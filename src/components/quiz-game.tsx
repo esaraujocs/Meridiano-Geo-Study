@@ -8,13 +8,10 @@ import {
   startLearningSession,
   type LearningSessionHandle,
 } from "../domain/learning-store";
-import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
+import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { shuffleAnswerOptions } from "../domain/answer-options";
 
 type Question = { target: string; options: string[] };
-
-function shuffled<T>(items: T[]) {
-  return shuffleSeeded(items, seedFromParts(items.map(String).join("|")));
-}
 
 export function QuizGame({
   data,
@@ -129,9 +126,9 @@ export function QuizGame({
     if (!deck || deck.remaining === 0) return;
     const targetId = deck.draw();
     if (!targetId) return;
-    const options = shuffled([
+    const options = shuffleAnswerOptions([
       targetId,
-      ...shuffled(pool.filter((id) => id !== targetId)).slice(0, 3),
+      ...shuffleAnswerOptions(pool.filter((id) => id !== targetId)).slice(0, 3),
     ]);
     setTarget(targetId);
     setRound(pool.length - deck.remaining);

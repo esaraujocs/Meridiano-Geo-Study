@@ -14,7 +14,8 @@ import {
   travelDestinationIds,
 } from "../domain/legacy-geometry";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
-import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
+import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
 
 type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; onBack: () => void; onEnd?: () => void };
@@ -106,7 +107,7 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
        if (!first) return;
        setTarget(first);
        setTyped(""); setFeedback(""); setAnswerResult(""); setLocked(false);
-       if (variant === "silhueta-opcoes") setChoices(shuffleSeeded([first, ...shuffleSeeded(ids.filter((id) => id !== first), seedFromParts(first)).slice(0, 3)], seedFromParts(first)));
+       if (variant === "silhueta-opcoes") setChoices(shuffleAnswerOptions([first, ...shuffleAnswerOptions(ids.filter((id) => id !== first)).slice(0, 3)]));
     }
   }, [ids, variant, region]);
   const submit = (value = typed) => {
@@ -126,7 +127,7 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
       }
       setTarget(next);
       setTyped(""); setFeedback(""); setLocked(false);
-      if (variant === "silhueta-opcoes") setChoices(shuffleSeeded([next, ...shuffleSeeded(ids.filter((id) => id !== next), seedFromParts(next)).slice(0, 3)], seedFromParts(next)));
+      if (variant === "silhueta-opcoes") setChoices(shuffleAnswerOptions([next, ...shuffleAnswerOptions(ids.filter((id) => id !== next)).slice(0, 3)]));
       requestAnimationFrame(() => inputRef.current?.focus());
     }, correct ? 650 : 1400);
   };
@@ -153,7 +154,7 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
          timer.current = window.setTimeout(async () => {
            const next = deck.current?.draw();
            if (!next) { await session.finish(); (onEnd ?? onBack)(); return; }
-           setTarget(next); setChoices(shuffleSeeded([next, ...shuffleSeeded(ids.filter((item) => item !== next), seedFromParts(next)).slice(0, 3)], seedFromParts(next))); setLocked(false); setFeedback(""); setAnswerResult("");
+            setTarget(next); setChoices(shuffleAnswerOptions([next, ...shuffleAnswerOptions(ids.filter((item) => item !== next)).slice(0, 3)])); setLocked(false); setFeedback(""); setAnswerResult("");
          }, correct ? 350 : 1400);
        }}>{data.meta[id]?.pt ?? id}{feedback && id === target ? " ✓" : ""}</button>)}</div> : <form className="quiz-options geometry-input" onSubmit={(event) => { event.preventDefault(); submit(); }}>
          <TypedAnswerInput key={target} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} answers={aliases(data.meta[target])} />

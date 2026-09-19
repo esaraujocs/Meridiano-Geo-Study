@@ -5,14 +5,13 @@ import { startLearningSession, type LearningSessionHandle } from "../domain/lear
 import type { AnyQuizVariant, Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion } from "../domain/regions";
 import { addHistoricalCollection } from "../domain/progress-surfaces";
-import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
+import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; onBack: () => void };
 type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
-
-function shuffle<T>(items: T[]) { return shuffleSeeded(items, seedFromParts(items.map(String).join("|"))); }
 
 export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { onEnd?: () => void }) {
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
@@ -101,8 +100,8 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     if (!item) return;
     setTarget(item); setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedChoice(""); setLocked(false); committedTarget.current = null; started.current = Date.now();
     if (!writing) {
-      const distractors = shuffle(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
-      setChoices(shuffle([item, ...distractors].map((candidate) => ({
+      const distractors = shuffleAnswerOptions(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
+      setChoices(shuffleAnswerOptions([item, ...distractors].map((candidate) => ({
         id: candidate.id,
         label: "pt" in candidate ? candidate.pt ?? candidate.id : "paises" in candidate ? candidate.paises : candidate.id,
         flag: "fl" in candidate ? candidate.fl : undefined,
