@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type Dispatch, type SetStateAction, type TransitionEvent } from "react";
 import { Icon } from "./icons";
 import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
@@ -10,12 +10,13 @@ import { unlockContent } from "../domain/economy-store";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 
-export function Header({ legacy, economy, onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
+export function Header({ legacy, economy, current = "hub", onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
   const items = [
-    ["hub", "Modos"], ["collection", "Coleção"], ["achievements", "Achievements"],
-    ["progress", "Progresso"], ["options", "Opções"],
+    ["hub", "Modos", "map"], ["collection", "Coleção", "collection"],
+    ["achievements", "Achievements", "achievements"], ["progress", "Progresso", "progress"],
   ] as const;
   return (
+    <>
     <header className="topbar">
       <a
         className="brand"
@@ -34,12 +35,14 @@ export function Header({ legacy, economy, onNavigate, onSurface }: { legacy?: Le
       </a>
       <nav className="desktop-nav" aria-label="Navegação principal">
         {items.map(([key, label]) => <button key={key} onClick={() => onNavigate?.(key)}>{label}</button>)}
+        <button onClick={() => onNavigate?.("options")}>Opções</button>
       </nav>
-      <div className="top-actions"><span className="pill mono">{economy?.balance ?? 0} moedas</span></div>
-      <nav className="mobile-nav" aria-label="Navegação principal">
-        {items.map(([key, label]) => <button key={key} onClick={() => onNavigate?.(key)}>{label}</button>)}
-      </nav>
+      <div className="top-actions"><span className="pill mono">{economy?.balance ?? 0} moedas</span><button className="settings-button" aria-label="Abrir Opções" title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
     </header>
+    <nav className="mobile-nav" aria-label="Navegação principal">
+      {items.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
+    </nav>
+    </>
   );
 }
 
@@ -100,10 +103,7 @@ export function Hub({
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
-  const [familyTrackTransition, setFamilyTrackTransition] = useState(true);
-  const familyGridRef = useRef<HTMLDivElement>(null);
-  const [hasFamilyOverflow, setHasFamilyOverflow] = useState(false);
-  const [carouselOffset, setCarouselOffset] = useState(0);
+  const [familyTrackTransition, setFamilyTrackTransition] = useState(false);
   const [carouselMode, setCarouselMode] = useState(
      () => matchMedia("(max-width: 899px)").matches,
   );
@@ -116,26 +116,10 @@ export function Hub({
     return () => media.removeEventListener("change", update);
   }, []);
   useEffect(() => {
-    const element = familyGridRef.current;
-    if (!element) return;
-    const viewport = element.parentElement;
-    const measure = () => {
-      setHasFamilyOverflow(
-        element.scrollWidth > (viewport?.clientWidth ?? element.clientWidth) + 1,
-      );
-       const active = element.children[carouselMode ? familyTrackIndex : activeFamily] as HTMLElement | undefined;
-      if (carouselMode && viewport && active) {
-        setCarouselOffset(
-          viewport.clientWidth / 2 - (active.offsetLeft + active.offsetWidth / 2),
-        );
-      }
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    if (viewport) observer.observe(viewport);
-    return () => observer.disconnect();
-   }, [carouselMode, activeFamily, familyTrackIndex]);
+    if (!carouselMode) return;
+    const frame = requestAnimationFrame(() => setFamilyTrackTransition(true));
+    return () => cancelAnimationFrame(frame);
+  }, [carouselMode]);
   const scrollFamily = (index: number) => {
     const next = (index + familyCount) % familyCount;
     setActiveFamily(next);
@@ -146,11 +130,14 @@ export function Hub({
           next + 1
     ));
   };
-  const finishFamilyTrack = () => {
+  const finishFamilyTrack = (event: TransitionEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
     if (familyTrackIndex !== 0 && familyTrackIndex !== familyCount + 1) return;
     setFamilyTrackTransition(false);
-    setFamilyTrackIndex(familyTrackIndex === 0 ? familyCount : 1);
-    requestAnimationFrame(() => setFamilyTrackTransition(true));
+    requestAnimationFrame(() => {
+      setFamilyTrackIndex(familyTrackIndex === 0 ? familyCount : 1);
+      requestAnimationFrame(() => setFamilyTrackTransition(true));
+    });
   };
   const unlocked = (family: Family, variant: AnyQuizVariant) => {
     const policy = policyFor(family, variant, "caribe");
@@ -170,23 +157,22 @@ export function Hub({
     ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]
     : familyItems.map((_, index) => index);
   return (
-    <main className="content">
+    <main className="content hub-content">
       <div className="hub-profile-bar" aria-label="Perfil de atividade">
         <div className="level-badge"><span>Nível</span><strong>{economy?.level ?? 1}</strong></div>
-        <div className="hub-xp"><div className="hub-xp-label"><span>{economy?.xp ?? 0} XP</span><span>{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div></div>
-        <div className="hub-coins"><strong>{economy?.balance ?? 0}</strong><span>moedas</span></div>
+        <div className="hub-xp"><div className="hub-xp-label"><span>{(economy?.xp ?? 0) - (economy?.xpBase ?? 0)} / {(economy?.xpNext ?? 100) - (economy?.xpBase ?? 0)} XP</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div><span className="hub-xp-next">{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div>
+        <div className="hub-coins" aria-label={`${economy?.balance ?? 0} moedas`}><i aria-hidden="true">$</i><strong>{economy?.balance ?? 0}</strong></div>
       </div>
       <div className="section-label"><h2>Modos</h2></div>
       <div className="family-carousel">
-          {carouselMode && hasFamilyOverflow && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
+          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
           className={`family-grid ${carouselMode ? "is-carousel" : ""}`}
           style={carouselMode ? {
-            "--carousel-offset": `${carouselOffset}px`,
+            "--track-index": familyTrackIndex,
             transition: familyTrackTransition ? undefined : "none",
           } as CSSProperties : undefined}
           onTransitionEnd={carouselMode ? finishFamilyTrack : undefined}
-          ref={familyGridRef}
           role="region"
            aria-label="Modos de jogo"
           onTouchStart={(event) => { event.currentTarget.dataset.x = String(event.touches[0].clientX); }}
@@ -199,7 +185,7 @@ export function Hub({
         {visibleFamilyIndexes.map((index, position) => {
           const item = familyItems[index];
             const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
-            const current = !carouselMode || (!clone && index === activeFamily);
+            const current = !carouselMode || position === familyTrackIndex;
           const isUnlocked = unlocked(item.family, item.variant);
           return <button
             type="button"
@@ -209,14 +195,14 @@ export function Hub({
             aria-hidden={carouselMode && !current ? true : undefined}
             inert={carouselMode && !current ? true : undefined}
           >
-            {item.family === "mapa" && <div className="family-geo" />}
-            <div><div className="family-icon" style={item.color ? { color: item.color } : undefined}><Icon type={item.icon} /></div><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{isUnlocked ? "aberta" : "bloqueada"}</span><Icon type="arrow" /></div>
+            <div className="family-visual" style={item.color ? { color: item.color } : undefined}>{item.family === "mapa" && <div className="family-geo" />}<div className="family-icon"><Icon type={item.icon} /></div></div>
+            <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
+            <div className="family-footer"><span>{isUnlocked ? "aberta" : "bloqueada"}</span><span className="family-play">Jogar <Icon type="arrow" /></span></div>
           </button>;
         })}
         </div>
-          {carouselMode && hasFamilyOverflow && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
-        {carouselMode && hasFamilyOverflow && <div className="carousel-dots" aria-label="Posição no carrossel">
+          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
+        {carouselMode && <div className="carousel-dots" aria-label="Posição no carrossel">
           {Array.from({ length: familyCount }, (_, index) => (
             <button type="button" key={index} aria-label={`Ir para família ${index + 1}`} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
           ))}

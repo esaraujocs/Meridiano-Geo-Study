@@ -241,10 +241,10 @@ export function App() {
   }
 
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history" || screen === "result") {
-     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current={screen === "history" || screen === "result" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
   }
   if (screen === "options") {
-    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} /><OptionsScreen offlineMap={offlineMap} onToggleOfflineMap={async () => {
+    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen offlineMap={offlineMap} onToggleOfflineMap={async () => {
       if (offlineMap === "installed") { await removeOfflineMap(); setOfflineMap("available"); }
       else { setOfflineMap("downloading"); try { await downloadOfflineMap(); setOfflineMap("installed"); } catch { setOfflineMap("error"); } }
     }} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} onBack={() => setScreen("hub")} /></div>;
@@ -286,7 +286,7 @@ export function App() {
 
   return (
     <div className="app-shell grain">
-        <Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} />
+        <Header legacy={legacy} economy={economy} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && (
         <Hub
           legacy={legacy}

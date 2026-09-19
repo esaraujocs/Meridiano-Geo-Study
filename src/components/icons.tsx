@@ -5,7 +5,10 @@ export type IconType =
   | "capital"
   | "lock"
   | "cross"
-  | "settings";
+  | "settings"
+  | "collection"
+  | "achievements"
+  | "progress";
 
 export function Icon({ type }: { type: IconType }) {
   return (
@@ -42,6 +45,9 @@ export function Icon({ type }: { type: IconType }) {
       )}
       {type === "cross" && <path d="M12 3v18M3 12h18" />}
       {type === "settings" && <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.1h-2.6v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 0 0 8 15a1.7 1.7 0 0 0-1.5-1H6v-2.6h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1L9 6.6l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.1h2.6v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1V14h-.1a1.7 1.7 0 0 0-1.1 1Z" /></>}
+      {type === "collection" && <><path d="M5 5h11a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V5Z" /><path d="M8 2h11a2 2 0 0 1 2 2v12M8 9h7M8 13h7" /></>}
+      {type === "achievements" && <><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" /><path d="M8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v5m-4 3h8" /></>}
+      {type === "progress" && <><path d="M5 20V10h4v10M10 20V4h4v16m1 0v-7h4v7" /></>}
     </svg>
   );
 }
