@@ -1,31 +1,15 @@
 # Carta Cega
 
-Rebuild TypeScript/PWA (React + Vite + MapLibre GL + PMTiles) em validação na raiz do Preview,
-substituindo a versão clássica de arquivo único. A versão clássica permanece disponível em
-`carta-cega-0.13.5.html` como referência/fallback.
+PWA React + Vite + MapLibre GL + PMTiles, servida na raiz do Preview.
+O Hub mobile tem HUD compacta, carrossel cíclico e navegação inferior acessível.
+A configuração de Bandeiras separa Variante, Recorte e Direção.
+Marcadores pequenos usam âncoras pré-computadas em `src/data/small-entity-markers.json`.
 
-## Executar no Replit
+## Executar
+`npm run dev` inicia o workflow; `npm run build` valida e gera a produção.
+Checks focados: `npm run test:map-marker-click`, `npm run test:flag-configuration` e `npm run test:small-entities`.
 
-O workflow **Start application** usa:
-
-```sh
-npm run dev
-```
-
-## Bandeiras e overrides
-
-As bandeiras embutidas ficam em `public/data/legacy/flags.json` e
-`historical-flags.json`. Para substituir uma bandeira durante desenvolvimento,
-adicione `public/data/flag-overrides/<id>.svg` ou `<id>.png`; o arquivo é
-mesclado sobre o JSON pelo manifesto gerado no início de `npm run dev` e
-`npm run build` (SVG tem prioridade sobre PNG). Com o servidor já aberto, rode
-`npm run validate:flag-overrides` depois de soltar um arquivo. A validação verifica
-estrutura, dimensões/`ratio` quando possível, aplica apenas a compactação segura
-de espaços entre tags SVG e avisa sobre arquivos pesados.
-
-## Pendências conhecidas
-
-`flagFill` (país revelado preenchido com a bandeira, como no clássico) está
-congelado por custo. Foram consideradas duas abordagens: overlay em canvas
-recortado pelo contorno (fiel ao clássico, caro) e cor representativa da
-bandeira via `feature-state` (barata).
+## Limitações conhecidas
+O smoke visual do Chromium é instável neste ambiente; prefira checks focados e capturas.
+O bundle principal permanece acima de 500 kB.
+`npm audit` tem 3 alertas altos pendentes no toolchain de Puppeteer, sem correção aplicada.
