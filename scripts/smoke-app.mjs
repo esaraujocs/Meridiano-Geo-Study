@@ -42,7 +42,14 @@ async function clickButton(label) {
 
 async function openFamily(family, variant, world = false, beforeStart) {
   await page.goto(baseUrl, { waitUntil: "networkidle0" });
-  await clickButton(family === "Mapa" ? "Abrir Mapa" : family === "Bandeiras" ? "Abrir Bandeiras" : family === "Capitais" ? "Abrir Capitais" : "Abrir Idiomas");
+  const familyLabel = family;
+  await page.$eval(".family-grid", (grid, label) => {
+    const card = [...grid.querySelectorAll(".family")].find(
+      (item) => item.querySelector("h3")?.textContent?.trim() === label,
+    );
+    if (!card) throw new Error(`Família não encontrada: ${label}`);
+    (card.querySelector("h3") ?? card).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  }, familyLabel);
   await page.waitForFunction(
     () => document.querySelector("h1")?.textContent?.includes("Como"),
   );
@@ -58,8 +65,46 @@ async function openFamily(family, variant, world = false, beforeStart) {
   if (!checks.ui.regionControls) {
     checks.ui.regionControls = (await page.$$eval(".region-list .region", (items) => items.length)) === 8;
   }
+  if (!checks.ui.regionAcceptance) {
+    const beforeRegion = await page.$eval(".region-detail", (item) => item.textContent ?? "");
+    const regionState = await page.evaluate(() => ({
+      count: document.querySelectorAll(".region-list .region").length,
+      selected: document.querySelectorAll('.region-list .region[aria-pressed="true"]').length,
+      selectedIndex: [...document.querySelectorAll(".region-list .region")].findIndex(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      ),
+      detail: document.querySelector(".region-detail")?.textContent ?? "",
+    }));
+    const alternate = await page.evaluate(() => {
+      const item = [...document.querySelectorAll(".region-list .region")].find(
+        (button) =>
+          !button.disabled && button.getAttribute("aria-pressed") !== "true",
+      );
+      item?.click();
+      return Boolean(item);
+    });
+    if (alternate) {
+      await page.waitForFunction((previous) =>
+        (document.querySelector(".region-detail")?.textContent ?? "") !== previous, {}, beforeRegion);
+    }
+    const changed = await page.evaluate(() => ({
+      selected: document.querySelectorAll('.region-list .region[aria-pressed="true"]').length,
+      detail: document.querySelector(".region-detail")?.textContent ?? "",
+    }));
+    checks.ui.regionAcceptance = regionState.count === 8 &&
+      regionState.selected === 1 &&
+      /moedas/.test(regionState.detail) &&
+      /sessão/.test(regionState.detail) &&
+      /cartas/.test(regionState.detail) &&
+      changed.selected === 1 && (!alternate || changed.detail !== beforeRegion);
+    if (alternate && regionState.selectedIndex >= 0) {
+      await page.click(
+        `.region-list .region:nth-child(${regionState.selectedIndex + 1})`,
+      );
+    }
+  }
   if (variant.includes("Histórica") || variant.includes("histórica")) {
-    const deckSize = await page.$eval(".deck-line b", (item) =>
+    const deckSize = await page.$eval(".region-detail-meta b", (item) =>
       Number.parseInt(item.textContent ?? "0", 10),
     );
     if (!(deckSize > 0)) throw new Error("Baralho histórico não foi pré-carregado");
@@ -83,8 +128,15 @@ checks.ui = await page.evaluate(() => {
     idiomasFree: Boolean(idiomas && !idiomas.classList.contains("locked")),
     arrowsDots: document.querySelectorAll(".carousel-arrow").length === 2 &&
       document.querySelectorAll(".carousel-dots button").length === 4,
+    familyCardsHaveNoInteractiveDescendants: [...document.querySelectorAll(".family")].every(
+      (card) => card.querySelectorAll("a,button,input,select,textarea,[tabindex]").length === 0,
+    ),
   };
 });
+await page.click(".family-grid .family:first-child h3");
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
+checks.ui.familyCardOpensVariant = true;
+await page.goto(baseUrl, { waitUntil: "networkidle0" });
 await page.click('button[aria-label="Próxima família"]');
 await page.waitForFunction(
   () =>
@@ -92,6 +144,15 @@ await page.waitForFunction(
     document.querySelector('.carousel-dots button[aria-current="true"]')
       ?.getAttribute("aria-label") === "Ir para família 2",
 );
+await page.waitForFunction(() => {
+  const grid = document.querySelector(".family-grid")?.getBoundingClientRect();
+  const active = document.querySelector(".family.active")?.getBoundingClientRect();
+  return Boolean(
+    grid &&
+    active &&
+    Math.abs((active.left + active.right) / 2 - (grid.left + grid.right) / 2) < 4
+  );
+});
 checks.ui.carouselNavigation = await page.evaluate(() => {
   const cards = [...document.querySelectorAll(".family-grid > .family")];
   return (
@@ -99,6 +160,25 @@ checks.ui.carouselNavigation = await page.evaluate(() => {
     cards[1]?.getAttribute("aria-hidden") !== "true" &&
     cards[0]?.hasAttribute("inert")
   );
+});
+checks.ui.carouselGeometry = await page.evaluate(() => {
+  const grid = document.querySelector(".family-grid").getBoundingClientRect();
+  const active = document.querySelector(".family.active").getBoundingClientRect();
+  const cards = [...document.querySelectorAll(".family")].map((card) => card.getBoundingClientRect());
+  const visible = (rect) => Math.max(0, Math.min(rect.right, grid.right) - Math.max(rect.left, grid.left));
+  const previous = visible(cards[0]);
+  const next = visible(cards[2]);
+  const prevArrow = document.querySelector(".carousel-arrow-prev").getBoundingClientRect();
+  const nextArrow = document.querySelector(".carousel-arrow-next").getBoundingClientRect();
+  return {
+    activeCentered: Math.abs((active.left + active.right) / 2 - (grid.left + grid.right) / 2) < 8,
+    symmetricPeeks: Math.abs(previous - next) < 14,
+    arrowsSymmetric: Math.abs(
+      Math.abs((prevArrow.left + prevArrow.right) / 2 - (grid.left + grid.right) / 2) -
+      Math.abs((nextArrow.left + nextArrow.right) / 2 - (grid.left + grid.right) / 2),
+    ) < 14,
+    previous, next,
+  };
 });
 await page.click('.carousel-dots button[aria-label="Ir para família 1"]');
 await page.waitForFunction(
@@ -112,7 +192,44 @@ checks.ui.debugVisibleWithOptIn = await page.$eval(".options-popover", (item) =>
 await clickButton("Conceder 10 moedas");
 await page.waitForFunction(() => document.querySelector(".pill")?.textContent?.includes("10 moedas"));
 checks.ui.debugLedgerRefresh = true;
-await clickButton("Abrir Bandeiras");
+await page.select(
+  'select[aria-label="Carta de teste"]',
+  await page.$eval('select[aria-label="Carta de teste"] option:nth-child(2)', (item) => item.value),
+);
+await page.select('select[aria-label="Nível de domínio"]', "5");
+await page.click('[data-debug-collection] input[type="checkbox"]');
+await clickButton("Aplicar carta");
+await page.waitForFunction(() =>
+  document.querySelector('[data-debug-collection] [role="status"]')?.textContent?.includes("Carta aplicada"),
+);
+const debugState = await page.evaluate(async () => {
+  const db = await new Promise((resolve, reject) => {
+    const request = indexedDB.open("carta-cega", 4);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  const records = await new Promise((resolve, reject) => {
+    const request = db.transaction("progress").objectStore("progress").getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  db.close();
+  return records.find((record) => record.source === "debug");
+});
+await clickButton("Coleção");
+await page.waitForFunction(() => document.querySelector(".collection-grid .collection-card"));
+checks.ui.debugCollection = Boolean(debugState && debugState.mastery === 5 &&
+  await page.$eval(".collection-grid", (grid) => grid.textContent?.includes("nível 5")));
+await clickButton("Progresso");
+await page.waitForSelector('[aria-label="Resumo de progresso"]');
+checks.ui.debugProgress = await page.$eval(
+  '[aria-label="Resumo de progresso"]',
+  (item) => /5:1/.test(item.textContent ?? ""),
+);
+await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await page.$eval(".family-grid .family:nth-child(2) h3", (item) =>
+  item.dispatchEvent(new MouseEvent("click", { bubbles: true })),
+);
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
 checks.ui.bandeiraCards = (await page.$$eval(".family h3", (items) =>
   items.filter((item) => ["Atuais", "Históricas"].includes(item.textContent ?? "") || item.textContent?.includes("Escrita")).length,
@@ -127,22 +244,29 @@ await page.setViewport({ width: 1280, height: 720 });
 
 let unDeckSize = 0;
 await openFamily("Mapa", "Clicar no mapa", false, async () => {
-  const lockedWorld = await page.$eval(
-    ".region-list .region:first-child",
-    (item) => item.textContent?.includes("3 moedas"),
+  await page.click(".region-list .region:first-child");
+  await page.waitForFunction(() =>
+    document.querySelector(".region-detail")?.textContent?.includes("Mundo"),
   );
-  const before = await page.$eval(".deck-line b", (item) =>
+  const lockedWorld = await page.$eval(
+    ".region-detail",
+    (item) =>
+      item.textContent?.includes("bloqueada") &&
+      item.textContent?.includes("3 moedas"),
+  );
+  await page.click(".region-list .region:nth-child(2)");
+  const before = await page.$eval(".region-detail-meta b", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
   await page.$eval('.config-details input[type="checkbox"]', (input) => input.click());
   await page.waitForFunction(
     (previous) =>
-      Number.parseInt(document.querySelector(".deck-line b")?.textContent ?? "0", 10) <
+      Number.parseInt(document.querySelector(".region-detail-meta b")?.textContent ?? "0", 10) <
       previous,
     {},
     before,
   );
-  unDeckSize = await page.$eval(".deck-line b", (item) =>
+  unDeckSize = await page.$eval(".region-detail-meta b", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
   checks.ui.lockedWorld = lockedWorld;
@@ -204,7 +328,7 @@ checks.writing = {
 
 let capitalDeckSize = 0;
 await openFamily("Capitais", "Escrita · nome da capital", false, async () => {
-  capitalDeckSize = await page.$eval(".deck-line b", (item) =>
+  capitalDeckSize = await page.$eval(".region-detail-meta b", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
   const expected = await page.evaluate(async () => {
@@ -223,6 +347,45 @@ await openFamily("Capitais", "Escrita · nome da capital", false, async () => {
 checks.capitalWriting = {
   input: Boolean(await page.$('input[aria-label="Resposta"]')),
 };
+const capitalAnswer = await page.evaluate(async () => {
+  const clue = document.querySelector(".quiz-clue")?.textContent?.trim();
+  const data = await fetch("/data/legacy/catalog.json").then((response) => response.json());
+  return Object.values(data.meta).find((meta) => meta.pt === clue)?.cap ?? "";
+});
+await page.type('input[aria-label="Resposta"]', capitalAnswer);
+await page.waitForFunction(() => {
+  const input = document.querySelector('input[aria-label="Resposta"]');
+  return input instanceof HTMLInputElement && !input.disabled && input.value === "";
+});
+checks.writingExactAutoAdvance = Boolean(
+  capitalAnswer && await page.$eval('input[aria-label="Resposta"]', (input) => document.activeElement === input),
+);
+await openFamily("Capitais", "Escrita · nome da capital");
+{
+  const input = await page.$('input[aria-label="Resposta"]');
+  await input.type("resposta-que-nao-existe");
+  checks.writingPartialUnlocked = await page.$eval(
+    'input[aria-label="Resposta"]',
+    (item) => !item.disabled,
+  );
+  await input.press("Enter");
+  await page.waitForFunction(() =>
+    document.querySelector('input[aria-label="Resposta"]')?.disabled === true &&
+    Boolean(document.querySelector('[role="status"]')?.textContent?.trim()),
+  );
+  checks.writingEnterIncorrect = await page.$eval(
+    '[role="status"]',
+    (item) => /correta|Ainda não/i.test(item.textContent ?? ""),
+  );
+}
+await openFamily("Capitais", "Escrita · nome da capital");
+await page.type('input[aria-label="Resposta"]', "resposta-por-desfoque");
+await page.$eval('input[aria-label="Resposta"]', (input) => input.blur());
+await page.waitForFunction(() => document.querySelector('input[aria-label="Resposta"]')?.disabled === true);
+checks.writingBlurIncorrect = await page.$eval(
+  '[role="status"]',
+  (item) => /correta|Ainda não/i.test(item.textContent ?? ""),
+);
 
 await openFamily("Bandeiras", "Histórica → nome");
 await page.waitForFunction(() => document.querySelectorAll(".quiz-option").length === 4);
@@ -292,7 +455,7 @@ await page.evaluate(async () => {
   db.close();
 });
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await clickButton("Abrir Mapa");
+  await page.$eval(".family-grid .family:first-child h3", (item) => item.dispatchEvent(new MouseEvent("click", { bubbles: true })));
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
 await clickButton("Travel");
 await page.waitForSelector(".region-list");
@@ -328,14 +491,22 @@ if (
   !checks.ui.carousel1280 ||
   !checks.ui.nativeScrollbarHidden ||
   !checks.ui.arrowsDots ||
+  !checks.ui.carouselGeometry?.activeCentered ||
+  !checks.ui.carouselGeometry?.symmetricPeeks ||
+  !checks.ui.carouselGeometry?.arrowsSymmetric ||
   !checks.ui.carouselNavigation ||
+  !checks.ui.familyCardsHaveNoInteractiveDescendants ||
+  !checks.ui.familyCardOpensVariant ||
   !checks.ui.grid1440 ||
   !checks.ui.idiomasFree ||
   !checks.ui.debugHiddenWithoutOptIn ||
   !checks.ui.debugVisibleWithOptIn ||
   !checks.ui.debugLedgerRefresh ||
+  !checks.ui.debugCollection ||
+  !checks.ui.debugProgress ||
   !checks.ui.bandeiraCards ||
   !checks.ui.regionControls ||
+  !checks.ui.regionAcceptance ||
   !checks.ui.lockedWorld ||
   !checks.ui.unFilterReducesDeck ||
   !checks.ui.capitalDeckParity ||
@@ -346,6 +517,10 @@ if (
   !checks.capitals.map ||
   !checks.writing.input ||
   !checks.writing.flag ||
+  !checks.writingExactAutoAdvance ||
+  !checks.writingPartialUnlocked ||
+  !checks.writingEnterIncorrect ||
+  !checks.writingBlurIncorrect ||
   !checks.capitalWriting.input ||
   checks.historical.options !== 4 ||
   !checks.historical.flag ||

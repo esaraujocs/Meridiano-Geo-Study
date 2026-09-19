@@ -41,6 +41,7 @@ export function App() {
   const [legacy, setLegacy] = useState<LegacyProfile | null>(null);
   const [offlineMap, setOfflineMap] =
     useState<OfflineMapStatus>("checking");
+  const [surfaceRevision, setSurfaceRevision] = useState(0);
   const [economy, setEconomy] = useState<EconomySnapshot>({
     balance: 0,
     earned: 0,
@@ -59,6 +60,16 @@ export function App() {
     if (!import.meta.env.DEV) return;
     const { grantDebugCoins } = await import("./domain/debug-economy");
     setEconomy(await grantDebugCoins());
+  };
+  const debugEntities = data
+    ? Object.entries(data.meta).map(([id, meta]) => ({ id, name: meta.pt ?? id })).slice(0, 250)
+    : [];
+  const debugCollection = async (id: string, mastery: number, historical: boolean) => {
+    if (!import.meta.env.DEV) return;
+    const { setDebugCollection } = await import("./domain/debug-collection");
+    await setDebugCollection(id, mastery, historical);
+    setEconomy(await queryEconomy());
+    setSurfaceRevision((value) => value + 1);
   };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => setScreen(surface);
 
@@ -147,7 +158,7 @@ export function App() {
   }
 
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history" || screen === "result") {
-     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} /><Surface data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} debugEntities={debugEntities} onDebugCollection={(id, mastery, historical) => void debugCollection(id, mastery, historical)} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "game") {
@@ -186,7 +197,7 @@ export function App() {
 
   return (
     <div className="app-shell grain">
-       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} />
+       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} debugEntities={debugEntities} onDebugCollection={(id, mastery, historical) => void debugCollection(id, mastery, historical)} />
       {screen === "hub" && (
         <Hub
           legacy={legacy}

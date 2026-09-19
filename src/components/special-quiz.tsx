@@ -23,11 +23,14 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const [typed, setTyped] = useState("");
   const [feedback, setFeedback] = useState("");
   const [locked, setLocked] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const committedTarget = useRef<string | null>(null);
   const timer = useRef<number | null>(null);
   const session = useRef<LearningSessionHandle | null>(null);
   const pendingSession = useRef<Promise<LearningSessionHandle> | null>(null);
   const strictUsers = useRef(0);
   const started = useRef(0);
+  const queuedRounds = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
   const historicalMode = variant === "historica-nome" || variant === "nome-historica";
   const writing = variant === "escrita-pais" || variant === "escrita-capital";
 
@@ -53,13 +56,17 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     });
     pendingSession.current = handle;
     handle.then((value) => {
-      if (strictUsers.current > 0) session.current = value;
+       if (strictUsers.current > 0) {
+         session.current = value;
+         for (const round of queuedRounds.current.splice(0)) value.recordRound(round);
+       }
       else void value.end();
     }).catch(() => undefined);
     return () => {
       strictUsers.current -= 1;
       queueMicrotask(() => {
         if (strictUsers.current > 0) return;
+        queuedRounds.current = [];
         const current = session.current;
         session.current = null;
         pendingSession.current = null;
@@ -78,9 +85,13 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   }, [data, historical, languages, region, historicalMode, writing, variant]);
 
   const next = () => {
+    if (timer.current) {
+      window.clearTimeout(timer.current);
+      timer.current = null;
+    }
     if (pool.length < 4) return;
     const item = pool[Math.floor(Math.random() * pool.length)];
-    setTarget(item); setTyped(""); setFeedback(""); setLocked(false); started.current = Date.now();
+    setTarget(item); setTyped(""); setFeedback(""); setLocked(false); committedTarget.current = null; started.current = Date.now();
     if (!writing) {
       const distractors = shuffle(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
       setChoices(shuffle([item, ...distractors].map((candidate) => ({
@@ -89,24 +100,33 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
         flag: "fl" in candidate ? candidate.fl : undefined,
       }))));
     }
+    if (writing) requestAnimationFrame(() => inputRef.current?.focus());
   };
   useEffect(() => { next(); }, [pool.length, variant]);
 
+  const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
+    if (session.current) session.current.recordRound(round);
+    else queuedRounds.current.push(round);
+  };
   const answer = (id: string, value: string, forcedCorrect?: boolean) => {
-    if (!target || locked) return;
+    if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
+    committedTarget.current = target.id;
     if (correct && historicalMode) {
       void addHistoricalCollection(target.id, target);
     }
     setLocked(true); setFeedback(correct ? "Acerto. A resposta foi registrada." : `Ainda não. A resposta correta é ${"pt" in target ? target.pt : "paises" in target ? target.paises : target.id}.`);
-    session.current?.recordRound({ targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(), selectedId: value });
+    recordRound({ targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(), selectedId: value });
     timer.current = window.setTimeout(next, correct ? 650 : 1400);
   };
-  const submitWriting = () => {
+  const submitWriting = (value = typed) => {
     if (!target || locked) return;
     const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {});
-    const correct = Array.isArray(expected) ? expected.includes(normalizeAnswer(typed)) : normalizeAnswer(typed) === normalizeAnswer(expected as string);
-    answer(target.id, typed, correct); if (!correct) setFeedback(`Ainda não. A resposta correta é ${variant === "escrita-capital" ? expected : ("pt" in target ? target.pt : target.id)}.`);
+    const normalized = normalizeAnswer(value);
+    if (!normalized) return;
+    const correct = Array.isArray(expected) ? expected.includes(normalized) : normalized === normalizeAnswer(expected as string);
+    answer(target.id, value, correct);
+    if (!correct) setFeedback(`Ainda não. A resposta correta é ${variant === "escrita-capital" ? expected : ("pt" in target ? target.pt : target.id)}.`);
   };
   const finish = async () => {
     const handle = session.current ?? (await pendingSession.current?.catch(() => null));
@@ -128,7 +148,15 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
       {writing && variant === "escrita-capital" ? <div className="quiz-clue">{data.meta[target.id]?.pt}</div> : writing ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /> : historicalMode && variant === "historica-nome" ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /> : <div className="quiz-clue">{("script" in target ? target.script : target.pt)}</div>}
       <div className="feedback" aria-live="polite" role="status">{feedback || "Escolha uma alternativa."}</div>
     </div>
-    {writing ? <form className="quiz-options" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}><input aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={(e) => setTyped(e.target.value)} /><button className="button" disabled={locked || !typed.trim()}>Responder</button></form> : <div className="quiz-options">{choices.map((choice) => {
+     {writing ? <form className="quiz-options" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}><input ref={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={(e) => {
+       const value = e.target.value;
+       setTyped(value);
+       const normalized = normalizeAnswer(value);
+       if (!normalized || !target || locked) return;
+       const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {});
+       const correct = Array.isArray(expected) ? expected.includes(normalized) : normalized === normalizeAnswer(expected as string);
+       if (correct) submitWriting(value);
+     }} onBlur={() => { if (!locked && normalizeAnswer(typed)) submitWriting(); }} /><button className="button" disabled={locked || !typed.trim()}>Responder</button></form> : <div className="quiz-options">{choices.map((choice) => {
       const historicalFlag = choice.flag
         ? historicalFlags[choice.flag.toLowerCase()]
         : undefined;

@@ -10,9 +10,14 @@ import { unlockContent } from "../domain/economy-store";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 
-export function Header({ legacy, economy, onSurface, onGrantDebugCoins }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; onGrantDebugCoins?: () => void }) {
+export function Header({ legacy, economy, onSurface, onGrantDebugCoins, debugEntities, onDebugCollection }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; onGrantDebugCoins?: () => void; debugEntities?: { id: string; name: string }[]; onDebugCollection?: (id: string, mastery: number, historical: boolean) => Promise<void> | void }) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
+  const [debugEntity, setDebugEntity] = useState("");
+  const [debugMastery, setDebugMastery] = useState("1");
+  const [debugHistorical, setDebugHistorical] = useState(false);
+  const [debugApplying, setDebugApplying] = useState(false);
+  const [debugApplied, setDebugApplied] = useState(false);
   const debugCoinsEnabled = import.meta.env.DEV && new URLSearchParams(location.search).get("debug-coins") === "1";
   useEffect(() => { document.documentElement.dataset.reducedMotion = reducedMotion ? "true" : "false"; localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0"); }, [reducedMotion]);
   return (
@@ -47,6 +52,28 @@ export function Header({ legacy, economy, onSurface, onGrantDebugCoins }: { lega
         <label>Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label>
         <p style={{ color: "var(--muted)", fontSize: 11, marginTop: 12 }}>Preferências salvas neste dispositivo.</p>
          {debugCoinsEnabled && onGrantDebugCoins && <button className="button ghost" style={{ width: "100%", marginTop: 12 }} onClick={onGrantDebugCoins}>Conceder 10 moedas de teste</button>}
+           {debugCoinsEnabled && onDebugCollection && debugEntities?.length && <div data-debug-collection style={{ borderTop: "1px solid var(--line)", marginTop: 12, paddingTop: 12, display: "grid", gap: 8 }}>
+            <div className="eyebrow">Coleção de teste</div>
+             <select style={{ width: "100%", padding: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)" }} value={debugEntity} onChange={(event) => setDebugEntity(event.target.value)} aria-label="Carta de teste">
+              <option value="">Escolha uma entidade…</option>
+              {debugEntities.map((entity) => <option key={entity.id} value={entity.id}>{entity.name}</option>)}
+            </select>
+             <select style={{ width: "100%", padding: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)" }} value={debugMastery} onChange={(event) => setDebugMastery(event.target.value)} aria-label="Nível de domínio">
+              {[0, 1, 2, 3, 4, 5].map((level) => <option key={level} value={level}>Nível {level}</option>)}
+            </select>
+            <label><input type="checkbox" checked={debugHistorical} onChange={(event) => setDebugHistorical(event.target.checked)} /> Acervo histórico</label>
+             <button className="button ghost" style={{ width: "100%", marginTop: 8 }} disabled={!debugEntity || debugApplying} onClick={async () => {
+               setDebugApplying(true);
+               setDebugApplied(false);
+               try {
+                 await onDebugCollection(debugEntity, Number(debugMastery), debugHistorical);
+                 setDebugApplied(true);
+               } finally {
+                 setDebugApplying(false);
+               }
+             }}>{debugApplying ? "Aplicando…" : "Aplicar carta"}</button>
+             {debugApplied && <span role="status">Carta aplicada.</span>}
+          </div>}
       </div>}
     </header>
   );
@@ -84,7 +111,7 @@ export function Hub({
     const next = Math.max(0, Math.min(familyCount - 1, index));
     setActiveFamily(next);
     const card = familyGridRef.current?.children[next] as HTMLElement | undefined;
-    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   };
   const unlocked = (family: Family, variant: AnyQuizVariant) => {
     const policy = policyFor(family, variant, "caribe");
@@ -135,10 +162,11 @@ export function Hub({
           onScroll={(event) => {
             const element = event.currentTarget;
             const cards = [...element.children] as HTMLElement[];
+            const viewportCenter = element.scrollLeft + element.clientWidth / 2;
             const index = cards.reduce(
               (closest, card, index) =>
-                Math.abs(card.offsetLeft - element.scrollLeft) <
-                Math.abs(cards[closest].offsetLeft - element.scrollLeft)
+                Math.abs(card.offsetLeft + card.offsetWidth / 2 - viewportCenter) <
+                Math.abs(cards[closest].offsetLeft + cards[closest].offsetWidth / 2 - viewportCenter)
                   ? index
                   : closest,
               0,
@@ -146,8 +174,9 @@ export function Hub({
             setActiveFamily(Math.max(0, Math.min(familyCount - 1, index)));
           }}
         >
-        <article
+        <button type="button"
           className={`family ${carouselMode && activeFamily === 0 ? "active" : ""} ${economy && !unlocked("mapa", "mapa") ? "locked" : ""}`}
+          onClick={() => onSelect("mapa")}
           aria-hidden={carouselMode && activeFamily !== 0}
           inert={carouselMode && activeFamily !== 0 ? true : undefined}
         >
@@ -158,19 +187,15 @@ export function Hub({
             </div>
             <h3>Mapa</h3>
             <p>Localizar países e territórios.</p>
-            <button className="family-primary" onClick={() => onSelect("mapa")}>Abrir Mapa</button>
-            <div className="family-variants" onClick={(event) => event.stopPropagation()}>
-              <button onClick={() => onSelect("silhueta")}>Silhueta</button>
-              <button onClick={() => onSelect("travel")}>Travel</button>
-            </div>
           </div>
           <div className="family-footer">
-            <span>{unlocked("mapa", "mapa") ? "Caribe aberta · Mundo/Pacífico por moeda" : "bloqueada · desbloqueie no recorte"}</span>
+            <span>{unlocked("mapa", "mapa") ? "aberta" : "bloqueada"}</span>
             <Icon type="arrow" />
           </div>
-        </article>
-        <article
+        </button>
+        <button type="button"
           className={`family ${carouselMode && activeFamily === 1 ? "active" : ""} ${economy && !unlocked("bandeiras", "bandeira-nome") ? "locked" : ""}`}
+          onClick={() => onSelect("bandeiras")}
           aria-hidden={carouselMode && activeFamily !== 1}
           inert={carouselMode && activeFamily !== 1 ? true : undefined}
         >
@@ -180,19 +205,15 @@ export function Hub({
             </div>
             <h3>Bandeiras</h3>
           <p>Reconhecimento visual e escrita.</p>
-          <button className="family-primary" onClick={() => onSelect("bandeiras")}>Abrir Bandeiras</button>
-          <div className="family-variants" onClick={(event) => event.stopPropagation()}>
-            <button onClick={() => onSelect("escrita")}>Escrita · nome do país</button>
-            <button onClick={() => onSelect("historicas")}>Históricas</button>
-          </div>
           </div>
           <div className="family-footer">
-            <span>{unlocked("bandeiras", "bandeira-nome") ? "Caribe aberta · variantes por domínio" : "bloqueada · desbloqueie no recorte"}</span>
+            <span>{unlocked("bandeiras", "bandeira-nome") ? "aberta" : "bloqueada"}</span>
             <Icon type="arrow" />
           </div>
-        </article>
-        <article
+        </button>
+        <button type="button"
           className={`family ${carouselMode && activeFamily === 2 ? "active" : ""} ${economy && !unlocked("capitais", "capital-pais") ? "locked" : ""}`}
+          onClick={() => onSelect("capitais")}
           aria-hidden={carouselMode && activeFamily !== 2}
           inert={carouselMode && activeFamily !== 2 ? true : undefined}
         >
@@ -202,22 +223,21 @@ export function Hub({
             </div>
             <h3>Capitais</h3>
             <p>Recuperação de nomes.</p>
-            <button className="family-primary" onClick={() => onSelect("capitais")}>Abrir Capitais</button>
           </div>
           <div className="family-footer">
-            <span>{unlocked("capitais", "capital-pais") ? "aberta · 2 variantes" : "bloqueada · desbloqueie no recorte"}</span>
+            <span>{unlocked("capitais", "capital-pais") ? "aberta" : "bloqueada"}</span>
             <Icon type="arrow" />
           </div>
-        </article>
-        <article
+        </button>
+        <button type="button"
           className={`family ${carouselMode && activeFamily === 3 ? "active" : ""} ${economy && !unlocked("idiomas", "idioma-pais") ? "locked" : ""}`}
+          onClick={() => onSelect("idiomas")}
           aria-hidden={carouselMode && activeFamily !== 3}
           inert={carouselMode && activeFamily !== 3 ? true : undefined}
         >
           <div><div className="family-icon" style={{ color: "var(--terracotta)" }}><Icon type="capital" /></div><h3>Idiomas</h3><p>Uma variante para ler escrita e território.</p></div>
-          <button className="family-primary" onClick={() => onSelect("idiomas")}>Abrir Idiomas</button>
-          <div className="family-footer"><span>acervo cultural · variante única</span><Icon type="arrow" /></div>
-        </article>
+          <div className="family-footer"><span>{unlocked("idiomas", "idioma-pais") ? "aberta" : "bloqueada"}</span><Icon type="arrow" /></div>
+        </button>
         </div>
         <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próxima família" disabled={activeFamily === familyCount - 1} onClick={() => scrollFamily(activeFamily + 1)}>›</button>
         <div className="carousel-dots" aria-label="Posição no carrossel">
@@ -398,6 +418,7 @@ export function Recorte({
 }) {
    const familyLabel = family === "mapa" ? "Mapa" : family === "bandeiras" ? "Bandeiras" : family === "capitais" ? "Capitais" : family === "escrita" ? "Escrita" : family === "historicas" ? "Históricas" : family === "idiomas" ? "Idiomas" : family === "silhueta" ? "Silhueta" : "Travel";
     const selectedPolicy = policyFor(family, variant, region);
+    const selectedRegionItem = REGION_ITEMS.find(([key]) => key === region);
    const selectedUnlocked =
       !selectedPolicy ||
       (selectedPolicy.cost === 0 && selectedPolicy.sessions === 0) ||
@@ -428,7 +449,7 @@ export function Recorte({
            <details className="config-details" open>
              <summary>Recorte do atlas</summary>
              <p>Escolha a região que vai compor o baralho. O recorte permanece salvo durante a sessão.</p>
-          <div className="region-list">
+           <div className="region-list" role="group" aria-label="Recortes disponíveis">
              {REGION_ITEMS.map(([key, label, description]) => {
                  const policy = policyFor(family, variant, key);
                 const unlocked =
@@ -439,25 +460,26 @@ export function Recorte({
               <button
                 key={key}
                 className="region"
+                 aria-pressed={region === key}
                   disabled={counts[key] === 0}
                   onClick={() => setRegion(key)}
-                style={{
-                  borderColor: region === key ? "var(--aqua)" : undefined,
-                }}
               >
-                <span>
-                  <b>{label}</b>
-                  <br />
-                  <small>{description}</small>
-                </span>
-                 <strong>{!unlocked ? `${policy?.cost ?? 0} moedas · ${policy?.sessions ?? 0} sessão(ões)` : null}{" "}
-                  {counts[key]}{" "}
-                  <span style={{ fontSize: 10, fontWeight: 400 }}>lugares</span>
-                </strong>
+                 <b>{label}</b>
+                 <span>{counts[key] === 0 ? "indisponível" : unlocked ? "aberta" : "bloqueada"}</span>
                </button>
                );
              })}
           </div>
+           <div className="region-detail" role="status" aria-live="polite">
+             <div>
+               <span className="eyebrow">{selectedRegionItem?.[1]}</span>
+               <p>{selectedRegionItem?.[2]}</p>
+             </div>
+             <div className="region-detail-meta">
+               <span>{selectedUnlocked ? "aberta" : "bloqueada"} · {selectedPolicy?.cost ?? 0} moedas · {selectedPolicy?.sessions ?? 0} sessão(ões)</span>
+               <b>{counts[region]} cartas</b>
+             </div>
+           </div>
            </details>
            <details className="config-details">
              <summary>Ajustes aplicáveis</summary>
@@ -475,7 +497,6 @@ export function Recorte({
                     : `Requisito: ${selectedPolicy.cost} moedas e ${selectedPolicy.sessions} sessão(ões). Saldo atual: ${economy?.balance ?? 0}; sessões: ${economy?.sessions ?? 0}.`)}
              </p>
            )}
-            <div className="deck-line"><span className="mono">TAMANHO DO BARALHO</span><b>{counts[region]} cartas</b></div>
             <button
             className="button coral"
             style={{ width: "100%", marginTop: 20 }}
