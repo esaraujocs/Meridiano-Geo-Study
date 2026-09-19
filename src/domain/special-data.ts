@@ -19,7 +19,15 @@ export function loadSpecialData() {
   ]).then(async ([historical, flags, languages]) => {
     if (!historical.ok || !flags.ok || !languages.ok) throw new Error("Falha ao carregar acervo especial.");
     const [h, f, l] = await Promise.all([historical.json(), flags.json(), languages.json()]);
-    return { historical: h.entities ?? [], historicalFlags: f.flags ?? {}, languages: l.entries ?? [] };
+    const historicalFlags = { ...(f.flags ?? {}) };
+    const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
+    const overrides = overrideResponse.ok
+      ? await overrideResponse.json() as Record<string, { src: string }>
+      : {};
+    for (const [id, override] of Object.entries(overrides)) {
+      if (historicalFlags[id] && override.src) historicalFlags[id] = override.src;
+    }
+    return { historical: h.entities ?? [], historicalFlags, languages: l.entries ?? [] };
   });
   return promise;
 }

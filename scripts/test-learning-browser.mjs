@@ -187,8 +187,8 @@ assert.equal(
   ).length,
   1,
 );
-// One qualifying current session plus the imported complete legacy session;
-// the empty abandoned session is intentionally excluded.
+// Direction variants keep their shared unlock while the old regional key is
+// normalized to the new variant-level policy.
 assert.deepEqual(
   currentSessions
     .filter((session) => session.family === "bandeiras")
@@ -197,11 +197,11 @@ assert.deepEqual(
   ["bandeira-nome", "nome-bandeira"],
 );
 assert.equal(
-  result.ledger.filter((entry) => entry.id === "debit:unlock:bandeiras:bandeira-nome:mundo").length,
+  result.ledger.filter((entry) => entry.id === "debit:unlock:bandeiras:bandeira-nome").length,
   0,
 );
-assert.ok(result.economy.unlocked.includes("bandeiras:bandeira-nome:mundo"));
-assert.equal(result.economy.sessions, 4);
+assert.ok(result.economy.unlocked.includes("bandeiras:bandeira-nome"));
+assert.equal(result.economy.sessions, 0);
 
 await browser.close();
 console.log("browser learning integration: ok");

@@ -38,6 +38,7 @@ export async function setDebugCollection(
   entityId: string,
   mastery: number,
   historical = false,
+  historicalRarity?: string,
 ) {
   const level = Math.max(0, Math.min(5, Math.floor(mastery)));
   const columns = debugColumnsForMastery(level);
@@ -58,7 +59,16 @@ export async function setDebugCollection(
   await transactionDone(transaction);
   db.close();
   if (historical) {
-    const rarity = level >= 5 ? "lendária" : level >= 4 ? "rara" : level >= 2 ? "incomum" : "comum";
+    const rarity = historicalRarity ?? (level >= 5 ? "lendária" : level >= 4 ? "rara" : level >= 2 ? "incomum" : "comum");
     await addHistoricalCollection(entityId, { id: entityId, debug: true, discovered: level > 0, mastery: level, rarity });
   }
+}
+
+export async function setDebugCollectionBatch(
+  entityIds: string[],
+  mastery: number,
+  historical = false,
+  historicalRarity?: string,
+) {
+  for (const entityId of entityIds) await setDebugCollection(entityId, mastery, historical, historicalRarity);
 }

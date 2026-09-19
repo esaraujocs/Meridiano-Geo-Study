@@ -21,7 +21,7 @@ export type ProgressSnapshot = {
   distribution: number[];
   pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; status: string; aggregate?: boolean }>;
 };
-export type CollectionCard = { id: string; name: string; mastery: number; fields: Array<[string, string]> };
+export type CollectionCard = { id: string; name: string; mastery: number; region?: string; flag?: string; fields: Array<[string, string]> };
 export type Achievement = { id: string; name: string; description: string; unlocked: boolean; unlockedAt?: number };
 
 function openDb() {
@@ -116,14 +116,14 @@ export function deriveProgress(records: any[], universe?: string[]): ProgressSna
   }
   return { total: ids.size, discovered: records.filter((record) => ids.has(String(record.entityId ?? record.id ?? "")) && Number(record.mastery ?? 0) > 0).length, distribution, pillars };
 }
-export function collectionCard(id: string, meta: Meta | undefined, mastery = 0): CollectionCard {
+export function collectionCard(id: string, meta: Meta | undefined, mastery = 0, flag?: string): CollectionCard {
   const fields: Array<[string, string]> = [];
   if (mastery >= 1) fields.push(["Região", meta?.reg ?? "—"]);
   if (mastery >= 2) fields.push(["Capital", meta?.cap ?? "—"]);
   if (mastery >= 3) fields.push(["Idioma", "—"]);
   if (mastery >= 4) fields.push(["ONU", meta?.un ? "membro" : "não membro"]);
   if (mastery >= 5) fields.push(["Status", "carta completa"]);
-  return { id, name: meta?.pt ?? id, mastery, fields };
+  return { id, name: meta?.pt ?? id, region: meta?.reg, flag, mastery, fields };
 }
 const DEFINITIONS = [
   ["first-session", "Primeiro traço", "Conclua uma sessão."],
@@ -166,7 +166,10 @@ export async function querySurfaces(data?: Legacy) {
     await new Promise<void>((resolve, reject) => { transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error); });
     writeDb.close();
   }
-  const cards = data ? progress.filter((record) => Number(record.mastery ?? 0) > 0 && universe.includes(String(record.entityId ?? record.id))).map((record) => collectionCard(String(record.entityId ?? record.id), data.meta[String(record.entityId ?? record.id)], Number(record.mastery ?? 0))) : [];
+  const cards = data ? universe.map((id) => {
+    const record = progress.find((item) => String(item.entityId ?? item.id) === id);
+    return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl);
+  }) : [];
   return { sessions, progress: snapshot, cards, achievements: evaluated, historical };
 }
 

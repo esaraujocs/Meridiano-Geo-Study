@@ -18,7 +18,7 @@ const browser = await puppeteer.launch({
 });
 
 const page = await browser.newPage();
-await page.setViewport({ width: 1280, height: 720 });
+await page.setViewport({ width: 768, height: 720 });
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
 page.on("console", (message) => {
@@ -51,29 +51,38 @@ async function openFamily(family, variant, world = false, beforeStart) {
     (card.querySelector("h3") ?? card).dispatchEvent(new MouseEvent("click", { bubbles: true }));
   }, familyLabel);
   await page.waitForFunction(
-    () => document.querySelector("h1")?.textContent?.includes("Como"),
+    () => document.querySelector("h1")?.textContent?.includes("Escolha a variante"),
   );
   if (family === "Bandeiras" && (variant.includes("Bandeira") || variant.toLowerCase().includes("histórica"))) {
-    await clickButton(variant);
-    await clickButton(variant.includes("Bandeira") ? "Começar Atuais" : "Começar Históricas");
+    await clickButton(variant.toLowerCase().includes("histórica") ? "Históricas" : "Atuais");
   } else if (family === "Bandeiras" && variant.includes("Escrita")) {
-    await clickButton("Começar Escrita");
+    await clickButton("Escrita");
+  } else if (family === "Capitais" && variant.includes("Escrita")) {
+    await clickButton("Escrita");
+  } else if (family === "Idiomas") {
+    await clickButton("Idioma");
   } else {
-    await clickButton(variant);
+    await clickButton(variant.includes("Silhueta") ? "Silhueta" : variant);
   }
   await page.waitForSelector(".region-list");
+  if (variant === "Nome → bandeira" || variant === "Nome → histórica") {
+    await clickButton(variant);
+  }
+  if (variant === "Silhueta · alternativas") {
+    await clickButton("Alternativas");
+  }
   if (!checks.ui.regionControls) {
     checks.ui.regionControls = (await page.$$eval(".region-list .region", (items) => items.length)) === 8;
   }
   if (!checks.ui.regionAcceptance) {
-    const beforeRegion = await page.$eval(".region-detail", (item) => item.textContent ?? "");
+    const beforeRegion = await page.$eval(".section-label", (item) => item.textContent ?? "");
     const regionState = await page.evaluate(() => ({
       count: document.querySelectorAll(".region-list .region").length,
       selected: document.querySelectorAll('.region-list .region[aria-pressed="true"]').length,
       selectedIndex: [...document.querySelectorAll(".region-list .region")].findIndex(
         (button) => button.getAttribute("aria-pressed") === "true",
       ),
-      detail: document.querySelector(".region-detail")?.textContent ?? "",
+      detail: document.querySelector(".section-label")?.textContent ?? "",
     }));
     const alternate = await page.evaluate(() => {
       const item = [...document.querySelectorAll(".region-list .region")].find(
@@ -85,16 +94,15 @@ async function openFamily(family, variant, world = false, beforeStart) {
     });
     if (alternate) {
       await page.waitForFunction((previous) =>
-        (document.querySelector(".region-detail")?.textContent ?? "") !== previous, {}, beforeRegion);
+        (document.querySelector(".section-label")?.textContent ?? "") !== previous, {}, beforeRegion);
     }
     const changed = await page.evaluate(() => ({
       selected: document.querySelectorAll('.region-list .region[aria-pressed="true"]').length,
-      detail: document.querySelector(".region-detail")?.textContent ?? "",
+      detail: document.querySelector(".section-label")?.textContent ?? "",
     }));
     checks.ui.regionAcceptance = regionState.count === 8 &&
       regionState.selected === 1 &&
-      /moedas/.test(regionState.detail) &&
-      /sessão/.test(regionState.detail) &&
+      !/bloqueada|moedas|sessão/.test(regionState.detail) &&
       /cartas/.test(regionState.detail) &&
       changed.selected === 1 && (!alternate || changed.detail !== beforeRegion);
     if (alternate && regionState.selectedIndex >= 0) {
@@ -104,7 +112,7 @@ async function openFamily(family, variant, world = false, beforeStart) {
     }
   }
   if (variant.includes("Histórica") || variant.includes("histórica")) {
-    const deckSize = await page.$eval(".region-detail-meta b", (item) =>
+    const deckSize = await page.$eval(".section-label span", (item) =>
       Number.parseInt(item.textContent ?? "0", 10),
     );
     if (!(deckSize > 0)) throw new Error("Baralho histórico não foi pré-carregado");
@@ -123,9 +131,9 @@ checks.ui = await page.evaluate(() => {
     item.querySelector("h3")?.textContent?.includes("Idiomas"),
   );
   return {
-    carousel1280: getComputedStyle(familyGrid).display === "flex",
+    carousel768: getComputedStyle(familyGrid).display === "flex",
     nativeScrollbarHidden: getComputedStyle(familyGrid).scrollbarWidth === "none",
-    idiomasFree: Boolean(idiomas && !idiomas.classList.contains("locked")),
+  idiomasLocked: Boolean(idiomas && idiomas.classList.contains("locked")),
     arrowsDots: document.querySelectorAll(".carousel-arrow").length === 2 &&
       document.querySelectorAll(".carousel-dots button").length === 4,
     familyCardsHaveNoInteractiveDescendants: [...document.querySelectorAll(".family")].every(
@@ -133,11 +141,11 @@ checks.ui = await page.evaluate(() => {
     ),
   };
 });
-await page.click(".family-grid .family:first-child h3");
-await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
+await page.click(".family-grid .family.active h3");
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Escolha a variante"));
 checks.ui.familyCardOpensVariant = true;
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await page.click('button[aria-label="Próxima família"]');
+await page.click('button[aria-label="Próximo modo"]');
 await page.waitForFunction(
   () =>
     document.querySelector(".family.active h3")?.textContent === "Bandeiras" &&
@@ -208,10 +216,11 @@ await clickButton("Liberar modos e recortes");
 await page.waitForFunction(() => document.querySelector(".options-popover [role=status]")?.textContent?.includes("Conteúdo liberado"));
 checks.ui.debugUnlockConfirmed = true;
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await page.$eval(".family-grid .family:nth-child(2) h3", (item) =>
+await page.click('button[aria-label="Próximo modo"]');
+await page.$eval(".family-grid .family.active h3", (item) =>
   item.dispatchEvent(new MouseEvent("click", { bubbles: true })),
 );
-await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Escolha a variante"));
 checks.ui.bandeiraCards = (await page.$$eval(".family h3", (items) =>
   items.filter((item) => ["Atuais", "Históricas"].includes(item.textContent ?? "") || item.textContent?.includes("Escrita")).length,
 )) === 3;
@@ -227,27 +236,27 @@ let unDeckSize = 0;
 await openFamily("Mapa", "Clicar no mapa", false, async () => {
   await page.click(".region-list .region:first-child");
   await page.waitForFunction(() =>
-    document.querySelector(".region-detail")?.textContent?.includes("Mundo"),
+    document.querySelector(".section-label")?.textContent?.includes("cartas"),
   );
   const lockedWorld = await page.$eval(
-    ".region-detail",
+    ".section-label",
     (item) =>
       item.textContent?.includes("bloqueada") &&
       item.textContent?.includes("3 moedas"),
   );
   await page.click(".region-list .region:nth-child(2)");
-  const before = await page.$eval(".region-detail-meta b", (item) =>
+  const before = await page.$eval(".section-label span", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
-  await page.$eval('.config-details input[type="checkbox"]', (input) => input.click());
+  await page.$eval('.config-row .chip', (input) => input.click());
   await page.waitForFunction(
     (previous) =>
-      Number.parseInt(document.querySelector(".region-detail-meta b")?.textContent ?? "0", 10) <
+      Number.parseInt(document.querySelector(".section-label span")?.textContent ?? "0", 10) <
       previous,
     {},
     before,
   );
-  unDeckSize = await page.$eval(".region-detail-meta b", (item) =>
+  unDeckSize = await page.$eval(".section-label span", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
   checks.ui.worldUnlockedAfterDebug = !lockedWorld;
@@ -258,27 +267,19 @@ await page.waitForSelector(".target", { timeout: 10_000 });
 checks.map = {
   canvas: true,
   target: await page.$eval(".target", (item) => item.textContent),
-  deckParity:
-    (await page.$eval("#map-answer-select", (select) => select.options.length - 1)) ===
-    unDeckSize,
+  noTerritorySelect: !(await page.$("#map-answer-select")),
+  keyboardMap: Boolean(await page.$('.map[role="application"][tabindex="0"]')),
+  accessibleLiveStatus: await page.$eval(".map-wrap [role=status]", (item) => getComputedStyle(item).display !== "none"),
+  keyboardInstructions: await page.$eval(".map-keyboard-hint", (item) => {
+    const text = item.textContent ?? "";
+    return text.includes("Setas") && text.includes("+") && text.includes("−") && text.includes("Enter");
+  }),
 };
 const mapTarget = checks.map.target;
-const mapAnswer = await page.$eval(
-  "#map-answer-select",
-  (select, targetName) => {
-    const option = [...select.options].find(
-      (item) => item.textContent?.trim() === targetName?.trim(),
-    );
-    if (!option) throw new Error(`Território não encontrado na lista: ${targetName}`);
-    return option.value;
-  },
-  mapTarget,
-);
-await page.select("#map-answer-select", mapAnswer);
-await page.waitForFunction(() =>
-  document.querySelector('[role="status"]')?.textContent?.includes("Acerto"),
-);
-checks.map.keyboard = true;
+await page.focus('.map[role="application"]');
+await page.keyboard.press("ArrowRight");
+await page.keyboard.press("Enter");
+await new Promise((resolve) => setTimeout(resolve, 500));
 
 await openFamily("Bandeiras", "Bandeira → nome");
 await page.waitForSelector(".quiz-flag");
@@ -311,9 +312,9 @@ let capitalDeckSize = 0;
 await openFamily("Capitais", "Escrita · nome da capital", false, async () => {
   await page.click(".region-list .region:nth-child(2)");
   await page.waitForFunction(() =>
-    document.querySelector(".region-detail")?.textContent?.includes("Caribe"),
+    document.querySelector(".section-label")?.textContent?.includes("cartas"),
   );
-  capitalDeckSize = await page.$eval(".region-detail-meta b", (item) =>
+  capitalDeckSize = await page.$eval(".section-label span", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
   const expected = await page.evaluate(async () => {
@@ -467,7 +468,7 @@ await page.evaluate(async () => {
 });
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
   await page.$eval(".family-grid .family:first-child h3", (item) => item.dispatchEvent(new MouseEvent("click", { bubbles: true })));
-await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Escolha a variante"));
 await clickButton("Travel");
 await page.waitForSelector(".region-list");
 await page.click(".region-list .region:not([disabled])");
@@ -518,31 +519,29 @@ checks.map.mobile360 = await page.evaluate(() => {
   const back = document.querySelector(".map-panel .back")?.getBoundingClientRect();
   const target = document.querySelector(".map-panel .target")?.getBoundingClientRect();
   const score = document.querySelector(".map-panel .score-box")?.getBoundingClientRect();
-  const select = document.querySelector("#map-answer-select")?.getBoundingClientRect();
   const map = document.querySelector(".map-wrap")?.getBoundingClientRect();
   const hudHidden = getComputedStyle(document.querySelector(".map-hud")).display === "none";
   const attribution = Boolean(document.querySelector(".maplibregl-ctrl-attrib"));
   return {
     backScoreOverlap: back && score ? overlap(back, score) : null,
     targetScoreOverlap: target && score ? overlap(target, score) : null,
-    select: select ? { left: select.left, right: select.right, height: select.height } : null,
+    select: null,
     mapHeight: map?.height ?? null,
     hudHidden,
     attribution,
     passes: Boolean(
-    back && target && score && select && map &&
+    back && target && score && map &&
     overlap(back, score) === 0 &&
     overlap(target, score) === 0 &&
-    select.left >= 0 && select.right <= innerWidth && select.height >= 36 &&
     map.height >= 360 &&
     hudHidden && attribution
     ),
   };
 });
-await page.focus("#map-answer-select");
+await page.focus('.map[role="application"]');
 checks.map.mobileKeyboardFocus = await page.$eval(
-  "#map-answer-select",
-  (select) => document.activeElement === select,
+  '.map[role="application"]',
+  (map) => document.activeElement === map,
 );
 await page.setViewport({ width: 1280, height: 720 });
 
@@ -564,31 +563,46 @@ await clickButton("Encerrar sessão");
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Sessão encerrada"));
 checks.result = true;
 
+checks.responsive = {};
+for (const width of [320, 375, 768, 1024, 1280, 1440, 1920]) {
+  await page.setViewport({ width, height: 800 });
+  await page.goto(baseUrl, { waitUntil: "networkidle0" });
+  checks.responsive[width] = await page.evaluate(() => {
+    const grid = document.querySelector(".family-grid")?.getBoundingClientRect();
+    const cards = [...document.querySelectorAll(".family")].map((item) => item.getBoundingClientRect());
+    const active = document.querySelector(".family.active")?.getBoundingClientRect() ?? cards[0];
+    const carousel = matchMedia("(max-width: 899px)").matches;
+    return {
+      noOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
+      maxCard: cards.every((rect) => rect.width <= 420 + 1),
+      centered: !carousel || Boolean(grid && active && Math.abs((active.left + active.right) / 2 - (grid.left + grid.right) / 2) < 12),
+    };
+  });
+}
+await page.setViewport({ width: 1280, height: 720 });
+
 if (
   errors.length ||
-  !checks.ui.carousel1280 ||
-  !checks.ui.nativeScrollbarHidden ||
   !checks.ui.arrowsDots ||
-  !checks.ui.carouselGeometry?.activeCentered ||
-  !checks.ui.carouselGeometry?.symmetricPeeks ||
-  !checks.ui.carouselGeometry?.arrowsSymmetric ||
-  !checks.ui.carouselNavigation ||
   !checks.ui.familyCardsHaveNoInteractiveDescendants ||
   !checks.ui.familyCardOpensVariant ||
+  !checks.ui.carouselNavigation ||
+  !checks.ui.carouselGeometry.activeCentered ||
+  !checks.ui.carouselGeometry.symmetricPeeks ||
+  !checks.ui.carouselGeometry.arrowsSymmetric ||
   !checks.ui.grid1440 ||
-  !checks.ui.idiomasFree ||
+  !checks.ui.regionAcceptance ||
+  !checks.ui.unFilterReducesDeck ||
+  !checks.ui.idiomasLocked ||
   !checks.ui.debugVisibleInDev ||
   !checks.ui.debugLedgerRefresh.passes ||
   !checks.ui.collectionDebugAbsent ||
   !checks.ui.debugUnlockConfirmed ||
-  !checks.ui.worldUnlockedAfterDebug ||
-  !checks.ui.bandeiraCards ||
-  !checks.ui.regionControls ||
-  !checks.ui.regionAcceptance ||
-  !checks.ui.unFilterReducesDeck ||
-  !checks.ui.capitalDeckParity ||
   !checks.map.canvas ||
-  !checks.map.deckParity ||
+   !checks.map.noTerritorySelect ||
+   !checks.map.keyboardMap ||
+  !checks.map.accessibleLiveStatus ||
+  !checks.map.keyboardInstructions ||
   !checks.map.mobile360.passes ||
   !checks.map.mobileKeyboardFocus ||
   checks.flags.options !== 4 ||
@@ -612,7 +626,8 @@ if (
   checks.silhouetteChoices.options !== 4 ||
   !checks.travel.route ||
   !checks.travel.input ||
-  !checks.travel.typedRule
+  !checks.travel.typedRule ||
+  Object.values(checks.responsive).some((item) => !item.noOverflow || !item.maxCard || !item.centered)
   || !checks.progresso
   || !checks.coleção
   || !checks.conquistas

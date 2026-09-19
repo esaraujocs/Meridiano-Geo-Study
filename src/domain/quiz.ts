@@ -21,7 +21,15 @@ export function loadFlags(): Promise<FlagCatalog> {
     if (!response.ok) throw new Error("Falha ao carregar as bandeiras.");
     const payload = (await response.json()) as { flags?: FlagCatalog };
     if (!payload.flags) throw new Error("Catálogo de bandeiras inválido.");
-    return payload.flags;
+    const flags = { ...payload.flags };
+    const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
+    const overrides = overrideResponse.ok
+      ? await overrideResponse.json() as Record<string, { src: string }>
+      : {};
+    for (const [id, override] of Object.entries(overrides)) {
+      if (flags[id] && override.src) flags[id] = override.src;
+    }
+    return flags;
   });
   return flagsPromise;
 }

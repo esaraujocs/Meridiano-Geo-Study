@@ -78,6 +78,8 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
   const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
   const [choices, setChoices] = useState<string[]>([]);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const deck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<number | null>(null);
@@ -101,6 +103,8 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
   const submit = (value = typed) => {
     if (!target || locked) return;
     const correct = aliases(data.meta[target]).includes(normalizeName(value));
+    setScore((current) => current + (correct ? 1 : 0));
+    setStreak((current) => correct ? current + 1 : 0);
     setLocked(true); setAnswerResult(correct ? "correct" : "wrong");
     setFeedback(correct ? "Acerto. A silhueta foi reconhecida." : `Ainda não. A resposta correta é ${data.meta[target]?.pt ?? target}.`);
     session.recordRound({ targetId: target, correct, responseTimeMs: null, answeredAt: Date.now(), selectedId: value });
@@ -122,8 +126,9 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
   if (!features || !target) return <LoadingGeometry />;
   return <div className="app-shell"><div className="quiz-stage">
      <aside className="quiz-panel"><button className="back" onClick={() => void finish()}>← Encerrar sessão</button>
-      <div className="eyebrow" style={{ marginTop: 28 }}>Sessão · Silhueta</div><h1>Reconheça o contorno.</h1>
-      <p className="lede">Digite o país sem pistas de texto.</p>
+      <div className="eyebrow">Silhueta</div>
+       <div className="score-box"><div><span>progresso</span><b>{ids.length - (deck.current?.remaining ?? ids.length)}/{ids.length}</b></div><div><span>acertos</span><b>{score}</b></div><div><span>sequência</span><b>{streak}</b></div></div>
+       <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void session.finish().then(onBack)}>Voltar ao recorte</button><button type="button" onClick={() => void session.finish().then(() => { location.href = "/"; })}>Início</button></div></details>
     </aside>
     <main className="quiz-main geometry-main">
       <div className="silhouette-frame"><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label="Silhueta geográfica"><path d={path.d} /></svg></div>
@@ -131,8 +136,10 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
        {variant === "silhueta-opcoes" ? <div className="quiz-options">{choices.map((id) => <button className={`quiz-option ${answerResult === "correct" && id === target ? "correct" : ""} ${answerResult === "wrong" && id === target ? "correct" : ""} ${answerResult === "wrong" && id === selectedSilhouette ? "wrong" : ""}`} disabled={locked} key={id} onClick={() => {
            if (locked) return;
          const correct = id === target;
+          setScore((current) => current + (correct ? 1 : 0));
+          setStreak((current) => correct ? current + 1 : 0);
          setSelectedSilhouette(id);
-         setLocked(true); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? "✓ Acerto. A silhueta foi reconhecida." : `Ainda não. A resposta correta é ${data.meta[target]?.pt ?? target}.`);
+          setLocked(true); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? "Acerto. A silhueta foi reconhecida." : `Ainda não. A resposta correta é ${data.meta[target]?.pt ?? target}.`);
          session.recordRound({ targetId: target, correct, responseTimeMs: null, answeredAt: Date.now(), selectedId: id });
          timer.current = window.setTimeout(async () => {
            const next = deck.current?.draw();
@@ -161,6 +168,9 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const [hints, setHints] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [round, setRound] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
   const destinationDeck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
   const destinationStarted = useRef(0);
@@ -197,6 +207,8 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
     setAttempts(nextAttempts);
     setTyped("");
     if (complete || failed) {
+      setScore((current) => current + (complete ? 1 : 0));
+      setStreak((current) => complete ? current + 1 : 0);
       session.recordRound({ targetId: route[route.length - 1], correct: complete, responseTimeMs: Date.now() - destinationStarted.current, answeredAt: Date.now(), selectedId: value, attempts: nextAttempts, guesses: newGuesses });
       window.setTimeout(async () => {
         const destination = destinationDeck.current?.draw();
@@ -207,7 +219,7 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
         }
         const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
         if (!nextRoute) { setError("Não há rota jogável para o próximo destino."); return; }
-        setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); destinationStarted.current = Date.now();
+        setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setRound((current) => current + 1); destinationStarted.current = Date.now();
         requestAnimationFrame(() => inputRef.current?.focus());
       }, complete ? 350 : 1400);
     } else requestAnimationFrame(() => inputRef.current?.focus());
@@ -225,12 +237,12 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const routePath = pathForFeatures(routeFeatures, 420, 190);
   return <div className="app-shell"><div className="quiz-stage">
       <aside className="quiz-panel"><button className="back" onClick={() => void finish()}>← Encerrar sessão</button>
-      <div className="eyebrow" style={{ marginTop: 28 }}>Sessão · Travel</div><h1>Trace a rota.</h1>
-      <p className="lede">Saia de <b>{data.meta[activeRoute[0]]?.pt}</b> e chegue ao destino.</p>
-      <div className="score-box"><div><span>tentativas</span><b>{attempts}/10</b></div><div><span>pistas</span><b>{hints}/3</b></div></div>
+      <div className="eyebrow">Travel</div>
+      <div className="score-box"><div><span>progresso</span><b>{round}/{destinations.length}</b></div><div><span>acertos</span><b>{score}</b></div><div><span>sequência</span><b>{streak}</b></div></div>
+      <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void session.finish().then(onBack)}>Voltar ao recorte</button><button type="button" onClick={() => void session.finish().then(() => { location.href = "/"; })}>Início</button></div></details>
     </aside>
     <main className="quiz-main geometry-main">
-      <div className="travel-destination">Destino: <strong>{data.meta[activeRoute.at(-1)!]?.pt}</strong></div>
+      <div className="travel-destination">Destino: <strong>{data.meta[activeRoute.at(-1)!]?.pt}</strong> · tentativas {attempts}/10 · pistas {hints}/3</div>
       <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label="Geometrias da rota"><path d={routePath.d} /></svg></div>
       <div className={`feedback ${feedback.startsWith("Rota concluída") ? "feedback-success" : feedback.startsWith("Esse país") || feedback.startsWith("Tentativas") ? "feedback-error" : ""}`} aria-live="polite">{feedback || `Digite o país ${guesses.length + 1} da rota.`}</div>
       <form className="quiz-options geometry-input" onSubmit={(event) => { event.preventDefault(); submit(); }}>

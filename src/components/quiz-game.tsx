@@ -39,6 +39,7 @@ export function QuizGame({
   const [selected, setSelected] = useState("");
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [round, setRound] = useState(0);
   const timer = useRef<number | null>(null);
   const targetStartedAtRef = useRef(0);
   const sessionRef = useRef<LearningSessionHandle | null>(null);
@@ -132,6 +133,7 @@ export function QuizGame({
       ...shuffled(pool.filter((id) => id !== targetId)).slice(0, 3),
     ]);
     setTarget(targetId);
+    setRound(pool.length - deck.remaining);
     targetStartedAtRef.current = Date.now();
     setQuestion({ target: targetId, options });
     setFeedback("");
@@ -167,6 +169,18 @@ export function QuizGame({
         nextQuestion();
       }
     }, correct ? 350 : 1400);
+  };
+  const restart = () => {
+    if (timer.current) window.clearTimeout(timer.current);
+    const previous = sessionRef.current;
+    sessionRef.current = null;
+    pendingSessionRef.current = null;
+    if (previous) void previous.end();
+    openSession();
+    setScore(0);
+    setStreak(0);
+    setRound(0);
+    nextQuestion();
   };
 
   const title = family === "bandeiras" ? "Reconheça a resposta." : "Recupere a resposta.";
@@ -219,27 +233,19 @@ export function QuizGame({
       <div className="quiz-stage">
         <aside className="quiz-panel">
            <button className="back" onClick={() => void leaveSession()}>← Encerrar sessão</button>
-          <div className="eyebrow" style={{ marginTop: 28 }}>
-            Sessão · {regionLabel(region)}
-          </div>
+          <div className="eyebrow">{regionLabel(region)}</div>
           <h1>{title}</h1>
           <div className="score-box">
+            <div><span>progresso</span><b>{round}/{pool.length}</b></div>
             <div><span>acertos</span><b>{score}</b></div>
             <div><span>sequência</span><b>{streak}</b></div>
           </div>
           <button className="button ghost" style={{ marginTop: 20 }} onClick={() => {
-            if (timer.current) window.clearTimeout(timer.current);
-            const previous = sessionRef.current;
-            sessionRef.current = null;
-            pendingSessionRef.current = null;
-            if (previous) void previous.end();
-            openSession();
-            setScore(0);
-            setStreak(0);
-            nextQuestion();
-          }}>
+             restart();
+           }}>
             Recomeçar sessão
           </button>
+           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => { location.href = "/"; }}>Início</button></div></details>
         </aside>
         <main className="quiz-main">
           <div className="quiz-prompt">
@@ -276,7 +282,7 @@ export function QuizGame({
                     titleFor(id)
                   )
                 ) : valueFor(id)}
-                {feedback && id === question.target && <span aria-label="Resposta correta"> ✓ Acerto</span>}
+                 {feedback && id === question.target && <span aria-label="Resposta correta"> Acerto</span>}
               </button>
             ))}
           </div>

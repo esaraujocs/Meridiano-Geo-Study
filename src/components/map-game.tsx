@@ -41,6 +41,7 @@ export function Game({
   const [target, setTarget] = useState("");
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [round, setRound] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [wrong, setWrong] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -122,6 +123,7 @@ export function Game({
     targetStartedAtRef.current = Date.now();
     feedbackRef.current = "";
     setTarget(item.id);
+    setRound(features.length - (deckRef.current?.remaining ?? 0));
     setSelectedAnswer("");
     setFeedback("");
     setWrong(false);
@@ -169,6 +171,18 @@ export function Game({
         else nextTarget();
       }, 1400);
     }
+  };
+  const restart = () => {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    const previous = sessionRef.current;
+    sessionRef.current = null;
+    pendingSessionRef.current = null;
+    if (previous) void previous.end();
+    openSession();
+    setScore(0);
+    setStreak(0);
+    setRound(0);
+    nextTarget();
   };
 
   useEffect(() => {
@@ -304,6 +318,16 @@ export function Game({
       if (!id) return;
       answerId(String(id));
     });
+    map.getContainer().addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" || feedbackRef.current) return;
+      const center = map.getContainer().getBoundingClientRect();
+      const hits = map.queryRenderedFeatures(
+        [center.width / 2, center.height / 2],
+        { layers: ["land", "small-entities-hit", "small-entities", "pts-hit", "pts"] },
+      );
+      const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
+      if (id) answerId(String(id));
+    });
     mapRef.current = map;
     return () => {
       if (timerRef.current) {
@@ -375,23 +399,7 @@ export function Game({
               novamente.
             </p>
             <p className="mono">{mapError}</p>
-             <label className="target-kicker" htmlFor="map-answer-select">
-               Resposta sem mapa
-             </label>
-             <select
-               id="map-answer-select"
-               aria-label="Selecionar território para responder"
-               value={selectedAnswer}
-               disabled={Boolean(feedback)}
-               onChange={(event) => answerId(event.target.value)}
-             >
-               <option value="">Escolha um território…</option>
-               {features.map((item) => (
-                 <option key={item.id} value={item.id}>
-                   {data.meta[item.id]?.pt ?? item.id}
-                 </option>
-               ))}
-             </select>
+              <p className="map-keyboard-hint">Foque o mapa, mova com as setas, use +/− e pressione Enter.</p>
           </div>
         </main>
       </div>
@@ -405,41 +413,25 @@ export function Game({
            <button className="back" onClick={() => void leaveSession()}>
              ← Encerrar sessão
           </button>
-          <div className="eyebrow" style={{ marginTop: 28 }}>
-            Sessão ·{" "}
-            {regionLabel(region)}
-          </div>
+          <div className="eyebrow">{regionLabel(region)}</div>
            <h1>{engineFamily === "capitais" ? "Encontre o país." : "Encontre no mapa."}</h1>
           <div className="target-kicker">Seu alvo</div>
           <div className="target" aria-live="polite" aria-atomic="true">
             {targetName}
           </div>
-           <label className="target-kicker" htmlFor="map-answer-select">
-             Responda também pelo teclado
-           </label>
-           <select
-             id="map-answer-select"
-             aria-label="Selecionar território para responder"
-             value={selectedAnswer}
-             disabled={Boolean(feedback)}
-             onChange={(event) => answerId(event.target.value)}
-           >
-             <option value="">Escolha um território…</option>
-             {features.map((item) => (
-               <option key={item.id} value={item.id}>
-                 {data.meta[item.id]?.pt ?? item.id}
-               </option>
-             ))}
-           </select>
-          <div
+           <div
              className={feedback ? `feedback ${wrong ? "bad feedback-error" : "feedback-success"}` : "feedback"}
             aria-live="polite"
             role="status"
           >
              {feedback || (engineFamily === "capitais" ? "Clique no país correspondente à capital." : "Clique na região correspondente.")}
-             {feedback && !wrong && <span aria-label="Resposta correta"> ✓ Acerto</span>}
+              {feedback && !wrong && <span aria-label="Resposta correta"> Acerto</span>}
           </div>
           <div className="score-box">
+            <div>
+              <span>progresso</span>
+              <b>{round}/{features.length}</b>
+            </div>
             <div>
               <span>acertos</span>
               <b>{score}</b>
@@ -449,33 +441,32 @@ export function Game({
               <b>{streak}</b>
             </div>
           </div>
-          <button
+           <button
             className="button ghost"
             style={{ marginTop: 20 }}
-            onClick={() => {
-              if (timerRef.current) window.clearTimeout(timerRef.current);
-              const previous = sessionRef.current;
-              sessionRef.current = null;
-              pendingSessionRef.current = null;
-              if (previous) void previous.end();
-              openSession();
-              setScore(0);
-              setStreak(0);
-              nextTarget();
-            }}
+             onClick={restart}
           >
             Recomeçar sessão
           </button>
+           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => { location.href = "/"; }}>Início</button></div></details>
         </aside>
-        <div className="map-wrap">
+           <div className="map-wrap">
+              <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                {feedback || `Alvo atual: ${targetName}`}
+              </p>
+              <p className="map-keyboard-hint">Setas movem o mapa; + e − controlam o zoom; Enter responde no centro da mira.</p>
+             <div className="map-crosshair" aria-hidden="true"><i /><i /></div>
           <div className="map-hud">
-             <div className="map-note">Toque, clique ou use a lista de teclado</div>
+              <div className="map-note">Clique no mapa ou use setas, +/− e Enter</div>
           </div>
           <div
             ref={mapEl}
             className="map"
-            role="application"
-            aria-label="Mapa interativo para localizar o alvo"
+             role="application"
+             tabIndex={0}
+             aria-label={`Mapa interativo: encontre ${targetName}; setas movem o mapa, Enter responde`}
+             onFocus={(event) => event.currentTarget.parentElement?.classList.add("map-focused")}
+             onBlur={(event) => event.currentTarget.parentElement?.classList.remove("map-focused")}
           />
         </div>
       </div>

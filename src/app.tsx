@@ -49,12 +49,13 @@ export function App() {
     earned: 0,
     spent: 0,
     coverage: 0,
+    coverageByColumn: { bandeiras: 0, mapa: 0, capitais: 0, escrita: 0 },
     sessions: 0,
     unlocked: [
-      "mapa:mapa:caribe",
-      "bandeiras:bandeira-nome:caribe",
-      "capitais:capital-pais:caribe",
-      "capitais:pais-capital:caribe",
+      "mapa:mapa",
+      "bandeiras:bandeira-nome",
+      "capitais:capital-pais",
+      "capitais:pais-capital",
     ],
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
@@ -276,6 +277,7 @@ export function App() {
            onPlay={() => setScreen("game")}
            onlyUn={onlyUn}
            setOnlyUn={setOnlyUn}
+            setVariant={setVariant}
         />
       )}
     </div>

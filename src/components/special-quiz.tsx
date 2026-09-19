@@ -27,6 +27,8 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const [answerResult, setAnswerResult] = useState<"correct" | "wrong" | "">("");
   const [selectedChoice, setSelectedChoice] = useState("");
   const [locked, setLocked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const committedTarget = useRef<string | null>(null);
   const timer = useRef<number | null>(null);
@@ -125,6 +127,8 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const answer = (id: string, value: string, forcedCorrect?: boolean) => {
     if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
+    setScore((current) => current + (correct ? 1 : 0));
+    setStreak((current) => correct ? current + 1 : 0);
     setSelectedChoice(id);
     committedTarget.current = target.id;
     if (correct && historicalMode) {
@@ -160,6 +164,24 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const finish = async () => {
     await finishSession();
   };
+  const leaveToRecorte = async () => {
+    const handle = session.current ?? await pendingSession.current?.catch(() => null);
+    if (handle) {
+      for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
+      session.current = null;
+      await handle.finish();
+    }
+    onBack();
+  };
+  const leaveToHome = async () => {
+    const handle = session.current ?? await pendingSession.current?.catch(() => null);
+    if (handle) {
+      for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
+      session.current = null;
+      await handle.finish();
+    }
+    location.href = "/";
+  };
   if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>← Encerrar sessão</button><div className="diagnostic">{error}</div></main></div>;
   if (!target) return <div className="app-shell"><main className="content"><div className="eyebrow">Preparando acervo</div><h1>Carregando material.</h1></main></div>;
   const targetFlag = "fl" in target
@@ -167,8 +189,9 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     : undefined;
   return <div className="app-shell"><div className="quiz-stage"><aside className="quiz-panel">
      <button className="back" onClick={finish}>← Encerrar sessão</button>
-    <div className="eyebrow" style={{ marginTop: 28 }}>Sessão · {historicalMode ? "Históricas" : writing ? "Escrita" : "Idiomas"}</div>
-    <h1>{writing ? "Escreva a resposta." : historicalMode ? "Reconheça a bandeira." : "Leia o idioma."}</h1>
+    <div className="eyebrow">{historicalMode ? "Históricas" : writing ? "Escrita" : "Idiomas"}</div>
+    <div className="score-box"><div><span>progresso</span><b>{pool.length - (deck.current?.remaining ?? pool.length)}/{pool.length}</b></div><div><span>acertos</span><b>{score}</b></div><div><span>sequência</span><b>{streak}</b></div></div>
+    <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void leaveToRecorte()}>Voltar ao recorte</button><button type="button" onClick={() => void leaveToHome()}>Início</button></div></details>
   </aside><main className="quiz-main">
     <div className="quiz-prompt"><div className="target-kicker">{writing ? (variant === "escrita-capital" ? "Qual é a capital deste país?" : "Qual é o nome deste país?") : historicalMode ? (variant === "historica-nome" ? "Qual entidade usava esta bandeira?" : "Escolha a bandeira correta") : "A que países este idioma está ligado?"}</div>
       {writing && variant === "escrita-capital" ? <div className="quiz-clue">{data.meta[target.id]?.pt}</div> : writing ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /> : historicalMode && variant === "historica-nome" ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /> : <div className="quiz-clue">{("script" in target ? target.script : target.pt)}</div>}
