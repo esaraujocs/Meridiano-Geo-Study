@@ -506,7 +506,7 @@ export function Game({
               <b>{score}</b>
             </div>
             <div>
-              <span>sequência</span>
+              <span>Seq.</span>
               <b>{streak}</b>
             </div>
           </div>
