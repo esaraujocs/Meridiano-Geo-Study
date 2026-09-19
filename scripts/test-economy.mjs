@@ -18,6 +18,7 @@ execFileSync("node_modules/.bin/tsc", [
 ], { env: { ...process.env, NODE_OPTIONS: "--experimental-specifier-resolution=node" } });
 const economyPath = join(out, "economy-store.js");
 await writeFile(economyPath, (await readFile(economyPath, "utf8")).replace('"./economy-rules"', '"./economy-rules.js"'));
+const playerStats = await import(`file://${out}/player-stats.js`);
 const migrationPath = join(out, "legacy-migration.js");
 await writeFile(migrationPath, (await readFile(migrationPath, "utf8")).replaceAll('"./learning-rules"', '"./learning-rules.js"').replaceAll('"./storage-schema"', '"./storage-schema.js"'));
 const rules = await import(`file://${out}/economy-rules.js`);
@@ -60,6 +61,12 @@ const migratedOtherMode = {
 };
 assert.equal(economy.dominatedFromSessions([migrated, migratedOtherMode]), 1);
 assert.equal(economy.roundsFromCompletedSessions([migrated, migratedOtherMode, abandoned([])]), 3);
+assert.deepEqual(playerStats.playerStatsFromSessions([
+  migrated,
+  migratedOtherMode,
+  abandoned([answer("ignored", true, "mapa")]),
+  { complete: true, aggregate: { rod: 7 } },
+]), { completedSessions: 3, rounds: 10 });
 const transformed = migration.transformLegacy({ history: { sessoes: [
   { ini: 100, modo: "mapa", completa: true, r: [["chronology", true, 9000], ["chronology", true, 1]] },
   { ini: 200, modo: "bn", completa: true, r: [["chronology", false, 1], ["chronology", true, 8000]] },

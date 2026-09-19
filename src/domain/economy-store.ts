@@ -1,11 +1,12 @@
 import type { AnyQuizVariant, Family, Region } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
+import { playerStatsFromSessions } from "./player-stats.js";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
 export type EconomySnapshot = {
   balance: number; earned: number; spent: number; coverage: number; sessions: number;
-  xp: number; level: number; xpBase: number; xpNext: number; rounds: number; dominated: number;
+  xp: number; level: number; xpBase: number; xpNext: number; rounds: number; completedSessions: number; dominated: number;
   coverageByColumn: Record<"bandeiras" | "mapa" | "capitais" | "escrita", number>;
   unlocked: UnlockKey[];
 };
@@ -83,11 +84,7 @@ export function dominatedFromSessions(sessions: unknown[], progress: unknown[] =
 }
 
 export function roundsFromCompletedSessions(sessions: unknown[]) {
-  return (sessions as any[]).filter((session) => session?.complete === true).reduce((total: number, session, index) => {
-    const recorded = sessionRounds(session, index).length;
-    const aggregate = session?.aggregate ?? session?.ag ?? {};
-    return total + (recorded || Number(session?.roundCount ?? session?.rodadas ?? aggregate.rod ?? 0));
-  }, 0);
+  return playerStatsFromSessions(sessions as any[]).rounds;
 }
 
 function openDb() {
@@ -162,7 +159,8 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
     capitais: progress.filter((row) => (row.columns?.capitais ?? 0) > 0).length,
     escrita: progress.filter((row) => (row.columns?.escrita ?? 0) > 0).length,
   };
-  const rounds = roundsFromCompletedSessions(sessions);
+  const playerStats = playerStatsFromSessions(sessions as any[]);
+  const rounds = playerStats.rounds;
   const dominated = dominatedFromSessions(sessions, progress);
   const xp = rounds + dominated * 25;
   let level = 1;
@@ -176,7 +174,7 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
     coverage: progress.filter((p) => (p.mastery ?? 0) > 0).length,
     coverageByColumn,
     sessions: sessions.filter(isQualifyingSession).length,
-    xp, level, xpBase, xpNext, rounds, dominated,
+    xp, level, xpBase, xpNext, rounds, completedSessions: playerStats.completedSessions, dominated,
     unlocked,
   };
 }

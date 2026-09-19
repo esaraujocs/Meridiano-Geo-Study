@@ -2,6 +2,7 @@ import type { Legacy, Meta } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { achievementContext, evaluateAchievementDefinitions } from "./achievements.js";
 import { collectionSummary } from "./collection-summary.js";
+import { playerStatsFromSessions } from "./player-stats.js";
 import type { HistoricalEntity } from "./special-data.js";
 import { regionMatches } from "./regions.js";
 import type { Region } from "./types.js";
@@ -201,7 +202,7 @@ export async function querySurfaces(data?: Legacy) {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl);
   }) : [];
-   return { sessions, progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical };
+   return { sessions, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical };
 }
 
 export async function queryCollectionSummary(data: Legacy) {

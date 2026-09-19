@@ -73,6 +73,7 @@ export function App() {
     xpBase: 0,
     xpNext: 100,
     rounds: 0,
+    completedSessions: 0,
     dominated: 0,
     coverageByColumn: { bandeiras: 0, mapa: 0, capitais: 0, escrita: 0 },
     sessions: 0,
