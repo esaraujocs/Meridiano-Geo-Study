@@ -169,8 +169,8 @@ export function Hub({
   return (
     <main className="content hub-content">
       <div className="hub-profile-bar" aria-label="Perfil de atividade">
-        <div className="level-badge"><span>Nível</span><strong>{economy?.level ?? 1}</strong></div>
-        <div className="hub-xp"><div className="hub-xp-label"><span>{(economy?.xp ?? 0) - (economy?.xpBase ?? 0)} / {(economy?.xpNext ?? 100) - (economy?.xpBase ?? 0)} XP</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div><span className="hub-xp-next">{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div>
+        <div className="level-badge"><strong>{economy?.level ?? 1}</strong></div>
+        <div className="hub-xp"><div className="hub-xp-label"><span>Nível {economy?.level ?? 1} · {(economy?.xp ?? 0) - (economy?.xpBase ?? 0)} / {(economy?.xpNext ?? 100) - (economy?.xpBase ?? 0)} XP</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div><span className="hub-xp-next">{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div>
         <div className="hub-player-stats" aria-label="Estatísticas do jogador"><span><small>Partidas</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>Rodadas</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
         <div className="hub-coins" aria-label={`${economy?.balance ?? 0} moedas`}><i aria-hidden="true">$</i><strong>{economy?.balance ?? 0}</strong></div>
       </div>
