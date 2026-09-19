@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "carta-cega-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8834"],
+      "port": 8834
+    }
+  ]
+}

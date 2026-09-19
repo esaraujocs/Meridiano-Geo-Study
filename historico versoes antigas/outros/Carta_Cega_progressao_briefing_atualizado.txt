@@ -1,0 +1,191 @@
+Quero evoluir o jogo com uma camada de progressão e retenção, aproveitando a estrutura atual sem descaracterizar o gameplay.
+
+A ideia NÃO é encher o jogo de gamificação. Toda mecânica deve ter relação com conhecimento geográfico, desempenho, evolução ou replayability.
+
+### 1. Histórico de desempenho
+
+Adicionar um sistema persistente de histórico de desempenho.
+
+Antes de implementar, analisar a estrutura atual do jogo e propor a melhor forma de integrar isso à UX existente, reutilizando os estados e métricas que o jogo já possui.
+
+O histórico deve registrar cada sessão concluída, permitindo posteriormente analisar:
+- modo de jogo
+- recorte geográfico
+- configuração país/capital
+- número de rodadas
+- acertos e erros
+- precisão
+- melhor sequência
+- sequência final
+- erro médio em km, quando aplicável
+- data/hora
+
+O histórico deve ser persistente via `localStorage`.
+
+O histórico deve funcionar como fonte de verdade dos dados, evitando armazenar estatísticas derivadas de forma que impeça seu recálculo posteriormente.
+
+A estrutura deve permitir futuramente calcular:
+- maestria por continente/região × modo
+- recordes pessoais
+- evolução do jogador
+- partidas cronometradas
+- desafios e leaderboard
+
+Criar uma área de Desempenho integrada à interface atual, permitindo entender rapidamente:
+"Como estou jogando?"
+
+Mostrar inicialmente:
+- desempenho geral
+- desempenho por modo
+- desempenho por região
+- histórico das últimas sessões
+
+Não transformar isso em um dashboard excessivamente complexo. Priorizar leitura rápida e sensação de progresso.
+
+Não alterar os modos existentes nem o fluxo de uma partida.
+
+Não implementar ainda maestria, perfil, conquistas, desafios ou leaderboard. Apenas deixar a estrutura preparada para eles.
+
+Primeiro apresente a proposta de estrutura/UX e os principais pontos de implementação. Aguarde minha aprovação antes de modificar o código.
+
+### 2. Maestria
+
+Depois que o histórico estiver funcionando e validado, criar uma métrica de maestria por CONTINENTE/REGIÃO × MODO.
+
+Exemplo:
+África
+- Mapa: 54%
+- Bandeiras: 82%
+- Escrever: 61%
+- Capitais: 47%
+
+Europa
+- Mapa: 91%
+- Bandeiras: 97%
+- etc.
+
+A maestria deve representar desempenho acumulado, não apenas a última partida.
+
+Considerar quantidade de amostras: 3/3 não deve imediatamente representar domínio máximo. A regra de estabilização deve ser simples, transparente, isolada e facilmente ajustável.
+
+Exibir também:
+- quantidade de perguntas que sustenta a maestria
+- maestria global
+- pontos fortes
+- pontos fracos
+- evolução quando houver histórico suficiente
+
+Maestria = conhecimento/desempenho consistente, não quantidade jogada.
+
+Não definir previamente uma representação visual rígida. Propor a melhor UX considerando a interface existente.
+
+Não alterar a lógica dos modos atuais.
+
+### 3. Perfil do jogador
+
+Depois de Histórico + Maestria, criar uma proposta de Perfil do Jogador que consolide a evolução do usuário.
+
+A ideia é transformar as partidas em uma identidade/progressão persistente dentro do jogo.
+
+Possíveis informações:
+- nível
+- título
+- maestria geral
+- melhor habilidade
+- ponto a melhorar
+- melhor sequência
+- países identificados
+- perguntas respondidas
+- recordes pessoais
+- regiões dominadas
+
+Avaliar se níveis e títulos fazem sentido e como diferenciá-los de maestria:
+- nível/título = experiência e atividade acumulada
+- maestria = conhecimento/desempenho
+
+Explorar títulos relacionados ao tema, como Explorador, Viajante, Geógrafo, Cartógrafo etc., mas não cravar nomes ou regras antes de avaliar a UX.
+
+O perfil deve parecer uma evolução natural do jogo, não um RPG inserido artificialmente.
+
+Primeiro propor a estrutura e a experiência do perfil; não implementar automaticamente todas as ideias.
+
+### 4. Conquistas
+
+Criar uma proposta de sistema de conquistas baseado em feitos que tenham significado dentro do jogo.
+
+Exemplos:
+- primeira partida
+- sequência de 10/25 acertos
+- partida perfeita
+- 50 bandeiras identificadas
+- dominar determinado continente
+- identificar países de todos os continentes
+- grande precisão no mapa
+- atingir determinados níveis de maestria
+
+As conquistas devem premiar:
+- conhecimento
+- consistência
+- exploração
+- habilidade
+- evolução
+
+Evitar conquistas artificiais apenas para aumentar a quantidade.
+
+As conquistas também podem incentivar o jogador a experimentar modos ou regiões que normalmente não jogaria.
+
+Avaliar categorias, progressão e apresentação visual sem transformar a interface em uma coleção excessiva de badges.
+
+### 5. Futuramente: desafio cronometrado
+
+Depois de Perfil + Conquistas, avaliar um modo de desafio cronometrado.
+
+Exemplo: 60 segundos para responder o máximo possível.
+
+Possíveis métricas:
+- pontuação
+- acertos
+- erros
+- precisão
+- países/minuto
+- recorde pessoal
+
+A evolução desejada é:
+1. recorde pessoal
+2. desafio entre amigos
+3. leaderboard
+
+O histórico deve estar preparado para suportar essas métricas, mas não implementar essas etapas agora.
+
+### 6. Moedas/economia
+
+Não implementar automaticamente.
+
+Avaliar somente se surgir uma finalidade real para elas, como:
+- desbloqueios
+- personalização
+- desafios
+- conteúdo especial
+
+Não criar moeda apenas para "gamificar".
+
+### Diretriz geral
+
+Preservar os modos e o fluxo atual do jogo.
+
+Como o projeto já possui uma UX construída iterativamente e testada na prática, não substituir decisões existentes sem necessidade. Analisar primeiro o que já funciona e evoluir sobre essa base.
+
+Priorizar:
+1. clareza
+2. utilidade dos dados
+3. sensação real de evolução
+4. replayability
+5. simplicidade
+
+Não adicionar gamificação apenas por obrigação. Para cada nova mecânica, responder:
+"Por que isso torna o jogo melhor?"
+
+A implementação deve ser feita ITEM POR ITEM, sempre seguindo:
+proposta → aprovação → implementação → teste no jogo → avaliação → próxima etapa.
+
+Não implementar todas as etapas de uma vez.

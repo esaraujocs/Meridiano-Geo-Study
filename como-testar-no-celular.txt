@@ -1,0 +1,62 @@
+COMO ABRIR O CARTA CEGA NO CELULAR VIA SERVIDOR LOCAL
+=======================================================
+
+Por que precisa disso: o Safari do iOS não abre arquivo HTML local
+direto (restrição de segurança da Apple), e o jogo precisa de internet
+de verdade pra carregar d3/topojson de um CDN. Rodando um servidor no
+PC e acessando pela URL http://, o Safari trata como um site normal —
+sem essas duas restrições.
+
+Celular precisa estar na MESMA rede Wi-Fi que o PC (não dados móveis).
+
+
+1) ACHAR O IP DO PC NA REDE
+----------------------------
+Só precisa rodar de novo se trocar de rede. No terminal (Git Bash):
+
+    ipconfig | grep -A 5 "Ethernet adapter Ethernet"
+
+Procure a linha "IPv4 Address". Da última vez foi 192.168.15.88.
+
+
+2) SUBIR O SERVIDOR (rodando na tela, Ctrl+C pra parar)
+----------------------------------------------------------
+
+    cd "/c/Users/Enzo Silva Araújo/Desktop/carta-cega"
+    python -m http.server 8920 --bind 0.0.0.0
+
+
+3) OU SUBIR EM SEGUNDO PLANO (terminal fica livre)
+-----------------------------------------------------
+
+    cd "/c/Users/Enzo Silva Araújo/Desktop/carta-cega"
+    nohup python -m http.server 8920 --bind 0.0.0.0 > /dev/null 2>&1 &
+
+Pra derrubar depois:
+
+    pkill -f "http.server 8920"
+
+
+4) NO CELULAR
+--------------
+Abre no Safari:
+
+    http://192.168.15.88:8920/carta-cega-0.13.5.html
+
+(troca o nome do arquivo aqui se a versão do jogo mudar — o arquivo
+sempre fica em Desktop/carta-cega, o nome muda a cada versão nova)
+
+
+NOTAS
+-----
+- Trocar de porta: troca "8920" por qualquer número livre acima de
+  1024 nos comandos 2/3/4 e na URL.
+- Progresso salvo no jogo (localStorage) fica preso à URL exata usada
+  pra abrir — trocar de porta/IP depois conta como "site diferente" pro
+  Safari, e o progresso não aparece lá. Não é bug, é assim que
+  navegador guarda dado de site.
+- Isso é só pra testar — não é uma forma boa de jogar no dia a dia,
+  porque depende do PC ligado e o servidor rodando toda vez que a aba
+  recarregar. Pra jogar sem essa dependência, precisa abrir o arquivo
+  local direto no celular (ex. um app leitor de HTML com WebView
+  própria, que não esbarra na restrição do Safari).
