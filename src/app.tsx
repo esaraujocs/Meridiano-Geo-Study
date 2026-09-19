@@ -159,6 +159,15 @@ export function App() {
       ),
     };
   }, [data, onlyUn]);
+  const gameFeatures = useMemo(
+    () => data
+      ? features.filter((item) =>
+        inRegion(item.id, region, data) &&
+        (family !== "capitais" || Boolean(data.meta[item.id]?.cap)),
+      )
+      : [],
+    [data, family, features, region],
+  );
   const counts = useMemo(
     () => data
       ? Object.fromEntries(REGION_ITEMS.map(([key]) => [
@@ -258,7 +267,7 @@ export function App() {
 
   if (screen === "game") {
     if (family === "capitais" && variant === "capital-pais") {
-       return <Game data={playableData ?? data} features={features.filter((item) => inRegion(item.id, region, data) && Boolean(data.meta[item.id]?.cap))} region={region} family={family} variant={variant} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
+       return <Game data={playableData ?? data} features={gameFeatures} region={region} family={family} variant={variant} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
     }
     if (family === "silhueta" || family === "travel") {
         return <GeometryGame family={family} variant={variant} data={playableData ?? data} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
@@ -282,7 +291,7 @@ export function App() {
     return (
       <Game
         data={data}
-        features={features.filter((item) => inRegion(item.id, region, data))}
+        features={gameFeatures}
         region={region}
         onBack={() => { void refreshEconomy(); setScreen("recorte"); }}
         onEnd={() => { void refreshEconomy(); setScreen("result"); }}

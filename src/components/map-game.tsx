@@ -15,6 +15,7 @@ import {
   SMALL_ENTITY_SOURCE,
 } from "../domain/small-entities";
 import { resolveMarkerClick } from "../domain/map-marker-click";
+import { mapDeckSignature } from "../domain/map-round-engine";
 
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -63,6 +64,7 @@ export function Game({
   const targetStartedAtRef = useRef(0);
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<GeoFeature>> | null>(null);
   const queuedRoundsRef = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
+  const featureSignature = mapDeckSignature(features.map((item) => item.id));
 
   const openSession = () => {
     const pending = startLearningSession({
@@ -145,7 +147,7 @@ export function Game({
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
     };
-  }, [features]);
+  }, [featureSignature, engineFamily, engineVariant, region]);
 
   const answerId = (id: string, evidence?: { byWater?: boolean; distanceKm?: number | null }) => {
     if (!id || feedbackRef.current || !targetRef.current) return;
