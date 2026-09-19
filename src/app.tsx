@@ -293,6 +293,7 @@ export function App() {
             economy={economy}
             onSurface={openSurface}
           offlineMap={offlineMap}
+          totalEntities={data.mapEntityIds.length}
           onSelect={async (selected) => {
             setFamily(selected);
             setRegion("mundo");

@@ -40,10 +40,9 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
         <span>CARTA CEGA</span>
       </a>
       <nav className="desktop-nav" aria-label="Navegação principal">
-        {items.map(([key, label]) => <button key={key} onClick={() => onNavigate?.(key)}>{label}</button>)}
-        <button onClick={() => onNavigate?.("options")}>Opções</button>
+        {items.map(([key, label, icon]) => <button key={key} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
       </nav>
-      <div className="top-actions"><span className="pill mono">{economy?.balance ?? 0} moedas</span><button className="settings-button" aria-label="Abrir Opções" title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
+      <div className="top-actions"><button className="settings-button" aria-label="Abrir Opções" aria-current={current === "options" ? "page" : undefined} title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
     </header>
     <nav className="mobile-nav" aria-label="Navegação principal">
       {items.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
@@ -98,6 +97,7 @@ export function Hub({
   onToggleOfflineMap,
   onSurface,
   onNavigate,
+  totalEntities = 0,
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
@@ -106,6 +106,7 @@ export function Hub({
   onToggleOfflineMap?: () => void;
   onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void;
   onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void;
+  totalEntities?: number;
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -201,7 +202,7 @@ export function Hub({
             aria-hidden={carouselMode && !current ? true : undefined}
             inert={carouselMode && !current ? true : undefined}
           >
-            <div className="family-visual" style={item.color ? { color: item.color } : undefined}>{item.family === "mapa" && <div className="family-geo" />}<div className="family-icon"><Icon type={item.icon} /></div></div>
+             <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
             <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
             <div className="family-footer"><span>{isUnlocked ? "aberta" : "bloqueada"}</span><span className="family-play">Jogar <Icon type="arrow" /></span></div>
           </button>;
@@ -214,6 +215,14 @@ export function Hub({
           ))}
         </div>}
       </div>
+      <section className="hub-progress" aria-labelledby="hub-progress-title">
+        <div className="section-label"><h2 id="hub-progress-title">Seu progresso</h2></div>
+        <div className="hub-progress-grid">
+          <button type="button" onClick={() => onNavigate?.("collection")}><span className="hub-progress-icon"><Icon type="collection" /></span><span><strong>{economy?.coverage ?? 0}/{totalEntities}</strong><small>Coleção · cartas descobertas</small></span><Icon type="arrow" /></button>
+          <button type="button" onClick={() => onNavigate?.("achievements")}><span className="hub-progress-icon"><Icon type="achievements" /></span><span><strong>{legacy?.achievements ?? 0}/30</strong><small>Achievements desbloqueados</small></span><Icon type="arrow" /></button>
+          <button type="button" onClick={() => onNavigate?.("progress")}><span className="hub-progress-icon"><Icon type="progress" /></span><span><strong>{Math.round(((economy?.dominated ?? 0) / Math.max(1, totalEntities)) * 100)}%</strong><small>Maestria · ver progresso</small></span><Icon type="arrow" /></button>
+        </div>
+      </section>
     </main>
   );
 }
