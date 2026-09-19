@@ -1,15 +1,16 @@
 # Carta Cega
 
-Jogo web estático em um único arquivo HTML. A versão atual é
-`carta-cega-0.13.5.html`; `index.html` encaminha a raiz do Preview para ela.
+O rebuild TypeScript/PWA está em validação na raiz do Preview. A versão clássica
+permanece disponível em `carta-cega-0.13.5.html`.
 
 ## Executar no Replit
 
 O workflow **Start application** usa:
 
 ```sh
-python3 -m http.server 5000 --bind 0.0.0.0
+npm run dev
 ```
 
-O jogo precisa de acesso à internet no navegador para carregar D3, TopoJSON,
-mapas e bandeiras usados pela página.
+O rebuild usa React, MapLibre e dados locais extraídos da versão clássica.
+O pipeline PMTiles definitivo e o empacotamento offline ainda fazem parte da
+Fase 0. A versão clássica continua dependendo de internet para suas CDNs.
