@@ -7,6 +7,12 @@ import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
 import { unlockContent } from "../domain/economy-store";
+import {
+  flagDirectionFromVariant,
+  flagSelection,
+  type FlagCategory,
+  type FlagDirection,
+} from "../domain/flag-configuration";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 
@@ -337,6 +343,19 @@ export function Recorte({
     const canBuySelected = selectedPolicy
       ? canUnlock(selectedPolicy, economy?.balance ?? 0, economy?.sessions ?? 0, selectedCoverage)
       : false;
+     const [flagDirection, setFlagDirection] = useState<FlagDirection>(() =>
+       flagDirectionFromVariant(variant) ??
+       (localStorage.getItem("carta-flag-direction") as FlagDirection | null) ??
+       "name-to-flag",
+     );
+     const flagCategory: FlagCategory =
+       family === "escrita" ? "writing" : family === "historicas" ? "historical" : "current";
+     const applyFlagSelection = (category: FlagCategory, direction = flagDirection) => {
+       const selection = flagSelection(category, direction);
+       onFamilyChange(selection.family, selection.variant);
+       setVariant(selection.variant);
+       localStorage.setItem(`carta-last-variant:${topFamily}`, selection.variant);
+     };
     useEffect(() => {
        if (selectedCount > 0) return;
        setRegion("mundo");
@@ -347,26 +366,30 @@ export function Recorte({
          ← Famílias
       </button>
       <div className="rec-grid">
-        <div>
+         <div>
           <div className="eyebrow" style={{ marginTop: 38 }}>
              {familyLabel} / configuração
           </div>
              <h1 style={{ marginTop: 18 }}>Configure a partida</h1>
         </div>
-        <div>
+         <div className="config-panel">
             <div className="section-label"><h2>Variante</h2></div>
             <div className="chip-list variant-chips" role="group" aria-label="Variantes">
               {(topFamily === "mapa"
                 ? [["mapa","Clicar no mapa","mapa"],["silhueta","Silhueta","silhueta"],["travel","Travel","travel"]]
-                 : topFamily === "bandeiras"
-                   ? [["nome-bandeira","Nome → bandeira","bandeiras"],["bandeira-nome","Bandeira → nome","bandeiras"],["escrita-pais","Escrita","escrita"],["nome-historica","Nome → histórica","historicas"],["historica-nome","Histórica → nome","historicas"]]
+                  : topFamily === "bandeiras"
+                    ? [["current","Atuais","bandeiras"],["writing","Escrita","escrita"],["historical","Históricas","historicas"]]
                   : topFamily === "capitais"
                     ? [["capital-pais","Clicar no mapa","capitais"],["escrita-capital","Escrita","escrita"]]
                     : [["idioma-pais","Idiomas","idiomas"]]
               ).map(([key, label, engine]) => {
-                const policy = policyFor(engine as Family, key as AnyQuizVariant, policyRegion);
+                const selection = topFamily === "bandeiras"
+                  ? flagSelection(key as FlagCategory, flagDirection)
+                  : { family: engine as Family, variant: key as AnyQuizVariant };
+                const policy = policyFor(selection.family, selection.variant, policyRegion);
                 const isUnlocked = !policy || (policy.cost === 0 && policy.sessions === 0) || Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                return <button type="button" className={`chip ${!isUnlocked ? "chip-locked" : ""}`} aria-pressed={variant === key} key={key} onClick={() => { onFamilyChange(engine as Family, key as AnyQuizVariant); setVariant(key as AnyQuizVariant); localStorage.setItem(`carta-last-variant:${topFamily}`, key); }}>{label}{!isUnlocked ? ` · ${policy?.cost ?? 0} moedas` : ""}</button>;
+                const pressed = topFamily === "bandeiras" ? flagCategory === key : variant === key;
+                return <button type="button" className={`chip ${!isUnlocked ? "chip-locked" : ""}`} aria-pressed={pressed} key={key} onClick={() => { if (topFamily === "bandeiras") applyFlagSelection(key as FlagCategory); else { onFamilyChange(engine as Family, key as AnyQuizVariant); setVariant(key as AnyQuizVariant); localStorage.setItem(`carta-last-variant:${topFamily}`, key); } }}>{label}{!isUnlocked ? ` · ${policy?.cost ?? 0} moedas` : ""}</button>;
               })}
             </div>
             <div className="section-label config-section-title"><h2>Recorte</h2></div>
@@ -396,6 +419,7 @@ export function Recorte({
              })}
           </div>
             {(family === "mapa" || family === "bandeiras" || family === "capitais" || family === "escrita" || family === "silhueta" || family === "travel") && <div className="config-row"><span>Filtro</span><button type="button" className="chip" aria-pressed={onlyUn} onClick={() => setOnlyUn(!onlyUn)}>Só membros da ONU</button></div>}
+            {topFamily === "bandeiras" && family !== "escrita" && <section className="config-direction" aria-labelledby="direction-title"><div className="section-label config-section-title"><h2 id="direction-title">Direção</h2></div><div className="chip-list" role="group" aria-label="Direção"><button type="button" className="chip" aria-pressed={flagDirection === "name-to-flag"} onClick={() => { setFlagDirection("name-to-flag"); localStorage.setItem("carta-flag-direction", "name-to-flag"); applyFlagSelection(flagCategory, "name-to-flag"); }}>Nome → bandeira</button><button type="button" className="chip" aria-pressed={flagDirection === "flag-to-name"} onClick={() => { setFlagDirection("flag-to-name"); localStorage.setItem("carta-flag-direction", "flag-to-name"); applyFlagSelection(flagCategory, "flag-to-name"); }}>Bandeira → nome</button></div></section>}
             {family === "silhueta" && <div className="config-row"><span>Resposta</span><div className="chip-list"><button type="button" className="chip" aria-pressed={variant === "silhueta"} onClick={() => setVariant("silhueta")}>Escrever</button><button type="button" className="chip" aria-pressed={variant === "silhueta-opcoes"} onClick={() => setVariant("silhueta-opcoes")}>Alternativas</button></div></div>}
              {selectedCount === 0 && <div className="config-empty-note">Sem cartas neste recorte para esta variante.</div>}
            {!selectedUnlocked && (
@@ -407,8 +431,7 @@ export function Recorte({
              </p>
            )}
             <button
-            className="button coral"
-            style={{ width: "100%", marginTop: 20 }}
+             className="button coral config-start"
              disabled={selectedCount === 0}
              onClick={async () => {
                 const policy = policyFor(family, variant, policyRegion);

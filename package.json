@@ -27,6 +27,7 @@
     "test:typed-answer": "rm -rf .tmp-typed && tsc --ignoreConfig src/domain/typed-answer.ts --outDir .tmp-typed --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-typed-answer.mjs",
     "test:small-entities": "node scripts/generate-small-entity-report.mjs && node scripts/test-small-entities.mjs",
     "test:map-marker-click": "rm -rf .tmp-marker && tsc --ignoreConfig src/domain/map-marker-click.ts --outDir .tmp-marker --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-map-marker-click.mjs",
+    "test:flag-configuration": "rm -rf .tmp-flag-config && tsc --ignoreConfig src/domain/flag-configuration.ts src/domain/types.ts --outDir .tmp-flag-config --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-flag-configuration.mjs",
     "smoke": "node scripts/smoke-app.mjs"
   },
   "keywords": [],
