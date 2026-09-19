@@ -331,9 +331,14 @@ export function App() {
             }
               const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-pais" : selected === "silhueta" ? "silhueta" : "travel";
               const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
-              const restored = variantContextFor(selectedTopFamily, savedVariant ?? defaultVariant);
-              if (restored) { setFamily(restored.family); setVariant(restored.variant); }
-              localStorage.setItem(`carta-last-variant:${selectedTopFamily}`, savedVariant ?? defaultVariant);
+              const restored =
+                variantContextFor(selectedTopFamily, savedVariant ?? "") ??
+                variantContextFor(selectedTopFamily, defaultVariant);
+              if (restored) {
+                setFamily(restored.family);
+                setVariant(restored.variant);
+                localStorage.setItem(`carta-last-variant:${selectedTopFamily}`, restored.variant);
+              }
              setScreen("recorte");
           }}
            onNavigate={navigate}
@@ -359,7 +364,6 @@ export function App() {
             onFamilyChange={(nextFamily, nextVariant) => {
               setFamily(nextFamily);
               setVariant(nextVariant);
-              setTopFamily(nextFamily === "mapa" || nextFamily === "silhueta" || nextFamily === "travel" ? "mapa" : nextFamily === "bandeiras" || nextFamily === "escrita" || nextFamily === "historicas" ? "bandeiras" : nextFamily === "capitais" ? "capitais" : "idiomas");
             }}
         />
       )}

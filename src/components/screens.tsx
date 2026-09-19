@@ -374,7 +374,7 @@ export function Recorte({
        setRegion("mundo");
      }, [selectedCount, setRegion]);
   return (
-    <main className="rec-content">
+    <main className="rec-content" data-top-family={topFamily} data-family={family} data-variant={variant}>
        <button className="back" onClick={onBack}>
          ← Famílias
       </button>

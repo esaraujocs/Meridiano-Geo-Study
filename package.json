@@ -30,6 +30,7 @@
     "test:map-round-engine": "node scripts/test-map-round-engine.mjs",
     "test:answer-options": "node scripts/test-answer-options.mjs",
     "test:flag-configuration": "rm -rf .tmp-flag-config && tsc --ignoreConfig src/domain/flag-configuration.ts src/domain/types.ts --outDir .tmp-flag-config --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-flag-configuration.mjs",
+    "test:config-family-isolation": "node scripts/test-config-family-isolation.mjs",
     "test:collection-summary": "rm -rf .tmp-collection-summary && tsc --ignoreConfig src/domain/collection-summary.ts --outDir .tmp-collection-summary --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-collection-summary.mjs",
     "smoke": "node scripts/smoke-app.mjs"
   },
