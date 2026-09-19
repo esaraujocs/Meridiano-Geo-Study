@@ -100,7 +100,7 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 .quiz-prompt .target-kicker{font-size:clamp(18px,2vw,24px);font-weight:700;letter-spacing:-.02em;color:var(--ink);text-transform:none}
 .quiz-option{border-radius:var(--radius);min-height:88px}.quiz-option img{width:100%;height:auto;min-height:120px;max-height:190px;object-fit:contain;object-position:center}
 .quiz-options:has(input){display:flex;align-items:stretch;gap:0}.quiz-options:has(input) input{flex:1;min-height:58px;border:1px solid var(--line);border-right:0;border-radius:var(--radius) 0 0 var(--radius);background:var(--paper);color:var(--ink);padding:0 16px;font:20px 'Plus Jakarta Sans'}.quiz-options:has(input) .button{min-height:58px;border-radius:0 var(--radius) var(--radius) 0}
-.variant-chips{margin-bottom:24px}.chip-locked{border-style:dashed;color:var(--terracotta)}.config-section-title{border-top:1px solid var(--line);padding-top:18px}
+.variant-chips{margin-bottom:24px}.chip-locked{border-style:dashed;color:var(--terracotta)}.config-section-title{border-top:1px solid var(--line);padding-top:24px;margin-top:24px}.config-direction{margin-top:24px}.config-direction .config-section-title{margin-top:0}.config-start{display:flex;margin-top:24px}
 .family{transition:transform .3s cubic-bezier(.22,.8,.24,1),opacity .3s ease,border-color .2s ease}.carousel-arrow{display:grid;place-items:center}.carousel-arrow-prev svg{transform:rotate(180deg)}.carousel-arrow-next svg{transform:none}.map-focused .map-crosshair:not(.is-visible){opacity:0}
 @media (prefers-reduced-motion:reduce){.family,.map-crosshair{transition:none!important}}
 
@@ -163,13 +163,14 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
   .hub-xp-label,.hub-xp-next{font-size:12px}.hub-coins{padding:7px 9px}.hub-coins strong{font-size:14px}
   .app-shell:has(.hub-content)>.mobile-nav{position:static;display:grid;background:rgba(243,233,210,.97);border-top:1px solid var(--line);box-shadow:0 -3px 12px rgba(36,59,58,.08)}
   .app-shell:has(.hub-content) .content{padding-bottom:24px}
-  .rec-content{height:calc(100dvh - 56px);display:flex;flex-direction:column;overflow:hidden;padding:14px 16px 60px}
+  .focused-flow>.mobile-nav{display:none}
+  .rec-content{height:calc(100dvh - 56px);display:flex;flex-direction:column;overflow:hidden;padding:14px 16px calc(88px + env(safe-area-inset-bottom))}
   .rec-content>.back{flex:none;min-height:36px}.rec-grid{display:flex;flex:1;min-height:0;flex-direction:column;gap:10px}
   .rec-grid>div:first-child{flex:none}.rec-grid>div:first-child .eyebrow{margin-top:4px!important}.rec-grid>div:first-child h1{margin-top:5px!important;font-size:28px}
   .config-panel{min-height:0;overflow-y:auto;padding-bottom:8px}.config-panel .section-label{margin-bottom:8px}.config-panel h2{font-size:20px}
-  .variant-chips{margin-bottom:12px}.config-section-title{padding-top:12px}.region-list{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .variant-chips{margin-bottom:12px}.config-section-title{padding-top:12px;margin-top:12px}.config-direction{margin-top:12px}.region-list{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
   .region{min-height:42px;padding:8px 10px;border-radius:var(--radius)}.region span{font-size:9px}.config-row{padding:10px 0}
-  .config-start{position:sticky;bottom:0;width:100%;min-height:54px;margin-top:14px;z-index:3;box-shadow:0 -10px 18px var(--paper)}
+  .config-start{position:fixed;left:16px;right:16px;bottom:calc(12px + env(safe-area-inset-bottom));width:auto;min-height:54px;margin:0;z-index:41;box-shadow:0 -10px 18px var(--paper)}
 }
 .button.coral{background:#8e4937}.surface .eyebrow,.surface .achievement strong,.collection-card.is-locked .eyebrow{color:#364943!important}.map-target-overlay span{color:#f0e6cd!important}
 .collection-card .eyebrow,.historical-card .eyebrow{color:#243b3a!important}.map-stage span{color:#f0e6cd!important}

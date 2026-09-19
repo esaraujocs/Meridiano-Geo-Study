@@ -291,7 +291,7 @@ export function App() {
   }
 
   return (
-    <div className="app-shell grain">
+    <div className={`app-shell grain ${screen === "recorte" ? "focused-flow" : ""}`}>
         <Header legacy={legacy} economy={economy} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && (
         <Hub
