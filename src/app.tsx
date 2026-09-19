@@ -24,6 +24,7 @@ import {
 } from "./domain/offline-map";
 import { initializeEconomy, queryEconomy, type EconomySnapshot } from "./domain/economy-store";
 import { Surface } from "./components/surfaces";
+import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
@@ -38,6 +39,7 @@ export function App() {
     historicas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     idiomas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
   });
+  const [travelCounts, setTravelCounts] = useState<RegionCounts | null>(null);
   const [legacy, setLegacy] = useState<LegacyProfile | null>(null);
   const [offlineMap, setOfflineMap] =
     useState<OfflineMapStatus>("checking");
@@ -56,20 +58,15 @@ export function App() {
     ],
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
-  const grantDevelopmentCoins = async () => {
+  const grantDevelopmentCoins = async (amount = 10) => {
     if (!import.meta.env.DEV) return;
     const { grantDebugCoins } = await import("./domain/debug-economy");
-    setEconomy(await grantDebugCoins());
+    setEconomy(await grantDebugCoins(amount));
   };
-  const debugEntities = data
-    ? Object.entries(data.meta).map(([id, meta]) => ({ id, name: meta.pt ?? id })).slice(0, 250)
-    : [];
-  const debugCollection = async (id: string, mastery: number, historical: boolean) => {
+  const unlockDevelopmentContent = async () => {
     if (!import.meta.env.DEV) return;
-    const { setDebugCollection } = await import("./domain/debug-collection");
-    await setDebugCollection(id, mastery, historical);
-    setEconomy(await queryEconomy());
-    setSurfaceRevision((value) => value + 1);
+    const { unlockAllDebugContent } = await import("./domain/debug-economy");
+    setEconomy(await unlockAllDebugContent());
   };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => setScreen(surface);
 
@@ -82,9 +79,20 @@ export function App() {
       .then((installed) => setOfflineMap(installed ? "installed" : "available"))
       .catch(() => setOfflineMap("unavailable"));
   }, []);
+  useEffect(() => {
+    if (!data) return;
+    setTravelCounts(null);
+    void geometryIndex().then(({ features: geometryFeatures }) => {
+      const ids = [...geometryFeatures.keys()].filter((id) => data.meta[id] && (!onlyUn || data.meta[id]?.un));
+      setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
+    }).catch(() => setTravelCounts(null));
+  }, [data, onlyUn]);
 
   const features = useMemo(
-    () => (data ? eligible(buildFeatures(data)).filter((item) => !onlyUn || data.meta[item.id]?.un) : []),
+    () => (data ? eligible(buildFeatures(data)).filter((item) => {
+      const meta = data.meta[item.id];
+      return meta && !meta.absorvido && meta.mapa !== false && (!onlyUn || meta.un);
+    }) : []),
     [data, onlyUn],
   );
   const playableData = useMemo(() => {
@@ -121,9 +129,9 @@ export function App() {
       historicas: specialCounts.historicas,
       idiomas: specialCounts.idiomas,
       silhueta: counts,
-      travel: counts,
+       travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     } as Record<Family, RegionCounts>;
-  }, [data, features, specialCounts, onlyUn, variant]);
+  }, [data, features, specialCounts, travelCounts, onlyUn, variant]);
 
   if (error) {
     return (
@@ -158,7 +166,7 @@ export function App() {
   }
 
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history" || screen === "result") {
-     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} debugEntities={debugEntities} onDebugCollection={(id, mastery, historical) => void debugCollection(id, mastery, historical)} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "game") {
@@ -166,7 +174,7 @@ export function App() {
        return <Game data={playableData ?? data} features={features.filter((item) => inRegion(item.id, region, data) && Boolean(data.meta[item.id]?.cap))} region={region} family={family} variant={variant} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
     }
     if (family === "silhueta" || family === "travel") {
-       return <GeometryGame family={family} data={playableData ?? data} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
+        return <GeometryGame family={family} variant={variant} data={playableData ?? data} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
     }
     if (family === "historicas" || family === "idiomas" || family === "escrita") {
         const specialData = family === "historicas" || family === "idiomas" ? data : (playableData ?? data);
@@ -197,7 +205,7 @@ export function App() {
 
   return (
     <div className="app-shell grain">
-       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} debugEntities={debugEntities} onDebugCollection={(id, mastery, historical) => void debugCollection(id, mastery, historical)} />
+       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} />
       {screen === "hub" && (
         <Hub
           legacy={legacy}

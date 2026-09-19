@@ -185,47 +185,28 @@ await page.waitForFunction(
   () => document.querySelector(".family.active h3")?.textContent === "Mapa",
 );
 await page.click('button[aria-label="Abrir opções"]');
-checks.ui.debugHiddenWithoutOptIn = !(await page.$eval(".options-popover", (item) => item.textContent?.includes("Conceder 10 moedas") ?? false));
-await page.goto(`${baseUrl}?debug-coins=1`, { waitUntil: "networkidle0" });
-await page.click('button[aria-label="Abrir opções"]');
-checks.ui.debugVisibleWithOptIn = await page.$eval(".options-popover", (item) => item.textContent?.includes("Conceder 10 moedas") ?? false);
-await clickButton("Conceder 10 moedas");
-await page.waitForFunction(() => document.querySelector(".pill")?.textContent?.includes("10 moedas"));
-checks.ui.debugLedgerRefresh = true;
-await page.select(
-  'select[aria-label="Carta de teste"]',
-  await page.$eval('select[aria-label="Carta de teste"] option:nth-child(2)', (item) => item.value),
+checks.ui.debugVisibleInDev = await page.$eval(".options-popover", (item) => item.textContent?.includes("Adicionar moedas") ?? false);
+const debugBalanceBefore = await page.$eval(".pill.mono", (item) =>
+  Number.parseInt(item.textContent ?? "0", 10),
 );
-await page.select('select[aria-label="Nível de domínio"]', "5");
-await page.click('[data-debug-collection] input[type="checkbox"]');
-await clickButton("Aplicar carta");
-await page.waitForFunction(() =>
-  document.querySelector('[data-debug-collection] [role="status"]')?.textContent?.includes("Carta aplicada"),
+await page.click('.options-popover input[type="number"]', { clickCount: 3 });
+await page.keyboard.type("17");
+await clickButton("Adicionar moedas");
+await page.waitForFunction(() => document.querySelector(".options-popover [role=status]")?.textContent?.includes("Moedas adicionadas"));
+const debugBalanceAfter = await page.$eval(
+  ".pill.mono",
+  (item) => Number.parseInt(item.textContent ?? "0", 10),
 );
-const debugState = await page.evaluate(async () => {
-  const db = await new Promise((resolve, reject) => {
-    const request = indexedDB.open("carta-cega", 4);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-  const records = await new Promise((resolve, reject) => {
-    const request = db.transaction("progress").objectStore("progress").getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-  db.close();
-  return records.find((record) => record.source === "debug");
-});
-await clickButton("Coleção");
-await page.waitForFunction(() => document.querySelector(".collection-grid .collection-card"));
-checks.ui.debugCollection = Boolean(debugState && debugState.mastery === 5 &&
-  await page.$eval(".collection-grid", (grid) => grid.textContent?.includes("nível 5")));
-await clickButton("Progresso");
-await page.waitForSelector('[aria-label="Resumo de progresso"]');
-checks.ui.debugProgress = await page.$eval(
-  '[aria-label="Resumo de progresso"]',
-  (item) => /5:1/.test(item.textContent ?? ""),
-);
+checks.ui.debugLedgerRefresh = {
+  before: debugBalanceBefore,
+  after: debugBalanceAfter,
+  expected: debugBalanceBefore + 17,
+  passes: debugBalanceAfter === debugBalanceBefore + 17,
+};
+checks.ui.collectionDebugAbsent = !(await page.$eval(".options-popover", (item) => item.textContent?.includes("Coleção de teste") ?? false));
+await clickButton("Liberar modos e recortes");
+await page.waitForFunction(() => document.querySelector(".options-popover [role=status]")?.textContent?.includes("Conteúdo liberado"));
+checks.ui.debugUnlockConfirmed = true;
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
 await page.$eval(".family-grid .family:nth-child(2) h3", (item) =>
   item.dispatchEvent(new MouseEvent("click", { bubbles: true })),
@@ -269,7 +250,7 @@ await openFamily("Mapa", "Clicar no mapa", false, async () => {
   unDeckSize = await page.$eval(".region-detail-meta b", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
-  checks.ui.lockedWorld = lockedWorld;
+  checks.ui.worldUnlockedAfterDebug = !lockedWorld;
   checks.ui.unFilterReducesDeck = unDeckSize > 0 && unDeckSize < before;
 });
 await page.waitForSelector("canvas", { timeout: 60_000 });
@@ -328,6 +309,10 @@ checks.writing = {
 
 let capitalDeckSize = 0;
 await openFamily("Capitais", "Escrita · nome da capital", false, async () => {
+  await page.click(".region-list .region:nth-child(2)");
+  await page.waitForFunction(() =>
+    document.querySelector(".region-detail")?.textContent?.includes("Caribe"),
+  );
   capitalDeckSize = await page.$eval(".region-detail-meta b", (item) =>
     Number.parseInt(item.textContent ?? "0", 10),
   );
@@ -350,13 +335,33 @@ checks.capitalWriting = {
 const capitalAnswer = await page.evaluate(async () => {
   const clue = document.querySelector(".quiz-clue")?.textContent?.trim();
   const data = await fetch("/data/legacy/catalog.json").then((response) => response.json());
-  return Object.values(data.meta).find((meta) => meta.pt === clue)?.cap ?? "";
+  return Object.values(data.meta).find((meta) =>
+    meta.pt === clue &&
+    !meta.absorvido &&
+    (meta.reg === "Caribbean" || meta.sub === "Caribbean" ||
+      (meta.reg === "Americas" && meta.sub === "Caribbean")) &&
+    typeof meta.cap === "string" &&
+    meta.cap.trim()
+  )?.cap ?? "";
 });
 await page.type('input[aria-label="Resposta"]', capitalAnswer);
-await page.waitForFunction(() => {
-  const input = document.querySelector('input[aria-label="Resposta"]');
-  return input instanceof HTMLInputElement && !input.disabled && input.value === "";
-});
+try {
+  await page.waitForFunction(() => {
+    const input = document.querySelector('input[aria-label="Resposta"]');
+    return input instanceof HTMLInputElement && !input.disabled && input.value === "";
+  }, { timeout: 3_000 });
+} catch {
+  const state = await page.evaluate(() => {
+    const input = document.querySelector('input[aria-label="Resposta"]');
+    return {
+      clue: document.querySelector(".quiz-clue")?.textContent,
+      input: input instanceof HTMLInputElement ? input.value : null,
+      disabled: input instanceof HTMLInputElement ? input.disabled : null,
+      feedback: document.querySelector('[role="status"]')?.textContent,
+    };
+  });
+  throw new Error(`Escrita exata não autoavançou: ${JSON.stringify({ capitalAnswer, state })}`);
+}
 checks.writingExactAutoAdvance = Boolean(
   capitalAnswer && await page.$eval('input[aria-label="Resposta"]', (input) => document.activeElement === input),
 );
@@ -416,6 +421,12 @@ checks.silhouette = {
   path: await page.$eval(".silhouette-frame path", (path) => (path.getAttribute("d") ?? "").length > 20),
   input: Boolean(await page.$('input[aria-label="Resposta"]')),
 };
+await openFamily("Mapa", "Silhueta · alternativas");
+await page.waitForFunction(() => document.querySelectorAll(".quiz-option").length === 4);
+checks.silhouetteChoices = {
+  path: await page.$eval(".silhouette-frame path", (path) => (path.getAttribute("d") ?? "").length > 20),
+  options: await page.$$eval(".quiz-option", (items) => new Set(items.map((item) => item.textContent?.trim())).size),
+};
 
 await page.evaluate(async () => {
   const db = await new Promise((resolve, reject) => {
@@ -459,7 +470,7 @@ await page.goto(baseUrl, { waitUntil: "networkidle0" });
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
 await clickButton("Travel");
 await page.waitForSelector(".region-list");
-await page.click(".region-list .region:nth-child(3)");
+await page.click(".region-list .region:not([disabled])");
 await clickButton("Começar com");
 await page.waitForSelector(".travel-frame path", { timeout: 60_000 });
 checks.travel = {
@@ -467,6 +478,73 @@ checks.travel = {
   destination: await page.$eval(".travel-destination", (item) => item.textContent),
   input: Boolean(await page.$('input[aria-label="Próximo país"]')),
 };
+await clickButton("Pista");
+const hintedCountry = await page.$eval(".feedback", (item) =>
+  item.textContent?.match(/é (.+)\.$/)?.[1] ?? "",
+);
+if (!hintedCountry) throw new Error("Travel não revelou o próximo intermediário");
+const hintedAmbiguous = await page.evaluate(async (hint) => {
+  const normalize = (value) => value.normalize("NFD").replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("pt-BR").replace(/[^a-z0-9]+/g, " ").trim();
+  const data = await fetch("/data/legacy/catalog.json").then((response) => response.json());
+  const candidates = [...new Set(Object.values(data.meta).flatMap((meta) =>
+    [meta.pt, meta.en, ...(Array.isArray(meta.al) ? meta.al : [meta.al])]
+      .filter(Boolean).map(normalize),
+  ))];
+  const normalized = normalize(hint);
+  return candidates.some((candidate) => candidate !== normalized && candidate.startsWith(normalized));
+}, hintedCountry);
+await page.type('input[aria-label="Próximo país"]', hintedCountry);
+if (hintedAmbiguous) {
+  await page.waitForFunction(() => {
+    const input = document.querySelector('input[aria-label="Próximo país"]');
+    return input instanceof HTMLInputElement && !input.disabled && Boolean(input.value);
+  });
+  await page.keyboard.press("Enter");
+}
+await page.waitForFunction(() =>
+  document.querySelector(".feedback")?.textContent?.includes("Trecho correto") ||
+  document.querySelector(".feedback")?.textContent?.includes("Rota concluída"),
+);
+checks.travel.typedRule = hintedAmbiguous ? "ambiguous-explicit-commit" : "unique-auto-commit";
+
+await page.setViewport({ width: 360, height: 720 });
+await openFamily("Mapa", "Clicar no mapa");
+await page.waitForSelector("canvas", { timeout: 60_000 });
+checks.map.mobile360 = await page.evaluate(() => {
+  const overlap = (a, b) =>
+    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+    Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  const back = document.querySelector(".map-panel .back")?.getBoundingClientRect();
+  const target = document.querySelector(".map-panel .target")?.getBoundingClientRect();
+  const score = document.querySelector(".map-panel .score-box")?.getBoundingClientRect();
+  const select = document.querySelector("#map-answer-select")?.getBoundingClientRect();
+  const map = document.querySelector(".map-wrap")?.getBoundingClientRect();
+  const hudHidden = getComputedStyle(document.querySelector(".map-hud")).display === "none";
+  const attribution = Boolean(document.querySelector(".maplibregl-ctrl-attrib"));
+  return {
+    backScoreOverlap: back && score ? overlap(back, score) : null,
+    targetScoreOverlap: target && score ? overlap(target, score) : null,
+    select: select ? { left: select.left, right: select.right, height: select.height } : null,
+    mapHeight: map?.height ?? null,
+    hudHidden,
+    attribution,
+    passes: Boolean(
+    back && target && score && select && map &&
+    overlap(back, score) === 0 &&
+    overlap(target, score) === 0 &&
+    select.left >= 0 && select.right <= innerWidth && select.height >= 36 &&
+    map.height >= 360 &&
+    hudHidden && attribution
+    ),
+  };
+});
+await page.focus("#map-answer-select");
+checks.map.mobileKeyboardFocus = await page.$eval(
+  "#map-answer-select",
+  (select) => document.activeElement === select,
+);
+await page.setViewport({ width: 1280, height: 720 });
 
 for (const [button, heading] of [
   ["Progresso", "Progresso que explica"],
@@ -499,19 +577,20 @@ if (
   !checks.ui.familyCardOpensVariant ||
   !checks.ui.grid1440 ||
   !checks.ui.idiomasFree ||
-  !checks.ui.debugHiddenWithoutOptIn ||
-  !checks.ui.debugVisibleWithOptIn ||
-  !checks.ui.debugLedgerRefresh ||
-  !checks.ui.debugCollection ||
-  !checks.ui.debugProgress ||
+  !checks.ui.debugVisibleInDev ||
+  !checks.ui.debugLedgerRefresh.passes ||
+  !checks.ui.collectionDebugAbsent ||
+  !checks.ui.debugUnlockConfirmed ||
+  !checks.ui.worldUnlockedAfterDebug ||
   !checks.ui.bandeiraCards ||
   !checks.ui.regionControls ||
   !checks.ui.regionAcceptance ||
-  !checks.ui.lockedWorld ||
   !checks.ui.unFilterReducesDeck ||
   !checks.ui.capitalDeckParity ||
   !checks.map.canvas ||
   !checks.map.deckParity ||
+  !checks.map.mobile360.passes ||
+  !checks.map.mobileKeyboardFocus ||
   checks.flags.options !== 4 ||
   !checks.flags.imageLoaded ||
   !checks.capitals.map ||
@@ -529,8 +608,11 @@ if (
   checks.languages.options !== 4 ||
   !checks.silhouette.path ||
   !checks.silhouette.input ||
+  !checks.silhouetteChoices.path ||
+  checks.silhouetteChoices.options !== 4 ||
   !checks.travel.route ||
-  !checks.travel.input
+  !checks.travel.input ||
+  !checks.travel.typedRule
   || !checks.progresso
   || !checks.coleção
   || !checks.conquistas

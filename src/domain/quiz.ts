@@ -57,6 +57,7 @@ export function variantLabel(variant: QuizVariant) {
     "pais-capital": "País → capital",
     mapa: "Localizar no mapa",
     silhueta: "Silhueta",
+    "silhueta-opcoes": "Silhueta · alternativas",
     travel: "Travel",
   }[variant];
 }

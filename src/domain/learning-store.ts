@@ -72,7 +72,7 @@ function newId() {
 }
 
 export function columnForVariant(variant: AnyQuizVariant): LearningColumn {
-  if (variant === "mapa" || variant === "silhueta" || variant === "travel") return "mapa";
+  if (variant === "mapa" || variant === "silhueta" || variant === "silhueta-opcoes" || variant === "travel") return "mapa";
   if (variant === "bandeira-nome" || variant === "nome-bandeira") {
     return "bandeiras";
   }

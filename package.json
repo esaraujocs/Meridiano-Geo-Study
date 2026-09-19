@@ -20,6 +20,9 @@
     "test:manifest": "node scripts/test-manifest-resources.mjs",
     "test:profile": "node scripts/test-progress-surfaces.mjs",
     "test:policies": "node scripts/test-policy-matrix.mjs",
+    "test:finite-decks": "rm -rf .tmp-finite && tsc --ignoreConfig src/domain/finite-deck.ts --outDir .tmp-finite --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-finite-decks.mjs",
+    "test:typed-answer": "rm -rf .tmp-typed && tsc --ignoreConfig src/domain/typed-answer.ts --outDir .tmp-typed --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-typed-answer.mjs",
+    "test:small-entities": "rm -rf .tmp-small && tsc --ignoreConfig src/domain/small-entities.ts --outDir .tmp-small --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-small-entities.mjs",
     "smoke": "node scripts/smoke-app.mjs"
   },
   "keywords": [],

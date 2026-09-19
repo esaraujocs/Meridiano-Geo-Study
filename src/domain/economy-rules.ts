@@ -45,7 +45,7 @@ const EXPOSED_VARIANTS: Record<Family, AnyQuizVariant[]> = {
   escrita: ["escrita-pais", "escrita-capital"],
   historicas: ["historica-nome", "nome-historica"],
   idiomas: ["idioma-pais"],
-  silhueta: ["silhueta"],
+  silhueta: ["silhueta", "silhueta-opcoes"],
   travel: ["travel"],
 };
 

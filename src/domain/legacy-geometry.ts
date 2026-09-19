@@ -145,3 +145,30 @@ export function solveTravelRoute(meta: Legacy["meta"], ids: string[], seed = 0) 
   }
   return null;
 }
+
+/** Finds a deterministic short route whose final node is the drawn destination. */
+export function solveTravelRouteToDestination(meta: Legacy["meta"], ids: string[], destination: string, seed = 0) {
+  const byCca3 = new Map(Object.entries(meta).filter(([, value]) => value.cca3).map(([id, value]) => [value.cca3!.toUpperCase(), id]));
+  const origins = ids.filter((id) => id !== destination && meta[id]?.borders?.length).sort();
+  const start = origins.length ? seed % origins.length : 0;
+  for (let offset = 0; offset < origins.length; offset += 1) {
+    const origin = origins[(start + offset) % origins.length];
+    const queue: string[][] = [[origin]];
+    const visited = new Set([origin]);
+    while (queue.length) {
+      const route = queue.shift()!;
+      const current = route.at(-1)!;
+      if (current === destination && route.length >= 3 && route.length <= 5) return route;
+      if (route.length >= 5) continue;
+      for (const neighbor of (meta[current]?.borders ?? []).map((id) => byCca3.get(String(id).toUpperCase()) ?? String(id)).filter((id) => meta[id] && !visited.has(id)).sort()) {
+        visited.add(neighbor);
+        queue.push([...route, neighbor]);
+      }
+    }
+  }
+  return null;
+}
+
+export function travelDestinationIds(meta: Legacy["meta"], ids: string[]) {
+  return ids.filter((destination) => Boolean(solveTravelRouteToDestination(meta, ids, destination)));
+}

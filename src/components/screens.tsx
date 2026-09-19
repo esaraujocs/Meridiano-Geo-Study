@@ -10,15 +10,12 @@ import { unlockContent } from "../domain/economy-store";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 
-export function Header({ legacy, economy, onSurface, onGrantDebugCoins, debugEntities, onDebugCollection }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; onGrantDebugCoins?: () => void; debugEntities?: { id: string; name: string }[]; onDebugCollection?: (id: string, mastery: number, historical: boolean) => Promise<void> | void }) {
+export function Header({ legacy, economy, onSurface, onGrantCoins, onUnlockContent }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; onGrantCoins?: (amount: number) => Promise<void>; onUnlockContent?: () => Promise<void> }) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
-  const [debugEntity, setDebugEntity] = useState("");
-  const [debugMastery, setDebugMastery] = useState("1");
-  const [debugHistorical, setDebugHistorical] = useState(false);
-  const [debugApplying, setDebugApplying] = useState(false);
-  const [debugApplied, setDebugApplied] = useState(false);
-  const debugCoinsEnabled = import.meta.env.DEV && new URLSearchParams(location.search).get("debug-coins") === "1";
+  const [debugAmount, setDebugAmount] = useState("10");
+  const [debugStatus, setDebugStatus] = useState("");
+  const debugEnabled = import.meta.env.DEV;
   useEffect(() => { document.documentElement.dataset.reducedMotion = reducedMotion ? "true" : "false"; localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0"); }, [reducedMotion]);
   return (
     <header className="topbar">
@@ -51,29 +48,20 @@ export function Header({ legacy, economy, onSurface, onGrantDebugCoins, debugEnt
         <h3>Opções de estudo</h3>
         <label>Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label>
         <p style={{ color: "var(--muted)", fontSize: 11, marginTop: 12 }}>Preferências salvas neste dispositivo.</p>
-         {debugCoinsEnabled && onGrantDebugCoins && <button className="button ghost" style={{ width: "100%", marginTop: 12 }} onClick={onGrantDebugCoins}>Conceder 10 moedas de teste</button>}
-           {debugCoinsEnabled && onDebugCollection && debugEntities?.length && <div data-debug-collection style={{ borderTop: "1px solid var(--line)", marginTop: 12, paddingTop: 12, display: "grid", gap: 8 }}>
-            <div className="eyebrow">Coleção de teste</div>
-             <select style={{ width: "100%", padding: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)" }} value={debugEntity} onChange={(event) => setDebugEntity(event.target.value)} aria-label="Carta de teste">
-              <option value="">Escolha uma entidade…</option>
-              {debugEntities.map((entity) => <option key={entity.id} value={entity.id}>{entity.name}</option>)}
-            </select>
-             <select style={{ width: "100%", padding: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)" }} value={debugMastery} onChange={(event) => setDebugMastery(event.target.value)} aria-label="Nível de domínio">
-              {[0, 1, 2, 3, 4, 5].map((level) => <option key={level} value={level}>Nível {level}</option>)}
-            </select>
-            <label><input type="checkbox" checked={debugHistorical} onChange={(event) => setDebugHistorical(event.target.checked)} /> Acervo histórico</label>
-             <button className="button ghost" style={{ width: "100%", marginTop: 8 }} disabled={!debugEntity || debugApplying} onClick={async () => {
-               setDebugApplying(true);
-               setDebugApplied(false);
-               try {
-                 await onDebugCollection(debugEntity, Number(debugMastery), debugHistorical);
-                 setDebugApplied(true);
-               } finally {
-                 setDebugApplying(false);
-               }
-             }}>{debugApplying ? "Aplicando…" : "Aplicar carta"}</button>
-             {debugApplied && <span role="status">Carta aplicada.</span>}
-          </div>}
+           {debugEnabled && (onGrantCoins || onUnlockContent) && <section aria-label="Developer tools" style={{ borderTop: "1px solid var(--line)", marginTop: 12, paddingTop: 12, display: "grid", gap: 8 }}>
+            <div className="eyebrow">Debug</div>
+             {onGrantCoins && <label>Moedas de teste
+              <input type="number" min="1" step="1" value={debugAmount} onChange={(event) => setDebugAmount(event.target.value)} />
+              <button className="button ghost" onClick={async () => {
+                const amount = Number(debugAmount);
+                if (!Number.isInteger(amount) || amount <= 0) { setDebugStatus("Informe um inteiro positivo."); return; }
+                setDebugStatus("Aplicando…");
+                try { await onGrantCoins(amount); setDebugStatus("Moedas adicionadas."); } catch (error) { setDebugStatus(error instanceof Error ? error.message : "Falha ao aplicar."); }
+              }}>Adicionar moedas</button>
+            </label>}
+            {onUnlockContent && <button className="button ghost" onClick={async () => { setDebugStatus("Aplicando…"); try { await onUnlockContent(); setDebugStatus("Conteúdo liberado."); } catch (error) { setDebugStatus(error instanceof Error ? error.message : "Falha ao liberar."); } }}>Liberar modos e recortes</button>}
+            {debugStatus && <span role="status">{debugStatus}</span>}
+          </section>}
       </div>}
     </header>
   );
@@ -297,7 +285,7 @@ export function Variant({
   economy?: EconomySnapshot | null;
 }) {
   const variants: Record<TopFamily, [Family, AnyQuizVariant, string, string][]> = {
-    mapa: [["mapa", "mapa", "Clicar no mapa", "Localize o território pedido no atlas."], ["silhueta", "silhueta", "Silhueta", "Reconheça o contorno geográfico."], ["travel", "travel", "Travel", "Trace uma rota entre países."]],
+     mapa: [["mapa", "mapa", "Clicar no mapa", "Localize o território pedido no atlas."], ["silhueta", "silhueta", "Silhueta", "Resposta: escrever."], ["silhueta", "silhueta-opcoes", "Silhueta · alternativas", "Resposta: 4 alternativas."], ["travel", "travel", "Travel", "Trace uma rota entre países."]],
     bandeiras: [["bandeiras", "bandeira-nome", "Bandeira → nome", "Reconheça o país pela bandeira."], ["bandeiras", "nome-bandeira", "Nome → bandeira", "Escolha a bandeira correspondente."], ["escrita", "escrita-pais", "Escrita · nome do país", "Digite o país a partir da bandeira."], ["historicas", "historica-nome", "Histórica → nome", "Reconheça uma bandeira histórica."], ["historicas", "nome-historica", "Nome → histórica", "Escolha a bandeira histórica."]],
     capitais: [["capitais", "capital-pais", "Clicar no mapa", "Encontre no mapa o país da capital."], ["escrita", "escrita-capital", "Escrita · nome da capital", "Digite a capital do país."]],
     idiomas: [["idiomas", "idioma-pais", "Idioma → países", "Associe uma escrita aos países."]],
@@ -426,6 +414,11 @@ export function Recorte({
     const canBuySelected = selectedPolicy
       ? canUnlock(selectedPolicy, economy?.balance ?? 0, economy?.sessions ?? 0)
       : false;
+    useEffect(() => {
+      if (counts[region] > 0) return;
+      const available = REGION_ITEMS.find(([key]) => counts[key] > 0)?.[0];
+      if (available && available !== region) setRegion(available);
+    }, [counts, region, setRegion]);
   return (
     <main className="rec-content">
       <button className="back" onClick={onBack}>
@@ -500,6 +493,7 @@ export function Recorte({
             <button
             className="button coral"
             style={{ width: "100%", marginTop: 20 }}
+              disabled={counts[region] === 0}
              onClick={async () => {
                const policy = policyFor(family, variant, region);
                 const unlocked =
@@ -522,7 +516,8 @@ export function Recorte({
                   !policy ||
                   (policy.cost === 0 && policy.sessions === 0) ||
                   Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                return unlocked ? `Começar com ${counts[region]} cartas` : `Liberar por ${policy?.cost ?? 0} moedas`;
+                 if (counts[region] === 0) return "Sem cartas neste recorte";
+                 return unlocked ? `Começar com ${counts[region]} cartas` : `Liberar por ${policy?.cost ?? 0} moedas`;
              })()} · {REGION_ITEMS.find(([key]) => key === region)?.[1]}{" "}
             <Icon type="arrow" />
           </button>

@@ -1,1 +1,2 @@
 - [Reconciliação de progresso local](progress-reconciliation.md) — reimportar legado substitui o baseline e preserva só o delta atual; sessão, progresso e ledger são atômicos.
+- [Baralhos React estáveis](stable-react-decks.md) — pools recriados por dados assíncronos precisam de chave semântica para não reiniciar a sessão.

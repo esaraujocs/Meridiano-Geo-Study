@@ -22,7 +22,7 @@ const expectedFamilies = {
   escrita: ["escrita-pais", "escrita-capital"],
   historicas: ["historica-nome", "nome-historica"],
   idiomas: ["idioma-pais"],
-  silhueta: ["silhueta"],
+  silhueta: ["silhueta", "silhueta-opcoes"],
   travel: ["travel"],
 };
 const regions = ["caribe", "mundo", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];

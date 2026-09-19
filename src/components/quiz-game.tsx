@@ -8,11 +8,12 @@ import {
   startLearningSession,
   type LearningSessionHandle,
 } from "../domain/learning-store";
+import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
 
 type Question = { target: string; options: string[] };
 
 function shuffled<T>(items: T[]) {
-  return [...items].sort(() => Math.random() - 0.5);
+  return shuffleSeeded(items, seedFromParts(items.map(String).join("|")));
 }
 
 export function QuizGame({
@@ -43,6 +44,8 @@ export function QuizGame({
   const sessionRef = useRef<LearningSessionHandle | null>(null);
   const pendingSessionRef = useRef<Promise<LearningSessionHandle> | null>(null);
   const strictUsersRef = useRef(0);
+  const queuedRoundsRef = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
+  const deckRef = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
 
   const openSession = () => {
     const pending = startLearningSession({ family, variant, region });
@@ -50,6 +53,9 @@ export function QuizGame({
     pending
       .then((handle) => {
         if (strictUsersRef.current > 0) sessionRef.current = handle;
+        if (strictUsersRef.current > 0) {
+          queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
+        }
         else void handle.end();
       })
       .catch((sessionError) =>
@@ -67,7 +73,22 @@ export function QuizGame({
       sessionRef.current ??
       (await pendingSessionRef.current?.catch(() => null));
     sessionRef.current = null;
-    if (handle) await handle.finish();
+    if (handle) {
+      queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
+      await handle.finish();
+    }
+    (onEnd ?? onBack)();
+  };
+  const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
+    if (sessionRef.current) sessionRef.current.recordRound(round);
+    else queuedRoundsRef.current.push(round);
+  };
+  const finishSession = async () => {
+    const handle = sessionRef.current ?? await pendingSessionRef.current?.catch(() => null);
+    if (handle) {
+      queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
+      await handle.finish();
+    }
     (onEnd ?? onBack)();
   };
 
@@ -102,8 +123,10 @@ export function QuizGame({
   );
 
   const nextQuestion = () => {
-    if (pool.length < 4) return;
-    const targetId = pool[Math.floor(Math.random() * pool.length)];
+    const deck = deckRef.current;
+    if (!deck || deck.remaining === 0) return;
+    const targetId = deck.draw();
+    if (!targetId) return;
     const options = shuffled([
       targetId,
       ...shuffled(pool.filter((id) => id !== targetId)).slice(0, 3),
@@ -116,13 +139,16 @@ export function QuizGame({
   };
 
   useEffect(() => {
-    if (pool.length >= 4) nextQuestion();
+    if (pool.length >= 4) {
+      deckRef.current = createFiniteDeck(pool, seedFromParts(family, variant, region, pool.join("|")) ^ Math.floor(Math.random() * 0x100000000));
+      nextQuestion();
+    }
   }, [pool]);
 
   const answer = (id: string) => {
     if (!question || feedback) return;
     const correct = id === question.target;
-    sessionRef.current?.recordRound({
+    recordRound({
       targetId: question.target,
       correct,
       responseTimeMs: Math.max(0, Date.now() - targetStartedAtRef.current),
@@ -133,7 +159,14 @@ export function QuizGame({
     setFeedback(correct ? "correct" : "wrong");
     setScore((value) => value + (correct ? 1 : 0));
     setStreak((value) => (correct ? value + 1 : 0));
-    timer.current = window.setTimeout(nextQuestion, correct ? 650 : 1400);
+    const exhausted = deckRef.current?.remaining === 0;
+    timer.current = window.setTimeout(async () => {
+      if (exhausted) {
+        await finishSession();
+      } else {
+        nextQuestion();
+      }
+    }, correct ? 350 : 1400);
   };
 
   const title = family === "bandeiras" ? "Reconheça a resposta." : "Recupere a resposta.";
@@ -243,6 +276,7 @@ export function QuizGame({
                     titleFor(id)
                   )
                 ) : valueFor(id)}
+                {feedback && id === question.target && <span aria-label="Resposta correta"> ✓ Acerto</span>}
               </button>
             ))}
           </div>

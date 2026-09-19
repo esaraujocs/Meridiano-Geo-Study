@@ -25,7 +25,7 @@ export type Legacy = {
   mapEntityIds: string[];
 };
 
-export type GeoFeature = { id: string };
+export type GeoFeature = { id: string; geometry?: { type: string; coordinates?: unknown } };
 
 export type Region =
   | "mundo"
@@ -44,6 +44,7 @@ export type QuizVariant =
   | "capital-pais"
   | "pais-capital"
   | "silhueta"
+   | "silhueta-opcoes"
   | "travel";
   // Non-map families retain explicit variant identifiers for session history.
 export type SpecialVariant =

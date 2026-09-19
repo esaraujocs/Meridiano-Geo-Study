@@ -10,17 +10,28 @@ import {
   normalizeName,
   pathForFeatures,
   solveTravelRoute,
+  solveTravelRouteToDestination,
+  travelDestinationIds,
 } from "../domain/legacy-geometry";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
+import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
+import { TypedAnswerInput } from "./typed-answer-input";
 
-type Props = { family: Family; data: Legacy; region: Region; onBack: () => void; onEnd?: () => void };
+type Props = { family: Family; variant?: string; data: Legacy; region: Region; onBack: () => void; onEnd?: () => void };
 
-function useSession(family: Family, variant: "silhueta" | "travel", region: Region) {
+type SessionRound = Parameters<LearningSessionHandle["recordRound"]>[0];
+function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "travel", region: Region) {
   const ref = useRef<LearningSessionHandle | null>(null);
+  const pending = useRef<Promise<LearningSessionHandle> | null>(null);
+  const queued = useRef<SessionRound[]>([]);
   useEffect(() => {
     let alive = true;
-    startLearningSession({ family, variant, region }).then((handle) => {
-      if (alive) ref.current = handle;
+    pending.current = startLearningSession({ family, variant, region });
+    pending.current.then((handle) => {
+      if (alive) {
+        ref.current = handle;
+        queued.current.splice(0).forEach((round) => handle.recordRound(round));
+      }
       else void handle.end();
     }).catch((error) => console.error("[carta-cega] geometry session failed", error));
     return () => {
@@ -30,27 +41,46 @@ function useSession(family: Family, variant: "silhueta" | "travel", region: Regi
       if (handle) void handle.end();
     };
   }, [family, variant, region]);
-  return ref;
+  return {
+    current: ref,
+    recordRound(round: SessionRound) {
+      if (ref.current) ref.current.recordRound(round);
+      else queued.current.push(round);
+    },
+    async finish() {
+      const handle = ref.current ?? await pending.current?.catch(() => null);
+      if (handle) {
+        queued.current.splice(0).forEach((round) => handle.recordRound(round));
+        await handle.finish();
+      }
+    },
+  };
 }
 
-export function GeometryGame({ family, data, region, onBack, onEnd }: Props) {
+export function GeometryGame({ family, variant, data, region, onBack, onEnd }: Props) {
   return family === "silhueta"
-    ? <SilhouetteGame data={data} region={region} onBack={onBack} onEnd={onEnd} />
+    ? <SilhouetteGame data={data} region={region} variant={variant} onBack={onBack} onEnd={onEnd} />
     : <TravelGame data={data} region={region} onBack={onBack} onEnd={onEnd} />;
 }
 
-function SilhouetteGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
-  const session = useSession("silhueta", "silhueta", region);
+function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "family">) {
+  const session = useSession("silhueta", variant === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta", region);
   const finish = async () => {
-    await session.current?.finish();
+    await session.finish();
     (onEnd ?? onBack)();
   };
   const [features, setFeatures] = useState<Map<string, Feature<Geometry>> | null>(null);
   const [target, setTarget] = useState("");
   const [typed, setTyped] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [answerResult, setAnswerResult] = useState<"correct" | "wrong" | "">("");
+  const [selectedSilhouette, setSelectedSilhouette] = useState("");
   const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
+  const [choices, setChoices] = useState<string[]>([]);
+  const deck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timer = useRef<number | null>(null);
   useEffect(() => {
     geometryIndex().then(({ features }) => setFeatures(features)).catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, []);
@@ -59,21 +89,32 @@ function SilhouetteGame({ data, region, onBack, onEnd }: Omit<Props, "family">) 
     return meta && !meta.absorvido && meta.mapa !== false && inRegion(id, region, data);
   }) : [], [features, data, region]);
   useEffect(() => {
-    if (ids.length && !ids.includes(target)) {
-      setTarget(ids[Math.floor(Math.random() * ids.length)]);
-      setTyped(""); setFeedback(""); setLocked(false);
+    if (ids.length) {
+       deck.current = createFiniteDeck(ids, seedFromParts("silhueta", variant ?? "silhueta", region, ids.join("|")) ^ Math.floor(Math.random() * 0x100000000));
+       const first = deck.current.draw();
+       if (!first) return;
+       setTarget(first);
+       setTyped(""); setFeedback(""); setAnswerResult(""); setLocked(false);
+       if (variant === "silhueta-opcoes") setChoices(shuffleSeeded([first, ...shuffleSeeded(ids.filter((id) => id !== first), seedFromParts(first)).slice(0, 3)], seedFromParts(first)));
     }
-  }, [ids, target]);
-  const submit = () => {
+  }, [ids, variant, region]);
+  const submit = (value = typed) => {
     if (!target || locked) return;
-    const correct = aliases(data.meta[target]).includes(normalizeName(typed));
-    setLocked(true);
+    const correct = aliases(data.meta[target]).includes(normalizeName(value));
+    setLocked(true); setAnswerResult(correct ? "correct" : "wrong");
     setFeedback(correct ? "Acerto. A silhueta foi reconhecida." : `Ainda não. A resposta correta é ${data.meta[target]?.pt ?? target}.`);
-    session.current?.recordRound({ targetId: target, correct, responseTimeMs: null, answeredAt: Date.now(), selectedId: typed });
-    window.setTimeout(() => {
-      const next = ids.filter((id) => id !== target);
-      setTarget(next[Math.floor(Math.random() * Math.max(next.length, 1))] ?? target);
+    session.recordRound({ targetId: target, correct, responseTimeMs: null, answeredAt: Date.now(), selectedId: value });
+    timer.current = window.setTimeout(async () => {
+      const next = deck.current?.draw();
+      if (!next) {
+        await session.finish();
+        (onEnd ?? onBack)();
+        return;
+      }
+      setTarget(next);
       setTyped(""); setFeedback(""); setLocked(false);
+      if (variant === "silhueta-opcoes") setChoices(shuffleSeeded([next, ...shuffleSeeded(ids.filter((id) => id !== next), seedFromParts(next)).slice(0, 3)], seedFromParts(next)));
+      requestAnimationFrame(() => inputRef.current?.focus());
     }, correct ? 650 : 1400);
   };
   const path = featurePath(features?.get(target));
@@ -86,11 +127,22 @@ function SilhouetteGame({ data, region, onBack, onEnd }: Omit<Props, "family">) 
     </aside>
     <main className="quiz-main geometry-main">
       <div className="silhouette-frame"><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label="Silhueta geográfica"><path d={path.d} /></svg></div>
-      <div className="feedback" aria-live="polite">{feedback || "Que país tem esta forma?"}</div>
-      <form className="quiz-options geometry-input" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-        <input aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={(e) => setTyped(e.target.value)} />
-        <button className="button" disabled={locked || !typed.trim()}>Responder</button>
-      </form>
+       <div className={`feedback ${answerResult === "correct" ? "feedback-success" : answerResult === "wrong" ? "feedback-error" : ""}`} aria-live="polite">{feedback || "Que país tem esta forma?"}</div>
+       {variant === "silhueta-opcoes" ? <div className="quiz-options">{choices.map((id) => <button className={`quiz-option ${answerResult === "correct" && id === target ? "correct" : ""} ${answerResult === "wrong" && id === target ? "correct" : ""} ${answerResult === "wrong" && id === selectedSilhouette ? "wrong" : ""}`} disabled={locked} key={id} onClick={() => {
+           if (locked) return;
+         const correct = id === target;
+         setSelectedSilhouette(id);
+         setLocked(true); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? "✓ Acerto. A silhueta foi reconhecida." : `Ainda não. A resposta correta é ${data.meta[target]?.pt ?? target}.`);
+         session.recordRound({ targetId: target, correct, responseTimeMs: null, answeredAt: Date.now(), selectedId: id });
+         timer.current = window.setTimeout(async () => {
+           const next = deck.current?.draw();
+           if (!next) { await session.finish(); (onEnd ?? onBack)(); return; }
+           setTarget(next); setChoices(shuffleSeeded([next, ...shuffleSeeded(ids.filter((item) => item !== next), seedFromParts(next)).slice(0, 3)], seedFromParts(next))); setLocked(false); setFeedback(""); setAnswerResult("");
+         }, correct ? 350 : 1400);
+       }}>{data.meta[id]?.pt ?? id}{feedback && id === target ? " ✓" : ""}</button>)}</div> : <form className="quiz-options geometry-input" onSubmit={(event) => { event.preventDefault(); submit(); }}>
+         <TypedAnswerInput key={target} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} answers={aliases(data.meta[target])} />
+         <button className="button" disabled={locked || !typed.trim()}>Responder</button>
+       </form>}
     </main>
   </div></div>;
 }
@@ -98,7 +150,7 @@ function SilhouetteGame({ data, region, onBack, onEnd }: Omit<Props, "family">) 
 function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const session = useSession("travel", "travel", region);
   const finish = async () => {
-    await session.current?.finish();
+    await session.finish();
     (onEnd ?? onBack)();
   };
   const [features, setFeatures] = useState<Map<string, Feature<Geometry>> | null>(null);
@@ -109,18 +161,27 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const [hints, setHints] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const destinationDeck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
+  const destinationStarted = useRef(0);
   useEffect(() => {
     geometryIndex().then(({ features }) => setFeatures(features)).catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, []);
   const ids = useMemo(() => features ? [...features.keys()].filter((id) => data.meta[id] && inRegion(id, region, data)) : [], [features, data, region]);
+  const destinations = useMemo(() => travelDestinationIds(data.meta, ids), [data, ids]);
   useEffect(() => {
-    if (ids.length && !route) setRoute(solveTravelRoute(data.meta, ids, Math.floor(Math.random() * ids.length)));
-  }, [ids, route, data]);
+    if (!destinations.length || destinationDeck.current) return;
+    destinationDeck.current = createFiniteDeck(destinations);
+    const destination = destinationDeck.current.draw();
+    if (!destination) return;
+    setRoute(solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination)));
+    destinationStarted.current = Date.now();
+  }, [destinations, ids, data, region]);
   const intermediates = route?.slice(1, -1) ?? [];
   const next = intermediates[guesses.length];
-  const submit = () => {
-    if (!route || !typed.trim() || feedback.startsWith("Rota concluída") || feedback.startsWith("Tentativas esgotadas")) return;
-    const result = evaluateTravelGuess(data.meta, intermediates, guesses, typed);
+  const submit = (value = typed) => {
+    if (!route || !value.trim() || feedback.startsWith("Rota concluída") || feedback.startsWith("Tentativas esgotadas")) return;
+    const result = evaluateTravelGuess(data.meta, intermediates, guesses, value);
     if (result.kind === "duplicate") {
       setFeedback("Esse país já foi usado; tente o próximo da rota.");
       setTyped("");
@@ -134,8 +195,22 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
     const failed = !correct && nextAttempts >= 10;
     setFeedback(complete ? "Rota concluída. Excelente navegação." : failed ? `Tentativas esgotadas. Rota: ${route.map((id) => data.meta[id]?.pt ?? id).join(" → ")}` : correct ? "Trecho correto. Continue a rota." : "Esse país não é o próximo trecho.");
     setAttempts(nextAttempts);
-    session.current?.recordRound({ targetId: route[route.length - 1], correct: complete, responseTimeMs: null, answeredAt: Date.now(), selectedId: typed, attempts: nextAttempts, guesses: newGuesses });
     setTyped("");
+    if (complete || failed) {
+      session.recordRound({ targetId: route[route.length - 1], correct: complete, responseTimeMs: Date.now() - destinationStarted.current, answeredAt: Date.now(), selectedId: value, attempts: nextAttempts, guesses: newGuesses });
+      window.setTimeout(async () => {
+        const destination = destinationDeck.current?.draw();
+        if (!destination) {
+          await session.finish();
+          (onEnd ?? onBack)();
+          return;
+        }
+        const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
+        if (!nextRoute) { setError("Não há rota jogável para o próximo destino."); return; }
+        setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); destinationStarted.current = Date.now();
+        requestAnimationFrame(() => inputRef.current?.focus());
+      }, complete ? 350 : 1400);
+    } else requestAnimationFrame(() => inputRef.current?.focus());
   };
   const hint = () => {
     if (hints >= 3 || !next) return;
@@ -143,21 +218,23 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
     setFeedback(`Pista: o próximo país é ${data.meta[next]?.pt ?? next}.`);
   };
   if (error) return <GeometryError error={error} onBack={onBack} />;
-  if (!features || !route) return <LoadingGeometry />;
-  const routeFeatures = route.map((id) => features.get(id)).filter(Boolean) as Feature<Geometry>[];
+  if (!features || (!route && !error)) return <LoadingGeometry />;
+  const activeRoute = route;
+  if (!activeRoute) return <LoadingGeometry />;
+  const routeFeatures = activeRoute.map((id) => features.get(id)).filter(Boolean) as Feature<Geometry>[];
   const routePath = pathForFeatures(routeFeatures, 420, 190);
   return <div className="app-shell"><div className="quiz-stage">
       <aside className="quiz-panel"><button className="back" onClick={() => void finish()}>← Encerrar sessão</button>
       <div className="eyebrow" style={{ marginTop: 28 }}>Sessão · Travel</div><h1>Trace a rota.</h1>
-      <p className="lede">Saia de <b>{data.meta[route[0]]?.pt}</b> e chegue ao destino.</p>
+      <p className="lede">Saia de <b>{data.meta[activeRoute[0]]?.pt}</b> e chegue ao destino.</p>
       <div className="score-box"><div><span>tentativas</span><b>{attempts}/10</b></div><div><span>pistas</span><b>{hints}/3</b></div></div>
     </aside>
     <main className="quiz-main geometry-main">
-      <div className="travel-destination">Destino: <strong>{data.meta[route.at(-1)!]?.pt}</strong></div>
+      <div className="travel-destination">Destino: <strong>{data.meta[activeRoute.at(-1)!]?.pt}</strong></div>
       <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label="Geometrias da rota"><path d={routePath.d} /></svg></div>
-      <div className="feedback" aria-live="polite">{feedback || `Digite o país ${guesses.length + 1} da rota.`}</div>
+      <div className={`feedback ${feedback.startsWith("Rota concluída") ? "feedback-success" : feedback.startsWith("Esse país") || feedback.startsWith("Tentativas") ? "feedback-error" : ""}`} aria-live="polite">{feedback || `Digite o país ${guesses.length + 1} da rota.`}</div>
       <form className="quiz-options geometry-input" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-        <input aria-label="Próximo país" value={typed} onChange={(e) => setTyped(e.target.value)} />
+         <TypedAnswerInput key={route.at(-1)} className={feedback.startsWith("Rota concluída") ? "answer-success" : feedback.startsWith("Esse país") || feedback.startsWith("Tentativas") ? "answer-error" : ""} inputRef={inputRef} aria-label="Próximo país" value={typed} onChange={setTyped} onCommit={submit} answers={ids.flatMap((id) => aliases(data.meta[id]))} ambiguitySafe />
         <div className="geometry-actions"><button className="button" disabled={!typed.trim()}>Responder</button><button type="button" className="button ghost" onClick={hint} disabled={hints >= 3}>Pista</button></div>
       </form>
     </main>

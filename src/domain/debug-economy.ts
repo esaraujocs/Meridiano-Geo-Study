@@ -4,6 +4,7 @@ import {
   DATABASE_VERSION,
   upgradeStorage,
 } from "./storage-schema";
+import { POLICIES } from "./economy-rules";
 
 function openDb() {
   return new Promise<IDBDatabase>((resolve, reject) => {
@@ -44,6 +45,23 @@ export async function grantDebugCoins(amount = 10) {
       createdAt: Date.now(),
     } satisfies LedgerEntry);
   };
+  await done(transaction);
+  db.close();
+  return queryEconomy();
+}
+
+export async function unlockAllDebugContent() {
+  const db = await openDb();
+  const transaction = db.transaction(["unlocks"], "readwrite");
+  const store = transaction.objectStore("unlocks");
+  for (const policy of POLICIES) {
+    store.put({
+      id: policy.key,
+      key: policy.key,
+      source: "debug-opt-in",
+      unlockedAt: Date.now(),
+    });
+  }
   await done(transaction);
   db.close();
   return queryEconomy();

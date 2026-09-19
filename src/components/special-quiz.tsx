@@ -5,12 +5,14 @@ import { startLearningSession, type LearningSessionHandle } from "../domain/lear
 import type { AnyQuizVariant, Family, Legacy, Region } from "../domain/types";
 import { inRegion } from "../domain/regions";
 import { addHistoricalCollection } from "../domain/progress-surfaces";
+import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
+import { TypedAnswerInput } from "./typed-answer-input";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: Region; data: Legacy; onBack: () => void };
 type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
 
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - .5); }
+function shuffle<T>(items: T[]) { return shuffleSeeded(items, seedFromParts(items.map(String).join("|"))); }
 
 export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { onEnd?: () => void }) {
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
@@ -22,6 +24,8 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const [choices, setChoices] = useState<Choice[]>([]);
   const [typed, setTyped] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [answerResult, setAnswerResult] = useState<"correct" | "wrong" | "">("");
+  const [selectedChoice, setSelectedChoice] = useState("");
   const [locked, setLocked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const committedTarget = useRef<string | null>(null);
@@ -31,6 +35,8 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const strictUsers = useRef(0);
   const started = useRef(0);
   const queuedRounds = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
+  const deck = useRef<ReturnType<typeof createFiniteDeck<any>> | null>(null);
+  const deckKey = useRef("");
   const historicalMode = variant === "historica-nome" || variant === "nome-historica";
   const writing = variant === "escrita-pais" || variant === "escrita-capital";
 
@@ -89,9 +95,9 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
       window.clearTimeout(timer.current);
       timer.current = null;
     }
-    if (pool.length < 4) return;
-    const item = pool[Math.floor(Math.random() * pool.length)];
-    setTarget(item); setTyped(""); setFeedback(""); setLocked(false); committedTarget.current = null; started.current = Date.now();
+    const item = deck.current?.draw();
+    if (!item) return;
+    setTarget(item); setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedChoice(""); setLocked(false); committedTarget.current = null; started.current = Date.now();
     if (!writing) {
       const distractors = shuffle(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
       setChoices(shuffle([item, ...distractors].map((candidate) => ({
@@ -102,7 +108,15 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     }
     if (writing) requestAnimationFrame(() => inputRef.current?.focus());
   };
-  useEffect(() => { next(); }, [pool.length, variant]);
+  useEffect(() => {
+    if (pool.length >= 1) {
+      const key = `${variant}|${region}|${pool.map((item) => item.id).join("|")}`;
+      if (deckKey.current === key) return;
+      deckKey.current = key;
+      deck.current = createFiniteDeck<any>(pool, seedFromParts(variant, region, pool.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
+      next();
+    }
+  }, [pool, variant, region]);
 
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     if (session.current) session.current.recordRound(round);
@@ -111,13 +125,19 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   const answer = (id: string, value: string, forcedCorrect?: boolean) => {
     if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
+    setSelectedChoice(id);
     committedTarget.current = target.id;
     if (correct && historicalMode) {
       void addHistoricalCollection(target.id, target);
     }
-    setLocked(true); setFeedback(correct ? "Acerto. A resposta foi registrada." : `Ainda não. A resposta correta é ${"pt" in target ? target.pt : "paises" in target ? target.paises : target.id}.`);
+    setLocked(true); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? "Acerto. A resposta foi registrada." : `Ainda não. A resposta correta é ${"pt" in target ? target.pt : "paises" in target ? target.paises : target.id}.`);
     recordRound({ targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(), selectedId: value });
-    timer.current = window.setTimeout(next, correct ? 650 : 1400);
+    const exhausted = deck.current?.remaining === 0;
+    timer.current = window.setTimeout(async () => {
+      if (exhausted) {
+        await finishSession();
+      } else next();
+    }, correct ? 350 : 1400);
   };
   const submitWriting = (value = typed) => {
     if (!target || locked) return;
@@ -128,11 +148,17 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     answer(target.id, value, correct);
     if (!correct) setFeedback(`Ainda não. A resposta correta é ${variant === "escrita-capital" ? expected : ("pt" in target ? target.pt : target.id)}.`);
   };
-  const finish = async () => {
-    const handle = session.current ?? (await pendingSession.current?.catch(() => null));
-    session.current = null;
-    if (handle) await handle.finish();
+  const finishSession = async () => {
+    const handle = session.current ?? await pendingSession.current?.catch(() => null);
+    if (handle) {
+      for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
+      session.current = null;
+      await handle.finish();
+    }
     (onEnd ?? onBack)();
+  };
+  const finish = async () => {
+    await finishSession();
   };
   if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>← Encerrar sessão</button><div className="diagnostic">{error}</div></main></div>;
   if (!target) return <div className="app-shell"><main className="content"><div className="eyebrow">Preparando acervo</div><h1>Carregando material.</h1></main></div>;
@@ -146,21 +172,13 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   </aside><main className="quiz-main">
     <div className="quiz-prompt"><div className="target-kicker">{writing ? (variant === "escrita-capital" ? "Qual é a capital deste país?" : "Qual é o nome deste país?") : historicalMode ? (variant === "historica-nome" ? "Qual entidade usava esta bandeira?" : "Escolha a bandeira correta") : "A que países este idioma está ligado?"}</div>
       {writing && variant === "escrita-capital" ? <div className="quiz-clue">{data.meta[target.id]?.pt}</div> : writing ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /> : historicalMode && variant === "historica-nome" ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /> : <div className="quiz-clue">{("script" in target ? target.script : target.pt)}</div>}
-      <div className="feedback" aria-live="polite" role="status">{feedback || "Escolha uma alternativa."}</div>
+       <div className={`feedback ${answerResult === "correct" ? "feedback-success" : answerResult === "wrong" ? "feedback-error" : ""}`} aria-live="polite" role="status">{feedback || (writing ? (variant === "escrita-capital" ? "Digite o nome da capital." : "Digite o nome do país.") : historicalMode ? "Escolha uma alternativa." : "Leia o idioma e responda.")}</div>
     </div>
-     {writing ? <form className="quiz-options" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}><input ref={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={(e) => {
-       const value = e.target.value;
-       setTyped(value);
-       const normalized = normalizeAnswer(value);
-       if (!normalized || !target || locked) return;
-       const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {});
-       const correct = Array.isArray(expected) ? expected.includes(normalized) : normalized === normalizeAnswer(expected as string);
-       if (correct) submitWriting(value);
-     }} onBlur={() => { if (!locked && normalizeAnswer(typed)) submitWriting(); }} /><button className="button" disabled={locked || !typed.trim()}>Responder</button></form> : <div className="quiz-options">{choices.map((choice) => {
+      {writing ? <form className="quiz-options" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}><TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} answers={(() => { const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {}); return (Array.isArray(expected) ? expected : [expected]).filter((answer): answer is string => Boolean(answer)); })()} /><button className="button" disabled={locked || !typed.trim()}>Responder</button></form> : <div className="quiz-options">{choices.map((choice) => {
       const historicalFlag = choice.flag
         ? historicalFlags[choice.flag.toLowerCase()]
         : undefined;
-      return <button key={choice.id} className={`quiz-option ${locked && choice.id === target.id ? "correct" : ""}`} disabled={locked} onClick={() => answer(choice.id, choice.label)}>{variant === "nome-historica" && historicalFlag ? <img src={flagSource(historicalFlag)} alt="Alternativa visual de bandeira histórica" /> : choice.label}</button>;
+       return <button key={choice.id} className={`quiz-option ${locked && choice.id === target.id ? "correct" : ""} ${locked && choice.id === selectedChoice && answerResult === "wrong" ? "wrong" : ""}`} aria-invalid={locked && choice.id === selectedChoice && answerResult === "wrong" ? true : undefined} disabled={locked} onClick={() => answer(choice.id, choice.label)}>{variant === "nome-historica" && historicalFlag ? <img src={flagSource(historicalFlag)} alt="Alternativa visual de bandeira histórica" /> : choice.label}</button>;
     })}</div>}
   </main></div></div>;
 }
