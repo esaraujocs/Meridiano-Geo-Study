@@ -3,7 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
-import { REGION_CAMERA } from "../domain/regions";
+import { REGION_CAMERA, regionLabel } from "../domain/regions";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
@@ -314,11 +314,7 @@ export function Game({
           </button>
           <div className="eyebrow" style={{ marginTop: 28 }}>
             Sessão ·{" "}
-            {region === "mundo"
-              ? "Mundo"
-              : region === "caribe"
-                ? "Caribe"
-                : "Pacífico"}
+            {regionLabel(region)}
           </div>
            <h1>{engineFamily === "capitais" ? "Encontre o país." : "Encontre no mapa."}</h1>
           <div className="target-kicker">Seu alvo</div>

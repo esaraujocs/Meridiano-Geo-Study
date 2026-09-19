@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "./icons";
 import { inRegion } from "../domain/regions";
+import { regionLabel } from "../domain/regions";
 import { flagSource, loadFlags, quizPool, type FlagCatalog } from "../domain/quiz";
 import type { Family, Legacy, QuizVariant, Region } from "../domain/types";
 import {
@@ -186,7 +187,7 @@ export function QuizGame({
         <aside className="quiz-panel">
            <button className="back" onClick={() => void leaveSession()}>← Encerrar sessão</button>
           <div className="eyebrow" style={{ marginTop: 28 }}>
-            Sessão · {region === "mundo" ? "Mundo" : region === "caribe" ? "Caribe" : "Pacífico"}
+            Sessão · {regionLabel(region)}
           </div>
           <h1>{title}</h1>
           <div className="score-box">

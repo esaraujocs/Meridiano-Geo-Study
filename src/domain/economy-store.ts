@@ -1,6 +1,6 @@
 import type { AnyQuizVariant, Family, Region } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
-import { POLICIES, canUnlock, policyFor, type Policy, type UnlockKey } from "./economy-rules";
+import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
 export type EconomySnapshot = {
@@ -101,13 +101,21 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   db.close();
   const earned = ledger.filter((e) => e.kind === "credit").reduce((n, e) => n + e.amount, 0);
   const spent = ledger.filter((e) => e.kind === "debit").reduce((n, e) => n + e.amount, 0);
+  const unlocked = [...new Set(unlocks.flatMap((u) => {
+    const value = String(u.key);
+    const match = value.match(/^(bandeiras|historicas):(bandeira-nome|nome-bandeira|historica-nome|nome-historica):(.*)$/);
+    if (!match) return [u.key];
+    const family = match[1] as Family;
+    const variant = match[2] as AnyQuizVariant;
+    return [policyFor(family, variant, match[3] as Region)?.key ?? u.key];
+  }))] as UnlockKey[];
   return {
     balance: earned - spent,
     earned,
     spent,
     coverage: progress.filter((p) => (p.mastery ?? 0) > 0).length,
     sessions: sessions.filter(isQualifyingSession).length,
-    unlocked: unlocks.map((u) => u.key),
+    unlocked,
   };
 }
 
@@ -117,9 +125,10 @@ export async function unlockContent(family: Family, variant: AnyQuizVariant, reg
   const db = await openDb();
   const tx = db.transaction(["ledger", "unlocks", "sessions"], "readwrite");
   const unlocks = tx.objectStore("unlocks");
-  const existing = unlocks.get(policy.key);
+  const existing = unlocks.getAll();
   existing.onsuccess = () => {
-    if (existing.result) return;
+    const aliases = unlockAliases(family, variant, region);
+    if ((existing.result as { key: UnlockKey }[]).some((item) => aliases.includes(item.key))) return;
     const sessionsReq = tx.objectStore("sessions").getAll();
     sessionsReq.onsuccess = () => {
       const ledgerReq = tx.objectStore("ledger").getAll();

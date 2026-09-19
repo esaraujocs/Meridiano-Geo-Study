@@ -46,8 +46,18 @@ async function openFamily(family, variant, world = false, beforeStart) {
   await page.waitForFunction(
     () => document.querySelector("h1")?.textContent?.includes("Como"),
   );
-  await clickButton(variant);
+  if (family === "Bandeiras" && (variant.includes("Bandeira") || variant.toLowerCase().includes("histórica"))) {
+    await clickButton(variant);
+    await clickButton(variant.includes("Bandeira") ? "Começar Atuais" : "Começar Históricas");
+  } else if (family === "Bandeiras" && variant.includes("Escrita")) {
+    await clickButton("Começar Escrita");
+  } else {
+    await clickButton(variant);
+  }
   await page.waitForSelector(".region-list");
+  if (!checks.ui.regionControls) {
+    checks.ui.regionControls = (await page.$$eval(".region-list .region", (items) => items.length)) === 8;
+  }
   if (variant.includes("Histórica") || variant.includes("histórica")) {
     const deckSize = await page.$eval(".deck-line b", (item) =>
       Number.parseInt(item.textContent ?? "0", 10),
@@ -69,9 +79,45 @@ checks.ui = await page.evaluate(() => {
   );
   return {
     carousel1280: getComputedStyle(familyGrid).display === "flex",
+    nativeScrollbarHidden: getComputedStyle(familyGrid).scrollbarWidth === "none",
     idiomasFree: Boolean(idiomas && !idiomas.classList.contains("locked")),
+    arrowsDots: document.querySelectorAll(".carousel-arrow").length === 2 &&
+      document.querySelectorAll(".carousel-dots button").length === 4,
   };
 });
+await page.click('button[aria-label="Próxima família"]');
+await page.waitForFunction(
+  () =>
+    document.querySelector(".family.active h3")?.textContent === "Bandeiras" &&
+    document.querySelector('.carousel-dots button[aria-current="true"]')
+      ?.getAttribute("aria-label") === "Ir para família 2",
+);
+checks.ui.carouselNavigation = await page.evaluate(() => {
+  const cards = [...document.querySelectorAll(".family-grid > .family")];
+  return (
+    cards[0]?.getAttribute("aria-hidden") === "true" &&
+    cards[1]?.getAttribute("aria-hidden") !== "true" &&
+    cards[0]?.hasAttribute("inert")
+  );
+});
+await page.click('.carousel-dots button[aria-label="Ir para família 1"]');
+await page.waitForFunction(
+  () => document.querySelector(".family.active h3")?.textContent === "Mapa",
+);
+await page.click('button[aria-label="Abrir opções"]');
+checks.ui.debugHiddenWithoutOptIn = !(await page.$eval(".options-popover", (item) => item.textContent?.includes("Conceder 10 moedas") ?? false));
+await page.goto(`${baseUrl}?debug-coins=1`, { waitUntil: "networkidle0" });
+await page.click('button[aria-label="Abrir opções"]');
+checks.ui.debugVisibleWithOptIn = await page.$eval(".options-popover", (item) => item.textContent?.includes("Conceder 10 moedas") ?? false);
+await clickButton("Conceder 10 moedas");
+await page.waitForFunction(() => document.querySelector(".pill")?.textContent?.includes("10 moedas"));
+checks.ui.debugLedgerRefresh = true;
+await clickButton("Abrir Bandeiras");
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
+checks.ui.bandeiraCards = (await page.$$eval(".family h3", (items) =>
+  items.filter((item) => ["Atuais", "Históricas"].includes(item.textContent ?? "") || item.textContent?.includes("Escrita")).length,
+)) === 3;
+await page.goto(baseUrl, { waitUntil: "networkidle0" });
 await page.setViewport({ width: 1440, height: 900 });
 checks.ui.grid1440 = await page.$eval(
   ".family-grid",
@@ -280,8 +326,16 @@ checks.result = true;
 if (
   errors.length ||
   !checks.ui.carousel1280 ||
+  !checks.ui.nativeScrollbarHidden ||
+  !checks.ui.arrowsDots ||
+  !checks.ui.carouselNavigation ||
   !checks.ui.grid1440 ||
   !checks.ui.idiomasFree ||
+  !checks.ui.debugHiddenWithoutOptIn ||
+  !checks.ui.debugVisibleWithOptIn ||
+  !checks.ui.debugLedgerRefresh ||
+  !checks.ui.bandeiraCards ||
+  !checks.ui.regionControls ||
   !checks.ui.lockedWorld ||
   !checks.ui.unFilterReducesDeck ||
   !checks.ui.capitalDeckParity ||

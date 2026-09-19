@@ -13,8 +13,8 @@ import {
 import { QuizGame } from "./components/quiz-game";
 import { SpecialQuiz } from "./components/special-quiz";
 import { GeometryGame } from "./components/geometry-games";
-import { inRegion } from "./domain/regions";
-import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, Screen } from "./domain/types";
+import { inRegion, REGION_ITEMS } from "./domain/regions";
+import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionCounts, Screen } from "./domain/types";
 import { loadSpecialData, specialInRegion } from "./domain/special-data";
 import {
   downloadOfflineMap,
@@ -35,8 +35,8 @@ export function App() {
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
   const [onlyUn, setOnlyUn] = useState(false);
   const [specialCounts, setSpecialCounts] = useState({
-    historicas: { mundo: 0, caribe: 0, pacifico: 0 },
-    idiomas: { mundo: 0, caribe: 0, pacifico: 0 },
+    historicas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
+    idiomas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
   });
   const [legacy, setLegacy] = useState<LegacyProfile | null>(null);
   const [offlineMap, setOfflineMap] =
@@ -55,6 +55,11 @@ export function App() {
     ],
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
+  const grantDevelopmentCoins = async () => {
+    if (!import.meta.env.DEV) return;
+    const { grantDebugCoins } = await import("./domain/debug-economy");
+    setEconomy(await grantDebugCoins());
+  };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => setScreen(surface);
 
   useEffect(() => {
@@ -76,18 +81,12 @@ export function App() {
     return { ...data, meta: Object.fromEntries(Object.entries(data.meta).filter(([, meta]) => meta.un)) };
   }, [data, onlyUn]);
   const counts = useMemo(
-    () =>
-      data
-        ? {
-            mundo: features.length,
-            caribe: features.filter((item) =>
-              inRegion(item.id, "caribe", data),
-            ).length,
-            pacifico: features.filter((item) =>
-              inRegion(item.id, "pacifico", data),
-            ).length,
-          }
-        : null,
+    () => data
+      ? Object.fromEntries(REGION_ITEMS.map(([key]) => [
+        key,
+        features.filter((item) => inRegion(item.id, key, data)).length,
+      ])) as RegionCounts
+      : null,
     [data, features],
   );
   const familyCounts = useMemo(() => {
@@ -100,20 +99,19 @@ export function App() {
         if (selected === "bandeiras") return Boolean(meta.fl);
         return Boolean(typeof meta.cap === "string" && meta.cap.trim() && !meta.soBandeira);
       }).length;
+    const regionCounts = (selected: Family) => Object.fromEntries(
+      REGION_ITEMS.map(([key]) => [key, count(selected, key)]),
+    ) as RegionCounts;
     return {
-      mapa: { mundo: count("mapa", "mundo"), caribe: count("mapa", "caribe"), pacifico: count("mapa", "pacifico") },
-      bandeiras: { mundo: count("bandeiras", "mundo"), caribe: count("bandeiras", "caribe"), pacifico: count("bandeiras", "pacifico") },
-      capitais: { mundo: count("capitais", "mundo"), caribe: count("capitais", "caribe"), pacifico: count("capitais", "pacifico") },
-      escrita: {
-        mundo: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "mundo"),
-        caribe: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "caribe"),
-        pacifico: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "pacifico"),
-      },
+      mapa: regionCounts("mapa"),
+      bandeiras: regionCounts("bandeiras"),
+      capitais: regionCounts("capitais"),
+      escrita: regionCounts(variant === "escrita-capital" ? "capitais" : "bandeiras"),
       historicas: specialCounts.historicas,
       idiomas: specialCounts.idiomas,
-      silhueta: { mundo: features.length, caribe: counts?.caribe ?? 0, pacifico: counts?.pacifico ?? 0 },
-      travel: { mundo: features.length, caribe: counts?.caribe ?? 0, pacifico: counts?.pacifico ?? 0 },
-    } as Record<Family, { mundo: number; caribe: number; pacifico: number }>;
+      silhueta: counts,
+      travel: counts,
+    } as Record<Family, RegionCounts>;
   }, [data, features, specialCounts, onlyUn, variant]);
 
   if (error) {
@@ -149,7 +147,7 @@ export function App() {
   }
 
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history" || screen === "result") {
-    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} /><Surface data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} /><Surface data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "game") {
@@ -188,7 +186,7 @@ export function App() {
 
   return (
     <div className="app-shell grain">
-      <Header legacy={legacy} economy={economy} onSurface={openSurface} />
+       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantDebugCoins={() => void grantDevelopmentCoins()} />
       {screen === "hub" && (
         <Hub
           legacy={legacy}
@@ -217,11 +215,11 @@ export function App() {
             }
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecialData().then((special) => {
-                const count = (items: { reg?: string; sub?: string }[]) => ({
-                  mundo: items.length,
-                  caribe: items.filter((item) => specialInRegion(item, "caribe")).length,
-                  pacifico: items.filter((item) => specialInRegion(item, "pacifico")).length,
-                });
+                const count = (items: { reg?: string; sub?: string }[]) =>
+                  Object.fromEntries(REGION_ITEMS.map(([key]) => [
+                    key,
+                    items.filter((item) => specialInRegion(item, key)).length,
+                  ])) as RegionCounts;
                 setSpecialCounts({
                   historicas: count(special.historical),
                   idiomas: count(special.languages),

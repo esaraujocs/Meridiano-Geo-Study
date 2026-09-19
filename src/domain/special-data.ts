@@ -1,3 +1,4 @@
+import { regionMatches } from "./regions.js";
 import type { Region } from "./types.js";
 
 export type HistoricalEntity = {
@@ -23,9 +24,7 @@ export function loadSpecialData() {
   return promise;
 }
 export function specialInRegion(item: { reg?: string; sub?: string }, region: Region) {
-  if (region === "mundo") return true;
-  if (region === "caribe") return item.sub === "Caribbean" || item.reg === "Caribbean";
-  return item.reg === "Oceania" || item.sub === "Oceania" || item.sub === "Melanesia" || item.sub === "Micronesia";
+  return regionMatches(item, region);
 }
 export function historicalPool(entries: HistoricalEntity[], region: Region) {
   return entries.filter((item) => specialInRegion(item, region));

@@ -29,6 +29,9 @@ const result = await page.evaluate(async () => {
   const { queryEconomy } = await import(
     "/src/domain/economy-store.ts?browser-integration"
   );
+  const { unlockContent } = await import(
+    "/src/domain/economy-store.ts?browser-unlock-integration"
+  );
   const { migrateLegacyProgress } = await import(
     "/src/domain/legacy-migration.ts?browser-integration"
   );
@@ -59,6 +62,21 @@ const result = await page.evaluate(async () => {
   });
   await abandoned.end();
 
+  for (const variant of ["bandeira-nome", "nome-bandeira"]) {
+    const direction = await startLearningSession({
+      family: "bandeiras",
+      variant,
+      region: "caribe",
+    });
+    direction.recordRound({
+      targetId: `direction-${variant}`,
+      correct: true,
+      responseTimeMs: 90,
+      answeredAt: variant === "bandeira-nome" ? 120 : 130,
+    });
+    await direction.finish();
+  }
+
   const legacy = (rounds) =>
     JSON.stringify({
       v: 1,
@@ -79,6 +97,33 @@ const result = await page.evaluate(async () => {
     legacy([["integration-target", true, 50]]),
   );
   await migrateLegacyProgress();
+
+  const seedDb = await new Promise((resolve, reject) => {
+    const request = indexedDB.open("carta-cega", 4);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  const seedTransaction = seedDb.transaction(["ledger", "unlocks"], "readwrite");
+  seedTransaction.objectStore("ledger").put({
+    id: "test:legacy-alias-credit",
+    kind: "credit",
+    amount: 10,
+    reason: "test",
+    source: "test",
+    createdAt: 140,
+  });
+  seedTransaction.objectStore("unlocks").put({
+    id: "bandeiras:nome-bandeira:mundo",
+    key: "bandeiras:nome-bandeira:mundo",
+    source: "legacy-test",
+    unlockedAt: 140,
+  });
+  await new Promise((resolve, reject) => {
+    seedTransaction.oncomplete = resolve;
+    seedTransaction.onerror = () => reject(seedTransaction.error);
+  });
+  seedDb.close();
+  await unlockContent("bandeiras", "bandeira-nome", "mundo");
   localStorage.setItem(
     "carta-cega.hist.v1",
     legacy([
@@ -113,12 +158,17 @@ const result = await page.evaluate(async () => {
 const currentSessions = result.sessions.filter(
   (session) => session.source === "current-v2",
 );
-assert.equal(currentSessions.length, 2);
+assert.equal(currentSessions.length, 4);
 assert.equal(
   currentSessions.filter((session) => session.complete).length,
-  1,
+  3,
 );
-assert.equal(currentSessions.find((session) => session.complete).rounds.length, 2);
+assert.equal(
+  currentSessions.find(
+    (session) => session.complete && session.variant === "mapa",
+  ).rounds.length,
+  2,
+);
 assert.equal(
   currentSessions.find((session) => !session.complete).rounds.length,
   0,
@@ -139,7 +189,19 @@ assert.equal(
 );
 // One qualifying current session plus the imported complete legacy session;
 // the empty abandoned session is intentionally excluded.
-assert.equal(result.economy.sessions, 2);
+assert.deepEqual(
+  currentSessions
+    .filter((session) => session.family === "bandeiras")
+    .map((session) => session.variant)
+    .sort(),
+  ["bandeira-nome", "nome-bandeira"],
+);
+assert.equal(
+  result.ledger.filter((entry) => entry.id === "debit:unlock:bandeiras:bandeira-nome:mundo").length,
+  0,
+);
+assert.ok(result.economy.unlocked.includes("bandeiras:bandeira-nome:mundo"));
+assert.equal(result.economy.sessions, 4);
 
 await browser.close();
 console.log("browser learning integration: ok");

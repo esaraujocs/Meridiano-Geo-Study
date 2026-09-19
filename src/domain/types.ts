@@ -27,7 +27,15 @@ export type Legacy = {
 
 export type GeoFeature = { id: string };
 
-export type Region = "mundo" | "caribe" | "pacifico";
+export type Region =
+  | "mundo"
+  | "caribe"
+  | "pacifico"
+  | "europa"
+  | "africa"
+  | "asia"
+  | "america-do-sul"
+  | "america-do-norte-central";
 export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel";
 export type QuizVariant =
   | "mapa"

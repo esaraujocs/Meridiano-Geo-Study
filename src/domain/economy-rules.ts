@@ -1,4 +1,5 @@
 import type { AnyQuizVariant, Family, Region } from "./types";
+import { REGION_ITEMS } from "./regions.js";
 
 export type EconomyColumn = "bandeiras" | "mapa" | "capitais" | "escrita";
 export type UnlockKey = `${Family}:${AnyQuizVariant}:${Region}`;
@@ -25,7 +26,6 @@ const BASE_POLICIES: Policy[] = [
   { key: "mapa:mapa:pacifico", family: "mapa", variant: "mapa", region: "pacifico", cost: 2, sessions: 2, label: "Mapa · Pacífico" },
   { key: "bandeiras:bandeira-nome:mundo", family: "bandeiras", variant: "bandeira-nome", region: "mundo", cost: 3, sessions: 1, label: "Bandeiras · Mundo" },
   { key: "bandeiras:bandeira-nome:pacifico", family: "bandeiras", variant: "bandeira-nome", region: "pacifico", cost: 2, sessions: 2, label: "Bandeiras · Pacífico" },
-  { key: "bandeiras:nome-bandeira:caribe", family: "bandeiras", variant: "nome-bandeira", region: "caribe", cost: 2, sessions: 1, label: "Bandeiras · Nome → bandeira" },
   { key: "capitais:capital-pais:mundo", family: "capitais", variant: "capital-pais", region: "mundo", cost: 0, sessions: 0, label: "Capitais · Mundo" },
   { key: "capitais:capital-pais:pacifico", family: "capitais", variant: "capital-pais", region: "pacifico", cost: 0, sessions: 0, label: "Capitais · Pacífico" },
   { key: "capitais:pais-capital:mundo", family: "capitais", variant: "pais-capital", region: "mundo", cost: 0, sessions: 0, label: "Capitais · Mundo (inverso)" },
@@ -50,12 +50,30 @@ const EXPOSED_VARIANTS: Record<Family, AnyQuizVariant[]> = {
 };
 
 const explicit = new Map(BASE_POLICIES.map((policy) => [policy.key, policy]));
+const canonicalVariant = (family: Family, variant: AnyQuizVariant) => {
+  if (family === "bandeiras" && (variant === "bandeira-nome" || variant === "nome-bandeira")) return "bandeira-nome";
+  if (family === "historicas" && (variant === "historica-nome" || variant === "nome-historica")) return "historica-nome";
+  return variant;
+};
+export function canonicalUnlockKey(family: Family, variant: AnyQuizVariant, region: Region): UnlockKey {
+  return `${family}:${canonicalVariant(family, variant)}:${region}` as UnlockKey;
+}
+export function unlockAliases(family: Family, variant: AnyQuizVariant, region: Region): UnlockKey[] {
+  const canonical = canonicalUnlockKey(family, variant, region);
+  if (family === "bandeiras" && (variant === "bandeira-nome" || variant === "nome-bandeira")) {
+    return [canonical, `${family}:bandeira-nome:${region}`, `${family}:nome-bandeira:${region}` as UnlockKey];
+  }
+  if (family === "historicas" && (variant === "historica-nome" || variant === "nome-historica")) {
+    return [canonical, `${family}:historica-nome:${region}`, `${family}:nome-historica:${region}` as UnlockKey];
+  }
+  return [canonical];
+}
 const defaultPolicy = (family: Family, variant: AnyQuizVariant, region: Region): Policy => {
   const free = family === "capitais" || family === "escrita" || family === "historicas" || family === "idiomas";
-  const cost = free ? 0 : region === "caribe" ? 0 : region === "mundo" ? 3 : 2;
-  const sessions = free ? 0 : region === "caribe" ? 0 : region === "mundo" ? 1 : 2;
+  const cost = free ? 0 : region === "caribe" ? 0 : region === "mundo" ? 3 : region === "pacifico" ? 2 : 4;
+  const sessions = free ? 0 : region === "caribe" ? 0 : region === "mundo" ? 1 : region === "pacifico" ? 2 : 3;
   return {
-    key: `${family}:${variant}:${region}` as UnlockKey,
+    key: canonicalUnlockKey(family, variant, region),
     family,
     variant,
     region,
@@ -67,16 +85,17 @@ const defaultPolicy = (family: Family, variant: AnyQuizVariant, region: Region):
 
 export const POLICIES: Policy[] = (Object.entries(EXPOSED_VARIANTS) as [Family, AnyQuizVariant[]][])
   .flatMap(([family, variants]) =>
-    (["caribe", "mundo", "pacifico"] as Region[]).map((region) =>
+    REGION_ITEMS.map(([region]) => region).map((region) =>
       variants.map((variant) => {
-        const key = `${family}:${variant}:${region}` as UnlockKey;
-        return explicit.get(key) ?? defaultPolicy(family, variant, region);
+        const key = canonicalUnlockKey(family, variant, region);
+        return explicit.get(key) ?? explicit.get(`${family}:${variant}:${region}` as UnlockKey) ?? defaultPolicy(family, variant, region);
       }),
-    ).flat(),
-  );
+    ).flat()
+  ).filter((policy, index, policies) => policies.findIndex((item) => item.key === policy.key) === index);
 
 export function policyFor(family: Family, variant: AnyQuizVariant, region: Region) {
-  return POLICIES.find((item) => item.family === family && item.variant === variant && item.region === region);
+  return POLICIES.find((item) => item.family === family && item.variant === variant && item.region === region)
+    ?? POLICIES.find((item) => item.family === family && item.variant === canonicalVariant(family, variant) && item.region === region);
 }
 
 export function canUnlock(policy: Policy, balance: number, sessions: number) {
