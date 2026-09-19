@@ -28,6 +28,9 @@ import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
 import { registerAchievementLifecycleListener } from "./domain/achievements";
 import { querySurfaces } from "./domain/progress-surfaces";
 
+const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
+  Boolean(meta?.un || id === "336");
+
 export function variantContextFor(topFamily: TopFamily, saved: string): { family: Family; variant: AnyQuizVariant } | null {
   const table: Record<TopFamily, Array<[string, Family]>> = {
     mapa: [["mapa", "mapa"], ["silhueta", "silhueta"], ["silhueta-opcoes", "silhueta"], ["travel", "travel"]],
@@ -114,7 +117,9 @@ export function App() {
     if (!data) return;
     setTravelCounts(null);
     void geometryIndex().then(({ features: geometryFeatures }) => {
-      const ids = [...geometryFeatures.keys()].filter((id) => data.meta[id] && (!onlyUn || data.meta[id]?.un));
+      const ids = [...geometryFeatures.keys()].filter((id) =>
+        data.meta[id] && (!onlyUn || isUnPresetEntity(id, data.meta[id])),
+      );
       setTravelIds(ids);
       setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
     }).catch(() => setTravelCounts(null));
@@ -134,13 +139,19 @@ export function App() {
   const features = useMemo(
     () => (data ? eligible(buildFeatures(data)).filter((item) => {
       const meta = data.meta[item.id];
-      return meta && !meta.absorvido && meta.mapa !== false && (!onlyUn || meta.un);
+      return meta && !meta.absorvido && meta.mapa !== false &&
+        (!onlyUn || isUnPresetEntity(item.id, meta));
     }) : []),
     [data, onlyUn],
   );
   const playableData = useMemo(() => {
     if (!data || !onlyUn) return data;
-    return { ...data, meta: Object.fromEntries(Object.entries(data.meta).filter(([, meta]) => meta.un)) };
+    return {
+      ...data,
+      meta: Object.fromEntries(
+        Object.entries(data.meta).filter(([id, meta]) => isUnPresetEntity(id, meta)),
+      ),
+    };
   }, [data, onlyUn]);
   const counts = useMemo(
     () => data
@@ -156,7 +167,7 @@ export function App() {
     const count = (selected: Family, selectedRegion: Region) =>
       Object.entries(data.meta).filter(([id, meta]) => {
          if (meta.absorvido || !inRegion(id, selectedRegion, data)) return false;
-         if (onlyUn && !meta.un) return false;
+         if (onlyUn && !isUnPresetEntity(id, meta)) return false;
         if (selected === "mapa") return features.some((item) => item.id === id);
         if (selected === "bandeiras") return Boolean(meta.fl);
         return Boolean(typeof meta.cap === "string" && meta.cap.trim() && !meta.soBandeira);
@@ -178,7 +189,11 @@ export function App() {
   const selectedCount = useMemo(() => {
     if (!data) return 0;
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
-      if (meta.absorvido || !inRegion(id, region, data) || (onlyUn && !meta.un)) return false;
+      if (
+        meta.absorvido ||
+        !inRegion(id, region, data) ||
+        (onlyUn && !isUnPresetEntity(id, meta))
+      ) return false;
       if (family === "mapa") return features.some((item) => item.id === id);
       if (family === "bandeiras") return Boolean(meta.fl);
       if (family === "capitais") return Boolean(meta.cap && !meta.soBandeira);

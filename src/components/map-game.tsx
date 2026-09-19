@@ -8,8 +8,12 @@ import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelectio
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
 import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
-import { geometryIndex } from "../domain/legacy-geometry";
-import { runtimeSmallEntityPoints } from "../domain/small-entities";
+import {
+  assertMarkerBound,
+  filteredMarkerSource,
+  markerFilter,
+  SMALL_ENTITY_SOURCE,
+} from "../domain/small-entities";
 
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -18,15 +22,6 @@ const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const a = Math.sin((lat2 - lat1) * r / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin((lon2 - lon1) * r / 2) ** 2;
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
-const projectAtZoom = ([longitude, latitude]: [number, number], zoom: number): [number, number] => {
-  const scale = 512 * 2 ** zoom;
-  const sin = Math.sin((latitude * Math.PI) / 180);
-  return [
-    ((longitude + 180) / 360) * scale,
-    (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale,
-  ];
-};
-
 export function Game({
   data,
   features,
@@ -61,7 +56,6 @@ export function Game({
   const [mapError, setMapError] = useState("");
   const [mapReady, setMapReady] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
-  const [geometryFeatures, setGeometryFeatures] = useState<GeoFeature[] | null>(null);
   const sessionRef = useRef<LearningSessionHandle | null>(null);
   const pendingSessionRef = useRef<Promise<LearningSessionHandle> | null>(null);
   const strictUsersRef = useRef(0);
@@ -203,25 +197,10 @@ export function Game({
   };
 
   useEffect(() => {
-    const allowed = new Set(features.map((feature) => feature.id));
-    geometryIndex()
-      .then(({ features: indexed }) => {
-        setGeometryFeatures(
-          features
-            .filter((feature) => allowed.has(feature.id))
-            .map((feature) => ({
-              id: feature.id,
-              geometry: indexed.get(feature.id)?.geometry,
-            })),
-        );
-      })
-      .catch((loadError) => setMapError(loadError instanceof Error ? loadError.message : String(loadError)));
-  }, [features]);
-
-  useEffect(() => {
     if (!mapEl.current) return;
-    if (!geometryFeatures) return;
+    assertMarkerBound(data.mapEntityIds.length);
     const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
+    const activeFilter = markerFilter(features.map((feature) => feature.id));
     setMapReady(false);
     let map: maplibregl.Map;
     try {
@@ -237,7 +216,7 @@ export function Game({
               attribution:
                 "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
             },
-            "small-entities": { type: "geojson", data: runtimeSmallEntityPoints(geometryFeatures, data, camera.zoom, projectAtZoom) },
+            "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
           },
           layers: [
             {
@@ -283,10 +262,11 @@ export function Game({
                id: "small-entities",
                type: "circle",
                source: "small-entities",
+               filter: activeFilter as unknown as maplibregl.FilterSpecification,
                 paint: {
                   "circle-radius": 4,
                  "circle-color": "#9db7b2",
-                  "circle-opacity": ["get", "opacity"],
+                  "circle-opacity": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 3, 0.7, 5, 0.25, 8, 0.05],
                  "circle-stroke-color": "#24423d",
                  "circle-stroke-width": 1,
                },
@@ -295,6 +275,7 @@ export function Game({
                id: "small-entities-hit",
                type: "circle",
                source: "small-entities",
+               filter: activeFilter as unknown as maplibregl.FilterSpecification,
                 paint: {
                   "circle-radius": 22,
                   "circle-color": "#9db7b2",
@@ -325,23 +306,14 @@ export function Game({
       setMapError(message);
     };
     map.on("load", handleLoad);
-     const updateRuntimeMarkers = () => {
-       const source = map.getSource("small-entities") as maplibregl.GeoJSONSource | undefined;
-       if (!source) return;
-       const markerData = runtimeSmallEntityPoints(
-         geometryFeatures,
-         data,
-         map.getZoom(),
-         projectAtZoom,
-       );
-       source.setData(markerData as GeoJSON.FeatureCollection);
-       mapEl.current?.setAttribute(
-         "data-marker-ids",
-         [...new Set(markerData.features.map((item) => item.properties.carta_id))].join(","),
-       );
-     };
-     map.on("load", updateRuntimeMarkers);
-     map.on("zoom", updateRuntimeMarkers);
+    const exposeActiveMarkerIds = () => {
+      const active = filteredMarkerSource(features.map((feature) => feature.id));
+      mapEl.current?.setAttribute(
+        "data-marker-ids",
+        active.features.map((item) => item.properties.carta_id).join(","),
+      );
+    };
+    map.on("load", exposeActiveMarkerIds);
     map.on("error", handleError);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
@@ -401,8 +373,7 @@ export function Game({
         timerRef.current = null;
       }
       map.off("load", handleLoad);
-      map.off("load", updateRuntimeMarkers);
-      map.off("zoom", updateRuntimeMarkers);
+      map.off("load", exposeActiveMarkerIds);
       map.off("error", handleError);
       map.getContainer().removeEventListener("keydown", handleKey);
       map.getContainer().removeEventListener("pointerdown", handlePointer);
@@ -410,7 +381,26 @@ export function Game({
       mapRef.current = null;
       setMapReady(false);
     };
-  }, [features, geometryFeatures, region]);
+  }, [region]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+    const filter = markerFilter(features.map((feature) => feature.id));
+    map.setFilter(
+      "small-entities",
+      filter as unknown as maplibregl.FilterSpecification,
+    );
+    map.setFilter(
+      "small-entities-hit",
+      filter as unknown as maplibregl.FilterSpecification,
+    );
+    const active = filteredMarkerSource(features.map((feature) => feature.id));
+    mapEl.current?.setAttribute(
+      "data-marker-ids",
+      active.features.map((item) => item.properties.carta_id).join(","),
+    );
+  }, [features, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;

@@ -1,0 +1,1940 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.180620300521195,
+          39.64831836980086
+        ]
+      },
+      "properties": {
+        "carta_id": "8",
+        "switchZoom": 2.296244205906987,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -170,
+          -14.33333333
+        ]
+      },
+      "properties": {
+        "carta_id": "16",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.5,
+          42.5
+        ]
+      },
+      "properties": {
+        "carta_id": "20",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.8,
+          17.05
+        ]
+      },
+      "properties": {
+        "carta_id": "28",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -78.02725234283592,
+          24.275814321016956
+        ]
+      },
+      "properties": {
+        "carta_id": "44",
+        "switchZoom": 4.259144335985184,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.56469927199272,
+          25.791965425227765
+        ]
+      },
+      "properties": {
+        "carta_id": "48",
+        "switchZoom": 5.288949544541538,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46.16918268040854,
+          38.87264137845842
+        ]
+      },
+      "properties": {
+        "carta_id": "51",
+        "switchZoom": 2.6339627215638757,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.53333333,
+          13.16666666
+        ]
+      },
+      "properties": {
+        "carta_id": "52",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.487884181188947,
+          49.50222210036008
+        ]
+      },
+      "properties": {
+        "carta_id": "56",
+        "switchZoom": 2.3535858895629644,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.75,
+          32.33333333
+        ]
+      },
+      "properties": {
+        "carta_id": "60",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.75291659166592,
+          26.70681812123632
+        ]
+      },
+      "properties": {
+        "carta_id": "64",
+        "switchZoom": 2.5527948271483183,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.434923021105227,
+          42.57010451510965
+        ]
+      },
+      "properties": {
+        "carta_id": "70",
+        "switchZoom": 2.334831928834319,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -89.2145167470664,
+          15.891817103890624
+        ]
+      },
+      "properties": {
+        "carta_id": "84",
+        "switchZoom": 2.849746252410114,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          71.5,
+          -6
+        ]
+      },
+      "properties": {
+        "carta_id": "86",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          160.64226189136895,
+          -9.934029010255902
+        ]
+      },
+      "properties": {
+        "carta_id": "90",
+        "switchZoom": 3.9949162043631077,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.62305,
+          18.431383
+        ]
+      },
+      "properties": {
+        "carta_id": "92",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.6143566215074,
+          4.020063535821568
+        ]
+      },
+      "properties": {
+        "carta_id": "96",
+        "switchZoom": 4.1595931285992265,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.713027089222166,
+          -4.455631342265353
+        ]
+      },
+      "properties": {
+        "carta_id": "108",
+        "switchZoom": 3.1902940263971686,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -23.538835388353874,
+          14.908979384754403
+        ]
+      },
+      "properties": {
+        "carta_id": "132",
+        "switchZoom": 5.4810711443424225,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.5,
+          19.5
+        ]
+      },
+      "properties": {
+        "carta_id": "136",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.58017097358474,
+          5.939342675201988
+        ]
+      },
+      "properties": {
+        "carta_id": "144",
+        "switchZoom": 2.3196676410734653,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.75367592533047,
+          21.960029535447237
+        ]
+      },
+      "properties": {
+        "carta_id": "158",
+        "switchZoom": 2.434357208199799,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.66666666,
+          -10.5
+        ]
+      },
+      "properties": {
+        "carta_id": "162",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.83333333,
+          -12.5
+        ]
+      },
+      "properties": {
+        "carta_id": "166",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.25,
+          -12.16666666
+        ]
+      },
+      "properties": {
+        "carta_id": "174",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.16666666,
+          -12.83333333
+        ]
+      },
+      "properties": {
+        "carta_id": "175",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -159.76666666,
+          -21.23333333
+        ]
+      },
+      "properties": {
+        "carta_id": "184",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.89555228141568,
+          8.047208192407483
+        ]
+      },
+      "properties": {
+        "carta_id": "188",
+        "switchZoom": 2.5450757341459394,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.96255892246424,
+          34.62703044157647
+        ]
+      },
+      "properties": {
+        "carta_id": "196",
+        "switchZoom": 3.783985773101449,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.33333333,
+          15.41666666
+        ]
+      },
+      "properties": {
+        "carta_id": "212",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -71.41689351910574,
+          17.61308417435746
+        ]
+      },
+      "properties": {
+        "carta_id": "214",
+        "switchZoom": 2.421213819645345,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.20301213991868,
+          13.162977295685776
+        ]
+      },
+      "properties": {
+        "carta_id": "222",
+        "switchZoom": 3.028963685967028,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.955959124323385,
+          0.9331068302974219
+        ]
+      },
+      "properties": {
+        "carta_id": "226",
+        "switchZoom": 3.3084565149620175,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.539180570377134,
+          57.52360394478408
+        ]
+      },
+      "properties": {
+        "carta_id": "233",
+        "switchZoom": 2.04302831646055,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.731750559693081,
+          61.93904222138349
+        ]
+      },
+      "properties": {
+        "carta_id": "234",
+        "switchZoom": 4.6113972114399076,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.39749623302684,
+          -52.305867819700254
+        ]
+      },
+      "properties": {
+        "carta_id": "238",
+        "switchZoom": 3.3482026923447847,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -36.10898799894953,
+          -54.88146264465829
+        ]
+      },
+      "properties": {
+        "carta_id": "239",
+        "switchZoom": 3.1292685912922025,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.946121336213427,
+          60.04945170033016
+        ]
+      },
+      "properties": {
+        "carta_id": "248",
+        "switchZoom": 4.77129951864481,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -53,
+          4
+        ]
+      },
+      "properties": {
+        "carta_id": "254",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -149.19289884863136,
+          -17.86819188108748
+        ]
+      },
+      "properties": {
+        "carta_id": "258",
+        "switchZoom": 5.31894888728857,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.90916569899395,
+          -49.71714034886591
+        ]
+      },
+      "properties": {
+        "carta_id": "260",
+        "switchZoom": 3.4511966854333878,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.94525617131173,
+          10.947748605738566
+        ]
+      },
+      "properties": {
+        "carta_id": "262",
+        "switchZoom": 3.44751391466707,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.56666666,
+          13.46666666
+        ]
+      },
+      "properties": {
+        "carta_id": "270",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.928934445594464,
+          31.350293481329416
+        ]
+      },
+      "properties": {
+        "carta_id": "275",
+        "switchZoom": 3.802590362727642,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.340729344793429,
+          36.1109006975107
+        ]
+      },
+      "properties": {
+        "carta_id": "292",
+        "switchZoom": 9.031190964393318,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.22864728647286,
+          1.7106636830536024
+        ]
+      },
+      "properties": {
+        "carta_id": "296",
+        "switchZoom": 5.596802009269595,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.66666666,
+          12.11666666
+        ]
+      },
+      "properties": {
+        "carta_id": "308",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.78333333,
+          13.46666666
+        ]
+      },
+      "properties": {
+        "carta_id": "316",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.12135777839069,
+          13.748023147665409
+        ]
+      },
+      "properties": {
+        "carta_id": "320",
+        "switchZoom": 2.2132525965571404,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.84528012733767,
+          18.03361906661777
+        ]
+      },
+      "properties": {
+        "carta_id": "332",
+        "switchZoom": 2.7876243498176336,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.45,
+          41.9
+        ]
+      },
+      "properties": {
+        "carta_id": "336",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2959550689257,
+          22.25888792420159
+        ]
+      },
+      "properties": {
+        "carta_id": "344",
+        "switchZoom": 5.287697953172028,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.89810928694394,
+          29.50517322571966
+        ]
+      },
+      "properties": {
+        "carta_id": "376",
+        "switchZoom": 2.099584484472871,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -77.5,
+          18.25
+        ]
+      },
+      "properties": {
+        "carta_id": "388",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.99413166341486,
+          29.205642044459342
+        ]
+      },
+      "properties": {
+        "carta_id": "400",
+        "switchZoom": 2.0076285135000944,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.012153370456325,
+          28.540243660051143
+        ]
+      },
+      "properties": {
+        "carta_id": "414",
+        "switchZoom": 3.3725868528708816,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.35181211187112,
+          33.062517428995434
+        ]
+      },
+      "properties": {
+        "carta_id": "422",
+        "switchZoom": 3.3248947877436876,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.063255351735545,
+          -30.65078777414911
+        ]
+      },
+      "properties": {
+        "carta_id": "426",
+        "switchZoom": 3.016101535409689,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -7.640861847168872,
+          4.368418345799358
+        ]
+      },
+      "properties": {
+        "carta_id": "430",
+        "switchZoom": 2.2200789973139763,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.53333333,
+          47.26666666
+        ]
+      },
+      "properties": {
+        "carta_id": "438",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.966725682881815,
+          49.444962181298166
+        ]
+      },
+      "properties": {
+        "carta_id": "442",
+        "switchZoom": 4.11573598254472,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.54848235982362,
+          22.105959549192885
+        ]
+      },
+      "properties": {
+        "carta_id": "446",
+        "switchZoom": 8.22879687231034,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.50888618261182,
+          4.163210035473894
+        ]
+      },
+      "properties": {
+        "carta_id": "462",
+        "switchZoom": 7.3295181300491095,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.58333333,
+          35.83333333
+        ]
+      },
+      "properties": {
+        "carta_id": "470",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          57.55,
+          -20.28333333
+        ]
+      },
+      "properties": {
+        "carta_id": "480",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.40242988367384,
+          43.718000662376895
+        ]
+      },
+      "properties": {
+        "carta_id": "492",
+        "switchZoom": 8.169053457677364,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.20401313195706,
+          45.473883566876324
+        ]
+      },
+      "properties": {
+        "carta_id": "498",
+        "switchZoom": 2.157263483852148,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.360174628532015,
+          41.8585670760029
+        ]
+      },
+      "properties": {
+        "carta_id": "499",
+        "switchZoom": 3.093155834823847,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.2,
+          16.75
+        ]
+      },
+      "properties": {
+        "carta_id": "500",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          166.91666666,
+          -0.53333333
+        ]
+      },
+      "properties": {
+        "carta_id": "520",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.839215333259112,
+          50.76133348726597
+        ]
+      },
+      "properties": {
+        "carta_id": "528",
+        "switchZoom": 2.1570395920425653,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -68.933333,
+          12.116667
+        ]
+      },
+      "properties": {
+        "carta_id": "531",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.96666666,
+          12.5
+        ]
+      },
+      "properties": {
+        "carta_id": "533",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.05,
+          18.033333
+        ]
+      },
+      "properties": {
+        "carta_id": "534",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -68.25,
+          12.18
+        ]
+      },
+      "properties": {
+        "carta_id": "535",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          166.75243637469273,
+          -22.3860529227132
+        ]
+      },
+      "properties": {
+        "carta_id": "540",
+        "switchZoom": 2.714808284305036,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          166.80586805868063,
+          -15.65358981161152
+        ]
+      },
+      "properties": {
+        "carta_id": "548",
+        "switchZoom": 4.20315632969141,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.9185770726207,
+          10.734803181594444
+        ]
+      },
+      "properties": {
+        "carta_id": "558",
+        "switchZoom": 2.117772951722145,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.86666666,
+          -19.03333333
+        ]
+      },
+      "properties": {
+        "carta_id": "570",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          167.95,
+          -29.03333333
+        ]
+      },
+      "properties": {
+        "carta_id": "574",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.7445605706057,
+          15.09712383024712
+        ]
+      },
+      "properties": {
+        "carta_id": "580",
+        "switchZoom": 6.757476978935301,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          158.2435920062326,
+          6.789383026468875
+        ]
+      },
+      "properties": {
+        "carta_id": "583",
+        "switchZoom": 6.53433792013675,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          171.2474117709927,
+          7.067655283741575
+        ]
+      },
+      "properties": {
+        "carta_id": "584",
+        "switchZoom": 5.787624349817634,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.5355953559536,
+          7.357477145700081
+        ]
+      },
+      "properties": {
+        "carta_id": "585",
+        "switchZoom": 5.689280888065696,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -130.1,
+          -25.06666666
+        ]
+      },
+      "properties": {
+        "carta_id": "612",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.037370412766627,
+          10.974554769897946
+        ]
+      },
+      "properties": {
+        "carta_id": "624",
+        "switchZoom": 2.682271351106465,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          125.06475142876428,
+          -9.481272633763652
+        ]
+      },
+      "properties": {
+        "carta_id": "626",
+        "switchZoom": 3.0332766780629754,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -66.19460830322589,
+          17.930503721070604
+        ]
+      },
+      "properties": {
+        "carta_id": "630",
+        "switchZoom": 3.5497022308409214,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.25,
+          25.5
+        ]
+      },
+      "properties": {
+        "carta_id": "634",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.430860623698855,
+          -2.819215279610112
+        ]
+      },
+      "properties": {
+        "carta_id": "646",
+        "switchZoom": 3.2774296179413795,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.41666666,
+          18.5
+        ]
+      },
+      "properties": {
+        "carta_id": "652",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.763573260732624,
+          -16.015156419525155
+        ]
+      },
+      "properties": {
+        "carta_id": "654",
+        "switchZoom": 7.131578751839697,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.75,
+          17.33333333
+        ]
+      },
+      "properties": {
+        "carta_id": "659",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.16666666,
+          18.25
+        ]
+      },
+      "properties": {
+        "carta_id": "660",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.96666666,
+          13.88333333
+        ]
+      },
+      "properties": {
+        "carta_id": "662",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.95,
+          18.08333333
+        ]
+      },
+      "properties": {
+        "carta_id": "663",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -56.33333333,
+          46.83333333
+        ]
+      },
+      "properties": {
+        "carta_id": "666",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.2,
+          13.25
+        ]
+      },
+      "properties": {
+        "carta_id": "670",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.41666666,
+          43.76666666
+        ]
+      },
+      "properties": {
+        "carta_id": "674",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7,
+          1
+        ]
+      },
+      "properties": {
+        "carta_id": "678",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.52781871568717,
+          -4.802495455122073
+        ]
+      },
+      "properties": {
+        "carta_id": "690",
+        "switchZoom": 6.334436070173979,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -11.477463446509464,
+          6.930676048727306
+        ]
+      },
+      "properties": {
+        "carta_id": "694",
+        "switchZoom": 2.6619229959324002,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.8,
+          1.36666666
+        ]
+      },
+      "properties": {
+        "carta_id": "702",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.886522770847666,
+          45.42891200505578
+        ]
+      },
+      "properties": {
+        "carta_id": "705",
+        "switchZoom": 2.643841763958335,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -56.03329162017977,
+          1.8489885030798088
+        ]
+      },
+      "properties": {
+        "carta_id": "740",
+        "switchZoom": 2.232265287078917,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.5,
+          -26.5
+        ]
+      },
+      "properties": {
+        "carta_id": "748",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.954885052755401,
+          45.82781200104573
+        ]
+      },
+      "properties": {
+        "carta_id": "756",
+        "switchZoom": 2.1281148958951235,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172,
+          -9
+        ]
+      },
+      "properties": {
+        "carta_id": "772",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -175.14758038205383,
+          -21.2679575258574
+        ]
+      },
+      "properties": {
+        "carta_id": "776",
+        "switchZoom": 5.974037474021316,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.89651408232831,
+          10.045659179328537
+        ]
+      },
+      "properties": {
+        "carta_id": "780",
+        "switchZoom": 4.2672338504344225,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.05597403259415,
+          22.63423358647767
+        ]
+      },
+      "properties": {
+        "carta_id": "784",
+        "switchZoom": 2.0321972211822867,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -71.65587241809916,
+          21.744801893586803
+        ]
+      },
+      "properties": {
+        "carta_id": "796",
+        "switchZoom": 6.486243632622063,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          179.1903776180619,
+          -8.541638747118574
+        ]
+      },
+      "properties": {
+        "carta_id": "798",
+        "switchZoom": 7.9082816652953625,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.994536447768354,
+          40.85487278918166
+        ]
+      },
+      "properties": {
+        "carta_id": "807",
+        "switchZoom": 2.939222705550492,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.58333333,
+          49.46666666
+        ]
+      },
+      "properties": {
+        "carta_id": "831",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.16666666,
+          49.25
+        ]
+      },
+      "properties": {
+        "carta_id": "832",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -4.5,
+          54.25
+        ]
+      },
+      "properties": {
+        "carta_id": "833",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.933333,
+          18.35
+        ]
+      },
+      "properties": {
+        "carta_id": "850",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -176.2,
+          -13.3
+        ]
+      },
+      "properties": {
+        "carta_id": "876",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.33333333,
+          -13.58333333
+        ]
+      },
+      "properties": {
+        "carta_id": "882",
+        "switchZoom": 9,
+        "un": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.685420135451345,
+          41.84904904084493
+        ]
+      },
+      "properties": {
+        "carta_id": "926",
+        "switchZoom": 3.352165561169386,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.5,
+          52.5
+        ]
+      },
+      "properties": {
+        "carta_id": "gb-eng",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -4.2,
+          56.8
+        ]
+      },
+      "properties": {
+        "carta_id": "gb-sct",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.7,
+          52.3
+        ]
+      },
+      "properties": {
+        "carta_id": "gb-wls",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.5,
+          54.6
+        ]
+      },
+      "properties": {
+        "carta_id": "gb-nir",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -14.36,
+          -7.95
+        ]
+      },
+      "properties": {
+        "carta_id": "sh-ac",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -12.28,
+          -37.11
+        ]
+      },
+      "properties": {
+        "carta_id": "sh-ta",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.97,
+          17.49
+        ]
+      },
+      "properties": {
+        "carta_id": "bq-se",
+        "switchZoom": 9,
+        "un": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -109.35,
+          -27.11
+        ]
+      },
+      "properties": {
+        "carta_id": "cl-ip",
+        "switchZoom": 9,
+        "un": false
+      }
+    }
+  ]
+}
