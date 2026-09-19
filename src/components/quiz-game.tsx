@@ -69,16 +69,17 @@ export function QuizGame({
         ),
       );
   };
-  const leaveSession = async () => {
+  const leaveSession = async (home = false) => {
     const handle =
       sessionRef.current ??
       (await pendingSessionRef.current?.catch(() => null));
     sessionRef.current = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.finish();
+      await handle.end({ complete: false });
     }
-    (onEnd ?? onBack)();
+    if (home) location.href = "/";
+    else onBack();
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     if (sessionRef.current) sessionRef.current.recordRound(round);
@@ -198,7 +199,7 @@ export function QuizGame({
       ? "Acerto. A resposta foi registrada."
       : feedback === "wrong"
         ? `Ainda não. A resposta correta é ${correctAnswer}.`
-        : "Escolha uma alternativa.";
+        : "Selecione uma resposta.";
 
   if (error) {
     return (
@@ -240,12 +241,7 @@ export function QuizGame({
             <div><span>acertos</span><b>{score}</b></div>
             <div><span>sequência</span><b>{streak}</b></div>
           </div>
-          <button className="button ghost" style={{ marginTop: 20 }} onClick={() => {
-             restart();
-           }}>
-            Recomeçar sessão
-          </button>
-           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => { location.href = "/"; }}>Início</button></div></details>
+           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => void leaveSession(true)}>Início</button></div></details>
         </aside>
         <main className="quiz-main">
           <div className="quiz-prompt">

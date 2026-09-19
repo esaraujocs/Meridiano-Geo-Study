@@ -36,6 +36,20 @@ assert.deepEqual(profile.canonicalCurrentIds(meta), ["a", "c"]);
 assert.equal(profile.collectionCard("a", meta.a, 0).fields.length, 0);
 assert.equal(profile.collectionCard("a", meta.a, 2).fields.length, 2);
 assert.equal(profile.collectionCard("a", meta.a, 5).fields.length, 5);
+const cards = [
+  profile.collectionCard("a", { pt: "Alfa", reg: "Europe", sub: "Western Europe", un: true }, 2),
+  profile.collectionCard("b", { pt: "Beta", reg: "Asia", sub: "Eastern Asia", un: false }, 0),
+];
+assert.equal(profile.filterCollectionCards(cards, { unOnly: true }).length, 1);
+assert.equal(profile.filterCollectionCards(cards, { state: "faltando" }).length, 1);
+assert.equal(profile.filterCollectionCards(cards, { region: "europa" })[0]?.id, "a");
+const historical = profile.historicalAlbum([
+  { id: "empire", pt: "Império", reg: "Europe", sub: "Western Europe", tipo: "imperio", fl: "hist-empire" },
+  { id: "movement", pt: "Movimento", reg: "Asia", sub: "Eastern Asia", tipo: "movimento", fl: "hist-movement" },
+], [{ entityId: "empire" }]);
+assert.equal(historical.length, 2);
+assert.equal(historical.filter((item) => item.discovered).length, 1);
+assert.equal(profile.filterHistoricalAlbum(historical, "europa", "imperio").length, 1);
 
 const achievements = profile.evaluateAchievements(progress, [current], []);
 assert.equal(achievements.find((item) => item.id === "first-session").unlocked, true);

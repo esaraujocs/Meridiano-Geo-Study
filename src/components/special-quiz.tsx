@@ -139,7 +139,7 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     const exhausted = deck.current?.remaining === 0;
     timer.current = window.setTimeout(async () => {
       if (exhausted) {
-        await finishSession();
+        await finishSession(true);
       } else next();
     }, correct ? 350 : 1400);
   };
@@ -152,12 +152,12 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     answer(target.id, value, correct);
     if (!correct) setFeedback(`Ainda não. A resposta correta é ${variant === "escrita-capital" ? expected : ("pt" in target ? target.pt : target.id)}.`);
   };
-  const finishSession = async () => {
+  const finishSession = async (complete = false) => {
     const handle = session.current ?? await pendingSession.current?.catch(() => null);
     if (handle) {
       for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
       session.current = null;
-      await handle.finish();
+      await handle.end({ complete });
     }
     (onEnd ?? onBack)();
   };
@@ -169,7 +169,7 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     if (handle) {
       for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
       session.current = null;
-      await handle.finish();
+      await handle.end({ complete: false });
     }
     onBack();
   };
@@ -178,7 +178,7 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
     if (handle) {
       for (const round of queuedRounds.current.splice(0)) handle.recordRound(round);
       session.current = null;
-      await handle.finish();
+      await handle.end({ complete: false });
     }
     location.href = "/";
   };
@@ -195,7 +195,7 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   </aside><main className="quiz-main">
     <div className="quiz-prompt"><div className="target-kicker">{writing ? (variant === "escrita-capital" ? "Qual é a capital deste país?" : "Qual é o nome deste país?") : historicalMode ? (variant === "historica-nome" ? "Qual entidade usava esta bandeira?" : "Escolha a bandeira correta") : "A que países este idioma está ligado?"}</div>
       {writing && variant === "escrita-capital" ? <div className="quiz-clue">{data.meta[target.id]?.pt}</div> : writing ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /> : historicalMode && variant === "historica-nome" ? <img className="quiz-flag" src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /> : <div className="quiz-clue">{("script" in target ? target.script : target.pt)}</div>}
-       <div className={`feedback ${answerResult === "correct" ? "feedback-success" : answerResult === "wrong" ? "feedback-error" : ""}`} aria-live="polite" role="status">{feedback || (writing ? (variant === "escrita-capital" ? "Digite o nome da capital." : "Digite o nome do país.") : historicalMode ? "Escolha uma alternativa." : "Leia o idioma e responda.")}</div>
+        <div className={`feedback ${answerResult === "correct" ? "feedback-success" : answerResult === "wrong" ? "feedback-error" : ""}`} aria-live="polite" role="status">{feedback || (writing ? (variant === "escrita-capital" ? "Digite o nome da capital." : "Digite o nome do país.") : historicalMode ? "Selecione uma resposta." : "Leia o idioma e responda.")}</div>
     </div>
       {writing ? <form className="quiz-options" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}><TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} answers={(() => { const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {}); return (Array.isArray(expected) ? expected : [expected]).filter((answer): answer is string => Boolean(answer)); })()} /><button className="button" disabled={locked || !typed.trim()}>Responder</button></form> : <div className="quiz-options">{choices.map((choice) => {
       const historicalFlag = choice.flag

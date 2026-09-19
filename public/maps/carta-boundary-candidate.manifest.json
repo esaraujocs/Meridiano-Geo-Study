@@ -4,26 +4,27 @@
   "auditDate": "2026-09-19",
   "generatedFrom": {
     "api": "https://www.geoboundaries.org/api/current/gbOpen/ALL/ADM0/",
+    "ukAdm1Api": "https://www.geoboundaries.org/api/current/gbOpen/GBR/ADM1/",
     "cartaSourceVersion": "0.13.5",
     "cartaSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1"
   },
   "counts": {
     "playableEntities": 250,
     "vectorFeatures": 250,
-    "geoBoundariesEntities": 225,
-    "legacyFallbackEntities": 25
+    "geoBoundariesEntities": 229,
+    "legacyFallbackEntities": 21
   },
   "zoom": {
     "min": 0,
     "max": 9
   },
   "bytes": {
-    "mergedGeoJSON": 108433826,
-    "pmtiles": 27741358
+    "mergedGeoJSON": 108603851,
+    "pmtiles": 27823584
   },
   "hashes": {
-    "geojsonSha256": "c9bc2a9f408c0f6f578c4464d637e179034cd3acee314bfb41133ba344742eb5",
-    "pmtilesSha256": "bacb912022100213501a4f57bd7a564df7b65e6b0a643bdb3f42f3bd33456ca7"
+    "geojsonSha256": "703a500ed39cac51571828188de376cec560b2714144806ec7f71c1a8a037bd4",
+    "pmtilesSha256": "5781307c2aad1358a93311a32f0740723ba98a0104a29aaa10fdde2537a49316"
   },
   "fallback": [
     {
@@ -163,38 +164,6 @@
       "reason": "sem correspondência geoBoundaries"
     },
     {
-      "cartaId": "gb-eng",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-sct",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-wls",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-nir",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
       "cartaId": "sh-ac",
       "status": "legacy-fallback",
       "source": "Carta Cega 0.13.5 legacy-map.json",
@@ -227,6 +196,602 @@
       "reason": "sem correspondência geoBoundaries"
     }
   ],
+  "fallbackHistory": [
+    {
+      "cartaId": "86",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "162",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "166",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "239",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "248",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "260",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "344",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "356",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "446",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "534",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "574",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "630",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "663",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "666",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "732",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "832",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "926",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "gb-eng",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "geoboundaries",
+      "currentSource": "Eurostat- European Commission",
+      "currentSourceURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "replacedByAuditableSource": true
+    },
+    {
+      "cartaId": "gb-sct",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "geoboundaries",
+      "currentSource": "Eurostat- European Commission",
+      "currentSourceURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "replacedByAuditableSource": true
+    },
+    {
+      "cartaId": "gb-wls",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "geoboundaries",
+      "currentSource": "Eurostat- European Commission",
+      "currentSourceURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "replacedByAuditableSource": true
+    },
+    {
+      "cartaId": "gb-nir",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "geoboundaries",
+      "currentSource": "Eurostat- European Commission",
+      "currentSourceURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "replacedByAuditableSource": true
+    },
+    {
+      "cartaId": "sh-ac",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "sh-ta",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "bq-se",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    },
+    {
+      "cartaId": "cl-ip",
+      "previousSource": "Carta Cega 0.13.5 legacy-map.json",
+      "previousSourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+      "previousLicense": "Inherited legacy provenance; verify before redistribution",
+      "currentStatus": "legacy-fallback",
+      "currentSource": "Carta Cega 0.13.5 legacy-map.json",
+      "currentSourceURL": null,
+      "replacedByAuditableSource": false
+    }
+  ],
+  "outliers": {
+    "method": "Coastline-only geodesic audit: normalized undirected exterior segments at 1000000 coordinate precision; segments shared by two entities are land borders and excluded. Remaining unshared segments (including islands) use Haversine length in km and vertices per km compared with the regional median. Disputed or near-coincident borders may be classified as coastline or border according to the precision key.",
+    "metricNames": {
+      "coastlineKm": "geodesic exterior-ring length in km",
+      "coastlineVertices": "closed exterior-ring vertices",
+      "verticesPerCoastlineKm": "coastlineVertices / coastlineKm",
+      "densityRatioToRegionalMedian": "verticesPerCoastlineKm / regional median",
+      "sharedLandBorderSegments": "exterior segments shared by two entities"
+    },
+    "worstHighDensity": [
+      {
+        "region": "Americas",
+        "cartaId": "533",
+        "vertices": 7668,
+        "coastlineKm": 99.15420657571543,
+        "coastlineVertices": 7334,
+        "verticesPerCoastlineKm": 73.96559614845653,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 49.673567459315954
+      },
+      {
+        "region": "Americas",
+        "cartaId": "60",
+        "vertices": 14415,
+        "coastlineKm": 207.2199145332412,
+        "coastlineVertices": 14343,
+        "verticesPerCoastlineKm": 69.21632041161357,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 46.484064758310765
+      },
+      {
+        "region": "Europe",
+        "cartaId": "492",
+        "vertices": 840,
+        "coastlineKm": 15.666943608734236,
+        "coastlineVertices": 839,
+        "verticesPerCoastlineKm": 53.55224483812287,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 45.359960482711585
+      },
+      {
+        "region": "Americas",
+        "cartaId": "531",
+        "vertices": 21195,
+        "coastlineKm": 317.40220403358387,
+        "coastlineVertices": 21076,
+        "verticesPerCoastlineKm": 66.4015552890426,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 44.593734219805725
+      },
+      {
+        "region": "Europe",
+        "cartaId": "442",
+        "vertices": 19361,
+        "coastlineKm": 368.2119544554957,
+        "coastlineVertices": 19360,
+        "verticesPerCoastlineKm": 52.57841242180519,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 44.53510243886153
+      },
+      {
+        "region": "Americas",
+        "cartaId": "92",
+        "vertices": 29689,
+        "coastlineKm": 387.3385483065201,
+        "coastlineVertices": 25660,
+        "verticesPerCoastlineKm": 66.2469566021453,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 44.489909351183
+      },
+      {
+        "region": "Americas",
+        "cartaId": "660",
+        "vertices": 10606,
+        "coastlineKm": 132.94406776180503,
+        "coastlineVertices": 8637,
+        "verticesPerCoastlineKm": 64.96717112248177,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 43.63043530287107
+      },
+      {
+        "region": "Africa",
+        "cartaId": "654",
+        "vertices": 7854,
+        "coastlineKm": 237.43303559611874,
+        "coastlineVertices": 7622,
+        "verticesPerCoastlineKm": 32.101682821278786,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 0.7540587672542454,
+        "densityRatioToRegionalMedian": 42.57185807701787
+      },
+      {
+        "region": "Americas",
+        "cartaId": "136",
+        "vertices": 21738,
+        "coastlineKm": 350.00002324992727,
+        "coastlineVertices": 21261,
+        "verticesPerCoastlineKm": 60.74571025047616,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 40.795400741917156
+      },
+      {
+        "region": "Europe",
+        "cartaId": "336",
+        "vertices": 154,
+        "coastlineKm": 3.4045413769463777,
+        "coastlineVertices": 153,
+        "verticesPerCoastlineKm": 44.939973717467254,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 38.06517239529907
+      },
+      {
+        "region": "Europe",
+        "cartaId": "234",
+        "vertices": 54317,
+        "coastlineKm": 1094.1003164868805,
+        "coastlineVertices": 48359,
+        "verticesPerCoastlineKm": 44.19978613595427,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 37.43821680177143
+      },
+      {
+        "region": "Europe",
+        "cartaId": "833",
+        "vertices": 6835,
+        "coastlineKm": 168.492801869184,
+        "coastlineVertices": 5784,
+        "verticesPerCoastlineKm": 34.32787594386753,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 29.076485980673173
+      },
+      {
+        "region": "Europe",
+        "cartaId": "438",
+        "vertices": 2521,
+        "coastlineKm": 77.85639282683425,
+        "coastlineVertices": 2520,
+        "verticesPerCoastlineKm": 32.36728428460467,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 27.415820578957128
+      },
+      {
+        "region": "Europe",
+        "cartaId": "831",
+        "vertices": 4189,
+        "coastlineKm": 128.98717252287744,
+        "coastlineVertices": 3891,
+        "verticesPerCoastlineKm": 30.165790317714606,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 25.551105483578475
+      },
+      {
+        "region": "Africa",
+        "cartaId": "480",
+        "vertices": 8298,
+        "coastlineKm": 460.03088253208125,
+        "coastlineVertices": 8292,
+        "verticesPerCoastlineKm": 18.024876839484225,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 0.7540587672542454,
+        "densityRatioToRegionalMedian": 23.903809122355568
+      }
+    ],
+    "worstLowDensity": [
+      {
+        "region": "Oceania",
+        "cartaId": "90",
+        "vertices": 2177,
+        "coastlineKm": 4498.339820227558,
+        "coastlineVertices": 2129,
+        "verticesPerCoastlineKm": 0.4732857198619334,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 18.516839651119074,
+        "densityRatioToRegionalMedian": 0.02555974608946458
+      },
+      {
+        "region": "Africa",
+        "cartaId": "732",
+        "vertices": 87,
+        "coastlineKm": 2983.1861026637116,
+        "coastlineVertices": 86,
+        "verticesPerCoastlineKm": 0.02882823834664887,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 0.7540587672542454,
+        "densityRatioToRegionalMedian": 0.03823075812992819
+      },
+      {
+        "region": "Americas",
+        "cartaId": "170",
+        "vertices": 707,
+        "coastlineKm": 7644.255705844983,
+        "coastlineVertices": 706,
+        "verticesPerCoastlineKm": 0.09235693142239804,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 0.062024758837039944
+      },
+      {
+        "region": "Americas",
+        "cartaId": "32",
+        "vertices": 1396,
+        "coastlineKm": 12459.616642325329,
+        "coastlineVertices": 1393,
+        "verticesPerCoastlineKm": 0.11180119260395041,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 0.075083070671096
+      },
+      {
+        "region": "Asia",
+        "cartaId": "156",
+        "vertices": 2146,
+        "coastlineKm": 25673.61792793579,
+        "coastlineVertices": 2143,
+        "verticesPerCoastlineKm": 0.08347090020640116,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.0736897750763013,
+        "densityRatioToRegionalMedian": 0.07774210218260609
+      },
+      {
+        "region": "Oceania",
+        "cartaId": "598",
+        "vertices": 32537,
+        "coastlineKm": 21578.223996198238,
+        "coastlineVertices": 31947,
+        "verticesPerCoastlineKm": 1.480520361899505,
+        "sharedLandBorderSegments": 165,
+        "regionalMedianVerticesPerCoastlineKm": 18.516839651119074,
+        "densityRatioToRegionalMedian": 0.07995534820165866
+      },
+      {
+        "region": "Oceania",
+        "cartaId": "36",
+        "vertices": 93249,
+        "coastlineKm": 58821.00453986203,
+        "coastlineVertices": 90082,
+        "verticesPerCoastlineKm": 1.5314597345741165,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 18.516839651119074,
+        "densityRatioToRegionalMedian": 0.08270632372633642
+      },
+      {
+        "region": "Asia",
+        "cartaId": "356",
+        "vertices": 1732,
+        "coastlineKm": 19086.608772487714,
+        "coastlineVertices": 1697,
+        "verticesPerCoastlineKm": 0.08891050370593498,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.0736897750763013,
+        "densityRatioToRegionalMedian": 0.08280837330281607
+      },
+      {
+        "region": "Asia",
+        "cartaId": "368",
+        "vertices": 653,
+        "coastlineKm": 2230.9351588507484,
+        "coastlineVertices": 213,
+        "verticesPerCoastlineKm": 0.09547565699297399,
+        "sharedLandBorderSegments": 441,
+        "regionalMedianVerticesPerCoastlineKm": 1.0736897750763013,
+        "densityRatioToRegionalMedian": 0.08892294516466738
+      },
+      {
+        "region": "Oceania",
+        "cartaId": "554",
+        "vertices": 28932,
+        "coastlineKm": 15817.381744118959,
+        "coastlineVertices": 28211,
+        "verticesPerCoastlineKm": 1.7835442335764007,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 18.516839651119074,
+        "densityRatioToRegionalMedian": 0.09632012088351218
+      },
+      {
+        "region": "Africa",
+        "cartaId": "434",
+        "vertices": 500,
+        "coastlineKm": 6076.843682806469,
+        "coastlineVertices": 499,
+        "verticesPerCoastlineKm": 0.08211499687113012,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 0.7540587672542454,
+        "densityRatioToRegionalMedian": 0.10889734386370907
+      },
+      {
+        "region": "Americas",
+        "cartaId": "630",
+        "vertices": 100,
+        "coastlineKm": 580.1481590315544,
+        "coastlineVertices": 96,
+        "verticesPerCoastlineKm": 0.1654749713594774,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 0.1111291273331392
+      },
+      {
+        "region": "Americas",
+        "cartaId": "328",
+        "vertices": 528,
+        "coastlineKm": 3139.4417959462694,
+        "coastlineVertices": 525,
+        "verticesPerCoastlineKm": 0.16722718053823898,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 0.11230587010783884
+      },
+      {
+        "region": "Americas",
+        "cartaId": "604",
+        "vertices": 1607,
+        "coastlineKm": 8013.775523760487,
+        "coastlineVertices": 1603,
+        "verticesPerCoastlineKm": 0.20003055928471875,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.489033301444202,
+        "densityRatioToRegionalMedian": 0.13433585339609974
+      },
+      {
+        "region": "Europe",
+        "cartaId": "112",
+        "vertices": 445,
+        "coastlineKm": 2572.7962116136828,
+        "coastlineVertices": 444,
+        "verticesPerCoastlineKm": 0.1725748809780464,
+        "sharedLandBorderSegments": 0,
+        "regionalMedianVerticesPerCoastlineKm": 1.1806060734672306,
+        "densityRatioToRegionalMedian": 0.14617482059127868
+      }
+    ]
+  },
   "sources": [
     {
       "cartaId": "4",
@@ -239,7 +804,9 @@
       "source": "geoBoundaries, ArcGIS Hub",
       "sourceURL": "hub.arcgis.com/datasets/2b63527870ef416bacf83bcaf388685f_0?geometry=53.805%2C30.812%2C81.556%2C37.181",
       "license": "Public Domain",
-      "licenseURL": "hub.arcgis.com/datasets/2b63527870ef416bacf83bcaf388685f_0?geometry=53.805%2C30.812%2C81.556%2C37.181"
+      "licenseURL": "hub.arcgis.com/datasets/2b63527870ef416bacf83bcaf388685f_0?geometry=53.805%2C30.812%2C81.556%2C37.181",
+      "sourceHash": "64520069c99f35d124a21029835373ef46bb1e1e3ff4016a3dbed85d42671d2b",
+      "sourceVersion": "geoBoundaries 2014"
     },
     {
       "cartaId": "8",
@@ -252,7 +819,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "en.wikipedia.org/wiki/Outline_of_Albania#/media",
       "license": "Public Domain",
-      "licenseURL": "en.wikipedia.org/wiki/Outline_of_Albania#/media/File"
+      "licenseURL": "en.wikipedia.org/wiki/Outline_of_Albania#/media/File",
+      "sourceHash": "006fca13e6c467aa5038792569d80d4ece537af937fde6602fc205e6e8a78ec8",
+      "sourceVersion": "geoBoundaries 2003"
     },
     {
       "cartaId": "10",
@@ -265,7 +834,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-physical-vectors/10m-antarctic-ice-shelves/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "5d13a94d9439f3b90da856c07302ad018b4aef3814896e5e9bc850183fa8ede6",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "12",
@@ -278,7 +849,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "34d4dd7bb12b571adefdcc514ac1e55b4c7a52a8f54139e2039a0d44b2f8c77c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "16",
@@ -291,7 +864,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "livingatlas.arcgis.com/landcover/"
+      "licenseURL": "livingatlas.arcgis.com/landcover/",
+      "sourceHash": "ec2fda26fb14a493c483cfb445f1087c0a6e75a79d68c5426e680dce5396f8ef",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "20",
@@ -304,7 +879,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "upload.wikimedia.org/wikipedia/commons/c/c5/0_Andorra_parishes_all.svg",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "6cb835ac2a6a2fffe8b81f08b4a3dc366adac4083e61cbe9918bd0ab795234b1",
+      "sourceVersion": "geoBoundaries 2007"
     },
     {
       "cartaId": "24",
@@ -317,7 +894,9 @@
       "source": "Open Street Map",
       "sourceURL": "osm-boundaries.com/",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "osm-boundaries.com/Documentation"
+      "licenseURL": "osm-boundaries.com/Documentation",
+      "sourceHash": "cb1bd5089353d0da2fe5e92e2170113c36c84e03477ff9edc141f5cf734a8703",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "28",
@@ -330,7 +909,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "52396401ccf60056c63784182151702195bb289cd9060b3e676f25f3508a4537",
+      "sourceVersion": "geoBoundaries 2009"
     },
     {
       "cartaId": "31",
@@ -343,7 +924,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "31d7e53d4696c70425227af834cfae6ddb94fdacd16af59d9e552d7c631ae12b",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "32",
@@ -356,7 +939,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "06e372da6a1bfbc0bc135832562fbe91ad07d5f20d0629cd0ef1e4e50bc3ceab",
+      "sourceVersion": "geoBoundaries 2006"
     },
     {
       "cartaId": "36",
@@ -369,7 +954,9 @@
       "source": "Australian Bureau of Statistics",
       "sourceURL": "www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files/AUS_2021_AUST_SHP_GDA2020.zip",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "www.abs.gov.au/website-privacy-copyright-and-disclaimer#copyright-and-creative-commons"
+      "licenseURL": "www.abs.gov.au/website-privacy-copyright-and-disclaimer#copyright-and-creative-commons",
+      "sourceHash": "4878aae64ff7db4dc43925777534de3a1a28aa39a6ba0ed246fee4ee0e281217",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "40",
@@ -382,7 +969,9 @@
       "source": "Federal Office for Metrology and Survey, Austria, Derived from ADM4 layer",
       "sourceURL": "www.data.gv.at/katalog/dataset/987d6260-1e87-4314-9039-ccae502819b6",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "www.data.gv.at/katalog/dataset/987d6260-1e87-4314-9039-ccae502819b6"
+      "licenseURL": "www.data.gv.at/katalog/dataset/987d6260-1e87-4314-9039-ccae502819b6",
+      "sourceHash": "773d2c036bba001fc6bfc988ac9e49fe208ce64f8a22c2e71b907ddb2ca8e3c5",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "44",
@@ -395,7 +984,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "cd7f8976c584e774fd57649bc3ece36fe278f45ed15121c403b170bfbceb24a1",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "48",
@@ -408,7 +999,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "cc75e86fb0075be1635a7e46b502ce055b023a9c05fb71715704e5a8ec123d28",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "50",
@@ -421,7 +1014,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "4cfafa6d5250a0aadeefb8737f11604ad1b9b9904585461fee2a5ece4a61a219",
+      "sourceVersion": "geoBoundaries 2015"
     },
     {
       "cartaId": "51",
@@ -434,7 +1029,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "32f414a224b3160be2d402fd43bc8b3710117b8af442aa7669c21932dc6a9915",
+      "sourceVersion": "geoBoundaries 2005"
     },
     {
       "cartaId": "52",
@@ -447,7 +1044,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "ba0b05fa020e9c41c863e12536408edfbb362877f8fe52f8dd6235c7ee150419",
+      "sourceVersion": "geoBoundaries 2005"
     },
     {
       "cartaId": "56",
@@ -460,7 +1059,9 @@
       "source": "Eurostat- European Commission",
       "sourceURL": "ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "ec.europa.eu/info/legal-notice_en"
+      "licenseURL": "ec.europa.eu/info/legal-notice_en",
+      "sourceHash": "8c5ca1fe41ff77a6344764351b2ea5c9ee4a4a2c83a0588d3f7d21c083502cee",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "60",
@@ -473,7 +1074,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "9ebb77a75466545b591e493b66c44bb82830069df2b2c375d9a17e679be601fe",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "64",
@@ -486,7 +1089,9 @@
       "source": "geoBoundaries, Wikimedia Commons; credit to author 'Babbage'",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 3.0 License",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "ddc342abf9b4019a84bd4d45ac489184d30809e8e3187439ca29c74fed7c01d6",
+      "sourceVersion": "geoBoundaries 2010"
     },
     {
       "cartaId": "68",
@@ -499,7 +1104,9 @@
       "source": "GeoBolivia, Derived from ADM3 layer",
       "sourceURL": "geo.gob.bo/geonetwork/srv/spa/catalog.search#/metadata/aeeb85a9-23df-48d4-a4e5-dd19e8b206db",
       "license": "Public Domain",
-      "licenseURL": "geo.gob.bo/geonetwork/srv/spa/catalog.search#/metadata/aeeb85a9-23df-48d4-a4e5-dd19e8b206db"
+      "licenseURL": "geo.gob.bo/geonetwork/srv/spa/catalog.search#/metadata/aeeb85a9-23df-48d4-a4e5-dd19e8b206db",
+      "sourceHash": "55d5515e32293408f0a6b901aa4c466554b31634d4d573d9a7577529bd8c5237",
+      "sourceVersion": "geoBoundaries 2015"
     },
     {
       "cartaId": "70",
@@ -512,7 +1119,9 @@
       "source": "Wikimedia Commons",
       "sourceURL": "en.wikipedia.org/wiki/Political_divisions_of_Bosnia_and_Herzegovina",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "b6dca39470be9f73859111e45f8960bd313952f3f572310f897cef5fc7dcc2c2",
+      "sourceVersion": "geoBoundaries 2013"
     },
     {
       "cartaId": "72",
@@ -525,7 +1134,9 @@
       "source": "geoBoundaries, RCMRD",
       "sourceURL": "geoportal.rcmrd.org/layers/servir%3Abotswana_district_boundary",
       "license": "Public Domain",
-      "licenseURL": "geoportal.rcmrd.org/layers/servir%3Abotswana_district_boundary"
+      "licenseURL": "geoportal.rcmrd.org/layers/servir%3Abotswana_district_boundary",
+      "sourceHash": "e8f177feb023334d402d9f1ca3126251420aaed56c7751f68a973618b7a3c1d2",
+      "sourceVersion": "geoBoundaries 2015"
     },
     {
       "cartaId": "76",
@@ -538,7 +1149,9 @@
       "source": "Instituto Brasileiro de Geografia e Estatística (IBGE)",
       "sourceURL": "data.humdata.org/dataset/brazil-administrative-level-0-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/brazil-administrative-level-0-boundaries"
+      "licenseURL": "data.humdata.org/dataset/brazil-administrative-level-0-boundaries",
+      "sourceHash": "80cdee9ebac45697023cf03ee6cb8ff7a94df491c6c7ca4c4d9da686108e92ea",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "84",
@@ -551,7 +1164,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "72717ca920e52822670b726322da24950c273d447b8bbec9fed545642c221be3",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "90",
@@ -564,7 +1179,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "87d4be37df7b284c03fe411a462dd2bcf58d383d46edf2bc046326ac774a2e36",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "92",
@@ -577,7 +1194,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "e20fb152ad0c1a7a8d940088938973a208b4cc08c8a3121dc885db2ac014e8e6",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "96",
@@ -590,7 +1209,9 @@
       "source": "Wikimedia Commons",
       "sourceURL": "en.wikipedia.org/wiki/Districts_of_Brunei",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "544e8a3b70531614f1fc0441d0a9ebf5777fe03fbfb1b9d8bc4fd07d81131bfa",
+      "sourceVersion": "geoBoundaries 2015"
     },
     {
       "cartaId": "100",
@@ -603,7 +1224,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "93f7c8f0ecfbe0e55da9f7b44caddde679a8cdeff67a2443438191275ba26592",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "104",
@@ -616,7 +1239,9 @@
       "source": "OpenStreetMap",
       "sourceURL": "www.openstreetmap.org/relation/50371",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "61d90a3c6faf06d8d34b757bb243022bbb0429d193885662b9976686409ed325",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "108",
@@ -629,7 +1254,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "c0f6ddd7daf42b572cc8671acb0d8296959215aad5faa74a8cf4ef52f209138c",
+      "sourceVersion": "geoBoundaries 2006"
     },
     {
       "cartaId": "112",
@@ -642,7 +1269,9 @@
       "source": "OpenDataSoft, WFPGeoNode",
       "sourceURL": "public.opendatasoft.com/explore/dataset/world-administrative-boundaries/information/?refine.color_code=BLR&dataChart=eyJxdWVyaWVzIjpbeyJjb25maWciOnsiZGF0YXNldCI6IndvcmxkLWFkbWluaXN0cmF0aXZlLWJvdW5kYXJpZXMiLCJvcHRpb25zIjp7ImxvY2F0aW9uIjoiNiw1My43ODE1OCwyNy45NTI3MyIsImJhc2VtYXAiOiJqYXdnLnN0cmVldHMiLCJyZWZpbmUuY29sb3JfY29kZSI6IkJMUiJ9fSwiY2hhcnRzIjpbeyJhbGlnbk1vbnRoIjp0cnVlLCJ0eXBlIjoiY29sdW1uIiwiZnVuYyI6IkNPVU5UIiwic2NpZW50aWZpY0Rpc3BsYXkiOnRydWUsImNvbG9yIjoiI0ZGNTE1QSJ9XSwieEF4aXMiOiJzdGF0dXMiLCJtYXhwb2ludHMiOjUwLCJzb3J0IjoiIn1dLCJ0aW1lc2NhbGUiOiIiLCJkaXNwbGF5TGVnZW5kIjp0cnVlLCJhbGlnbk1vbnRoIjp0cnVlfQ%3D%3D&location=6,53.78158,27.95273&basemap=jawg.streets",
       "license": "Open Government Licence v3.0",
-      "licenseURL": "www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      "licenseURL": "www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+      "sourceHash": "6871a75c05d72b9ed34ce73e6145ea4a38b9cc62e397f9faf547d94c3613d6a8",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "116",
@@ -655,7 +1284,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "osm-boundaries.com/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8d0a6e840681097f602bb2991845da07903560892d3b917c21091f70c8e9a414",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "120",
@@ -668,7 +1299,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 3.0 License",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "1f1401505adf513157124560cc6d54acba20da2680c742dcc5bd9c116c4486d4",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "124",
@@ -681,7 +1314,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "cf7de565e255adb1067a31316402e3667ebbad63850d77b477e2e67b48cf69bd",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "132",
@@ -694,7 +1329,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "832e5d177fcea9dc1af72596281d3b915ef60afd3fc2486c1c3fbb12390c11d1",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "136",
@@ -707,7 +1344,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "8aee73a84eb6bf37f554fa9bbb372ceea124d36023487539ab024e28ae5f4886",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "140",
@@ -720,7 +1359,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "6a326a8b08e5bebb43f2d9ef07ae70aa4f25a55f9eaa42217a61964bcccde644",
+      "sourceVersion": "geoBoundaries 2006"
     },
     {
       "cartaId": "144",
@@ -733,7 +1374,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "e895a2e5c5fd8e1b323801dc60ab04a14bdecb3a312ecfee7952cd7c25d41bdd",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "148",
@@ -746,7 +1389,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "771290823d1ba8aa9b79499d1f61533802482baa72f72bb84073920e791a3221",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "152",
@@ -759,7 +1404,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "28c64a9521e527d7cd77714f4ac852c0b9073c2c1e9f747f85793bc542dc30f4",
+      "sourceVersion": "geoBoundaries 2009"
     },
     {
       "cartaId": "156",
@@ -772,7 +1419,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "13a90021245486ce430787d92edec282bde2dc34ed0256f190d3aa48a2b1772b",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "158",
@@ -785,7 +1434,9 @@
       "source": "geoBoundaries, Pixabay",
       "sourceURL": "pixabay.com/vectors/taiwan-map-roc-republic-of-china-33713/",
       "license": "Pixabay License for Content",
-      "licenseURL": "pixabay.com/vectors/taiwan-map-roc-republic-of-china-33713/"
+      "licenseURL": "pixabay.com/vectors/taiwan-map-roc-republic-of-china-33713/",
+      "sourceHash": "c24b2eff8d05f8914942e1aee2b9885a6a6dd16cb0001e2123149b016dce2982",
+      "sourceVersion": "geoBoundaries 2012"
     },
     {
       "cartaId": "170",
@@ -798,7 +1449,9 @@
       "source": "Geoboundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "ff9bab4c53136d8ca7a68f0ed02dc8d42b30b1fd2be42cbf92fc35524c52be25",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "174",
@@ -811,7 +1464,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "5a7314c4704470e88dcb5dda329a1c365ad7fa3dc12b4ce89c2632fff5277305",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "175",
@@ -824,7 +1479,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "edda1cafea707224458584287197449e9e8da4ad3b168e441333f28836c96dea",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "178",
@@ -837,7 +1494,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "f16c2550acb49316750d00e04bf5f34edcb91e427abbd1070c4560898dcbcb52",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "180",
@@ -850,7 +1509,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "5cdf6a4032115aef2589fad4baedf333d463b2aaff3d58fec6b3f3f1205d9810",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "184",
@@ -863,7 +1524,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "213972fbb83bec6c5678a7671823983633166ae032439de8903fb59b8896d05e",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "188",
@@ -876,7 +1539,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "b0cd1e514ea4a12d65f7d74c673170010bf9e1ac60f0c489459039e2e9f464c7",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "191",
@@ -889,7 +1554,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "7f9b66bd5e0f84ac77efbd49219730637b5e3b4da03ae9c0e134bc146e3631b7",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "192",
@@ -902,7 +1569,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "cc5a3bc1a39e2f5395a129f7adbce7d2b290459ddb3fc1b213e07619052612f0",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "196",
@@ -915,7 +1584,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "87ede4e9e630eec610eba9c017dc9645fb088a3aff61b8a510349080f9c78efb",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "203",
@@ -928,7 +1599,9 @@
       "source": "Czech Office for Surveying",
       "sourceURL": "geoportal.cuzk.cz/(S(0jvahy1mipdkur5tenlb1uhp))/Default.aspx?lng=EN&mode=TextMeta&side=dsady_RUIAN&metadataID=CZ-CUZK-SH-V&mapid=5&menu=252",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "creativecommons.org/licenses/by/4.0/"
+      "licenseURL": "creativecommons.org/licenses/by/4.0/",
+      "sourceHash": "562d073b86ea4c1368c45f853ba2aa61fb9e7cbd6f221c32ca975069cf861317",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "204",
@@ -941,7 +1614,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "5aaeda3fc5fd667ac2a36083372d1b95fb118a4bdfd237b3a0940a827e16c268",
+      "sourceVersion": "geoBoundaries 2012"
     },
     {
       "cartaId": "208",
@@ -954,7 +1629,9 @@
       "source": "geoBoundaries, Web Vectors Map",
       "sourceURL": "webvectormaps.com/administrative-map-of-denmark-by-regions/",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "webvectormaps.com/administrative-map-of-denmark-by-regions/"
+      "licenseURL": "webvectormaps.com/administrative-map-of-denmark-by-regions/",
+      "sourceHash": "96c79464c4fa02f5d60540ac8a8ecce054fe5b37b7950ab59d512d5a0b0f75cd",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "212",
@@ -967,7 +1644,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "3816b95a8cc9b1587a6317e091884654051a2d9c38d222037005dcd3b3d1e5ae",
+      "sourceVersion": "geoBoundaries 2005"
     },
     {
       "cartaId": "214",
@@ -980,7 +1659,9 @@
       "source": "Caribbean GeoPortal, N/A",
       "sourceURL": "haiti.caribbeangeoportal.com/datasets/caribgeoportal",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "creativecommons.org/licenses/by/4.0/"
+      "licenseURL": "creativecommons.org/licenses/by/4.0/",
+      "sourceHash": "271b81fe9dc134beb53f921969ac2f75cd04acfabc97e00b8955107812a78db9",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "218",
@@ -993,7 +1674,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "03e04316aa66bd3615d3f160b407c028dd85965e03ede4844febd80a9f8e5f06",
+      "sourceVersion": "geoBoundaries 2011"
     },
     {
       "cartaId": "222",
@@ -1006,7 +1689,9 @@
       "source": "Open Street Map",
       "sourceURL": "osm-boundaries.com/",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "osm-boundaries.com/"
+      "licenseURL": "osm-boundaries.com/",
+      "sourceHash": "c1935fac73e8cb02daeb5dff4ef480d8d4000e4a3c9a828941ff3f283f153b9e",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "226",
@@ -1019,7 +1704,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "10892679f86ba1fc9aea6152ef0fe29ecb7e88da5abf3576745cc2cbf0d57546",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "231",
@@ -1032,7 +1719,9 @@
       "source": "Open Africa, Code for Ethiopia",
       "sourceURL": "africaopendata.org/dataset/ethiopia-shapefiles",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "africaopendata.org/dataset/ethiopia-shapefiles"
+      "licenseURL": "africaopendata.org/dataset/ethiopia-shapefiles",
+      "sourceHash": "8e1079c90be09d0444355b0301d9869a730f9684bfcb2036f12c0f199607b321",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "232",
@@ -1045,7 +1734,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "e9425f7de71248cf489822175735adb865669251bcc32647bcb75d4568a7e925",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "233",
@@ -1058,7 +1749,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "125bc64b954bfa20cc3a55b71425123088ef4a42d69a55bb01afe298eab79203",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "234",
@@ -1071,7 +1764,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "06ce2e2560fcc2751f08338580e80690e51b24411cdbf67c07a5792fccbde211",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "238",
@@ -1084,7 +1779,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "4f584a9a08910fe7b3dd3fd7f279f84928646c37045ec3d199c184093b3c231b",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "242",
@@ -1097,7 +1794,9 @@
       "source": "geoBoundaries, OpenStreetMap",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "f31373981f0b8d91700cff20cb1b4ccfba7e409ee0180ae438b7a0dd04b0ba09",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "246",
@@ -1110,7 +1809,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c9f3808962ccbf996850c7e46181bd11e8b0d2bd55beb76fdae15b221eb75fda",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "250",
@@ -1123,7 +1824,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "creativecommons.org/publicdomain/zero/1.0/deed.en"
+      "licenseURL": "creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceHash": "57632a49e6733c21e46fb15ae267166994f575f0b1a984237a4742b9d0c0cdee",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "254",
@@ -1136,7 +1839,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / erase adm0 overlap / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "87dab4488d22a68658c7aba54512d58626e011039118c2726ed5ae0e4fec3cf8",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "258",
@@ -1149,7 +1854,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "fa5ca0f40b281e9aba3848f3fe7459d751e3e35e0f8dd53a0435bb46ad320bc3",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "262",
@@ -1162,7 +1869,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "f7d211a4c0437bafb5d4f563da856c42267257c4b4f7d84e572d9bc8ffc3d95b",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "266",
@@ -1175,7 +1884,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "en.wikipedia.org/wiki/Subdivisions_of_Gabon#/media/File",
       "license": "Creative Commons Attribution-ShareAlike 3.0 Unported",
-      "licenseURL": "en.wikipedia.org/wiki/Subdivisions_of_Gabon#/media/File"
+      "licenseURL": "en.wikipedia.org/wiki/Subdivisions_of_Gabon#/media/File",
+      "sourceHash": "71046924ecaa90fbd96ebe42eb3c4643264d6c1d9bd932c18fa347f61c6910b7",
+      "sourceVersion": "geoBoundaries 2005"
     },
     {
       "cartaId": "268",
@@ -1188,7 +1899,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c13f3b37ee2fa85b091f792a252750925702faba62c20c387549c8d433593d08",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "270",
@@ -1201,7 +1914,9 @@
       "source": "geoBoundaries, Knippenberg, Erwin, & Moritz, Meyer. “The Hidden Potential of Mobile Phone Data Insights on COVID-19 in the Gambia.” The World Bank Data Catalog",
       "sourceURL": "blogs.worldbank.org/opendata/hidden-potential-mobile-phone-data-insights-covid-19-gambia",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "datacatalog.worldbank.org/search/dataset/0038034"
+      "licenseURL": "datacatalog.worldbank.org/search/dataset/0038034",
+      "sourceHash": "4c455ebc39892fac5a5121f4250fe75027ae2780603cc193d3ba3e7a096be00e",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "275",
@@ -1214,7 +1929,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / erase adm0 overlap / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "ad8d5e564d5023e06e3899e3c4435c0a7e5f4a9fb117019ef8f6d522a3f96640",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "276",
@@ -1227,7 +1944,9 @@
       "source": "Federal Agency for Cartography and Geodesy",
       "sourceURL": "gdz.bkg.bund.de/index.php/default/digitale-geodaten/verwaltungsgebiete/nuts-gebiete-1-250-000-stand-31-12-nuts250-31-12.html",
       "license": "Data license Germany - Attribution - Version 2.0",
-      "licenseURL": "www.govdata.de/dl-de/by-2-0"
+      "licenseURL": "www.govdata.de/dl-de/by-2-0",
+      "sourceHash": "deb9620cc1e805be64c4f41e7b87a709b6593c1522afe9773095f9c2f02fe0ea",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "288",
@@ -1240,7 +1959,9 @@
       "source": "Stanford Digital Repository",
       "sourceURL": "purl.stanford.edu/rh271yg5585",
       "license": "Public Domain",
-      "licenseURL": "purl.stanford.edu/rh271yg5585"
+      "licenseURL": "purl.stanford.edu/rh271yg5585",
+      "sourceHash": "a0a11c9a1a1565f28e9265600b20801f11cf96babea49bebe45d23e5f3b92146",
+      "sourceVersion": "geoBoundaries 2007"
     },
     {
       "cartaId": "292",
@@ -1253,7 +1974,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / erase adm0 overlap / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "66b89469a4956ab5946999b5f5d65c9bb26fea02349a08e2575227703de30ebc",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "296",
@@ -1266,7 +1989,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8ae4e8915709032641c56ec8f47a095f49a29817ef8fea7fc6a179bb9904ee6b",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "300",
@@ -1279,7 +2004,9 @@
       "source": "EuroGeoGraphics, Regional IM Working Group - Europe",
       "sourceURL": "data.humdata.org/dataset/gree",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "data.humdata.org/dataset/gree"
+      "licenseURL": "data.humdata.org/dataset/gree",
+      "sourceHash": "fa3f7854ee3d15914fe63e742e2db2f043dc54be78bc234091b5b7bc1399f106",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "304",
@@ -1292,7 +2019,9 @@
       "source": "OpenStreetMap, Geofabrik",
       "sourceURL": "download.geofabrik.de/north-america/greenland.html",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "download.geofabrik.de/north-america/greenland.html"
+      "licenseURL": "download.geofabrik.de/north-america/greenland.html",
+      "sourceHash": "e35ebac489467328ee07ceae2e247514204334182ced72ce3f9d2776052039ac",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "308",
@@ -1305,7 +2034,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "5e9233fd5ed3c199cd387fc03500c8f3eaa2e076abb7e247e7a6c19c12e67b23",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "316",
@@ -1318,7 +2049,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "441d02c529acc049a7ef7cb0842ff1acf0eaa1bbd884a1fc55234fdcaf839400",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "320",
@@ -1331,7 +2064,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "406be31fa7564e3ed986fed63ac72b197b22016a17b5666f5fd9991e12ccac24",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "324",
@@ -1344,7 +2079,9 @@
       "source": "OSM Boundaries",
       "sourceURL": "osm-boundaries.com/Download/Submit?apiKey=112e2c3e43c0fc5af2ebcb4ebd154523&db=osm20200907&osmIds=-192778",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "6e0f0cc87117280998aad00c183e5fe8ee1e300fdf4bdb8a17f46a7c013de5a2",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "328",
@@ -1357,7 +2094,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "71e2309ec8b7eede6a01cbce6d474ffa7bb0582a41758a213e0161f16eee04c1",
+      "sourceVersion": "geoBoundaries 2014"
     },
     {
       "cartaId": "332",
@@ -1370,7 +2109,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "6029d87d264af82b36b54ba2b611d0edd6da56a33fc78fee50b580fd1bfd3010",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "336",
@@ -1383,7 +2124,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "upload.wikimedia.org/wikipedia/commons/9/9c/Flag_map_of_Vatican_City.svg"
+      "licenseURL": "upload.wikimedia.org/wikipedia/commons/9/9c/Flag_map_of_Vatican_City.svg",
+      "sourceHash": "7deb521dbc378d5bce40dda500caca3addc1adcaea0d56658f4121a13bad7def",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "340",
@@ -1396,7 +2139,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "7eae0ba4d61099c5d041904f3607b9799c8d28a7557557372f58824aa05b2c62",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "348",
@@ -1409,7 +2154,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "commons.wikimedia.org/w/index.php?search=Maps+of+Hungary&title=Special"
+      "licenseURL": "commons.wikimedia.org/w/index.php?search=Maps+of+Hungary&title=Special",
+      "sourceHash": "7fbe58debe86dbda8a43c0e1156ae7e22d633de4f34e317a54bca8635467661d",
+      "sourceVersion": "geoBoundaries 2011"
     },
     {
       "cartaId": "352",
@@ -1422,7 +2169,9 @@
       "source": "Lýsigagnagátt",
       "sourceURL": "gatt.lmi.is/geonetwork/srv/eng/catalog.search#/metadata/A1919501-BA1F-4AEE-ABB8-00A3217258AA",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "gatt.lmi.is/geonetwork/srv/eng/catalog.search#/metadata/A1919501-BA1F-4AEE-ABB8-00A3217258AA"
+      "licenseURL": "gatt.lmi.is/geonetwork/srv/eng/catalog.search#/metadata/A1919501-BA1F-4AEE-ABB8-00A3217258AA",
+      "sourceHash": "59c86c957e9f6f147f4adfca45ece4ea946990dcbdf8884f9edb6e715242205b",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "360",
@@ -1435,7 +2184,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "adb38ba53ef172f63ffdc93da69827725cbd319c7b1d4b5c79ab08e5544b8fa3",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "364",
@@ -1448,7 +2199,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "f76a8937fad80af06a586a95b7ff1ff2d848dbe867e90ce160b51d9fa05682c0",
+      "sourceVersion": "geoBoundaries 2009"
     },
     {
       "cartaId": "368",
@@ -1461,7 +2214,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "1ccfe7c48a306c86e23049a563802623b53028e521d3076b6eaceefa6969bd57",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "372",
@@ -1474,7 +2229,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "6015f1f0d5fe61f4d4c9b0dc37fbbf53dc7184f0319170b6e887bac2d5ec3717",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "376",
@@ -1487,7 +2244,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "a5f3503a3adc9659761e22663bd5fb7bbc276783358e770aad6d36ebb3106e52",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "380",
@@ -1500,7 +2259,9 @@
       "source": "ISTAT, National Institute of Statistics",
       "sourceURL": "www.istat.it/it/archivio/222527",
       "license": "Creative Commons Attribution 3.0 License",
-      "licenseURL": "www.istat.it/it/note-legali"
+      "licenseURL": "www.istat.it/it/note-legali",
+      "sourceHash": "3a20d66e2486a19b6b616b93576d13b4ed0aab9f0e231ab82c974161e31c8d8e",
+      "sourceVersion": "geoBoundaries 2023"
     },
     {
       "cartaId": "384",
@@ -1513,7 +2274,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "d74f409ec8b921aeadb16d09c61c663471ca2d436d4051d6e787617044ff1b21",
+      "sourceVersion": "geoBoundaries 2018"
     },
     {
       "cartaId": "388",
@@ -1526,7 +2289,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "50f195907246be126dceff209cb954b0d542b057134aad5df82dd05dfe246655",
+      "sourceVersion": "geoBoundaries 2014"
     },
     {
       "cartaId": "392",
@@ -1539,7 +2304,9 @@
       "source": "Ministry of Land, Infrastructure, Transport and Tourism National Land Numerical Information Download Site",
       "sourceURL": "nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "nlftp.mlit.go.jp/ksj/other/agreement.html#agree-01"
+      "licenseURL": "nlftp.mlit.go.jp/ksj/other/agreement.html#agree-01",
+      "sourceHash": "5b68d2cede4eff2422a5d3542315bf42682b1885db7707ccd4ccad966162989f",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "398",
@@ -1552,7 +2319,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "2e4d8b0625bd907d63641a3435c64f0faf1a78fb679c7ce1cf31dd1a106cd96f",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "400",
@@ -1565,7 +2334,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "en.wikipedia.org/wiki/Geography_of_Jordan#/media/File",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "en.wikipedia.org/wiki/Geography_of_Jordan#/media/File"
+      "licenseURL": "en.wikipedia.org/wiki/Geography_of_Jordan#/media/File",
+      "sourceHash": "88e50e3dabc8c561549c4c4ec9588529046967639dce1ad790de091cb63e6444",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "404",
@@ -1578,7 +2349,9 @@
       "source": "RCMRD GeoPortal, geoBoundaries",
       "sourceURL": "rcmrd.africageoportal.com/datasets/africageoportal",
       "license": "Public Domain",
-      "licenseURL": "rcmrd.africageoportal.com/datasets/africageoportal"
+      "licenseURL": "rcmrd.africageoportal.com/datasets/africageoportal",
+      "sourceHash": "9b4d7143ffff236eaf48081bc7d2ca7e51b58ccb47f0ca08ca77fb98b98633d5",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "408",
@@ -1591,7 +2364,9 @@
       "source": "World Food Programme, OCHA ROAP",
       "sourceURL": "data.humdata.org/dataset/dpr-korea-administrative-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/dpr-korea-administrative-boundaries"
+      "licenseURL": "data.humdata.org/dataset/dpr-korea-administrative-boundaries",
+      "sourceHash": "b0843eae3323d42c589e2366aca987d028dba3b78bbe1619702f31f98876ed59",
+      "sourceVersion": "geoBoundaries 2018"
     },
     {
       "cartaId": "410",
@@ -1604,7 +2379,9 @@
       "source": "Natural Earth, geoBoundaries",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "d903b14a38269f37b90ec5861eaf4677c43a0504446a7a1614ee0d09ed585025",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "414",
@@ -1617,7 +2394,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8ad06d62cd501275a31df30aafc2b333cd12d34023350d2f21eeb57a32b75ac7",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "417",
@@ -1630,7 +2409,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "ec173ad3b8497c1b2fc895f1cb0ae3a4dfd39c1632c26e71b496a62ade114d54",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "418",
@@ -1643,7 +2424,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "3c878cb2d5c983705eac14bd1b3a7a7a6453d788e038637d066b7b0eef3d33b3",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "422",
@@ -1656,7 +2439,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "upload.wikimedia.org/wikipedia/commons/c/c9/North_Governorate1.png",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "9a24eb47e0aa456c2de7407898b1027e38ac416d1311db4570e621c8a9f312ee",
+      "sourceVersion": "geoBoundaries 2010"
     },
     {
       "cartaId": "426",
@@ -1669,7 +2454,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "aa81f6f98afc0332300a3fdcc15382cb1389836c6240aa0a9fe32ec54df61720",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "428",
@@ -1682,7 +2469,9 @@
       "source": "Geoportal of Latvia",
       "sourceURL": "geolatvija.lv/geo/p/658",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "geolatvija.lv/geo/p/658"
+      "licenseURL": "geolatvija.lv/geo/p/658",
+      "sourceHash": "0b1d2ede8fc4147c94f0e824b6624b13a2f6eef5426eb4769c830e96b773e845",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "430",
@@ -1695,7 +2484,9 @@
       "source": "UNMIL, OCHA ROWCA",
       "sourceURL": "data.humdata.org/dataset/liberia-admin-level-2-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/liberia-admin-level-2-boundaries"
+      "licenseURL": "data.humdata.org/dataset/liberia-admin-level-2-boundaries",
+      "sourceHash": "ee628bd875dc94aa4b81402b553d79b41675c6d46e46d80f4c2413a2034090d5",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "434",
@@ -1708,7 +2499,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "aae0fdc79199079276b3a72f2e27f33562af90f36b6c18fb499ceba14381b273",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "438",
@@ -1721,7 +2514,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8a447218181a4649807bd4803ff9ff81873b3a770f60142ec42c58220bfaeae8",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "440",
@@ -1734,7 +2529,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "6261b555a21fda8ffe8e97677db3ef6b1ab612353fb1e7afe5a9b310ec1a8ed4",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "442",
@@ -1747,7 +2544,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "4a8520b25b82ae16a8385f26a95886f78a9cac2812893947f97a423760bded8f",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "450",
@@ -1760,7 +2559,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "194c0fafbcd9e734b99f839bf70daaa08ee8e8265016bb2077a853273b94834b",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "454",
@@ -1773,7 +2574,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "3b3aed2e53ffa74fc067348cc9536286fe39523b842f247998b7ced424a88e1f",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "458",
@@ -1786,7 +2589,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "37be7210ed0f6d82cc865c98756e4b373fdb05a8a3b3a51dad16e7508ac748a1",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "462",
@@ -1799,7 +2604,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "67946ca5af6ff4c85e7bdf63901addccfeac239e2d9b8e97d81eb6a3d5e90f3a",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "466",
@@ -1812,7 +2619,9 @@
       "source": "DNCT - Direction Nationale des Colelctivités Territorielles, DNP - Direction Nationale de la Population, United Nations Office for the Coordination of Humanitarian Affairs, Mali",
       "sourceURL": "data.humdata.org/dataset/mali-admin-boundaries-level-1-2-and-3-including-2017-population-desagregated-by-sexe",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "data.humdata.org/dataset/mali-admin-boundaries-level-1-2-and-3-including-2017-population-desagregated-by-sexe"
+      "licenseURL": "data.humdata.org/dataset/mali-admin-boundaries-level-1-2-and-3-including-2017-population-desagregated-by-sexe",
+      "sourceHash": "9d65b9e0a4a86d3dff9e2846f77d35722ddf4ab657d48ec760d90bce0a21f564",
+      "sourceVersion": "geoBoundaries 2015"
     },
     {
       "cartaId": "470",
@@ -1825,7 +2634,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "upload.wikimedia.org/wikipedia/commons/1/1d/DistritosMalta.PNG",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "6fdd6eac31cb0c76f29a119731f0705c7e4cc46459ba8ad11e7d85539e0bcb5b",
+      "sourceVersion": "geoBoundaries 2010"
     },
     {
       "cartaId": "478",
@@ -1838,7 +2649,9 @@
       "source": "World Food Programme and OCHA",
       "sourceURL": "data.humdata.org/dataset/mauritania-administrative-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/mauritania-administrative-boundaries"
+      "licenseURL": "data.humdata.org/dataset/mauritania-administrative-boundaries",
+      "sourceHash": "e6f8709ab22395adee9bc1fb6056e40de808c89a0afcd11c05fe7c7acc47113e",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "480",
@@ -1851,7 +2664,9 @@
       "source": "OpenStreetMap, Wambachers",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8f4cee597c5e2840a65cb2d89e151fa1928d0a0b7506e91aafe3d2b6114ddaf7",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "484",
@@ -1864,7 +2679,9 @@
       "source": "geoBoundaries, World Bank",
       "sourceURL": "datacatalog.worldbank.org/dataset/mexico-municipalities-2012",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "datacatalog.worldbank.org/public-licenses#cc-by"
+      "licenseURL": "datacatalog.worldbank.org/public-licenses#cc-by",
+      "sourceHash": "6a3698980ceabf1c1b0b91975c5c969f5c35293f54d526be46ad6c9459d11921",
+      "sourceVersion": "geoBoundaries 2012"
     },
     {
       "cartaId": "492",
@@ -1877,7 +2694,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "782f642ae163ac729516d8e7faa223f354c32b2719577bb332d7eb7be7e7b7c1",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "496",
@@ -1890,7 +2709,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "2367244dd6c0775d6bf99991765ca8f1734f07b7ffa37da4304cd54c77e08154",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "498",
@@ -1903,7 +2724,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "commons.wikimedia.org/wiki/Category",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "commons.wikimedia.org/wiki/Category"
+      "licenseURL": "commons.wikimedia.org/wiki/Category",
+      "sourceHash": "2bf643bb50560ab7d52dabb8d72f7db232d9c84a651109f522749a43ef8d01e4",
+      "sourceVersion": "geoBoundaries 2014"
     },
     {
       "cartaId": "499",
@@ -1916,7 +2739,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "5878886ab474d94f17607eb7395b62e1a33da0d0758a02ce307da643e20c210b",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "500",
@@ -1929,7 +2754,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "b9eb4cd0cc47b22f108a17705b79a0b4cb7a955f57a41a9eac82b9e399319767",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "504",
@@ -1942,7 +2769,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "03fe92c371a04a1c9e396d86e9462089b6e65f164e63a4a66ca02a404ace5d53",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "508",
@@ -1955,7 +2784,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c758b2fdcbc6b0bbc14ca5dc0bf520952cb6f1ca9689ddc299b41f6bdd269c3c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "512",
@@ -1968,7 +2799,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "d84f5e3c398719a4ab589614dbe0f7bcf093d4abf1648f16a13f838c7ffc9fdc",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "516",
@@ -1981,7 +2814,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "996c53d9239402211e0af1fdc31ca5f9c782fb7f78b3adb94d670009746baaca",
+      "sourceVersion": "geoBoundaries 2014"
     },
     {
       "cartaId": "520",
@@ -1994,7 +2829,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "3f6b35591f16f04b07d5882a38d79c95c80b1754bd34f7f1cba0a5d127688aa3",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "524",
@@ -2007,7 +2844,9 @@
       "source": "Geoboundaries, Open Data Nepal",
       "sourceURL": "opendatanepal.com/dataset/new-political-and-administrative-boundaries-shapefile-of-nepal",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "opendatanepal.com/dataset/new-political-and-administrative-boundaries-shapefile-of-nepal"
+      "licenseURL": "opendatanepal.com/dataset/new-political-and-administrative-boundaries-shapefile-of-nepal",
+      "sourceHash": "d0702e35e0f88aba1d3cb95bab603f3562c49ca61e701431699af4a58fcf98e8",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "528",
@@ -2020,7 +2859,9 @@
       "source": "National Georegister",
       "sourceURL": "nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/208bc283-7c66-4ce7-8ad3-1cf3e8933fb5?tab=relations",
       "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-      "licenseURL": "nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/208bc283-7c66-4ce7-8ad3-1cf3e8933fb5?tab=general"
+      "licenseURL": "nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/208bc283-7c66-4ce7-8ad3-1cf3e8933fb5?tab=general",
+      "sourceHash": "83b3905b4318f506fe4feabc932d9a9425cc7663d5471077cf7f46b79b258902",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "531",
@@ -2033,7 +2874,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "1ecf3b51b28891da666adc6e85706d5dcc71a081162559d2c5474be1ee07efaa",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "533",
@@ -2046,7 +2889,9 @@
       "source": "Sentinel-2 10m LandCover",
       "sourceURL": "livingatlas.arcgis.com/landcover/",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "6d09b2aa3891065cb63b6cb4d8232325504a617d91f28c17c60a51647955f0a6",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "535",
@@ -2059,7 +2904,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "18cf3d053504f7f7f7785c23139a4fe225ced513141ab6681061650bc51139f3",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "540",
@@ -2072,7 +2919,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "fe84a4f9846296fff7bc2270f976b6e7f39e6dcc51cd266f7b183b72ba3d55d0",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "548",
@@ -2085,7 +2934,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "a219d3616d7084e80fb04dc6c9d84d3090ae9db2b962b308a8f42e5fdae58d4e",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "554",
@@ -2098,7 +2949,9 @@
       "source": "NZ Stats",
       "sourceURL": "www.stats.govt.nz/browse_for_stats/Maps_and_geography/Geographic-areas/digital-boundary-files.aspx",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "www.stats.govt.nz/about_us/about-this-site/copyright-terms-of-use.aspx"
+      "licenseURL": "www.stats.govt.nz/about_us/about-this-site/copyright-terms-of-use.aspx",
+      "sourceHash": "83ec1f261a84724bacbf9ad6d93a80b05b4a483f455cc5b7c40cfa668b66273b",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "558",
@@ -2111,7 +2964,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "b510dc3c86d37b35483b597dc851d67e8d03223a397a3e5b7c8babea9beca658",
+      "sourceVersion": "geoBoundaries 2007"
     },
     {
       "cartaId": "562",
@@ -2124,7 +2979,9 @@
       "source": "geoBoundaries, Open Street Map, Converted Lines into Polygon Layer",
       "sourceURL": "mapcruzin.com/free-niger-country-city-place-gis-shapefiles.htm",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "mapcruzin.com/free-niger-country-city-place-gis-shapefiles.htm"
+      "licenseURL": "mapcruzin.com/free-niger-country-city-place-gis-shapefiles.htm",
+      "sourceHash": "2db77d292d611f3242f1efdd94b820c8ad462cc04f439f9e0f80d7d24fddcd21",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "566",
@@ -2137,7 +2994,9 @@
       "source": "GRID3",
       "sourceURL": "data.grid3.org/datasets/grid3-nigeria-state-boundaries/explore?location=8.992006%2C8.685290%2C6.82",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "data.grid3.org/datasets/grid3-nigeria-state-boundaries/explore?location=8.992006%2C8.685290%2C6.82"
+      "licenseURL": "data.grid3.org/datasets/grid3-nigeria-state-boundaries/explore?location=8.992006%2C8.685290%2C6.82",
+      "sourceHash": "22bef6ad05ad58ab1594c8e12199526b4595a857b3955eec41224ca9547f1977",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "570",
@@ -2150,7 +3009,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "835625ce5617a01fbdecd99fde93f5de587d46e07d0dc52c83d7fb0fbf2fd705",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "578",
@@ -2163,7 +3024,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "5d95549efcf268f25c8ccf2bba7716bb17b5aac539e1304377635bc196be740c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "580",
@@ -2176,7 +3039,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "b6c1e4c859b6ad8ddb5d30ffe6f6edc5a25bf0b9b4bbdab7f04535ef05167e7d",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "583",
@@ -2189,7 +3054,9 @@
       "source": "OCHA ROP, Federated States of Micronesia Division of Statistics, 2010 Census of Population and Housing and Secretariat of the Pacific Community, Statistics for Development Division",
       "sourceURL": "data.humdata.org/dataset/fsm-2010-administrative-level-0-2-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "Data https"
+      "licenseURL": "Data https",
+      "sourceHash": "583b5e180784fb9cf9d56fadcb89a883246be0584dd305fc71517c91e798554b",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "584",
@@ -2202,7 +3069,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "13445171e902d4400cb9c3fb02492d212c57a7106612cc69c4f6e5b2ec8d0a12",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "585",
@@ -2215,7 +3084,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "7905de9e65bfa18ff4361f701d4b87598b6298616a84beb634dc6aa236484dbe",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "586",
@@ -2228,7 +3099,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "ce8bbb400c22b037372e4de8be7a90c53af5c23f8ca30fb6654c48acb212fb67",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "591",
@@ -2241,7 +3114,9 @@
       "source": "The World Factbook - CIA",
       "sourceURL": "www.cia.gov/the-world-factbook/countries/panama/map",
       "license": "Public Domain",
-      "licenseURL": "www.cia.gov/the-world-factbook/countries/panama/map"
+      "licenseURL": "www.cia.gov/the-world-factbook/countries/panama/map",
+      "sourceHash": "8f969a6389f9455bb2c3ae5bad1fd1ae1ab93f8909d95ab8cc76e51f670d54be",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "598",
@@ -2254,7 +3129,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "05ba4f47ba5e2d3c08993cf650f27ba4b1d8e366f24b167e352099cd3c29bb7c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "600",
@@ -2267,7 +3144,9 @@
       "source": "Direcion General de Estadica, Encuestas y Censos",
       "sourceURL": "geo.stp.gov.py/user/dgeec/tables/paraguay_2012_departamentos/public",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "twitter.com/WMgeoLab/status/1179001467669078017/photo/1"
+      "licenseURL": "twitter.com/WMgeoLab/status/1179001467669078017/photo/1",
+      "sourceHash": "956dbd0ee51208ed45588bdef7772ea6d4cc8737664e936e3912a40c83b270b8",
+      "sourceVersion": "geoBoundaries 2012"
     },
     {
       "cartaId": "604",
@@ -2280,7 +3159,9 @@
       "source": "Wikimedia Commons",
       "sourceURL": "en.wikipedia.org/wiki/Administrative_divisions_of_Peru",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "af3b5dcffbf0d859138a1c24945e3085ad131b1c6ce942f0dba131e623666afd",
+      "sourceVersion": "geoBoundaries 2008"
     },
     {
       "cartaId": "608",
@@ -2293,7 +3174,9 @@
       "source": "OCHA Philippines, National Mapping and Resource Information Authority",
       "sourceURL": "data.humdata.org/dataset/philippines-administrative-levels-0-to-3",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "Data https"
+      "licenseURL": "Data https",
+      "sourceHash": "618b602a10daff2c9ae6310e1e1f68c148caf230edca857222c6c5aa015d0a29",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "612",
@@ -2306,7 +3189,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "c2f6455f23ed54d1a33f6a0baa153a89469b32adde5943a60eda81909d8866e5",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "616",
@@ -2319,7 +3204,9 @@
       "source": "Wiki Commons Media",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Other - Humanitarian",
-      "licenseURL": "creativecommons.org/licenses/by/2.0/deed.en"
+      "licenseURL": "creativecommons.org/licenses/by/2.0/deed.en",
+      "sourceHash": "a08293a4d5fa478c4218e52950a904f40a626e6af3548973b682957771e7f5ee",
+      "sourceVersion": "geoBoundaries 2011"
     },
     {
       "cartaId": "620",
@@ -2332,7 +3219,9 @@
       "source": "DG Territory",
       "sourceURL": "snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5e3debf1-6cde-4ff2-8301-a86799231906",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5e3debf1-6cde-4ff2-8301-a86799231906"
+      "licenseURL": "snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5e3debf1-6cde-4ff2-8301-a86799231906",
+      "sourceHash": "f8ae870a266e86a1ebc91823fdfd98c69c12ad28b9c52827b9e10f834f06f529",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "624",
@@ -2345,7 +3234,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "879604381a756dac12f5bd0db54264e7326bcc07825a73fd080663391b0bdcb0",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "626",
@@ -2358,7 +3249,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "88cba3b9d28b4ebaf01f17394e10bf1a67b57f8cd4fc74abe9b9c9b2ed5528d9",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "634",
@@ -2371,7 +3264,9 @@
       "source": "Open Street Map, Wambacher (https//wambachers-osm.website/boundaries/)",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "wiki.openstreetmap.org/wiki/Legal_FAQ#What_is_the_license_for_OpenStreetMap.27s_geodata.3F"
+      "licenseURL": "wiki.openstreetmap.org/wiki/Legal_FAQ#What_is_the_license_for_OpenStreetMap.27s_geodata.3F",
+      "sourceHash": "9afaa263f5f2385de40208af9ea0de55a5bc8d9384df241efd7be86b1793eaca",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "642",
@@ -2384,7 +3279,9 @@
       "source": "StatSilk, geoBoundaries",
       "sourceURL": "www.statsilk.com/maps/download-free-shapefile-maps",
       "license": "Creative Commons Attribution 3.0 License",
-      "licenseURL": "www.statsilk.com/license"
+      "licenseURL": "www.statsilk.com/license",
+      "sourceHash": "69b95a1d9ef17646766b4cdeae89fc0d717bd54e6b4d1e999702884f18b586bb",
+      "sourceVersion": "geoBoundaries 2018"
     },
     {
       "cartaId": "643",
@@ -2397,7 +3294,9 @@
       "source": "geoBoundaries, OpenStreetMap",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "2417495bab802f569f6a619f6b0d9218bed16f7655c7ec7606545683bbe1adbc",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "646",
@@ -2410,7 +3309,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "76eb1dddc07062ec412a51364a65650f8d8fdbd40be16d4a68db0637415f9964",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "652",
@@ -2423,7 +3324,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "0d591be3c50817bdfc72e78ba071225d4e11b9cc361199a1e1b4dae26ffe9f8c",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "654",
@@ -2436,7 +3339,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "94c9e525d8f9c12fc1f643f8c61b5f03323587e10d01b8c3109269b4349aa27e",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "659",
@@ -2449,7 +3354,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Creative Commons Attribution 2.5 Generic",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "7de139b327f1e0503d67b45284d80d9d885a73bd96c824c9abc407ec3b1ebd96",
+      "sourceVersion": "geoBoundaries 2006"
     },
     {
       "cartaId": "660",
@@ -2462,7 +3369,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "6fa5dff75ac3ab9d8064c46a5b6ec1d4e307e67d033d100f0a4a6f4b3aac1237",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "662",
@@ -2475,7 +3384,9 @@
       "source": "geoBoundaries, Wikimedia Commons",
       "sourceURL": "upload.wikimedia.org/wikipedia/commons/a/a5/Santa_lucia_Quarters_numbered_English.png",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "dd371a300ecf188ed01d9629a1bde349e5c019893689e87b76d5bec542ce4e81",
+      "sourceVersion": "geoBoundaries 2005"
     },
     {
       "cartaId": "670",
@@ -2488,7 +3399,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c58186849921b1fca83779d3ab614801d7b60f444f36348dc24429ff837a452e",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "674",
@@ -2501,7 +3414,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "2109c65de0bcba5bc61e6d227e1c5669f8244c436fbb433f8a7405c3e8031bed",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "678",
@@ -2514,7 +3429,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "666ecde10c5d7ff4d3f8f2623e0f68d55e3f035691d1d2437d2893089b885a0c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "682",
@@ -2527,7 +3444,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "7908e4f59ae61e5a8a39b1d0e4cea12d576b0a0b8fcee3daf6de80447a8a012d",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "686",
@@ -2540,7 +3459,9 @@
       "source": "Government of Senegal, OCHA ROWCA",
       "sourceURL": "data.humdata.org/dataset/senegal-administrative-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/senegal-administrative-boundaries"
+      "licenseURL": "data.humdata.org/dataset/senegal-administrative-boundaries",
+      "sourceHash": "a80e9b44fe2d9b97e278bf75da2a0f0ce35efac49e31d4c29389e440ccfe6233",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "688",
@@ -2553,7 +3474,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "03a7f63318b09351689666b2f0e149c10d6331abfcc3c3b2070dfc7840d89ebf",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "690",
@@ -2566,7 +3489,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "942dfb20a5ffc9867ef647d98258532ed587b63b1e1e93df90f1837a1d781a93",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "694",
@@ -2579,7 +3504,9 @@
       "source": "openAfrica, geoBoundaries",
       "sourceURL": "africaopendata.org/dataset/sierra-leone-admin-level-4-boundaries",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "africaopendata.org/dataset/sierra-leone-admin-level-4-boundaries"
+      "licenseURL": "africaopendata.org/dataset/sierra-leone-admin-level-4-boundaries",
+      "sourceHash": "c72f39fa78f48e7a63d1acbad702ae92ccbd94258c99da9ad24eeee98971c4d5",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "702",
@@ -2592,7 +3519,9 @@
       "source": "Urban Redevelopment Authority, derived from ADM 3",
       "sourceURL": "data.gov.sg/dataset/master-plan-2014-subzone-boundary-no-sea",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "data.gov.sg/dataset/master-plan-2014-subzone-boundary-no-sea"
+      "licenseURL": "data.gov.sg/dataset/master-plan-2014-subzone-boundary-no-sea",
+      "sourceHash": "d347c753ec38568609f9414da6b85ec46d2a776d1a3c99b9634822735a335c38",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "703",
@@ -2605,7 +3534,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "87727f8afb53a71f14e06fbfe7b3b72a634354e81e2399733277d491fa732a43",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "704",
@@ -2618,7 +3549,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "en.wikipedia.org/wiki/Vietnam#/media/File",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "6d59ad13be1212956005f507fa2ed137b7d09b78320d3ae192e0fa412c530435",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "705",
@@ -2631,7 +3564,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "commons.wikimedia.org/wiki/Category",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki"
+      "licenseURL": "commons.wikimedia.org/wiki",
+      "sourceHash": "5a5c8850536c68609c329623a6b128ac00d36ad7119d25b6ba26dbd468eb833a",
+      "sourceVersion": "geoBoundaries 2009"
     },
     {
       "cartaId": "706",
@@ -2644,7 +3579,9 @@
       "source": "United National Development Programme (UNDP), OCHA Somalia",
       "sourceURL": "data.humdata.org/dataset/somalia-administrative-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/somalia-administrative-boundaries"
+      "licenseURL": "data.humdata.org/dataset/somalia-administrative-boundaries",
+      "sourceHash": "ae7cda4305b463a3a75bec0f7c5486a2abe30b88f98022b20d8b70ad7ebf8642",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "710",
@@ -2657,7 +3594,9 @@
       "source": "OCHA ROSEA, South African Municipal Demarcation Board",
       "sourceURL": "data.humdata.org/dataset/south-africa-admin-level-1-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/south-africa-admin-level-1-boundaries"
+      "licenseURL": "data.humdata.org/dataset/south-africa-admin-level-1-boundaries",
+      "sourceHash": "d4880e6c8d73b5c476731e06870a3a3a2f8081d5a4596208ecf44ef0fe28be95",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "716",
@@ -2670,7 +3609,9 @@
       "source": "Zimbabwe National Statistics Agency (ZIMSTAT www.zimstat.co.zw) Central Statistics Office, OCHA ROSEA",
       "sourceURL": "data.humdata.org/dataset/zimbabwe-administrative-levels-0-3-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/zimbabwe-administrative-levels-0-3-boundaries"
+      "licenseURL": "data.humdata.org/dataset/zimbabwe-administrative-levels-0-3-boundaries",
+      "sourceHash": "242fda94d2ed43f3e93c2e9f68b335f301fcb2a0cc873d56b8a021ff4d80524d",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "724",
@@ -2683,7 +3624,9 @@
       "source": "Instituto de Geografico Nacional",
       "sourceURL": "centrodedescargas.cnig.es/CentroDescargas/index.jsp",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "centrodedescargas.cnig.es/CentroDescargas/index.jsp#"
+      "licenseURL": "centrodedescargas.cnig.es/CentroDescargas/index.jsp#",
+      "sourceHash": "601fe37bde93a59012a493a0cdcfa24d1be52f309dd4205005a2fab6e18890cf",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "728",
@@ -2696,7 +3639,9 @@
       "source": "South Sudan Information Management Working Group (IMWG), National Bureau of Statistics (NBS), and OCHA, OCHA South Sudan",
       "sourceURL": "data.humdata.org/dataset/south-sudan-administrative-boundaries",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/about/license"
+      "licenseURL": "data.humdata.org/about/license",
+      "sourceHash": "b4e16d90bae9413091497065bf474ac64a17d800c5a1dbd86cf98fcd85184d80",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "729",
@@ -2709,7 +3654,9 @@
       "source": "Information Management Working Group (IMWG), OCHA ROSEA",
       "sourceURL": "data.humdata.org/dataset/sudan-administrative-boundaries-levels-0-2",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.humdata.org/dataset/sudan-administrative-boundaries-levels-0-2"
+      "licenseURL": "data.humdata.org/dataset/sudan-administrative-boundaries-levels-0-2",
+      "sourceHash": "41d894bfb9daf7fb1dd17c77e048962147f4c0b52c5b1f6d4f43c191f23a8669",
+      "sourceVersion": "geoBoundaries 2020"
     },
     {
       "cartaId": "740",
@@ -2722,7 +3669,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "339f3060aae78f587cd7fef1245a46f3e7a096cb5b3c355cd3ceb7e2fc4e44e9",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "748",
@@ -2735,7 +3684,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "9776e73024f4bd617467e85cd6d979913c002daa1384e3f2bf2dbe2c9aa91a6c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "752",
@@ -2748,7 +3699,9 @@
       "source": "Open Data Soft, World Food Programme",
       "sourceURL": "public.opendatasoft.com/explore/dataset/world-administrative-boundaries/information/?q=SWE&refine.color_code=SWE&location=6,50.66687,15.23804&basemap=jawg.streets",
       "license": "Open Government Licence v3.0",
-      "licenseURL": "www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      "licenseURL": "www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+      "sourceHash": "b6a58dd375c68f024b42124a9ba62198df3beeea3539de84d7ebae0e24daa848",
+      "sourceVersion": "geoBoundaries 2019"
     },
     {
       "cartaId": "756",
@@ -2761,7 +3714,9 @@
       "source": "Federal Office of Topography swisstopo",
       "sourceURL": "www.swisstopo.admin.ch/en/geodata/landscape/boundaries3d.html",
       "license": "Federal Office of Topography swisstopo License",
-      "licenseURL": "www.swisstopo.admin.ch/en/home/meta/conditions/geodata/ogd.html"
+      "licenseURL": "www.swisstopo.admin.ch/en/home/meta/conditions/geodata/ogd.html",
+      "sourceHash": "dfbbc0c6ba14faf03521c396b9e627d8f576235dcfb14e7dfe25c58963ae0ee0",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "760",
@@ -2774,7 +3729,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "9ce5373686efe3f6e0585abfa16ce310a32985af22f8c58e1585c36ff45c6d10",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "762",
@@ -2787,7 +3744,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "98cd5e4e83b5b5b43617c10be56848435394032d9af7c1bc1b9e51743f04c2c8",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "764",
@@ -2800,7 +3759,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "16e8f650e4ffddd0f45b49c7357a0202bda271763940e3bb0c12a680a4510b38",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "768",
@@ -2813,7 +3774,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c0c3ad2bbfa5526079eab772156ebe939e1ae92099163909adb92800e141e40c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "772",
@@ -2826,7 +3789,9 @@
       "source": "raster 2 polygon from Sentinel-2 10m Land Cover where Image Year = 2022 / exclude gridcode = 1 (water) / dissolve",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "livingatlas.arcgis.com/landcover/"
+      "licenseURL": "livingatlas.arcgis.com/landcover/",
+      "sourceHash": "257b31214c1d66307a829de7441b4a91f4276fa5b2b8d3cf61f05d460d096486",
+      "sourceVersion": "geoBoundaries 2022"
     },
     {
       "cartaId": "776",
@@ -2839,7 +3804,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "106f993f53bf2cba6adf6b1b91b30c6b78788c11c6f1dc5897af4081f8a07df9",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "780",
@@ -2852,7 +3819,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "898660f34135bb61e8f31d547f88800a5ed646656ce5c13a93e0dfb23b878a2a",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "784",
@@ -2865,7 +3834,9 @@
       "source": "geoBoundaries, Wikipedia",
       "sourceURL": "en.wikipedia.org/wiki/Outline_of_the_United_Arab_Emirates#/media",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "da199c6e4356c77476d8b5c7e013fb4f29159c0904971609df03ead45ce1fd2b",
+      "sourceVersion": "geoBoundaries 1995"
     },
     {
       "cartaId": "788",
@@ -2878,7 +3849,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "8882fb2cee2489e8c063bb5abda779640d9146a5ed79b94017d57587f850ccc3",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "792",
@@ -2891,7 +3864,9 @@
       "source": "Open Street Map",
       "sourceURL": "osm-boundaries.com/",
       "license": "Creative Commons Attribution-ShareAlike 2.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "263ed2d7855f4cd23a8314a12c0a2bec773dc0dbe62a4e40d3a6a687939f7379",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "795",
@@ -2904,7 +3879,9 @@
       "source": "geoBoundaries, Wikimedia",
       "sourceURL": "commons.wikimedia.org/wiki/File",
       "license": "Public Domain",
-      "licenseURL": "commons.wikimedia.org/wiki/File"
+      "licenseURL": "commons.wikimedia.org/wiki/File",
+      "sourceHash": "2ba70337beac093ec58b22fe8d152a31bd9cec62856fc98228e47f018a88f4e0",
+      "sourceVersion": "geoBoundaries 2007"
     },
     {
       "cartaId": "796",
@@ -2917,7 +3894,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "6f0424f68214add63c14cd01ec5de38a2336efa5b353f5c210039e657b477e26",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "798",
@@ -2930,7 +3909,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "84aad1891d78f181ebd0b4898772c6258f98c51ca7aaef2053fadb8f12ac385e",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "800",
@@ -2943,7 +3924,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "f14dd18dd29d37e87bed1af382604fe6544a0b917bb87aca0c6626b290cacc3c",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "804",
@@ -2956,7 +3939,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "c7266254f5d3994b4fb2019c861cb4f01775b7ad96c949fc84f892d56d9cfa7f",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "807",
@@ -2969,7 +3954,9 @@
       "source": "EuroGeographics, Regional IM Working Group - Europe",
       "sourceURL": "data.humdata.org/dataset/fyrom-administrative-levels-1-4-from-eurogeographics-and-ntes",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "data.humdata.org/dataset/fyrom-administrative-levels-1-4-from-eurogeographics-and-ntes"
+      "licenseURL": "data.humdata.org/dataset/fyrom-administrative-levels-1-4-from-eurogeographics-and-ntes",
+      "sourceHash": "ce488a9c2e6a8f8413022b23347aa0c113c72e5f04da6f90e60dc2405f40ca53",
+      "sourceVersion": "geoBoundaries 2016"
     },
     {
       "cartaId": "818",
@@ -2982,7 +3969,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "98df760d52d0940cc838a0d309348374dcf8626c40a1e71f00cec432c7ca7bae",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "831",
@@ -2995,7 +3984,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "a05a097b9ae50942270600237ceb20d62a782707b25cd4ca91af6ae9d6397bda",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "833",
@@ -3008,7 +3999,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "e0daabd6e33db868f1969e571416450968d8eb7420c63c02ead1ea6b6d8fdc88",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "834",
@@ -3021,7 +4014,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "80678503a41b5a2aa6bca17f1f94346db067b547d8b1267ddde8efdbb5b1ff2f",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "840",
@@ -3034,7 +4029,9 @@
       "source": "United States Census Bureau, MAF/TIGER Database",
       "sourceURL": "www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html",
       "license": "Public Domain",
-      "licenseURL": "www.census.gov/programs-surveys/geography/technical-documentation/naming-convention/cartographic-boundary-file.html"
+      "licenseURL": "www.census.gov/programs-surveys/geography/technical-documentation/naming-convention/cartographic-boundary-file.html",
+      "sourceHash": "4969e043fd82cd65d6976830454b6a2592d1cf8548ce7dadb0d20cd99f5313c1",
+      "sourceVersion": "geoBoundaries 2018"
     },
     {
       "cartaId": "850",
@@ -3047,7 +4044,9 @@
       "source": "Sentinel-2 10-Meter Land Use/LandCover",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "c59a52d68bc8b390ee0d48650d6c08ead4d276e216f2fe57a6fa864c01380c89",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "854",
@@ -3060,7 +4059,9 @@
       "source": "GeoBoundaries, World Bank",
       "sourceURL": "datacatalog.worldbank.org/dataset/burkina-faso-administrative-boundaries-2017",
       "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
-      "licenseURL": "datacatalog.worldbank.org/public-licenses#cc-by"
+      "licenseURL": "datacatalog.worldbank.org/public-licenses#cc-by",
+      "sourceHash": "37ee409289f46ecc1277515d176a86e1b8680e5cc21f9313aee458dc7c1a0c48",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "858",
@@ -3073,7 +4074,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "cca293333d70510fd1c3d0ef3a2e764698e49e4313df0f9a9bb8680b21bc8715",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "860",
@@ -3086,7 +4089,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "eff6006fe728a782d3dc4569df83e216598dc06765a6706980aef63551901376",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "862",
@@ -3099,7 +4104,9 @@
       "source": "Natural Earth",
       "sourceURL": "www.naturalearthdata.com/downloads/10m-cultural-vectors/",
       "license": "Public Domain",
-      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/"
+      "licenseURL": "www.naturalearthdata.com/about/terms-of-use/",
+      "sourceHash": "75a118660b466d5158e7b340f68316637f7a32f1449dd14d9a34634dd1484780",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "876",
@@ -3112,7 +4119,9 @@
       "source": "raster2polygon from Sentinel-2 10m Land Cover where Image Year = 2021 / exclude gridcode = 1 (water) / dissolve / processed by IMB",
       "sourceURL": "env1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer",
       "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+      "licenseURL": "sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+      "sourceHash": "015702f68d17a38520a586dc10db1e8775c05fd30065594666dd2e8cca8127c5",
+      "sourceVersion": "geoBoundaries 2021"
     },
     {
       "cartaId": "882",
@@ -3125,7 +4134,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "d553c39353df082e51df3a4d0c60df4e79300ad86a59aa3a2f9bc6f167961a9e",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "887",
@@ -3138,7 +4149,9 @@
       "source": "OpenStreetMap, Wambacher",
       "sourceURL": "wambachers-osm.website/boundaries/",
       "license": "Open Data Commons Open Database License 1.0",
-      "licenseURL": "www.openstreetmap.org/copyright"
+      "licenseURL": "www.openstreetmap.org/copyright",
+      "sourceHash": "9085296623dfe25e44651f1c9e447024e20abaca3aeacfe128b1d1be94be0de7",
+      "sourceVersion": "geoBoundaries 2017"
     },
     {
       "cartaId": "894",
@@ -3151,7 +4164,69 @@
       "source": "Disaster Management and Mitigation Unit (DMMU) Zambia, OCHA ROSEA",
       "sourceURL": "data.grid3.org/datasets/GRID3",
       "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
-      "licenseURL": "data.grid3.org/datasets/GRID3"
+      "licenseURL": "data.grid3.org/datasets/GRID3",
+      "sourceHash": "75f9c768a51fdf61ad1ac06024d253385ce44b505f8be3bdd7aa056de9ea3843",
+      "sourceVersion": "geoBoundaries 2020"
+    },
+    {
+      "cartaId": "gb-eng",
+      "status": "geoboundaries",
+      "resolution": "simplified-first",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "boundaryID": "GBR-ADM1-14339913:England",
+      "year": "2021",
+      "buildDate": "Dec 12, 2023",
+      "source": "Eurostat- European Commission",
+      "sourceURL": "ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseURL": "ec.europa.eu/info/legal-notice_en",
+      "sourceHash": "22b69feadc23622a05d273479ab1915cace89355f6918157a1bc480cb80c3dcd",
+      "sourceVersion": "geoBoundaries GBR ADM1 2021"
+    },
+    {
+      "cartaId": "gb-sct",
+      "status": "geoboundaries",
+      "resolution": "simplified-first",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "boundaryID": "GBR-ADM1-14339913:Scotland",
+      "year": "2021",
+      "buildDate": "Dec 12, 2023",
+      "source": "Eurostat- European Commission",
+      "sourceURL": "ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseURL": "ec.europa.eu/info/legal-notice_en",
+      "sourceHash": "22b69feadc23622a05d273479ab1915cace89355f6918157a1bc480cb80c3dcd",
+      "sourceVersion": "geoBoundaries GBR ADM1 2021"
+    },
+    {
+      "cartaId": "gb-wls",
+      "status": "geoboundaries",
+      "resolution": "simplified-first",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "boundaryID": "GBR-ADM1-14339913:Wales",
+      "year": "2021",
+      "buildDate": "Dec 12, 2023",
+      "source": "Eurostat- European Commission",
+      "sourceURL": "ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseURL": "ec.europa.eu/info/legal-notice_en",
+      "sourceHash": "22b69feadc23622a05d273479ab1915cace89355f6918157a1bc480cb80c3dcd",
+      "sourceVersion": "geoBoundaries GBR ADM1 2021"
+    },
+    {
+      "cartaId": "gb-nir",
+      "status": "geoboundaries",
+      "resolution": "simplified-first",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GBR/ADM1/geoBoundaries-GBR-ADM1.geojson",
+      "boundaryID": "GBR-ADM1-14339913:Northern Ireland",
+      "year": "2021",
+      "buildDate": "Dec 12, 2023",
+      "source": "Eurostat- European Commission",
+      "sourceURL": "ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseURL": "ec.europa.eu/info/legal-notice_en",
+      "sourceHash": "22b69feadc23622a05d273479ab1915cace89355f6918157a1bc480cb80c3dcd",
+      "sourceVersion": "geoBoundaries GBR ADM1 2021"
     },
     {
       "cartaId": "86",
@@ -3290,38 +4365,6 @@
       "reason": "sem correspondência geoBoundaries"
     },
     {
-      "cartaId": "gb-eng",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-sct",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-wls",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
-      "cartaId": "gb-nir",
-      "status": "legacy-fallback",
-      "source": "Carta Cega 0.13.5 legacy-map.json",
-      "sourceURL": "public/data/legacy-map.json (sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1)",
-      "license": "Inherited legacy provenance; verify before redistribution",
-      "reason": "sem correspondência geoBoundaries"
-    },
-    {
       "cartaId": "sh-ac",
       "status": "legacy-fallback",
       "source": "Carta Cega 0.13.5 legacy-map.json",
@@ -3359,12 +4402,14 @@
     "checks": [
       "250/250 IDs jogáveis preservados no catálogo e no PMTiles",
       "Cobertura do Caribe e do Pacífico conferida por carta_id",
-      "Header PMTiles, zoom 0–9, ranges e layer countries válidos"
+      "Header PMTiles, zoom 0–9, ranges e layer countries válidos",
+      "Histórico explícito dos 25 fallbacks originais preservado em fallbackHistory",
+      "gb-eng, gb-sct, gb-wls e gb-nir substituídos por geoBoundaries GBR ADM1 CC BY 4.0"
     ],
     "limitations": [
-      "25 entidades usam geometria legada licenciada/documentada como fallback.",
+      "21 entidades usam geometria legada licenciada/documentada como fallback atual; fallbackHistory lista os 25 IDs originais.",
       "A aceitação é estrutural; desempenho visual em aparelhos low/mid ainda requer matriz física.",
-      "As fontes geoBoundaries mantêm a proveniência e licença registrada por entidade."
+      "As fontes geoBoundaries mantêm a proveniência, versão, hash e licença registrada por entidade."
     ],
     "fallbackProvenance": "Carta Cega 0.13.5 · public/data/legacy-map.json · sourceHash cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1"
   }

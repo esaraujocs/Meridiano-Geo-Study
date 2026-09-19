@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { PMTiles, tileIdToZxy } from "pmtiles";
 import { VectorTile } from "@mapbox/vector-tile";
 import { PbfReader } from "pbf";
+import { auditCoastlines } from "./coastline-audit.mjs";
 
 const root = new URL("../", import.meta.url);
 const manifest = JSON.parse(
@@ -27,6 +28,32 @@ const source = {
 const archive = new PMTiles(source);
 const header = await archive.getHeader();
 
+const synthetic = auditCoastlines([
+  {
+    type: "Feature",
+    properties: { carta_id: "shared-a" },
+    geometry: {
+      type: "Polygon",
+      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]],
+    },
+  },
+  {
+    type: "Feature",
+    properties: { carta_id: "shared-b" },
+    geometry: {
+      type: "MultiPolygon",
+      coordinates: [
+        [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]],
+        [[[10, 0], [10.1, 0], [10.1, 0.1], [10, 0.1], [10, 0]]],
+      ],
+    },
+  },
+]);
+assert.equal(synthetic.get("shared-a").sharedLandBorderSegments, 1);
+assert.ok(synthetic.get("shared-a").coastlineKm > 0);
+assert.ok(synthetic.get("shared-b").coastlineKm > 0);
+assert.equal(synthetic.get("shared-b").sharedLandBorderSegments, 1);
+
 assert.equal(manifest.status, "accepted-with-documented-fallbacks");
 assert.equal(bytes.byteLength, manifest.bytes.pmtiles);
 assert.equal(header.minZoom, manifest.zoom.min);
@@ -34,6 +61,36 @@ assert.equal(header.maxZoom, manifest.zoom.max);
 assert.ok(header.numTileEntries > 0);
 assert.ok(header.numTileContents > 0);
 assert.equal(manifest.counts.playableEntities, 250);
+assert.equal(manifest.fallbackHistory.length, 25);
+assert.ok(manifest.outliers?.metricNames?.coastlineKm);
+assert.ok(manifest.outliers?.metricNames?.verticesPerCoastlineKm);
+for (const entity of [
+  ...manifest.outliers.worstHighDensity,
+  ...manifest.outliers.worstLowDensity,
+]) {
+  assert.ok(Number.isFinite(entity.coastlineKm));
+  assert.ok(entity.coastlineKm > 0);
+  assert.ok(Number.isFinite(entity.coastlineVertices));
+  assert.ok(Number.isFinite(entity.verticesPerCoastlineKm));
+  assert.ok(Number.isFinite(entity.regionalMedianVerticesPerCoastlineKm));
+  assert.ok(Number.isFinite(entity.densityRatioToRegionalMedian));
+  assert.ok(entity.regionalMedianVerticesPerCoastlineKm > 0);
+  assert.ok(
+    Math.abs(
+      entity.densityRatioToRegionalMedian -
+        entity.verticesPerCoastlineKm /
+          entity.regionalMedianVerticesPerCoastlineKm,
+    ) < 1e-9,
+    "razão de densidade não usa a mediana regional",
+  );
+}
+for (const id of ["gb-eng", "gb-sct", "gb-wls", "gb-nir"]) {
+  const source = manifest.sources.find((item) => item.cartaId === id);
+  assert.ok(source, `${id} ausente do manifesto`);
+  assert.match(source.url, /GBR-ADM1\.geojson$/);
+  assert.match(source.sourceVersion, /GBR ADM1/);
+  assert.equal(source.license, "Creative Commons Attribution 4.0 International (CC BY 4.0)");
+}
 
 const playable = Object.entries(catalog.meta)
   .filter(([, meta]) => meta.mapa !== false && !meta.soBandeira && !meta.absorvido)

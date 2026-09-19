@@ -56,7 +56,6 @@ export type SpecialVariant =
 export type AnyQuizVariant = QuizVariant | SpecialVariant;
 export type Screen =
   | "hub"
-  | "variant"
   | "recorte"
   | "game"
   | "progress"

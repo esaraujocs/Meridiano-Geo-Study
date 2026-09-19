@@ -84,3 +84,41 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 .hud-overflow{order:4;position:relative;color:var(--text-dark)}.hud-overflow summary{list-style:none;cursor:pointer;font-size:22px;line-height:1;padding:5px 9px}.hud-overflow summary::-webkit-details-marker{display:none}.hud-overflow>div{position:absolute;right:0;top:34px;z-index:8;display:grid;min-width:150px;padding:6px;background:var(--dark-surface);border:1px solid var(--line);box-shadow:3px 3px 0 rgba(0,0,0,.18)}.hud-overflow button{border:0;background:transparent;color:var(--text-dark);text-align:left;padding:9px;font-size:11px}.hud-overflow button:hover{background:rgba(246,239,223,.12)}
 @media (max-width:760px){.map-stage{height:100dvh!important;min-height:0!important}.map-panel{height:58px!important;min-height:58px!important;padding:8px 12px!important;display:flex!important;flex-direction:row!important}.map-panel .back{display:inline-flex!important}.map-panel .target{display:block!important;font-size:14px!important;max-width:none!important;margin:0!important}.map-panel .score-box{position:static!important;margin-left:auto!important;width:auto!important}.map-panel .target-kicker,.map-panel h1,.map-panel .eyebrow,.map-panel .feedback,.map-panel>.button{display:none!important}.map-wrap{height:100dvh!important;min-height:0!important}.variant-track{padding-inline:34px}.variant-card{flex-basis:calc(100vw - 68px)}}
 @media (max-width:899px){.family-grid.is-carousel{justify-content:center;overflow:hidden;padding-inline:10px}.family{flex-basis:clamp(260px,70vw,420px);scroll-snap-align:center}.family-grid.is-carousel .family:not(.active){opacity:.7;transform:scale(.94);pointer-events:none}}
+
+/* Lote 3: tactile gameplay surfaces */
+.map-crosshair{opacity:0;transition:opacity .22s ease}.map-crosshair.is-visible{opacity:1}
+.map-crosshair span{position:absolute;top:43px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:6px 9px;border:1px solid rgba(246,239,223,.5);border-radius:var(--radius);background:rgba(20,38,36,.92);color:#f6efdf;font:10px 'DM Mono'}
+.map-target-overlay{position:absolute;z-index:3;top:86px;left:50%;transform:translateX(-50%);display:grid;gap:4px;text-align:center;padding:11px 18px;border:1px solid rgba(199,182,143,.7);border-radius:var(--radius);background:rgba(20,38,36,.94);color:#d5cba8;pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.map-target-overlay span{font:10px 'DM Mono';text-transform:uppercase;letter-spacing:.15em}.map-target-overlay strong{font-family:'Fraunces',Georgia,serif;font-size:clamp(24px,3vw,42px);color:#f6efdf;line-height:1}
+.quiz-prompt .target-kicker{font-size:clamp(18px,2vw,24px);font-weight:700;letter-spacing:-.02em;color:var(--ink);text-transform:none}
+.quiz-option{border-radius:var(--radius);min-height:88px}.quiz-option img{width:100%;height:auto;min-height:120px;max-height:190px;object-fit:contain;object-position:center}
+.quiz-options:has(input){display:flex;align-items:stretch;gap:0}.quiz-options:has(input) input{flex:1;min-height:58px;border:1px solid var(--line);border-right:0;border-radius:var(--radius) 0 0 var(--radius);background:var(--paper);color:var(--ink);padding:0 16px;font:20px 'Plus Jakarta Sans'}.quiz-options:has(input) .button{min-height:58px;border-radius:0 var(--radius) var(--radius) 0}
+.variant-chips{margin-bottom:24px}.chip-locked{border-style:dashed;color:var(--terracotta)}.config-section-title{border-top:1px solid var(--line);padding-top:18px}
+.family{transition:transform .3s cubic-bezier(.22,.8,.24,1),opacity .3s ease,border-color .2s ease}.carousel-arrow{display:grid;place-items:center}.carousel-arrow-prev svg{transform:rotate(180deg)}.carousel-arrow-next svg{transform:none}.map-focused .map-crosshair:not(.is-visible){opacity:0}
+@media (prefers-reduced-motion:reduce){.family,.map-crosshair{transition:none!important}}
+
+/* Contrast guardrails for the smoke contract */
+.button{color:#fff4df}.map-panel .back,.quiz-panel .back{color:#d8d0b9}.feedback{color:#245e58}.feedback-success{color:#205e55}.feedback-error{color:#93452f}.surface .eyebrow{color:#245e58}.surface .rarity-0.is-locked .eyebrow,.surface .achievement strong{color:#59655d}
+.quiz-flag{height:auto;max-height:none;object-fit:contain}
+.button.coral{color:#fff4df}.collection-card.is-locked .eyebrow{color:#59655d!important}.achievement strong{color:#59655d!important}.map-panel .score-box span,.map-target-overlay span{color:#ded5ba}
+.button:disabled{opacity:1;color:#fff4df}.surface .eyebrow,.surface .achievement strong{color:#59655d!important}.map-panel span,.map-target-overlay span{color:#ded5ba!important}
+.button.coral{background:#8e4937}.surface .eyebrow,.surface .achievement strong,.collection-card.is-locked .eyebrow{color:#364943!important}.map-target-overlay span{color:#f0e6cd!important}
+.collection-card .eyebrow,.historical-card .eyebrow{color:#243b3a!important}.map-stage span{color:#f0e6cd!important}
+.hero-side .mono,.diagnostic .eyebrow,.legacy .eyebrow{color:#364943!important}
+.collection-card.is-locked{opacity:1}.map-stage span{opacity:1!important;color:#fff4df!important}
+.geometry-main>.feedback{font-size:20px;color:#245e58}
+.map-stage .maplibregl-ctrl-attrib,.map-stage .maplibregl-ctrl-attrib a{color:#f0e6cd!important}
+.map-stage .maplibregl-ctrl-attrib{background:rgba(20,38,36,.94)!important}.quiz-option img{width:calc(100% + 32px);margin-left:-16px}
+.quiz-option:has(img){padding-inline:0}
+.map-stage div:nth-child(3)>span{color:#fff4df!important;background:rgba(20,38,36,.94)!important}
+
+/* Collection albums */
+.collection-tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.collection-tabs button{border:1px solid var(--line);border-radius:var(--radius);background:transparent;color:var(--ink);padding:8px 13px;font-size:11px}
+.collection-tabs button[aria-selected=true]{border-color:var(--green);background:rgba(47,111,106,.12);font-weight:800}
+.collection-check{display:flex;align-items:center;gap:5px}
+.historical-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}
+.historical-grid .historical-card{display:flex;flex-direction:column;align-items:stretch;gap:8px;min-height:156px;border:1px solid var(--line);padding:10px}
+.historical-grid .collection-flag,.historical-grid .collection-placeholder{width:100%;height:105px;object-fit:contain;flex:none}
+.historical-grid .collection-placeholder{display:grid;place-items:center;background:var(--line);color:var(--muted)}
+.historical-grid .eyebrow{font-size:9px;line-height:1.3}

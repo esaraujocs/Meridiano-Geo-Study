@@ -1,7 +1,7 @@
 export const MAP_URL = "/maps/carta-boundary-candidate.pmtiles";
-export const MAP_BYTES = 27_741_358;
+export const MAP_BYTES = 27_823_584;
 export const MAP_VERSION =
-  "bacb912022100213501a4f57bd7a564df7b65e6b0a643bdb3f42f3bd33456ca7";
+  "5781307c2aad1358a93311a32f0740723ba98a0104a29aaa10fdde2537a49316";
 const OPFS_FILE = `carta-boundary-candidate-${MAP_VERSION}.pmtiles`;
 
 export type OfflineMapStatus =

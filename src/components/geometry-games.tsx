@@ -54,6 +54,14 @@ function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "t
         await handle.finish();
       }
     },
+    async abandon() {
+      const handle = ref.current ?? await pending.current?.catch(() => null);
+      ref.current = null;
+      if (handle) {
+        queued.current.splice(0).forEach((round) => handle.recordRound(round));
+        await handle.end({ complete: false });
+      }
+    },
   };
 }
 
@@ -65,9 +73,10 @@ export function GeometryGame({ family, variant, data, region, onBack, onEnd }: P
 
 function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "family">) {
   const session = useSession("silhueta", variant === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta", region);
-  const finish = async () => {
-    await session.finish();
-    (onEnd ?? onBack)();
+  const leave = async (home = false) => {
+    await session.abandon();
+    if (home) location.href = "/";
+    else onBack();
   };
   const [features, setFeatures] = useState<Map<string, Feature<Geometry>> | null>(null);
   const [target, setTarget] = useState("");
@@ -125,10 +134,10 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
   if (error) return <GeometryError error={error} onBack={onBack} />;
   if (!features || !target) return <LoadingGeometry />;
   return <div className="app-shell"><div className="quiz-stage">
-     <aside className="quiz-panel"><button className="back" onClick={() => void finish()}>← Encerrar sessão</button>
+     <aside className="quiz-panel"><button className="back" onClick={() => void leave()}>← Encerrar sessão</button>
       <div className="eyebrow">Silhueta</div>
        <div className="score-box"><div><span>progresso</span><b>{ids.length - (deck.current?.remaining ?? ids.length)}/{ids.length}</b></div><div><span>acertos</span><b>{score}</b></div><div><span>sequência</span><b>{streak}</b></div></div>
-       <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void session.finish().then(onBack)}>Voltar ao recorte</button><button type="button" onClick={() => void session.finish().then(() => { location.href = "/"; })}>Início</button></div></details>
+        <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void leave()}>Voltar ao recorte</button><button type="button" onClick={() => void leave(true)}>Início</button></div></details>
     </aside>
     <main className="quiz-main geometry-main">
       <div className="silhouette-frame"><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label="Silhueta geográfica"><path d={path.d} /></svg></div>
@@ -156,9 +165,10 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
 
 function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const session = useSession("travel", "travel", region);
-  const finish = async () => {
-    await session.finish();
-    (onEnd ?? onBack)();
+  const leave = async (home = false) => {
+    await session.abandon();
+    if (home) location.href = "/";
+    else onBack();
   };
   const [features, setFeatures] = useState<Map<string, Feature<Geometry>> | null>(null);
   const [route, setRoute] = useState<string[] | null>(null);
@@ -236,10 +246,10 @@ function TravelGame({ data, region, onBack, onEnd }: Omit<Props, "family">) {
   const routeFeatures = activeRoute.map((id) => features.get(id)).filter(Boolean) as Feature<Geometry>[];
   const routePath = pathForFeatures(routeFeatures, 420, 190);
   return <div className="app-shell"><div className="quiz-stage">
-      <aside className="quiz-panel"><button className="back" onClick={() => void finish()}>← Encerrar sessão</button>
+      <aside className="quiz-panel"><button className="back" onClick={() => void leave()}>← Encerrar sessão</button>
       <div className="eyebrow">Travel</div>
       <div className="score-box"><div><span>progresso</span><b>{round}/{destinations.length}</b></div><div><span>acertos</span><b>{score}</b></div><div><span>sequência</span><b>{streak}</b></div></div>
-      <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void session.finish().then(onBack)}>Voltar ao recorte</button><button type="button" onClick={() => void session.finish().then(() => { location.href = "/"; })}>Início</button></div></details>
+       <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={() => void leave()}>Voltar ao recorte</button><button type="button" onClick={() => void leave(true)}>Início</button></div></details>
     </aside>
     <main className="quiz-main geometry-main">
       <div className="travel-destination">Destino: <strong>{data.meta[activeRoute.at(-1)!]?.pt}</strong> · tentativas {attempts}/10 · pistas {hints}/3</div>

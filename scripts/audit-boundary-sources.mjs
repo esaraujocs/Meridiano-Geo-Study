@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const API = "https://www.geoboundaries.org/api/current/gbOpen/ALL/ADM0/";
+const UK_ADM1_API =
+  "https://www.geoboundaries.org/api/current/gbOpen/GBR/ADM1/";
 const root = new URL("../", import.meta.url);
 const legacy = JSON.parse(
   await readFile(new URL("public/data/legacy-map.json", root), "utf8"),
@@ -15,6 +17,13 @@ if (!response.ok) {
 }
 
 const boundaries = await response.json();
+const ukResponse = await fetch(UK_ADM1_API, {
+  headers: { "user-agent": "Carta-Cega-boundary-audit/1.0" },
+});
+if (!ukResponse.ok) {
+  throw new Error(`geoBoundaries ADM1 GBR respondeu ${ukResponse.status}.`);
+}
+const ukBoundary = await ukResponse.json();
 const byIso = new Map(boundaries.map((item) => [item.boundaryISO, item]));
 const isoUsage = new Map();
 
@@ -37,6 +46,13 @@ const rows = Object.entries(legacy.meta).map(([id, meta]) => {
       ? "full-resolution"
       : "simplified-first";
 
+  const ukRegion =
+    {
+      "gb-eng": "England",
+      "gb-sct": "Scotland",
+      "gb-wls": "Wales",
+      "gb-nir": "Northern Ireland",
+    }[id] ?? null;
   return {
     cartaId: id,
     name: meta.pt,
@@ -49,7 +65,22 @@ const rows = Object.entries(legacy.meta).map(([id, meta]) => {
         ? "legacy-extra"
         : "legacy-topology-or-none",
     recommendedResolution: priority,
-    match: source
+    match: ukRegion
+      ? {
+          boundaryID: `${ukBoundary.boundaryID}:${ukRegion}`,
+          boundaryName: ukRegion,
+          year: ukBoundary.boundaryYearRepresented,
+          buildDate: ukBoundary.buildDate,
+          source: ukBoundary.boundarySource,
+          sourceURL: ukBoundary.boundarySourceURL,
+          license: ukBoundary.boundaryLicense,
+          licenseURL: ukBoundary.licenseSource,
+          fullGeoJSON: ukBoundary.gjDownloadURL,
+          simplifiedGeoJSON: ukBoundary.simplifiedGeometryGeoJSON,
+          admLevel: "ADM1",
+          featureName: ukRegion,
+        }
+      : source
       ? {
           boundaryID: source.boundaryID,
           boundaryName: source.boundaryName,
@@ -76,6 +107,7 @@ const duplicateIso = [...isoUsage.entries()]
 const report = {
   generatedFrom: {
     api: API,
+    ukAdm1Api: UK_ADM1_API,
     cartaSourceVersion: legacy.sourceVersion,
     cartaSourceHash: legacy.sourceHash,
   },

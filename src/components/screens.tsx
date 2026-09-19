@@ -36,7 +36,6 @@ export function Header({ legacy, economy, onSurface, onGrantCoins, onUnlockConte
       </a>
       <div className="top-actions">
         <span className="pill mono">{economy?.balance ?? 0} moedas · {economy?.coverage ?? 0} dominados</span>
-        {onSurface && <button className="surface-menu" onClick={() => onSurface("progress")}>Progresso</button>}
         <button className="icon-button" aria-label="Abrir opções" onClick={() => setOptionsOpen((value) => !value)}><Icon type="settings" /></button>
         {legacy?.detected && (
           <span className="pill" style={{ color: "var(--gold)" }}>
@@ -120,8 +119,8 @@ export function Hub({
       <div className="hero-row">
         <div>
            <div className="eyebrow">Atlas de campo / partida local</div>
-           <h1 style={{ marginTop: 14 }}>Escolha o modo</h1>
-           <p className="lede">Jogue por mapa, bandeiras, capitais ou idiomas.</p>
+            <h1 style={{ marginTop: 14 }}>Escolha uma partida</h1>
+            <p className="lede">Um recorte. Uma pergunta. O atlas responde.</p>
         </div>
         <div className="hero-side">
           <span className="mono" style={{ color: "var(--aqua)" }}>
@@ -140,14 +139,14 @@ export function Hub({
         </div>
       </div>
       <div className="section-label">
-         <h2>Modos</h2>
+         <h2>Famílias</h2>
            <span className="mono">{economy ? `${economy.unlocked.length} liberadas` : "carregando economia"}</span>
-      </div>
+       </div>
       {onSurface && <nav className="surface-nav" aria-label="Arquivo local">
-        {(["progress", "collection", "achievements", "history"] as const).map((item) => <button key={item} onClick={() => onSurface(item)}>{item === "progress" ? "Progresso" : item === "collection" ? "Coleção" : item === "achievements" ? "Conquistas" : "Histórico"}</button>)}
+         {(["progress", "collection", "achievements", "history"] as const).map((item) => <button key={item} onClick={() => onSurface(item)}>{item === "progress" ? "Progresso" : item === "collection" ? "Coleção" : item === "achievements" ? "Achievements" : "Histórico"}</button>)}
       </nav>}
       <div className="family-carousel">
-         <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}>‹</button>
+          <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>
         <div
           className={`family-grid ${carouselMode ? "is-carousel" : ""}`}
           role="region"
@@ -177,7 +176,7 @@ export function Hub({
           </button>;
         })}
         </div>
-         <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}>›</button>
+          <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>
         <div className="carousel-dots" aria-label="Posição no carrossel">
           {Array.from({ length: familyCount }, (_, index) => (
             <button type="button" key={index} aria-label={`Ir para família ${index + 1}`} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
@@ -209,7 +208,7 @@ export function Hub({
                     : "Baixar mapa offline · 27,7 MB"}
           </button>
         </div>
-        <div className="legacy"><div className="eyebrow">Atlas pessoal</div><p>Seu progresso, coleção, conquistas e histórico ficam neste dispositivo.</p><button className="button ghost" style={{ marginTop: 12 }} onClick={() => onSurface?.("collection")}>Abrir coleção <Icon type="arrow" /></button></div>
+         <div className="legacy"><div className="eyebrow">Estudo offline</div><p>O mapa continua disponível mesmo sem conexão.</p></div>
       </div>
     </main>
   );
@@ -301,6 +300,8 @@ export function Recorte({
   onlyUn,
   setOnlyUn,
     setVariant,
+  topFamily,
+  onFamilyChange,
 }: {
   data: Legacy;
   family: Family;
@@ -315,6 +316,8 @@ export function Recorte({
   onlyUn: boolean;
   setOnlyUn: (value: boolean) => void;
   setVariant: (variant: AnyQuizVariant) => void;
+  topFamily: TopFamily;
+  onFamilyChange: (family: Family, variant: AnyQuizVariant) => void;
 }) {
    const familyLabel = family === "mapa" ? "Mapa" : family === "bandeiras" ? "Bandeiras" : family === "capitais" ? "Capitais" : family === "escrita" ? "Escrita" : family === "historicas" ? "Históricas" : family === "idiomas" ? "Idiomas" : family === "silhueta" ? "Silhueta" : "Travel";
     const selectedPolicy = policyFor(family, variant, region);
@@ -335,18 +338,33 @@ export function Recorte({
     }, [counts, region, setRegion]);
   return (
     <main className="rec-content">
-      <button className="back" onClick={onBack}>
-        ← Escolher variante
+       <button className="back" onClick={onBack}>
+         ← Famílias
       </button>
       <div className="rec-grid">
         <div>
           <div className="eyebrow" style={{ marginTop: 38 }}>
              {familyLabel} / configuração
           </div>
-           <h1 style={{ marginTop: 18 }}>Escolha o recorte</h1>
+             <h1 style={{ marginTop: 18 }}>Configure a partida</h1>
         </div>
         <div>
-            <div className="section-label"><h2>Configuração</h2><span>{counts[region]} cartas</span></div>
+            <div className="section-label"><h2>Variante</h2></div>
+            <div className="chip-list variant-chips" role="group" aria-label="Variantes">
+              {(topFamily === "mapa"
+                ? [["mapa","Clicar no mapa","mapa"],["silhueta","Silhueta","silhueta"],["travel","Travel","travel"]]
+                : topFamily === "bandeiras"
+                  ? [["bandeira-nome","Atuais","bandeiras"],["escrita-pais","Escrita","escrita"],["historica-nome","Históricas","historicas"]]
+                  : topFamily === "capitais"
+                    ? [["capital-pais","Clicar no mapa","capitais"],["escrita-capital","Escrita","escrita"]]
+                    : [["idioma-pais","Idiomas","idiomas"]]
+              ).map(([key, label, engine]) => {
+                const policy = policyFor(engine as Family, key as AnyQuizVariant, region);
+                const isUnlocked = !policy || (policy.cost === 0 && policy.sessions === 0) || Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
+                return <button type="button" className={`chip ${!isUnlocked ? "chip-locked" : ""}`} aria-pressed={variant === key} key={key} onClick={() => { onFamilyChange(engine as Family, key as AnyQuizVariant); setVariant(key as AnyQuizVariant); localStorage.setItem(`carta-last-variant:${topFamily}`, key); }}>{label}{!isUnlocked ? ` · ${policy?.cost ?? 0} moedas` : ""}</button>;
+              })}
+            </div>
+            <div className="section-label config-section-title"><h2>Recorte</h2></div>
            <div className="region-list" role="group" aria-label="Recortes disponíveis">
              {REGION_ITEMS.map(([key, label, description]) => {
                return (
@@ -365,7 +383,7 @@ export function Recorte({
             {family === "bandeiras" || family === "historicas" ? <div className="config-row"><span>Direção</span><div className="chip-list">{(family === "bandeiras" ? [["bandeira-nome","Bandeira → nome"],["nome-bandeira","Nome → bandeira"]] : [["historica-nome","Histórica → nome"],["nome-historica","Nome → histórica"]]).map(([key,label]) => <button type="button" className="chip" key={key} aria-pressed={variant === key} onClick={() => setVariant(key as AnyQuizVariant)}>{label}</button>)}</div></div> : null}
             {(family === "mapa" || family === "bandeiras" || family === "capitais" || family === "escrita" || family === "silhueta" || family === "travel") && <div className="config-row"><span>Filtro</span><button type="button" className="chip" aria-pressed={onlyUn} onClick={() => setOnlyUn(!onlyUn)}>Só membros da ONU</button></div>}
             {family === "silhueta" && <div className="config-row"><span>Resposta</span><div className="chip-list"><button type="button" className="chip" aria-pressed={variant === "silhueta"} onClick={() => setVariant("silhueta")}>Escrever</button><button type="button" className="chip" aria-pressed={variant === "silhueta-opcoes"} onClick={() => setVariant("silhueta-opcoes")}>Alternativas</button></div></div>}
-            <div className="config-empty-note">{counts[region] === 0 ? "Sem cartas neste recorte para esta variante." : `${counts[region]} cartas disponíveis.`}</div>
+            <div className="config-empty-note">{counts[region] === 0 ? "Sem cartas neste recorte para esta variante." : "Selecione um recorte para continuar."}</div>
            {!selectedUnlocked && (
              <p className="diagnostic" role="status" style={{ marginTop: 14 }}>
                 {selectedPolicy &&

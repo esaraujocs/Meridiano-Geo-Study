@@ -13,6 +13,11 @@ import { smallEntityPoints } from "../domain/small-entities";
 
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
+const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const r = Math.PI / 180;
+  const a = Math.sin((lat2 - lat1) * r / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin((lon2 - lon1) * r / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
 export function Game({
   data,
@@ -47,6 +52,7 @@ export function Game({
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [mapError, setMapError] = useState("");
   const [mapReady, setMapReady] = useState(false);
+  const [keyboardMode, setKeyboardMode] = useState(false);
   const [geometryFeatures, setGeometryFeatures] = useState<GeoFeature[] | null>(null);
   const sessionRef = useRef<LearningSessionHandle | null>(null);
   const pendingSessionRef = useRef<Promise<LearningSessionHandle> | null>(null);
@@ -78,16 +84,17 @@ export function Game({
         ),
       );
   };
-  const leaveSession = async () => {
+  const leaveSession = async (home = false) => {
     const handle =
       sessionRef.current ??
       (await pendingSessionRef.current?.catch(() => null));
     sessionRef.current = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.finish();
+      await handle.end({ complete: false });
     }
-    (onEnd ?? onBack)();
+    if (home) location.href = "/";
+    else onBack();
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     if (sessionRef.current) sessionRef.current.recordRound(round);
@@ -137,7 +144,7 @@ export function Game({
     };
   }, [features]);
 
-  const answerId = (id: string) => {
+  const answerId = (id: string, evidence?: { byWater?: boolean; distanceKm?: number | null }) => {
     if (!id || feedbackRef.current || !targetRef.current) return;
     setSelectedAnswer(id);
     const responseTimeMs = Math.max(0, Date.now() - targetStartedAtRef.current);
@@ -147,6 +154,8 @@ export function Game({
       responseTimeMs,
       answeredAt: Date.now(),
       clickedId: id,
+      byWater: evidence?.byWater,
+      distanceKm: evidence?.distanceKm ?? null,
     };
     recordRound(round);
     if (round.correct) {
@@ -315,10 +324,12 @@ export function Game({
           layers: ["land", "small-entities-hit", "small-entities", "pts-hit", "pts"],
       });
       const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
-      if (!id) return;
-      answerId(String(id));
+      const targetMeta = data.meta[targetRef.current];
+      const distanceKm = targetMeta?.ll ? haversine(event.lngLat.lat, event.lngLat.lng, targetMeta.ll[1], targetMeta.ll[0]) : null;
+      answerId(id ? String(id) : "__water_click__", { byWater: !id, distanceKm });
     });
-    map.getContainer().addEventListener("keydown", (event) => {
+     const handleKey = (event: KeyboardEvent) => {
+       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","+","=","-","_"].includes(event.key)) setKeyboardMode(true);
       if (event.key !== "Enter" || feedbackRef.current) return;
       const center = map.getContainer().getBoundingClientRect();
       const hits = map.queryRenderedFeatures(
@@ -326,8 +337,16 @@ export function Game({
         { layers: ["land", "small-entities-hit", "small-entities", "pts-hit", "pts"] },
       );
       const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
-      if (id) answerId(String(id));
-    });
+       const centerLngLat = map.unproject([center.width / 2, center.height / 2]);
+       const targetMeta = data.meta[targetRef.current];
+       const distanceKm = targetMeta?.ll
+         ? haversine(centerLngLat.lat, centerLngLat.lng, targetMeta.ll[1], targetMeta.ll[0])
+         : null;
+       answerId(id ? String(id) : "__water_click__", { byWater: !id, distanceKm });
+     };
+     const handlePointer = () => setKeyboardMode(false);
+     map.getContainer().addEventListener("keydown", handleKey);
+     map.getContainer().addEventListener("pointerdown", handlePointer);
     mapRef.current = map;
     return () => {
       if (timerRef.current) {
@@ -336,6 +355,8 @@ export function Game({
       }
       map.off("load", handleLoad);
       map.off("error", handleError);
+      map.getContainer().removeEventListener("keydown", handleKey);
+      map.getContainer().removeEventListener("pointerdown", handlePointer);
       map.remove();
       mapRef.current = null;
       setMapReady(false);
@@ -415,8 +436,8 @@ export function Game({
           </button>
           <div className="eyebrow">{regionLabel(region)}</div>
            <h1>{engineFamily === "capitais" ? "Encontre o país." : "Encontre no mapa."}</h1>
-          <div className="target-kicker">Seu alvo</div>
-          <div className="target" aria-live="polite" aria-atomic="true">
+           <div className="target-kicker">Seu alvo</div>
+           <div className="target" aria-live="polite" aria-atomic="true">
             {targetName}
           </div>
            <div
@@ -441,21 +462,15 @@ export function Game({
               <b>{streak}</b>
             </div>
           </div>
-           <button
-            className="button ghost"
-            style={{ marginTop: 20 }}
-             onClick={restart}
-          >
-            Recomeçar sessão
-          </button>
-           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => { location.href = "/"; }}>Início</button></div></details>
+            <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => void leaveSession(true)}>Início</button></div></details>
         </aside>
            <div className="map-wrap">
+              <div className="map-target-overlay"><span>Encontre</span><strong>{targetName}</strong></div>
               <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
                 {feedback || `Alvo atual: ${targetName}`}
               </p>
               <p className="map-keyboard-hint">Setas movem o mapa; + e − controlam o zoom; Enter responde no centro da mira.</p>
-             <div className="map-crosshair" aria-hidden="true"><i /><i /></div>
+               <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>Enter responde</span></div>
           <div className="map-hud">
               <div className="map-note">Clique no mapa ou use setas, +/− e Enter</div>
           </div>

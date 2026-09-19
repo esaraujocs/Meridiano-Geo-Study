@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Game } from "./components/map-game";
-import { Header, Hub, Recorte, Variant, type TopFamily } from "./components/screens";
+import { Header, Hub, Recorte, type TopFamily } from "./components/screens";
 import {
   buildFeatures,
   eligible,
@@ -25,6 +25,8 @@ import {
 import { initializeEconomy, queryEconomy, type EconomySnapshot } from "./domain/economy-store";
 import { Surface } from "./components/surfaces";
 import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
+import { registerAchievementLifecycleListener } from "./domain/achievements";
+import { querySurfaces } from "./domain/progress-surfaces";
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
@@ -81,6 +83,10 @@ export function App() {
       .catch(() => setOfflineMap("unavailable"));
   }, []);
   useEffect(() => {
+    const saved = localStorage.getItem(`carta-last-variant:${topFamily}`);
+    if (saved) setVariant(saved as AnyQuizVariant);
+  }, [topFamily]);
+  useEffect(() => {
     if (!data) return;
     setTravelCounts(null);
     void geometryIndex().then(({ features: geometryFeatures }) => {
@@ -88,6 +94,17 @@ export function App() {
       setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
     }).catch(() => setTravelCounts(null));
   }, [data, onlyUn]);
+  useEffect(() => {
+    if (!data) return;
+    registerAchievementLifecycleListener(() => {
+      void querySurfaces(data)
+        .then(() => setSurfaceRevision((current) => current + 1))
+        .catch((achievementError) => {
+          console.error("[carta-cega] achievement evaluation failed", achievementError);
+        });
+    });
+    return () => registerAchievementLifecycleListener(null);
+  }, [data]);
 
   const features = useMemo(
     () => (data ? eligible(buildFeatures(data)).filter((item) => {
@@ -246,21 +263,13 @@ export function App() {
                 });
               });
             }
-            setVariant(selected === "mapa" ? "mapa" : selected === "bandeiras" ? "bandeira-nome" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "historica-nome" : selected === "idiomas" ? "idioma-pais" : selected === "silhueta" ? "silhueta" : "travel");
-            setScreen("variant");
+             const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "bandeira-nome" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "historica-nome" : selected === "idiomas" ? "idioma-pais" : selected === "silhueta" ? "silhueta" : "travel";
+             const familyKey = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
+             const savedVariant = localStorage.getItem(`carta-last-variant:${familyKey}`);
+             setVariant((savedVariant as AnyQuizVariant | null) ?? defaultVariant);
+             localStorage.setItem(`carta-last-variant:${familyKey}`, savedVariant ?? defaultVariant);
+             setScreen("recorte");
           }}
-        />
-      )}
-      {screen === "variant" && (
-        <Variant
-            topFamily={topFamily}
-            family={family}
-            variant={variant}
-            setVariant={setVariant}
-            onSelectEngine={(nextFamily, nextVariant) => { setFamily(nextFamily); setVariant(nextVariant); setScreen("recorte"); }}
-            economy={economy}
-          onBack={() => setScreen("hub")}
-          onNext={() => setScreen("recorte")}
         />
       )}
       {screen === "recorte" && (
@@ -271,13 +280,19 @@ export function App() {
             counts={familyCounts?.[family] ?? counts}
           region={region}
           setRegion={setRegion}
-          onBack={() => setScreen("variant")}
+          onBack={() => setScreen("hub")}
            economy={economy}
            onRefresh={refreshEconomy}
            onPlay={() => setScreen("game")}
            onlyUn={onlyUn}
            setOnlyUn={setOnlyUn}
             setVariant={setVariant}
+            topFamily={topFamily}
+            onFamilyChange={(nextFamily, nextVariant) => {
+              setFamily(nextFamily);
+              setVariant(nextVariant);
+              setTopFamily(nextFamily === "mapa" || nextFamily === "silhueta" || nextFamily === "travel" ? "mapa" : nextFamily === "bandeiras" || nextFamily === "escrita" || nextFamily === "historicas" ? "bandeiras" : nextFamily === "capitais" ? "capitais" : "idiomas");
+            }}
         />
       )}
     </div>

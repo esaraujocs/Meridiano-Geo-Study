@@ -1,3 +1,4 @@
 - [Reconciliação de progresso local](progress-reconciliation.md) — reimportar legado substitui o baseline e preserva só o delta atual; sessão, progresso e ledger são atômicos.
 - [Baralhos React estáveis](stable-react-decks.md) — pools recriados por dados assíncronos precisam de chave semântica para não reiniciar a sessão.
 - [Carrosséis responsivos determinísticos](responsive-carousel-testing.md) — o estado ativo deve dirigir a tríade visual; valide peeks no breakpoint real sem usar scroll suave como estado.
+- [Semântica de partida e geografia](lote3-session-geography.md) — só esgotar o baralho conclui sessão; evidências do mapa e auditoria costeira seguem regras explícitas.

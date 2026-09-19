@@ -11,6 +11,7 @@ import {
   type ProgressRecord,
 } from "./learning-rules";
 import { firstCorrectReward } from "./economy-rules";
+import { notifyAchievementLifecycle } from "./achievements.js";
 export { mergeProgressRecord, masteryForProgress };
 export type { LearningColumn, ProgressRecord };
 
@@ -26,6 +27,8 @@ export type LearningRound = {
   clickedId?: string;
   attempts?: number;
   guesses?: string[];
+  distanceKm?: number | null;
+  byWater?: boolean;
 };
 
 export type CurrentLearningSession = {
@@ -156,6 +159,11 @@ export async function startLearningSession(input: {
         reportFailure(error);
         database.close();
       });
+    queue = queue.then(() => notifyAchievementLifecycle({
+      phase: "finish",
+      sessionId: current.id,
+      roundCount: current.rounds.length,
+    })).catch(reportFailure);
     return queue;
   };
 
@@ -212,6 +220,11 @@ export async function startLearningSession(input: {
           };
           request.onerror = () => transaction.abort();
           await done;
+          await notifyAchievementLifecycle({
+            phase: "round",
+            sessionId: current.id,
+            roundCount: current.rounds.length,
+          });
         })
         .catch(reportFailure);
     },
