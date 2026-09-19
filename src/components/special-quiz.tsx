@@ -2,13 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { flagSource, loadFlags, type FlagCatalog } from "../domain/quiz";
 import { acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, normalizeAnswer, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
-import type { AnyQuizVariant, Family, Legacy, Region } from "../domain/types";
+import type { AnyQuizVariant, Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion } from "../domain/regions";
 import { addHistoricalCollection } from "../domain/progress-surfaces";
 import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
 import { TypedAnswerInput } from "./typed-answer-input";
 
-type Props = { family: Family; variant: AnyQuizVariant; region: Region; data: Legacy; onBack: () => void };
+type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; onBack: () => void };
 type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
 
@@ -112,10 +112,10 @@ export function SpecialQuiz({ variant, region, data, onBack, onEnd }: Props & { 
   };
   useEffect(() => {
     if (pool.length >= 1) {
-      const key = `${variant}|${region}|${pool.map((item) => item.id).join("|")}`;
+       const key = `${variant}|${JSON.stringify(region)}|${pool.map((item) => item.id).join("|")}`;
       if (deckKey.current === key) return;
       deckKey.current = key;
-      deck.current = createFiniteDeck<any>(pool, seedFromParts(variant, region, pool.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
+       deck.current = createFiniteDeck<any>(pool, seedFromParts(variant, JSON.stringify(region), pool.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
       next();
     }
   }, [pool, variant, region]);

@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
 const injectPrecacheManifest = () => ({
   name: "carta-cega-precache-manifest",
   apply: "build" as const,
-  async closeBundle() {
+  async writeBundle(_options: unknown, bundle: Record<string, unknown>) {
     const dist = new URL("./dist/", import.meta.url);
-    const assets = await readdir(new URL("assets/", dist));
+    const assets = Object.keys(bundle).filter((file) => file.startsWith("assets/"));
     const precache = [
       "/",
       "/manifest.webmanifest",
@@ -17,7 +17,7 @@ const injectPrecacheManifest = () => ({
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
-      ...assets.map((asset) => `/assets/${asset}`),
+      ...assets.map((asset) => `/${asset}`),
     ];
     const serviceWorker = new URL("sw.js", dist);
     const source = await readFile(serviceWorker, "utf8");

@@ -3,13 +3,13 @@ import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
-import { REGION_CAMERA, regionLabel } from "../domain/regions";
-import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region } from "../domain/types";
+import { normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
+import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
 import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
 import { geometryIndex } from "../domain/legacy-geometry";
-import { smallEntityPoints } from "../domain/small-entities";
+import { runtimeSmallEntityPoints } from "../domain/small-entities";
 
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -17,6 +17,14 @@ const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const r = Math.PI / 180;
   const a = Math.sin((lat2 - lat1) * r / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin((lon2 - lon1) * r / 2) ** 2;
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+const projectAtZoom = ([longitude, latitude]: [number, number], zoom: number): [number, number] => {
+  const scale = 512 * 2 ** zoom;
+  const sin = Math.sin((latitude * Math.PI) / 180);
+  return [
+    ((longitude + 180) / 360) * scale,
+    (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale,
+  ];
 };
 
 export function Game({
@@ -30,7 +38,7 @@ export function Game({
 }: {
   data: Legacy;
   features: GeoFeature[];
-  region: Region;
+  region: RegionSelection;
   onBack: () => void;
   onEnd?: () => void;
   family?: Family;
@@ -137,7 +145,7 @@ export function Game({
   };
 
   useEffect(() => {
-    deckRef.current = createFiniteDeck(features, seedFromParts(engineFamily, engineVariant, region, features.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
+    deckRef.current = createFiniteDeck(features, seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
     nextTarget();
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -213,7 +221,7 @@ export function Game({
   useEffect(() => {
     if (!mapEl.current) return;
     if (!geometryFeatures) return;
-    const camera = REGION_CAMERA[region];
+    const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
     setMapReady(false);
     let map: maplibregl.Map;
     try {
@@ -229,7 +237,7 @@ export function Game({
               attribution:
                 "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
             },
-            "small-entities": { type: "geojson", data: smallEntityPoints(geometryFeatures, data), promoteId: "carta_id" },
+            "small-entities": { type: "geojson", data: runtimeSmallEntityPoints(geometryFeatures, data, camera.zoom, projectAtZoom) },
           },
           layers: [
             {
@@ -275,11 +283,10 @@ export function Game({
                id: "small-entities",
                type: "circle",
                source: "small-entities",
-               paint: {
-                 "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 4, 3, 5, 5, 1,
-                 ],
+                paint: {
+                  "circle-radius": 4,
                  "circle-color": "#9db7b2",
-                 "circle-opacity": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 3, 0.65, 5, 0.08],
+                  "circle-opacity": ["get", "opacity"],
                  "circle-stroke-color": "#24423d",
                  "circle-stroke-width": 1,
                },
@@ -288,7 +295,11 @@ export function Game({
                id: "small-entities-hit",
                type: "circle",
                source: "small-entities",
-               paint: { "circle-radius": 14, "circle-color": "#9db7b2", "circle-opacity": 0.01 },
+                paint: {
+                  "circle-radius": 22,
+                  "circle-color": "#9db7b2",
+                  "circle-opacity": 0.01,
+                },
              },
           ],
         },
@@ -314,14 +325,50 @@ export function Game({
       setMapError(message);
     };
     map.on("load", handleLoad);
+     const updateRuntimeMarkers = () => {
+       const source = map.getSource("small-entities") as maplibregl.GeoJSONSource | undefined;
+       if (!source) return;
+       const markerData = runtimeSmallEntityPoints(
+         geometryFeatures,
+         data,
+         map.getZoom(),
+         projectAtZoom,
+       );
+       source.setData(markerData as GeoJSON.FeatureCollection);
+       mapEl.current?.setAttribute(
+         "data-marker-ids",
+         [...new Set(markerData.features.map((item) => item.properties.carta_id))].join(","),
+       );
+     };
+     map.on("load", updateRuntimeMarkers);
+     map.on("zoom", updateRuntimeMarkers);
     map.on("error", handleError);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
     );
     map.on("click", (event: MapMouseEvent) => {
+       const markerHits = map.queryRenderedFeatures(event.point, {
+         layers: ["small-entities-hit"],
+       });
+       const nearestMarker = markerHits
+         .map((feature) => {
+           const coordinates = feature.geometry.type === "Point" ? feature.geometry.coordinates as [number, number] : null;
+           if (!coordinates) return null;
+           const projected = map.project(coordinates);
+           return { feature, distance: Math.hypot(projected.x - event.point.x, projected.y - event.point.y) };
+         })
+         .filter((item): item is { feature: maplibregl.MapGeoJSONFeature; distance: number } => Boolean(item))
+         .sort((a, b) => a.distance - b.distance)[0];
+       if (nearestMarker?.feature.properties?.carta_id) {
+         const id = String(nearestMarker.feature.properties.carta_id);
+         const targetMeta = data.meta[targetRef.current];
+         const distanceKm = targetMeta?.ll ? haversine(event.lngLat.lat, event.lngLat.lng, targetMeta.ll[1], targetMeta.ll[0]) : null;
+         answerId(id, { distanceKm });
+         return;
+       }
       const hits = map.queryRenderedFeatures(event.point, {
-          layers: ["land", "small-entities-hit", "small-entities", "pts-hit", "pts"],
+           layers: ["land", "pts-hit", "pts"],
       });
       const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
       const targetMeta = data.meta[targetRef.current];
@@ -354,6 +401,8 @@ export function Game({
         timerRef.current = null;
       }
       map.off("load", handleLoad);
+      map.off("load", updateRuntimeMarkers);
+      map.off("zoom", updateRuntimeMarkers);
       map.off("error", handleError);
       map.getContainer().removeEventListener("keydown", handleKey);
       map.getContainer().removeEventListener("pointerdown", handlePointer);

@@ -11,6 +11,7 @@ export type SurfaceSession = {
   family: string;
   variant: string;
   region: string;
+  regions?: string[];
   startedAt: number | null;
   endedAt: number | null;
   complete: boolean;
@@ -84,6 +85,7 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     family: String(value?.family ?? familyFor(String(value?.mode ?? value?.modo ?? ""))),
     variant: String(value?.variant ?? value?.assunto ?? value?.modo ?? ""),
     region: String(value?.region ?? value?.recorte ?? ""),
+    regions: Array.isArray(value?.regions) ? value.regions.map(String) : undefined,
     startedAt: typeof value?.startedAt === "number" ? value.startedAt : typeof value?.ini === "number" ? value.ini : null,
     endedAt: typeof value?.endedAt === "number" ? value.endedAt : typeof value?.fim === "number" ? value.fim : null,
     complete: Boolean(value?.complete ?? value?.completa),

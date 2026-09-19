@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, Geometry } from "geojson";
-import type { Family, Legacy, Region } from "../domain/types";
+import type { Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion } from "../domain/regions";
 import {
   aliases,
@@ -17,10 +17,10 @@ import { startLearningSession, type LearningSessionHandle } from "../domain/lear
 import { createFiniteDeck, seedFromParts, shuffleSeeded } from "../domain/finite-deck";
 import { TypedAnswerInput } from "./typed-answer-input";
 
-type Props = { family: Family; variant?: string; data: Legacy; region: Region; onBack: () => void; onEnd?: () => void };
+type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; onBack: () => void; onEnd?: () => void };
 
 type SessionRound = Parameters<LearningSessionHandle["recordRound"]>[0];
-function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "travel", region: Region) {
+function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "travel", region: RegionSelection) {
   const ref = useRef<LearningSessionHandle | null>(null);
   const pending = useRef<Promise<LearningSessionHandle> | null>(null);
   const queued = useRef<SessionRound[]>([]);
@@ -101,7 +101,7 @@ function SilhouetteGame({ data, region, variant, onBack, onEnd }: Omit<Props, "f
   }) : [], [features, data, region]);
   useEffect(() => {
     if (ids.length) {
-       deck.current = createFiniteDeck(ids, seedFromParts("silhueta", variant ?? "silhueta", region, ids.join("|")) ^ Math.floor(Math.random() * 0x100000000));
+       deck.current = createFiniteDeck(ids, seedFromParts("silhueta", variant ?? "silhueta", JSON.stringify(region), ids.join("|")) ^ Math.floor(Math.random() * 0x100000000));
        const first = deck.current.draw();
        if (!first) return;
        setTarget(first);

@@ -1,4 +1,17 @@
-import type { Legacy, Region } from "./types";
+import type { Legacy, Region, RegionSelection } from "./types";
+const REGION_KEYS: Region[] = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
+export function normalizeRegionSelection(selection: RegionSelection): Region[] {
+  const values = Array.isArray(selection) ? selection : [selection];
+  if (values.includes("mundo") || REGION_KEYS.every((key) => values.includes(key))) return ["mundo"];
+  return REGION_KEYS.filter((key) => values.includes(key));
+}
+export function regionSelectionIncludes(selection: RegionSelection, region: Region) {
+  const normalized = normalizeRegionSelection(selection);
+  return normalized.includes("mundo") || normalized.includes(region);
+}
+export function idsInRegionSelection(ids: Iterable<string>, selection: RegionSelection, data: Legacy) {
+  return [...ids].filter((id) => inRegion(id, selection, data));
+}
 
 export const REGION_CAMERA: Record<
   Region,
@@ -15,6 +28,13 @@ export const REGION_CAMERA: Record<
 };
 
 export function regionMatches(
+  meta: { reg?: string; sub?: string } | undefined,
+  region: RegionSelection,
+) {
+  if (normalizeRegionSelection(region).includes("mundo")) return true;
+  return normalizeRegionSelection(region).some((item) => regionMatchesSingle(meta, item));
+}
+function regionMatchesSingle(
   meta: { reg?: string; sub?: string } | undefined,
   region: Region,
 ) {
@@ -35,7 +55,7 @@ export function regionMatches(
     meta.reg === "North America" || meta.reg === "Central America";
 }
 
-export function inRegion(id: string, region: Region, data: Legacy) {
+export function inRegion(id: string, region: RegionSelection, data: Legacy) {
   return regionMatches(data.meta[id], region);
 }
 
@@ -50,6 +70,8 @@ export const REGION_ITEMS: [Region, string, string][] = [
   ["america-do-norte-central", "América do Norte e Central", "Do Ártico ao istmo"],
 ];
 
-export function regionLabel(region: Region) {
-  return REGION_ITEMS.find(([key]) => key === region)?.[1] ?? region;
+export function regionLabel(region: RegionSelection) {
+  const normalized = normalizeRegionSelection(region);
+  if (normalized.length === 1) return REGION_ITEMS.find(([key]) => key === normalized[0])?.[1] ?? normalized[0];
+  return `${normalized.length} recortes`;
 }

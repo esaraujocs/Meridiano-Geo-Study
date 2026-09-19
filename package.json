@@ -20,6 +20,7 @@
     "test:manifest": "node scripts/test-manifest-resources.mjs",
     "test:profile": "node scripts/test-progress-surfaces.mjs",
     "test:achievements": "node scripts/test-achievements.mjs",
+    "test:regions": "node scripts/test-regions.mjs",
     "validate:flag-overrides": "node scripts/validate-flag-overrides.mjs",
     "test:policies": "node scripts/test-policy-matrix.mjs",
     "test:finite-decks": "rm -rf .tmp-finite && tsc --ignoreConfig src/domain/finite-deck.ts --outDir .tmp-finite --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-finite-decks.mjs",

@@ -1,4 +1,4 @@
-import type { Family, Legacy, QuizVariant, Region } from "./types";
+import type { Family, Legacy, QuizVariant, RegionSelection } from "./types";
 import { inRegion } from "./regions";
 
 export type FlagCatalog = Record<string, string>;
@@ -45,7 +45,7 @@ function usableCapital(meta: Legacy["meta"][string]) {
 export function quizPool(
   data: Legacy,
   family: Family,
-  region: Region,
+  region: RegionSelection,
   flags?: FlagCatalog,
 ) {
   return Object.entries(data.meta)

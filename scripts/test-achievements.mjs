@@ -160,5 +160,21 @@ assert.equal(realisticContext.precise, true, "map miss distances must make certe
 const realisticState = evaluateAchievementDefinitions(realisticContext);
 assert.equal(realisticState.find((item) => item.id === "pescador")?.unlocked, true);
 assert.equal(realisticState.find((item) => item.id === "certeiro")?.unlocked, true);
+const regionalCapital = {
+  ...realisticMapSession,
+  family: "capitais",
+  mode: "capital-pais",
+  variant: "capital-pais",
+  regions: ["caribe", "europa", "asia"],
+};
+const worldUnion = {
+  ...realisticMapSession,
+  regions: ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"],
+  rounds: Array.from({ length: 150 }, (_, index) => ({ targetId: String(index), correct: true, responseTimeMs: 100 })),
+  correct: 150,
+};
+const regionalContext = achievementContext(realisticProgress, [regionalCapital, worldUnion], {});
+assert.equal(regionalContext.capitalRegions.size, 3, "capital achievements must consume all selected regions");
+assert.equal(regionalContext.worldComplete, true, "all-region union must count as Mundo");
 
 console.log("achievements: 30 canonical rules pass");

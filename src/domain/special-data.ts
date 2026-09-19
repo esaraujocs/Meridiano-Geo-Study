@@ -1,5 +1,5 @@
 import { regionMatches } from "./regions.js";
-import type { Region } from "./types.js";
+import type { RegionSelection } from "./types.js";
 
 export type HistoricalEntity = {
   id: string; pt: string; reg?: string; sub?: string; fl?: string;
@@ -31,13 +31,13 @@ export function loadSpecialData() {
   });
   return promise;
 }
-export function specialInRegion(item: { reg?: string; sub?: string }, region: Region) {
+export function specialInRegion(item: { reg?: string; sub?: string }, region: RegionSelection) {
   return regionMatches(item, region);
 }
-export function historicalPool(entries: HistoricalEntity[], region: Region) {
+export function historicalPool(entries: HistoricalEntity[], region: RegionSelection) {
   return entries.filter((item) => specialInRegion(item, region));
 }
-export function languagePool(entries: LanguageEntry[], region: Region) {
+export function languagePool(entries: LanguageEntry[], region: RegionSelection) {
   return entries.filter((item) => specialInRegion(item, region));
 }
 export function normalizeAnswer(value: string) {

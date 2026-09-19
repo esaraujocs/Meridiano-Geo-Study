@@ -12,6 +12,7 @@ const executablePath =
 const browser = await puppeteer.launch({
   executablePath,
   headless: true,
+  dumpio: process.env.SMOKE_DUMPIO === "1",
   args: [
     "--no-sandbox",
     "--disable-dev-shm-usage",
@@ -22,14 +23,17 @@ const browser = await puppeteer.launch({
   ],
 });
 
-const page = await browser.newPage();
+let page = await browser.newPage();
 await page.setViewport({ width: 768, height: 720 });
 const errors = [];
 const accessibility = [];
-page.on("pageerror", (error) => errors.push(error.message));
-page.on("console", (message) => {
-  if (message.type() === "error") errors.push(message.text());
-});
+const observePage = (target) => {
+  target.on("pageerror", (error) => errors.push(error.message));
+  target.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+};
+observePage(page);
 
 async function auditContrast(label) {
   await page.addScriptTag({ content: axeSource });
@@ -63,22 +67,73 @@ async function clickButton(label) {
   }, label);
 }
 
-async function openFamily(family, variant, world = false, beforeStart) {
-  await page.goto(baseUrl, { waitUntil: "networkidle0" });
-  const familyLabel = family;
-  await page.$eval(".family-grid", (grid, label) => {
-    const card = [...grid.querySelectorAll(".family")].find(
-      (item) => item.querySelector("h3")?.textContent?.trim() === label,
+async function gotoHome() {
+  if (await page.$(".family-grid")) return;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const usedBack = await page.evaluate(() => {
+      const button = document.querySelector("button.back");
+      if (!(button instanceof HTMLButtonElement) || button.disabled) return false;
+      button.click();
+      return true;
+    }).catch(() => false);
+    if (!usedBack) break;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    if (await page.$(".family-grid")) return;
+  }
+  const usedPlay = await page.evaluate(() => {
+    const button = [...document.querySelectorAll("button")].find(
+      (item) => item.textContent?.trim() === "Jogar",
     );
-    if (!card) throw new Error(`Família não encontrada: ${label}`);
-    (card.querySelector("h3") ?? card).dispatchEvent(new MouseEvent("click", { bubbles: true }));
-  }, familyLabel);
+    button?.click();
+    return Boolean(button);
+  }).catch(() => false);
+  if (usedPlay) {
+    await page.waitForSelector(".family-grid");
+    return;
+  }
+
+  const viewport = page.viewport() ?? { width: 768, height: 720 };
+  try {
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".family-grid");
+  } catch (error) {
+    if (!(error instanceof Error) || !/detached Frame|frame was detached/i.test(error.message)) throw error;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await page.setViewport(viewport);
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".family-grid");
+  }
+}
+
+async function resetPage(viewport = { width: 1280, height: 720 }) {
+  const previous = page;
+  page = await browser.newPage();
+  observePage(page);
+  await page.setViewport(viewport);
+  await previous.close().catch(() => undefined);
+}
+
+async function openFamily(family, variant, world = false, beforeStart, recordQuality = true) {
+  await gotoHome();
+  const familyLabel = family;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const found = await page.evaluate((label) => {
+      const card = [...document.querySelectorAll(".family-grid .family")].find(
+        (item) => item.querySelector("h3")?.textContent?.trim() === label,
+      );
+      if (!card) return false;
+      (card.querySelector("h3") ?? card).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      return true;
+    }, familyLabel);
+    if (found) break;
+    await page.click('button[aria-label="Próximo modo"]');
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    if (attempt === 3) throw new Error(`Família não encontrada: ${familyLabel}`);
+  }
   await page.waitForFunction(
     () => document.querySelector("h1")?.textContent?.includes("Configure a partida"),
   );
-  const chipLabel = variant.includes("Bandeira") ? "Atuais"
-    : variant.toLowerCase().includes("histórica") ? (variant.includes("Nome") ? "Históricas" : "Históricas")
-    : variant.includes("Escrita") ? "Escrita"
+  const chipLabel = variant.includes("Escrita") ? "Escrita"
     : variant.includes("Silhueta") ? "Silhueta"
     : variant.includes("Travel") ? "Travel"
     : variant.includes("Idioma") ? "Idiomas"
@@ -100,9 +155,6 @@ async function openFamily(family, variant, world = false, beforeStart) {
         !document.querySelector(".config-empty-note")?.textContent?.match(/\d+\s+cartas/),
     };
   });
-  if (variant === "Nome → bandeira" || variant === "Nome → histórica") {
-    await clickButton(variant);
-  }
   if (variant === "Silhueta · alternativas") {
     await clickButton("Alternativas");
   }
@@ -191,14 +243,16 @@ async function openFamily(family, variant, world = false, beforeStart) {
       }),
     };
   });
-  checks.gameQuality = checks.gameQuality ?? [];
-  checks.gameQuality.push({ family, variant, ...quality });
+  if (recordQuality) {
+    checks.gameQuality = checks.gameQuality ?? [];
+    checks.gameQuality.push({ family, variant, ...quality });
+  }
   await auditContrast(`game:${family}:${variant}`);
 }
 
 const checks = {};
 
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
 await auditContrast("hub");
 checks.ui = await page.evaluate(() => {
   const familyGrid = document.querySelector(".family-grid");
@@ -229,7 +283,7 @@ checks.ui.singleConfigurationPasses = checks.ui.singleConfiguration.titleCount =
   checks.ui.singleConfiguration.variantChips === 3 &&
   checks.ui.singleConfiguration.regionChips === 8 &&
   checks.ui.singleConfiguration.noVariantScreen;
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
 await page.$eval(".family-grid .family", (item) => item.querySelector("h3")?.textContent === "Idiomas" ? item.click() : [...document.querySelectorAll(".family h3")].find((h) => h.textContent === "Idiomas")?.click());
 await page.waitForSelector(".variant-chips");
 await clickButton("Idiomas");
@@ -239,19 +293,20 @@ checks.ui.blockedVariantSelection = await page.evaluate(() => {
   return Boolean(chip && chip.classList.contains("chip-locked") && cta &&
     /Liberar|Falta|moedas/i.test(cta.textContent ?? ""));
 });
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
 await page.$eval(".family-grid .family.active h3", (item) => item.click());
 await page.waitForSelector(".variant-chips");
 await clickButton("Silhueta");
 await page.waitForFunction(() => localStorage.getItem("carta-last-variant:mapa") === "silhueta");
 const savedMapVariant = await page.evaluate(() => localStorage.getItem("carta-last-variant:mapa"));
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
 await page.$eval(".family-grid .family.active h3", (item) => item.click());
 await page.waitForSelector(".variant-chips");
 checks.ui.lastVariantPersistence = savedMapVariant === "silhueta" &&
   await page.$eval('.variant-chips .chip[aria-pressed="true"]', (item) => item.textContent?.includes("Silhueta"));
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
+await gotoHome();
+await page.setViewport({ width: 390, height: 844 });
 await page.click('button[aria-label="Próximo modo"]');
 await page.waitForFunction(
   () =>
@@ -260,7 +315,7 @@ await page.waitForFunction(
       ?.getAttribute("aria-label") === "Ir para família 2",
 );
 await page.waitForFunction(() => {
-  const grid = document.querySelector(".family-grid")?.getBoundingClientRect();
+  const grid = document.querySelector(".family-carousel")?.getBoundingClientRect();
   const active = document.querySelector(".family.active")?.getBoundingClientRect();
   return Boolean(
     grid &&
@@ -270,19 +325,20 @@ await page.waitForFunction(() => {
 });
 checks.ui.carouselNavigation = await page.evaluate(() => {
   const cards = [...document.querySelectorAll(".family-grid > .family")];
+  const active = document.querySelector(".family-grid > .family.active");
   return (
+    active?.querySelector("h3")?.textContent === "Bandeiras" &&
     cards[0]?.getAttribute("aria-hidden") === "true" &&
-    cards[1]?.getAttribute("aria-hidden") !== "true" &&
     cards[0]?.hasAttribute("inert")
   );
 });
 checks.ui.carouselGeometry = await page.evaluate(() => {
-  const grid = document.querySelector(".family-grid").getBoundingClientRect();
+  const grid = document.querySelector(".family-carousel").getBoundingClientRect();
   const active = document.querySelector(".family.active").getBoundingClientRect();
   const cards = [...document.querySelectorAll(".family")].map((card) => card.getBoundingClientRect());
   const visible = (rect) => Math.max(0, Math.min(rect.right, grid.right) - Math.max(rect.left, grid.left));
-  const previous = visible(cards[0]);
-  const next = visible(cards[2]);
+  const previous = visible([...document.querySelectorAll(".family")].find((item) => item.querySelector("h3")?.textContent === "Mapa").getBoundingClientRect());
+  const next = visible([...document.querySelectorAll(".family")].find((item) => item.querySelector("h3")?.textContent === "Capitais").getBoundingClientRect());
   const prevArrow = document.querySelector(".carousel-arrow-prev").getBoundingClientRect();
   const nextArrow = document.querySelector(".carousel-arrow-next").getBoundingClientRect();
   return {
@@ -299,15 +355,16 @@ await page.click('.carousel-dots button[aria-label="Ir para família 1"]');
 await page.waitForFunction(
   () => document.querySelector(".family.active h3")?.textContent === "Mapa",
 );
-await page.click('button[aria-label="Abrir opções"]');
-checks.ui.debugVisibleInDev = await page.$eval(".options-popover", (item) => item.textContent?.includes("Adicionar moedas") ?? false);
+await clickButton("Opções");
+await page.waitForSelector(".options-screen");
+checks.ui.debugVisibleInDev = await page.$eval(".options-debug", (item) => item.textContent?.includes("Adicionar moedas") ?? false);
 const debugBalanceBefore = await page.$eval(".pill.mono", (item) =>
   Number.parseInt(item.textContent ?? "0", 10),
 );
-await page.click('.options-popover input[type="number"]', { clickCount: 3 });
+await page.click(".options-debug input[type=number]", { clickCount: 3 });
 await page.keyboard.type("17");
 await clickButton("Adicionar moedas");
-await page.waitForFunction(() => document.querySelector(".options-popover [role=status]")?.textContent?.includes("Moedas adicionadas"));
+await page.waitForFunction(() => document.querySelector(".options-debug [role=status]")?.textContent?.includes("Moedas adicionadas"));
 const debugBalanceAfter = await page.$eval(
   ".pill.mono",
   (item) => Number.parseInt(item.textContent ?? "0", 10),
@@ -318,21 +375,29 @@ checks.ui.debugLedgerRefresh = {
   expected: debugBalanceBefore + 17,
   passes: debugBalanceAfter === debugBalanceBefore + 17,
 };
-checks.ui.collectionDebugAbsent = !(await page.$eval(".options-popover", (item) => item.textContent?.includes("Coleção de teste") ?? false));
+checks.ui.collectionDebugAbsent = !(await page.$eval(".options-debug", (item) => item.textContent?.includes("Coleção de teste") ?? false));
 await clickButton("Liberar modos e recortes");
-await page.waitForFunction(() => document.querySelector(".options-popover [role=status]")?.textContent?.includes("Conteúdo liberado"));
+await page.waitForFunction(() => document.querySelector(".options-debug [role=status]")?.textContent?.includes("Conteúdo liberado"));
 checks.ui.debugUnlockConfirmed = true;
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await page.click('button[aria-label="Próximo modo"]');
-await page.$eval(".family-grid .family.active h3", (item) =>
-  item.dispatchEvent(new MouseEvent("click", { bubbles: true })),
-);
+await gotoHome();
+await page.$eval(".family-grid .family h3", (items) => {
+  const card = [...document.querySelectorAll(".family-grid .family h3")]
+    .find((item) => item.textContent?.trim() === "Bandeiras");
+  (card ?? items).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+});
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Configure a partida"));
 checks.ui.bandeiraCards = (await page.$$eval(".variant-chips .chip", (items) =>
-  items.filter((item) => ["Atuais", "Históricas", "Escrita"].some((label) => item.textContent?.includes(label))).length,
-)) === 3;
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+  items.filter((item) => [
+    "Nome → bandeira",
+    "Bandeira → nome",
+    "Escrita",
+    "Nome → histórica",
+    "Histórica → nome",
+  ].some((label) => item.textContent?.includes(label))).length,
+)) === 5;
+await gotoHome();
 await page.setViewport({ width: 1440, height: 900 });
+await page.waitForSelector(".family-grid");
 checks.ui.grid1440 = await page.$eval(
   ".family-grid",
   (item) => getComputedStyle(item).display === "grid",
@@ -340,6 +405,7 @@ checks.ui.grid1440 = await page.$eval(
 await page.setViewport({ width: 1280, height: 720 });
 
 let unDeckSize = 0;
+await resetPage();
 await openFamily("Mapa", "Clicar no mapa", false, async () => {
   await page.click(".region-list .region:first-child");
   await page.waitForFunction(() =>
@@ -369,7 +435,17 @@ await openFamily("Mapa", "Clicar no mapa", false, async () => {
   checks.ui.worldUnlockedAfterDebug = !lockedWorld;
   checks.ui.unFilterReducesDeck = unDeckSize > 0 && unDeckSize < before;
 });
-await page.waitForSelector("canvas", { timeout: 60_000 });
+try {
+  await page.waitForSelector("canvas", { timeout: 60_000 });
+} catch (error) {
+  console.error("Map canvas diagnostic", await page.evaluate(() => ({
+    h1: document.querySelector("h1")?.textContent,
+    diagnostic: document.querySelector(".diagnostic")?.textContent,
+    mapStage: Boolean(document.querySelector(".map-stage")),
+    body: document.body.textContent?.replace(/\s+/g, " ").trim().slice(0, 800),
+  })), { errors });
+  throw error;
+}
 await page.waitForSelector(".target", { timeout: 10_000 });
 checks.map = {
   canvas: true,
@@ -387,6 +463,17 @@ checks.map = {
   }),
   countersInBar: await page.$eval(".map-panel .score-box", (item) => item.parentElement?.classList.contains("map-panel") ?? false),
 };
+checks.map.markerCoverage = await page.evaluate(async () => {
+  const report = await fetch("/data/small-entity-markers-report.json").then((response) => response.json());
+  const required = ["336", "674", "666", "798", "520", "585", "584", "583", "296", "776", "882"];
+  const entities = new Set(report.entities.map((item) => item.id));
+  return report.entities.length === 250 &&
+    report.zooms.join(",") === "2,3,4,5,6,7,8" &&
+    required.every((id) => entities.has(id)) &&
+    report.entities.every((entity) => entity.markedParts.every((part) =>
+      part.zooms.every((sample) => sample.marker !== sample.contour),
+    ));
+});
 const mapTarget = checks.map.target;
 await page.focus('.map[role="application"]');
 checks.map.crosshairHiddenBeforeKeyboard = await page.$eval(".map-crosshair", (item) => getComputedStyle(item).opacity === "0");
@@ -398,6 +485,7 @@ await page.waitForFunction(() => getComputedStyle(document.querySelector(".map-c
 checks.map.crosshairHiddenAfterMouse = await page.$eval(".map-crosshair", (item) => getComputedStyle(item).opacity === "0");
 await page.keyboard.press("Enter");
 await new Promise((resolve) => setTimeout(resolve, 500));
+await resetPage();
 
 await openFamily("Bandeiras", "Bandeira → nome");
 await page.waitForSelector(".quiz-flag");
@@ -604,7 +692,7 @@ await page.evaluate(async () => {
   });
   db.close();
 });
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
+await gotoHome();
   await page.$eval(".family-grid .family:first-child h3", (item) => item.dispatchEvent(new MouseEvent("click", { bubbles: true })));
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Configure a partida"));
 await clickButton("Travel");
@@ -647,6 +735,149 @@ await page.waitForFunction(() =>
 );
 checks.travel.typedRule = hintedAmbiguous ? "ambiguous-explicit-commit" : "unique-auto-commit";
 
+checks.mobileFourOption = {};
+for (const width of [360, 390]) {
+  for (const [family, variant] of [
+    ["Bandeiras", "Bandeira → nome"],
+    ["Bandeiras", "Nome → bandeira"],
+    ["Bandeiras", "Histórica → nome"],
+    ["Bandeiras", "Nome → histórica"],
+    ["Idiomas", "Idioma → países"],
+    ["Mapa", "Silhueta · alternativas"],
+  ]) {
+    await page.setViewport({ width, height: 640 });
+    await openFamily(family, variant, false, undefined, false);
+    checks.mobileFourOption[`${width}:${family}:${variant}`] = await page.evaluate(() => {
+      const options = [...document.querySelectorAll(".quiz-option")];
+      const optionGrid = document.querySelector(".quiz-options");
+      const columns = optionGrid
+        ? getComputedStyle(optionGrid).gridTemplateColumns.split(" ").filter(Boolean).length
+        : 0;
+      const withinViewport = [...document.querySelectorAll(".quiz-options, .quiz-prompt, .quiz-option")]
+        .filter((item) => item instanceof HTMLElement && item.getBoundingClientRect().width > 0)
+        .every((item) => {
+          const rect = item.getBoundingClientRect();
+          return rect.top >= -1 && rect.bottom <= innerHeight + 1;
+        });
+      const viewportOffenders = [...document.querySelectorAll(".quiz-options, .quiz-prompt, .quiz-option")]
+        .filter((item) => item instanceof HTMLElement && item.getBoundingClientRect().width > 0)
+        .filter((item) => {
+          const rect = item.getBoundingClientRect();
+          return rect.top < -1 || rect.bottom > innerHeight + 1;
+        })
+        .slice(0, 5)
+        .map((item) => ({ tag: item.tagName, text: item.textContent?.slice(0, 24), className: item.className, top: item.getBoundingClientRect().top, bottom: item.getBoundingClientRect().bottom }));
+      const targets = options.every((item) => {
+        const rect = item.getBoundingClientRect();
+        return rect.width >= 44 && rect.height >= 44;
+      });
+      return {
+        twoColumns: columns === 2,
+        options: options.length === 4,
+        targets,
+        withinViewport,
+        viewportOffenders,
+        noVerticalScroll: document.documentElement.scrollHeight <= innerHeight + 1,
+      };
+    });
+  }
+}
+
+checks.mobileConfiguration = {};
+for (const [family, variant] of [
+  ["Bandeiras", "Nome → bandeira"],
+  ["Capitais", "Escrita · nome da capital"],
+]) {
+  await page.setViewport({ width: 390, height: 844 });
+  await gotoHome();
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const found = await page.evaluate((label) => {
+      const card = [...document.querySelectorAll(".family-grid .family")].find(
+        (candidate) => candidate.querySelector("h3")?.textContent?.trim() === label,
+      );
+      if (!card) return false;
+      card.querySelector("h3")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      return true;
+    }, family);
+    if (found) break;
+    await page.click('button[aria-label="Próximo modo"]');
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    if (attempt === 3) throw new Error(`Família não encontrada: ${family}`);
+  }
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Configure a partida"));
+  if (variant.includes("Nome")) await clickButton(variant);
+  if (variant.includes("Escrita")) await clickButton("Escrita");
+  checks.mobileConfiguration[family] = await page.evaluate(() => {
+    const title = document.querySelector(".rec-content h1")?.getBoundingClientRect();
+    const variantChips = document.querySelectorAll(".variant-chips .chip");
+    const regions = document.querySelectorAll(".region-list .region");
+    const cta = document.querySelector(".rec-content .button.coral");
+    const ctaStyle = cta ? getComputedStyle(cta) : null;
+    return {
+      compactTitle: Boolean(title && title.width > 0 && title.height > 0 && parseFloat(getComputedStyle(document.querySelector(".rec-content h1")).fontSize) <= 32),
+      variantVisible: [...variantChips].every((item) => item.getBoundingClientRect().bottom <= innerHeight),
+      regionVisible: [...regions].every((item) => item.getBoundingClientRect().bottom <= innerHeight),
+      ctaSticky: Boolean(ctaStyle && (ctaStyle.position === "fixed" || ctaStyle.position === "sticky") && cta.getBoundingClientRect().bottom <= innerHeight && innerHeight - cta.getBoundingClientRect().bottom <= 16),
+    };
+  });
+}
+
+await page.setViewport({ width: 768, height: 720 });
+await gotoHome();
+await page.waitForSelector(".family-grid");
+const carouselPosition = () => page.evaluate(() => {
+  const track = document.querySelector(".family-grid.is-carousel");
+  const active = document.querySelector(".family-grid .family.active");
+  if (!track || !active) return { transform: "none", x: 0, transitionMs: 0 };
+  const style = getComputedStyle(track);
+  return {
+    transform: style.transform,
+    x: active.getBoundingClientRect().left,
+    tx: style.transform === "none" ? 0 : Number.parseFloat(style.transform.match(/matrix\([^,]+,[^,]+,[^,]+,[^,]+,([^,]+)/)?.[1] ?? "0"),
+    transitionMs: parseFloat(style.transitionDuration) * 1000,
+  };
+});
+const carouselStart = await carouselPosition();
+await page.click('button[aria-label="Próximo modo"]');
+await new Promise((resolve) => setTimeout(resolve, 120));
+const carouselMid = await carouselPosition();
+await new Promise((resolve) => setTimeout(resolve, 100));
+const carouselEnd = await carouselPosition();
+const carouselSample = {
+  intermediate: carouselMid.transform !== carouselStart.transform &&
+    carouselMid.transform !== carouselEnd.transform &&
+    carouselMid.x !== carouselStart.x && carouselMid.x !== carouselEnd.x,
+  transitionMs: carouselMid.transitionMs,
+  displacement: Math.abs(carouselEnd.tx - carouselStart.tx),
+};
+await page.click('.carousel-dots button[aria-label="Ir para família 4"]');
+await new Promise((resolve) => setTimeout(resolve, 350));
+const carouselWrapStart = await carouselPosition();
+await page.click('.carousel-dots button[aria-label="Ir para família 1"]');
+await new Promise((resolve) => setTimeout(resolve, 120));
+const carouselWrapMid = await carouselPosition();
+await new Promise((resolve) => setTimeout(resolve, 100));
+const carouselWrapEnd = await carouselPosition();
+const carouselWrapSample = {
+  intermediate: carouselWrapMid.transform !== carouselWrapStart.transform &&
+    carouselWrapMid.transform !== carouselWrapEnd.transform &&
+    carouselWrapMid.x !== carouselWrapStart.x && carouselWrapMid.x !== carouselWrapEnd.x,
+  transitionMs: carouselWrapMid.transitionMs,
+  displacement: Math.abs(carouselWrapEnd.tx - carouselWrapStart.tx),
+};
+await page.evaluate(() => { document.documentElement.dataset.reducedMotion = "true"; });
+const reducedCarousel = await page.evaluate(() => {
+  const track = document.querySelector(".family-grid.is-carousel");
+  return Boolean(track && parseFloat(getComputedStyle(track).transitionDuration) < 50);
+});
+await page.evaluate(() => { delete document.documentElement.dataset.reducedMotion; });
+checks.carouselMotion = { carouselSample, carouselWrapSample, reducedCarousel };
+await page.setViewport({ width: 1920, height: 900 });
+await gotoHome();
+checks.carouselMeasuredControls = await page.evaluate(() => ({
+  controlsHiddenWhenAllVisible: document.querySelectorAll(".carousel-arrow,.carousel-dots").length === 0,
+}));
+
 await page.setViewport({ width: 360, height: 720 });
 await openFamily("Mapa", "Clicar no mapa");
 await page.waitForSelector("canvas", { timeout: 60_000 });
@@ -687,9 +918,8 @@ for (const [button, heading] of [
   ["Progresso", "Progresso que explica"],
   ["Coleção", "Coleção em camadas"],
   ["Achievements", "Achievements de aprendizagem"],
-  ["Histórico", "Histórico de sessões"],
 ]) {
-  await page.goto(baseUrl, { waitUntil: "networkidle0" });
+  await gotoHome();
   await clickButton(button);
   await page.waitForFunction((text) => document.querySelector("h1")?.textContent?.includes(text), {}, heading);
   await auditContrast(`surface:${button}`);
@@ -713,6 +943,16 @@ for (const [button, heading] of [
     }));
   }
 }
+await gotoHome();
+await clickButton("Progresso");
+await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Progresso que explica"));
+await clickButton("Histórico");
+await page.waitForFunction(() =>
+  document.querySelector('[role="tab"][aria-selected="true"]')?.textContent?.includes("Histórico") &&
+  document.querySelector(".history-list, .surface-card .lede"),
+);
+await auditContrast("surface:Histórico");
+checks.histórico = true;
 
 await openFamily("Capitais", "Clicar no mapa");
 await page.waitForSelector("canvas", { timeout: 60_000 });
@@ -738,9 +978,9 @@ checks.result = await page.evaluate(async () => {
 checks.responsive = {};
 for (const width of [320, 375, 768, 1024, 1280, 1440, 1920]) {
   await page.setViewport({ width, height: 800 });
-  await page.goto(baseUrl, { waitUntil: "networkidle0" });
+  await gotoHome();
   checks.responsive[width] = await page.evaluate(() => {
-    const grid = document.querySelector(".family-grid")?.getBoundingClientRect();
+    const grid = document.querySelector(".family-carousel")?.getBoundingClientRect();
     const cards = [...document.querySelectorAll(".family")].map((item) => item.getBoundingClientRect());
     const active = document.querySelector(".family.active")?.getBoundingClientRect() ?? cards[0];
     const carousel = matchMedia("(max-width: 899px)").matches;
@@ -813,6 +1053,16 @@ if (
   !checks.travel.route ||
   !checks.travel.input ||
   !checks.travel.typedRule ||
+  Object.values(checks.mobileFourOption).some((item) => !item.twoColumns || !item.options || !item.targets || !item.withinViewport || !item.noVerticalScroll) ||
+  Object.values(checks.mobileConfiguration).some((item) => !item.compactTitle || !item.variantVisible || !item.regionVisible || !item.ctaSticky) ||
+  !checks.carouselMotion.carouselSample.intermediate ||
+  checks.carouselMotion.carouselSample.transitionMs < 250 ||
+  !checks.carouselMotion.carouselWrapSample.intermediate ||
+  checks.carouselMotion.carouselWrapSample.transitionMs < 250 ||
+  Math.abs(checks.carouselMotion.carouselWrapSample.displacement - checks.carouselMotion.carouselSample.displacement) >
+    Math.max(24, checks.carouselMotion.carouselSample.displacement * 0.25) ||
+  !checks.carouselMotion.reducedCarousel ||
+  !checks.carouselMeasuredControls.controlsHiddenWhenAllVisible ||
   checks.gameQuality.some((item) => !item.prompt20 || !item.promptInk || !item.noHint || !item.restartOnlyMenu || !item.optionBaseline || !item.typedControl || !item.flagProportional || !item.reducedMotion) ||
   Object.values(checks.responsive).some((item) => !item.noOverflow || !item.maxCard || !item.centered)
   || !checks.progresso

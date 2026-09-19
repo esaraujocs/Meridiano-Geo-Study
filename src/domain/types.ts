@@ -36,6 +36,7 @@ export type Region =
   | "asia"
   | "america-do-sul"
   | "america-do-norte-central";
+export type RegionSelection = Region | Region[];
 export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel";
 export type QuizVariant =
   | "mapa"
@@ -62,6 +63,7 @@ export type Screen =
   | "collection"
   | "achievements"
   | "history"
+   | "options"
   | "result";
 
 export type RegionCounts = Record<Region, number>;

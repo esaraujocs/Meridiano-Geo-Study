@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type Dispatch, type SetStateAction } from "react";
 import { Icon } from "./icons";
-import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionCounts } from "../domain/types";
-import { REGION_ITEMS } from "../domain/regions";
+import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts } from "../domain/types";
+import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
 import type { LegacyProfile } from "../domain/legacy-migration";
 import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
@@ -10,13 +10,11 @@ import { unlockContent } from "../domain/economy-store";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 
-export function Header({ legacy, economy, onSurface, onGrantCoins, onUnlockContent }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; onGrantCoins?: (amount: number) => Promise<void>; onUnlockContent?: () => Promise<void> }) {
-  const [optionsOpen, setOptionsOpen] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
-  const [debugAmount, setDebugAmount] = useState("10");
-  const [debugStatus, setDebugStatus] = useState("");
-  const debugEnabled = import.meta.env.DEV;
-  useEffect(() => { document.documentElement.dataset.reducedMotion = reducedMotion ? "true" : "false"; localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0"); }, [reducedMotion]);
+export function Header({ legacy, economy, onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
+  const items = [
+    ["hub", "Modos"], ["collection", "Coleção"], ["achievements", "Achievements"],
+    ["progress", "Progresso"], ["options", "Opções"],
+  ] as const;
   return (
     <header className="topbar">
       <a
@@ -34,36 +32,53 @@ export function Header({ legacy, economy, onSurface, onGrantCoins, onUnlockConte
         </span>
         <span>CARTA CEGA</span>
       </a>
-      <div className="top-actions">
-        <span className="pill mono">{economy?.balance ?? 0} moedas · {economy?.coverage ?? 0} dominados</span>
-        <button className="icon-button" aria-label="Abrir opções" onClick={() => setOptionsOpen((value) => !value)}><Icon type="settings" /></button>
-        {legacy?.detected && (
-          <span className="pill" style={{ color: "var(--gold)" }}>
-            {legacy.migrated ? "progresso legado importado" : "progresso legado detectado"}
-          </span>
-        )}
-      </div>
-       {optionsOpen && <div className="options-popover" role="dialog" aria-label="Opções">
-        <h3>Opções de estudo</h3>
-        <label>Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label>
-        <p style={{ color: "var(--muted)", fontSize: 11, marginTop: 12 }}>Preferências salvas neste dispositivo.</p>
-           {debugEnabled && (onGrantCoins || onUnlockContent) && <section aria-label="Developer tools" style={{ borderTop: "1px solid var(--line)", marginTop: 12, paddingTop: 12, display: "grid", gap: 8 }}>
-            <div className="eyebrow">Debug</div>
-             {onGrantCoins && <label>Moedas de teste
-              <input type="number" min="1" step="1" value={debugAmount} onChange={(event) => setDebugAmount(event.target.value)} />
-              <button className="button ghost" onClick={async () => {
-                const amount = Number(debugAmount);
-                if (!Number.isInteger(amount) || amount <= 0) { setDebugStatus("Informe um inteiro positivo."); return; }
-                setDebugStatus("Aplicando…");
-                try { await onGrantCoins(amount); setDebugStatus("Moedas adicionadas."); } catch (error) { setDebugStatus(error instanceof Error ? error.message : "Falha ao aplicar."); }
-              }}>Adicionar moedas</button>
-            </label>}
-            {onUnlockContent && <button className="button ghost" onClick={async () => { setDebugStatus("Aplicando…"); try { await onUnlockContent(); setDebugStatus("Conteúdo liberado."); } catch (error) { setDebugStatus(error instanceof Error ? error.message : "Falha ao liberar."); } }}>Liberar modos e recortes</button>}
-            {debugStatus && <span role="status">{debugStatus}</span>}
-          </section>}
-      </div>}
+      <nav className="desktop-nav" aria-label="Navegação principal">
+        {items.map(([key, label]) => <button key={key} onClick={() => onNavigate?.(key)}>{label}</button>)}
+      </nav>
+      <div className="top-actions"><span className="pill mono">{economy?.balance ?? 0} moedas</span></div>
+      <nav className="mobile-nav" aria-label="Navegação principal">
+        {items.map(([key, label]) => <button key={key} onClick={() => onNavigate?.(key)}>{label}</button>)}
+      </nav>
     </header>
   );
+}
+
+export function OptionsScreen({ offlineMap, onToggleOfflineMap, onGrantCoins, onUnlockContent, onBack }: {
+  offlineMap: OfflineMapStatus;
+  onToggleOfflineMap: () => Promise<void>;
+  onGrantCoins: (amount: number) => Promise<void>;
+  onUnlockContent: () => Promise<void>;
+  onBack: () => void;
+}) {
+  const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
+  const [debugAmount, setDebugAmount] = useState("10");
+  const [debugStatus, setDebugStatus] = useState("");
+  const [cacheReport, setCacheReport] = useState("Consultando cache do app…");
+  useEffect(() => {
+    document.documentElement.dataset.reducedMotion = reducedMotion ? "true" : "false";
+    localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0");
+  }, [reducedMotion]);
+  useEffect(() => {
+    if (!("caches" in window)) { setCacheReport("Cache offline não disponível neste navegador."); return; }
+    caches.keys().then(async (keys) => {
+      const entries = (await Promise.all(keys.map((key) => caches.open(key).then((cache) => cache.keys())))).flat();
+      const paths = entries.map((request) => new URL(request.url).pathname);
+      const app = paths.some((path) => path === "/" || path.endsWith(".js") || path.endsWith(".css"));
+      const data = paths.some((path) => /data|json|geo|special/i.test(path));
+      const flags = paths.some((path) => /flag|bandeir/i.test(path));
+      setCacheReport(`App (shell): ${app ? "cacheado" : "precacheado no build"} · dados (catálogo, mapa-base, históricas e idiomas): ${data ? "cacheados" : "precacheados pelo service worker"} · bandeiras atuais/históricas: ${flags ? "cacheadas" : "precacheadas pelo service worker"}`);
+    }).catch(() => setCacheReport("Não foi possível consultar o cache offline."));
+  }, []);
+  const mapLabel = offlineMap === "installed" ? "Baixado" : offlineMap === "downloading" ? "Baixando…" : offlineMap === "error" ? "Falha — tentar novamente" : "Disponível para baixar";
+  return <main className="content options-screen">
+    <button className="back" onClick={onBack}>← Voltar</button>
+    <div className="eyebrow options-kicker">Preferências</div><h1>Opções</h1>
+    <section className="options-grid" aria-label="Preferências e disponibilidade offline">
+      <article className="surface-card"><h2>Movimento</h2><label className="option-toggle">Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label><p>Desativa transições e animações decorativas.</p></article>
+      <article className="surface-card"><h2>Offline</h2><p className="offline-status">App e dados locais: {cacheReport}</p><p className="offline-status">Mapa: {mapLabel} · 27,7 MB</p><button className="button ghost" disabled={offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable"} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? "Remover mapa" : "Baixar mapa · 27,7 MB"}</button></article>
+      {import.meta.env.DEV && <article className="surface-card options-debug"><h2>Debug</h2><label>Moedas de teste<input type="number" min="1" step="1" value={debugAmount} onChange={(event) => setDebugAmount(event.target.value)} /></label><button className="button ghost" onClick={async () => { const amount = Number(debugAmount); if (!Number.isInteger(amount) || amount <= 0) { setDebugStatus("Informe um inteiro positivo."); return; } await onGrantCoins(amount); setDebugStatus("Moedas adicionadas."); }}>Adicionar moedas</button><button className="button ghost" onClick={async () => { await onUnlockContent(); setDebugStatus("Conteúdo liberado."); }}>Liberar modos e recortes</button>{debugStatus && <span role="status">{debugStatus}</span>}</article>}
+    </section>
+  </main>;
 }
 
 export function Hub({
@@ -73,15 +88,22 @@ export function Hub({
   offlineMap,
   onToggleOfflineMap,
   onSurface,
+  onNavigate,
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
   economy?: EconomySnapshot | null;
-  offlineMap: OfflineMapStatus;
-  onToggleOfflineMap: () => void;
+  offlineMap?: OfflineMapStatus;
+  onToggleOfflineMap?: () => void;
   onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void;
+  onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void;
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
+  const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
+  const [familyTrackTransition, setFamilyTrackTransition] = useState(true);
+  const familyGridRef = useRef<HTMLDivElement>(null);
+  const [hasFamilyOverflow, setHasFamilyOverflow] = useState(false);
+  const [carouselOffset, setCarouselOffset] = useState(0);
   const [carouselMode, setCarouselMode] = useState(
      () => matchMedia("(max-width: 899px)").matches,
   );
@@ -93,9 +115,42 @@ export function Hub({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
+  useEffect(() => {
+    const element = familyGridRef.current;
+    if (!element) return;
+    const viewport = element.parentElement;
+    const measure = () => {
+      setHasFamilyOverflow(
+        element.scrollWidth > (viewport?.clientWidth ?? element.clientWidth) + 1,
+      );
+       const active = element.children[carouselMode ? familyTrackIndex : activeFamily] as HTMLElement | undefined;
+      if (carouselMode && viewport && active) {
+        setCarouselOffset(
+          viewport.clientWidth / 2 - (active.offsetLeft + active.offsetWidth / 2),
+        );
+      }
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    if (viewport) observer.observe(viewport);
+    return () => observer.disconnect();
+   }, [carouselMode, activeFamily, familyTrackIndex]);
   const scrollFamily = (index: number) => {
     const next = (index + familyCount) % familyCount;
     setActiveFamily(next);
+    setFamilyTrackTransition(true);
+    setFamilyTrackIndex((current) => (
+      (index < 0 || next === familyCount - 1) && current === 1 ? 0 :
+        (index >= familyCount || next === 0) && current === familyCount ? familyCount + 1 :
+          next + 1
+    ));
+  };
+  const finishFamilyTrack = () => {
+    if (familyTrackIndex !== 0 && familyTrackIndex !== familyCount + 1) return;
+    setFamilyTrackTransition(false);
+    setFamilyTrackIndex(familyTrackIndex === 0 ? familyCount : 1);
+    requestAnimationFrame(() => setFamilyTrackTransition(true));
   };
   const unlocked = (family: Family, variant: AnyQuizVariant) => {
     const policy = policyFor(family, variant, "caribe");
@@ -112,43 +167,26 @@ export function Hub({
     { family: "idiomas", variant: "idioma-pais", label: "Idiomas", description: "Uma variante para ler escrita e território.", icon: "capital", color: "var(--terracotta)" },
   ];
   const visibleFamilyIndexes = carouselMode
-    ? [(activeFamily + familyCount - 1) % familyCount, activeFamily, (activeFamily + 1) % familyCount]
+    ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]
     : familyItems.map((_, index) => index);
   return (
     <main className="content">
-      <div className="hero-row">
-        <div>
-           <div className="eyebrow">Atlas de campo / partida local</div>
-            <h1 style={{ marginTop: 14 }}>Escolha uma partida</h1>
-            <p className="lede">Um recorte. Uma pergunta. O atlas responde.</p>
-        </div>
-        <div className="hero-side">
-          <span className="mono" style={{ color: "var(--aqua)" }}>
-            PERFIL LOCAL
-          </span>
-          <br />
-           <b style={{ color: "var(--cream)" }}>{economy?.balance ?? 0} moedas</b> · {economy?.coverage ?? 0} cartas
-          <br />
-          <span>
-             {economy
-               ? `${economy.sessions} sessões · ${economy.coverage} entidades descobertas`
-               : legacy?.migrated && legacy.sessions
-              ? `${legacy.sessions} partidas · ${legacy.rounds} rodadas preservadas`
-              : "Sem sessão em andamento"}
-          </span>
-        </div>
+      <div className="hub-profile-bar" aria-label="Perfil de atividade">
+        <div className="level-badge"><span>Nível</span><strong>{economy?.level ?? 1}</strong></div>
+        <div className="hub-xp"><div className="hub-xp-label"><span>{economy?.xp ?? 0} XP</span><span>{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div></div>
+        <div className="hub-coins"><strong>{economy?.balance ?? 0}</strong><span>moedas</span></div>
       </div>
-      <div className="section-label">
-         <h2>Famílias</h2>
-           <span className="mono">{economy ? `${economy.unlocked.length} liberadas` : "carregando economia"}</span>
-       </div>
-      {onSurface && <nav className="surface-nav" aria-label="Arquivo local">
-         {(["progress", "collection", "achievements", "history"] as const).map((item) => <button key={item} onClick={() => onSurface(item)}>{item === "progress" ? "Progresso" : item === "collection" ? "Coleção" : item === "achievements" ? "Achievements" : "Histórico"}</button>)}
-      </nav>}
+      <div className="section-label"><h2>Modos</h2></div>
       <div className="family-carousel">
-          <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>
+          {carouselMode && hasFamilyOverflow && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
           className={`family-grid ${carouselMode ? "is-carousel" : ""}`}
+          style={carouselMode ? {
+            "--carousel-offset": `${carouselOffset}px`,
+            transition: familyTrackTransition ? undefined : "none",
+          } as CSSProperties : undefined}
+          onTransitionEnd={carouselMode ? finishFamilyTrack : undefined}
+          ref={familyGridRef}
           role="region"
            aria-label="Modos de jogo"
           onTouchStart={(event) => { event.currentTarget.dataset.x = String(event.touches[0].clientX); }}
@@ -158,13 +196,14 @@ export function Hub({
             if (Math.abs(end - start) > 40) scrollFamily(activeFamily + (end < start ? 1 : -1));
           }}
         >
-        {visibleFamilyIndexes.map((index, positionIndex) => {
+        {visibleFamilyIndexes.map((index, position) => {
           const item = familyItems[index];
-          const current = !carouselMode || positionIndex === 1;
+            const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
+            const current = !carouselMode || (!clone && index === activeFamily);
           const isUnlocked = unlocked(item.family, item.variant);
           return <button
             type="button"
-            key={carouselMode ? `${positionIndex}:${item.family}` : item.family}
+             key={`${clone ? "clone" : "real"}-${item.family}`}
             className={`family ${current && carouselMode ? "active" : ""} ${economy && !isUnlocked ? "locked" : ""}`}
             onClick={() => onSelect(item.family)}
             aria-hidden={carouselMode && !current ? true : undefined}
@@ -176,39 +215,12 @@ export function Hub({
           </button>;
         })}
         </div>
-          <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>
-        <div className="carousel-dots" aria-label="Posição no carrossel">
+          {carouselMode && hasFamilyOverflow && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
+        {carouselMode && hasFamilyOverflow && <div className="carousel-dots" aria-label="Posição no carrossel">
           {Array.from({ length: familyCount }, (_, index) => (
             <button type="button" key={index} aria-label={`Ir para família ${index + 1}`} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
           ))}
-        </div>
-      </div>
-      <div className="lower-grid">
-        <div className="diagnostic">
-          <div className="eyebrow">Mapa offline</div>
-          <p>Leve o atlas inteiro para estudar sem conexão.</p>
-          <button
-            className="button ghost"
-            style={{ marginTop: 12 }}
-            disabled={
-              offlineMap === "checking" ||
-              offlineMap === "downloading" ||
-              offlineMap === "unavailable"
-            }
-            onClick={onToggleOfflineMap}
-          >
-            {offlineMap === "installed"
-              ? "Remover mapa offline"
-              : offlineMap === "downloading"
-                ? "Baixando 27,7 MB…"
-                : offlineMap === "error"
-                  ? "Tentar download novamente"
-                  : offlineMap === "unavailable"
-                    ? "Offline indisponível neste navegador"
-                    : "Baixar mapa offline · 27,7 MB"}
-          </button>
-        </div>
-         <div className="legacy"><div className="eyebrow">Estudo offline</div><p>O mapa continua disponível mesmo sem conexão.</p></div>
+        </div>}
       </div>
     </main>
   );
@@ -235,7 +247,7 @@ export function Variant({
 }) {
   const variants: Record<TopFamily, [Family, AnyQuizVariant, string, string][]> = {
     mapa: [["mapa", "mapa", "Clicar no mapa", "Localize o território pedido."], ["silhueta", "silhueta", "Silhueta", "Escreva ou escolha entre quatro nomes."], ["travel", "travel", "Travel", "Trace uma rota entre países."]],
-    bandeiras: [["bandeiras", "bandeira-nome", "Atuais", "Bandeiras atuais nos dois sentidos."], ["escrita", "escrita-pais", "Escrita", "Digite o país pela bandeira."], ["historicas", "historica-nome", "Históricas", "Bandeiras históricas nos dois sentidos."]],
+     bandeiras: [["bandeiras", "nome-bandeira", "Atuais", "Bandeiras atuais nos dois sentidos."], ["bandeiras", "bandeira-nome", "Bandeira → nome", "Reconheça o país pela bandeira."], ["escrita", "escrita-pais", "Escrita", "Digite o país pela bandeira."], ["historicas", "nome-historica", "Históricas", "Bandeiras históricas nos dois sentidos."]],
     capitais: [["capitais", "capital-pais", "Clicar no mapa", "Localize o país da capital."], ["escrita", "escrita-capital", "Escrita", "Digite a capital do país."]],
     idiomas: [["idiomas", "idioma-pais", "Idioma", "Associe uma escrita aos países."]],
   };
@@ -290,6 +302,7 @@ export function Variant({
 export function Recorte({
   family,
   counts,
+  selectedCount: selectedCountProp,
   variant,
   region,
   setRegion,
@@ -307,8 +320,9 @@ export function Recorte({
   family: Family;
   variant: AnyQuizVariant;
   counts: RegionCounts;
-  region: Region;
-  setRegion: Dispatch<SetStateAction<Region>>;
+  selectedCount?: number;
+  region: RegionSelection;
+  setRegion: Dispatch<SetStateAction<RegionSelection>>;
   onBack: () => void;
   onPlay: () => void;
   economy?: EconomySnapshot | null;
@@ -320,7 +334,13 @@ export function Recorte({
   onFamilyChange: (family: Family, variant: AnyQuizVariant) => void;
 }) {
    const familyLabel = family === "mapa" ? "Mapa" : family === "bandeiras" ? "Bandeiras" : family === "capitais" ? "Capitais" : family === "escrita" ? "Escrita" : family === "historicas" ? "Históricas" : family === "idiomas" ? "Idiomas" : family === "silhueta" ? "Silhueta" : "Travel";
-    const selectedPolicy = policyFor(family, variant, region);
+    const selectedRegions = normalizeRegionSelection(region);
+    const policyRegion = selectedRegions.length === 1 ? selectedRegions[0] : "mundo";
+    const selectedCountFromCards = selectedRegions.length === 1 && selectedRegions[0] === "mundo"
+      ? counts.mundo
+      : selectedRegions.reduce((total, item) => total + (counts[item] ?? 0), 0);
+    const selectedCount = selectedCountProp ?? selectedCountFromCards;
+     const selectedPolicy = policyFor(family, variant, policyRegion);
    const selectedUnlocked =
       !selectedPolicy ||
       (selectedPolicy.cost === 0 && selectedPolicy.sessions === 0) ||
@@ -332,10 +352,9 @@ export function Recorte({
       ? canUnlock(selectedPolicy, economy?.balance ?? 0, economy?.sessions ?? 0, selectedCoverage)
       : false;
     useEffect(() => {
-      if (counts[region] > 0) return;
-      const available = REGION_ITEMS.find(([key]) => counts[key] > 0)?.[0];
-      if (available && available !== region) setRegion(available);
-    }, [counts, region, setRegion]);
+       if (selectedCount > 0) return;
+       setRegion("mundo");
+     }, [selectedCount, setRegion]);
   return (
     <main className="rec-content">
        <button className="back" onClick={onBack}>
@@ -353,37 +372,46 @@ export function Recorte({
             <div className="chip-list variant-chips" role="group" aria-label="Variantes">
               {(topFamily === "mapa"
                 ? [["mapa","Clicar no mapa","mapa"],["silhueta","Silhueta","silhueta"],["travel","Travel","travel"]]
-                : topFamily === "bandeiras"
-                  ? [["bandeira-nome","Atuais","bandeiras"],["escrita-pais","Escrita","escrita"],["historica-nome","Históricas","historicas"]]
+                 : topFamily === "bandeiras"
+                   ? [["nome-bandeira","Nome → bandeira","bandeiras"],["bandeira-nome","Bandeira → nome","bandeiras"],["escrita-pais","Escrita","escrita"],["nome-historica","Nome → histórica","historicas"],["historica-nome","Histórica → nome","historicas"]]
                   : topFamily === "capitais"
                     ? [["capital-pais","Clicar no mapa","capitais"],["escrita-capital","Escrita","escrita"]]
                     : [["idioma-pais","Idiomas","idiomas"]]
               ).map(([key, label, engine]) => {
-                const policy = policyFor(engine as Family, key as AnyQuizVariant, region);
+                const policy = policyFor(engine as Family, key as AnyQuizVariant, policyRegion);
                 const isUnlocked = !policy || (policy.cost === 0 && policy.sessions === 0) || Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
                 return <button type="button" className={`chip ${!isUnlocked ? "chip-locked" : ""}`} aria-pressed={variant === key} key={key} onClick={() => { onFamilyChange(engine as Family, key as AnyQuizVariant); setVariant(key as AnyQuizVariant); localStorage.setItem(`carta-last-variant:${topFamily}`, key); }}>{label}{!isUnlocked ? ` · ${policy?.cost ?? 0} moedas` : ""}</button>;
               })}
             </div>
             <div className="section-label config-section-title"><h2>Recorte</h2></div>
            <div className="region-list" role="group" aria-label="Recortes disponíveis">
-             {REGION_ITEMS.map(([key, label, description]) => {
+              {REGION_ITEMS.map(([key, label, description]) => {
+                const selected = selectedRegions.includes(key);
+                const toggle = () => {
+                  if (key === "mundo") return setRegion("mundo");
+                  const next = selectedRegions.includes("mundo")
+                    ? [key]
+                    : selected
+                      ? selectedRegions.filter((item) => item !== key)
+                      : [...selectedRegions, key];
+                  setRegion(next.length ? normalizeRegionSelection(next) : "mundo");
+                };
                return (
               <button
                 key={key}
                 className="region"
-                 aria-pressed={region === key}
+                  aria-pressed={selected}
                   disabled={counts[key] === 0}
-                  onClick={() => setRegion(key)}
+                  onClick={toggle}
               >
                   <b>{label}</b><span>{counts[key] === 0 ? "0 cartas" : `${counts[key]} cartas`}</span>
                </button>
                );
              })}
           </div>
-            {family === "bandeiras" || family === "historicas" ? <div className="config-row"><span>Direção</span><div className="chip-list">{(family === "bandeiras" ? [["bandeira-nome","Bandeira → nome"],["nome-bandeira","Nome → bandeira"]] : [["historica-nome","Histórica → nome"],["nome-historica","Nome → histórica"]]).map(([key,label]) => <button type="button" className="chip" key={key} aria-pressed={variant === key} onClick={() => setVariant(key as AnyQuizVariant)}>{label}</button>)}</div></div> : null}
             {(family === "mapa" || family === "bandeiras" || family === "capitais" || family === "escrita" || family === "silhueta" || family === "travel") && <div className="config-row"><span>Filtro</span><button type="button" className="chip" aria-pressed={onlyUn} onClick={() => setOnlyUn(!onlyUn)}>Só membros da ONU</button></div>}
             {family === "silhueta" && <div className="config-row"><span>Resposta</span><div className="chip-list"><button type="button" className="chip" aria-pressed={variant === "silhueta"} onClick={() => setVariant("silhueta")}>Escrever</button><button type="button" className="chip" aria-pressed={variant === "silhueta-opcoes"} onClick={() => setVariant("silhueta-opcoes")}>Alternativas</button></div></div>}
-            <div className="config-empty-note">{counts[region] === 0 ? "Sem cartas neste recorte para esta variante." : "Selecione um recorte para continuar."}</div>
+             {selectedCount === 0 && <div className="config-empty-note">Sem cartas neste recorte para esta variante.</div>}
            {!selectedUnlocked && (
              <p className="diagnostic" role="status" style={{ marginTop: 14 }}>
                 {selectedPolicy &&
@@ -395,9 +423,9 @@ export function Recorte({
             <button
             className="button coral"
             style={{ width: "100%", marginTop: 20 }}
-              disabled={counts[region] === 0}
+             disabled={selectedCount === 0}
              onClick={async () => {
-               const policy = policyFor(family, variant, region);
+                const policy = policyFor(family, variant, policyRegion);
                 const unlocked =
                   (policy?.cost === 0 && policy.sessions === 0) ||
                   !policy ||
@@ -406,7 +434,7 @@ export function Recorte({
                   const coverage = policy.coverage ? economy?.coverageByColumn[policy.coverage] ?? 0 : 0;
                   const canBuyNow = canUnlock(policy, economy?.balance ?? 0, economy?.sessions ?? 0, coverage);
                  if (!canBuyNow) return;
-                 await unlockContent(family, variant, region);
+                  await unlockContent(family, variant, policyRegion);
                  await onRefresh();
                  return;
                }
@@ -414,14 +442,14 @@ export function Recorte({
              }}
           >
              {(() => {
-               const policy = policyFor(family, variant, region);
+                  const policy = policyFor(family, variant, policyRegion);
                 const unlocked =
                   !policy ||
                   (policy.cost === 0 && policy.sessions === 0) ||
                   Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                 if (counts[region] === 0) return "Sem cartas neste recorte";
-                 return unlocked ? `Começar com ${counts[region]} cartas` : `Liberar por ${policy?.cost ?? 0} moedas`;
-             })()} · {REGION_ITEMS.find(([key]) => key === region)?.[1]}{" "}
+                  if (selectedCount === 0) return "Sem cartas neste recorte";
+                  return unlocked ? `Começar com ${selectedCount} cartas` : `Liberar por ${policy?.cost ?? 0} moedas`;
+              })()} · {selectedRegions.length === 1 ? REGION_ITEMS.find(([key]) => key === selectedRegions[0])?.[1] : `${selectedRegions.length} recortes`}{" "}
             <Icon type="arrow" />
           </button>
         </div>

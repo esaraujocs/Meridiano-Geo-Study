@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Game } from "./components/map-game";
-import { Header, Hub, Recorte, type TopFamily } from "./components/screens";
+import { Header, Hub, OptionsScreen, Recorte, type TopFamily } from "./components/screens";
 import {
   buildFeatures,
   eligible,
@@ -13,8 +13,8 @@ import {
 import { QuizGame } from "./components/quiz-game";
 import { SpecialQuiz } from "./components/special-quiz";
 import { GeometryGame } from "./components/geometry-games";
-import { inRegion, REGION_ITEMS } from "./domain/regions";
-import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionCounts, Screen } from "./domain/types";
+import { inRegion, normalizeRegionSelection, REGION_ITEMS } from "./domain/regions";
+import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts, Screen } from "./domain/types";
 import { loadSpecialData, specialInRegion } from "./domain/special-data";
 import {
   downloadOfflineMap,
@@ -28,11 +28,22 @@ import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
 import { registerAchievementLifecycleListener } from "./domain/achievements";
 import { querySurfaces } from "./domain/progress-surfaces";
 
+export function variantContextFor(topFamily: TopFamily, saved: string): { family: Family; variant: AnyQuizVariant } | null {
+  const table: Record<TopFamily, Array<[string, Family]>> = {
+    mapa: [["mapa", "mapa"], ["silhueta", "silhueta"], ["silhueta-opcoes", "silhueta"], ["travel", "travel"]],
+    bandeiras: [["bandeira-nome", "bandeiras"], ["nome-bandeira", "bandeiras"], ["escrita-pais", "escrita"], ["nome-historica", "historicas"], ["historica-nome", "historicas"]],
+    capitais: [["capital-pais", "capitais"], ["pais-capital", "capitais"], ["escrita-capital", "escrita"]],
+    idiomas: [["idioma-pais", "idiomas"]],
+  };
+  const match = table[topFamily].find(([variant]) => variant === saved);
+  return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;
+}
+
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
   const [data, setData] = useState<Legacy | null>(null);
   const [error, setError] = useState("");
-  const [region, setRegion] = useState<Region>("caribe");
+  const [region, setRegion] = useState<RegionSelection>("mundo");
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
@@ -41,6 +52,8 @@ export function App() {
     historicas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     idiomas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
   });
+  const [specialEntries, setSpecialEntries] = useState<{ historicas: Awaited<ReturnType<typeof loadSpecialData>>["historical"]; idiomas: Awaited<ReturnType<typeof loadSpecialData>>["languages"] }>({ historicas: [], idiomas: [] });
+  const [travelIds, setTravelIds] = useState<string[]>([]);
   const [travelCounts, setTravelCounts] = useState<RegionCounts | null>(null);
   const [legacy, setLegacy] = useState<LegacyProfile | null>(null);
   const [offlineMap, setOfflineMap] =
@@ -51,6 +64,12 @@ export function App() {
     earned: 0,
     spent: 0,
     coverage: 0,
+    xp: 0,
+    level: 1,
+    xpBase: 0,
+    xpNext: 100,
+    rounds: 0,
+    dominated: 0,
     coverageByColumn: { bandeiras: 0, mapa: 0, capitais: 0, escrita: 0 },
     sessions: 0,
     unlocked: [
@@ -72,6 +91,11 @@ export function App() {
     setEconomy(await unlockAllDebugContent());
   };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => setScreen(surface);
+  const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "options") => setScreen(destination);
+  const restoreVariantContext = (familyKey: TopFamily, saved: string) => {
+    const context = variantContextFor(familyKey, saved);
+    if (context) { setFamily(context.family); setVariant(context.variant); }
+  };
 
   useEffect(() => {
     loadLegacy()
@@ -84,13 +108,14 @@ export function App() {
   }, []);
   useEffect(() => {
     const saved = localStorage.getItem(`carta-last-variant:${topFamily}`);
-    if (saved) setVariant(saved as AnyQuizVariant);
+    if (saved) restoreVariantContext(topFamily, saved);
   }, [topFamily]);
   useEffect(() => {
     if (!data) return;
     setTravelCounts(null);
     void geometryIndex().then(({ features: geometryFeatures }) => {
       const ids = [...geometryFeatures.keys()].filter((id) => data.meta[id] && (!onlyUn || data.meta[id]?.un));
+      setTravelIds(ids);
       setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
     }).catch(() => setTravelCounts(null));
   }, [data, onlyUn]);
@@ -150,6 +175,23 @@ export function App() {
        travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     } as Record<Family, RegionCounts>;
   }, [data, features, specialCounts, travelCounts, onlyUn, variant]);
+  const selectedCount = useMemo(() => {
+    if (!data) return 0;
+    const ids = Object.entries(data.meta).filter(([id, meta]) => {
+      if (meta.absorvido || !inRegion(id, region, data) || (onlyUn && !meta.un)) return false;
+      if (family === "mapa") return features.some((item) => item.id === id);
+      if (family === "bandeiras") return Boolean(meta.fl);
+      if (family === "capitais") return Boolean(meta.cap && !meta.soBandeira);
+      if (family === "escrita") return variant === "escrita-capital" ? Boolean(meta.cap) : Boolean(meta.fl);
+      return true;
+    });
+    if (family === "historicas" || family === "idiomas") {
+      const source = family === "historicas" ? specialEntries.historicas : specialEntries.idiomas;
+      return source.filter((item) => specialInRegion(item, region)).length;
+    }
+    if (family === "travel") return travelDestinationIds(data.meta, travelIds.filter((id) => inRegion(id, region, data))).length;
+    return ids.length;
+  }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant]);
 
   if (error) {
     return (
@@ -184,7 +226,13 @@ export function App() {
   }
 
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history" || screen === "result") {
-     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} /></div>;
+  }
+  if (screen === "options") {
+    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} /><OptionsScreen offlineMap={offlineMap} onToggleOfflineMap={async () => {
+      if (offlineMap === "installed") { await removeOfflineMap(); setOfflineMap("available"); }
+      else { setOfflineMap("downloading"); try { await downloadOfflineMap(); setOfflineMap("installed"); } catch { setOfflineMap("error"); } }
+    }} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "game") {
@@ -223,33 +271,18 @@ export function App() {
 
   return (
     <div className="app-shell grain">
-       <Header legacy={legacy} economy={economy} onSurface={openSurface} onGrantCoins={grantDevelopmentCoins} onUnlockContent={unlockDevelopmentContent} />
+        <Header legacy={legacy} economy={economy} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && (
         <Hub
           legacy={legacy}
             economy={economy}
             onSurface={openSurface}
           offlineMap={offlineMap}
-          onToggleOfflineMap={async () => {
-            try {
-              if (offlineMap === "installed") {
-                await removeOfflineMap();
-                setOfflineMap("available");
-              } else {
-                setOfflineMap("downloading");
-                await downloadOfflineMap();
-                setOfflineMap("installed");
-              }
-            } catch {
-              setOfflineMap("error");
-            }
-          }}
           onSelect={async (selected) => {
             setFamily(selected);
-            setTopFamily(selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas");
-            if (selected === "historicas" || selected === "idiomas" || selected === "escrita") {
-              setRegion("mundo");
-            }
+            setRegion("mundo");
+             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
+             setTopFamily(selectedTopFamily);
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecialData().then((special) => {
                 const count = (items: { reg?: string; sub?: string }[]) =>
@@ -261,16 +294,18 @@ export function App() {
                   historicas: count(special.historical),
                   idiomas: count(special.languages),
                 });
+                setSpecialEntries({ historicas: special.historical, idiomas: special.languages });
               });
             }
-             const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "bandeira-nome" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "historica-nome" : selected === "idiomas" ? "idioma-pais" : selected === "silhueta" ? "silhueta" : "travel";
-             const familyKey = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
-             const savedVariant = localStorage.getItem(`carta-last-variant:${familyKey}`);
-             setVariant((savedVariant as AnyQuizVariant | null) ?? defaultVariant);
-             localStorage.setItem(`carta-last-variant:${familyKey}`, savedVariant ?? defaultVariant);
+              const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-pais" : selected === "silhueta" ? "silhueta" : "travel";
+              const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
+              const restored = variantContextFor(selectedTopFamily, savedVariant ?? defaultVariant);
+              if (restored) { setFamily(restored.family); setVariant(restored.variant); }
+              localStorage.setItem(`carta-last-variant:${selectedTopFamily}`, savedVariant ?? defaultVariant);
              setScreen("recorte");
           }}
-        />
+           onNavigate={navigate}
+         />
       )}
       {screen === "recorte" && (
         <Recorte
@@ -278,6 +313,7 @@ export function App() {
             family={family}
             variant={variant}
             counts={familyCounts?.[family] ?? counts}
+            selectedCount={selectedCount}
           region={region}
           setRegion={setRegion}
           onBack={() => setScreen("hub")}

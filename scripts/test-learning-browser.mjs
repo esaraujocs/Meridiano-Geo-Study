@@ -39,7 +39,7 @@ const result = await page.evaluate(async () => {
   const first = await startLearningSession({
     family: "mapa",
     variant: "mapa",
-    region: "caribe",
+     region: ["caribe", "europa"],
   });
   first.recordRound({
     targetId: "integration-target",
@@ -168,6 +168,10 @@ assert.equal(
     (session) => session.complete && session.variant === "mapa",
   ).rounds.length,
   2,
+);
+assert.deepEqual(
+  currentSessions.find((session) => session.complete && session.variant === "mapa").regions,
+  ["caribe", "europa"],
 );
 assert.equal(
   currentSessions.find((session) => !session.complete).rounds.length,

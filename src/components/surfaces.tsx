@@ -20,10 +20,14 @@ export function Surface({ data, kind, onBack }: Props) {
   </main>;
 }
 function ProgressView({ state }: { state: Awaited<ReturnType<typeof querySurfaces>> }) {
+  const [tab, setTab] = useState<"progress" | "history">("progress");
   return <section className="surface-grid" aria-label="Resumo de progresso">
+    <div className="surface-tabs" role="tablist"><button role="tab" aria-selected={tab === "progress"} onClick={() => setTab("progress")}>Resumo</button><button role="tab" aria-selected={tab === "history"} onClick={() => setTab("history")}>Histórico</button></div>
+    {tab === "history" ? <HistoryView sessions={state.sessions} /> : <>
     <article className="surface-card"><span className="eyebrow">Cobertura</span><strong>{state.progress.discovered}/{state.progress.total}</strong><p>entidades descobertas</p></article>
     <article className="surface-card"><span className="eyebrow">Distribuição</span><strong>{state.progress.distribution.map((n, i) => `${i}:${n}`).join(" · ")}</strong><p>níveis de domínio, 0 a 5</p></article>
     <div className="surface-card surface-wide"><h2>Pilares</h2>{Object.entries(state.progress.pillars).map(([key, item]) => <div className="metric-row" key={key}><b>{key}{item.aggregate ? " · agregado" : ""}</b><span>{item.correct}/{item.seen} · {item.bayesianScore === null ? "—" : `${Math.round(item.bayesianScore * 100)}%`} · {item.status}</span></div>)}</div>
+    </>}
   </section>;
 }
 function CollectionView({ state }: { state: Awaited<ReturnType<typeof querySurfaces>> }) {
@@ -79,5 +83,5 @@ function AchievementView({ state }: { state: Awaited<ReturnType<typeof querySurf
     })}</div></section>;
 }
 function HistoryView({ sessions }: { sessions: SurfaceSession[] }) {
-  return <section className="surface-card surface-wide"><h2>Últimas sessões</h2>{sessions.length ? <div className="history-list">{sessions.map((session) => <article className="history-row" key={session.id}><div><b>{label(session.mode)}</b><span>{session.region || "mundo"} · {session.complete ? "encerrada" : "abandonada"}</span></div><strong>{session.correct}/{session.rounds.length || "—"}</strong><small>{session.accuracy === null ? "sem respostas" : `${Math.round(session.accuracy * 100)}%`}{session.averageTime ? ` · ${Math.round(session.averageTime)} ms` : ""}</small></article>)}</div> : <p className="lede">Nenhuma sessão registrada ainda.</p>}</section>;
+  return <section className="surface-card surface-wide"><h2>Últimas sessões</h2>{sessions.length ? <div className="history-list">{sessions.map((session) => <article className="history-row" key={session.id}><div><b>{label(session.mode)}</b><span>{(session.regions?.length ? session.regions : [session.region || "mundo"]).join(" + ")} · {session.complete ? "encerrada" : "abandonada"}</span></div><strong>{session.correct}/{session.rounds.length || "—"}</strong><small>{session.accuracy === null ? "sem respostas" : `${Math.round(session.accuracy * 100)}%`}{session.averageTime ? ` · ${Math.round(session.averageTime)} ms` : ""}</small></article>)}</div> : <p className="lede">Nenhuma sessão registrada ainda.</p>}</section>;
 }

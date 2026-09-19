@@ -74,8 +74,9 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
 export function achievementContext(progress: ProgressSnapshot, sessions: SurfaceSession[], catalog: Record<string, any> = {}): AchievementContext {
   const completed = sessions.filter(s => s.complete);
   const modes = new Set(sessions.map(s => s.mode));
-  const regions = new Set(completed.map(s => s.region).filter(Boolean));
-  const capitalRegions = new Set(completed.filter(s => s.variant === "capital" || s.mode.includes("capital")).map(s => s.region).filter(Boolean));
+  const regions = new Set(completed.flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
+  const capitalRegions = new Set(completed.filter(s => s.variant === "capital" || s.mode.includes("capital"))
+    .flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
   let bestStreak=0, byWater=0, lightning=0, flagsSet=new Set<string>(), capSet=new Set<string>(), perfect20=false, perfect40=false, precise=false, confines=false, worldComplete=false;
   for (const s of sessions) {
     let streak=0, rapid=0, km=0, kmn=0; const tiny=new Set<string>();
@@ -89,7 +90,8 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
     }
     if (s.complete && s.rounds.length && s.correct===s.rounds.length) { if(s.rounds.length>=20) perfect20=true; if(s.rounds.length>=40) perfect40=true; }
     if (s.mode==="mapa" && s.complete) { s.rounds.forEach(r=>{ if(!r.correct && r.distanceKm!==null && r.distanceKm!==undefined){km+=r.distanceKm;kmn++;} }); if(kmn>=3 && km/kmn<500) precise=true; }
-    if(s.region==="mundo" && s.complete && s.rounds.length>=150) worldComplete=true;
+    const selectedRegions = s.regions?.length ? s.regions : [s.region];
+    if((selectedRegions.includes("mundo") || ["caribe","pacifico","europa","africa","asia","america-do-sul","america-do-norte-central"].every(region => selectedRegions.includes(region))) && s.complete && s.rounds.length>=150) worldComplete=true;
     const names = new Set(s.rounds.filter(r=>r.correct).map(r=>String(catalog[r.targetId]?.pt ?? r.targetId).toLowerCase()));
     if (["tuvalu","nauru","palau"].every(name => names.has(name))) confines = true;
   }

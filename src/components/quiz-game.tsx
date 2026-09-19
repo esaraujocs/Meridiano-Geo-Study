@@ -3,7 +3,7 @@ import { Icon } from "./icons";
 import { inRegion } from "../domain/regions";
 import { regionLabel } from "../domain/regions";
 import { flagSource, loadFlags, quizPool, type FlagCatalog } from "../domain/quiz";
-import type { Family, Legacy, QuizVariant, Region } from "../domain/types";
+import type { Family, Legacy, QuizVariant, RegionSelection } from "../domain/types";
 import {
   startLearningSession,
   type LearningSessionHandle,
@@ -27,7 +27,7 @@ export function QuizGame({
   data: Legacy;
   family: Extract<Family, "bandeiras" | "capitais">;
   variant: Exclude<QuizVariant, "mapa">;
-  region: Region;
+  region: RegionSelection;
   onBack: () => void;
   onEnd?: () => void;
 }) {
@@ -143,7 +143,7 @@ export function QuizGame({
 
   useEffect(() => {
     if (pool.length >= 4) {
-      deckRef.current = createFiniteDeck(pool, seedFromParts(family, variant, region, pool.join("|")) ^ Math.floor(Math.random() * 0x100000000));
+      deckRef.current = createFiniteDeck(pool, seedFromParts(family, variant, JSON.stringify(region), pool.join("|")) ^ Math.floor(Math.random() * 0x100000000));
       nextQuestion();
     }
   }, [pool]);

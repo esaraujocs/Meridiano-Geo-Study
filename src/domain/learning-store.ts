@@ -1,4 +1,4 @@
-import type { AnyQuizVariant, Family, QuizVariant, Region } from "./types";
+import type { AnyQuizVariant, Family, QuizVariant, Region, RegionSelection } from "./types";
 import {
   DATABASE_NAME,
   DATABASE_VERSION,
@@ -39,6 +39,7 @@ export type CurrentLearningSession = {
   mode?: string;
   subject?: string;
   region: Region;
+  regions?: Region[];
   startedAt: number;
   endedAt: number | null;
   complete: boolean;
@@ -100,7 +101,7 @@ async function closeSession(
 export async function startLearningSession(input: {
   family: Family;
   variant: AnyQuizVariant;
-  region: Region;
+  region: RegionSelection;
   persistProgress?: boolean;
   mode?: string;
   subject?: string;
@@ -128,7 +129,8 @@ export async function startLearningSession(input: {
     variant: input.variant,
     mode: input.mode ?? input.variant,
     subject: input.subject ?? "",
-    region: input.region,
+    region: Array.isArray(input.region) ? (input.region.includes("mundo") ? "mundo" : input.region[0] ?? "mundo") : input.region,
+    regions: Array.isArray(input.region) ? [...input.region] : [input.region],
     startedAt: Date.now(),
     endedAt: null,
     complete: false,
