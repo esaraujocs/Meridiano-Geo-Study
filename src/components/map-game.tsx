@@ -14,6 +14,7 @@ import {
   markerFilter,
   SMALL_ENTITY_SOURCE,
 } from "../domain/small-entities";
+import { resolveMarkerClick } from "../domain/map-marker-click";
 
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -320,7 +321,10 @@ export function Game({
       "bottom-right",
     );
     map.on("click", (event: MapMouseEvent) => {
-       const markerHits = map.queryRenderedFeatures(event.point, {
+       const markerHits = map.queryRenderedFeatures([
+         [event.point.x - 15, event.point.y - 15],
+         [event.point.x + 15, event.point.y + 15],
+       ], {
          layers: ["small-entities-hit"],
        });
        const nearestMarker = markerHits
@@ -333,7 +337,10 @@ export function Game({
          .filter((item): item is { feature: maplibregl.MapGeoJSONFeature; distance: number } => Boolean(item))
          .sort((a, b) => a.distance - b.distance)[0];
        if (nearestMarker?.feature.properties?.carta_id) {
-         const id = String(nearestMarker.feature.properties.carta_id);
+          const { answerId: id } = resolveMarkerClick(
+            nearestMarker.feature,
+            targetRef.current,
+          );
          const targetMeta = data.meta[targetRef.current];
          const distanceKm = targetMeta?.ll ? haversine(event.lngLat.lat, event.lngLat.lng, targetMeta.ll[1], targetMeta.ll[0]) : null;
          answerId(id, { distanceKm });
