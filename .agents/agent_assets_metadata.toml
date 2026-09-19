@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "qtt53PgXb2kkm096qbwVu"
+uri = "file://screenshots/priority-zero-390x844.png"
+type = "image"
+title = "Validação mobile 390×844"
+description = "Captura da abertura do mapa após trocar marcadores por uma source pré-computada por entidade."
+logical_id = "82e23fa0-ef1e-4215-8495-fbd9ab2ad6c3"
+content_hash = "sha256:fb51cc4f3ac11511c6ddfb4354d9f875997331165f9fd344d2701bc4cd2ae54f"
+size = 99100
+mtime_ms = 1789847372226
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:d27aa451-1acc-4074-9028-dd623cf0db5e/82e23fa0-ef1e-4215-8495-fbd9ab2ad6c3/ce1f6fae-69c8-4ce8-9fb1-df34e38de9b3"
+storage_version_token = "1789847387701793"
+content_type = "image/png"
