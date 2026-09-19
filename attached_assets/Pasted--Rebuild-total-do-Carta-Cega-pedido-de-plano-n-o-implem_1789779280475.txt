@@ -1,0 +1,74 @@
+# Rebuild total do Carta Cega — pedido de plano (não implementar ainda)
+
+Antes de qualquer proposta, leia `CLAUDE.md` e `historico-carta-cega.txt` na raiz do
+projeto. Eles documentam o estado atual, as decisões já tomadas e — importante — várias
+tentativas já feitas e revertidas de resolver o problema de qualidade do mapa (ex.: um
+sistema de duas resoluções por território, "LOD", foi implementado e removido DUAS vezes
+porque pesava ~76% do arquivo pra ganho de nitidez que não compensou; ~43 dos 45
+territórios pequenos já foram re-sourceados do zero via OpenStreetMap nas versões mais
+recentes). Não reproponha isso sem entender por que foi revertido antes.
+
+## Contexto: por que este rebuild existe
+
+O app hoje é um único arquivo HTML autocontido, aberto direto do disco/navegador
+(`file://`), sem build step, com toda a lógica em JS client-side e o mapa renderizado em
+SVG via D3 (`d3.geoNaturalEarth1()`, uma projeção só, compartilhada por todos os recortes).
+Essa arquitetura foi ótima pra prototipar e chegou longe, mas bateu no teto:
+
+- **Qualidade de mapa em zoom é ruim**, especialmente em Polinésia, Melanésia, Micronésia
+  e nas Antilhas — muitas ilhas pequenas próximas, geometria de origem (Natural Earth 10m)
+  não tem vértice suficiente pra ficar boa ampliada, e re-sourcing manual território por
+  território (via Overpass/OSM) melhora mas não escala pro universo inteiro de ilhas do
+  mundo.
+- **Tudo roda no navegador** — isso trava o teto de qualidade de renderização, performance
+  de zoom/pan e a fluidez de animação que dá pra alcançar.
+
+## Objetivo deste rebuild
+
+1. **Decidir a plataforma-alvo.** Preciso de uma recomendação fundamentada: mobile nativo
+   (React Native / Flutter / Capacitor), PWA otimizado, ou continuar web mas com stack
+   diferente — sempre comparando contra o objetivo de rodar bem em mobile E desktop. Se as
+   duas plataformas puxarem a arquitetura em direções incompatíveis, quero a recomendação
+   de qual priorizar e por quê, não as duas meio-feitas.
+2. **Resolver o mapa de vez, na raiz, não território por território.** Avalie alternativas
+   de renderização que aguentem zoom profundo em arquipélagos densos sem re-sourcing manual
+   infinito — ex. renderização baseada em vetor tiles (MapLibre GL / Mapbox GL Style) em vez
+   de SVG+D3, ou outra abordagem que resolva estruturalmente o problema descrito no
+   histórico. Considere que hoje há ~262 países + territórios, ~49 geometrias extras fora do
+   topo base, e um mecanismo de "vira bolinha abaixo de um limiar de pixels" (`DOT_AT`) que é
+   um paliativo pro problema de performance/legibilidade em zoom baixo, não uma solução de
+   qualidade.
+3. **Rebrand visual completo + motion.** Nova identidade visual (cores, tipografia,
+   iconografia). O fluxo de navegação atual (Hub → Família → Variante → Recorte) é a parte
+   que considero mais madura do projeto hoje — preserve essa arquitetura de informação, mas
+   redesenhe visualmente e adicione animação de clique/toque e transições fluidas entre
+   telas. Referência principal de estilo e fluidez: **StudyGe** (app nativo de quiz de
+   geografia mundial, iOS/Android — múltiplos tipos de mapa, vários modos de quiz, conquistas,
+   ranking). Quero que o plano aponte especificamente quais elementos de UX/motion do StudyGe
+   vale mirar (transição entre telas, feedback de acerto/erro, hierarquia visual do mapa vs.
+   HUD) e como isso se traduz pra stack escolhida no item 1.
+4. **Sistema de economia para liberar modos.** Hoje o jogo já tem um sistema de maestria por
+   3 pilares (Bandeiras/Mapa/Capitais, com escada de domínio por país) e conquistas — não
+   invente do zero sem considerar isso. Quero um sistema de moedas/progressão, inspirado no
+   StudyGe, que:
+   - libere modos de jogo progressivamente (não tudo aberto desde o início);
+   - dê a sensação de progressão para qualquer jogador, mas **recompense conhecimento real
+     mais rápido** — um jogador que já manda bem deve acumular moeda mais rápido que alguém
+     just começando, não só "jogar mais tempo = mais moeda".
+   Proponha como isso se conecta (ou não) ao sistema de maestria já existente — é o mesmo
+   dado usado de duas formas, ou uma camada nova por cima?
+
+## O que quero como entrega desta etapa (plano, não código)
+
+- Recomendação de plataforma/stack com trade-offs explícitos (não uma lista neutra de
+  opções — uma recomendação).
+- Proposta de arquitetura para o mapa que resolva o problema de zoom/ilhas pequenas de
+  forma estrutural.
+- Wireframe/descrição do rebrand + sistema de motion, referenciando StudyGe onde fizer
+  sentido.
+- Desenho do sistema de economia e como ele se relaciona com maestria/conquistas
+  existentes.
+- Fases de execução (o que dá pra entregar incremental vs. o que exige reescrita completa
+  antes de qualquer entrega), e riscos de cada fase.
+- Lista de decisões que só eu (o jogador/dono do projeto) preciso bater o martelo antes de
+  vocês começarem a implementar.
