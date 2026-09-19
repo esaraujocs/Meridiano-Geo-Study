@@ -98,6 +98,7 @@ export function Hub({
   onSurface,
   onNavigate,
   totalEntities = 0,
+  collectionSummary = { discovered: 0, total: 0 },
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
@@ -107,6 +108,7 @@ export function Hub({
   onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void;
   onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void;
   totalEntities?: number;
+  collectionSummary?: { discovered: number; total: number };
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -218,7 +220,7 @@ export function Hub({
       <section className="hub-progress" aria-labelledby="hub-progress-title">
         <div className="section-label"><h2 id="hub-progress-title">Seu progresso</h2></div>
         <div className="hub-progress-grid">
-          <button type="button" onClick={() => onNavigate?.("collection")}><span className="hub-progress-icon"><Icon type="collection" /></span><span><strong>{economy?.coverage ?? 0}/{totalEntities}</strong><small>Coleção · cartas descobertas</small></span><Icon type="arrow" /></button>
+          <button type="button" onClick={() => onNavigate?.("collection")}><span className="hub-progress-icon"><Icon type="collection" /></span><span><strong>{collectionSummary.discovered}/{collectionSummary.total}</strong><small>Coleção · cartas descobertas</small></span><Icon type="arrow" /></button>
           <button type="button" onClick={() => onNavigate?.("achievements")}><span className="hub-progress-icon"><Icon type="achievements" /></span><span><strong>{legacy?.achievements ?? 0}/30</strong><small>Achievements desbloqueados</small></span><Icon type="arrow" /></button>
           <button type="button" onClick={() => onNavigate?.("progress")}><span className="hub-progress-icon"><Icon type="progress" /></span><span><strong>{Math.round(((economy?.dominated ?? 0) / Math.max(1, totalEntities)) * 100)}%</strong><small>Maestria · ver progresso</small></span><Icon type="arrow" /></button>
         </div>

@@ -26,7 +26,7 @@ import { initializeEconomy, queryEconomy, type EconomySnapshot } from "./domain/
 import { Surface } from "./components/surfaces";
 import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
 import { registerAchievementLifecycleListener } from "./domain/achievements";
-import { querySurfaces } from "./domain/progress-surfaces";
+import { queryCollectionSummary, querySurfaces } from "./domain/progress-surfaces";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
@@ -62,6 +62,7 @@ export function App() {
   const [offlineMap, setOfflineMap] =
     useState<OfflineMapStatus>("checking");
   const [surfaceRevision, setSurfaceRevision] = useState(0);
+  const [collectionSummary, setCollectionSummary] = useState({ discovered: 0, total: 0 });
   const [economy, setEconomy] = useState<EconomySnapshot>({
     balance: 0,
     earned: 0,
@@ -124,6 +125,10 @@ export function App() {
       setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
     }).catch(() => setTravelCounts(null));
   }, [data, onlyUn]);
+  useEffect(() => {
+    if (!data) return;
+    void queryCollectionSummary(data).then(setCollectionSummary).catch(() => undefined);
+  }, [data, economy.coverage, surfaceRevision]);
   useEffect(() => {
     if (!data) return;
     registerAchievementLifecycleListener(() => {
@@ -294,6 +299,7 @@ export function App() {
             onSurface={openSurface}
           offlineMap={offlineMap}
           totalEntities={data.mapEntityIds.length}
+          collectionSummary={collectionSummary}
           onSelect={async (selected) => {
             setFamily(selected);
             setRegion("mundo");

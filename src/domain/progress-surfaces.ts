@@ -1,6 +1,7 @@
 import type { Legacy, Meta } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { achievementContext, evaluateAchievementDefinitions } from "./achievements.js";
+import { collectionSummary } from "./collection-summary.js";
 import type { HistoricalEntity } from "./special-data.js";
 import { regionMatches } from "./regions.js";
 import type { Region } from "./types.js";
@@ -127,7 +128,8 @@ export function deriveProgress(records: any[], universe?: string[]): ProgressSna
       item.status = pillarStatus(item.bayesianScore, item.seen);
     }
   }
-  return { total: ids.size, discovered: records.filter((record) => ids.has(String(record.entityId ?? record.id ?? "")) && Number(record.mastery ?? 0) > 0).length, distribution, pillars, records };
+  const collection = collectionSummary(records, ids);
+  return { total: collection.total, discovered: collection.discovered, distribution, pillars, records };
 }
 export function collectionCard(id: string, meta: Meta | undefined, mastery = 0, flag?: string): CollectionCard {
   const fields: Array<[string, string]> = [];
@@ -200,6 +202,13 @@ export async function querySurfaces(data?: Legacy) {
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl);
   }) : [];
    return { sessions, progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical };
+}
+
+export async function queryCollectionSummary(data: Legacy) {
+  const db = await openDb();
+  const progress = await all<any>(db.transaction("progress", "readonly").objectStore("progress"));
+  db.close();
+  return collectionSummary(progress, canonicalCurrentIds(data.meta));
 }
 
 export async function addHistoricalCollection(id: string, value: unknown) {

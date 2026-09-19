@@ -136,12 +136,12 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 }
 
 @media (max-width:899px){
-  .app-shell:has(.hub-content){height:100dvh;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
-  .app-shell:has(.hub-content)>.topbar{display:none}.app-shell:has(.hub-content)>.hub-content{grid-row:1;min-height:0}.app-shell:has(.hub-content)>.mobile-nav{grid-row:2}
-  .hub-content{width:100%;margin-block:0;display:grid;grid-template-rows:auto auto minmax(0,1fr);padding:12px 16px 8px;overflow:hidden}
+  .app-shell:has(.hub-content){height:100dvh;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+  .app-shell:has(.hub-content)>.topbar{display:flex;grid-row:1}.app-shell:has(.hub-content)>.topbar .desktop-nav{display:none}.app-shell:has(.hub-content)>.hub-content{grid-row:2;min-height:0}.app-shell:has(.hub-content)>.mobile-nav{grid-row:3}
+  .hub-content{width:100%;margin-block:0;display:grid;grid-template-rows:auto auto minmax(0,1fr);padding:12px 16px 24px;overflow:hidden}
   .hub-content .section-label{margin:0 0 8px}.hub-content .section-label h2{font-size:25px}
-  .family-carousel{--slide-step:min(82vw,380px);position:relative;width:100%;min-width:0;height:100%;min-height:0;overflow:hidden;padding-bottom:24px}
-  .family-grid.is-carousel{position:absolute;top:0;bottom:24px;left:50%;width:max-content;height:auto;display:flex;align-items:center;gap:0;padding:0;overflow:visible;transform:translateX(calc(-1 * (var(--track-index) + .5) * var(--slide-step)));transition:transform 300ms cubic-bezier(.22,.61,.36,1)}
+  .family-carousel{--slide-step:min(82vw,380px);position:relative;width:100%;min-width:0;height:100%;min-height:0;overflow:hidden;padding-bottom:26px}
+  .family-grid.is-carousel{position:absolute;top:0;bottom:26px;left:50%;width:max-content;height:auto;display:flex;align-items:center;gap:0;padding:0;overflow:visible;transform:translateX(calc(-1 * (var(--track-index) + .5) * var(--slide-step)));transition:transform 300ms cubic-bezier(.22,.61,.36,1)}
   .family-grid.is-carousel .family{flex:0 0 calc(var(--slide-step) - 12px);width:calc(var(--slide-step) - 12px);height:clamp(260px,100%,520px);max-height:520px;margin-inline:6px;padding:20px}
   .family-grid.is-carousel .family:not(.active){opacity:.7;transform:scale(.94);pointer-events:none}
   .family-visual{height:45%;min-height:100px}.family-visual .family-icon svg{width:64px;height:64px}.family-geo{inset:5% 8%;width:auto;height:auto}
@@ -159,7 +159,7 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
   .hub-profile-bar{margin:0 0 10px;padding:9px 12px;gap:10px;min-height:68px}.level-badge{min-width:48px;height:48px}.level-badge span{font-size:11px}
   .hub-xp-label,.hub-xp-next{font-size:12px}.hub-coins{padding:7px 9px}.hub-coins strong{font-size:14px}
   .app-shell:has(.hub-content)>.mobile-nav{position:static;display:grid;background:rgba(243,233,210,.97);border-top:1px solid var(--line);box-shadow:0 -3px 12px rgba(36,59,58,.08)}
-  .app-shell:has(.hub-content) .content{padding-bottom:8px}
+  .app-shell:has(.hub-content) .content{padding-bottom:24px}
   .rec-content{height:calc(100dvh - 56px);display:flex;flex-direction:column;overflow:hidden;padding:14px 16px 60px}
   .rec-content>.back{flex:none;min-height:36px}.rec-grid{display:flex;flex:1;min-height:0;flex-direction:column;gap:10px}
   .rec-grid>div:first-child{flex:none}.rec-grid>div:first-child .eyebrow{margin-top:4px!important}.rec-grid>div:first-child h1{margin-top:5px!important;font-size:28px}
