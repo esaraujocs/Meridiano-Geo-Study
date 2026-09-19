@@ -157,7 +157,7 @@ export function Hub({
     { family: "mapa", variant: "mapa", label: "Mapa", description: "Localizar países e territórios.", icon: "map" },
     { family: "bandeiras", variant: "bandeira-nome", label: "Bandeiras", description: "Reconhecimento visual e escrita.", icon: "flag", color: "var(--coral)" },
     { family: "capitais", variant: "capital-pais", label: "Capitais", description: "Recuperação de nomes.", icon: "capital", color: "var(--gold)" },
-    { family: "idiomas", variant: "idioma-pais", label: "Idiomas", description: "Uma variante para ler escrita e território.", icon: "capital", color: "var(--terracotta)" },
+    { family: "idiomas", variant: "idioma-pais", label: "Idiomas", description: "Uma variante para ler escrita e território.", icon: "language", color: "var(--terracotta)" },
   ];
   const visibleFamilyIndexes = carouselMode
     ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]

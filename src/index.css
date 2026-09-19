@@ -126,11 +126,12 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 
 @media (max-width:760px){
   .topbar{height:56px}
-  .mobile-nav{grid-template-columns:repeat(4,1fr);gap:4px;padding:6px max(12px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
-  .mobile-nav button{min-width:44px;min-height:44px;padding:8px;display:grid;place-items:center;border-radius:99px}
-  .mobile-nav button svg{width:25px;height:25px}.mobile-nav button[aria-current=page]{background:var(--green);color:#fff4df}
+  .mobile-nav{grid-template-columns:repeat(4,1fr);gap:4px;padding:10px max(12px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  .mobile-nav button{position:relative;isolation:isolate;justify-self:center;width:60px;min-width:44px;height:44px;min-height:44px;padding:8px;display:grid;place-items:center;border-radius:99px}
+  .mobile-nav button::before{content:"";position:absolute;z-index:-1;width:60px;height:40px;border-radius:99px}
+  .mobile-nav button svg{width:24px;height:24px}.mobile-nav button[aria-current=page]{background:transparent;color:#fff4df}.mobile-nav button[aria-current=page]::before{background:var(--green)}
   .mobile-nav button span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .hub-profile-bar{margin:0 0 10px;padding:9px 12px;gap:10px;min-height:68px}.level-badge{min-width:48px;height:48px}
+  .hub-profile-bar{margin:0 0 10px;padding:9px 12px;gap:10px;min-height:68px}.level-badge{min-width:48px;height:48px}.level-badge span{font-size:11px}
   .hub-xp-label,.hub-xp-next{font-size:12px}.hub-coins{padding:7px 9px}.hub-coins strong{font-size:14px}
   .app-shell:has(.hub-content)>.mobile-nav{position:static;display:grid;background:rgba(243,233,210,.97);border-top:1px solid var(--line);box-shadow:0 -3px 12px rgba(36,59,58,.08)}
   .app-shell:has(.hub-content) .content{padding-bottom:8px}
