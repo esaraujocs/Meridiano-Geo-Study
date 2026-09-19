@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Game } from "./components/map-game";
-import { Header, Hub, Recorte, Variant } from "./components/screens";
+import { Header, Hub, Recorte, Variant, type TopFamily } from "./components/screens";
 import {
   buildFeatures,
   eligible,
@@ -31,7 +31,9 @@ export function App() {
   const [error, setError] = useState("");
   const [region, setRegion] = useState<Region>("caribe");
   const [family, setFamily] = useState<Family>("mapa");
+  const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
+  const [onlyUn, setOnlyUn] = useState(false);
   const [specialCounts, setSpecialCounts] = useState({
     historicas: { mundo: 0, caribe: 0, pacifico: 0 },
     idiomas: { mundo: 0, caribe: 0, pacifico: 0 },
@@ -66,9 +68,13 @@ export function App() {
   }, []);
 
   const features = useMemo(
-    () => (data ? eligible(buildFeatures(data)) : []),
-    [data],
+    () => (data ? eligible(buildFeatures(data)).filter((item) => !onlyUn || data.meta[item.id]?.un) : []),
+    [data, onlyUn],
   );
+  const playableData = useMemo(() => {
+    if (!data || !onlyUn) return data;
+    return { ...data, meta: Object.fromEntries(Object.entries(data.meta).filter(([, meta]) => meta.un)) };
+  }, [data, onlyUn]);
   const counts = useMemo(
     () =>
       data
@@ -88,7 +94,8 @@ export function App() {
     if (!data) return null;
     const count = (selected: Family, selectedRegion: Region) =>
       Object.entries(data.meta).filter(([id, meta]) => {
-        if (meta.absorvido || !inRegion(id, selectedRegion, data)) return false;
+         if (meta.absorvido || !inRegion(id, selectedRegion, data)) return false;
+         if (onlyUn && !meta.un) return false;
         if (selected === "mapa") return features.some((item) => item.id === id);
         if (selected === "bandeiras") return Boolean(meta.fl);
         return Boolean(typeof meta.cap === "string" && meta.cap.trim() && !meta.soBandeira);
@@ -98,16 +105,16 @@ export function App() {
       bandeiras: { mundo: count("bandeiras", "mundo"), caribe: count("bandeiras", "caribe"), pacifico: count("bandeiras", "pacifico") },
       capitais: { mundo: count("capitais", "mundo"), caribe: count("capitais", "caribe"), pacifico: count("capitais", "pacifico") },
       escrita: {
-        mundo: count("bandeiras", "mundo"),
-        caribe: count("bandeiras", "caribe"),
-        pacifico: count("bandeiras", "pacifico"),
+        mundo: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "mundo"),
+        caribe: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "caribe"),
+        pacifico: count(variant === "escrita-capital" ? "capitais" : "bandeiras", "pacifico"),
       },
       historicas: specialCounts.historicas,
       idiomas: specialCounts.idiomas,
       silhueta: { mundo: features.length, caribe: counts?.caribe ?? 0, pacifico: counts?.pacifico ?? 0 },
       travel: { mundo: features.length, caribe: counts?.caribe ?? 0, pacifico: counts?.pacifico ?? 0 },
     } as Record<Family, { mundo: number; caribe: number; pacifico: number }>;
-  }, [data, features, specialCounts]);
+  }, [data, features, specialCounts, onlyUn, variant]);
 
   if (error) {
     return (
@@ -146,16 +153,20 @@ export function App() {
   }
 
   if (screen === "game") {
+    if (family === "capitais" && variant === "capital-pais") {
+       return <Game data={playableData ?? data} features={features.filter((item) => inRegion(item.id, region, data) && Boolean(data.meta[item.id]?.cap))} region={region} family={family} variant={variant} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
+    }
     if (family === "silhueta" || family === "travel") {
-       return <GeometryGame family={family} data={data} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
+       return <GeometryGame family={family} data={playableData ?? data} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
     }
     if (family === "historicas" || family === "idiomas" || family === "escrita") {
-       return <SpecialQuiz data={data} family={family} variant={variant} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
+        const specialData = family === "historicas" || family === "idiomas" ? data : (playableData ?? data);
+        return <SpecialQuiz data={specialData} family={family} variant={variant} region={region} onBack={() => { void refreshEconomy(); setScreen("recorte"); }} onEnd={() => { void refreshEconomy(); setScreen("result"); }} />;
     }
     if (family !== "mapa") {
       return (
         <QuizGame
-          data={data}
+          data={playableData ?? data}
           family={family}
             variant={variant as Exclude<QuizVariant, "mapa">}
           region={region}
@@ -200,8 +211,11 @@ export function App() {
           }}
           onSelect={async (selected) => {
             setFamily(selected);
+            setTopFamily(selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas");
             if (selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               setRegion("mundo");
+            }
+            if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecialData().then((special) => {
                 const count = (items: { reg?: string; sub?: string }[]) => ({
                   mundo: items.length,
@@ -221,9 +235,11 @@ export function App() {
       )}
       {screen === "variant" && (
         <Variant
+            topFamily={topFamily}
             family={family}
             variant={variant}
             setVariant={setVariant}
+            onSelectEngine={(nextFamily, nextVariant) => { setFamily(nextFamily); setVariant(nextVariant); setScreen("recorte"); }}
             economy={economy}
           onBack={() => setScreen("hub")}
           onNext={() => setScreen("recorte")}
@@ -241,6 +257,8 @@ export function App() {
            economy={economy}
            onRefresh={refreshEconomy}
            onPlay={() => setScreen("game")}
+           onlyUn={onlyUn}
+           setOnlyUn={setOnlyUn}
         />
       )}
     </div>

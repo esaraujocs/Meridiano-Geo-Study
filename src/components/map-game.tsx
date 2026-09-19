@@ -4,7 +4,7 @@ import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
 import { REGION_CAMERA } from "../domain/regions";
-import type { GeoFeature, Legacy, Region } from "../domain/types";
+import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
 
@@ -17,13 +17,19 @@ export function Game({
   region,
   onBack,
   onEnd,
+  family,
+  variant,
 }: {
   data: Legacy;
   features: GeoFeature[];
   region: Region;
   onBack: () => void;
   onEnd?: () => void;
+  family?: Family;
+  variant?: AnyQuizVariant;
 }) {
+  const engineFamily = family ?? "mapa";
+  const engineVariant = variant ?? "mapa";
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
@@ -44,8 +50,8 @@ export function Game({
 
   const openSession = () => {
     const pending = startLearningSession({
-      family: "mapa",
-      variant: "mapa",
+      family: engineFamily,
+      variant: engineVariant,
       region,
     });
     pendingSessionRef.current = pending;
@@ -258,7 +264,9 @@ export function Game({
     }
   }, [target, wrong, mapReady]);
 
-  const targetName = data.meta[target]?.pt ?? "carregando";
+  const targetName = engineFamily === "capitais" && engineVariant === "capital-pais"
+    ? data.meta[target]?.cap ?? "carregando"
+    : data.meta[target]?.pt ?? "carregando";
   if (mapError) {
     return (
       <div className="app-shell">
@@ -312,7 +320,7 @@ export function Game({
                 ? "Caribe"
                 : "Pacífico"}
           </div>
-          <h1>Encontre no mapa.</h1>
+           <h1>{engineFamily === "capitais" ? "Encontre o país." : "Encontre no mapa."}</h1>
           <div className="target-kicker">Seu alvo</div>
           <div className="target" aria-live="polite" aria-atomic="true">
             {targetName}
@@ -339,7 +347,7 @@ export function Game({
             aria-live="polite"
             role="status"
           >
-            {feedback || "Clique na região correspondente."}
+             {feedback || (engineFamily === "capitais" ? "Clique no país correspondente à capital." : "Clique na região correspondente.")}
           </div>
           <div className="score-box">
             <div>
@@ -371,7 +379,6 @@ export function Game({
         </aside>
         <div className="map-wrap">
           <div className="map-hud">
-             <div className="map-note">PMTiles aceito · fallback legado documentado</div>
              <div className="map-note">Toque, clique ou use a lista de teclado</div>
           </div>
           <div

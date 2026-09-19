@@ -30,31 +30,86 @@ async function clickButton(label) {
     const button = [...document.querySelectorAll("button")].find((item) =>
       item.textContent?.includes(text),
     );
-    if (!button) throw new Error(`Botão não encontrado: ${text}`);
+    if (!button) {
+      const available = [...document.querySelectorAll("button")]
+        .map((item) => item.textContent?.replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+      throw new Error(`Botão não encontrado: ${text}. Disponíveis: ${available.join(" | ")}`);
+    }
     button.click();
   }, label);
 }
 
-async function openFamily(family, variant, world = false) {
+async function openFamily(family, variant, world = false, beforeStart) {
   await page.goto(baseUrl, { waitUntil: "networkidle0" });
-  await clickButton(family);
+  await clickButton(family === "Mapa" ? "Abrir Mapa" : family === "Bandeiras" ? "Abrir Bandeiras" : family === "Capitais" ? "Abrir Capitais" : "Abrir Idiomas");
   await page.waitForFunction(
     () => document.querySelector("h1")?.textContent?.includes("Como"),
   );
   await clickButton(variant);
   await page.waitForSelector(".region-list");
+  if (variant.includes("Histórica") || variant.includes("histórica")) {
+    const deckSize = await page.$eval(".deck-line b", (item) =>
+      Number.parseInt(item.textContent ?? "0", 10),
+    );
+    if (!(deckSize > 0)) throw new Error("Baralho histórico não foi pré-carregado");
+  }
   if (world) await page.click(".region-list .region:first-child");
-  await clickButton("Abrir sessão");
+  if (beforeStart) await beforeStart();
+  await clickButton("Começar com");
 }
 
 const checks = {};
 
-await openFamily("Mapa", "Localizar no mapa");
+await page.goto(baseUrl, { waitUntil: "networkidle0" });
+checks.ui = await page.evaluate(() => {
+  const familyGrid = document.querySelector(".family-grid");
+  const idiomas = [...document.querySelectorAll(".family")].find((item) =>
+    item.querySelector("h3")?.textContent?.includes("Idiomas"),
+  );
+  return {
+    carousel1280: getComputedStyle(familyGrid).display === "flex",
+    idiomasFree: Boolean(idiomas && !idiomas.classList.contains("locked")),
+  };
+});
+await page.setViewport({ width: 1440, height: 900 });
+checks.ui.grid1440 = await page.$eval(
+  ".family-grid",
+  (item) => getComputedStyle(item).display === "grid",
+);
+await page.setViewport({ width: 1280, height: 720 });
+
+let unDeckSize = 0;
+await openFamily("Mapa", "Clicar no mapa", false, async () => {
+  const lockedWorld = await page.$eval(
+    ".region-list .region:first-child",
+    (item) => item.textContent?.includes("3 moedas"),
+  );
+  const before = await page.$eval(".deck-line b", (item) =>
+    Number.parseInt(item.textContent ?? "0", 10),
+  );
+  await page.$eval('.config-details input[type="checkbox"]', (input) => input.click());
+  await page.waitForFunction(
+    (previous) =>
+      Number.parseInt(document.querySelector(".deck-line b")?.textContent ?? "0", 10) <
+      previous,
+    {},
+    before,
+  );
+  unDeckSize = await page.$eval(".deck-line b", (item) =>
+    Number.parseInt(item.textContent ?? "0", 10),
+  );
+  checks.ui.lockedWorld = lockedWorld;
+  checks.ui.unFilterReducesDeck = unDeckSize > 0 && unDeckSize < before;
+});
 await page.waitForSelector("canvas", { timeout: 60_000 });
 await page.waitForSelector(".target", { timeout: 10_000 });
 checks.map = {
   canvas: true,
   target: await page.$eval(".target", (item) => item.textContent),
+  deckParity:
+    (await page.$eval("#map-answer-select", (select) => select.options.length - 1)) ===
+    unDeckSize,
 };
 const mapTarget = checks.map.target;
 const mapAnswer = await page.$eval(
@@ -84,27 +139,53 @@ checks.flags = {
   ),
 };
 
-await openFamily("Capitais", "Capital → país");
-await page.waitForSelector(".quiz-options");
+await openFamily("Capitais", "Clicar no mapa");
+await page.waitForSelector("canvas", { timeout: 60_000 });
 checks.capitals = {
-  options: await page.$$eval(".quiz-option", (items) => items.length),
-  prompt: await page.$eval(".quiz-clue", (item) => item.textContent),
+  map: true,
+  prompt: await page.$eval(".target", (item) => item.textContent),
 };
 
-await openFamily("Escrita", "Escrita → país");
+await openFamily("Bandeiras", "Escrita · nome do país");
+await page.waitForFunction(() => {
+  const image = document.querySelector(".quiz-flag");
+  return image instanceof HTMLImageElement && image.naturalWidth > 0;
+});
 checks.writing = {
   input: Boolean(await page.$('input[aria-label="Resposta"]')),
   flag: await page.$eval(".quiz-flag", (image) => image.naturalWidth > 0),
 };
 
-await openFamily("Históricas", "Bandeira histórica → nome");
+let capitalDeckSize = 0;
+await openFamily("Capitais", "Escrita · nome da capital", false, async () => {
+  capitalDeckSize = await page.$eval(".deck-line b", (item) =>
+    Number.parseInt(item.textContent ?? "0", 10),
+  );
+  const expected = await page.evaluate(async () => {
+    const data = await fetch("/data/legacy/catalog.json").then((response) => response.json());
+    return Object.values(data.meta).filter(
+      (meta) =>
+        !meta.absorvido &&
+        meta.sub === "Caribbean" &&
+        typeof meta.cap === "string" &&
+        meta.cap.trim() &&
+        !meta.soBandeira,
+    ).length;
+  });
+  checks.ui.capitalDeckParity = capitalDeckSize === expected;
+});
+checks.capitalWriting = {
+  input: Boolean(await page.$('input[aria-label="Resposta"]')),
+};
+
+await openFamily("Bandeiras", "Histórica → nome");
 await page.waitForFunction(() => document.querySelectorAll(".quiz-option").length === 4);
 checks.historical = {
   options: await page.$$eval(".quiz-option", (items) => items.length),
   flag: await page.$eval(".quiz-flag", (image) => image.naturalWidth > 0),
 };
 
-await openFamily("Históricas", "Nome → bandeira histórica");
+await openFamily("Bandeiras", "Nome → histórica");
 await page.waitForFunction(() => document.querySelectorAll(".quiz-option img").length === 4);
 checks.historicalInverse = {
   options: await page.$$eval(".quiz-option", (items) => items.length),
@@ -120,7 +201,7 @@ checks.languages = {
   prompt: await page.$eval(".quiz-clue", (item) => item.textContent),
 };
 
-await openFamily("Silhueta", "Silhueta");
+await openFamily("Mapa", "Silhueta");
 await page.waitForSelector(".silhouette-frame path", { timeout: 60_000 });
 checks.silhouette = {
   path: await page.$eval(".silhouette-frame path", (path) => (path.getAttribute("d") ?? "").length > 20),
@@ -165,12 +246,12 @@ await page.evaluate(async () => {
   db.close();
 });
 await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await clickButton("Travel");
+await clickButton("Abrir Mapa");
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Como"));
 await clickButton("Travel");
 await page.waitForSelector(".region-list");
 await page.click(".region-list .region:nth-child(3)");
-await clickButton("Abrir sessão");
+await clickButton("Começar com");
 await page.waitForSelector(".travel-frame path", { timeout: 60_000 });
 checks.travel = {
   route: await page.$eval(".travel-frame path", (path) => (path.getAttribute("d") ?? "").length > 20),
@@ -190,23 +271,28 @@ for (const [button, heading] of [
   checks[button.toLowerCase()] = true;
 }
 
-await openFamily("Capitais", "Capital → país");
-await page.waitForSelector(".quiz-option");
-await page.click(".quiz-option");
+await openFamily("Capitais", "Clicar no mapa");
+await page.waitForSelector("canvas", { timeout: 60_000 });
 await clickButton("Encerrar sessão");
 await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("Sessão encerrada"));
 checks.result = true;
 
-await browser.close();
-
 if (
   errors.length ||
+  !checks.ui.carousel1280 ||
+  !checks.ui.grid1440 ||
+  !checks.ui.idiomasFree ||
+  !checks.ui.lockedWorld ||
+  !checks.ui.unFilterReducesDeck ||
+  !checks.ui.capitalDeckParity ||
   !checks.map.canvas ||
+  !checks.map.deckParity ||
   checks.flags.options !== 4 ||
   !checks.flags.imageLoaded ||
-  checks.capitals.options !== 4 ||
+  !checks.capitals.map ||
   !checks.writing.input ||
   !checks.writing.flag ||
+  !checks.capitalWriting.input ||
   checks.historical.options !== 4 ||
   !checks.historical.flag ||
   checks.historicalInverse.options !== 4 ||
@@ -225,4 +311,8 @@ if (
   throw new Error(JSON.stringify({ checks, errors }, null, 2));
 }
 
+const nestedButtons = await page.$$eval("button button", (items) => items.length);
+if (nestedButtons) throw new Error(`Botões aninhados encontrados: ${nestedButtons}`);
+
+await browser.close();
 console.log(JSON.stringify({ checks, errors }, null, 2));
