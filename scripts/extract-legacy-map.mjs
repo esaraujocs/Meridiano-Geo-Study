@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 
 const sourcePath = new URL("../carta-cega-0.13.5.html", import.meta.url);
 const outputPath = new URL("../public/data/legacy-map.json", import.meta.url);
@@ -18,9 +19,12 @@ if (end < 0) {
 }
 
 const legacy = JSON.parse(html.slice(contentStart, end));
+const sourceHash = createHash("sha256")
+  .update(html.slice(contentStart, end))
+  .digest("hex");
 const mapPayload = {
   sourceVersion: "0.13.5",
-  generatedAt: new Date().toISOString(),
+  sourceHash,
   topo: legacy.topo,
   meta: legacy.meta,
   points: legacy.points,

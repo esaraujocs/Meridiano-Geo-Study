@@ -1,0 +1,64 @@
+{
+  "history": {
+    "v": 1,
+    "sessoes": [
+      {
+        "id": "map",
+        "ini": 100,
+        "modo": "mapa",
+        "completa": true,
+        "r": [["76", true], ["76", false], ["8", true]]
+      },
+      {
+        "id": "writing",
+        "ini": 200,
+        "modo": "escr",
+        "completa": true,
+        "r": [["76", true], ["8", true]]
+      },
+      {
+        "id": "capital",
+        "ini": 300,
+        "modo": "bn",
+        "assunto": "capital",
+        "completa": true,
+        "r": [["76", true], ["8", true]]
+      },
+      {
+        "id": "flags",
+        "ini": 400,
+        "modo": "bn",
+        "completa": true,
+        "r": [["76", true]]
+      },
+      {
+        "id": "writing-2",
+        "ini": 500,
+        "modo": "escr",
+        "completa": true,
+        "r": [["76", true]]
+      },
+      {
+        "id": "capital-2",
+        "ini": 600,
+        "modo": "mapa",
+        "assunto": "capital",
+        "completa": true,
+        "r": [["76", true]]
+      },
+      {
+        "id": "pruned",
+        "ini": 700,
+        "modo": "mapa",
+        "completa": true,
+        "ag": { "rod": 10, "ac": 8 }
+      }
+    ]
+  },
+  "historicalCollection": {
+    "v": 1,
+    "itens": { "ottoman": { "bn": true, "nb": true } }
+  },
+  "preferences": { "modo": "mapa", "recorte": "mundo" },
+  "achievements": { "primeira": 1700000000000 }
+}

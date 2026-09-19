@@ -1,0 +1,36 @@
+{
+  "proof": "legacy-geometry-packaging",
+  "sourceVersion": "0.13.5",
+  "sourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+  "limitations": [
+    "Este arquivo prova empacotamento, carregamento e preservação de IDs.",
+    "A geometria ainda combina Natural Earth e exceções legadas; não é a fonte definitiva."
+  ],
+  "counts": {
+    "playableCatalogEntities": 250,
+    "tiledFeatures": 250,
+    "polygons": 240,
+    "points": 10,
+    "withoutGeometry": 0
+  },
+  "withoutGeometry": [],
+  "zoom": {
+    "min": 0,
+    "max": 7
+  },
+  "bytes": {
+    "extractedLegacyJson": 2671687,
+    "mergedGeoJson": 8684307,
+    "pmtiles": 3936692
+  },
+  "hashes": {
+    "geojsonSha256": "4a77fe724e6ad2e55fab2a0d329546bee308d0fb0aa097b9c43cfb785ecaa2a9",
+    "pmtilesSha256": "08b2141fd849f9da9bd8e48d30196decc8802b23446d9c00732169dbb1b53028"
+  },
+  "layer": "countries",
+  "idProperty": "carta_id",
+  "attribution": [
+    "Natural Earth (domínio público), para a base legada.",
+    "© OpenStreetMap contributors, para exceções legadas documentadas no projeto."
+  ]
+}

@@ -1,0 +1,1 @@
+- [Reconciliação de progresso local](progress-reconciliation.md) — reimportar legado substitui o baseline e preserva só o delta atual; sessão, progresso e ledger são atômicos.

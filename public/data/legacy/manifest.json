@@ -1,0 +1,26 @@
+{
+  "sourceVersion": "0.13.5",
+  "sourceHash": "cdda493421881299a6cc938721252db2fa396866113e0257be5c68a62e705fa1",
+  "files": {
+    "catalog.json": {
+      "bytes": 161593,
+      "sha256": "6f8876d78c111c32ac7563df32500f4ca1dff460db20135e40502864e61f1cce"
+    },
+    "flags.json": {
+      "bytes": 2263654,
+      "sha256": "2a3eea8fe84c3671f8c1f1826bddbfa1528e2dc887fd995726ae993b3aaad05a"
+    },
+    "historical.json": {
+      "bytes": 65398,
+      "sha256": "c7566c06c7bfa607852bd82bb9007177d7bba099f28e1af356911181116b07f7"
+    },
+    "historical-flags.json": {
+      "bytes": 3743578,
+      "sha256": "c1e9381dcdb3b03717e914d689945aa9501c85489b79331db745378b6771d60d"
+    },
+    "languages.json": {
+      "bytes": 17275,
+      "sha256": "14e5d327fd63be3d1961bdda049348e13478e11fa791e26fe7f6059ccc39a43e"
+    }
+  }
+}
