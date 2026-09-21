@@ -3,11 +3,13 @@ import type { RegionSelection } from "./types.js";
 
 export type HistoricalEntity = {
   id: string; pt: string; reg?: string; sub?: string; fl?: string;
-  ini?: number; fim?: number; tipo?: string; cap?: string;
+  ini?: number; fim?: number; tipo?: string; cap?: string; sucessor?: string; fato?: string;
 };
 export type LanguageEntry = {
   id: string; idioma: string; script: string; translit?: string;
   paises: string; reg?: string;
+  /** Tradução do provérbio, quantos falam e a posição do idioma no mundo (vêm do acervo do modo clássico). */
+  significado?: string; falantes?: string; ranking?: string;
 };
 export type SpecialData = { historical: HistoricalEntity[]; historicalFlags: Record<string, string>; languages: LanguageEntry[] };
 let promise: Promise<SpecialData> | null = null;

@@ -27,11 +27,14 @@ export function seedFromParts(...parts: (string | number)[]) {
   return hash >>> 0;
 }
 
+// `limit`: quantas cartas entram no baralho (rodadas da partida); sem valor, entra tudo.
 export function createFiniteDeck<T>(
   items: readonly T[],
   seed = Math.floor(Math.random() * 0x100000000) >>> 0,
+  limit?: number | null,
 ) {
-  const deck = shuffleSeeded(items, seed);
+  const shuffled = shuffleSeeded(items, seed);
+  const deck = limit && limit > 0 ? shuffled.slice(0, limit) : shuffled;
   let cursor = 0;
   return {
     get size() {

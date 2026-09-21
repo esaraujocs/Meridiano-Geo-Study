@@ -10,7 +10,7 @@ import {
   type LearningColumn,
   type ProgressRecord,
 } from "./learning-rules";
-import { firstCorrectReward } from "./economy-rules";
+import { computeSpoils, emptySpoils, type Pace, type Spoils, type Tier } from "./spoils.js";
 import { notifyAchievementLifecycle } from "./achievements.js";
 export { mergeProgressRecord, masteryForProgress };
 export type { LearningColumn, ProgressRecord };
@@ -29,7 +29,16 @@ export type LearningRound = {
   guesses?: string[];
   distanceKm?: number | null;
   byWater?: boolean;
+  /** Dificuldade do país (1 fácil, 3 difícil): entra no valor das moedas do acerto. */
+  tier?: Tier;
+  /** Travel: quantos países da rota foram acertados (vale moedas mesmo se a rota não fechou). */
+  weight?: number;
+  /** O tempo da pergunta acabou (conta como erro). */
+  timedOut?: boolean;
 };
+
+/** Carta que subiu de nível nesta partida (de 0 = carta nova). */
+export type Promotion = { id: string; from: number; to: number };
 
 export type CurrentLearningSession = {
   id: string;
@@ -44,13 +53,21 @@ export type CurrentLearningSession = {
   endedAt: number | null;
   complete: boolean;
   rounds: LearningRound[];
+  /** Ritmo (Partida com tempo ou Treino), tamanho pedido e segundos por pergunta. */
+  pace?: Pace;
+  roundLimit?: number | null;
+  timerSeconds?: number | null;
+  promotions?: Promotion[];
+  spoils?: Spoils;
 };
+
+export type SessionResult = { session: CurrentLearningSession; spoils: Spoils | null };
 
 export type LearningSessionHandle = {
   id: string;
   recordRound: (round: LearningRound) => void;
-  end: (options?: { complete?: boolean }) => Promise<void>;
-  finish: () => Promise<void>;
+  end: (options?: { complete?: boolean }) => Promise<SessionResult>;
+  finish: () => Promise<SessionResult>;
 };
 
 function openDatabase() {
@@ -88,15 +105,18 @@ async function closeSession(
   database: IDBDatabase,
   session: CurrentLearningSession,
   complete: boolean,
+  credit: LedgerCredit | null,
 ) {
-  const transaction = database.transaction(SESSIONS_STORE, "readwrite");
+  const transaction = database.transaction([SESSIONS_STORE, "ledger"], "readwrite");
   transaction.objectStore(SESSIONS_STORE).put({
     ...session,
     endedAt: session.endedAt ?? Date.now(),
     complete,
   });
+  if (credit) transaction.objectStore("ledger").put(credit);
   await transactionDone(transaction);
 }
+type LedgerCredit = { id: string; kind: "credit"; amount: number; reason: string; source: string; createdAt: number };
 
 export async function startLearningSession(input: {
   family: Family;
@@ -105,8 +125,18 @@ export async function startLearningSession(input: {
   persistProgress?: boolean;
   mode?: string;
   subject?: string;
+  pace?: Pace;
+  roundLimit?: number | null;
+  timerSeconds?: number | null;
 }): Promise<LearningSessionHandle> {
   const database = await openDatabase();
+  const idle = (): LearningSessionHandle => {
+    const empty: CurrentLearningSession = {
+      id: `current-v2-${newId()}`, source: "current-v2", family: input.family, variant: input.variant, region: "mundo",
+      startedAt: Date.now(), endedAt: Date.now(), complete: false, rounds: [],
+    };
+    return { id: empty.id, recordRound() {}, async end() { return { session: empty, spoils: null }; }, async finish() { return { session: empty, spoils: null }; } };
+  };
   if (
     !database.objectStoreNames.contains(SESSIONS_STORE) ||
     !database.objectStoreNames.contains(PROGRESS_STORE)
@@ -115,12 +145,7 @@ export async function startLearningSession(input: {
       "[carta-cega] learning persistence unavailable: IndexedDB v2 stores missing",
     );
     database.close();
-    return {
-      id: `current-v2-${newId()}`,
-      recordRound() {},
-      async end() {},
-      async finish() {},
-    };
+    return idle();
   }
   const session: CurrentLearningSession = {
     id: `current-v2-${newId()}`,
@@ -135,6 +160,10 @@ export async function startLearningSession(input: {
     endedAt: null,
     complete: false,
     rounds: [],
+    pace: input.pace ?? "timed",
+    roundLimit: input.roundLimit ?? null,
+    timerSeconds: input.timerSeconds ?? null,
+    promotions: [],
   };
   const transaction = database.transaction(SESSIONS_STORE, "readwrite");
   transaction.objectStore(SESSIONS_STORE).put(session);
@@ -143,30 +172,52 @@ export async function startLearningSession(input: {
   let current = session;
   let ended = false;
   let queue = Promise.resolve();
+  let result: Promise<SessionResult> | null = null;
   const reportFailure = (error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`[carta-cega] learning persistence failed: ${message}`);
   };
 
-  const endSession = async (options?: { complete?: boolean }) => {
-    if (ended) return queue;
+  const endSession = (options?: { complete?: boolean }): Promise<SessionResult> => {
+    if (ended && result) return result;
     ended = true;
-    queue = queue
-      .then(async () => {
-        current = { ...current, endedAt: current.endedAt ?? Date.now() };
-        await closeSession(database, current, options?.complete === true);
-        database.close();
-      })
-      .catch((error) => {
-        reportFailure(error);
-        database.close();
-      });
+    const complete = options?.complete === true;
+    result = new Promise<SessionResult>((resolve) => {
+      queue = queue
+        .then(async () => {
+          const promotions = current.promotions ?? [];
+          // Só a partida terminada paga moedas (e conta XP); sair no meio guarda o aprendizado, sem recompensa.
+          const spoils = complete
+            ? computeSpoils({
+              variant: current.variant,
+              pace: current.pace ?? "timed",
+              rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight })),
+              complete,
+              newCards: promotions.filter((item) => item.from === 0).length,
+              levelUps: promotions.filter((item) => item.from > 0).length,
+            })
+            : emptySpoils(current.pace ?? "timed");
+          const endedAt = current.endedAt ?? Date.now();
+          current = { ...current, endedAt, spoils };
+          const credit: LedgerCredit | null = spoils.total > 0
+            ? { id: `spoils:${current.id}`, kind: "credit", amount: spoils.total, reason: "session-spoils", source: current.id, createdAt: endedAt }
+            : null;
+          await closeSession(database, current, complete, credit);
+          database.close();
+          resolve({ session: { ...current, complete }, spoils: complete && current.rounds.length > 0 ? spoils : null });
+        })
+        .catch((error) => {
+          reportFailure(error);
+          database.close();
+          resolve({ session: { ...current, complete }, spoils: null });
+        });
+    });
     queue = queue.then(() => notifyAchievementLifecycle({
       phase: "finish",
       sessionId: current.id,
       roundCount: current.rounds.length,
     })).catch(reportFailure);
-    return queue;
+    return result;
   };
 
   return {
@@ -181,7 +232,7 @@ export async function startLearningSession(input: {
       queue = queue
         .then(async () => {
           const transaction = database.transaction(
-            [SESSIONS_STORE, PROGRESS_STORE, "ledger"],
+            [SESSIONS_STORE, PROGRESS_STORE],
             "readwrite",
           );
           const progress = transaction.objectStore(PROGRESS_STORE);
@@ -199,23 +250,14 @@ export async function startLearningSession(input: {
                 transaction.objectStore(SESSIONS_STORE).put(sessionAfterRound);
                 return;
               }
-              const reward = firstCorrectReward(
-                round.targetId,
-                column,
-                round.correct,
-                existing?.columns?.[column] ?? 0,
-              );
-              progress.put(mergeProgressRecord(existing, round.targetId, column, round.correct, round.answeredAt));
-              if (reward) {
-                const ledger = transaction.objectStore("ledger");
-                const ledgerRequest = ledger.get(reward.id);
-                ledgerRequest.onsuccess = () => {
-                  if (!ledgerRequest.result) {
-                    ledger.put({ ...reward, kind: "credit", createdAt: round.answeredAt });
-                  }
-                };
-              }
-              transaction.objectStore(SESSIONS_STORE).put(sessionAfterRound);
+              const merged = mergeProgressRecord(existing, round.targetId, column, round.correct, round.answeredAt);
+              progress.put(merged);
+              const before = existing?.mastery ?? 0;
+              const promotions = merged.mastery > before && round.correct
+                ? [...(current.promotions ?? []), { id: round.targetId, from: before, to: merged.mastery }]
+                : current.promotions ?? [];
+              current = { ...current, promotions };
+              transaction.objectStore(SESSIONS_STORE).put({ ...sessionAfterRound, promotions });
             } catch {
               transaction.abort();
             }

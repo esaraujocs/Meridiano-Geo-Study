@@ -2,11 +2,18 @@ import type { AnyQuizVariant, Family, Region } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
 import { playerStatsFromSessions } from "./player-stats.js";
+import { XP_ADJUST_ID } from "./debug-rules.js";
+import { dominatedFromSessions } from "./dominated.js";
+import { ROUND_UNLOCKS, type RoundUnlockKey } from "./pace.js";
+import { themeById, themeUnlockKey } from "./themes.js";
+export { dominatedFromSessions, dominatedIdsFromSessions } from "./dominated.js";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
 export type EconomySnapshot = {
   balance: number; earned: number; spent: number; coverage: number; sessions: number;
   xp: number; level: number; xpBase: number; xpNext: number; rounds: number; completedSessions: number; dominated: number;
+  /** XP calculado só pelo jogo e ajuste de XP das ferramentas de debug (0 fora do debug). */
+  xpReal?: number; xpAdjust?: number;
   coverageByColumn: Record<"bandeiras" | "mapa" | "capitais" | "escrita", number>;
   unlocked: UnlockKey[];
 };
@@ -22,65 +29,6 @@ export function isQualifyingSession(value: unknown): value is {
   return session?.complete === true &&
     Array.isArray(session.rounds) &&
     session.rounds.length >= Math.min(10, deckSize);
-}
-
-type EconomyRound = { targetId: string; correct: boolean; column: string; at: number };
-
-function sessionRounds(value: any, sessionIndex: number): EconomyRound[] {
-  const raw = Array.isArray(value?.rounds) ? value.rounds : Array.isArray(value?.r)
-    ? value.r.filter(Array.isArray).map((item: any[]) => ({ targetId: item[0], correct: item[1], distanceKm: item[3], tuple: true }))
-    : [];
-  const variant = String(value?.variant ?? value?.assunto ?? value?.modo ?? value?.mode ?? "");
-  const family = String(value?.family ?? value?.mode ?? "");
-  const column = String(value?.column ?? value?.learningColumn ?? "") ||
-    (/histor|bandeira|flag|bnhist|nbhist/i.test(variant + family)
-    ? "bandeiras"
-    : /capital|capitais/i.test(variant + family)
-      ? "capitais"
-      : /escrit|idioma/i.test(variant + family)
-        ? "escrita"
-        : "mapa");
-  const sessionOrder = Number(value?.sourceIndex ?? value?.startedAt ?? value?.ini ?? value?.endedAt ?? value?.fim ?? sessionIndex);
-  return raw.map((round: any, index: number) => ({
-    targetId: String(round?.targetId ?? round?.entityId ?? round?.id ?? round?.[0] ?? ""),
-    correct: Boolean(round?.correct ?? round?.ok ?? round?.c ?? round?.[1]),
-    column: String(round?.column ?? column),
-    at: Number(round?.tuple
-      ? sessionOrder * 1000000 + index
-      : round?.answeredAt ?? round?.at ?? sessionOrder * 1000000 + index),
-  })).filter((round: EconomyRound) => round.targetId);
-}
-
-/** Classic profile rule: the last three answers for a country must all be
- * correct, and those answers must span at least two game columns. */
-export function dominatedFromSessions(sessions: unknown[], progress: unknown[] = []) {
-  const byEntity = new Map<string, EconomyRound[]>();
-  sessions.forEach((session, index) => {
-    const value = session as any;
-    if (value?.complete !== true) return;
-    for (const round of sessionRounds(value, index)) {
-      const list = byEntity.get(round.targetId) ?? [];
-      list.push(round);
-      byEntity.set(round.targetId, list);
-    }
-  });
-  let dominated = 0;
-  for (const rounds of byEntity.values()) {
-    const last = rounds.sort((a, b) => a.at - b.at).slice(-3);
-    if (last.length === 3 && last.every((round) => round.correct) &&
-      new Set(last.map((round) => round.column)).size >= 2) dominated += 1;
-  }
-  // Older migrations may have preserved explicit last-three evidence but not
-  // the original session rows. Accept only that normalized evidence; mastery
-  // alone is deliberately not treated as domination.
-  for (const row of progress as any[]) {
-    const history = Array.isArray(row?.last3) ? row.last3 : Array.isArray(row?.lastThree) ? row.lastThree : [];
-    const last = history.slice(-3);
-    if (last.length === 3 && last.every((item: any) => Boolean(item?.correct ?? item?.ok ?? item === true)) &&
-      new Set(last.map((item: any) => String(item?.column ?? item?.family ?? ""))).size >= 2 &&
-      !byEntity.has(String(row?.entityId ?? row?.id ?? ""))) dominated += 1;
-  }
-  return dominated;
 }
 
 export function roundsFromCompletedSessions(sessions: unknown[]) {
@@ -132,22 +80,48 @@ export async function initializeEconomy() {
   };
   await done(tx);
   db.close();
+  await convertEconomyV2();
   return queryEconomy();
+}
+
+// Economia v2 (moedas inflacionadas): o saldo que o jogador já tinha vira ×10, uma vez só. Modos já liberados continuam liberados.
+export const ECONOMY_V2_CONVERSION_ID = "economy-v2-conversion";
+export const ECONOMY_V2_FACTOR = 10;
+export async function convertEconomyV2() {
+  const db = await openDb();
+  const tx = db.transaction(["state", "ledger"], "readwrite");
+  const state = tx.objectStore("state");
+  const ledger = tx.objectStore("ledger");
+  const marker = state.get(ECONOMY_V2_CONVERSION_ID);
+  marker.onsuccess = () => {
+    if (marker.result) return;
+    const all = ledger.getAll();
+    all.onsuccess = () => {
+      const entries = all.result as LedgerEntry[];
+      const balance = entries.reduce((sum, entry) => sum + (entry.kind === "credit" ? entry.amount : -entry.amount), 0);
+      const bonus = Math.max(0, balance) * (ECONOMY_V2_FACTOR - 1);
+      if (bonus > 0) ledger.put({ id: "grant:economy-v2-conversion", kind: "credit", amount: bonus, reason: "economy-v2-conversion", source: "economy-v2", createdAt: Date.now() } satisfies LedgerEntry);
+      state.put({ id: ECONOMY_V2_CONVERSION_ID, factor: ECONOMY_V2_FACTOR, balanceBefore: balance, createdAt: Date.now() });
+    };
+  };
+  await done(tx);
+  db.close();
 }
 
 export async function queryEconomy(): Promise<EconomySnapshot> {
   const db = await openDb();
-  const tx = db.transaction(["ledger", "unlocks", "progress", "sessions"], "readonly");
-  const [ledger, unlocks, progress, sessions] = await Promise.all([
+  const tx = db.transaction(["ledger", "unlocks", "progress", "sessions", "state"], "readonly");
+  const [ledger, unlocks, progress, sessions, adjustRow] = await Promise.all([
     all<LedgerEntry>(tx.objectStore("ledger")), all<{ key: UnlockKey }>(tx.objectStore("unlocks")),
     all<{ mastery?: number; columns?: Record<string, number> }>(tx.objectStore("progress")), all<unknown>(tx.objectStore("sessions")),
+    new Promise<{ amount?: number } | undefined>((resolve, reject) => { const r = tx.objectStore("state").get(XP_ADJUST_ID); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }),
   ]);
   db.close();
   const earned = ledger.filter((e) => e.kind === "credit").reduce((n, e) => n + e.amount, 0);
   const spent = ledger.filter((e) => e.kind === "debit").reduce((n, e) => n + e.amount, 0);
   const unlocked = [...new Set(unlocks.flatMap((u) => {
     const value = String(u.key);
-    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-pais|silhueta|silhueta-opcoes|travel)(?::.*)?$/);
+    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-nome|idioma-pais|silhueta|silhueta-opcoes|travel)(?::.*)?$/);
     if (!match) return [u.key];
     const family = match[1] as Family;
     const variant = match[2] as AnyQuizVariant;
@@ -162,7 +136,9 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const playerStats = playerStatsFromSessions(sessions as any[]);
   const rounds = playerStats.rounds;
   const dominated = dominatedFromSessions(sessions, progress);
-  const xp = rounds + dominated * 25;
+  const xpReal = rounds + dominated * 25;
+  const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
+  const xp = Math.max(0, xpReal + xpAdjust);
   let level = 1;
   while (50 * level * (level + 1) <= xp) level += 1;
   const xpBase = 50 * (level - 1) * level;
@@ -175,8 +151,57 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
     coverageByColumn,
     sessions: sessions.filter(isQualifyingSession).length,
     xp, level, xpBase, xpNext, rounds, completedSessions: playerStats.completedSessions, dominated,
+    xpReal, xpAdjust,
     unlocked,
   };
+}
+
+/** Compra as rodadas extras (20 e baralho completo): valem para todos os modos. */
+export async function unlockRounds(key: RoundUnlockKey) {
+  const option = ROUND_UNLOCKS.find((item) => item.key === key);
+  if (!option) throw new Error("Opção de rodadas inválida.");
+  const db = await openDb();
+  const tx = db.transaction(["ledger", "unlocks"], "readwrite");
+  const unlocks = tx.objectStore("unlocks");
+  const ledger = tx.objectStore("ledger");
+  const owned = unlocks.get(key);
+  owned.onsuccess = () => {
+    if (owned.result) return;
+    const entries = ledger.getAll();
+    entries.onsuccess = () => {
+      const balance = (entries.result as LedgerEntry[]).reduce((sum, entry) => sum + (entry.kind === "credit" ? entry.amount : -entry.amount), 0);
+      if (balance < option.cost) { tx.abort(); return; }
+      ledger.put({ id: `debit:unlock:${key}`, kind: "debit", amount: option.cost, reason: "unlock", source: key, createdAt: Date.now() } satisfies LedgerEntry);
+      unlocks.put({ id: key, key, source: "purchase", unlockedAt: Date.now() });
+    };
+  };
+  await done(tx).catch(() => { throw new Error("Saldo insuficiente."); });
+  db.close();
+  return queryEconomy();
+}
+
+/** Compra um tema do Hub na Loja: debita as moedas e guarda o desbloqueio (uma vez só; o padrão nunca precisa de compra). */
+export async function unlockTheme(id: string) {
+  const theme = themeById(id);
+  if (!theme || theme.cost <= 0) throw new Error("Tema inválido.");
+  const key = themeUnlockKey(id);
+  const db = await openDb();
+  const tx = db.transaction(["ledger", "unlocks"], "readwrite");
+  const unlocks = tx.objectStore("unlocks");
+  const ledger = tx.objectStore("ledger");
+  const owned = unlocks.get(key);
+  owned.onsuccess = () => {
+    if (owned.result) return;
+    const entries = ledger.getAll();
+    entries.onsuccess = () => {
+      const balance = (entries.result as LedgerEntry[]).reduce((sum, entry) => sum + (entry.kind === "credit" ? entry.amount : -entry.amount), 0);
+      if (balance < theme.cost) { tx.abort(); return; }
+      ledger.put({ id: `debit:unlock:${key}`, kind: "debit", amount: theme.cost, reason: "unlock", source: key, createdAt: Date.now() } satisfies LedgerEntry);
+      unlocks.put({ id: key, key, source: "purchase", unlockedAt: Date.now() });
+    };
+  };
+  try { await done(tx); } catch { throw new Error("Saldo insuficiente."); } finally { db.close(); }
+  return queryEconomy();
 }
 
 export async function unlockContent(family: Family, variant: AnyQuizVariant, region: Region) {
@@ -189,7 +214,7 @@ export async function unlockContent(family: Family, variant: AnyQuizVariant, reg
   existing.onsuccess = () => {
     const aliases = unlockAliases(family, variant, region);
     if ((existing.result as { key: UnlockKey }[]).some((item) => {
-      if (aliases.includes(item.key)) return true;
+      if ((aliases as UnlockKey[]).includes(item.key)) return true;
       const legacy = String(item.key).match(/^([^:]+):([^:]+):/);
       return legacy && policyFor(legacy[1] as Family, legacy[2] as AnyQuizVariant, region)?.key === policy.key;
     })) return;

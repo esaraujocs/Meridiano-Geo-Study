@@ -1,0 +1,426 @@
+// Números da tela de Progresso: maestria, pilares, recortes, revisão, atividade, recordes, evolução e histórico.
+// Lógica pura: recebe os dados já lidos do IndexedDB e devolve o que a tela desenha.
+import type { Meta } from "./types";
+import type { SurfaceSession } from "./progress-surfaces.js";
+import { MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
+import { MASTERY_STAGES, PILLAR_TITLES, clampPercent, hubProfile } from "./hub-profile.js";
+import { pillarOfSession, type PillarKey } from "./pillars.js";
+import { REGION_ITEMS, regionMatches } from "./regions.js";
+import { placeLabel } from "./collection-view.js";
+import {
+  MONTH_NAMES, addDays, dayKey, formatDuration, formatShortDate, relativeWhen, sessionLabel, sessionRegionLabel, shortMonth, startOfDay,
+  type SessionGroup,
+} from "./session-view.js";
+
+export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
+export const FORM_WINDOW = 40; // rodadas da "forma recente"
+export const REVIEW_MIN_TRIES = 3;
+export const REVIEW_BELOW = 0.5;
+export const HEATMAP_WEEKS = 12;
+export const EVOLUTION_POINTS = 14;
+
+export type ProgressRecordLike = { entityId?: unknown; id?: unknown; mastery?: unknown; columns?: Record<string, number | undefined> };
+export type PillarSnapshot = { seen: number; correct: number; bayesianScore: number | null; status: string };
+
+export type DashboardInput = {
+  now: number;
+  sessions: readonly SurfaceSession[];
+  records: readonly ProgressRecordLike[];
+  meta: Record<string, Meta>;
+  /** ids jogáveis do atlas (denominador do domínio, o mesmo do Hub). */
+  universe: readonly string[];
+  dominatedIds: readonly string[];
+  titleIds: readonly string[];
+  pillars: Record<string, PillarSnapshot | undefined>;
+  album: { discovered: number; total: number; distribution: readonly number[] };
+  economy: { level: number; xp: number; xpBase: number; xpNext: number; completedSessions: number; rounds: number };
+};
+
+export type PillarTone = "good" | "mid" | "warn" | "earned";
+export type PillarCard = {
+  key: "bandeiras" | "mapa" | "capitais";
+  label: string;
+  title: string;
+  earned: boolean;
+  seen: number;
+  correct: number;
+  /** nota do pilar (bayesiana) em %, a mesma que abre o título. */
+  scorePct: number | null;
+  goalPct: number;
+  gapPts: number;
+  status: string;
+  tone: PillarTone;
+  coverage: number;
+  coverageTotal: number;
+  formPct: number | null;
+  formDelta: number | null;
+  /** só Bandeiras e Capitais: os títulos pedem escrita validada (2 acertos digitados). */
+  writing: { ok: boolean; count: number; needed: number } | null;
+};
+export type RegionRow = { key: string; label: string; found: number; discovered: number; total: number; pct: number; world: boolean; tag: "good" | "warn" | null };
+export type ReviewItem = { id: string; name: string; place: string; flag?: string; pct: number; correct: number; tries: number; weak: string[] };
+export type SessionRow = {
+  id: string; title: string; family: string; variant: string; group: SessionGroup; region: string;
+  rounds: number; duration: string | null; pct: number | null; complete: boolean; startedAt: number; when: string;
+  pattern: string; avgTimeMs: number | null; bestStreak: number; misses: Array<{ id: string; name: string; flag?: string }>;
+};
+export type HistoryGroup = { key: string; label: string; sessions: number; rounds: number; pct: number | null; rows: SessionRow[] };
+
+export type Dashboard = {
+  empty: boolean;
+  hero: {
+    pct: number; dominated: number; total: number; stageTitle: string; stageIndex: number;
+    stages: Array<{ name: string; at: string }>;
+    next: { name: string; at: number } | null; missing: number | null;
+    titles: Array<{ id: string; label: string; earned: boolean }>;
+  };
+  kpis: {
+    level: number; xpInLevel: number; xpSpan: number;
+    album: { discovered: number; total: number; distribution: readonly number[] };
+    sessions: number; rounds: number;
+    accuracyPct: number | null; accuracyDelta: number | null;
+    avgTimeMs: number | null; timeDeltaMs: number | null;
+  };
+  pillars: PillarCard[];
+  regions: RegionRow[];
+  review: { total: number; items: ReviewItem[] };
+  activity: {
+    /** início (segunda-feira) da primeira semana do mapa de calor. */
+    start: number; weeks: number[][]; months: string[]; streak: number; bestStreak: number;
+    weekRounds: number; weekAccuracy: number | null; activeDays: number; daysTotal: number;
+  };
+  records: {
+    bestStreak: { value: number; when: string } | null;
+    bestSession: { pct: number; rounds: number; when: string } | null;
+    fastest: { ms: number; family: string; when: string } | null;
+    bestMapError: { km: number; when: string } | null;
+  };
+  evolution: { points: Array<{ pct: number; when: string }>; delta: number | null; deltaOver: number; first: string; last: string };
+  recent: SessionRow[];
+  history: SessionRow[];
+};
+
+const PILLAR_META: Array<{ key: PillarCard["key"]; label: string; titleId: "vexilologo" | "cartografo" | "diplomata" }> = [
+  { key: "bandeiras", label: "Bandeiras", titleId: "vexilologo" },
+  { key: "mapa", label: "Mapa", titleId: "cartografo" },
+  { key: "capitais", label: "Capitais", titleId: "diplomata" },
+];
+const PILLAR_WORD: Record<PillarKey, string> = { bandeiras: "Bandeira", mapa: "Mapa", capitais: "Capital", escrita: "Escrita" };
+
+const startedAtOf = (session: SurfaceSession) => session.startedAt ?? session.endedAt ?? 0;
+const mean = (values: number[]) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null);
+const roundPct = (fraction: number) => Math.round(fraction * 100);
+
+function longestStreak(rounds: SurfaceSession["rounds"]) {
+  let best = 0;
+  let run = 0;
+  for (const round of rounds) {
+    run = round.correct ? run + 1 : 0;
+    best = Math.max(best, run);
+  }
+  return best;
+}
+
+function timedRounds(session: SurfaceSession) {
+  return session.rounds.map((round) => round.responseTimeMs).filter((ms): ms is number => typeof ms === "number" && ms >= 100 && ms <= 120_000);
+}
+
+function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number): SessionRow {
+  const label = sessionLabel(session);
+  const startedAt = startedAtOf(session);
+  const times = timedRounds(session);
+  const misses: SessionRow["misses"] = [];
+  const seen = new Set<string>();
+  for (const round of session.rounds) {
+    if (round.correct || !round.targetId || seen.has(round.targetId)) continue;
+    seen.add(round.targetId);
+    misses.push({ id: round.targetId, name: meta[round.targetId]?.pt ?? round.targetId, flag: flagOf(round.targetId) });
+  }
+  return {
+    id: session.id,
+    title: `${label.family} · ${label.variant}`,
+    family: label.family,
+    variant: label.variant,
+    group: label.group,
+    region: sessionRegionLabel(session),
+    rounds: session.roundCount,
+    duration: session.startedAt && session.endedAt ? formatDuration(session.endedAt - session.startedAt) : null,
+    pct: session.roundCount ? roundPct(session.correct / session.roundCount) : null,
+    complete: session.complete,
+    startedAt,
+    when: startedAt ? relativeWhen(startedAt, now) : "",
+    pattern: session.rounds.slice(0, 60).map((round) => (round.correct ? "1" : "0")).join(""),
+    avgTimeMs: mean(times),
+    bestStreak: longestStreak(session.rounds),
+    misses,
+  };
+}
+
+export function buildProgressDashboard(input: DashboardInput): Dashboard {
+  const { now, meta } = input;
+  const sessions = input.sessions.filter((session) => session.roundCount > 0).slice().sort((a, b) => startedAtOf(a) - startedAtOf(b));
+  const universe = new Set(input.universe);
+  const total = input.universe.length;
+  const flagOf = (id: string) => meta[id]?.fl;
+
+  // ---- maestria e estágios
+  const dominated = input.dominatedIds.length;
+  const pct = total > 0 ? clampPercent((dominated / total) * 100) : 0;
+  const profile = hubProfile({ masteryPct: pct, titleIds: input.titleIds });
+  const cosmographer = input.titleIds.includes("cosmografo");
+  let stageIndex = 0;
+  MASTERY_STAGES.forEach((stage, index) => { if (pct >= stage.from) stageIndex = index; });
+  if (cosmographer) stageIndex = MASTERY_STAGES.length;
+  const stages = [...MASTERY_STAGES.map((stage) => ({ name: stage.title as string, at: `${stage.from}%` })), { name: "Cosmógrafo", at: "3 títulos" }];
+  const hero: Dashboard["hero"] = {
+    pct, dominated, total,
+    stageTitle: profile.title,
+    stageIndex,
+    stages,
+    next: profile.next ? { name: profile.next.title, at: profile.next.at } : null,
+    missing: profile.next ? Math.max(0, Math.ceil((profile.next.at / 100) * total) - dominated) : null,
+    titles: [
+      ...PILLAR_TITLES.map((title) => ({ id: title.id as string, label: title.label, earned: input.titleIds.includes(title.id) })),
+      { id: "cosmografo", label: "Cosmógrafo", earned: cosmographer },
+    ],
+  };
+
+  // ---- números rápidos
+  const byRecency = sessions;
+  const accuracyOf = (items: SurfaceSession[]) => {
+    const rounds = items.reduce((sum, session) => sum + session.roundCount, 0);
+    const correct = items.reduce((sum, session) => sum + session.correct, 0);
+    return rounds ? correct / rounds : null;
+  };
+  const overall = accuracyOf(byRecency);
+  const lastFive = byRecency.slice(-5);
+  const beforeLastFive = byRecency.slice(0, -5);
+  const accRecent = accuracyOf(lastFive);
+  const accRest = accuracyOf(beforeLastFive);
+  const timeOf = (items: SurfaceSession[]) => mean(items.flatMap(timedRounds));
+  const timeRecent = timeOf(lastFive);
+  const timeRest = timeOf(beforeLastFive);
+  const kpis: Dashboard["kpis"] = {
+    level: input.economy.level,
+    xpInLevel: Math.max(0, input.economy.xp - input.economy.xpBase),
+    xpSpan: Math.max(1, input.economy.xpNext - input.economy.xpBase),
+    album: input.album,
+    sessions: input.economy.completedSessions,
+    rounds: input.economy.rounds,
+    accuracyPct: overall === null ? null : roundPct(overall),
+    accuracyDelta: byRecency.length > 5 && accRecent !== null && accRest !== null ? roundPct(accRecent) - roundPct(accRest) : null,
+    avgTimeMs: timeOf(byRecency),
+    timeDeltaMs: byRecency.length > 5 && timeRecent !== null && timeRest !== null ? timeRecent - timeRest : null,
+  };
+
+  // ---- pilares
+  const roundsByPillar: Record<string, boolean[]> = {};
+  for (const session of sessions) {
+    const key = pillarOfSession(session);
+    if (!key || !session.rounds.length) continue;
+    (roundsByPillar[key] ??= []).push(...session.rounds.map((round) => round.correct));
+  }
+  const writingCorrect = input.pillars.escrita?.correct ?? 0;
+  const pillars: PillarCard[] = PILLAR_META.map(({ key, label, titleId }) => {
+    const snapshot = input.pillars[key];
+    const seen = snapshot?.seen ?? 0;
+    const correct = snapshot?.correct ?? 0;
+    const score = snapshot?.bayesianScore ?? null;
+    const earned = input.titleIds.includes(titleId);
+    const scorePct = score === null ? null : roundPct(score);
+    const status = snapshot?.status ?? "sem evidência";
+    const tone: PillarTone = earned ? "earned" : status === "forte" ? "good" : status === "revisar" ? "warn" : "mid";
+    const statusLabel = earned ? "Título conquistado" : status === "forte" ? "Forte" : status === "em desenvolvimento" ? "Em desenvolvimento" : status === "revisar" ? "Revisar" : status === "diagnóstico" ? "Poucos dados" : "Sem dados";
+    const flags = roundsByPillar[key] ?? [];
+    const window = (from: number, to: number) => { const part = flags.slice(from, to); return part.length >= 10 ? roundPct(part.filter(Boolean).length / part.length) : null; };
+    const formNow = window(Math.max(0, flags.length - FORM_WINDOW), flags.length);
+    const formBefore = window(Math.max(0, flags.length - 2 * FORM_WINDOW), Math.max(0, flags.length - FORM_WINDOW));
+    const coverage = input.records.filter((record) => universe.has(String(record.entityId ?? record.id ?? "")) && (record.columns?.[key] ?? 0) > 0).length;
+    return {
+      key, label,
+      title: PILLAR_TITLES.find((item) => item.id === titleId)?.label ?? "",
+      earned, seen, correct, scorePct, goalPct: TITLE_GOAL,
+      gapPts: earned || scorePct === null ? (earned ? 0 : TITLE_GOAL) : Math.max(0, TITLE_GOAL - scorePct),
+      status: statusLabel, tone,
+      coverage, coverageTotal: total,
+      formPct: formNow, formDelta: formNow !== null && formBefore !== null ? formNow - formBefore : null,
+      writing: key === "mapa" ? null : { ok: writingCorrect >= 2, count: writingCorrect, needed: 2 },
+    };
+  });
+
+  // ---- domínio por recorte
+  const dominatedSet = new Set(input.dominatedIds);
+  const discoveredSet = new Set(input.records.filter((record) => Number(record.mastery ?? 0) > 0).map((record) => String(record.entityId ?? record.id ?? "")));
+  const rows: RegionRow[] = REGION_ITEMS.map(([key, label]) => {
+    const ids = key === "mundo" ? [...input.universe] : input.universe.filter((id) => regionMatches(meta[id], key));
+    const found = key === "mundo" ? dominated : ids.filter((id) => dominatedSet.has(id)).length;
+    const count = key === "mundo" ? total : ids.length;
+    return { key, label, found, discovered: ids.filter((id) => discoveredSet.has(id)).length, total: count, pct: count ? Math.round((found / count) * 100) : 0, world: key === "mundo", tag: null };
+  });
+  const regional = rows.filter((row) => !row.world && row.total > 0);
+  if (regional.length > 1 && dominated > 0) {
+    const best = regional.reduce((a, b) => (b.pct > a.pct ? b : a));
+    const worst = regional.reduce((a, b) => (b.pct < a.pct || (b.pct === a.pct && b.total > a.total) ? b : a));
+    if (best.pct > worst.pct) { best.tag = "good"; worst.tag = "warn"; }
+  }
+
+  // ---- para revisar
+  type Tally = { tries: number; correct: number; byPillar: Map<PillarKey, { tries: number; correct: number }> };
+  const tally = new Map<string, Tally>();
+  for (const session of sessions) {
+    const key = pillarOfSession(session);
+    if (!key) continue;
+    for (const round of session.rounds) {
+      if (!round.targetId || !meta[round.targetId]) continue;
+      const item = tally.get(round.targetId) ?? { tries: 0, correct: 0, byPillar: new Map() };
+      item.tries += 1;
+      if (round.correct) item.correct += 1;
+      const part = item.byPillar.get(key) ?? { tries: 0, correct: 0 };
+      part.tries += 1;
+      if (round.correct) part.correct += 1;
+      item.byPillar.set(key, part);
+      tally.set(round.targetId, item);
+    }
+  }
+  const weak = [...tally.entries()]
+    .filter(([, item]) => item.tries >= REVIEW_MIN_TRIES && item.correct / item.tries < REVIEW_BELOW)
+    .sort((a, b) => a[1].correct / a[1].tries - b[1].correct / b[1].tries || b[1].tries - a[1].tries || (meta[a[0]]?.pt ?? "").localeCompare(meta[b[0]]?.pt ?? "", "pt-BR"));
+  const review: Dashboard["review"] = {
+    total: weak.length,
+    items: weak.slice(0, 30).map(([id, item]) => ({
+      id, name: meta[id]?.pt ?? id, place: placeLabel(meta[id]), flag: flagOf(id),
+      pct: roundPct(item.correct / item.tries), correct: item.correct, tries: item.tries,
+      weak: [...item.byPillar.entries()].filter(([, part]) => part.tries >= 2 && part.correct / part.tries < REVIEW_BELOW).map(([key]) => PILLAR_WORD[key]),
+    })),
+  };
+
+  // ---- atividade (mapa de calor de 12 semanas, segunda a domingo)
+  const today = startOfDay(now);
+  const mondayOffset = (new Date(today).getDay() + 6) % 7;
+  const mondayThisWeek = addDays(today, -mondayOffset);
+  const firstMonday = addDays(mondayThisWeek, -(HEATMAP_WEEKS - 1) * 7);
+  const perDay = new Map<string, number>();
+  for (const session of sessions) {
+    const at = startedAtOf(session);
+    if (!at) continue;
+    perDay.set(dayKey(at), (perDay.get(dayKey(at)) ?? 0) + session.roundCount);
+  }
+  const weeks: number[][] = [];
+  const months: string[] = [];
+  let activeDays = 0;
+  let daysTotal = 0;
+  for (let week = 0; week < HEATMAP_WEEKS; week += 1) {
+    const monday = addDays(firstMonday, week * 7);
+    const previous = week ? addDays(firstMonday, (week - 1) * 7) : null;
+    months.push(previous === null || new Date(monday).getMonth() !== new Date(previous).getMonth() ? shortMonth(monday) : "");
+    const column: number[] = [];
+    for (let day = 0; day < 7; day += 1) {
+      const date = addDays(monday, day);
+      if (date > today) { column.push(-1); continue; }
+      const rounds = perDay.get(dayKey(date)) ?? 0;
+      daysTotal += 1;
+      if (rounds > 0) activeDays += 1;
+      column.push(rounds);
+    }
+    weeks.push(column);
+  }
+  // um mês recém-começado não divide o espaço com o anterior: fica só o rótulo mais novo
+  for (let index = 0; index < months.length - 1; index += 1) if (months[index] && months[index + 1]) months[index] = "";
+  const activeStamps = [...perDay.entries()].filter(([, rounds]) => rounds > 0).map(([key]) => { const [y, m, d] = key.split("-").map(Number); return new Date(y, m - 1, d).getTime(); }).sort((a, b) => a - b);
+  const activeSet = new Set(activeStamps);
+  let streak = 0;
+  for (let cursor = activeSet.has(today) ? today : addDays(today, -1); activeSet.has(cursor); cursor = addDays(cursor, -1)) streak += 1;
+  let bestStreak = 0;
+  let run = 0;
+  activeStamps.forEach((stamp, index) => {
+    run = index > 0 && addDays(activeStamps[index - 1], 1) === stamp ? run + 1 : 1;
+    bestStreak = Math.max(bestStreak, run);
+  });
+  const thisWeek = sessions.filter((session) => startedAtOf(session) >= mondayThisWeek);
+  const weekAcc = accuracyOf(thisWeek);
+  const activity: Dashboard["activity"] = {
+    start: firstMonday, weeks, months, streak, bestStreak,
+    weekRounds: thisWeek.reduce((sum, session) => sum + session.roundCount, 0),
+    weekAccuracy: weekAcc === null ? null : roundPct(weekAcc),
+    activeDays, daysTotal,
+  };
+
+  // ---- recordes
+  const dateOf = (session: SurfaceSession) => formatShortDate(startedAtOf(session));
+  let bestStreakRecord: Dashboard["records"]["bestStreak"] = null;
+  for (const session of sessions) {
+    const value = longestStreak(session.rounds);
+    if (value > (bestStreakRecord?.value ?? 0)) bestStreakRecord = { value, when: dateOf(session) };
+  }
+  let bestSession: Dashboard["records"]["bestSession"] = null;
+  let fastest: Dashboard["records"]["fastest"] = null;
+  let bestMapError: Dashboard["records"]["bestMapError"] = null;
+  for (const session of sessions.filter((item) => item.complete)) {
+    if (session.roundCount >= 10) {
+      const pctValue = roundPct(session.correct / session.roundCount);
+      if (!bestSession || pctValue > bestSession.pct || (pctValue === bestSession.pct && session.roundCount >= bestSession.rounds)) {
+        bestSession = { pct: pctValue, rounds: session.roundCount, when: dateOf(session) };
+      }
+      const times = timedRounds(session);
+      const average = times.length >= 10 ? mean(times) : null;
+      if (average !== null && (!fastest || average < fastest.ms)) fastest = { ms: average, family: sessionLabel(session).family, when: dateOf(session) };
+    }
+    const label = sessionLabel(session);
+    if (label.group === "mapa") {
+      const error = meanMapErrorKm(session.rounds);
+      if (error && error.rounds >= MAP_ERROR_MIN_ROUNDS && (!bestMapError || error.km < bestMapError.km)) bestMapError = { km: error.km, when: dateOf(session) };
+    }
+  }
+  const records: Dashboard["records"] = { bestStreak: bestStreakRecord, bestSession, fastest, bestMapError };
+
+  // ---- evolução da precisão
+  const finished = sessions.filter((session) => session.complete && session.roundCount >= 5).slice(-EVOLUTION_POINTS);
+  const points = finished.map((session) => ({ pct: roundPct(session.correct / session.roundCount), when: dateOf(session) }));
+  const compare = Math.min(5, Math.floor(points.length / 2));
+  const evolution: Dashboard["evolution"] = {
+    points,
+    delta: compare >= 2 ? Math.round((mean(points.slice(-compare).map((point) => point.pct)) ?? 0) - (mean(points.slice(0, compare).map((point) => point.pct)) ?? 0)) : null,
+    deltaOver: compare,
+    first: points[0]?.when ?? "",
+    last: finished.length ? relativeWhen(startedAtOf(finished[finished.length - 1]), now).split(",")[0] : "",
+  };
+
+  // ---- partidas (mais recentes primeiro)
+  const history = sessions.slice().reverse().map((session) => buildRow(session, meta, flagOf, now));
+
+  return {
+    empty: sessions.length === 0,
+    hero, kpis, pillars, regions: rows, review, activity, records, evolution,
+    recent: history.slice(0, 5),
+    history,
+  };
+}
+
+// Agrupa o histórico em Hoje · Ontem · Esta semana · meses anteriores.
+export function groupHistory(rows: readonly SessionRow[], now: number): HistoryGroup[] {
+  const today = startOfDay(now);
+  const yesterday = addDays(today, -1);
+  const monday = addDays(today, -((new Date(today).getDay() + 6) % 7));
+  const groups = new Map<string, HistoryGroup>();
+  for (const row of rows) {
+    const day = startOfDay(row.startedAt);
+    const date = new Date(row.startedAt);
+    let key: string;
+    let label: string;
+    if (day === today) { key = "hoje"; label = "Hoje"; }
+    else if (day === yesterday) { key = "ontem"; label = "Ontem"; }
+    else if (day >= monday) { key = "semana"; label = "Esta semana"; }
+    else {
+      key = `${date.getFullYear()}-${date.getMonth()}`;
+      label = `${MONTH_NAMES[date.getMonth()]}${date.getFullYear() === new Date(now).getFullYear() ? "" : ` ${date.getFullYear()}`}`;
+    }
+    const group = groups.get(key) ?? { key, label, sessions: 0, rounds: 0, pct: null, rows: [] };
+    group.rows.push(row);
+    groups.set(key, group);
+  }
+  return [...groups.values()].map((group) => {
+    const rounds = group.rows.reduce((sum, row) => sum + row.rounds, 0);
+    const correct = group.rows.reduce((sum, row) => sum + Math.round(((row.pct ?? 0) / 100) * row.rounds), 0);
+    return { ...group, sessions: group.rows.length, rounds, pct: rounds ? Math.round((correct / rounds) * 100) : null };
+  });
+}

@@ -1,0 +1,130 @@
+// Moedas ganhas numa partida ("espólios"). Lógica pura: as regras de recompensa, sem IndexedDB nem React.
+import type { AnyQuizVariant, Meta } from "./types";
+
+export type Pace = "training" | "timed";
+export type Tier = 1 | 2 | 3;
+
+/** O Treino paga só uma fração das moedas, para incentivar a jogar com tempo. */
+export const TRAINING_COIN_FACTOR = 0.25;
+export const NEW_CARD_COINS = 60;
+export const LEVEL_UP_COINS = 30;
+/**
+ * Sequência: cada acerto seguido soma 3% do valor daquele acerto, até +75% (o teto chega no 25º acerto seguido).
+ * É proporcional ao valor do modo (e não um número fixo) para o modo fácil nunca pagar tanto por hora quanto o difícil.
+ */
+export const STREAK_STEP = 0.03;
+export const STREAK_CAP = 0.75;
+const TIER_FACTOR: Record<Tier, number> = { 1: 1, 2: 1.12, 3: 1.25 };
+
+// Moedas base por acerto (Partida). Bandeira/nome com alternativas = 32; capital escrita = 96 (3×).
+const BASE_BY_VARIANT: Partial<Record<AnyQuizVariant, number>> = {
+  "bandeira-nome": 32, "nome-bandeira": 32,
+  "pais-capital": 40,
+  "historica-nome": 44, "nome-historica": 44, "idioma-nome": 40, "idioma-pais": 44,
+  mapa: 48,
+  "capital-pais": 56, "silhueta-opcoes": 56,
+  travel: 64,
+  "escrita-pais": 80,
+  silhueta: 88,
+  "escrita-capital": 96,
+};
+export const baseCoins = (variant: AnyQuizVariant) => BASE_BY_VARIANT[variant] ?? 32;
+export const hitCoins = (variant: AnyQuizVariant, tier: Tier = 1) => Math.round(baseCoins(variant) * TIER_FACTOR[tier]);
+/** Faixa por acerto mostrada na configuração (país fácil → país difícil). */
+export const hitRange = (variant: AnyQuizVariant, pace: Pace): [number, number] => {
+  const factor = pace === "training" ? TRAINING_COIN_FACTOR : 1;
+  return [Math.round(hitCoins(variant, 1) * factor), Math.round(hitCoins(variant, 3) * factor)];
+};
+
+// Dificuldade do país: menos populoso e menor = mais difícil de reconhecer ou achar no mapa.
+const tierCache = new WeakMap<object, Map<string, Tier>>();
+function buildTiers(meta: Record<string, Meta>) {
+  const tiers = new Map<string, Tier>();
+  const ranked = Object.entries(meta).filter(([, item]) => !item.absorvido && typeof item.pop === "number" && item.pop > 0).sort((a, b) => (b[1].pop ?? 0) - (a[1].pop ?? 0));
+  const third = Math.max(1, Math.ceil(ranked.length / 3));
+  ranked.forEach(([id], index) => tiers.set(id, index < third ? 1 : index < third * 2 ? 2 : 3));
+  for (const [id, item] of Object.entries(meta)) {
+    const base = tiers.get(id) ?? 3;
+    const area = typeof item.area === "number" ? item.area : Infinity;
+    tiers.set(id, (area < 1000 ? 3 : area < 20000 ? Math.max(base, 2) : base) as Tier);
+  }
+  return tiers;
+}
+export function entityTier(meta: Record<string, Meta> | undefined, id: string): Tier {
+  if (!meta) return 1;
+  let tiers = tierCache.get(meta);
+  if (!tiers) { tiers = buildTiers(meta); tierCache.set(meta, tiers); }
+  return tiers.get(id) ?? 1;
+}
+
+export type SpoilsRound = {
+  correct: boolean;
+  tier?: Tier;
+  /** Quanto da rodada foi cumprido (Travel: países da rota acertados). Sem valor: 1 se acertou, 0 se errou. */
+  weight?: number;
+};
+export type SpoilsInput = {
+  variant: AnyQuizVariant;
+  pace: Pace;
+  rounds: readonly SpoilsRound[];
+  complete: boolean;
+  newCards: number;
+  levelUps: number;
+};
+export type Spoils = {
+  pace: Pace;
+  factor: number;
+  hits: { count: number; coins: number };
+  streak: { best: number; coins: number };
+  newCards: { count: number; coins: number };
+  levelUps: { count: number; coins: number };
+  completion: { pct: number; coins: number };
+  total: number;
+};
+
+// Bônus de partida completa por rodada: 90%+ → 14, 75%+ → 9, 60%+ → 5.
+export const completionPerRound = (accuracy: number) => (accuracy >= 0.9 ? 14 : accuracy >= 0.75 ? 9 : accuracy >= 0.6 ? 5 : 0);
+
+/** Partida abandonada no meio: nenhuma moeda (e nenhum XP, que só conta partidas completas). */
+export function emptySpoils(pace: Pace): Spoils {
+  return {
+    pace, factor: pace === "training" ? TRAINING_COIN_FACTOR : 1,
+    hits: { count: 0, coins: 0 }, streak: { best: 0, coins: 0 }, newCards: { count: 0, coins: 0 },
+    levelUps: { count: 0, coins: 0 }, completion: { pct: 0, coins: 0 }, total: 0,
+  };
+}
+
+export function computeSpoils(input: SpoilsInput): Spoils {
+  const factor = input.pace === "training" ? TRAINING_COIN_FACTOR : 1;
+  let hitCount = 0;
+  let hitCoinsRaw = 0;
+  let streak = 0;
+  let best = 0;
+  let streakRaw = 0;
+  let correctRounds = 0;
+  for (const round of input.rounds) {
+    const weight = round.weight ?? (round.correct ? 1 : 0);
+    if (weight > 0) {
+      hitCount += 1;
+      hitCoinsRaw += hitCoins(input.variant, round.tier ?? 1) * weight;
+    }
+    if (round.correct) {
+      correctRounds += 1;
+      streak += 1;
+      best = Math.max(best, streak);
+      streakRaw += hitCoins(input.variant, round.tier ?? 1) * weight * Math.min(streak * STREAK_STEP, STREAK_CAP);
+    } else streak = 0;
+  }
+  const accuracy = input.rounds.length ? correctRounds / input.rounds.length : 0;
+  const completionRaw = input.complete ? completionPerRound(accuracy) * input.rounds.length : 0;
+  const scale = (value: number) => Math.round(value * factor);
+  const lines = {
+    hits: { count: hitCount, coins: scale(hitCoinsRaw) },
+    streak: { best, coins: scale(streakRaw) },
+    newCards: { count: input.newCards, coins: scale(input.newCards * NEW_CARD_COINS) },
+    levelUps: { count: input.levelUps, coins: scale(input.levelUps * LEVEL_UP_COINS) },
+    completion: { pct: Math.round(accuracy * 100), coins: scale(completionRaw) },
+  };
+  const total = lines.hits.coins + lines.streak.coins + lines.newCards.coins + lines.levelUps.coins + lines.completion.coins;
+  return { pace: input.pace, factor, ...lines, total };
+}

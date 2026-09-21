@@ -1,4 +1,5 @@
 import type { ProgressSnapshot, SurfaceSession } from "./progress-surfaces";
+import { MAP_ERROR_GOAL_KM, MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
 
 export type AchievementCategory = "hab" | "exp" | "conh" | "evo" | "dom" | "desc";
 export type AchievementDefinition = {
@@ -44,7 +45,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   { id:"seq25",category:"hab",rarity:3,name:"Vinte e cinco sem tropeço",description:"Sequência de 25 acertos.",target:()=>25,progress:c=>c.bestStreak },
   { id:"perfeita",category:"hab",rarity:3,name:"Partida limpa",description:"100% numa partida de 20 rodadas ou mais.",...one(c=>c.perfect20) },
   { id:"perfeitaGrande",category:"hab",rarity:4,name:"Impecável",description:"100% numa partida de 40 rodadas ou mais.",...one(c=>c.perfect40) },
-  { id:"certeiro",category:"hab",rarity:2,name:"Mão firme",description:"Erro médio abaixo de 500 km numa partida de mapa.",...one(c=>c.precise) },
+  { id:"certeiro",category:"hab",rarity:2,name:"Mão firme",description:"Erro médio abaixo de 500 km numa partida completa de Clicar no mapa (acerto vale 0 km).",...one(c=>c.precise) },
   { id:"todosModos",category:"exp",rarity:1,name:"Quatro caminhos",description:"Jogue os quatro modos.",target:()=>4,progress:c=>c.modes.size},
   { id:"todosRecortes",category:"exp",rarity:2,name:"Sete mares",description:"Complete uma partida em cada recorte.",target:()=>7,progress:c=>c.regions.size},
   { id:"voltaAoMundo",category:"exp",rarity:3,name:"Volta ao mundo",description:"Complete o baralho inteiro do recorte Mundo.",...one(c=>c.worldComplete) },
@@ -79,9 +80,9 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
     .flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
   let bestStreak=0, byWater=0, lightning=0, flagsSet=new Set<string>(), capSet=new Set<string>(), perfect20=false, perfect40=false, precise=false, confines=false, worldComplete=false;
   for (const s of sessions) {
-    let streak=0, rapid=0, km=0, kmn=0; const tiny=new Set<string>();
+    let streak=0, rapid=0; const tiny=new Set<string>();
     for (const r of s.rounds) {
-      if (r.byWater) byWater++;
+      if (r.byWater && r.correct) byWater++;
       if (r.correct) { streak++; bestStreak=Math.max(bestStreak,streak); rapid++; lightning=Math.max(lightning,rapid); }
       else { streak=0; rapid=0; }
       if (r.responseTimeMs === null || r.responseTimeMs >= 1500) { rapid=0; }
@@ -89,7 +90,7 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
       if ((s.variant==="capital" || s.mode.includes("capital")) && r.correct) capSet.add(r.targetId);
     }
     if (s.complete && s.rounds.length && s.correct===s.rounds.length) { if(s.rounds.length>=20) perfect20=true; if(s.rounds.length>=40) perfect40=true; }
-    if (s.mode==="mapa" && s.complete) { s.rounds.forEach(r=>{ if(!r.correct && r.distanceKm!==null && r.distanceKm!==undefined){km+=r.distanceKm;kmn++;} }); if(kmn>=3 && km/kmn<500) precise=true; }
+    if (s.mode==="mapa" && s.complete) { const error = meanMapErrorKm(s.rounds); if (error && error.rounds >= MAP_ERROR_MIN_ROUNDS && error.km < MAP_ERROR_GOAL_KM) precise=true; }
     const selectedRegions = s.regions?.length ? s.regions : [s.region];
     if((selectedRegions.includes("mundo") || ["caribe","pacifico","europa","africa","asia","america-do-sul","america-do-norte-central"].every(region => selectedRegions.includes(region))) && s.complete && s.rounds.length>=150) worldComplete=true;
     const names = new Set(s.rounds.filter(r=>r.correct).map(r=>String(catalog[r.targetId]?.pt ?? r.targetId).toLowerCase()));
@@ -128,9 +129,12 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
     masteryIndex,fit,evolved,titles,cosmo,byWater,lightning,confines};
 }
 
+// Registros salvos: `{ id: "current:seq10", achievementId: "seq10" }` (perfil atual) ou `{ id: "seq10" }` (perfil clássico migrado).
+const savedKey = (record: {id?:string;achievementId?:string}) => String(record.achievementId ?? record.id ?? "").replace(/^current:/, "");
+
 export function evaluateAchievementDefinitions(context: AchievementContext, existing: Array<{id?:string;achievementId?:string;unlockedAt?:number}> = []) {
   return ACHIEVEMENT_DEFINITIONS.map(def => {
-    const saved=existing.find(x=>(x.id??x.achievementId)===def.id); const target=def.target(context); const current=Math.min(target,Math.max(0,def.progress(context)));
+    const saved=existing.find(x=>savedKey(x)===def.id); const target=def.target(context); const current=Math.min(target,Math.max(0,def.progress(context)));
     return { ...def, target, current, unlocked:Boolean(saved || current>=target), unlockedAt:saved?.unlockedAt };
   });
 }

@@ -5,7 +5,10 @@ import { collectionSummary } from "./collection-summary.js";
 import { playerStatsFromSessions } from "./player-stats.js";
 import type { HistoricalEntity } from "./special-data.js";
 import { regionMatches } from "./regions.js";
+import { matchesSearch, type ProgressColumns } from "./collection-view.js";
 import type { Region } from "./types.js";
+import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals } from "./pillars.js";
+import { dominatedIdsFromSessions } from "./dominated.js";
 
 export type SurfaceSession = {
   id: string;
@@ -18,6 +21,12 @@ export type SurfaceSession = {
   endedAt: number | null;
   complete: boolean;
   rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean }>;
+  /** Rodadas jogadas: as listadas em `rounds` ou, em partida antiga já resumida, o total do resumo. */
+  roundCount: number;
+  /** Pilar gravado pelo perfil clássico migrado, quando existe. */
+  column?: string;
+  /** "pais" ou "capital" (assunto da partida). */
+  subject?: string;
   correct: number;
   accuracy: number | null;
   averageTime: number | null;
@@ -29,8 +38,8 @@ export type ProgressSnapshot = {
   pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; status: string; aggregate?: boolean }>;
   records?: any[];
 };
-export type CollectionCard = { id: string; name: string; mastery: number; region?: string; sub?: string; un?: boolean; flag?: string; fields: Array<[string, string]> };
-export type CollectionFilters = { region?: Region | "todas"; mastery?: number | "todas"; state?: "todas" | "descobertas" | "faltando"; unOnly?: boolean };
+export type CollectionCard = { id: string; name: string; mastery: number; region?: string; sub?: string; un?: boolean; flag?: string; fields: Array<[string, string]>; columns?: ProgressColumns };
+export type CollectionFilters = { region?: Region | "todas"; mastery?: number | "todas"; state?: "todas" | "descobertas" | "faltando"; unOnly?: boolean; query?: string };
 export type HistoricalAlbumCard = { id: string; name: string; region?: string; sub?: string; type?: string; flag?: string; discovered: boolean; value?: HistoricalEntity };
 export type Achievement = { id: string; name: string; description: string; unlocked: boolean; unlockedAt?: number; category?: string; rarity?: number; hidden?: boolean; target?: number; current?: number; deprecated?: boolean };
 
@@ -58,21 +67,27 @@ function familyFor(mode: string) {
   return "bandeiras";
 }
 type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean };
-function roundsOf(value: any): NormalizedRound[] {
-  if (Array.isArray(value?.rounds)) return value.rounds.map((round: any) => ({
-    targetId: String(round.targetId ?? ""),
-    correct: Boolean(round.correct),
-    responseTimeMs: typeof round.responseTimeMs === "number" ? round.responseTimeMs : null,
-    distanceKm: typeof round.distanceKm === "number" ? round.distanceKm : null,
-    byWater: Boolean(round.byWater),
-  }));
-  if (Array.isArray(value?.r)) return value.r.filter(Array.isArray).map((round: any[]) => ({
+// A rodada vem como objeto (partida atual) ou como tupla [alvo, acertou, ms, km] (perfil clássico, inclusive
+// quando migrado para o campo `rounds`).
+function roundFrom(round: any): NormalizedRound {
+  if (Array.isArray(round)) return {
     targetId: String(round[0] ?? ""),
     correct: Boolean(round[1]),
     responseTimeMs: typeof round[2] === "number" ? round[2] : null,
     distanceKm: typeof round[3] === "number" ? round[3] : null,
     byWater: typeof round[3] === "number" && round[3] > 0,
-  }));
+  };
+  return {
+    targetId: String(round?.targetId ?? ""),
+    correct: Boolean(round?.correct),
+    responseTimeMs: typeof round?.responseTimeMs === "number" ? round.responseTimeMs : null,
+    distanceKm: typeof round?.distanceKm === "number" ? round.distanceKm : null,
+    byWater: Boolean(round?.byWater),
+  };
+}
+function roundsOf(value: any): NormalizedRound[] {
+  if (Array.isArray(value?.rounds)) return value.rounds.map(roundFrom);
+  if (Array.isArray(value?.r)) return value.r.filter(Array.isArray).map(roundFrom);
   return [];
 }
 export function normalizeSession(value: any, index = 0): SurfaceSession {
@@ -92,6 +107,9 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     endedAt: typeof value?.endedAt === "number" ? value.endedAt : typeof value?.fim === "number" ? value.fim : null,
     complete: Boolean(value?.complete ?? value?.completa),
     rounds,
+    roundCount: total,
+    column: typeof value?.column === "string" ? value.column : undefined,
+    subject: typeof value?.subject === "string" ? value.subject : typeof value?.assunto === "string" ? value.assunto : undefined,
     correct,
     accuracy: total ? correct / total : null,
     averageTime: times.length ? times.reduce((sum: number, time: number) => sum + time, 0) / times.length : null,
@@ -100,12 +118,9 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
 export function canonicalCurrentIds(meta: Record<string, Meta> = {}) {
   return Object.entries(meta).filter(([, item]) => !item?.absorvido && Boolean(item?.mapa || item?.soBandeira || item?.cap || item?.pt)).map(([id]) => id);
 }
-function pillarStatus(score: number | null, seen: number) {
-  if (score === null) return "sem evidência";
-  if (seen < 10) return "diagnóstico";
-  return score >= 0.75 ? "forte" : score >= 0.55 ? "em desenvolvimento" : "revisar";
-}
-export function deriveProgress(records: any[], universe?: string[]): ProgressSnapshot {
+// Sem `sessions`, os pilares vêm só das cartas (o total de rodadas de cada carta é dividido igual entre os pilares).
+// Com `sessions`, cada pilar usa as rodadas das partidas dele, que é a conta certa para precisão e títulos.
+export function deriveProgress(records: any[], universe?: string[], sessions?: SurfaceSession[]): ProgressSnapshot {
   const distribution = [0, 0, 0, 0, 0, 0];
   const pillars: ProgressSnapshot["pillars"] = {};
   const ids = new Set(universe ?? records.map((record) => String(record.entityId ?? record.id)));
@@ -129,17 +144,31 @@ export function deriveProgress(records: any[], universe?: string[]): ProgressSna
       item.status = pillarStatus(item.bayesianScore, item.seen);
     }
   }
+  if (sessions) {
+    const totals = pillarTotals(sessions);
+    for (const key of PILLAR_KEYS) {
+      const item = pillars[key] ?? (pillars[key] = { seen: 0, correct: 0, accuracy: null, bayesianScore: null, status: "sem evidência" });
+      // acertos gravados nas cartas incluem o perfil clássico migrado sem as partidas originais
+      const correct = Math.max(totals[key].correct, item.correct);
+      const seen = Math.max(totals[key].seen, correct);
+      item.correct = correct;
+      item.seen = seen;
+      item.accuracy = seen ? correct / seen : null;
+      item.bayesianScore = seen ? bayesianScore(correct, seen) : null;
+      item.status = pillarStatus(item.bayesianScore, seen);
+    }
+  }
   const collection = collectionSummary(records, ids);
   return { total: collection.total, discovered: collection.discovered, distribution, pillars, records };
 }
-export function collectionCard(id: string, meta: Meta | undefined, mastery = 0, flag?: string): CollectionCard {
+export function collectionCard(id: string, meta: Meta | undefined, mastery = 0, flag?: string, columns?: ProgressColumns): CollectionCard {
   const fields: Array<[string, string]> = [];
   if (mastery >= 1) fields.push(["Região", meta?.reg ?? "—"]);
   if (mastery >= 2) fields.push(["Capital", meta?.cap ?? "—"]);
   if (mastery >= 3) fields.push(["Idioma", "—"]);
   if (mastery >= 4) fields.push(["ONU", meta?.un ? "membro" : "não membro"]);
   if (mastery >= 5) fields.push(["Status", "carta completa"]);
-  return { id, name: meta?.pt ?? id, region: meta?.reg, sub: meta?.sub, un: meta?.un, flag, mastery, fields };
+  return { id, name: meta?.pt ?? id, region: meta?.reg, sub: meta?.sub, un: meta?.un, flag, mastery, fields, columns };
 }
 const regionForCard = (card: CollectionCard, region: Region | "todas") =>
   region === "todas" || regionMatches({ reg: card.region, sub: card.sub }, region);
@@ -149,7 +178,8 @@ export function filterCollectionCards(cards: CollectionCard[], filters: Collecti
     (filters.mastery === undefined || filters.mastery === "todas" || card.mastery === filters.mastery) &&
     (filters.state === undefined || filters.state === "todas" ||
       (filters.state === "descobertas" ? card.mastery > 0 : card.mastery === 0)) &&
-    (!filters.unOnly || card.un === true));
+    (!filters.unOnly || card.un === true) &&
+    matchesSearch(card.name, filters.query ?? ""));
 }
 export function historicalAlbum(entries: HistoricalEntity[], records: any[] = []): HistoricalAlbumCard[] {
   const found = new Set(records.map((record) => String(record.entityId ?? record.value?.id ?? record.value?.entityId ?? record.id ?? "").replace(/^current:/, "")));
@@ -158,10 +188,15 @@ export function historicalAlbum(entries: HistoricalEntity[], records: any[] = []
     flag: entry.fl, discovered: found.has(entry.id), value: entry,
   }));
 }
-export function filterHistoricalAlbum(cards: HistoricalAlbumCard[], region: Region | "todas" = "todas", type = "todos") {
+export function filterHistoricalAlbum(
+  cards: HistoricalAlbumCard[], region: Region | "todas" = "todas", type = "todos",
+  extra: { query?: string; state?: "todas" | "descobertas" | "faltando" } = {},
+) {
   return cards.filter((card) =>
     (region === "todas" || regionMatches({ reg: card.region, sub: card.sub }, region)) &&
-    (type === "todos" || card.type === type));
+    (type === "todos" || card.type === type) &&
+    (extra.state === undefined || extra.state === "todas" || (extra.state === "descobertas" ? card.discovered : !card.discovered)) &&
+    matchesSearch(card.name, extra.query ?? ""));
 }
 export function evaluateAchievements(progress: ProgressSnapshot, sessions: SurfaceSession[], existing: any[] = [], catalog: Record<string, any> = {}): Achievement[] {
   const evaluated: Achievement[] = evaluateAchievementDefinitions(achievementContext(progress, sessions, catalog), existing).map((item) => ({
@@ -187,7 +222,7 @@ export async function querySurfaces(data?: Legacy) {
   db.close();
   const sessions = rawSessions.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
   const universe = canonicalCurrentIds(data?.meta);
-  const snapshot = deriveProgress(progress, universe);
+  const snapshot = deriveProgress(progress, universe, sessions);
    const evaluated = evaluateAchievements(snapshot, sessions, achievements, data?.meta);
    const missing = evaluated.filter((item) => !item.deprecated && item.unlocked && !achievements.some((saved) => saved.achievementId === item.id || saved.id === item.id));
   if (missing.length) {
@@ -200,9 +235,9 @@ export async function querySurfaces(data?: Legacy) {
   }
   const cards = data ? universe.map((id) => {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
-    return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl);
+    return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl, record?.columns);
   }) : [];
-   return { sessions, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical };
+   return { sessions, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
 }
 
 export async function queryCollectionSummary(data: Legacy) {

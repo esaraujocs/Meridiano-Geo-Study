@@ -15,6 +15,11 @@ export type Meta = {
   substitui?: string;
   soBandeira?: boolean;
   un?: boolean;
+  lang?: string[];
+  cur?: string[];
+  pop?: number;
+  area?: number;
+  fato?: string;
 };
 
 export type Legacy = {
@@ -53,6 +58,7 @@ export type SpecialVariant =
   | "escrita-capital"
   | "historica-nome"
   | "nome-historica"
+  | "idioma-nome"
   | "idioma-pais";
 export type AnyQuizVariant = QuizVariant | SpecialVariant;
 export type Screen =
@@ -64,6 +70,7 @@ export type Screen =
   | "achievements"
   | "history"
    | "options"
+  | "store"
   | "result";
 
 export type RegionCounts = Record<Region, number>;
