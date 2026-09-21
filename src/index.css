@@ -653,7 +653,10 @@ html[data-reduced-motion=true] .ach-toast-medal .ach-med{animation:none}
    as Opções ficam na barra de baixo, no lugar da Loja, e a engrenagem do topo some das outras telas */
 @media (max-width:760px){
   .top-actions{display:none}
-  .app-shell:not(.focused-flow)>.topbar{display:none}
+  .app-shell>.topbar,.app-shell:has(.hub-content)>.topbar{display:none}
+  .content.surface>.back,.options-screen>.back{display:none}
+  .content.surface,.options-screen{padding-top:16px}
+  .content.surface{max-height:none;overflow:visible}
   .app-shell:has(.hub-content){grid-template-rows:minmax(0,1fr) auto}
   .app-shell:has(.hub-content)>.hub-content{grid-row:1;padding-top:10px}
   .app-shell:has(.hub-content)>.mobile-nav{grid-row:2}
