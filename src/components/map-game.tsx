@@ -3,46 +3,63 @@ import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
-import { normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
+import { inRegion, normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
-import { startLearningSession, type LearningSessionHandle } from "../domain/learning-store";
+import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { entityTier } from "../domain/spoils";
+import { RoundTimer } from "./round-timer";
+import { useLeaveGuard } from "./leave-guard";
+import { GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
+import { variantLabel } from "../domain/result-view";
 import {
+  ABSORBED_MARKER_IDS,
   assertMarkerBound,
   filteredMarkerSource,
+  isMarkerVisibleAtZoom,
+  MARKER_BAND_ZOOMS,
+  markerBandFilter,
+  markerBandOpacity,
   markerFilter,
+  markerLayerId,
   SMALL_ENTITY_SOURCE,
 } from "../domain/small-entities";
-import { resolveMarkerClick } from "../domain/map-marker-click";
+import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
 import { mapDeckSignature } from "../domain/map-round-engine";
+import { distanceToGeometriesKm, haversineKm, nearestWithin, SEA_TAP_PX } from "../domain/map-nearest";
 
+const ABSORBED_URL = "/data/absorbed-territories.geojson";
+// Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
+const HIT_FEEDBACK_MS = 700;
+const ANSWER_COLOR = "#4fe0a8";
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
-const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-  const r = Math.PI / 180;
-  const a = Math.sin((lat2 - lat1) * r / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin((lon2 - lon1) * r / 2) ** 2;
-  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
 export function Game({
   data,
   features,
   region,
+  options,
   onBack,
   onEnd,
   family,
   variant,
+  onlyUn = false,
 }: {
   data: Legacy;
   features: GeoFeature[];
   region: RegionSelection;
+  options?: SessionOptions;
   onBack: () => void;
-  onEnd?: () => void;
+  onEnd?: (result: SessionResult | null) => void;
   family?: Family;
   variant?: AnyQuizVariant;
+  onlyUn?: boolean;
 }) {
   const engineFamily = family ?? "mapa";
   const engineVariant = variant ?? "mapa";
+  const { pace, roundLimit, timerSeconds } = sessionSettings(options, engineVariant);
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
@@ -52,6 +69,8 @@ export function Game({
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [round, setRound] = useState(0);
+  const [serial, setSerial] = useState(0);
+  const [timedOut, setTimedOut] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [wrong, setWrong] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -64,13 +83,23 @@ export function Game({
   const targetStartedAtRef = useRef(0);
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<GeoFeature>> | null>(null);
   const queuedRoundsRef = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
+  const leaveGuard = useLeaveGuard();
+  const log = useRoundLog(engineVariant, pace);
   const featureSignature = mapDeckSignature(features.map((item) => item.id));
+  // Territórios absorvidos (Guadalupe, Martinica...) nunca são alvo, mas aparecem com o recorte;
+  // seguem a mesma regra do "Só ONU" das demais entidades pequenas (não são membros).
+  const absorbedMarkerIds = onlyUn ? [] : ABSORBED_MARKER_IDS.filter((id) => inRegion(id, region, data));
+  const markerIds = [...features.map((feature) => feature.id), ...absorbedMarkerIds];
+  const markerSignature = markerIds.join("|");
 
   const openSession = () => {
     const pending = startLearningSession({
       family: engineFamily,
       variant: engineVariant,
       region,
+      pace,
+      roundLimit,
+      timerSeconds,
     });
     pendingSessionRef.current = pending;
     pending
@@ -89,29 +118,36 @@ export function Game({
         ),
       );
   };
-  const leaveSession = async (home = false) => {
+  // "result": encerrar pelo botão mostra o resultado (com as moedas ganhas até ali); "recorte"/"home" só navegam.
+  const leaveSession = async (destination: "recorte" | "home" | "result" = "recorte") => {
     const handle =
       sessionRef.current ??
       (await pendingSessionRef.current?.catch(() => null));
     sessionRef.current = null;
+    let result: SessionResult | null = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.end({ complete: false });
+      result = await handle.end({ complete: false });
     }
-    if (home) location.href = "/";
+    if (destination === "home") location.href = "/";
+    else if (destination === "result" && result?.spoils && onEnd) onEnd(result);
     else onBack();
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
+    leaveGuard.noteAnswer();
+    log.push({ correct: round.correct, tier: round.tier });
     if (sessionRef.current) sessionRef.current.recordRound(round);
     else queuedRoundsRef.current.push(round);
   };
   const finishSession = async () => {
     const handle = sessionRef.current ?? await pendingSessionRef.current?.catch(() => null);
+    let result: SessionResult | null = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.finish();
+      result = await handle.finish();
     }
-    (onEnd ?? onBack)();
+    if (onEnd) onEnd(result);
+    else onBack();
   };
 
   useEffect(() => {
@@ -135,22 +171,41 @@ export function Game({
     targetStartedAtRef.current = Date.now();
     feedbackRef.current = "";
     setTarget(item.id);
-    setRound(features.length - (deckRef.current?.remaining ?? 0));
+    setRound((deckRef.current?.size ?? features.length) - (deckRef.current?.remaining ?? 0));
     setSelectedAnswer("");
     setFeedback("");
     setWrong(false);
+    setTimedOut(false);
+    setSerial((value) => value + 1);
   };
+  const newDeck = () => createFiniteDeck(features, seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000), roundLimit);
 
   useEffect(() => {
-    deckRef.current = createFiniteDeck(features, seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000));
+    deckRef.current = newDeck();
     nextTarget();
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
     };
   }, [featureSignature, engineFamily, engineVariant, region]);
 
-  const answerId = (id: string, evidence?: { byWater?: boolean; distanceKm?: number | null }) => {
+  // Anel + check no ponto do acerto (toque, marcador ou mira) e vibração curta no celular.
+  const celebrateHit = (point?: [number, number]) => {
+    try { navigator.vibrate?.(30); } catch { /* aparelho sem vibração */ }
+    const map = mapRef.current;
+    if (!map || !point) return;
+    const element = document.createElement("div");
+    element.className = "hit-pulse";
+    element.setAttribute("aria-hidden", "true");
+    element.innerHTML = "<i></i><i></i><b>✓</b>";
+    const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat(point).addTo(map);
+    window.setTimeout(() => { try { marker.remove(); } catch { /* mapa já removido */ } }, 1000);
+  };
+
+  const answerId = (id: string, evidence?: { byWater?: boolean; distanceKm?: number | null; point?: [number, number] }) => {
     if (!id || feedbackRef.current || !targetRef.current) return;
+    if (import.meta.env.DEV) {
+      (window as unknown as { __cartaLastAnswer?: string }).__cartaLastAnswer = id;
+    }
     setSelectedAnswer(id);
     const responseTimeMs = Math.max(0, Date.now() - targetStartedAtRef.current);
     const round = {
@@ -161,19 +216,21 @@ export function Game({
       clickedId: id,
       byWater: evidence?.byWater,
       distanceKm: evidence?.distanceKm ?? null,
+      tier: entityTier(data.meta, targetRef.current),
     };
     recordRound(round);
     if (round.correct) {
-      feedbackRef.current = "Acerto. O mapa respondeu.";
+      feedbackRef.current = `Acertou: ${data.meta[targetRef.current]?.pt ?? "alvo"}`;
       setScore((value) => value + 1);
       setStreak((value) => value + 1);
       setFeedback(feedbackRef.current);
+      celebrateHit(evidence?.point);
        const exhausted = deckRef.current?.remaining === 0;
        timerRef.current = window.setTimeout(async () => {
          if (exhausted) {
            await finishSession();
          } else nextTarget();
-       }, 350);
+       }, HIT_FEEDBACK_MS);
     } else {
       feedbackRef.current = "Ainda não. O alvo está marcado no mapa.";
       setStreak(0);
@@ -186,8 +243,33 @@ export function Game({
       }, 1400);
     }
   };
+  // O tempo da pergunta acabou: conta como erro (sem clique) e o alvo fica marcado no mapa.
+  const timeUp = () => {
+    if (feedbackRef.current || !targetRef.current) return;
+    recordRound({
+      targetId: targetRef.current,
+      correct: false,
+      responseTimeMs: Math.max(0, Date.now() - targetStartedAtRef.current),
+      answeredAt: Date.now(),
+      timedOut: true,
+      tier: entityTier(data.meta, targetRef.current),
+    });
+    feedbackRef.current = "Tempo esgotado. O alvo está marcado no mapa.";
+    setSelectedAnswer("");
+    setTimedOut(true);
+    setStreak(0);
+    setWrong(true);
+    setFeedback(feedbackRef.current);
+    const exhausted = deckRef.current?.remaining === 0;
+    timerRef.current = window.setTimeout(async () => {
+      if (exhausted) await finishSession();
+      else nextTarget();
+    }, 1400);
+  };
   const restart = () => {
     if (timerRef.current) window.clearTimeout(timerRef.current);
+    leaveGuard.reset();
+    log.reset();
     const previous = sessionRef.current;
     sessionRef.current = null;
     pendingSessionRef.current = null;
@@ -196,6 +278,7 @@ export function Game({
     setScore(0);
     setStreak(0);
     setRound(0);
+    deckRef.current = newDeck();
     nextTarget();
   };
 
@@ -203,7 +286,7 @@ export function Game({
     if (!mapEl.current) return;
     assertMarkerBound(data.mapEntityIds.length);
     const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
-    const activeFilter = markerFilter(features.map((feature) => feature.id));
+    const activeFilter = markerFilter(markerIds);
     setMapReady(false);
     let map: maplibregl.Map;
     try {
@@ -220,6 +303,7 @@ export function Game({
                 "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
             },
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
+            absorbed: { type: "geojson", data: ABSORBED_URL },
           },
           layers: [
             {
@@ -232,6 +316,17 @@ export function Game({
               type: "fill",
               source: "atlas",
               "source-layer": "countries",
+              filter: ["==", "$type", "Polygon"],
+              paint: {
+                "fill-color": "#164455",
+                "fill-outline-color": "#4c8890",
+                "fill-opacity": 0.82,
+              },
+            },
+            {
+              id: "absorbed-land",
+              type: "fill",
+              source: "absorbed",
               filter: ["==", "$type", "Polygon"],
               paint: {
                 "fill-color": "#164455",
@@ -261,26 +356,28 @@ export function Game({
                filter: ["==", "$type", "Point"],
                paint: { "circle-radius": 14, "circle-color": "#9db7b2", "circle-opacity": 0.01 },
              },
-             {
-               id: "small-entities",
-               type: "circle",
-               source: "small-entities",
-               filter: activeFilter as unknown as maplibregl.FilterSpecification,
-                paint: {
-                  "circle-radius": 4,
-                 "circle-color": "#9db7b2",
-                  "circle-opacity": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 3, 0.7, 5, 0.25, 8, 0.05],
-                 "circle-stroke-color": "#24423d",
-                 "circle-stroke-width": 1,
-               },
-             },
-             {
+             ...MARKER_BAND_ZOOMS.map((band) => ({
+              id: markerLayerId(band),
+              type: "circle" as const,
+              source: "small-entities",
+              maxzoom: band,
+              filter: markerBandFilter(band, markerIds) as unknown as maplibregl.FilterSpecification,
+              paint: {
+                "circle-radius": 4,
+                "circle-color": "#9db7b2",
+                "circle-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
+                "circle-stroke-color": "#24423d",
+                "circle-stroke-width": 1,
+                "circle-stroke-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
+              },
+            })),
+            {
                id: "small-entities-hit",
                type: "circle",
                source: "small-entities",
                filter: activeFilter as unknown as maplibregl.FilterSpecification,
                 paint: {
-                  "circle-radius": 22,
+                  "circle-radius": MARKER_TOUCH_PX,
                   "circle-color": "#9db7b2",
                   "circle-opacity": 0.01,
                 },
@@ -310,7 +407,7 @@ export function Game({
     };
     map.on("load", handleLoad);
     const exposeActiveMarkerIds = () => {
-      const active = filteredMarkerSource(features.map((feature) => feature.id));
+      const active = filteredMarkerSource(markerIds);
       mapEl.current?.setAttribute(
         "data-marker-ids",
         active.features.map((item) => item.properties.carta_id).join(","),
@@ -322,60 +419,78 @@ export function Game({
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
     );
-    map.on("click", (event: MapMouseEvent) => {
-       const markerHits = map.queryRenderedFeatures([
-         [event.point.x - 15, event.point.y - 15],
-         [event.point.x + 15, event.point.y + 15],
-       ], {
-         layers: ["small-entities-hit"],
-       });
-       const nearestMarker = markerHits
-         .map((feature) => {
-           const coordinates = feature.geometry.type === "Point" ? feature.geometry.coordinates as [number, number] : null;
-           if (!coordinates) return null;
-           const projected = map.project(coordinates);
-           return { feature, distance: Math.hypot(projected.x - event.point.x, projected.y - event.point.y) };
-         })
-         .filter((item): item is { feature: maplibregl.MapGeoJSONFeature; distance: number } => Boolean(item))
-         .sort((a, b) => a.distance - b.distance)[0];
-       if (nearestMarker?.feature.properties?.carta_id) {
-          const { answerId: id } = resolveMarkerClick(
-            nearestMarker.feature,
-            targetRef.current,
-          );
-         const targetMeta = data.meta[targetRef.current];
-         const distanceKm = targetMeta?.ll ? haversine(event.lngLat.lat, event.lngLat.lng, targetMeta.ll[1], targetMeta.ll[0]) : null;
-         answerId(id, { distanceKm });
-         return;
-       }
-      const hits = map.queryRenderedFeatures(event.point, {
-           layers: ["land", "pts-hit", "pts"],
-      });
-      const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
-      const targetMeta = data.meta[targetRef.current];
-      const distanceKm = targetMeta?.ll ? haversine(event.lngLat.lat, event.lngLat.lng, targetMeta.ll[1], targetMeta.ll[0]) : null;
-      answerId(id ? String(id) : "__water_click__", { byWater: !id, distanceKm });
-    });
+    // Toque na água: vale o território mais perto, dentro do alcance de um dedo (SEA_TAP_PX), como no jogo clássico.
+    // Antes o mar contava sempre como erro, mesmo colado nas ilhas do país pedido.
+    const nearestLand = (x: number, y: number) => {
+      const zoom = map.getZoom();
+      const found = map
+        .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "absorbed-land", "pts-hit", "small-entities-hit"] })
+        .filter((feature) => feature.properties?.carta_id && (feature.layer.id !== "small-entities-hit" || isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom)))
+        .map((feature) => ({ answerId: String(feature.properties?.answer_id ?? feature.properties?.carta_id), geometry: feature.geometry as unknown as { type: string; coordinates: unknown } }));
+      return nearestWithin(found, (position) => map.project(position), x, y, SEA_TAP_PX);
+    };
+    // Distância do toque até o território pedido (0 se caiu dentro): é o "erro" do jogador.
+    const distanceToTargetKm = (lng: number, lat: number) => {
+      const id = targetRef.current;
+      try {
+        const filter = ["==", ["get", "carta_id"], id] as maplibregl.FilterSpecification;
+        const geometries = [
+          ...map.querySourceFeatures("atlas", { sourceLayer: "countries", filter }),
+          ...map.querySourceFeatures("small-entities", { filter }),
+        ].map((feature) => feature.geometry as unknown as { type: string; coordinates: unknown });
+        const measured = geometries.length ? distanceToGeometriesKm(geometries, lng, lat) : null;
+        if (measured !== null) return measured;
+      } catch { /* fonte ainda carregando: cai no centro do país */ }
+      const ll = data.meta[id]?.ll;
+      return ll ? haversineKm(lat, lng, ll[1], ll[0]) : null;
+    };
+    // Quem responde por um ponto da tela: o marcador só vale perto do próprio ponto e, sobre o terreno
+    // de outro país, apenas no núcleo dele (senão um país grande "cai" no pequeno vizinho).
+    const resolveAt = (x: number, y: number): { id: string; point: [number, number] | undefined; byWater: boolean } => {
+      const zoom = map.getZoom();
+      const candidates = map
+        .queryRenderedFeatures(
+          [[x - MARKER_TOUCH_PX, y - MARKER_TOUCH_PX], [x + MARKER_TOUCH_PX, y + MARKER_TOUCH_PX]],
+          { layers: ["small-entities-hit"] },
+        )
+        .filter((feature) => isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom))
+        .flatMap((feature) => {
+          if (feature.geometry.type !== "Point") return [];
+          const coordinates = feature.geometry.coordinates as [number, number];
+          const projected = map.project(coordinates);
+          return [{
+            answerId: resolveMarkerClick(feature, targetRef.current).answerId,
+            distancePx: Math.hypot(projected.x - x, projected.y - y),
+            coordinates,
+          }];
+        });
+      const landHits = map
+        .queryRenderedFeatures([x, y], { layers: ["land", "absorbed-land", "pts-hit", "pts"] })
+        .filter((feature) => feature.properties?.carta_id);
+      const landHit = landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land") ?? landHits[0];
+      const landId = landHit ? String(landHit.properties?.answer_id ?? landHit.properties?.carta_id) : "";
+      const choice = chooseClickAnswer(candidates, landId);
+      if (choice.answerId) return { id: choice.answerId, point: choice.marker?.coordinates, byWater: false };
+      return { id: nearestLand(x, y)?.answerId ?? "", point: undefined, byWater: true };
+    };
+    const tapAt = (x: number, y: number, lngLat: { lng: number; lat: number }) => {
+      const { id, point, byWater } = resolveAt(x, y);
+      answerId(id || "__water_click__", { byWater, distanceKm: distanceToTargetKm(lngLat.lng, lngLat.lat), point: point ?? [lngLat.lng, lngLat.lat] });
+    };
+    map.on("click", (event: MapMouseEvent) => tapAt(event.point.x, event.point.y, event.lngLat));
      const handleKey = (event: KeyboardEvent) => {
        if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","+","=","-","_"].includes(event.key)) setKeyboardMode(true);
       if (event.key !== "Enter" || feedbackRef.current) return;
       const center = map.getContainer().getBoundingClientRect();
-      const hits = map.queryRenderedFeatures(
-        [center.width / 2, center.height / 2],
-        { layers: ["land", "small-entities-hit", "small-entities", "pts-hit", "pts"] },
-      );
-      const id = hits.find((feature) => feature.properties?.carta_id)?.properties?.carta_id;
-       const centerLngLat = map.unproject([center.width / 2, center.height / 2]);
-       const targetMeta = data.meta[targetRef.current];
-       const distanceKm = targetMeta?.ll
-         ? haversine(centerLngLat.lat, centerLngLat.lng, targetMeta.ll[1], targetMeta.ll[0])
-         : null;
-       answerId(id ? String(id) : "__water_click__", { byWater: !id, distanceKm });
-     };
+      tapAt(center.width / 2, center.height / 2, map.unproject([center.width / 2, center.height / 2]));
+    };
      const handlePointer = () => setKeyboardMode(false);
      map.getContainer().addEventListener("keydown", handleKey);
      map.getContainer().addEventListener("pointerdown", handlePointer);
     mapRef.current = map;
+    if (import.meta.env.DEV) {
+      (window as unknown as { __cartaMap?: maplibregl.Map }).__cartaMap = map;
+    }
     return () => {
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
@@ -395,26 +510,29 @@ export function Game({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
-    const filter = markerFilter(features.map((feature) => feature.id));
-    map.setFilter(
-      "small-entities",
-      filter as unknown as maplibregl.FilterSpecification,
-    );
+    const filter = markerFilter(markerIds);
+    const activeIds = markerIds;
+    for (const band of MARKER_BAND_ZOOMS) {
+      map.setFilter(
+        markerLayerId(band),
+        markerBandFilter(band, activeIds) as unknown as maplibregl.FilterSpecification,
+      );
+    }
     map.setFilter(
       "small-entities-hit",
       filter as unknown as maplibregl.FilterSpecification,
     );
-    const active = filteredMarkerSource(features.map((feature) => feature.id));
+    const active = filteredMarkerSource(markerIds);
     mapEl.current?.setAttribute(
       "data-marker-ids",
       active.features.map((item) => item.properties.carta_id).join(","),
     );
-  }, [features, mapReady]);
+  }, [markerSignature, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !target || !mapReady || !map.isStyleLoaded()) return;
-    const answerColor = "#2f8f83";
+    const answerColor = ANSWER_COLOR;
     const revealed = Boolean(feedback);
     try {
       map.setPaintProperty("land", "fill-color", [
@@ -422,6 +540,14 @@ export function Game({
         ["all", revealed, ["==", ["get", "carta_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
+        "#ee7968",
+        "#164455",
+      ]);
+      map.setPaintProperty("absorbed-land", "fill-color", [
+        "case",
+        ["all", revealed, ["==", ["get", "answer_id"], target]],
+        answerColor,
+        ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         "#ee7968",
         "#164455",
       ]);
@@ -433,14 +559,19 @@ export function Game({
         "#ee7968",
          "#9db7b2",
       ]);
-      map.setPaintProperty("small-entities", "circle-color", [
+      for (const band of MARKER_BAND_ZOOMS) {
+        map.setPaintProperty(markerLayerId(band), "circle-color", [
         "case",
-        ["all", revealed, ["==", ["get", "carta_id"], target]],
+        ["all", revealed, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]],
         answerColor,
-        ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
+        ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
         "#ee7968",
         "#9db7b2",
       ]);
+        const isRevealedTarget = ["all", revealed, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]] as unknown as maplibregl.ExpressionSpecification;
+        map.setPaintProperty(markerLayerId(band), "circle-radius", ["case", isRevealedTarget, 9, 4]);
+        map.setPaintProperty(markerLayerId(band), "circle-stroke-width", ["case", isRevealedTarget, 2.5, 1]);
+      }
     } catch (error) {
       setMapError(
         error instanceof Error
@@ -450,6 +581,9 @@ export function Game({
     }
   }, [target, wrong, feedback, selectedAnswer, mapReady]);
 
+  const totalRounds = deckRef.current?.size ?? features.length;
+  const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
+  useGameKeys({ exit });
   const targetName = engineFamily === "capitais" && engineVariant === "capital-pais"
     ? data.meta[target]?.cap ?? "carregando"
     : data.meta[target]?.pt ?? "carregando";
@@ -458,7 +592,7 @@ export function Game({
       <div className="app-shell">
         <main className="content">
            <button className="back" onClick={() => void leaveSession()}>
-             ← Encerrar sessão
+             ← Sair da partida
           </button>
            <div className="diagnostic" style={{ marginTop: 32 }}>
             <div className="eyebrow">Mapa indisponível</div>
@@ -476,62 +610,34 @@ export function Game({
   }
 
   return (
-    <div className="app-shell">
-      <div className="map-stage">
-        <aside className="map-panel">
-           <button className="back" onClick={() => void leaveSession()}>
-             ← Encerrar sessão
-          </button>
-          <div className="eyebrow">{regionLabel(region)}</div>
-           <h1>{engineFamily === "capitais" ? "Encontre o país." : "Encontre no mapa."}</h1>
-           <div className="target-kicker">Seu alvo</div>
-           <div className="target" aria-live="polite" aria-atomic="true">
-            {targetName}
+    <div className="app-shell gs-app">
+      {leaveGuard.dialog}
+      <div className="gs gs-map-screen">
+        <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
+        <main className="map-wrap" aria-label="Mapa e alvo">
+          <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
+            <span>{feedback ? (wrong ? (timedOut ? "Tempo esgotado" : "Ainda não") : "Acertou") : (engineFamily === "capitais" ? "País da capital" : "Encontre")}</span>
+            <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
+            <RoundTimer seconds={timerSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
           </div>
-           <div
-             className={feedback ? `feedback ${wrong ? "bad feedback-error" : "feedback-success"}` : "feedback"}
-            aria-live="polite"
-            role="status"
-          >
-             {feedback || (engineFamily === "capitais" ? "Clique no país correspondente à capital." : "Clique na região correspondente.")}
-              {feedback && !wrong && <span aria-label="Resposta correta"> Acerto</span>}
-          </div>
-          <div className="score-box">
-            <div>
-              <span>progresso</span>
-              <b>{round}/{features.length}</b>
-            </div>
-            <div>
-              <span>acertos</span>
-              <b>{score}</b>
-            </div>
-            <div>
-              <span>Seq.</span>
-              <b>{streak}</b>
-            </div>
-          </div>
-            <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => void leaveSession(true)}>Início</button></div></details>
-        </aside>
-           <div className="map-wrap">
-              <div className="map-target-overlay"><span>Encontre</span><strong>{targetName}</strong></div>
-              <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-                {feedback || `Alvo atual: ${targetName}`}
-              </p>
-              <p className="map-keyboard-hint">Setas movem o mapa; + e − controlam o zoom; Enter responde no centro da mira.</p>
-               <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>Enter responde</span></div>
+          <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+            {feedback || `Alvo atual: ${targetName}`}
+          </p>
+          <p className="map-keyboard-hint">Setas movem o mapa; + e − controlam o zoom; Enter responde no centro da mira.</p>
+          <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>Enter responde</span></div>
           <div className="map-hud">
-              <div className="map-note">Clique no mapa ou use setas, +/− e Enter</div>
+            <div className="map-note">Clique no mapa ou use setas, +/− e Enter</div>
           </div>
           <div
             ref={mapEl}
             className="map"
-             role="application"
-             tabIndex={0}
-             aria-label={`Mapa interativo: encontre ${targetName}; setas movem o mapa, Enter responde`}
-             onFocus={(event) => event.currentTarget.parentElement?.classList.add("map-focused")}
-             onBlur={(event) => event.currentTarget.parentElement?.classList.remove("map-focused")}
+            role="application"
+            tabIndex={0}
+            aria-label={`Mapa interativo: encontre ${targetName}; setas movem o mapa, Enter responde`}
+            onFocus={(event) => event.currentTarget.parentElement?.classList.add("map-focused")}
+            onBlur={(event) => event.currentTarget.parentElement?.classList.remove("map-focused")}
           />
-        </div>
+        </main>
       </div>
     </div>
   );

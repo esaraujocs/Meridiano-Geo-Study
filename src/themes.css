@@ -1,0 +1,339 @@
+/* Temas do Hub. Duas camadas no elemento raiz:
+   · data-theme  → paleta (4 cores dos modos + 2º tom + mancha de aquarela + barra de XP)
+   · data-treat  → tratamento (como o Hub é pintado). Vários temas dividem o mesmo tratamento.
+   Sem data-treat o Hub fica como era antes dos temas. Os ganchos são data-fam (cartão de modo) e data-tile (cartão de progresso). */
+
+/* ── paletas ─────────────────────────────────────────────── */
+:root{
+  --on-mapa:#FFF4DF;--on-band:#FFF4DF;--on-cap:#10201E;--on-idi:#FFF4DF; /* texto dos botões: no latão/âmbar vale o escuro (contraste AA) */
+}
+/* Pigmentos: teal, terracota, latão, violeta */
+:root,:root[data-theme="pigmentos"],:root[data-theme="fusao"],:root[data-theme="listras"]{
+  --h-mapa:#2B8378;--h-band:#C25A42;--h-cap:#BE8A2C;--h-idi:#6F5DA6;
+  --hb-mapa:#297B71;--hb-band:#B0543E;--hb-cap:#BE8A2C;--hb-idi:#6F5DA6;
+  --h2-mapa:#2C6FA8;--h2-band:#D4553C;--h2-cap:#C9482F;--h2-idi:#9A4C9E;
+  --w-mapa:#33B0A6;--w-band:#F0705A;--w-cap:#F2B73F;--w-idi:#9884E0;
+  --bar:linear-gradient(90deg,#1F8A87,#5561B5 35%,#B94A76 68%,#D2782B);
+  --rule:linear-gradient(90deg,#1F8A87,#5561B5 34%,#B94A76 66%,#D2782B);
+}
+/* Aquarela: os mesmos pigmentos, um tom mais fundo */
+:root[data-theme="aquarela"]{
+  --h-mapa:#1F7C74;--h-band:#B84E38;--h-cap:#A87719;--h-idi:#5D4C99;
+  --hb-mapa:#1F7A72;--hb-band:#B84E38;--hb-cap:#BE8A2C;--hb-idi:#5D4C99;
+  --h2-mapa:#2C6FA8;--h2-band:#D4553C;--h2-cap:#C9482F;--h2-idi:#9A4C9E;
+  --w-mapa:#33B0A6;--w-band:#F0705A;--w-cap:#F2B73F;--w-idi:#9884E0;
+  --bar:linear-gradient(90deg,#1F8A87,#5561B5 35%,#B94A76 68%,#D2782B);
+  --rule:linear-gradient(90deg,#1F8A87,#5561B5 34%,#B94A76 66%,#D2782B);
+}
+/* Atlas: azul-oceano, ferrugem, ocre, sálvia */
+:root[data-theme="atlas"]{
+  --h-mapa:#3D7C93;--h-band:#AE5238;--h-cap:#C29A44;--h-idi:#6C8A58;
+  --hb-mapa:#3A768C;--hb-band:#AE5238;--hb-cap:#C29A44;--hb-idi:#5A754C;
+  --h2-mapa:#2F6478;--h2-band:#8C3F2C;--h2-cap:#A87D2E;--h2-idi:#557046;
+  --w-mapa:#6FA7BA;--w-band:#D98A70;--w-cap:#E3C06E;--w-idi:#9DB58A;
+  --bar:linear-gradient(90deg,#3D7C93,#6C8A58 40%,#C29A44 72%,#AE5238);
+  --rule:linear-gradient(90deg,#3D7C93 0 25%,#6C8A58 25% 50%,#C29A44 50% 75%,#AE5238 75%);
+}
+/* Terra: a paleta original do jogo (verde, terracota, latão) + oliva, que nasce da mistura de latão com verde */
+:root[data-theme="terra"],:root[data-theme="circulo"],:root[data-theme="pinceladas-terra"]{
+  --h-mapa:#2F6F6A;--h-band:#B65F47;--h-cap:#C49345;--h-idi:#7A8145;
+  --hb-mapa:#2F6F6A;--hb-band:#A55943;--hb-cap:#C49345;--hb-idi:#6B7340;
+  --h2-mapa:#5B7F4A;--h2-band:#8C3F2C;--h2-cap:#B65F47;--h2-idi:#3F6F5A;
+  --w-mapa:#4FA39A;--w-band:#DE7C5F;--w-cap:#EBB95E;--w-idi:#A9B26B;
+  --bar:linear-gradient(90deg,#2F6F6A,#7A8145 36%,#C49345 68%,#B65F47);
+  --rule:linear-gradient(90deg,#2F6F6A,#7A8145 34%,#C49345 66%,#B65F47);
+}
+/* Jóia: teal, rosa, âmbar, índigo */
+:root[data-theme="pinceladas"],:root[data-theme="atelie"]{
+  --h-mapa:#1F8A87;--h-band:#B94A76;--h-cap:#D2782B;--h-idi:#5561B5;
+  --hb-mapa:#1D7B78;--hb-band:#B24872;--hb-cap:#D2782B;--hb-idi:#5561B5;
+  --h2-mapa:#2E6FB0;--h2-band:#D4553C;--h2-cap:#C9482F;--h2-idi:#A2489C;
+  --w-mapa:#46B5B0;--w-band:#E37AA0;--w-cap:#F0A24F;--w-idi:#7C88D6;
+  --bar:linear-gradient(90deg,#1F8A87,#5561B5 35%,#B94A76 68%,#D2782B);
+  --rule:linear-gradient(90deg,#1F8A87,#5561B5 34%,#B94A76 66%,#D2782B);
+}
+/* tom de cada cor seguro para texto claro em cima (botões, CTAs, marcas): só o latão/âmbar precisa escurecer */
+:root,:root[data-theme="pigmentos"],:root[data-theme="fusao"],:root[data-theme="listras"]{--hg-mapa:#297B71;--hg-band:#B0543E;--hg-cap:#8A6A28;--hg-idi:#6F5DA6}
+:root[data-theme="aquarela"]{--hg-mapa:#1F7A72;--hg-band:#B84E38;--hg-cap:#8D671A;--hg-idi:#5D4C99}
+:root[data-theme="atlas"]{--hg-mapa:#3A768C;--hg-band:#AE5238;--hg-cap:#7E6C36;--hg-idi:#5A754C}
+:root[data-theme="terra"],:root[data-theme="circulo"],:root[data-theme="pinceladas-terra"]{--hg-mapa:#2F6F6A;--hg-band:#A55943;--hg-cap:#836A37;--hg-idi:#6B7340}
+:root[data-theme="pinceladas"],:root[data-theme="atelie"]{--hg-mapa:#1D7B78;--hg-band:#B24872;--hg-cap:#9C5F27;--hg-idi:#5561B5}
+/* as 4 cores dos modos ficam à mão para o resto do app */
+:root{--mapa:var(--h-mapa);--bandeiras:var(--h-band);--capitais:var(--h-cap);--idiomas:var(--h-idi)}
+
+/* cada cartão lê a cor do seu modo, e cada cartão de progresso a sua */
+[data-fam="mapa"]{--h:var(--h-mapa);--hb:var(--hb-mapa);--hg:var(--hg-mapa);--h2:var(--h2-mapa);--on:var(--on-mapa)}
+[data-fam="bandeiras"]{--h:var(--h-band);--hb:var(--hb-band);--hg:var(--hg-band);--h2:var(--h2-band);--on:var(--on-band)}
+[data-fam="capitais"]{--h:var(--h-cap);--hb:var(--hb-cap);--hg:var(--hg-cap);--h2:var(--h2-cap);--on:var(--on-cap)}
+[data-fam="idiomas"]{--h:var(--h-idi);--hb:var(--hb-idi);--hg:var(--hg-idi);--h2:var(--h2-idi);--on:var(--on-idi)}
+.hub-progress-grid button[data-tile="collection"]{--h:var(--h-cap);--h2:var(--h2-cap)}
+.hub-progress-grid button[data-tile="achievements"]{--h:var(--h-band);--h2:var(--h2-band)}
+.hub-progress-grid button[data-tile="progress"]{--h:var(--h-mapa);--h2:var(--h2-mapa)}
+
+/* a moeda do Hub agora é um botão (leva à Loja) */
+button.hub-coin{font:inherit;color:inherit;text-align:left;cursor:pointer}
+button.hub-coin:hover{border-color:var(--green)}
+button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.hub-coin svg{flex:none;margin-left:2px;color:var(--muted)}
+
+/* ── comum a todos os tratamentos ────────────────────────── */
+/* modo bloqueado: em vez de opacidade (derruba o contraste do texto sobre o cartão colorido), o cartão perde a cor */
+:root[data-treat] .family.locked{opacity:1;filter:saturate(.35)}
+:root[data-treat] .hub-track i{background:var(--bar)}
+@media (min-width:1024px){:root[data-treat] .hub-rule{display:block;height:4px;border:0;border-radius:4px;background:var(--rule);opacity:.9}}
+:root[data-treat] .hub-content .family-play{background:var(--hb);color:var(--on)}
+@media (max-width:899px){
+  :root[data-treat] .hub-content .family-visual .family-icon{width:104px;height:104px;border-radius:50%;display:grid;place-items:center}
+  :root[data-treat] .hub-content .family-visual .family-icon svg{width:46px;height:46px}
+}
+
+/* manchas de aquarela atrás do Hub (Aquarela, Fusão, Terra, Ateliê) */
+.wash{display:none}
+:root[data-wash="1"] .app-shell:has(.wash){isolation:isolate}
+:root[data-wash="1"] .wash{display:block;position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+.wash i{position:absolute;left:50%;top:50%;border-radius:50%;opacity:.5;filter:url(#wc) blur(46px)}
+.wash .wk0{background:var(--w-mapa)}.wash .wk1{background:var(--w-band)}.wash .wk2{background:var(--w-cap)}.wash .wk3{background:var(--w-idi)}
+.wash i:nth-child(1){width:400px;height:280px;margin:-140px 0 0 -200px;transform:translate(-710px,-242px)}
+.wash i:nth-child(2){width:340px;height:400px;margin:-200px 0 0 -170px;transform:translate(-400px,-2px)}
+.wash i:nth-child(3){width:340px;height:400px;margin:-200px 0 0 -170px;transform:translate(-115px,-2px)}
+.wash i:nth-child(4){width:340px;height:400px;margin:-200px 0 0 -170px;transform:translate(170px,-2px)}
+.wash i:nth-child(5){width:360px;height:400px;margin:-200px 0 0 -180px;transform:translate(430px,-2px)}
+.wash i:nth-child(6){width:460px;height:220px;margin:-110px 0 0 -230px;transform:translate(-180px,-352px)}
+.wash i:nth-child(7){width:520px;height:260px;margin:-130px 0 0 -260px;transform:translate(310px,-382px)}
+.wash i:nth-child(8){width:520px;height:200px;margin:-100px 0 0 -260px;transform:translate(-440px,318px)}
+.wash i:nth-child(9){width:420px;height:200px;margin:-100px 0 0 -210px;transform:translate(0,328px)}
+.wash i:nth-child(10){width:500px;height:210px;margin:-105px 0 0 -250px;transform:translate(380px,318px)}
+@media (max-width:899px){
+  .wash i:nth-child(n+6){display:none}
+  .wash i:nth-child(1){width:300px;height:260px;margin:-130px 0 0 -150px;transform:translate(-155px,-222px)}
+  .wash i:nth-child(2){width:280px;height:280px;margin:-140px 0 0 -140px;transform:translate(155px,-92px)}
+  .wash i:nth-child(3){width:320px;height:280px;margin:-140px 0 0 -160px;transform:translate(-135px,198px)}
+  .wash i:nth-child(4){width:300px;height:260px;margin:-130px 0 0 -150px;transform:translate(135px,338px)}
+  .wash i:nth-child(5){width:260px;height:180px;margin:-90px 0 0 -130px;transform:translate(5px,-332px)}
+  .wash i:nth-child(2){background:var(--w-idi)}.wash i:nth-child(3){background:var(--w-cap)}.wash i:nth-child(4),.wash i:nth-child(5){background:var(--w-band)}
+}
+
+/* ═══ PIGMENTOS (padrão): cartão tingido na cor do modo, medalhão cheio, botão colorido ═══ */
+:root[data-treat="tint"] .app-shell:has(.hub-content,[data-surface]){background:
+  radial-gradient(760px 420px at 6% 2%,color-mix(in srgb,var(--h-mapa) 15%,transparent),transparent 70%),
+  radial-gradient(760px 420px at 96% 2%,color-mix(in srgb,var(--h-idi) 14%,transparent),transparent 70%),
+  radial-gradient(760px 420px at 4% 100%,color-mix(in srgb,var(--h-band) 13%,transparent),transparent 70%),
+  radial-gradient(760px 420px at 98% 100%,color-mix(in srgb,var(--h-cap) 15%,transparent),transparent 70%),
+  var(--paper)}
+:root[data-treat="tint"] .hub-content .family{background:linear-gradient(172deg,color-mix(in srgb,var(--h) 30%,#F6EDD6) 0%,color-mix(in srgb,var(--h) 12%,#EADCBC) 58%,#E8D9B7 100%);border:1px solid color-mix(in srgb,var(--h) 46%,#C7B68F);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 14px 26px -18px color-mix(in srgb,var(--h) 70%,transparent)}
+:root[data-treat="tint"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="tint"] .hub-content .family .family-geo{opacity:.38;background:repeating-linear-gradient(22deg,transparent 0 15px,var(--h) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,var(--h) 23px 24px)}
+:root[data-treat="tint"] .hub-content .family-visual .family-icon{background:var(--h);color:#FBF3DF;border-color:var(--h);box-shadow:0 0 0 7px color-mix(in srgb,var(--h) 20%,transparent),0 8px 16px -8px var(--h)}
+:root[data-treat="tint"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 52%,#1C2C2A)}
+:root[data-treat="tint"] .hub-content .family p,:root[data-treat="tint"] .hub-content .family-footer{color:#3E4E49}
+:root[data-treat="tint"] .hub-content .family-play{box-shadow:0 6px 12px -8px var(--hb)}
+:root[data-treat="tint"] .hub-progress-grid button{background:linear-gradient(95deg,color-mix(in srgb,var(--h) 20%,#F5EBD3),rgba(243,233,210,.55) 70%);border-color:color-mix(in srgb,var(--h) 42%,#C7B68F)}
+:root[data-treat="tint"] .hub-progress-grid button:hover{border-color:var(--h)}
+:root[data-treat="tint"] .hub-progress-icon{background:var(--h);color:#FBF3DF}
+:root[data-treat="tint"] .hub-progress-bar{background:color-mix(in srgb,var(--h) 20%,#DCCDA9)}
+:root[data-treat="tint"] .hub-progress-bar i{background:var(--h)}
+:root[data-treat="tint"] .hub-progress-grid strong{color:color-mix(in srgb,var(--h) 55%,#1C2C2A)}
+
+/* ═══ VIDRO (Aquarela, Fusão, Ateliê): cartões translúcidos sobre as manchas ═══ */
+:root[data-treat="aquarela"] .hub-content .family,:root[data-treat="brush-wash"] .hub-content .family{background:rgba(250,244,229,.6);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);border:1px solid color-mix(in srgb,var(--h) 30%,rgba(255,255,255,.8))}
+:root[data-treat="aquarela"] .hub-content .family{box-shadow:0 18px 30px -22px rgba(36,59,58,.55),inset 0 0 0 1px color-mix(in srgb,var(--h) 22%,transparent)}
+:root[data-treat="fusion"] .hub-content .family{background:linear-gradient(172deg,color-mix(in srgb,var(--h) 30%,rgba(251,246,232,.8)) 0%,color-mix(in srgb,var(--h) 12%,rgba(246,237,216,.64)) 62%,rgba(244,234,212,.58) 100%);-webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);border:1px solid color-mix(in srgb,var(--h) 38%,rgba(255,255,255,.85));box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 16px 28px -20px color-mix(in srgb,var(--h) 70%,transparent)}
+:root[data-treat="aquarela"] .hub-content .family:hover,:root[data-treat="fusion"] .hub-content .family:hover,:root[data-treat="brush-wash"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="aquarela"] .hub-content .family .family-geo,:root[data-treat="fusion"] .hub-content .family .family-geo{opacity:.32;background:repeating-linear-gradient(22deg,transparent 0 15px,var(--h) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,var(--h) 23px 24px)}
+:root[data-treat="aquarela"] .hub-content .family-visual .family-icon{background:rgba(255,255,255,.62);color:var(--h);border:1.5px solid color-mix(in srgb,var(--h) 70%,transparent);box-shadow:0 10px 22px -10px var(--h)}
+:root[data-treat="fusion"] .hub-content .family-visual .family-icon{background:var(--h);color:#FBF3DF;border-color:var(--h);box-shadow:0 0 0 7px color-mix(in srgb,var(--h) 20%,transparent),0 8px 16px -8px var(--h)}
+:root[data-treat="aquarela"] .hub-content .family h3,:root[data-treat="fusion"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 48%,#1C2C2A)}
+:root[data-treat="aquarela"] .hub-content .family p,:root[data-treat="aquarela"] .hub-content .family-footer,:root[data-treat="fusion"] .hub-content .family p,:root[data-treat="fusion"] .hub-content .family-footer,:root[data-treat="brush-wash"] .hub-content .family p,:root[data-treat="brush-wash"] .hub-content .family-footer{color:#3E4E49}
+:root[data-treat="aquarela"] .hub-bar,:root[data-treat="fusion"] .hub-bar,:root[data-treat="brush-wash"] .hub-bar{background:rgba(250,244,229,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-color:rgba(255,255,255,.78);box-shadow:0 14px 26px -22px rgba(36,59,58,.5)}
+:root[data-treat="aquarela"] .hub-progress-grid button{background:rgba(250,244,229,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--h) 26%,rgba(255,255,255,.8));box-shadow:0 14px 24px -22px rgba(36,59,58,.55)}
+:root[data-treat="fusion"] .hub-progress-grid button{background:linear-gradient(95deg,color-mix(in srgb,var(--h) 22%,rgba(251,246,232,.78)),rgba(244,234,212,.6) 72%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--h) 38%,rgba(255,255,255,.85));box-shadow:0 14px 24px -22px rgba(36,59,58,.55)}
+:root[data-treat="aquarela"] .hub-progress-grid button:hover,:root[data-treat="fusion"] .hub-progress-grid button:hover{border-color:var(--h)}
+:root[data-treat="aquarela"] .hub-progress-icon{background:rgba(255,255,255,.65);color:var(--h);box-shadow:0 6px 14px -8px var(--h)}
+:root[data-treat="fusion"] .hub-progress-icon{background:var(--h);color:#FBF3DF;box-shadow:0 6px 14px -8px var(--h)}
+:root[data-treat="aquarela"] .hub-progress-bar{background:rgba(255,255,255,.55)}
+:root[data-treat="fusion"] .hub-progress-bar{background:color-mix(in srgb,var(--h) 20%,rgba(255,255,255,.55))}
+:root[data-treat="aquarela"] .hub-progress-bar i,:root[data-treat="fusion"] .hub-progress-bar i{background:var(--h)}
+:root[data-treat="fusion"] .hub-progress-grid strong{color:color-mix(in srgb,var(--h) 55%,#1C2C2A)}
+
+/* ═══ ATLAS: pranchas de mapa impresso ═══ */
+:root[data-treat="atlas"] .app-shell:has(.hub-content,[data-surface]){background:linear-gradient(rgba(36,59,58,.05) 1px,transparent 1px) 0 0/64px 64px,linear-gradient(90deg,rgba(36,59,58,.05) 1px,transparent 1px) 0 0/64px 64px,var(--paper)}
+:root[data-treat="atlas"] .hub-level{box-shadow:0 0 0 4px rgba(61,124,147,.16)}
+:root[data-treat="atlas"] .hub-content .family{background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.13)}
+:root[data-treat="atlas"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="atlas"] .hub-content .family::before{content:"";position:absolute;left:0;right:0;top:0;height:54%;background:repeating-radial-gradient(circle at 74% 34%,transparent 0 13px,rgba(255,255,255,.2) 13px 14px),repeating-radial-gradient(circle at 20% 76%,transparent 0 17px,rgba(0,0,0,.09) 17px 18px),linear-gradient(180deg,color-mix(in srgb,var(--h) 78%,#fff) 0%,var(--h) 62%,color-mix(in srgb,var(--h) 78%,#2b1a10) 100%)}
+:root[data-treat="atlas"] .hub-content .family::after{content:"";position:absolute;inset:6px;border:1px solid rgba(255,255,255,.55);border-radius:3px;pointer-events:none;z-index:2}
+:root[data-treat="atlas"] .hub-content .family .family-visual{z-index:3}
+:root[data-treat="atlas"] .hub-content .family .family-geo{opacity:.18;background:repeating-linear-gradient(22deg,transparent 0 15px,#fff 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,#fff 23px 24px)}
+:root[data-treat="atlas"] .hub-content .family-visual .family-icon{background:#F5ECD6;color:color-mix(in srgb,var(--h) 80%,#1a2b29);border:2px solid #F5ECD6;box-shadow:0 0 0 2px var(--h),0 8px 14px -6px rgba(0,0,0,.4)}
+:root[data-treat="atlas"] .hub-content .family-copy,:root[data-treat="atlas"] .hub-content .family-footer{position:relative;z-index:3}
+:root[data-treat="atlas"] .hub-content .family h3{color:#1F302E}
+:root[data-treat="atlas"] .hub-content .family p,:root[data-treat="atlas"] .hub-content .family-footer{color:#3E4E49}
+:root[data-treat="atlas"] .hub-content .family-play{background:#1F302E;color:#FFF4DF;border-radius:4px}
+:root[data-treat="atlas"] .hub-content .family-play:hover{background:var(--hb)}
+:root[data-treat="atlas"] .hub-content .family-visual::before{content:"Prancha";content:"Prancha" / "";position:absolute;left:-2px;top:-8px;z-index:4;font:500 9.5px 'DM Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.9);text-transform:uppercase}
+:root[data-treat="atlas"] .family[data-fam="mapa"] .family-visual::before{content:"Prancha I";content:"Prancha I" / ""}
+:root[data-treat="atlas"] .family[data-fam="bandeiras"] .family-visual::before{content:"Prancha II";content:"Prancha II" / ""}
+:root[data-treat="atlas"] .family[data-fam="capitais"] .family-visual::before{content:"Prancha III";content:"Prancha III" / ""}
+:root[data-treat="atlas"] .family[data-fam="idiomas"] .family-visual::before{content:"Prancha IV";content:"Prancha IV" / ""}
+:root[data-treat="atlas"] .hub-bar{background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.13)}
+:root[data-treat="atlas"] .hub-progress-grid button{background:#F5ECD6;border:1px solid #8A7C5A;border-left:8px solid var(--h);border-radius:4px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.12)}
+:root[data-treat="atlas"] .hub-progress-icon{background:color-mix(in srgb,var(--h) 20%,transparent);color:color-mix(in srgb,var(--h) 85%,#1a2b29);border-radius:6px}
+:root[data-treat="atlas"] .hub-progress-bar{background:rgba(36,59,58,.13);border-radius:0}
+:root[data-treat="atlas"] .hub-progress-bar i{background:var(--h)}
+
+/* ═══ PINCELADA VERTICAL (Pinceladas, Pinceladas · Terra, Ateliê) ═══ */
+:root[data-treat="brush-v"] .hub-content .family,:root[data-treat="brush-wash"] .hub-content .family{position:relative}
+:root[data-treat="brush-v"] .hub-content .family{background:#F3E8CF;border:1px solid color-mix(in srgb,var(--h) 30%,#C7B68F)}
+:root[data-treat="brush-v"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="brush-v"] .hub-content .family::before,:root[data-treat="brush-wash"] .hub-content .family::before{content:"";position:absolute;left:50%;top:-14px;width:78%;height:70%;transform:translateX(-50%);background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 2px,transparent 2px 9px),linear-gradient(180deg,var(--h) 0%,var(--h) 40%,var(--h2) 76%,color-mix(in srgb,var(--h2) 40%,transparent) 92%,transparent 100%);border-radius:46% 46% 58% 58%/6% 6% 40% 40%;filter:url(#roughV);opacity:.97}
+:root[data-treat="brush-v"] .hub-content .family::after,:root[data-treat="brush-wash"] .hub-content .family::after{content:"";position:absolute;left:50%;top:-6px;width:38%;height:54%;transform:translateX(-46%) rotate(2.5deg);background:linear-gradient(180deg,rgba(255,255,255,.22),transparent 90%);border-radius:50%;filter:url(#roughV);mix-blend-mode:soft-light;pointer-events:none}
+:root[data-treat="brush-v"] .hub-content .family .family-visual,:root[data-treat="brush-wash"] .hub-content .family .family-visual{z-index:3}
+:root[data-treat="brush-v"] .hub-content .family .family-geo,:root[data-treat="brush-wash"] .hub-content .family .family-geo{opacity:0}
+:root[data-treat="brush-v"] .hub-content .family-visual .family-icon,:root[data-treat="brush-wash"] .hub-content .family-visual .family-icon{background:transparent;color:#FFF6E4;border:1.5px solid rgba(255,246,228,.85);box-shadow:0 0 0 7px rgba(255,246,228,.14)}
+@media (min-width:900px){
+  :root[data-treat="brush-v"] .hub-content .family-visual .family-icon,:root[data-treat="brush-wash"] .hub-content .family-visual .family-icon{width:78px;height:78px}
+  :root[data-treat="brush-v"] .hub-content .family-visual .family-icon svg,:root[data-treat="brush-wash"] .hub-content .family-visual .family-icon svg{width:36px;height:36px}
+}
+:root[data-treat="brush-v"] .hub-content .family-copy,:root[data-treat="brush-v"] .hub-content .family-footer,:root[data-treat="brush-wash"] .hub-content .family-copy,:root[data-treat="brush-wash"] .hub-content .family-footer{position:relative;z-index:3}
+:root[data-treat="brush-v"] .hub-content .family h3,:root[data-treat="brush-wash"] .hub-content .family h3{color:#22322F}
+:root[data-treat="brush-v"] .hub-content .family p,:root[data-treat="brush-v"] .hub-content .family-footer{color:#3E4E49}
+@media (max-width:899px){:root[data-treat="brush-v"] .hub-content .family::before,:root[data-treat="brush-wash"] .hub-content .family::before{height:58%}}
+:root[data-treat="brush-v"] .hub-progress-grid button,:root[data-treat="brush-wash"] .hub-progress-grid button{position:relative;overflow:hidden}
+:root[data-treat="brush-v"] .hub-progress-grid button{background:#F3E8CF;border:1px solid color-mix(in srgb,var(--h) 30%,#C7B68F)}
+:root[data-treat="brush-wash"] .hub-progress-grid button{background:rgba(250,244,229,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--h) 30%,rgba(255,255,255,.8))}
+:root[data-treat="brush-v"] .hub-progress-icon,:root[data-treat="brush-wash"] .hub-progress-icon{position:relative;z-index:1;background:transparent;color:#FFF6E4;border:1.5px solid rgba(255,246,228,.8)}
+:root[data-treat="brush-v"] .hub-progress-icon::before,:root[data-treat="brush-wash"] .hub-progress-icon::before{content:"";position:absolute;left:50%;top:-46px;width:86px;height:150px;transform:translateX(-50%);z-index:-1;background:linear-gradient(180deg,var(--h) 0%,var(--h) 55%,color-mix(in srgb,var(--h) 40%,transparent) 85%,transparent);filter:url(#roughV);border-radius:40%}
+:root[data-treat="brush-v"] .hub-progress-text,:root[data-treat="brush-wash"] .hub-progress-text{position:relative;z-index:1}
+:root[data-treat="brush-v"] .hub-progress-bar,:root[data-treat="brush-wash"] .hub-progress-bar{background:rgba(36,59,58,.12)}
+:root[data-treat="brush-v"] .hub-progress-bar i,:root[data-treat="brush-wash"] .hub-progress-bar i{background:var(--h)}
+
+/* ═══ PINCELADA HORIZONTAL (Listras): faixa inclinada atrás do ícone e um filete de 2º tom ═══ */
+:root[data-treat="brush-h"] .hub-content .family{background:#F3E8CF;border:1px solid color-mix(in srgb,var(--h) 30%,#C7B68F)}
+:root[data-treat="brush-h"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="brush-h"] .hub-content .family .family-geo{opacity:0}
+:root[data-treat="brush-h"] .hub-content .family-visual::before{content:"";position:absolute;left:-40px;right:-40px;top:50%;height:74%;transform:translateY(-50%) rotate(-2.4deg);background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 2px,transparent 2px 9px),linear-gradient(100deg,var(--h) 0%,var(--h) 55%,var(--h2) 100%);border-radius:6px;filter:url(#roughH)}
+:root[data-treat="brush-h"] .hub-content .family-visual::after{content:"";position:absolute;left:-40px;right:-40px;top:calc(87% + 6px);height:13px;transform:rotate(-2.4deg);background:linear-gradient(100deg,var(--h2),color-mix(in srgb,var(--h2) 35%,transparent));border-radius:6px;filter:url(#roughH);opacity:.92}
+:root[data-treat="brush-h"] .hub-content .family-visual .family-icon{position:relative;z-index:2;background:transparent;color:#FFF6E4;border:1.5px solid rgba(255,246,228,.88);box-shadow:0 0 0 7px rgba(255,246,228,.14)}
+:root[data-treat="brush-h"] .hub-content .family h3{color:#22322F}
+:root[data-treat="brush-h"] .hub-content .family p,:root[data-treat="brush-h"] .hub-content .family-footer{color:#3E4E49}
+:root[data-treat="brush-h"] .hub-progress-grid button{position:relative;overflow:hidden;background:#F3E8CF;border:1px solid color-mix(in srgb,var(--h) 30%,#C7B68F)}
+:root[data-treat="brush-h"] .hub-progress-icon{position:relative;z-index:1;background:transparent;color:#FFF6E4;border:1.5px solid rgba(255,246,228,.85)}
+:root[data-treat="brush-h"] .hub-progress-icon::before{content:"";position:absolute;left:-90px;width:150px;top:50%;height:50px;transform:translateY(-50%) rotate(-3deg);z-index:-1;background:linear-gradient(100deg,var(--h) 0%,var(--h) 62%,var(--h2) 100%);border-radius:5px;filter:url(#roughH)}
+:root[data-treat="brush-h"] .hub-progress-text{position:relative;z-index:1}
+:root[data-treat="brush-h"] .hub-progress-bar{background:rgba(36,59,58,.12)}
+:root[data-treat="brush-h"] .hub-progress-bar i{background:var(--h)}
+
+/* ═══ PINCELADA EM CÍRCULO: anel pintado à mão em volta do ícone ═══ */
+:root[data-treat="brush-o"] .hub-content .family{background:linear-gradient(175deg,color-mix(in srgb,var(--h) 13%,#F7EEDA),#EFE3C6 72%);border:1px solid color-mix(in srgb,var(--h) 34%,#C7B68F)}
+:root[data-treat="brush-o"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="brush-o"] .hub-content .family .family-geo{opacity:.16;background:repeating-linear-gradient(22deg,transparent 0 15px,var(--h) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,var(--h) 23px 24px)}
+:root[data-treat="brush-o"] .hub-content .family-visual .family-icon{position:relative;z-index:2;background:#FBF3DF;color:var(--h);border:0;box-shadow:0 8px 16px -10px var(--h)}
+:root[data-treat="brush-o"] .hub-content .family-visual .family-icon::before,:root[data-treat="brush-o"] .hub-progress-icon::before{content:"";position:absolute;border-radius:50%;transform:rotate(-28deg);background:conic-gradient(from 0deg,transparent 0deg,color-mix(in srgb,var(--h) 45%,transparent) 12deg,var(--h) 55deg,var(--h) 292deg,var(--h2) 334deg,transparent 350deg);-webkit-mask:radial-gradient(circle closest-side,transparent 0 75.5%,#000 76.5% 97.5%,transparent 98.5%);mask:radial-gradient(circle closest-side,transparent 0 75.5%,#000 76.5% 97.5%,transparent 98.5%);filter:url(#roughO);pointer-events:none}
+:root[data-treat="brush-o"] .hub-content .family-visual .family-icon::before{inset:-38%}
+:root[data-treat="brush-o"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 42%,#1C2C2A)}
+:root[data-treat="brush-o"] .hub-content .family p,:root[data-treat="brush-o"] .hub-content .family-footer{color:#3E4E49}
+:root[data-treat="brush-o"] .hub-progress-grid button{position:relative;overflow:hidden;background:linear-gradient(95deg,color-mix(in srgb,var(--h) 14%,#F7EEDA),#F1E5C9 70%);border:1px solid color-mix(in srgb,var(--h) 34%,#C7B68F)}
+:root[data-treat="brush-o"] .hub-progress-icon{position:relative;background:#FBF3DF;color:var(--h)}
+:root[data-treat="brush-o"] .hub-progress-icon::before{inset:-38%}
+:root[data-treat="brush-o"] .hub-progress-bar{background:color-mix(in srgb,var(--h) 18%,#DCCDA9)}
+:root[data-treat="brush-o"] .hub-progress-bar i{background:var(--h)}
+
+/* ═══ LOJA ═══ */
+.store-sec{display:flex;align-items:baseline;gap:14px;margin:34px 0 4px}
+.store-sec h2{font:500 26px 'Fraunces',Georgia,serif;margin:0}
+.store-sec span{font:400 12px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.store-notice{min-height:22px;margin:6px 0 0;font-size:14px;color:#245e58;font-weight:700}
+.store-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
+.store-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.store-card.is-active{border-color:var(--green);box-shadow:0 0 0 2px rgba(47,111,106,.28)}
+.store-thumb{display:block;width:100%;height:auto;aspect-ratio:640/323;object-fit:cover;background:var(--paper);border-bottom:1px solid var(--line)}
+.store-card.is-locked .store-thumb{filter:saturate(.92)}
+.store-body{display:flex;flex:1;flex-direction:column;gap:8px;padding:16px 18px 18px}
+.store-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.store-head h3{margin:0;font:500 22px/1.1 'Fraunces',Georgia,serif;color:var(--ink)}
+.store-swatches{display:inline-flex;gap:5px;flex:none}
+.store-swatches i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.store-body>p{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
+.store-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px}
+.store-state{font:400 12px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.store-price{display:inline-flex;align-items:center;gap:7px;font:500 20px 'Fraunces',Georgia,serif;color:var(--ink)}
+.store-price i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--brass);color:#2b1f06;font:700 12px 'Plus Jakarta Sans',sans-serif}
+.store-btn{min-height:40px;padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.store-btn:hover:not(:disabled){border-color:var(--green)}
+.store-btn.primary{background:var(--green);border-color:var(--green);color:#FFF4DF}
+.store-btn.primary:hover:not(:disabled){background:#265d59}
+.store-btn:disabled{cursor:default;color:#5b6a65}
+.store-btn.is-current{border-color:transparent;background:rgba(47,111,106,.14);color:#1b4a45}
+.store-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.store-confirm{margin:6px 0 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:13px;line-height:1.5;color:var(--ink)}
+.store-confirm span{display:flex;gap:8px;margin-top:10px}
+@media (max-width:1023px){.store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.store-grid{grid-template-columns:1fr}.store-sec h2{font-size:22px}}
+.option-toggle select{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}
+
+/* ═══ OUTRAS TELAS: Coleção, Achievements, Progresso e Loja ═══
+   Cada tela ganha a cor do seu modo (como os cartões de progresso do Hub): Coleção = Capitais, Achievements = Bandeiras,
+   Progresso = Mapa, Loja = Idiomas. Dentro delas, --green passa a ser essa cor (versão segura para texto claro), então barras,
+   bordas, ícones e botões que já usavam --green seguem o tema sozinhos. Os textos e fundos com teal fixo são trocados abaixo. */
+[data-surface]{--h:var(--h-mapa);--hb:var(--hb-mapa);--hg:var(--hg-mapa);--h2:var(--h2-mapa)} /* padrão (ex.: histórico de sessões) */
+[data-surface="collection"]{--h:var(--h-cap);--hb:var(--hb-cap);--hg:var(--hg-cap);--h2:var(--h2-cap)}
+[data-surface="achievements"]{--h:var(--h-band);--hb:var(--hb-band);--hg:var(--hg-band);--h2:var(--h2-band)}
+[data-surface="progress"]{--h:var(--h-mapa);--hb:var(--hb-mapa);--hg:var(--hg-mapa);--h2:var(--h2-mapa)}
+[data-surface="store"]{--h:var(--h-idi);--hb:var(--hb-idi);--hg:var(--hg-idi);--h2:var(--h2-idi)}
+:root[data-treat] :is([data-surface],.pr-pillar[data-fam],.pr-kpi[data-fam]){--green:var(--hg);--hd:color-mix(in srgb,var(--h) 44%,#1C2C2A);--ht:color-mix(in srgb,var(--h) 16%,transparent)}
+
+/* com manchas de aquarela atrás, o texto cinza das telas fica mais escuro (contraste) */
+:root[data-wash="1"] [data-surface]{--muted:#3E4E49}
+
+/* raridade: os degraus do meio seguem as cores do tema (Incomum = Mapa, Rara = Capitais, Épica = Bandeiras); Comum e Lendária ficam */
+:root{--rar-2:var(--h-mapa);--rar-3:var(--h-cap);--rar-4:var(--h-band)}
+:root[data-treat] .ach-r2{--ach:var(--rar-2);--ach-text:color-mix(in srgb,var(--rar-2) 42%,#1C2C2A);--ach-bar:var(--rar-2)}
+:root[data-treat] .ach-r3{--ach:var(--rar-3);--ach-text:color-mix(in srgb,var(--rar-3) 42%,#1C2C2A);--ach-bar:var(--rar-3)}
+:root[data-treat] .ach-r4{--ach:var(--rar-4);--ach-text:color-mix(in srgb,var(--rar-4) 42%,#1C2C2A);--ach-bar:var(--rar-4)}
+:root[data-treat] .col-l2{--lv:var(--rar-2);--lv-text:color-mix(in srgb,var(--rar-2) 42%,#1C2C2A);--lv-edge:var(--rar-2)}
+:root[data-treat] .col-l3{--lv:var(--rar-3);--lv-text:color-mix(in srgb,var(--rar-3) 42%,#1C2C2A);--lv-edge:var(--rar-3)}
+:root[data-treat] .col-l4{--lv:var(--rar-4);--lv-text:color-mix(in srgb,var(--rar-4) 42%,#1C2C2A);--lv-edge:var(--rar-4)}
+:root[data-treat] .ach-med.ach-r4.is-unlocked{box-shadow:0 0 0 4px color-mix(in srgb,var(--rar-4) 16%,transparent)}
+
+/* textos e fundos com teal fixo */
+:root[data-treat] :is(.pg-eyebrow,.col-eyebrow,.ach-done,.pr-inline,.pr-how,.pr-node.now .pr-node-label b,.pr-kpi small.up,.pr-pstats dd em.up,.pr-write.ok,.pr-link,.pr-regions li>button:hover .pr-rname b,.pr-titles li.is-earned,.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.col-modes li.is-done,.pr-seg button[aria-pressed=true],.pr-status.is-good,.pr-delta,.pr-tag.good,.store-notice,.ach-cat-icon){color:var(--hd)}
+:root[data-treat] :is(.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.ach-cat-icon,.col-modes li.is-done,.pr-titles li.is-earned,.pr-status.is-good,.pr-seg button[aria-pressed=true],.pr-tag.good,.pr-delta,.store-btn.is-current){background:var(--ht)}
+:root[data-treat] .col-next{background:color-mix(in srgb,var(--h) 9%,transparent)}
+:root[data-treat] .pr-node.now{box-shadow:0 0 0 6px color-mix(in srgb,var(--h) 22%,transparent)}
+:root[data-treat] .pr-pillar.is-earned{box-shadow:0 0 0 3px color-mix(in srgb,var(--h) 14%,transparent)}
+:root[data-treat] .pr-sess.is-open{box-shadow:0 0 0 3px color-mix(in srgb,var(--h) 12%,transparent)}
+:root[data-treat] .store-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--h) 32%,transparent)}
+:root[data-treat] .store-btn.primary:hover:not(:disabled){background:color-mix(in srgb,var(--hg) 82%,#000)}
+:root[data-treat] .col-tick{color:var(--hg)}
+:root[data-treat] .hl1{background:color-mix(in srgb,var(--h) 26%,#F3E9D2)}
+:root[data-treat] .hl2{background:color-mix(in srgb,var(--h) 52%,#F3E9D2)}
+:root[data-treat] .hl3{background:color-mix(in srgb,var(--h) 78%,#F3E9D2)}
+:root[data-treat] .hl4{background:var(--hg)}
+/* desenhos SVG com teal fixo: o CSS vence o atributo */
+:root[data-treat] .pg-meridian circle,:root[data-treat] .pg-meridian g,:root[data-treat] .col-meridian{stroke:var(--h)}
+:root[data-treat] .pg-ring circle:nth-of-type(2){stroke:var(--h)}
+:root[data-treat] .pr-chart stop{stop-color:var(--h)}
+:root[data-treat] .pr-chart path[fill="none"]{stroke:var(--h)}
+:root[data-treat] .pr-chart circle[stroke="#2F6F6A"]{stroke:var(--h)}
+:root[data-treat] .pr-chart circle[fill="#2F6F6A"]{fill:var(--h)}
+:root[data-treat] .pr-chart text.lastv{fill:var(--hd)}
+
+/* cartões da página: borda tingida na cor da tela */
+:root[data-treat] :is(.ach-card,.pr-card,.pr-kpi){border-color:color-mix(in srgb,var(--h) 26%,var(--line))}
+
+/* cabeçalho (pg-hero) de cada tratamento */
+:root[data-treat] .pg-hero{border-color:color-mix(in srgb,var(--h) 34%,var(--line));background:linear-gradient(115deg,color-mix(in srgb,var(--h) 22%,var(--surface)) 0%,var(--surface) 64%)}
+:root[data-treat="aquarela"] .pg-hero,:root[data-treat="fusion"] .pg-hero,:root[data-treat="brush-wash"] .pg-hero{background:linear-gradient(115deg,color-mix(in srgb,var(--h) 22%,rgba(251,246,232,.7)),rgba(244,234,212,.55) 66%);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--h) 30%,rgba(255,255,255,.8))}
+:root[data-treat="aquarela"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar),:root[data-treat="fusion"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar),:root[data-treat="brush-wash"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar){background:rgba(250,244,229,.6)}
+:root[data-treat="atlas"] .pg-hero{background:#F5ECD6;border:1px solid #8A7C5A;border-left:8px solid var(--h);border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.13)}
+:root[data-treat="atlas"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar,.store-card){background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.12)}
+/* pincelada vertical atrás do anel (Pinceladas, Pinceladas · Terra, Ateliê) */
+:root[data-treat="brush-v"] .pg-hero::before,:root[data-treat="brush-wash"] .pg-hero::before{content:"";position:absolute;left:13px;top:-14px;width:170px;height:min(calc(100% + 24px),232px);background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 2px,transparent 2px 9px),linear-gradient(180deg,var(--h) 0%,var(--h) 42%,var(--h2) 80%,color-mix(in srgb,var(--h2) 40%,transparent) 94%,transparent 100%);border-radius:46% 46% 58% 58%/6% 6% 40% 40%;filter:url(#roughV);opacity:.95}
+/* faixa horizontal no topo (Listras) */
+:root[data-treat="brush-h"] .pg-hero::before{content:"";position:absolute;left:-14px;right:-14px;top:-7px;height:24px;transform:rotate(-.5deg);background:linear-gradient(100deg,var(--h),var(--h) 55%,var(--h2));border-radius:4px;filter:url(#roughH)}
+/* anel pintado em volta do anel de progresso (Círculo) */
+:root[data-treat="brush-o"] .pg-ring::before{content:"";position:absolute;inset:-16%;border-radius:50%;transform:rotate(-28deg);background:conic-gradient(from 0deg,transparent 0deg,color-mix(in srgb,var(--h) 45%,transparent) 12deg,var(--h) 55deg,var(--h) 292deg,var(--h2) 334deg,transparent 350deg);-webkit-mask:radial-gradient(circle closest-side,transparent 0 72%,#000 73% 89%,transparent 90%);mask:radial-gradient(circle closest-side,transparent 0 72%,#000 73% 89%,transparent 90%);filter:url(#roughO);pointer-events:none}
+/* celular: o anel é menor e o título fica mais perto, então o traço vertical do cabeçalho estreita e encurta */
+@media (max-width:760px){
+  :root[data-treat="brush-v"] .pg-hero::before,:root[data-treat="brush-wash"] .pg-hero::before{left:8px;width:118px;height:min(calc(100% + 24px),190px)}
+}

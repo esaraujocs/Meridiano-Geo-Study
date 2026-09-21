@@ -1,25 +1,23 @@
-import { useEffect, useRef, useState, type CSSProperties, type Dispatch, type SetStateAction, type TransitionEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type CSSProperties, type TransitionEvent } from "react";
 import { Icon } from "./icons";
-import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts } from "../domain/types";
-import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
+import { BrandLogo } from "./brand-logo";
+import type { AnyQuizVariant, Family, Legacy } from "../domain/types";
 import type { LegacyProfile } from "../domain/legacy-migration";
+import { isDebugEnabled } from "../domain/debug-flag";
+import { EMPTY_ACHIEVEMENT_SUMMARY, achievementCaption, collectionCaption, hubProfile, ratioPercent, type AchievementSummary } from "../domain/hub-profile";
 import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
-import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
-import { unlockContent } from "../domain/economy-store";
-import {
-  flagDirectionFromVariant,
-  flagSelection,
-  type FlagCategory,
-  type FlagDirection,
-} from "../domain/flag-configuration";
+import { policyFor, type UnlockKey } from "../domain/economy-rules";
+import type { TopFamily } from "../domain/match-config";
+import { THEMES, isThemeOwned } from "../domain/themes";
 
-export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
+export type { TopFamily };
 
-export function Header({ legacy, economy, current = "hub", onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
+export function Header({ legacy, economy, current = "hub", onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "store" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
   const items = [
     ["hub", "Modos", "map"], ["collection", "Coleção", "collection"],
     ["achievements", "Achievements", "achievements"], ["progress", "Progresso", "progress"],
+    ["store", "Loja", "store"],
   ] as const;
   return (
     <>
@@ -34,10 +32,8 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
           }
         }}
       >
-        <span className="brand-mark">
-          <span className="brand-dot" />
-        </span>
-        <span>CARTA CEGA</span>
+        <BrandLogo />
+        <span>MERIDIANO</span>
       </a>
       <nav className="desktop-nav" aria-label="Navegação principal">
         {items.map(([key, label, icon]) => <button key={key} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
@@ -51,17 +47,27 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
   );
 }
 
-export function OptionsScreen({ offlineMap, onToggleOfflineMap, onGrantCoins, onUnlockContent, onBack }: {
+// Painel de debug carregado só quando ligado (npm run dev, ou ?debug=1 em qualquer build).
+const DebugPanel = lazy(() => import("./debug-panel"));
+
+export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore, offlineMap, onToggleOfflineMap, onDebugChange, onBack }: {
+  data: Legacy;
+  theme: string;
+  ownedUnlocks: readonly string[];
+  onTheme: (id: string) => void;
+  onOpenStore: () => void;
   offlineMap: OfflineMapStatus;
   onToggleOfflineMap: () => Promise<void>;
-  onGrantCoins: (amount: number) => Promise<void>;
-  onUnlockContent: () => Promise<void>;
+  onDebugChange: (options: { announce: boolean }) => Promise<void> | void;
   onBack: () => void;
 }) {
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
-  const [debugAmount, setDebugAmount] = useState("10");
-  const [debugStatus, setDebugStatus] = useState("");
+  const [timerLate, setTimerLate] = useState(() => localStorage.getItem("carta-timer-late") === "1");
   const [cacheReport, setCacheReport] = useState("Consultando cache do app…");
+  useEffect(() => {
+    document.documentElement.dataset.timerReveal = timerLate ? "late" : "always";
+    localStorage.setItem("carta-timer-late", timerLate ? "1" : "0");
+  }, [timerLate]);
   useEffect(() => {
     document.documentElement.dataset.reducedMotion = reducedMotion ? "true" : "false";
     localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0");
@@ -82,9 +88,11 @@ export function OptionsScreen({ offlineMap, onToggleOfflineMap, onGrantCoins, on
     <button className="back" onClick={onBack}>← Voltar</button>
     <div className="eyebrow options-kicker">Preferências</div><h1>Opções</h1>
     <section className="options-grid" aria-label="Preferências e disponibilidade offline">
+      <article className="surface-card"><h2>Aparência</h2><label className="option-toggle">Tema do Hub <select value={theme} onChange={(event) => onTheme(event.target.value)}>{THEMES.filter((item) => isThemeOwned(item.id, ownedUnlocks)).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><p>Os temas comprados na Loja aparecem aqui.</p><button type="button" className="button ghost" onClick={onOpenStore}>Abrir a Loja</button></article>
       <article className="surface-card"><h2>Movimento</h2><label className="option-toggle">Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label><p>Desativa transições e animações decorativas.</p></article>
+      <article className="surface-card"><h2>Barra de tempo</h2><label className="option-toggle">Mostrar só na segunda metade <input type="checkbox" checked={timerLate} onChange={(event) => setTimerLate(event.target.checked)} /></label><p>Na Partida com tempo, uma barra curta acompanha a pergunta. Ligando esta opção, ela só aparece quando falta menos da metade do tempo.</p></article>
       <article className="surface-card"><h2>Offline</h2><p className="offline-status">App e dados locais: {cacheReport}</p><p className="offline-status">Mapa: {mapLabel} · 27,7 MB</p><button className="button ghost" disabled={offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable"} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? "Remover mapa" : "Baixar mapa · 27,7 MB"}</button></article>
-      {import.meta.env.DEV && <article className="surface-card options-debug"><h2>Debug</h2><label>Moedas de teste<input type="number" min="1" step="1" value={debugAmount} onChange={(event) => setDebugAmount(event.target.value)} /></label><button className="button ghost" onClick={async () => { const amount = Number(debugAmount); if (!Number.isInteger(amount) || amount <= 0) { setDebugStatus("Informe um inteiro positivo."); return; } await onGrantCoins(amount); setDebugStatus("Moedas adicionadas."); }}>Adicionar moedas</button><button className="button ghost" onClick={async () => { await onUnlockContent(); setDebugStatus("Conteúdo liberado."); }}>Liberar modos e recortes</button>{debugStatus && <span role="status">{debugStatus}</span>}</article>}
+      {isDebugEnabled() && <Suspense fallback={<article className="surface-card dbg"><p>Carregando ferramentas de debug…</p></article>}><DebugPanel data={data} onChange={onDebugChange} /></Suspense>}
     </section>
   </main>;
 }
@@ -99,6 +107,7 @@ export function Hub({
   onNavigate,
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
+  achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
@@ -106,9 +115,10 @@ export function Hub({
   offlineMap?: OfflineMapStatus;
   onToggleOfflineMap?: () => void;
   onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void;
-  onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "options") => void;
+  onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void;
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
+  achievementSummary?: AchievementSummary;
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const formatNumber = (value: number) => value.toLocaleString("pt-BR");
@@ -161,19 +171,47 @@ export function Hub({
     { family: "mapa", variant: "mapa", label: "Mapa", description: "Localizar países e territórios.", icon: "map" },
     { family: "bandeiras", variant: "bandeira-nome", label: "Bandeiras", description: "Reconhecimento visual e escrita.", icon: "flag", color: "var(--coral)" },
     { family: "capitais", variant: "capital-pais", label: "Capitais", description: "Recuperação de nomes.", icon: "capital", color: "var(--gold)" },
-    { family: "idiomas", variant: "idioma-pais", label: "Idiomas", description: "Uma variante para ler escrita e território.", icon: "language", color: "var(--terracotta)" },
+    { family: "idiomas", variant: "idioma-nome", label: "Idiomas", description: "Reconhecer idiomas pela escrita e pelos países.", icon: "language", color: "var(--terracotta)" },
   ];
+  const level = economy?.level ?? 1;
+  const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
+  const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
+  const xpToNext = Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0));
+  const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
+  const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
+  const progressTiles = [
+    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: "Coleção · cartas descobertas", pct: ratioPercent(collectionSummary.discovered, collectionSummary.total), caption: collectionCaption(collectionSummary.discovered, collectionSummary.total) },
+    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: "Achievements desbloqueados", pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
+    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: "Maestria · ver progresso", pct: masteryPct, caption: profile.caption },
+  ] as const;
   const visibleFamilyIndexes = carouselMode
     ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]
     : familyItems.map((_, index) => index);
   return (
     <main className="content hub-content">
-      <div className="hub-profile-bar" aria-label="Perfil de atividade">
-        <div className="level-badge"><strong>{economy?.level ?? 1}</strong></div>
-        <div className="hub-xp"><div className="hub-xp-label"><span>Nível {economy?.level ?? 1} · {(economy?.xp ?? 0) - (economy?.xpBase ?? 0)} / {(economy?.xpNext ?? 100) - (economy?.xpBase ?? 0)} XP</span></div><div className="hub-xp-track"><i style={{ width: `${Math.min(100, Math.round((((economy?.xp ?? 0) - (economy?.xpBase ?? 0)) / Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0))) * 100))}%` }} /></div><span className="hub-xp-next">{Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0))} para o próximo</span></div>
-        <div className="hub-player-stats" aria-label="Estatísticas do jogador"><span><small>Partidas</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>Rodadas</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
-        <div className="hub-coins" aria-label={`${economy?.balance ?? 0} moedas`}><i aria-hidden="true">$</i><strong>{economy?.balance ?? 0}</strong></div>
+      <h1 className="sr-only">Meridiano</h1>
+      <div className="hub-bar" aria-label="Perfil de atividade">
+        <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
+        <div className="hub-player">
+          <div className="hub-level" aria-label={`Nível ${level}`}><strong>{level}</strong></div>
+          <div className="hub-head">
+            <p className="hub-title">{profile.title}</p>
+            {profile.earned.length > 0 && <ul className="hub-badges" aria-label="Títulos conquistados">{profile.earned.map((title) => <li key={title.id} className="hub-badge"><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
+            <p className="hub-mastery">{profile.masteryLine}</p>
+          </div>
+          <div className="hub-xp">
+            <span className="hub-xp-label">Nível {level} · {xpInLevel} / {xpSpan} XP</span>
+            <div className="hub-track" role="progressbar" aria-label="Progresso de XP" aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
+            <span className="hub-xp-next">{xpToNext} para o próximo</span>
+          </div>
+        </div>
+        <div className="hub-stats">
+          <div className="hub-totals" aria-label="Estatísticas do jogador"><span><small>Partidas</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>Rodadas</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
+          <button type="button" className="hub-coin" aria-label={`${(economy?.balance ?? 0).toLocaleString("pt-BR")} moedas · abrir a Loja`} title="Loja" onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{(economy?.balance ?? 0).toLocaleString("pt-BR")}</strong><Icon type="store" size={17} /></button>
+          <button type="button" className="hub-gear" aria-label="Abrir Opções" title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
+        </div>
       </div>
+      <div className="hub-rule" aria-hidden="true" />
       <div className="section-label"><h2>Modos</h2></div>
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
@@ -197,10 +235,13 @@ export function Hub({
           const item = familyItems[index];
             const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
             const current = !carouselMode || position === familyTrackIndex;
-          const isUnlocked = unlocked(item.family, item.variant);
+          const isUnlocked = item.family === "idiomas"
+            ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
+            : unlocked(item.family, item.variant);
           return <button
             type="button"
              key={`${clone ? "clone" : "real"}-${item.family}`}
+            data-fam={item.family}
             className={`family ${current && carouselMode ? "active" : ""} ${economy && !isUnlocked ? "locked" : ""}`}
             onClick={() => onSelect(item.family)}
             aria-hidden={carouselMode && !current ? true : undefined}
@@ -222,9 +263,7 @@ export function Hub({
       <section className="hub-progress" aria-labelledby="hub-progress-title">
         <div className="section-label"><h2 id="hub-progress-title">Seu progresso</h2></div>
         <div className="hub-progress-grid">
-          <button type="button" onClick={() => onNavigate?.("collection")}><span className="hub-progress-icon"><Icon type="collection" /></span><span><strong>{collectionSummary.discovered}/{collectionSummary.total}</strong><small>Coleção · cartas descobertas</small></span><Icon type="arrow" /></button>
-          <button type="button" onClick={() => onNavigate?.("achievements")}><span className="hub-progress-icon"><Icon type="achievements" /></span><span><strong>{legacy?.achievements ?? 0}/30</strong><small>Achievements desbloqueados</small></span><Icon type="arrow" /></button>
-          <button type="button" onClick={() => onNavigate?.("progress")}><span className="hub-progress-icon"><Icon type="progress" /></span><span><strong>{Math.round(((economy?.dominated ?? 0) / Math.max(1, totalEntities)) * 100)}%</strong><small>Maestria · ver progresso</small></span><Icon type="arrow" /></button>
+          {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}
         </div>
       </section>
     </main>
@@ -254,7 +293,7 @@ export function Variant({
     mapa: [["mapa", "mapa", "Clicar no mapa", "Localize o território pedido."], ["silhueta", "silhueta", "Silhueta", "Escreva ou escolha entre quatro nomes."], ["travel", "travel", "Travel", "Trace uma rota entre países."]],
      bandeiras: [["bandeiras", "nome-bandeira", "Atuais", "Bandeiras atuais nos dois sentidos."], ["bandeiras", "bandeira-nome", "Bandeira → nome", "Reconheça o país pela bandeira."], ["escrita", "escrita-pais", "Escrita", "Digite o país pela bandeira."], ["historicas", "nome-historica", "Históricas", "Bandeiras históricas nos dois sentidos."]],
     capitais: [["capitais", "capital-pais", "Clicar no mapa", "Localize o país da capital."], ["escrita", "escrita-capital", "Escrita", "Digite a capital do país."]],
-    idiomas: [["idiomas", "idioma-pais", "Idioma", "Associe uma escrita aos países."]],
+    idiomas: [["idiomas", "idioma-nome", "Nome do idioma", "Reconheça o idioma pela escrita."], ["idiomas", "idioma-pais", "Países do idioma", "Associe uma escrita aos países."]],
   };
   const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
   const continueWith = (engine: Family, key: AnyQuizVariant) => {
@@ -293,188 +332,12 @@ export function Variant({
             return (
             <button key={`${position}:${key}`} type="button" className={`family variant-card variant-card-${position} ${position === "current" ? "active" : ""}`} aria-current={position === "current" ? "true" : undefined} aria-hidden={position === "current" ? undefined : "true"} inert={position === "current" ? undefined : true} onClick={() => continueWith(engine, key)}>
               <div><div className="family-icon"><Icon type={engine === "capitais" ? "capital" : engine === "bandeiras" || engine === "historicas" || engine === "escrita" ? "flag" : "cross"} /></div><h3>{label}</h3><p>{description}</p></div>
-              <div className="family-footer"><span>{position === "current" ? (cardUnlocked ? "disponível" : `bloqueada · ${cardPolicy?.cost ?? 0} moedas`) : "próxima variante"}</span><Icon type="arrow" /></div>
+              <div className="family-footer"><span>{position === "current" ? (cardUnlocked ? "disponível" : `bloqueada · ${(cardPolicy?.cost ?? 0).toLocaleString("pt-BR")} moedas`) : "próxima variante"}</span><Icon type="arrow" /></div>
             </button>
           )})}
         </div>
         {cards.length > 1 && <button className="carousel-arrow carousel-arrow-next" aria-label="Próxima variante" onClick={() => move(active + 1)}>›</button>}
         {cards.length > 1 && <div className="carousel-dots">{cards.map(([, key], index) => <button type="button" key={key} aria-label={`Ir para variante ${index + 1}`} aria-current={index === active ? "true" : undefined} onClick={() => move(index)} />)}</div>}
-      </div>
-    </main>
-  );
-}
-
-export function Recorte({
-  family,
-  counts,
-  selectedCount: selectedCountProp,
-  variant,
-  region,
-  setRegion,
-  onBack,
-  onPlay,
-  economy,
-  onRefresh,
-  onlyUn,
-  setOnlyUn,
-    setVariant,
-  topFamily,
-  onFamilyChange,
-}: {
-  data: Legacy;
-  family: Family;
-  variant: AnyQuizVariant;
-  counts: RegionCounts;
-  selectedCount?: number;
-  region: RegionSelection;
-  setRegion: Dispatch<SetStateAction<RegionSelection>>;
-  onBack: () => void;
-  onPlay: () => void;
-  economy?: EconomySnapshot | null;
-  onRefresh: () => Promise<unknown> | void;
-  onlyUn: boolean;
-  setOnlyUn: (value: boolean) => void;
-  setVariant: (variant: AnyQuizVariant) => void;
-  topFamily: TopFamily;
-  onFamilyChange: (family: Family, variant: AnyQuizVariant) => void;
-}) {
-   const familyLabel = family === "mapa" ? "Mapa" : family === "bandeiras" ? "Bandeiras" : family === "capitais" ? "Capitais" : family === "escrita" ? "Escrita" : family === "historicas" ? "Históricas" : family === "idiomas" ? "Idiomas" : family === "silhueta" ? "Silhueta" : "Travel";
-    const selectedRegions = normalizeRegionSelection(region);
-    const policyRegion = selectedRegions.length === 1 ? selectedRegions[0] : "mundo";
-    const selectedCountFromCards = selectedRegions.length === 1 && selectedRegions[0] === "mundo"
-      ? counts.mundo
-      : selectedRegions.reduce((total, item) => total + (counts[item] ?? 0), 0);
-    const selectedCount = selectedCountProp ?? selectedCountFromCards;
-     const selectedPolicy = policyFor(family, variant, policyRegion);
-   const selectedUnlocked =
-      !selectedPolicy ||
-      (selectedPolicy.cost === 0 && selectedPolicy.sessions === 0) ||
-      Boolean(economy?.unlocked.includes(selectedPolicy.key as UnlockKey));
-    const selectedCoverage = selectedPolicy?.coverage
-      ? economy?.coverageByColumn[selectedPolicy.coverage] ?? 0
-      : 0;
-    const canBuySelected = selectedPolicy
-      ? canUnlock(selectedPolicy, economy?.balance ?? 0, economy?.sessions ?? 0, selectedCoverage)
-      : false;
-     const [flagDirection, setFlagDirection] = useState<FlagDirection>(() =>
-       flagDirectionFromVariant(variant) ??
-       (localStorage.getItem("carta-flag-direction") as FlagDirection | null) ??
-       "name-to-flag",
-     );
-     const flagCategory: FlagCategory =
-       family === "escrita" ? "writing" : family === "historicas" ? "historical" : "current";
-     const applyFlagSelection = (category: FlagCategory, direction = flagDirection) => {
-       const selection = flagSelection(category, direction);
-       onFamilyChange(selection.family, selection.variant);
-       setVariant(selection.variant);
-       localStorage.setItem(`carta-last-variant:${topFamily}`, selection.variant);
-     };
-    useEffect(() => {
-       if (selectedCount > 0) return;
-       setRegion("mundo");
-     }, [selectedCount, setRegion]);
-  return (
-    <main className="rec-content" data-top-family={topFamily} data-family={family} data-variant={variant}>
-       <button className="back" onClick={onBack}>
-         ← Famílias
-      </button>
-      <div className="rec-grid">
-         <div>
-          <div className="eyebrow" style={{ marginTop: 38 }}>
-             {familyLabel} / configuração
-          </div>
-             <h1 style={{ marginTop: 18 }}>Configure a partida</h1>
-        </div>
-         <div className="config-panel">
-            <div className="section-label"><h2>Variante</h2></div>
-            <div className="chip-list variant-chips" role="group" aria-label="Variantes">
-              {(topFamily === "mapa"
-                ? [["mapa","Clicar no mapa","mapa"],["silhueta","Silhueta","silhueta"],["travel","Travel","travel"]]
-                  : topFamily === "bandeiras"
-                    ? [["current","Atuais","bandeiras"],["writing","Escrita","escrita"],["historical","Históricas","historicas"]]
-                  : topFamily === "capitais"
-                    ? [["capital-pais","Clicar no mapa","capitais"],["escrita-capital","Escrita","escrita"]]
-                    : [["idioma-pais","Idiomas","idiomas"]]
-              ).map(([key, label, engine]) => {
-                const selection = topFamily === "bandeiras"
-                  ? flagSelection(key as FlagCategory, flagDirection)
-                  : { family: engine as Family, variant: key as AnyQuizVariant };
-                const policy = policyFor(selection.family, selection.variant, policyRegion);
-                const isUnlocked = !policy || (policy.cost === 0 && policy.sessions === 0) || Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                const pressed = topFamily === "bandeiras" ? flagCategory === key : variant === key;
-                return <button type="button" className={`chip ${!isUnlocked ? "chip-locked" : ""}`} aria-pressed={pressed} key={key} onClick={() => { if (topFamily === "bandeiras") applyFlagSelection(key as FlagCategory); else { onFamilyChange(engine as Family, key as AnyQuizVariant); setVariant(key as AnyQuizVariant); localStorage.setItem(`carta-last-variant:${topFamily}`, key); } }}>{label}{!isUnlocked ? ` · ${policy?.cost ?? 0} moedas` : ""}</button>;
-              })}
-            </div>
-            <div className="section-label config-section-title"><h2>Recorte</h2></div>
-           <div className="region-list" role="group" aria-label="Recortes disponíveis">
-              {REGION_ITEMS.map(([key, label, description]) => {
-                const selected = selectedRegions.includes(key);
-                const toggle = () => {
-                  if (key === "mundo") return setRegion("mundo");
-                  const next = selectedRegions.includes("mundo")
-                    ? [key]
-                    : selected
-                      ? selectedRegions.filter((item) => item !== key)
-                      : [...selectedRegions, key];
-                  setRegion(next.length ? normalizeRegionSelection(next) : "mundo");
-                };
-               return (
-              <button
-                key={key}
-                className="region"
-                  aria-pressed={selected}
-                  disabled={counts[key] === 0}
-                  onClick={toggle}
-              >
-                  <b>{label}</b><span>{counts[key] === 0 ? "0 cartas" : `${counts[key]} cartas`}</span>
-               </button>
-               );
-             })}
-          </div>
-            {(family === "mapa" || family === "bandeiras" || family === "capitais" || family === "escrita" || family === "silhueta" || family === "travel") && <div className="config-row"><span>Filtro</span><button type="button" className="chip" aria-pressed={onlyUn} onClick={() => setOnlyUn(!onlyUn)}>Só membros da ONU</button></div>}
-            {topFamily === "bandeiras" && family !== "escrita" && <section className="config-direction" aria-labelledby="direction-title"><div className="section-label config-section-title"><h2 id="direction-title">Direção</h2></div><div className="chip-list" role="group" aria-label="Direção"><button type="button" className="chip" aria-pressed={flagDirection === "name-to-flag"} onClick={() => { setFlagDirection("name-to-flag"); localStorage.setItem("carta-flag-direction", "name-to-flag"); applyFlagSelection(flagCategory, "name-to-flag"); }}>Nome → bandeira</button><button type="button" className="chip" aria-pressed={flagDirection === "flag-to-name"} onClick={() => { setFlagDirection("flag-to-name"); localStorage.setItem("carta-flag-direction", "flag-to-name"); applyFlagSelection(flagCategory, "flag-to-name"); }}>Bandeira → nome</button></div></section>}
-            {family === "silhueta" && <div className="config-row"><span>Resposta</span><div className="chip-list"><button type="button" className="chip" aria-pressed={variant === "silhueta"} onClick={() => setVariant("silhueta")}>Escrever</button><button type="button" className="chip" aria-pressed={variant === "silhueta-opcoes"} onClick={() => setVariant("silhueta-opcoes")}>Alternativas</button></div></div>}
-             {selectedCount === 0 && <div className="config-empty-note">Sem cartas neste recorte para esta variante.</div>}
-           {!selectedUnlocked && (
-             <p className="diagnostic" role="status" style={{ marginTop: 14 }}>
-                {selectedPolicy &&
-                  (canBuySelected
-                    ? `Libere esta variante por ${selectedPolicy.cost} moedas.`
-                    : `Requisito: ${selectedPolicy.cost} moedas e ${selectedPolicy.coverageCount} descobertas em ${selectedPolicy.coverage}. Saldo: ${economy?.balance ?? 0}; cobertura: ${selectedCoverage}.`)}
-             </p>
-           )}
-            <button
-             className="button coral config-start"
-             disabled={selectedCount === 0}
-             onClick={async () => {
-                const policy = policyFor(family, variant, policyRegion);
-                const unlocked =
-                  (policy?.cost === 0 && policy.sessions === 0) ||
-                  !policy ||
-                  Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                if (policy && !unlocked) {
-                  const coverage = policy.coverage ? economy?.coverageByColumn[policy.coverage] ?? 0 : 0;
-                  const canBuyNow = canUnlock(policy, economy?.balance ?? 0, economy?.sessions ?? 0, coverage);
-                 if (!canBuyNow) return;
-                  await unlockContent(family, variant, policyRegion);
-                 await onRefresh();
-                 return;
-               }
-               onPlay();
-             }}
-          >
-             {(() => {
-                  const policy = policyFor(family, variant, policyRegion);
-                const unlocked =
-                  !policy ||
-                  (policy.cost === 0 && policy.sessions === 0) ||
-                  Boolean(economy?.unlocked.includes(policy.key as UnlockKey));
-                  if (selectedCount === 0) return "Sem cartas neste recorte";
-                  return unlocked ? `Começar com ${selectedCount} cartas` : `Liberar por ${policy?.cost ?? 0} moedas`;
-              })()} · {selectedRegions.length === 1 ? REGION_ITEMS.find(([key]) => key === selectedRegions[0])?.[1] : `${selectedRegions.length} recortes`}{" "}
-            <Icon type="arrow" />
-          </button>
-        </div>
       </div>
     </main>
   );

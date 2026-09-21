@@ -7,9 +7,19 @@ import type { Family, Legacy, QuizVariant, RegionSelection } from "../domain/typ
 import {
   startLearningSession,
   type LearningSessionHandle,
+  type SessionResult,
 } from "../domain/learning-store";
 import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
+import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { entityTier } from "../domain/spoils";
+import { RoundTimer } from "./round-timer";
+import { cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
+import { useAdvance } from "./use-advance";
+import { useLeaveGuard } from "./leave-guard";
+import { ContinueBar, GameTopBar, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { variantLabel } from "../domain/result-view";
+import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 
 type Question = { target: string; options: string[] };
 
@@ -18,6 +28,7 @@ export function QuizGame({
   family,
   variant,
   region,
+  options,
   onBack,
   onEnd,
 }: {
@@ -25,9 +36,11 @@ export function QuizGame({
   family: Extract<Family, "bandeiras" | "capitais">;
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
+  options?: SessionOptions;
   onBack: () => void;
-  onEnd?: () => void;
+  onEnd?: (result: SessionResult | null) => void;
 }) {
+  const { pace, roundLimit, timerSeconds } = sessionSettings(options, variant);
   const [flags, setFlags] = useState<FlagCatalog | null>(null);
   const [error, setError] = useState("");
   const [target, setTarget] = useState("");
@@ -37,6 +50,12 @@ export function QuizGame({
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [round, setRound] = useState(0);
+  const [serial, setSerial] = useState(0);
+  const [timedOut, setTimedOut] = useState(false);
+  const settledRef = useRef("");
+  const advance = useAdvance();
+  const leaveGuard = useLeaveGuard();
+  const log = useRoundLog(variant, pace);
   const timer = useRef<number | null>(null);
   const targetStartedAtRef = useRef(0);
   const sessionRef = useRef<LearningSessionHandle | null>(null);
@@ -46,7 +65,7 @@ export function QuizGame({
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
 
   const openSession = () => {
-    const pending = startLearningSession({ family, variant, region });
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {
@@ -66,29 +85,36 @@ export function QuizGame({
         ),
       );
   };
-  const leaveSession = async (home = false) => {
+  // "result": encerrar pelo botão mostra o resultado (com as moedas ganhas até ali); "recorte"/"home" só navegam.
+  const leaveSession = async (destination: "recorte" | "home" | "result" = "recorte") => {
     const handle =
       sessionRef.current ??
       (await pendingSessionRef.current?.catch(() => null));
     sessionRef.current = null;
+    let result: SessionResult | null = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.end({ complete: false });
+      result = await handle.end({ complete: false });
     }
-    if (home) location.href = "/";
+    if (destination === "home") location.href = "/";
+    else if (destination === "result" && result?.spoils && onEnd) onEnd(result);
     else onBack();
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
+    leaveGuard.noteAnswer();
+    log.push({ correct: round.correct, tier: round.tier });
     if (sessionRef.current) sessionRef.current.recordRound(round);
     else queuedRoundsRef.current.push(round);
   };
   const finishSession = async () => {
     const handle = sessionRef.current ?? await pendingSessionRef.current?.catch(() => null);
+    let result: SessionResult | null = null;
     if (handle) {
       queuedRoundsRef.current.splice(0).forEach((round) => handle.recordRound(round));
-      await handle.finish();
+      result = await handle.finish();
     }
-    (onEnd ?? onBack)();
+    if (onEnd) onEnd(result);
+    else onBack();
   };
 
   useEffect(() => {
@@ -131,45 +157,54 @@ export function QuizGame({
       ...shuffleAnswerOptions(pool.filter((id) => id !== targetId)).slice(0, 3),
     ]);
     setTarget(targetId);
-    setRound(pool.length - deck.remaining);
+    setRound(deck.size - deck.remaining);
     targetStartedAtRef.current = Date.now();
     setQuestion({ target: targetId, options });
     setFeedback("");
     setSelected("");
+    setTimedOut(false);
+    settledRef.current = "";
+    setSerial((value) => value + 1);
   };
+  const newDeck = () => createFiniteDeck(pool, seedFromParts(family, variant, JSON.stringify(region), pool.join("|")) ^ Math.floor(Math.random() * 0x100000000), roundLimit);
 
   useEffect(() => {
     if (pool.length >= 4) {
-      deckRef.current = createFiniteDeck(pool, seedFromParts(family, variant, JSON.stringify(region), pool.join("|")) ^ Math.floor(Math.random() * 0x100000000));
+      deckRef.current = newDeck();
       nextQuestion();
     }
   }, [pool]);
 
-  const answer = (id: string) => {
-    if (!question || feedback) return;
-    const correct = id === question.target;
+  // id nulo = o tempo da pergunta acabou (conta como erro, sem alternativa marcada).
+  const resolveRound = (id: string | null) => {
+    if (!question || feedback || settledRef.current === question.target) return;
+    settledRef.current = question.target;
+    const correct = id !== null && id === question.target;
     recordRound({
       targetId: question.target,
       correct,
       responseTimeMs: Math.max(0, Date.now() - targetStartedAtRef.current),
       answeredAt: Date.now(),
-      selectedId: id,
+      tier: entityTier(data.meta, question.target),
+      ...(id === null ? { timedOut: true } : { selectedId: id }),
     });
-    setSelected(id);
+    setSelected(id ?? "");
+    setTimedOut(id === null);
     setFeedback(correct ? "correct" : "wrong");
     setScore((value) => value + (correct ? 1 : 0));
     setStreak((value) => (correct ? value + 1 : 0));
     const exhausted = deckRef.current?.remaining === 0;
-    timer.current = window.setTimeout(async () => {
-      if (exhausted) {
-        await finishSession();
-      } else {
-        nextQuestion();
-      }
-    }, correct ? 350 : 1400);
+    advance.schedule(async () => {
+      if (exhausted) await finishSession();
+      else nextQuestion();
+    }, feedbackHoldMs(correct, false), feedbackSkipAfterMs(correct));
+    if (correct) cueCorrect();
   };
+  const answer = (id: string) => resolveRound(id);
   const restart = () => {
-    if (timer.current) window.clearTimeout(timer.current);
+    advance.cancel();
+    leaveGuard.reset();
+    log.reset();
     const previous = sessionRef.current;
     sessionRef.current = null;
     pendingSessionRef.current = null;
@@ -178,10 +213,14 @@ export function QuizGame({
     setScore(0);
     setStreak(0);
     setRound(0);
+    deckRef.current = newDeck();
     nextQuestion();
   };
 
-  const title = family === "bandeiras" ? "Reconheça a resposta." : "Recupere a resposta.";
+  const totalRounds = deckRef.current?.size ?? pool.length;
+  const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
+  useGameKeys({ exit, choose: (index) => { const id = question?.options[index]; if (id && !feedback) answer(id); } });
+
   const targetMeta = data.meta[target];
   const isFlagPrompt = variant === "bandeira-nome";
   const titleFor = (id: string) => data.meta[id]?.pt ?? id;
@@ -191,18 +230,14 @@ export function QuizGame({
     variant === "pais-capital"
       ? valueFor(question?.target ?? target)
       : titleFor(question?.target ?? target);
-  const feedbackText =
-    feedback === "correct"
-      ? "Acerto. A resposta foi registrada."
-      : feedback === "wrong"
-        ? `Ainda não. A resposta correta é ${correctAnswer}.`
-        : "Selecione uma resposta.";
+  // A linha visível é curta e calma; a alternativa certa fica destacada nas opções e a frase completa vai para leitores de tela.
+  const feedbackText = feedback === "correct" ? "Certo!" : feedback === "wrong" ? (timedOut ? "Tempo esgotado." : "Não foi dessa vez.") : "Selecione uma resposta.";
 
   if (error) {
     return (
       <div className="app-shell">
         <main className="content">
-          <button className="back" onClick={() => void leaveSession()}>← Encerrar sessão</button>
+          <button className="back" onClick={() => void leaveSession()}>← Sair da partida</button>
           <div className="diagnostic" style={{ marginTop: 32 }}>
             <div className="eyebrow">Quiz indisponível</div>
             <p><strong>Não foi possível carregar este material.</strong></p>
@@ -217,7 +252,7 @@ export function QuizGame({
     return (
       <div className="app-shell">
         <main className="content">
-          <button className="back" onClick={() => void leaveSession()}>← Encerrar sessão</button>
+          <button className="back" onClick={() => void leaveSession()}>← Sair da partida</button>
           <div className="eyebrow" style={{ marginTop: 32 }}>Preparando sessão</div>
           <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? "Carregando bandeiras." : "Carregando capitais."}</h1>
           <p className="lede">Montando um baralho de quatro alternativas.</p>
@@ -226,60 +261,58 @@ export function QuizGame({
     );
   }
 
+  const flagOptions = variant === "nome-bandeira";
+  const promptText = variant === "capital-pais" ? targetMeta?.cap : titleFor(target);
+  const promptFlag = isFlagPrompt && targetMeta?.fl ? flags?.[targetMeta.fl.toLowerCase()] : undefined;
+  const kicker = isFlagPrompt ? "Qual país usa esta bandeira?" : variant === "nome-bandeira" ? "Escolha a bandeira correta" : variant === "capital-pais" ? "A qual país pertence esta capital?" : "Qual é a capital deste país?";
   return (
-    <div className="app-shell">
-      <div className="quiz-stage">
-        <aside className="quiz-panel">
-           <button className="back" onClick={() => void leaveSession()}>← Encerrar sessão</button>
-          <div className="eyebrow">{regionLabel(region)}</div>
-          <h1>{title}</h1>
-          <div className="score-box">
-            <div><span>progresso</span><b>{round}/{pool.length}</b></div>
-            <div><span>acertos</span><b>{score}</b></div>
-            <div><span>sequência</span><b>{streak}</b></div>
-          </div>
-           <details className="hud-overflow"><summary aria-label="Mais ações">⋯</summary><div><button type="button" onClick={restart}>Recomeçar</button><button type="button" onClick={() => void leaveSession()}>Voltar ao recorte</button><button type="button" onClick={() => void leaveSession(true)}>Início</button></div></details>
-        </aside>
-        <main className="quiz-main">
-          <div className="quiz-prompt">
-            <div className="target-kicker">{isFlagPrompt ? "Qual país usa esta bandeira?" : variant === "nome-bandeira" ? "Escolha a bandeira correta" : variant === "capital-pais" ? "A qual país pertence esta capital?" : "Qual é a capital deste país?"}</div>
-            {isFlagPrompt && targetMeta?.fl && flags?.[targetMeta.fl.toLowerCase()] ? (
-              <img
-                className="quiz-flag"
-                src={flagSource(flags[targetMeta.fl.toLowerCase()])}
-                alt="Bandeira apresentada como estímulo visual"
-              />
-            ) : (
-              <div className="quiz-clue">{variant === "capital-pais" ? targetMeta?.cap : titleFor(target)}</div>
-            )}
-            <div className={feedback ? `feedback ${feedback === "wrong" ? "bad" : ""}` : "feedback"} aria-live="polite" role="status">
-              {feedbackText}
+    <div className="app-shell gs-app">
+      {leaveGuard.dialog}
+      <div className="gs">
+        <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
+          <RoundTimer seconds={timerSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
+        </GameTopBar>
+        <div className="gs-body">
+          <main className="gs-stage">
+            <div className="gs-kicker">{kicker}</div>
+            {promptFlag
+              ? <div className="gs-flag"><img src={flagSource(promptFlag)} alt="Bandeira apresentada como estímulo visual" /></div>
+              : <div className={bigClass(promptText)}>{promptText}</div>}
+            <div className={`gs-ribbon${feedback ? ` on ${feedback === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
+              {feedback === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+              {feedback ? feedbackText : ""}
+              {feedback === "wrong" && <span className="sr-only"> A resposta certa é {correctAnswer}.</span>}
             </div>
-          </div>
-          <div className="quiz-options">
-            {question.options.map((id) => (
-              <button
-                key={id}
-                className={`quiz-option ${feedback && id === question.target ? "correct" : ""} ${feedback === "wrong" && id === selected ? "wrong" : ""}`}
-                disabled={Boolean(feedback)}
-                aria-pressed={selected === id}
-                onClick={() => answer(id)}
-              >
-                {variant === "nome-bandeira" ? (
-                  data.meta[id]?.fl && flags?.[data.meta[id].fl.toLowerCase()] ? (
-                    <img
-                      src={flagSource(flags[data.meta[id].fl.toLowerCase()])}
-                      alt="Alternativa visual de bandeira"
-                    />
-                  ) : (
-                    titleFor(id)
-                  )
-                ) : valueFor(id)}
-                 {feedback && id === question.target && <span aria-label="Resposta correta"> Acerto</span>}
-              </button>
-            ))}
-          </div>
-        </main>
+          </main>
+          <section className="gs-tray" aria-label="Respostas">
+            <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>
+              {question.options.map((id, index) => (
+                <button
+                  key={id}
+                  className={`${optionClass(id === question.target, id === selected, feedback)} gs-opt`}
+                  disabled={Boolean(feedback)}
+                  aria-pressed={selected === id}
+                  onClick={() => answer(id)}
+                >
+                  <span className="gs-key" aria-hidden="true">{index + 1}</span>
+                  {flagOptions ? (
+                    data.meta[id]?.fl && flags?.[data.meta[id].fl.toLowerCase()] ? (
+                      <OptionFlag
+                        src={flagSource(flags[data.meta[id].fl.toLowerCase()])}
+                        alt="Alternativa visual de bandeira"
+                      />
+                    ) : (
+                      <span className="gs-opt-label">{titleFor(id)}</span>
+                    )
+                  ) : <span className="gs-opt-label">{valueFor(id)}</span>}
+                  <OptionMarks isTarget={id === question.target} isPicked={id === selected} verdict={feedback} />
+                </button>
+              ))}
+            </div>
+            {feedback === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, false)} onSkip={advance.skip} />}
+            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> escolhe</span><span><kbd>Enter</kbd> continua</span><span><kbd>Esc</kbd> sair</span></div>
+          </section>
+        </div>
       </div>
     </div>
   );
