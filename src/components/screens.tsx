@@ -86,16 +86,49 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
     }).catch(() => setCacheReport("Não foi possível consultar o cache offline."));
   }, []);
   const mapLabel = offlineMap === "installed" ? "Baixado" : offlineMap === "downloading" ? "Baixando…" : offlineMap === "error" ? "Falha — tentar novamente" : "Disponível para baixar";
-  return <main className="content options-screen">
-    <button className="back" onClick={onBack}>← Voltar</button>
-    <div className="eyebrow options-kicker">Preferências</div><h1>Opções</h1>
-    <section className="options-grid" aria-label="Preferências e disponibilidade offline">
-      <article className="surface-card"><h2>Aparência</h2><label className="option-toggle">Tema do Hub <select value={theme} onChange={(event) => onTheme(event.target.value)}>{THEMES.filter((item) => isThemeOwned(item.id, ownedUnlocks)).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><p>Os temas comprados na Loja aparecem aqui.</p><button type="button" className="button ghost" onClick={onOpenStore}>Abrir a Loja</button></article>
-      <article className="surface-card"><h2>Movimento</h2><label className="option-toggle">Movimento reduzido <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} /></label><p>Desativa transições e animações decorativas.</p></article>
-      <article className="surface-card"><h2>Barra de tempo</h2><label className="option-toggle">Mostrar só na segunda metade <input type="checkbox" checked={timerLate} onChange={(event) => setTimerLate(event.target.checked)} /></label><p>Na Partida com tempo, uma barra curta acompanha a pergunta. Ligando esta opção, ela só aparece quando falta menos da metade do tempo.</p></article>
-      <article className="surface-card"><h2>Offline</h2><p className="offline-status">App e dados locais: {cacheReport}</p><p className="offline-status">Mapa: {mapLabel} · 27,7 MB</p><button className="button ghost" disabled={offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable"} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? "Remover mapa" : "Baixar mapa · 27,7 MB"}</button></article>
-      {isDebugEnabled() && <Suspense fallback={<article className="surface-card dbg"><p>Carregando ferramentas de debug…</p></article>}><DebugPanel data={data} onChange={onDebugChange} /></Suspense>}
-    </section>
+  const ownedThemes = THEMES.filter((item) => isThemeOwned(item.id, ownedUnlocks));
+  const toBuy = THEMES.length - ownedThemes.length;
+  const mapBusy = offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable";
+  // Mesmo molde da tela "Configure a partida": título simples e um cartão só, com uma linha rotulada por assunto.
+  return <main className="content cv-page options-screen">
+    <div className="cv-top"><button type="button" className="back" onClick={onBack}>← Hub</button></div>
+    <div className="cv">
+      <header className="cv-head"><span className="eyebrow">Preferências · este aparelho</span><h1>Opções</h1></header>
+      <section className="cv-card" aria-label="Preferências e disponibilidade offline">
+        <div className="cv-row">
+          <span className="cv-k">Aparência</span>
+          <div className="cv-ctl">
+            <div className="cv-chips" role="group" aria-label="Tema do Hub">
+              {ownedThemes.map((item) => <button type="button" key={item.id} className="cv-chip" aria-pressed={theme === item.id} onClick={() => onTheme(item.id)}>{item.name}</button>)}
+            </div>
+            <p className="cv-hint">{toBuy > 0 ? `${toBuy} ${toBuy === 1 ? "tema" : "temas"} para comprar na Loja.` : "Você já tem todos os temas."} <button type="button" className="cv-buy" onClick={onOpenStore}>Abrir a Loja</button></p>
+          </div>
+        </div>
+        <div className="cv-row">
+          <span className="cv-k">Movimento</span>
+          <div className="cv-ctl">
+            <button type="button" role="switch" aria-checked={reducedMotion} className="cv-switch" onClick={() => setReducedMotion(!reducedMotion)}><i aria-hidden="true" /><span>Movimento reduzido</span></button>
+            <p className="cv-hint">Desativa transições e animações decorativas.</p>
+          </div>
+        </div>
+        <div className="cv-row">
+          <span className="cv-k">Barra de tempo</span>
+          <div className="cv-ctl">
+            <button type="button" role="switch" aria-checked={timerLate} className="cv-switch" onClick={() => setTimerLate(!timerLate)}><i aria-hidden="true" /><span>Mostrar só na segunda metade</span></button>
+            <p className="cv-hint">Na Partida com tempo, uma barra curta acompanha a pergunta. Ligando esta opção, ela só aparece quando falta menos da metade do tempo.</p>
+          </div>
+        </div>
+        <div className="cv-row cv-last">
+          <span className="cv-k">Offline</span>
+          <div className="cv-ctl">
+            <p className="cv-hint offline-status">App e dados locais: {cacheReport}</p>
+            <p className="cv-hint offline-status">Mapa: {mapLabel} · 27,7 MB</p>
+            <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? "Remover mapa" : "Baixar mapa · 27,7 MB"}</button></div>
+          </div>
+        </div>
+      </section>
+      {isDebugEnabled() && <section className="options-grid" aria-label="Ferramentas de debug"><Suspense fallback={<article className="surface-card dbg"><p>Carregando ferramentas de debug…</p></article>}><DebugPanel data={data} onChange={onDebugChange} /></Suspense></section>}
+    </div>
   </main>;
 }
 
