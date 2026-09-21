@@ -9,6 +9,8 @@ import {
   isStashId,
   levelForXp,
   modesForColumns,
+  PURCHASE_DEBIT_PREFIX,
+  purchasesToUndo,
   stashId,
   xpAdjustFor,
   xpForLevel,
@@ -63,4 +65,22 @@ assert.deepEqual(createdSinceFreshStart(["a"], ["a", "b"]), [], "originais ainda
 assert.deepEqual(createdSinceFreshStart([], ["a"]), []);
 assert.deepEqual(createdSinceFreshStart(["x"], []), ["x"], "loja que estava vazia: tudo é de teste");
 
-console.log("debug rules: level curve, level adjust, card levels, restore keys and fresh start verified");
+// Saldo negativo depois de restaurar: as compras mais recentes voltam, só até o saldo não ser negativo.
+const credit = (id, amount) => ({ id, kind: "credit", amount, source: "x", createdAt: 0 });
+const purchase = (key, amount, createdAt) => ({ id: `debit:unlock:${key}`, kind: "debit", amount, source: key, createdAt });
+assert.deepEqual(purchasesToUndo([credit("a", 500), purchase("theme:atlas", 300, 1)]), [], "saldo positivo: nada a desfazer");
+assert.deepEqual(purchasesToUndo([]), []);
+assert.deepEqual(
+  purchasesToUndo([credit("real", 400), purchase("theme:atlas", 300, 1), purchase("theme:terra", 300, 2), purchase("theme:atelie", 400, 3)]).map((entry) => entry.source),
+  ["theme:atelie", "theme:terra"],
+  "saldo -600: desfaz da mais recente para a mais antiga até chegar a zero ou mais (a mais antiga cabia nas moedas reais)",
+);
+assert.deepEqual(
+  purchasesToUndo([credit("real", 100), purchase("theme:atlas", 60, 1), purchase("theme:terra", 60, 2)]).map((entry) => entry.source),
+  ["theme:terra"],
+  "-20: basta a última compra; a anterior cabia nas moedas reais",
+);
+assert.deepEqual(purchasesToUndo([{ id: "outro", kind: "debit", amount: 50, createdAt: 1 }]), [], "débito que não é compra não é desfeito");
+assert.equal(PURCHASE_DEBIT_PREFIX, "debit:unlock:");
+
+console.log("debug rules: level curve, level adjust, card levels, restore keys, fresh start and negative-balance repair verified");

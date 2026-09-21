@@ -41,6 +41,25 @@ export const createdSinceFreshStart = (currentKeys: readonly string[], stashedKe
   return currentKeys.filter((key) => !stashed.has(key));
 };
 
+// Compras feitas com moedas de debug: ao restaurar, as moedas somem mas o débito da compra ficava e o saldo virava negativo.
+export type LedgerLike = { id: string; kind: "credit" | "debit"; amount: number; source?: string; createdAt?: number };
+export const PURCHASE_DEBIT_PREFIX = "debit:unlock:";
+/** Compras (débitos de liberação) a desfazer, das mais recentes para as mais antigas, até o saldo deixar de ser negativo. */
+export function purchasesToUndo<T extends LedgerLike>(entries: readonly T[]): T[] {
+  let balance = entries.reduce((sum, entry) => sum + (entry.kind === "credit" ? entry.amount : -entry.amount), 0);
+  if (balance >= 0) return [];
+  const purchases = entries
+    .filter((entry) => entry.kind === "debit" && entry.id.startsWith(PURCHASE_DEBIT_PREFIX))
+    .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+  const undo: T[] = [];
+  for (const purchase of purchases) {
+    if (balance >= 0) break;
+    undo.push(purchase);
+    balance += purchase.amount;
+  }
+  return undo;
+}
+
 // URL ?debug=1 liga; ?debug=0 desliga. Qualquer outro valor não muda nada.
 export function debugFlagFromSearch(search: string): boolean | null {
   const value = new URLSearchParams(search).get("debug");

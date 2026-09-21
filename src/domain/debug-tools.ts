@@ -8,7 +8,7 @@ import {
   DATABASE_VERSION,
   upgradeStorage,
 } from "./storage-schema";
-import { FRESH_START_ID, XP_ADJUST_ID, clampLevel, columnsForLevel, createdSinceFreshStart, isStashId, stashId, xpAdjustFor } from "./debug-rules";
+import { FRESH_START_ID, XP_ADJUST_ID, clampLevel, columnsForLevel, createdSinceFreshStart, isStashId, purchasesToUndo, stashId, xpAdjustFor } from "./debug-rules";
 
 // Toda alteração do debug guarda antes o registro original (em `state`, chave "debug-stash:<loja>:<id>"),
 // então "Restaurar dados reais" desfaz tudo e o perfil de verdade nunca se perde.
@@ -121,6 +121,19 @@ export async function grantCoins(amount: number) {
     await putStashed(tx, "ledger", { id: `grant:debug-opt-in:${next}`, kind: "credit", amount, reason: "debug-grant", source: "debug-opt-in", createdAt: Date.now() } satisfies LedgerEntry);
   });
 }
+/** Se o saldo ficou negativo (compras pagas com moedas de debug que já foram desfeitas), desfaz as compras mais recentes até voltar a zero ou mais. */
+async function undoPurchasesAboveBalance(tx: IDBTransaction) {
+  const ledger = tx.objectStore("ledger");
+  const undo = purchasesToUndo(await request(ledger.getAll()) as LedgerEntry[]);
+  for (const purchase of undo) {
+    await request(ledger.delete(purchase.id));
+    await request(tx.objectStore("unlocks").delete(purchase.source));
+  }
+  return undo.length;
+}
+export async function repairNegativeBalance() {
+  return withTx(["ledger", "unlocks"], (tx) => undoPurchasesAboveBalance(tx));
+}
 export async function unlockAllModes() {
   await withTx(["unlocks"], async (tx) => {
     for (const policy of POLICIES) await putStashed(tx, "unlocks", { id: policy.key, key: policy.key, source: "debug-opt-in", unlockedAt: Date.now() } as { id: string });
@@ -199,6 +212,8 @@ export async function restoreRealData() {
         restored++;
       }
     }
+    // Compras pagas com moedas de debug: sem as moedas o saldo ficaria negativo, então as compras voltam também.
+    restored += await undoPurchasesAboveBalance(tx);
     return restored;
   });
 }

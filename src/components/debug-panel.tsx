@@ -111,6 +111,12 @@ export default function DebugPanel({ data, onChange }: Props) {
         <button type="button" className="button ghost" disabled={busy} onClick={() => run(async () => { const amount = Number(coins); await tools.grantCoins(amount); return `${amount} moedas adicionadas.`; })}>Adicionar moedas</button>
         <button type="button" className="button ghost" disabled={busy} onClick={() => run(async () => { await tools.unlockAllModes(); return "Modos e recortes liberados."; })}>Liberar modos e recortes</button>
       </div>
+      {economy && economy.balance < 0 && <>
+        <p className="dbg-summary">Saldo negativo ({economy.balance.toLocaleString("pt-BR")}): sobraram compras feitas com moedas de debug que já foram desfeitas.</p>
+        <div className="dbg-row">
+          <button type="button" className="button ghost" disabled={busy} onClick={() => run(async () => { const undone = await tools.repairNegativeBalance(); return undone > 0 ? `${undone} compra${undone > 1 ? "s" : ""} desfeita${undone > 1 ? "s" : ""}: o saldo voltou a zero ou mais.` : "Nada a corrigir."; })}>Corrigir saldo negativo</button>
+        </div>
+      </>}
     </section>
 
     <section className="dbg-sec" aria-labelledby="dbg-logo">
