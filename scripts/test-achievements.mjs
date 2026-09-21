@@ -119,6 +119,15 @@ const first = evaluateAchievementDefinitions(saturated, [{ achievementId: "prime
 assert.equal(first?.unlockedAt, unlockedAt);
 assert.equal(first?.unlocked, true);
 
+// Registro como o app grava (id "current:xxx" + achievementId) e como o perfil clássico migrado (id cru):
+// vale mesmo sem o progresso atual, com a data preservada.
+for (const record of [{ id: "current:primeira", achievementId: "primeira", unlockedAt }, { id: "primeira", unlockedAt }]) {
+  const kept = evaluateAchievementDefinitions(empty, [record]);
+  assert.equal(kept.find((item) => item.id === "primeira")?.unlocked, true, "conquista salva continua desbloqueada");
+  assert.equal(kept.find((item) => item.id === "primeira")?.unlockedAt, unlockedAt, "mantém a data do desbloqueio");
+  assert.equal(kept.filter((item) => item.unlocked).length, 1, "só a conquista salva");
+}
+
 assert.equal(allUnlocked.find((item) => item.id === "pacifico")?.unlocked, true);
 assert.equal(allUnlocked.find((item) => item.id === "certeiro")?.unlocked, true);
 assert.equal(allUnlocked.find((item) => item.id === "pescador")?.unlocked, true);
@@ -146,17 +155,41 @@ const realisticMapSession = {
   complete: true,
   correct: 0,
   accuracy: 0,
+  // 5 acertos tocando no mar, 3 acertos em terra (0 km) e 2 erros: erro médio = (0 + 800 + 1200) / 10 = 200 km
   rounds: [
-    { targetId: "tv", correct: false, responseTimeMs: 800, distanceKm: 120, byWater: true },
-    { targetId: "nr", correct: false, responseTimeMs: 900, distanceKm: 180, byWater: true },
-    { targetId: "pw", correct: false, responseTimeMs: 1000, distanceKm: 240, byWater: true },
-    { targetId: "fj", correct: false, responseTimeMs: 1100, distanceKm: 300, byWater: true },
-    { targetId: "ws", correct: false, responseTimeMs: 1200, distanceKm: 360, byWater: true },
+    { targetId: "tv", correct: true, responseTimeMs: 800, distanceKm: 40, byWater: true },
+    { targetId: "nr", correct: true, responseTimeMs: 900, distanceKm: 55, byWater: true },
+    { targetId: "pw", correct: true, responseTimeMs: 1000, distanceKm: 90, byWater: true },
+    { targetId: "fj", correct: true, responseTimeMs: 1100, distanceKm: 30, byWater: true },
+    { targetId: "ws", correct: true, responseTimeMs: 1200, distanceKm: 70, byWater: true },
+    { targetId: "ki", correct: true, responseTimeMs: 1200, distanceKm: 0, byWater: false },
+    { targetId: "to", correct: true, responseTimeMs: 1200, distanceKm: 0, byWater: false },
+    { targetId: "vu", correct: true, responseTimeMs: 1200, distanceKm: 0, byWater: false },
+    { targetId: "mh", correct: false, responseTimeMs: 1200, distanceKm: 800, byWater: false },
+    { targetId: "sb", correct: false, responseTimeMs: 1200, distanceKm: 1200, byWater: false },
   ],
 };
 const realisticContext = achievementContext(realisticProgress, [realisticMapSession], {});
-assert.equal(realisticContext.byWater, 5, "water interactions must progress pescador");
-assert.equal(realisticContext.precise, true, "map miss distances must make certeiro attainable");
+assert.equal(realisticContext.byWater, 5, "toques no mar que acertaram levam ao pescador");
+assert.equal(realisticContext.precise, true, "erro médio de 200 km (acerto = 0) conquista a mão firme");
+// toque no mar que ERROU não conta para o pescador (bug: a conquista saía numa rodada de erro)
+const wrongWater = { ...realisticMapSession, id: "wrong-water", rounds: Array.from({ length: 10 }, (_, index) => ({ targetId: "w" + index, correct: false, responseTimeMs: 900, distanceKm: 900, byWater: true })) };
+const wrongContext = achievementContext(realisticProgress, [wrongWater], {});
+assert.equal(wrongContext.byWater, 0, "toque no mar que errou não conta");
+assert.equal(wrongContext.precise, false, "erro médio de 900 km não conquista");
+assert.equal(evaluateAchievementDefinitions(wrongContext).find((item) => item.id === "pescador")?.unlocked, false);
+// meta de 500 km e mínimo de 10 rodadas
+const fewRounds = { ...realisticMapSession, id: "few", rounds: realisticMapSession.rounds.slice(0, 5) };
+assert.equal(achievementContext(realisticProgress, [fewRounds], {}).precise, false, "menos de 10 rodadas não vale");
+const borderline = { ...realisticMapSession, id: "borderline", rounds: realisticMapSession.rounds.map((round, index) => index >= 8 ? { ...round, distanceKm: 2400 } : round) };
+assert.equal(achievementContext(realisticProgress, [borderline], {}).precise, true, "480 km de média: (2400×2) ÷ 10 fica abaixo da meta");
+const loose = { ...realisticMapSession, id: "loose", rounds: realisticMapSession.rounds.map((round, index) => index >= 8 ? { ...round, distanceKm: 3000 } : round) };
+assert.equal(achievementContext(realisticProgress, [loose], {}).precise, false, "600 km de média (3000×2 ÷ 10) não chega à meta de 500 km");
+const looser = { ...realisticMapSession, id: "looser", rounds: realisticMapSession.rounds.map((round, index) => index >= 7 ? { ...round, correct: false, distanceKm: 3000 } : round) };
+assert.equal(achievementContext(realisticProgress, [looser], {}).precise, false, "900 km de média: 0×7 + 3000×3 = 900");
+// partida incompleta ou de outro modo não conta
+assert.equal(achievementContext(realisticProgress, [{ ...realisticMapSession, id: "open", complete: false }], {}).precise, false);
+assert.equal(achievementContext(realisticProgress, [{ ...realisticMapSession, id: "cap", mode: "capital-pais", variant: "capital-pais" }], {}).precise, false, "Mão firme é do modo Clicar no mapa (país)");
 const realisticState = evaluateAchievementDefinitions(realisticContext);
 assert.equal(realisticState.find((item) => item.id === "pescador")?.unlocked, true);
 assert.equal(realisticState.find((item) => item.id === "certeiro")?.unlocked, true);

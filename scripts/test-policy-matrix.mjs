@@ -21,7 +21,7 @@ const expectedFamilies = {
   capitais: ["capital-pais", "pais-capital"],
   escrita: ["escrita-pais", "escrita-capital"],
   historicas: ["historica-nome", "nome-historica"],
-  idiomas: ["idioma-pais"],
+  idiomas: ["idioma-nome", "idioma-pais"],
   silhueta: ["silhueta", "silhueta-opcoes"],
   travel: ["travel"],
 };
@@ -47,20 +47,31 @@ assert.equal(keys.size, rules.POLICIES.length);
 assert.equal(rules.policyFor("bandeiras", "nome-bandeira", "caribe").cost, 0);
 assert.equal(rules.policyFor("bandeiras", "nome-bandeira", "mundo").key, rules.policyFor("bandeiras", "bandeira-nome", "mundo").key);
 assert.equal(rules.policyFor("capitais", "capital-pais", "mundo").cost, 0);
+// Economia v2: só moedas (sem cobertura nem partidas) e preços em ordem crescente.
 assert.deepEqual(
-  Object.fromEntries(rules.POLICIES.map((policy) => [policy.key, [policy.cost, policy.coverage, policy.coverageCount]])),
+  Object.fromEntries(rules.POLICIES.map((policy) => [policy.key, [policy.cost, policy.coverage, policy.coverageCount, policy.sessions]])),
   {
-    "mapa:mapa": [0, undefined, 0],
-    "bandeiras:bandeira-nome": [0, undefined, 0],
-    "capitais:capital-pais": [0, undefined, 0],
-    "capitais:pais-capital": [0, undefined, 0],
-    "silhueta:silhueta": [4, "mapa", 12],
-    "silhueta:silhueta-opcoes": [4, "mapa", 12],
-    "travel:travel": [6, "mapa", 20],
-    "escrita:escrita-pais": [3, "bandeiras", 10],
-    "historicas:historica-nome": [5, "bandeiras", 20],
-    "escrita:escrita-capital": [4, "capitais", 10],
-    "idiomas:idioma-pais": [5, "bandeiras", 15],
+    "mapa:mapa": [0, undefined, 0, 0],
+    "bandeiras:bandeira-nome": [0, undefined, 0, 0],
+    "capitais:capital-pais": [0, undefined, 0, 0],
+    "capitais:pais-capital": [0, undefined, 0, 0],
+    "escrita:escrita-pais": [5000, undefined, 0, 0],
+    "silhueta:silhueta-opcoes": [11000, undefined, 0, 0],
+    "escrita:escrita-capital": [15000, undefined, 0, 0],
+    "silhueta:silhueta": [27000, undefined, 0, 0],
+    "historicas:historica-nome": [36000, undefined, 0, 0],
+    "idiomas:idioma-nome": [40000, undefined, 0, 0],
+    "idiomas:idioma-pais": [48000, undefined, 0, 0],
+    "travel:travel": [64000, undefined, 0, 0],
   },
 );
+const paid = rules.POLICIES.filter((policy) => policy.cost > 0).map((policy) => policy.cost);
+assert.deepEqual(paid, [...paid].sort((x, y) => x - y), "preços em ordem crescente");
+assert.equal(rules.canUnlock(rules.policyFor("travel", "travel", "mundo"), 64000, 0), true);
+assert.equal(rules.canUnlock(rules.policyFor("travel", "travel", "mundo"), 63999, 0), false);
+// escada suave: cada degrau custa de 1,1 a 2,2 vezes o anterior (sem amontoado e sem penhasco; as duas variantes de Idiomas ficam coladas)
+for (let index = 1; index < paid.length; index += 1) {
+  const step = paid[index] / paid[index - 1];
+  assert.ok(step >= 1.1 && step <= 2.2, `degrau ${paid[index - 1]} → ${paid[index]} = ${step.toFixed(2)}×`);
+}
 console.log(`policy matrix: ${keys.size} explicit entries`);

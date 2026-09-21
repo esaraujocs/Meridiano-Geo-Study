@@ -24,15 +24,14 @@ await writeFile(migrationPath, (await readFile(migrationPath, "utf8")).replaceAl
 const rules = await import(`file://${out}/economy-rules.js`);
 const economy = await import(`file://${out}/economy-store.js`);
 const migration = await import(`file://${out}/legacy-migration.js`);
-assert.equal(rules.firstCorrectReward("a", "mapa", true, 0).amount, 2);
-assert.equal(rules.firstCorrectReward("a", "mapa", true, 1), null);
-assert.equal(rules.firstCorrectReward("a", "mapa", false, 0), null);
+// Economia v2: o acerto não paga mais na hora (as moedas vêm no fim da partida, em spoils.ts).
+assert.equal(rules.firstCorrectReward, undefined);
 const world = rules.policyFor("mapa", "mapa", "mundo");
 assert.equal(rules.canUnlock(world, 0, 0, 0), true);
 const travel = rules.policyFor("travel", "travel", "mundo");
-assert.equal(rules.canUnlock(travel, 5, 0, 20), false);
-assert.equal(rules.canUnlock(travel, 6, 0, 19), false);
-assert.equal(rules.canUnlock(travel, 6, 0, 20), true);
+// Só moedas: nem cobertura nem partidas jogadas entram no desbloqueio.
+assert.equal(rules.canUnlock(travel, 63999, 99, 99), false);
+assert.equal(rules.canUnlock(travel, 64000, 0, 0), true);
 const completed = (rounds) => ({ complete: true, family: "mapa", variant: "mapa", rounds });
 const abandoned = (rounds) => ({ complete: false, family: "mapa", variant: "mapa", rounds });
 const answer = (targetId, correct, column) => ({ targetId, correct, column });

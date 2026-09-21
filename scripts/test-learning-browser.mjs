@@ -185,12 +185,11 @@ const entity = entities[0];
 assert.equal(entity.seen, 4);
 assert.equal(entity.correct, 3);
 assert.equal(entity.columns.mapa, 3);
-assert.equal(
-  result.ledger.filter(
-    (entry) => entry.id === "reward:first-correct:integration-target:mapa",
-  ).length,
-  1,
-);
+// Economia v2: as moedas vêm no fim da partida (um crédito por sessão que teve rodadas); nada é pago por acerto.
+const credits = result.ledger.filter((entry) => entry.id.startsWith("spoils:"));
+assert.equal(credits.length, 3);
+assert.ok(credits.every((entry) => entry.kind === "credit" && entry.amount > 0));
+assert.equal(result.ledger.filter((entry) => entry.id.startsWith("reward:first-correct")).length, 0);
 // Direction variants keep their shared unlock while the old regional key is
 // normalized to the new variant-level policy.
 assert.deepEqual(

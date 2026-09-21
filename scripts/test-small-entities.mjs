@@ -8,12 +8,34 @@ const [source, catalog] = await Promise.all([
 const playableIds = new Set(catalog.mapEntityIds.map(String));
 const byId = new Map(source.features.map((item) => [item.properties.carta_id, item]));
 
-assert(source.features.length <= playableIds.size, "marker source cannot exceed playable entities");
+const absorbedMarkers = source.features.filter((item) => item.properties.absorbed);
+const playableMarkers = source.features.filter((item) => !item.properties.absorbed);
+assert(playableMarkers.length <= playableIds.size, "marker source cannot exceed playable entities");
 assert.equal(byId.size, source.features.length, "exactly one marker per marked entity");
-assert(source.features.every((item) =>
+assert(playableMarkers.every((item) =>
   playableIds.has(item.properties.carta_id) &&
   item.geometry.coordinates.every(Number.isFinite)
 ), "every marker must belong to a playable entity and have finite coordinates");
+
+// Absorvidos (Guadalupe, Martinica, Reunião, Svalbard, Bouvet, Heard, Ilhas Menores): nunca são
+// alvo, respondem pelo soberano e existem no catálogo como absorvidos.
+const absorbedInCatalog = Object.entries(catalog.meta).filter(([, meta]) => meta.absorvido).map(([id]) => id);
+assert.deepEqual(absorbedMarkers.map((item) => item.properties.carta_id).sort(), [...absorbedInCatalog].sort(),
+  "todo território absorvido do catálogo precisa de marcador");
+for (const item of absorbedMarkers) {
+  const { carta_id: id, answer_id: answerId } = item.properties;
+  assert(!playableIds.has(id), `${id}: absorvido não pode ser jogável`);
+  assert(playableIds.has(answerId), `${id}: soberano ${answerId} precisa ser jogável`);
+  assert.equal(String(catalog.meta[id].mapaPara), answerId, `${id}: answer_id diferente de mapaPara`);
+  assert.equal(item.properties.un, false, `${id}: absorvido não é membro da ONU`);
+  assert(item.geometry.coordinates.every(Number.isFinite), `${id}: coordenadas inválidas`);
+}
+const absorbedFile = await readFile("public/data/absorbed-territories.geojson", "utf8").then(JSON.parse);
+const polygonIds = absorbedFile.features.filter((item) => item.geometry.type !== "Point").map((item) => item.properties.carta_id);
+for (const name of ["Guadalupe", "Martinica", "Reunião"]) {
+  const id = Object.entries(catalog.meta).find(([, meta]) => meta.pt === name)?.[0];
+  assert(polygonIds.includes(id), `${name} precisa de contorno em absorbed-territories.geojson`);
+}
 
 const idFor = (name) => Object.entries(catalog.meta)
   .find(([, meta]) => meta.pt === name)?.[0];
@@ -30,7 +52,7 @@ const regionMatches = (meta, region) => {
   if (region === "pacifico") return meta?.reg === "Oceania";
   return false;
 };
-const count = (region, unOnly) => source.features.filter((item) => {
+const count = (region, unOnly) => playableMarkers.filter((item) => {
   const meta = catalog.meta[item.properties.carta_id];
   return regionMatches(meta, region) && (!unOnly || meta?.un);
 }).length;
@@ -45,8 +67,32 @@ assert(!source.features.filter((item) => item.properties.un).some((item) =>
   item.properties.carta_id === saintPierre
 ), "ONU filter must exclude Saint Pierre");
 
+// Visibilidade por tamanho: o marcador só existe enquanto o contorno é menor que o ponto.
+const cameraZoom = Object.fromEntries(
+  [...(await readFile("src/domain/regions.ts", "utf8"))
+    .matchAll(/(\w+): \{ center: \[[^\]]+\], zoom: ([\d.]+) \}/g)]
+    .map(([, region, zoom]) => [region, Number(zoom)]),
+);
+assert(Number.isFinite(cameraZoom.caribe), "zoom da câmera do Caribe não encontrado em regions.ts");
+const zoomOf = (name) => byId.get(idFor(name))?.properties.switchZoom;
+assert(source.features.every((item) =>
+  Number.isFinite(item.properties.switchZoom) && item.properties.switchZoom > 2
+), "todo marcador precisa de switchZoom finito e maior que o zoom de classificação");
+for (const name of ["Haiti", "Jamaica", "República Dominicana"]) {
+  const value = zoomOf(name);
+  assert(value === undefined || value < cameraZoom.caribe, `${name} não pode ter marcador visível no zoom do Caribe`);
+}
+for (const name of ["Barbados", "Granada", "Santa Lúcia", "Antígua e Barbuda", "Dominica", "Aruba", "Curaçao", "Ilhas Cayman"]) {
+  assert(zoomOf(name) > cameraZoom.caribe, `${name} precisa de marcador visível no zoom do Caribe`);
+}
+assert(zoomOf("Vaticano") > 9 && zoomOf("San Marino") > 6 && zoomOf("Malta") > 6,
+  "microestados mantêm o marcador até zoom alto");
+assert(source.features.filter((item) => item.properties.switchZoom >= 24).length <= 10,
+  "só entidades sem polígono nos tiles podem ficar sempre visíveis");
+
 const counts = {
-  total: source.features.length,
+  total: playableMarkers.length,
+  absorbed: absorbedMarkers.length,
   worldUnOn: count("mundo", true) + 1, // Vaticano is the explicit observer exception.
   worldUnOff: count("mundo", false),
   caribbean: count("caribe", false),
