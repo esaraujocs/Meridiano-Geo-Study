@@ -566,7 +566,8 @@ html[data-reduced-motion=true] .ach-toast-medal .ach-med{animation:none}
 .dbg-summary{margin:8px 0 0;font:500 13px 'DM Mono',monospace;letter-spacing:.02em;color:var(--ink)}
 /* hub: barra do jogador, modos e progresso */
 .hub-bar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"head head head" "ring xp coin" "totals totals totals";margin:0 0 12px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:rgba(231,216,186,.72)}
-.hub-brand,.hub-gear,.hub-rule{display:none}
+.hub-brand,.hub-gear,.hub-rule,.hub-meridian,.hub-level-ring,.hub-level-cap,.hub-eyebrow{display:none}
+.hub-mastery b{font-weight:inherit}
 .hub-player,.hub-stats{display:contents}
 .hub-head{grid-area:head;display:grid;grid-template-columns:1fr auto;column-gap:10px;align-items:start;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
 .hub-title{grid-column:1;margin:0;font:500 30px/1.05 'Fraunces',Georgia,serif;letter-spacing:-.01em;color:var(--ink)}
@@ -646,6 +647,43 @@ html[data-reduced-motion=true] .ach-toast-medal .ach-med{animation:none}
   .hub-progress-bar i{display:block;height:100%;background:var(--green)}
   .hub-progress-caption{display:block;overflow:hidden;color:var(--muted);font-size:10.5px;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
   .hub-progress-grid button>svg{position:absolute;right:16px;top:50%;margin-top:-8px}
+}
+
+/* Hub no celular: sem barra fixa do topo e cartão do jogador num bloco só (anel à esquerda, moeda à direita no rodapé);
+   as Opções ficam na barra de baixo, no lugar da Loja, e a engrenagem do topo some das outras telas */
+@media (max-width:760px){
+  .top-actions{display:none}
+  .app-shell:not(.focused-flow)>.topbar{display:none}
+  .app-shell:has(.hub-content){grid-template-rows:minmax(0,1fr) auto}
+  .app-shell:has(.hub-content)>.hub-content{grid-row:1;padding-top:10px}
+  .app-shell:has(.hub-content)>.mobile-nav{grid-row:2}
+  .hub-bar{position:relative;grid-template-columns:auto minmax(0,1fr);grid-template-areas:none;border-radius:20px}
+  .hub-meridian{display:block;position:absolute;right:-58px;top:-84px;width:224px;height:224px;opacity:.55;pointer-events:none}
+  .hub-meridian circle,.hub-meridian g{stroke:var(--h-mapa,var(--green))}
+  .hub-level{grid-column:1;grid-row:1/4;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;align-self:center;width:96px;height:96px;margin:18px 16px 16px 18px;border:0;border-radius:0;background:none;box-shadow:none}
+  .hub-level-ring{display:block;position:absolute;inset:0;width:100%;height:100%}
+  .hub-ring-track{fill:var(--paper);stroke:rgba(199,182,143,.7);stroke-width:8}
+  .hub-ring-arc{fill:none;stroke:var(--h-mapa,var(--green));stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:66px 66px}
+  .hub-level strong{position:relative;font-size:36px;line-height:1}
+  .hub-level-cap{display:block;position:relative;margin-top:2px;font-size:11px;color:var(--muted)}
+  .hub-head{display:contents}
+  .hub-eyebrow{grid-column:2;grid-row:1;align-self:end;position:relative;z-index:1;display:block;padding:16px 16px 0 0;font:500 10.5px 'DM Mono',monospace;letter-spacing:.05em;text-transform:uppercase;color:#245e58}
+  .hub-title{grid-column:2;grid-row:2;position:relative;z-index:1;margin:4px 16px 6px 0;font-size:32px;line-height:1.05;letter-spacing:-.02em}
+  .hub-mastery{grid-column:2;grid-row:3;align-self:start;position:relative;z-index:1;margin:0;padding:0 16px 14px 0;font:400 13px/1.45 'Plus Jakarta Sans',sans-serif;letter-spacing:0;text-transform:none;color:var(--muted)}
+  .hub-mastery b{font-weight:700;color:var(--ink)}
+  .hub-badges{grid-column:1/-1;grid-row:4;position:relative;z-index:1;flex-wrap:wrap;margin:0;padding:0 18px 14px}
+  .hub-badge{width:auto;height:auto;gap:5px;padding:3px 9px 3px 7px;border-radius:999px;font:500 9.5px/1.3 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+  .hub-badge-label{position:static;width:auto;height:auto;overflow:visible;clip:auto}
+  .hub-xp{display:none}
+  .hub-stats{grid-area:auto;grid-column:1/-1;grid-row:5;position:relative;z-index:1;display:flex;align-items:center;gap:14px;padding:10px 18px 12px;border-top:1px solid var(--line)}
+  .hub-totals{padding:0;border:0;gap:14px;min-width:0}
+  .hub-totals span{flex-direction:column;align-items:flex-start;gap:0}
+  .hub-totals strong{order:-1;font-size:20px;line-height:1.05}
+  .hub-totals small{font-size:11px;line-height:1.1}
+  .hub-coin{order:1;flex:none;margin:0 0 0 auto;padding:4px 10px 4px 4px;gap:5px}
+  .hub-coin i{width:24px;height:24px;font-size:13px}
+  .hub-coin strong{font-size:18px}
+  .hub-coin svg{width:16px;height:16px}
 }
 
 /* telas internas no desktop: sem barra superior, só o botão de voltar */

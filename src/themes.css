@@ -337,3 +337,6 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 @media (max-width:760px){
   :root[data-treat="brush-v"] .pg-hero::before,:root[data-treat="brush-wash"] .pg-hero::before{left:8px;width:118px;height:min(calc(100% + 24px),190px)}
 }
+
+/* celular: o anel do nível é desenhado em SVG, sem a sombra do Atlas */
+@media (max-width:760px){:root[data-treat] .hub-level{box-shadow:none}}

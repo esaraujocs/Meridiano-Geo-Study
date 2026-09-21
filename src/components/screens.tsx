@@ -19,6 +19,8 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
     ["achievements", "Achievements", "achievements"], ["progress", "Progresso", "progress"],
     ["store", "Loja", "store"],
   ] as const;
+  // no celular a Loja abre pela moeda do Hub; o lugar dela na barra de baixo é das Opções
+  const mobileItems = [...items.slice(0, 4), ["options", "Opções", "settings"] as const];
   return (
     <>
     <header className="topbar">
@@ -41,7 +43,7 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
       <div className="top-actions"><button className="settings-button" aria-label="Abrir Opções" aria-current={current === "options" ? "page" : undefined} title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
     </header>
     <nav className="mobile-nav" aria-label="Navegação principal">
-      {items.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
+      {mobileItems.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
     </nav>
     </>
   );
@@ -179,6 +181,7 @@ export function Hub({
   const xpToNext = Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0));
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
+  const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");
   const progressTiles = [
     { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: "Coleção · cartas descobertas", pct: ratioPercent(collectionSummary.discovered, collectionSummary.total), caption: collectionCaption(collectionSummary.discovered, collectionSummary.total) },
     { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: "Achievements desbloqueados", pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
@@ -191,13 +194,23 @@ export function Hub({
     <main className="content hub-content">
       <h1 className="sr-only">Meridiano</h1>
       <div className="hub-bar" aria-label="Perfil de atividade">
+        <svg className="hub-meridian" width="300" height="300" viewBox="0 0 170 170" aria-hidden="true">
+          <defs><clipPath id="hub-globe"><circle cx="85" cy="85" r="78" /></clipPath></defs>
+          <circle cx="85" cy="85" r="78" fill="none" strokeWidth="1" opacity=".5" />
+          <g clipPath="url(#hub-globe)" fill="none" strokeWidth=".8" opacity=".3"><ellipse cx="85" cy="85" rx="30" ry="78" /><ellipse cx="85" cy="85" rx="58" ry="78" /><line x1="85" y1="7" x2="85" y2="163" /><line x1="7" y1="85" x2="163" y2="85" /><line x1="15" y1="55" x2="155" y2="55" /><line x1="15" y1="115" x2="155" y2="115" /></g>
+        </svg>
         <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
         <div className="hub-player">
-          <div className="hub-level" aria-label={`Nível ${level}`}><strong>{level}</strong></div>
+          <div className="hub-level" role="img" aria-label={`Nível ${level}, ${xpInLevel} de ${xpSpan} XP`}>
+            <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
+            <strong>{level}</strong>
+            <span className="hub-level-cap">nível</span>
+          </div>
           <div className="hub-head">
+            <span className="hub-eyebrow">Nível {level} · {xpInLevel}/{xpSpan} XP</span>
             <p className="hub-title">{profile.title}</p>
             {profile.earned.length > 0 && <ul className="hub-badges" aria-label="Títulos conquistados">{profile.earned.map((title) => <li key={title.id} className="hub-badge"><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
-            <p className="hub-mastery">{profile.masteryLine}</p>
+            <p className="hub-mastery"><b>{masteryHead}</b>{masteryRest.length > 0 && ` · ${masteryRest.join(" · ")}`}</p>
           </div>
           <div className="hub-xp">
             <span className="hub-xp-label">Nível {level} · {xpInLevel} / {xpSpan} XP</span>
