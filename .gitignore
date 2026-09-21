@@ -8,3 +8,6 @@ attached_assets/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+# cache do Replit e temporarios de teste
+.config/
+.tmp-*/

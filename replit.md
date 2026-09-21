@@ -1,4 +1,4 @@
-# Carta Cega
+# Meridiano (nome provisório; antes Carta Cega)
 
 PWA React + Vite + MapLibre GL + PMTiles, servida na raiz do Preview.
 O Hub mobile tem HUD compacta, carrossel cíclico e navegação inferior acessível.

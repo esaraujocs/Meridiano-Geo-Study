@@ -1,18 +1,34 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+
+// O MapLibre resolve o worker como ./maplibre-gl-worker.mjs relativo ao bundle, e esse worker
+// importa ./maplibre-gl-shared.mjs. O Vite não emite nenhum dos dois, então no build de
+// produção o worker falhava (404/HTML) e o mapa nunca carregava. Copiamos ambos para dist/assets.
+const MAPLIBRE_WORKER_FILES = ["maplibre-gl-worker.mjs", "maplibre-gl-shared.mjs"];
 
 const injectPrecacheManifest = () => ({
   name: "carta-cega-precache-manifest",
   apply: "build" as const,
   async writeBundle(_options: unknown, bundle: Record<string, unknown>) {
     const dist = new URL("./dist/", import.meta.url);
-    const assets = Object.keys(bundle).filter((file) => file.startsWith("assets/"));
+    await mkdir(new URL("assets/", dist), { recursive: true });
+    for (const file of MAPLIBRE_WORKER_FILES) {
+      await copyFile(
+        new URL(`./node_modules/maplibre-gl/dist/${file}`, import.meta.url),
+        new URL(`assets/${file}`, dist),
+      );
+    }
+    const assets = [
+      ...Object.keys(bundle).filter((file) => file.startsWith("assets/")),
+      ...MAPLIBRE_WORKER_FILES.map((file) => `assets/${file}`),
+    ];
     const precache = [
       "/",
       "/manifest.webmanifest",
       "/data/legacy/catalog.json",
       "/data/legacy-map.json",
+      "/data/absorbed-territories.geojson",
       "/data/legacy/flags.json",
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",

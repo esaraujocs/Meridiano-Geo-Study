@@ -1,7 +1,7 @@
 const CACHE = "carta-cega-shell-v2";
 const MAP_URL = "/maps/carta-boundary-candidate.pmtiles";
-const MAP_BYTES = 27741358;
-const MAP_FILE = "carta-boundary-candidate-bacb912022100213501a4f57bd7a564df7b65e6b0a643bdb3f42f3bd33456ca7.pmtiles";
+const MAP_BYTES = 27823584;
+const MAP_FILE = "carta-boundary-candidate-5781307c2aad1358a93311a32f0740723ba98a0104a29aaa10fdde2537a49316.pmtiles";
 const CORE = /*__CARTA_PRECACHE__*/[];
 
 self.addEventListener("install", (event) => {
