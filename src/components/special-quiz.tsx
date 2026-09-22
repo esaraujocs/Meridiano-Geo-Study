@@ -251,7 +251,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
       ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /></div>
       : historicalMode && variant === "historica-nome"
         ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /></div>
-        : <div className={"script" in target ? "gs-big script" : bigClass(stimulusText)}>{stimulusText}</div>;
+        : <div className={"script" in target ? `gs-big script${(stimulusText?.length ?? 0) > 110 ? " xlong" : (stimulusText?.length ?? 0) > 60 ? " long" : ""}` : bigClass(stimulusText)}>{stimulusText}</div>;
   const kicker = writing
     ? (variant === "escrita-capital" ? "Qual é a capital deste país?" : "Qual é o nome deste país?")
     : historicalMode
@@ -307,7 +307,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
 /** Depois de responder em Idiomas: o que a frase quer dizer, como se lê, onde o idioma é falado e quantos falam. */
 function LanguageCard({ entry }: { entry: LanguageEntry }) {
   // A posição vem com notas entre parênteses em alguns idiomas; no cartão fica só a frase curta.
-  const rank = entry.ranking?.replace(/s*(.*)s*$/, "");
+  const rank = entry.ranking?.replace(/\s*\([^)]*\)\s*$/, "");
   return <section className="gs-lang" aria-label={`Sobre ${entry.idioma}`}>
     <div className="gs-lang-head"><b>{entry.idioma}</b>{rank && <span>{rank}</span>}</div>
     {entry.translit && <em>{entry.translit}</em>}
