@@ -235,6 +235,8 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 @keyframes score-bump{0%{transform:scale(1)}40%{transform:scale(1.5);color:#4fe0a8}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.hit-pulse i{display:none}.hit-pulse b{animation:none!important;opacity:1}.map-target-overlay.is-correct{animation:none}}
 html[data-reduced-motion=true] .hit-pulse i{display:none}html[data-reduced-motion=true] .hit-pulse b{animation:none!important;opacity:1}html[data-reduced-motion=true] .map-target-overlay.is-correct{animation:none}
+/* rótulo do país/capital perguntado no mapa (modo Treino: fica marcado acertando ou errando) */
+.map-reveal-label{pointer-events:none;padding:2px 8px;border-radius:999px;background:rgba(20,38,36,.86);border:1px solid rgba(79,224,168,.55);color:#eafff4;font:10px 'DM Mono';white-space:nowrap}
 /* achievements */
 .ach{margin-top:24px}
 .ach-r1{--ach:#857b5f;--ach-text:#5a5340;--ach-bar:#2F6F6A}

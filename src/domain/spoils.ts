@@ -5,7 +5,7 @@ export type Pace = "training" | "timed";
 export type Tier = 1 | 2 | 3;
 
 /** O Treino paga só uma fração das moedas, para incentivar a jogar com tempo. */
-export const TRAINING_COIN_FACTOR = 0.25;
+export const TRAINING_COIN_FACTOR = 0.5;
 export const NEW_CARD_COINS = 60;
 export const LEVEL_UP_COINS = 30;
 /**

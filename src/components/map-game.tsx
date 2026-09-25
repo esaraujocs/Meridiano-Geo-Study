@@ -60,6 +60,9 @@ export function Game({
   const engineFamily = family ?? "mapa";
   const engineVariant = variant ?? "mapa";
   const { pace, roundLimit, timerSeconds } = sessionSettings(options, engineVariant);
+  // No Treino (sem cronômetro, rende 50%) cada país/capital perguntado fica marcado no mapa com o nome
+  // escrito, acertando ou errando — é o que diferencia Treino de Partida além do cronômetro/moedas.
+  const revealNames = pace === "training";
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
@@ -77,6 +80,9 @@ export function Game({
   const [mapError, setMapError] = useState("");
   const [mapReady, setMapReady] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
+  // Ids já perguntados nesta partida, acertando ou errando (só usado no Treino, ver revealNames) — zera a cada baralho novo.
+  const [revealed, setRevealed] = useState<string[]>([]);
+  const labelMarkersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const sessionRef = useRef<LearningSessionHandle | null>(null);
   const pendingSessionRef = useRef<Promise<LearningSessionHandle> | null>(null);
   const strictUsersRef = useRef(0);
@@ -91,6 +97,9 @@ export function Game({
   const absorbedMarkerIds = onlyUn ? [] : ABSORBED_MARKER_IDS.filter((id) => inRegion(id, region, data));
   const markerIds = [...features.map((feature) => feature.id), ...absorbedMarkerIds];
   const markerSignature = markerIds.join("|");
+  // No modo Capitais mostra o nome da capital (foi o que foi perguntado); no modo Mapa, o nome do país.
+  const nameFor = (id: string) =>
+    engineFamily === "capitais" && engineVariant === "capital-pais" ? data.meta[id]?.cap : data.meta[id]?.pt;
 
   const openSession = () => {
     const pending = startLearningSession({
@@ -182,6 +191,7 @@ export function Game({
 
   useEffect(() => {
     deckRef.current = newDeck();
+    setRevealed([]);
     nextTarget();
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -219,6 +229,8 @@ export function Game({
       tier: entityTier(data.meta, targetRef.current),
     };
     recordRound(round);
+    // No Treino, o alvo da rodada fica marcado no mapa com o nome — acertando ou errando.
+    setRevealed((list) => (list.includes(targetRef.current) ? list : [...list, targetRef.current]));
     if (round.correct) {
       feedbackRef.current = `Acertou: ${data.meta[targetRef.current]?.pt ?? "alvo"}`;
       setScore((value) => value + 1);
@@ -278,6 +290,7 @@ export function Game({
     setScore(0);
     setStreak(0);
     setRound(0);
+    setRevealed([]);
     deckRef.current = newDeck();
     nextTarget();
   };
@@ -508,6 +521,8 @@ export function Game({
       map.off("error", handleError);
       map.getContainer().removeEventListener("keydown", handleKey);
       map.getContainer().removeEventListener("pointerdown", handlePointer);
+      labelMarkersRef.current.forEach((marker) => marker.remove());
+      labelMarkersRef.current.clear();
       map.remove();
       mapRef.current = null;
       setMapReady(false);
@@ -540,42 +555,48 @@ export function Game({
     const map = mapRef.current;
     if (!map || !target || !mapReady || !map.isStyleLoaded()) return;
     const answerColor = ANSWER_COLOR;
-    const revealed = Boolean(feedback);
+    const settled = Boolean(feedback);
+    // Fora do alvo desta rodada: só fica marcado no Treino (revealNames), com todo país já perguntado até aqui.
+    const marked = revealNames && revealed.length ? revealed : null;
     try {
       map.setPaintProperty("land", "fill-color", [
         "case",
-        ["all", revealed, ["==", ["get", "carta_id"], target]],
+        ["all", settled, ["==", ["get", "carta_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         "#ee7968",
+        ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         "#164455",
-      ]);
+      ] as unknown as maplibregl.ExpressionSpecification);
       map.setPaintProperty("absorbed-land", "fill-color", [
         "case",
-        ["all", revealed, ["==", ["get", "answer_id"], target]],
+        ["all", settled, ["==", ["get", "answer_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         "#ee7968",
+        ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         "#164455",
-      ]);
+      ] as unknown as maplibregl.ExpressionSpecification);
        map.setPaintProperty("pts", "circle-color", [
         "case",
-        ["all", revealed, ["==", ["get", "carta_id"], target]],
+        ["all", settled, ["==", ["get", "carta_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         "#ee7968",
+        ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
          "#9db7b2",
-      ]);
+      ] as unknown as maplibregl.ExpressionSpecification);
       for (const band of MARKER_BAND_ZOOMS) {
         map.setPaintProperty(markerLayerId(band), "circle-color", [
         "case",
-        ["all", revealed, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]],
+        ["all", settled, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]],
         answerColor,
         ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
         "#ee7968",
+        ...(marked ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", marked]], answerColor] : []),
         "#9db7b2",
-      ]);
-        const isRevealedTarget = ["all", revealed, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]] as unknown as maplibregl.ExpressionSpecification;
+      ] as unknown as maplibregl.ExpressionSpecification);
+        const isRevealedTarget = ["all", settled, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]] as unknown as maplibregl.ExpressionSpecification;
         map.setPaintProperty(markerLayerId(band), "circle-radius", ["case", isRevealedTarget, 9, 4]);
         map.setPaintProperty(markerLayerId(band), "circle-stroke-width", ["case", isRevealedTarget, 2.5, 1]);
       }
@@ -586,14 +607,38 @@ export function Game({
           : "Falha ao atualizar o destaque do alvo.",
       );
     }
-  }, [target, wrong, feedback, selectedAnswer, mapReady]);
+  }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames]);
+
+  // Rótulo escrito (HTML por cima do mapa, não texto nativo do MapLibre) para cada país/capital já perguntado.
+  // Reaproveita maplibregl.Marker: ele já se reposiciona sozinho a cada pan/zoom, sem projetar coordenada à mão.
+  useEffect(() => {
+    const map = mapRef.current;
+    const markers = labelMarkersRef.current;
+    if (!map || !mapReady) return;
+    if (!revealNames) {
+      if (markers.size) { markers.forEach((marker) => marker.remove()); markers.clear(); }
+      return;
+    }
+    for (const [id, marker] of markers) {
+      if (!revealed.includes(id)) { marker.remove(); markers.delete(id); }
+    }
+    for (const id of revealed) {
+      if (markers.has(id)) continue;
+      const ll = data.meta[id]?.ll;
+      const label = nameFor(id);
+      if (!ll || !label) continue;
+      const element = document.createElement("div");
+      element.className = "map-reveal-label";
+      element.textContent = label;
+      const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([ll[1], ll[0]]).addTo(map);
+      markers.set(id, marker);
+    }
+  }, [revealed, revealNames, mapReady]);
 
   const totalRounds = deckRef.current?.size ?? features.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
   useGameKeys({ exit });
-  const targetName = engineFamily === "capitais" && engineVariant === "capital-pais"
-    ? data.meta[target]?.cap ?? "carregando"
-    : data.meta[target]?.pt ?? "carregando";
+  const targetName = nameFor(target) ?? "carregando";
   if (mapError) {
     return (
       <div className="app-shell">

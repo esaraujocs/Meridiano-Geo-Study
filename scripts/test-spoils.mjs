@@ -27,7 +27,7 @@ assert.equal(spoils.hitCoins("escrita-capital", 1), 96);
 assert.equal(spoils.hitCoins("escrita-capital", 3), 120);
 assert.equal(spoils.hitCoins("escrita-capital", 1), spoils.hitCoins("bandeira-nome", 1) * 3, "capital escrita vale 3× o acerto com alternativas");
 assert.deepEqual(spoils.hitRange("silhueta", "timed"), [88, 110]);
-assert.deepEqual(spoils.hitRange("silhueta", "training"), [22, 28]);
+assert.deepEqual(spoils.hitRange("silhueta", "training"), [44, 55]);
 const variants = ["mapa", "silhueta", "silhueta-opcoes", "travel", "bandeira-nome", "nome-bandeira", "capital-pais", "pais-capital", "escrita-pais", "escrita-capital", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"];
 for (const variant of variants) {
   const base = spoils.baseCoins(variant);
@@ -47,15 +47,15 @@ assert.equal(timed.total, 320 + 53 + 140);
 assert.equal(timed.total, timed.hits.coins + timed.streak.coins + timed.newCards.coins + timed.levelUps.coins + timed.completion.coins);
 assert.ok(!("speed" in timed) && !("bonusSpeed" in timed), "sem bônus por velocidade");
 
-// Treino paga 25%, em cada linha
+// Treino paga 50%, em cada linha
 const training = spoils.computeSpoils({ ...base, pace: "training" });
-assert.equal(spoils.TRAINING_COIN_FACTOR, 0.25);
-assert.equal(training.factor, 0.25);
-assert.equal(training.hits.coins, 80);
-assert.equal(training.streak.coins, 13);
-assert.equal(training.completion.coins, 35);
-assert.equal(training.total, 80 + 13 + 35);
-assert.ok(training.total < timed.total * 0.3);
+assert.equal(spoils.TRAINING_COIN_FACTOR, 0.5);
+assert.equal(training.factor, 0.5);
+assert.equal(training.hits.coins, 160);
+assert.equal(training.streak.coins, 26);
+assert.equal(training.completion.coins, 70);
+assert.equal(training.total, 160 + 26 + 70);
+assert.ok(training.total < timed.total * 0.55 && training.total > timed.total * 0.45, "treino paga perto da metade da partida");
 
 // erro quebra a sequência; partida abandonada não ganha o bônus de partida
 const mixed = spoils.computeSpoils({ variant: "mapa", pace: "timed", complete: true, newCards: 0, levelUps: 0, rounds: [
@@ -80,7 +80,7 @@ const cards = spoils.computeSpoils({ variant: "escrita-pais", pace: "timed", com
 assert.equal(cards.newCards.coins, 180);
 assert.equal(cards.levelUps.coins, 60);
 assert.equal(cards.total, 240);
-assert.equal(spoils.computeSpoils({ variant: "escrita-pais", pace: "training", complete: false, rounds: [], newCards: 4, levelUps: 0 }).newCards.coins, 60);
+assert.equal(spoils.computeSpoils({ variant: "escrita-pais", pace: "training", complete: false, rounds: [], newCards: 4, levelUps: 0 }).newCards.coins, 120);
 
 // Travel: cada país da rota acertado vale moedas, mesmo com a rota aberta
 const route = spoils.computeSpoils({ variant: "travel", pace: "timed", complete: true, newCards: 0, levelUps: 0, rounds: [
@@ -146,7 +146,7 @@ assert.equal(pace.isRoundTierUnlocked("fifty", ["rounds:20"]), false);
 assert.equal(pace.isRoundTierUnlocked("all", ["rounds:all"]), true);
 assert.equal(pace.isRoundTierUnlocked("hundred", ["rounds:all"]), true);
 // tempos: uma rede de segurança, não uma corrida
-const seconds = { "bandeira-nome": 15, "nome-bandeira": 15, "pais-capital": 15, "historica-nome": 15, "nome-historica": 15, "idioma-nome": 15, "idioma-pais": 15, "silhueta-opcoes": 15, mapa: 20, "capital-pais": 20, "escrita-pais": 30, "escrita-capital": 30, silhueta: 30, travel: 120 };
+const seconds = { "bandeira-nome": 15, "nome-bandeira": 15, "pais-capital": 15, "historica-nome": 20, "nome-historica": 20, "idioma-nome": 15, "idioma-pais": 20, "silhueta-opcoes": 20, mapa: 20, "capital-pais": 15, "escrita-pais": 30, "escrita-capital": 30, silhueta: 30, travel: 120 };
 for (const [variant, expected] of Object.entries(seconds)) assert.equal(pace.timerSecondsFor(variant), expected, variant);
 assert.equal(pace.paceSecondsFor("training", "escrita-pais"), null, "Treino não tem cronômetro");
 assert.equal(pace.paceSecondsFor("timed", "escrita-pais"), 30);
@@ -197,7 +197,7 @@ assert.equal(practice.title, "Treino encerrado");
 assert.equal(practice.paceLabel, "Treino · sem tempo");
 assert.equal(practice.training, true);
 assert.equal(practice.xpGain, 0, "XP que caiu não vira ganho");
-assert.equal(practice.lines.find((line) => line.key === "cards")?.note, "4 × 15", "Treino mostra o valor reduzido por carta");
+assert.equal(practice.lines.find((line) => line.key === "cards")?.note, "4 × 30", "Treino mostra o valor reduzido por carta");
 assert.equal(view.buildResultView({ session: { ...session, variant: "travel", timerSeconds: 120 }, spoils: null, before: { balance: 0, xp: 0, level: 1 }, after: { balance: 0, xp: 0, level: 1 }, regionLabel: "Mundo" }).paceLabel, "Partida · 2 min por rota");
 assert.equal(view.buildResultView({ session: { ...session, complete: false }, spoils: null, before: { balance: 0, xp: 0, level: 1 }, after: { balance: 0, xp: 0, level: 1 }, regionLabel: "Mundo" }).title, "Partida encerrada");
 assert.equal(view.buildResultView({ session: { ...session, rounds: [] }, spoils: null, before: { balance: 0, xp: 0, level: 1 }, after: { balance: 0, xp: 0, level: 1 }, regionLabel: "Mundo" }).pct, 0);

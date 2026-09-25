@@ -154,7 +154,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome }: Props) {
           {view.xpGain > 0 && <span className="rs-xp" ref={xpChipRef}>+{view.xpGain} XP</span>}
         </div>
       </div>
-      {view.training && <p className="rs-note">Treino paga 25% das moedas. Na Partida com tempo o valor é cheio.</p>}
+      {view.training && <p className="rs-note">Treino paga 50% das moedas. Na Partida com tempo o valor é cheio.</p>}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
         <button type="button" className="rs-toggle" aria-expanded={open} aria-controls="rs-details" onClick={() => setOpen((value) => !value)}>{open ? "Esconder detalhes" : "Ver detalhes"} <Icon type="chevron" /></button>

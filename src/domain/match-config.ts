@@ -61,7 +61,13 @@ export function formatSeconds(seconds: number, variant: AnyQuizVariant) {
 }
 
 export function paceHint(pace: Pace, variant: AnyQuizVariant) {
-  if (pace === "training") return "Sem cronômetro. Rende só 25% das moedas.";
+  if (pace === "training") {
+    // Só nos modos que clicam no mapa (mapa/capital-pais) o Treino também marca o país perguntado.
+    const marking = variant === "mapa" || variant === "capital-pais"
+      ? " Cada país perguntado fica marcado no mapa com o nome, acertando ou errando."
+      : "";
+    return `Sem cronômetro. Rende só 50% das moedas.${marking}`;
+  }
   const time = formatSeconds(timerSecondsFor(variant), variant);
   return variant === "travel"
     ? `${time}. Acabou o tempo, a rota conta como erro.`
@@ -88,6 +94,6 @@ export function configSummary(input: {
     title: mode.direction && input.direction ? `${mode.label} · ${directionLabel(input.direction)}` : mode.label,
     sub: `${time} · ${input.rounds} rodadas · ${input.regionText} (${input.count})`,
     earn: low === high ? String(low) : `${low} a ${high}`,
-    earnUnit: pace === "training" ? `moedas ${unit} · 25%` : `moedas ${unit}`,
+    earnUnit: pace === "training" ? `moedas ${unit} · 50%` : `moedas ${unit}`,
   };
 }

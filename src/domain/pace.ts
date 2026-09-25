@@ -46,11 +46,22 @@ export const isRoundTierUnlocked = (tier: RoundTier, unlocked: readonly string[]
   return ROUND_UNLOCKS.some((item) => ROUND_TIERS.indexOf(item.tier) >= index && unlocked.includes(item.key));
 };
 
-// Tempo por pergunta na Partida: 15 s com alternativas, 20 s no mapa, 30 s digitando, 120 s por rota no Travel.
-// É uma rede de segurança, não uma corrida: o objetivo é conferir que a pessoa sabe, sem apressar.
+// Tempo por pergunta na Partida — rede de segurança, não corrida: confirmar que a pessoa sabe, sem
+// apressar, mas sem sobrar tempo ocioso. Revisitado por completo (22/09), não só o caso do capital-pais:
+// - 15 s — 4 alternativas curtas, reconhecidas de cara (nome/bandeira/idioma) ou capital-pais (clique no
+//   mapa, mas quem sabe a capital de cor já sabe o país — o gargalo é o mesmo clique de "mapa", só que
+//   sem precisar escanear opção nenhuma antes).
+// - 20 s — clicar no mapa de verdade (busca física, às vezes com zoom/pan, não é só reconhecer) ou
+//   4 alternativas que pedem mais leitura: entidade histórica pouco conhecida (historica-nome/
+//   nome-historica), silhueta sem cor pra ajudar (silhueta-opcoes), ou opção com lista de países em
+//   vez de um nome só (idioma-pais).
+// - 30 s — digitar o nome completo, com acentuação.
+// - 120 s — Travel, várias etapas e vários países pra digitar numa rota só.
 export function timerSecondsFor(variant: AnyQuizVariant): number {
   switch (variant) {
-    case "mapa": case "capital-pais": return 20;
+    case "mapa": case "historica-nome": case "nome-historica": case "silhueta-opcoes": case "idioma-pais":
+      return 20;
+    case "capital-pais": return 15;
     case "escrita-pais": case "escrita-capital": case "silhueta": return 30;
     case "travel": return 120;
     default: return 15;

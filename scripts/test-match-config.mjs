@@ -42,7 +42,9 @@ assert.equal(config.selectedMode("idiomas", "idiomas", "idioma-nome").key, "idio
 assert.equal(config.selectedMode("capitais", "escrita", "escrita-pais").key, "capital-pais", "estado incoerente cai no primeiro modo");
 
 // textos do ritmo
-assert.equal(config.paceHint("training", "mapa"), "Sem cronômetro. Rende só 25% das moedas.");
+assert.equal(config.paceHint("training", "mapa"), "Sem cronômetro. Rende só 50% das moedas. Cada país perguntado fica marcado no mapa com o nome, acertando ou errando.");
+assert.equal(config.paceHint("training", "capital-pais"), "Sem cronômetro. Rende só 50% das moedas. Cada país perguntado fica marcado no mapa com o nome, acertando ou errando.");
+assert.equal(config.paceHint("training", "nome-bandeira"), "Sem cronômetro. Rende só 50% das moedas.", "só marca no mapa nos modos que clicam nele");
 assert.equal(config.paceHint("timed", "mapa"), "20 s por pergunta. Acabou o tempo, conta como erro.");
 assert.equal(config.paceHint("timed", "nome-bandeira"), "15 s por pergunta. Acabou o tempo, conta como erro.");
 assert.equal(config.paceHint("timed", "travel"), "2 min por rota. Acabou o tempo, a rota conta como erro.");
@@ -59,12 +61,12 @@ assert.equal(timed.earnUnit, "moedas por acerto");
 const training = config.configSummary({ mode: atuais, direction: "flag-to-name", variant: "bandeira-nome", pace: "training", rounds: 10, regionText: "Europa", count: 55 });
 assert.equal(training.title, "Atuais · Bandeira → nome");
 assert.equal(training.sub, "Treino · 10 rodadas · Europa (55)");
-assert.equal(training.earn, "8 a 10");
-assert.equal(training.earnUnit, "moedas por acerto · 25%");
+assert.equal(training.earn, "16 a 20");
+assert.equal(training.earnUnit, "moedas por acerto · 50%");
 const silhouette = config.configSummary({ mode: config.modesFor("mapa")[1], variant: "silhueta-opcoes", pace: "timed", rounds: 20, regionText: "2 recortes", count: 82 });
 assert.equal(silhouette.title, "Silhueta · alternativas", "modo sem sentido não leva a direção");
 assert.equal(silhouette.earn, "56 a 70");
-assert.equal(silhouette.sub, "Partida 15 s · 20 rodadas · 2 recortes (82)");
+assert.equal(silhouette.sub, "Partida 20 s · 20 rodadas · 2 recortes (82)");
 const travel = config.configSummary({ mode: config.modesFor("mapa")[3], variant: "travel", pace: "timed", rounds: 5, regionText: "Mundo", count: 150 });
 assert.equal(travel.sub, "Partida 2 min · 5 rodadas · Mundo (150)");
 assert.equal(travel.earnUnit, "moedas por país da rota");
