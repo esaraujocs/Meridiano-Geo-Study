@@ -2,7 +2,7 @@
 
 Jogo de geografia em **pt-BR**, PWA feito em React 19 + Vite + TypeScript + MapLibre GL (mapa vetorial em PMTiles). Projeto pessoal do Enzo, poucos usuários, usado no **celular** (PWA instalado) e no PC. Nome "Meridiano" é provisório; por dentro ainda vale `carta-cega` (banco `carta-cega`, chaves `carta-*`).
 
-Este arquivo descreve o **rebuild** (estado em 24/09/2026). O jogo antigo, um único HTML (`carta-cega-0.13.5.html`), está **congelado**; o `CLAUDE.md` dele foi arquivado em `docs/legado-html-classico.md` (não é contexto de trabalho, mas guarda as regras de conteúdo e os bugs já mapeados). Histórico mais antigo: `historico-carta-cega.txt`.
+Este arquivo descreve o **rebuild** (estado em 25/09/2026). O jogo antigo, um único HTML (`carta-cega-0.13.5.html`), está **congelado**; o `CLAUDE.md` dele foi arquivado em `docs/legado-html-classico.md` (não é contexto de trabalho, mas guarda as regras de conteúdo e os bugs já mapeados). Histórico mais antigo: `historico-carta-cega.txt`.
 
 **Onde fica:** `Desktop\Geo Study - Meridian\carta-cega-rebuild` (git, branch `main`, só local, sem remoto). Ao lado ficam `carta-cega-servidor\` (túnel para testar no celular fora de casa) e `mockups-carta-cega\` (imagens de design).
 
@@ -25,7 +25,7 @@ Este arquivo descreve o **rebuild** (estado em 24/09/2026). O jogo antigo, um ú
 - **Ferramentas de debug:** abrir com `?debug=1` (fica ligado no navegador até `?debug=0`). Em Opções aparece o painel: jogador novo, zerar histórico/moedas, definir nível, nível das cartas, desbloquear conquistas, adicionar moedas, **"Liberar modos e recortes"** (libera todos os modos e os cortes de rodadas — é o jeito de testar Idiomas, Históricas e "Todas"), paleta do logo, "Restaurar dados reais".
 - **Só no `npm run dev`:** `window.__cartaMap` (instância do MapLibre) e `window.__cartaLastAnswer`. Dá para simular clique com `map.fire('click', { point, lngLat })`.
 - **Armadilhas ao testar o mapa no painel do Claude:** aba em segundo plano ou painel oculto faz o MapLibre demorar dezenas de segundos para carregar o terreno (só os marcadores aparecem); espere `map.loaded()` e `getLayer('land')` antes de clicar. Clicar antes disso dispara "Mapa indisponível" (ver seção 8). Não reinicie partida dezenas de vezes na mesma aba (contextos WebGL se esgotam): recarregue.
-- **Link para o celular fora de casa:** `carta-cega-servidor\iniciar-servidor.bat` (túnel Cloudflare rápido, sem conta; o link muda a cada execução e não tem senha). Usa o `dist/`, então rode `npm run build` antes. O caminho do projeto agora é relativo (`..\carta-cega-rebuild`).
+- **Link para o celular fora de casa:** `carta-cega-servidor\iniciar-servidor.bat` (túnel Cloudflare rápido, sem conta; o link muda a cada execução e não tem senha). Usa o `dist/`, então rode `npm run build` antes. O caminho do projeto agora é relativo (`..\carta-cega-rebuild`). O túnel só vive enquanto a janela do `iniciar-servidor.bat` (ou o processo `cloudflared`) estiver aberta: se o link "não abre", quase sempre é o túnel que caiu, não o jogo (o `localhost:5000` responde). Link novo = origem nova = progresso vazio até importar um backup.
 
 ---
 
@@ -51,6 +51,9 @@ Este arquivo descreve o **rebuild** (estado em 24/09/2026). O jogo antigo, um ú
 ### 3.2 Fluxo de telas
 Hub (4 famílias: Mapa, Bandeiras, Capitais, Idiomas; carrossel no celular) → "Configure a partida" (`match-config.tsx`: **Modo, Ritmo, Rodadas, Recorte, Filtro "Só membros da ONU"**) → partida → resultado (`result-screen.tsx`, moedas/XP). Fora da partida: Progresso (Perfil, Maestria, Conquistas, Desempenho), Coleção (Países / Históricas), Conquistas, Loja (temas), Opções (tema, movimento reduzido, barra de tempo, mapa offline, debug). `useLeaveGuard`: sair no meio **não paga moedas nem XP**; com ao menos uma resposta pede confirmação.
 
+### 3.2b Favoritas (configurações guardadas)
+Em "Configure a partida" a faixa **Favoritas** (`preset-bar.tsx`) guarda a configuração da tela (modo, ritmo, rodadas, recorte, filtro ONU): até **5 por família do Hub**, uma marcada **★** (principal). Tocar num chip preenche a tela (dá para ajustar e "Atualizar", renomear, marcar ★ ou apagar); repetir a mesma configuração não duplica; a primeira de cada família já vira ★; apagar a ★ passa a coroa à mais antiga. Só dá para salvar o que está liberado e tem cartas. Regras puras e testadas em `domain/presets.ts` (`npm run test:presets`); armazenamento na loja `preferences` (`preset:<id>`, `source: "preset-v1"`, em `presets-store.ts`), então **entram no Exportar/Importar progresso**. Existiu um atalho "Jogar favorita" no Hub; foi **retirado a pedido do Enzo (25/09)**: as favoritas vivem só na tela de configuração (a ★ hoje só ordena; ainda não aplica sozinha ao abrir a tela).
+
 ### 3.3 Motores de partida (cada família usa um)
 | componente | famílias/variantes |
 |---|---|
@@ -59,12 +62,16 @@ Hub (4 famílias: Mapa, Bandeiras, Capitais, Idiomas; carrossel no celular) → 
 | `special-quiz.tsx` (`SpecialQuiz`) | `historicas`, `idiomas`, `escrita` (digitada) |
 | `geometry-games.tsx` (`GeometryGame`) | `silhueta` (4 opções e digitada), `travel` |
 
+**Idiomas não avança sozinho:** depois de responder, o cartão do idioma fica na tela até a pessoa confirmar (botão Continuar ou Enter/Espaço; toque solto não pula) — `useAdvance.schedule(..., manual = true)` em `use-advance.ts`. Os outros modos seguem com o retorno temporizado (`feedback-timing.ts`).
+
 Todos usam **baralho finito sem repetição** (`finite-deck.ts`, `roundLimit` do corte; `null` = "Todas"), gravam a sessão por `startLearningSession` (`learning-store.ts`) e calculam moedas em `spoils.ts`. `game-shell.tsx` tem a barra do topo, o log de rodadas e as teclas.
 
 ### 3.4 Persistência (tudo local, nada de servidor)
 - **IndexedDB `carta-cega` v4** (`storage-schema.ts`): `sessions`, `progress` (uma carta por entidade), `ledger` (livro-caixa; saldo é derivado; crédito de fim de partida tem id `spoils:<sessionId>`), `unlocks` (`familia:variante`, `rounds:20|50|100|all`, `theme:*`), `achievements`, `historicalCollection`, `preferences`, `state`.
 - **localStorage:** `carta-theme`, `carta-pace`, `carta-round-tier`, `carta-last-variant:<família>`, `carta-flag-direction`, `carta-reduced-motion`, `carta-timer-late`, `carta-cega:debug`, `carta-cega:logo-palette`.
 - **Migração do perfil clássico** (`legacy-migration.ts`): importa `carta-cega.hist.v1`, `.histcol.v1`, `.pref.v1`, `.conq.v1` (versão 2). Ids únicos de migração (`grant:retroactive-v1`, `economy-v2-conversion` com fator 10) não podem ser reaplicados.
+
+- **Origem do navegador = seu progresso.** IndexedDB e localStorage valem por endereço exato (`localhost:5000`, `127.0.0.1:5000`, IP da rede e cada link novo do túnel Cloudflare são "sites" diferentes). Foi assim que o progresso "sumiu" em 24/09 (três origens com dados diferentes). **Exportar/Importar progresso** (Opções → Progresso, `progress-backup.ts`, `npm run test:backup`) leva tudo num `.json`: importa por **união por id** (nada é apagado; cartas repetidas somam acertos e a maestria é recalculada; compra repetida vale o **maior** preço pago, senão o preço antigo "devolvia" moedas; conquista mais antiga vence), numa transação só, com marcador `backup-import:<aparelho>:<data>` para não somar duas vezes e sem somar cartas se o arquivo veio do próprio aparelho. Preferências leves (tema, ritmo…) só entram se ainda não existirem.
 
 ### 3.5 PWA e offline
 `public/sw.js` (cache `carta-cega-shell-v2`); a lista de precache é **injetada no build** por um plugin em `vite.config.ts` (páginas, JSONs de dados, assets com hash e os dois arquivos do worker do MapLibre, que o Vite não emite e o plugin copia para `dist/assets`). O **mapa não é pré-cacheado**: o jogador baixa em Opções ("Baixar mapa", 27,8 MB) para o OPFS, e o service worker responde a requisições `Range` a partir dele. `MAP_BYTES` e `MAP_VERSION` (hash) existem em `offline-map.ts` **e** em `sw.js` e precisam bater com o `.pmtiles` real (`test:manifest` confere). Trocou o mapa? Atualize os três.
@@ -136,18 +143,18 @@ Todos usam **baralho finito sem repetição** (`finite-deck.ts`, `roundLimit` do
 
 ---
 
-## 7. Testes e estado (24/09/2026)
+## 7. Testes e estado (25/09/2026)
 
 - `tsc -b` limpo; `npm run build` ok (`dist/` gerado hoje).
-- **28 dos 31 testes de domínio passam.** Falham só por limite do Windows: `test:regions` (criar symlink dá EPERM), `test:map-round-engine` e `test:answer-options` (usam `file:///tmp/...`; corrigível trocando por `os.tmpdir()`). Não rodam aqui: os 3 de browser (precisam de `CHROMIUM_PATH`).
-- Cobertura: regras de domínio (economia, spoils, pace, conquistas, decks, migração, geometria, mapa, temas). **Não há teste de componente React**; o comportamento de tela é conferido no navegador.
-- Testes com números escritos à mão que quebram quando o balanceamento muda: `test-spoils.mjs`, `test-match-config.mjs`, `test-achievements.mjs` (lista de ids e total).
+- **30 dos 35 scripts `test:*` passam** (rodados todos em 25/09). Falham só por limite do Windows: `test:regions` (criar symlink dá EPERM), `test:map-round-engine` e `test:answer-options` (usam `file:///tmp/...`; corrigível trocando por `os.tmpdir()`). Não rodam aqui: os de browser `test:learning:browser` e `test:config-family-isolation` (precisam de `CHROMIUM_PATH`).
+- Cobertura: regras de domínio (economia, spoils, pace, conquistas, decks, migração, geometria, mapa, temas, **backup de progresso**, **favoritas**, curva de nível). **Não há teste de componente React**; o comportamento de tela é conferido no navegador.
+- Testes com números escritos à mão que quebram quando o balanceamento muda: `test-spoils.mjs` (inclui os níveis 50/150/300 XP), `test-economy.mjs`, `test-debug-rules.mjs`, `test-match-config.mjs`, `test-achievements.mjs` (lista de ids e total).
 
 ---
 
 ## 8. Pendências e problemas conhecidos
 
-- **Working tree sem commit** (último commit `9f3b2be`, 21/09): clique Marrocos/Saara, Treino marcando nomes e pagando 50%, cronômetros novos, conquistas 30→49 (`roundLimit` exposto em `progress-surfaces.ts`), testes, shim do Windows, `Jogar.bat`, `.gitattributes` (`*.bat` em CRLF), este documento e `docs/`. Commitar só quando o Enzo pedir; sugestão: separar por tema.
+- **Working tree:** tudo commitado até `8734b39` (mapa sem rotação), **menos as Favoritas** (`presets*.ts`, `preset-bar.tsx`, `test-presets.mjs` e edições em `app.tsx`/`match-config.tsx`/`icons.tsx`/`index.css`) e este documento, que aguardam o pedido de commit. Os arquivos soltos de `historico versoes antigas/` (8 HTMLs e uma pasta `historico .zip/`) nunca foram versionados: decidir se entram ou se a pasta sai do repositório.
 - **Saara Ocidental sob o Marrocos é problema do dado:** o polígono `504` (geoBoundaries) inclui a área reivindicada e o `732` é fallback legado. O `tapAt` só corrige o **clique**; o Saara continua visualmente encoberto, e com alvo Marrocos tocar no Saara provavelmente conta como acerto. Conserto de verdade: recortar o 504 pelo 732 na geração do mapa (precisa de tippecanoe) ou desenhar o 732 por cima com uma camada GeoJSON. O `ll` do 732 cai fora do próprio polígono (não é a causa).
 - **"Mapa indisponível" é fatal por qualquer erro:** `map.on("error")` grava `mapError`, e um clique antes de o estilo carregar ("layer 'land' does not exist") derruba a tela até recarregar. Real para dedo rápido em rede lenta; falta guardar `resolveAt` com `isStyleLoaded()`/`mapReady`.
 - **Travel diverge do clássico:** no rebuild a rota é digitada **na ordem**, com 10 tentativas e 3 pistas (a pista revela o próximo país) e 120 s por rota; o clássico aceitava qualquer ordem, dava feedback em 4 níveis e revelava a rota no mapa. Não foi decisão registrada — confirmar com o Enzo antes de mexer.
@@ -162,6 +169,8 @@ Todos usam **baralho finito sem repetição** (`finite-deck.ts`, `roundLimit` do
 
 - **Login (Google) e sincronização entre aparelhos** — só para o rebuild. Hoje tudo é local. Registros têm id único e só se acrescentam, então sincronizar tende a ser **união por id**; preferências, vale a última. Propostas: jogo continua funcionando sem conta e offline; primeiro login une tudo sem dobrar ids de migração; moedas/XP calculados no aparelho (dá para trapacear, aceito para uso pessoal); Node + SQLite + Google Identity Services em Docker; hospedagem no próprio PC/VPS por **túnel Cloudflare nomeado** (login Google exige endereço fixo → domínio próprio, ~R$ 40–60/ano). Ordem combinada: estabilizar → montar servidor → só depois segurança (nada de senha caseira, sempre HTTPS, servidor nunca exposto direto).
 - **Mapa de consulta (estudo, sem quiz):** ver o mundo com país e capital escritos, sem pontuação, tocar abre a ficha; entrada na tela de configuração dos modos Mapa e Capitais **como botão separado, não como valor de Ritmo** (decisão 3). Precisa de zoom progressivo (no mundo só os grandes mostram texto). Depende de escolher entre rótulos em HTML com decluttering escrito à mão (sem peça nova) ou montar fontes PBF para o MapLibre (nativo, com arquivos novos e offline).
+- **Salvar o progresso fora do navegador (ideia de 24/09, não iniciada):** o servidor local do `Jogar.bat` poderia gravar um arquivo por perfil (`saves/<nome>.json`, sem senha por enquanto), independente do endereço; o IndexedDB viraria cache e o Exportar/Importar já fornece o formato. Depende de saber se o Enzo joga também pelo celular (o PC teria de estar ligado).
+- **★ das Favoritas aplicar sozinha ao abrir a configuração da família** (hoje só ordena; o atalho no Hub foi retirado a pedido em 25/09).
 - **Modo "só os errados"**, **estados não reconhecidos** (Chipre do Norte, Somalilândia, Catalunha etc., quase sem arte), **Saba**, **"nível como cobertura"** (XP só por descoberta inédita; discutido, não aprovado).
 - **Engavetado por decisão do Enzo:** ranking/desafios entre pessoas (o jogo mede conhecimento, não velocidade; vale também para recorde local) e **interface em inglês** (não existe camada de i18n; seria iniciativa própria grande). Isto **substitui** o "economia descartada" do clássico: a economia existe e está em uso.
 - Idiomas: reativar os 7 suspensos (idioma local para Belize, Honduras e Nicarágua) e trocar os países só em `tambem` por idioma local com fonte (Somali, Kirundi, Kinyarwanda tonal, Tétum, crioulos de Cabo Verde e Guiné-Bissau, línguas do Sahel e árabe dialetal são os candidatos), escrita mongol tradicional só com suporte a texto vertical, e um sentido invertido ("frase → nome") pede outro layout.
