@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "carta-cega-static",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8834"],
-      "port": 8834
+      "name": "meridiano-dev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", "5000"],
+      "port": 5000
+    },
+    {
+      "name": "meridiano-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "preview", "--host", "127.0.0.1", "--port", "5000"],
+      "port": 5000
     }
   ]
 }
