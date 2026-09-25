@@ -25,7 +25,7 @@ export type AchievementSummary = {
   titles: string[];
   next: { name: string; current: number; target: number } | null;
 };
-export const EMPTY_ACHIEVEMENT_SUMMARY: AchievementSummary = { unlocked: 0, total: 30, titles: [], next: null };
+export const EMPTY_ACHIEVEMENT_SUMMARY: AchievementSummary = { unlocked: 0, total: 49, titles: [], next: null };
 
 export const clampPercent = (value: number) => Math.max(0, Math.min(100, Math.round(Number.isFinite(value) ? value : 0)));
 export const ratioPercent = (value: number, total: number) => (total > 0 ? clampPercent((value / total) * 100) : 0);

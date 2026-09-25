@@ -27,17 +27,22 @@ const {
 } = achievements;
 
 const expectedIds = [
-  "primeira", "seq10", "seq25", "perfeita", "perfeitaGrande", "certeiro",
+  "primeira", "seq10", "seq25", "perfeita", "perfeitaGrande", "certeiro", "travel20", "escrita100",
   "todosModos", "todosRecortes", "voltaAoMundo", "pacifico", "capitalRodada",
   "dom50", "dom150", "band100", "cap50", "cadaContinente", "continenteInteiro", "micro",
+  "silhueta50", "silhueta150", "historicas50", "historicas150", "idiomas40",
   "gExplorador", "gNavegador", "gGeografo", "forma", "evoluiu",
   "vexilologo", "cartografo", "diplomata", "cosmografo",
+  "mapaRecorte1", "mapaZonas3", "mapaSemFalhas",
+  "capitaisRecorte1", "capitaisZonas3", "capitaisSemFalhas",
+  "bandeirasRecorte1", "bandeirasZonas3", "bandeirasSemFalhas",
+  "idiomasRecorte1", "idiomasSemFalhas", "tresPilaresSemFalhas",
   "pescador", "relampago", "confins",
 ];
 
-assert.equal(ACHIEVEMENT_DEFINITIONS.length, 30);
+assert.equal(ACHIEVEMENT_DEFINITIONS.length, 49);
 assert.deepEqual(ACHIEVEMENT_DEFINITIONS.map((item) => item.id), expectedIds);
-assert.equal(new Set(expectedIds).size, 30);
+assert.equal(new Set(expectedIds).size, 49);
 assert.equal(ACHIEVEMENT_CATEGORIES.length, 6);
 assert.equal(ACHIEVEMENT_DEFINITIONS.filter((item) => item.hidden).length, 3);
 assert.deepEqual(new Set(ACHIEVEMENT_DEFINITIONS.map((item) => item.rarity)), new Set([1, 2, 3, 4, 5]));
@@ -74,6 +79,18 @@ const saturated = {
   byWater: 5,
   lightning: 10,
   confines: true,
+  perfectRegionsMapa: new Set(["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]),
+  perfectRegionsCapitais: new Set(["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]),
+  perfectRegionsBandeiras: new Set(["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]),
+  perfectRegionsIdiomas: new Set(["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]),
+  zonesMapa: new Set(["americas", "africa", "asia", "europa", "oceania"]),
+  zonesCapitais: new Set(["americas", "africa", "asia", "europa", "oceania"]),
+  zonesBandeiras: new Set(["americas", "africa", "asia", "europa", "oceania"]),
+  silhouettes: new Set(Array.from({ length: 150 }, (_, i) => "s" + i)),
+  historicalEntities: new Set(Array.from({ length: 150 }, (_, i) => "h" + i)),
+  languagesKnown: new Set(Array.from({ length: 40 }, (_, i) => "l" + i)),
+  travelRoutes: 20,
+  writtenCorrect: 100,
 };
 
 const allUnlocked = evaluateAchievementDefinitions(saturated);
@@ -110,6 +127,18 @@ const empty = {
   byWater: 0,
   lightning: 0,
   confines: false,
+  perfectRegionsMapa: new Set(),
+  perfectRegionsCapitais: new Set(),
+  perfectRegionsBandeiras: new Set(),
+  perfectRegionsIdiomas: new Set(),
+  zonesMapa: new Set(),
+  zonesCapitais: new Set(),
+  zonesBandeiras: new Set(),
+  silhouettes: new Set(),
+  historicalEntities: new Set(),
+  languagesKnown: new Set(),
+  travelRoutes: 0,
+  writtenCorrect: 0,
 };
 assert.equal(evaluateAchievementDefinitions(empty).some((item) => item.unlocked), false);
 
@@ -133,6 +162,23 @@ assert.equal(allUnlocked.find((item) => item.id === "certeiro")?.unlocked, true)
 assert.equal(allUnlocked.find((item) => item.id === "pescador")?.unlocked, true);
 assert.equal(allUnlocked.find((item) => item.id === "confins")?.unlocked, true);
 assert.equal(allUnlocked.find((item) => item.id === "cosmografo")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "mapaSemFalhas")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "capitaisSemFalhas")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "bandeirasSemFalhas")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "idiomasSemFalhas")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "idiomasRecorte1")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "tresPilaresSemFalhas")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "silhueta50")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "silhueta150")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "historicas50")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "historicas150")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "idiomas40")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "travel20")?.unlocked, true);
+assert.equal(allUnlocked.find((item) => item.id === "escrita100")?.unlocked, true);
+for (const mode of ["mapa", "capitais", "bandeiras"]) {
+  assert.equal(allUnlocked.find((item) => item.id === `${mode}Recorte1`)?.unlocked, true, `${mode}Recorte1 deveria estar desbloqueada`);
+  assert.equal(allUnlocked.find((item) => item.id === `${mode}Zonas3`)?.unlocked, true, `${mode}Zonas3 deveria estar desbloqueada`);
+}
 
 const realisticProgress = {
   total: 3,
@@ -210,4 +256,98 @@ const regionalContext = achievementContext(realisticProgress, [regionalCapital, 
 assert.equal(regionalContext.capitalRegions.size, 3, "capital achievements must consume all selected regions");
 assert.equal(regionalContext.worldComplete, true, "all-region union must count as Mundo");
 
-console.log("achievements: 30 canonical rules pass");
+// ---- "recorte sem falhas" (mapaSemFalhas/capitaisSemFalhas/bandeirasSemFalhas/idiomasSemFalhas):
+// baralho inteiro (roundLimit: null) + 100% de acerto + um recorte regional só (não Mundo, não combinado).
+const perfectDeck = (overrides = {}) => ({
+  id: "perfect-" + Math.random(),
+  family: "mapa",
+  variant: "mapa",
+  mode: "mapa",
+  region: "caribe",
+  complete: true,
+  roundLimit: null,
+  rounds: Array.from({ length: 5 }, (_, index) => ({ targetId: "c" + index, correct: true, responseTimeMs: 900 })),
+  correct: 5,
+  ...overrides,
+});
+const onlyMapaCaribe = achievementContext(realisticProgress, [perfectDeck()], {});
+assert.equal(onlyMapaCaribe.perfectRegionsMapa.size, 1, "baralho inteiro, 100%, recorte único: conta");
+assert.ok(onlyMapaCaribe.perfectRegionsMapa.has("caribe"));
+assert.equal(onlyMapaCaribe.perfectRegionsCapitais.size, 0, "não vaza pra outro modo");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ roundLimit: 20 })], {}).perfectRegionsMapa.size, 0, "corte de rodadas (não \"Todas\") não conta");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ roundLimit: undefined })], {}).perfectRegionsMapa.size, 0, "partida sem o campo roundLimit (migrada) não conta");
+const missedOne = perfectDeck({ correct: 4, rounds: [...Array.from({ length: 4 }, (_, i) => ({ targetId: "c" + i, correct: true, responseTimeMs: 900 })), { targetId: "c4", correct: false, responseTimeMs: 900 }] });
+assert.equal(achievementContext(realisticProgress, [missedOne], {}).perfectRegionsMapa.size, 0, "menos de 100% não conta");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ region: "mundo" })], {}).perfectRegionsMapa.size, 0, "Mundo fica de fora (tem a conquista própria \"Volta ao mundo\")");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ region: undefined, regions: ["caribe", "europa"] })], {}).perfectRegionsMapa.size, 0, "seleção de vários recortes juntos não conta pra nenhum dos dois");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ complete: false })], {}).perfectRegionsMapa.size, 0, "partida abandonada não conta");
+const sevenRegions = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]
+  .map((region) => perfectDeck({ region }));
+const sevenContext = achievementContext(realisticProgress, sevenRegions, {});
+assert.equal(sevenContext.perfectRegionsMapa.size, 7, "os 7 recortes regionais, cada um com sua própria partida");
+const sevenState = evaluateAchievementDefinitions(sevenContext);
+assert.equal(sevenState.find((item) => item.id === "mapaSemFalhas")?.unlocked, true, "os 7 recortes fecham a conquista");
+assert.equal(sevenState.find((item) => item.id === "capitaisSemFalhas")?.unlocked, false, "só o modo jogado desbloqueia, não os outros três");
+assert.equal(sevenState.find((item) => item.id === "bandeirasSemFalhas")?.unlocked, false);
+assert.equal(sevenState.find((item) => item.id === "idiomasSemFalhas")?.unlocked, false);
+assert.equal(sevenState.find((item) => item.id === "tresPilaresSemFalhas")?.unlocked, false, "grand slam exige os três modos, não só um");
+const idiomasSeven = achievementContext(realisticProgress, sevenRegions.map((s) => ({ ...s, family: "idiomas", variant: "idioma-nome", mode: "idioma-nome" })), {});
+assert.equal(evaluateAchievementDefinitions(idiomasSeven).find((item) => item.id === "idiomasSemFalhas")?.unlocked, true, "o mesmo critério vale para idiomas");
+
+// ---- zonas: as 4 zonas de recorte único fecham com 1 partida; Américas exige os 3 recortes americanos.
+assert.equal(onlyMapaCaribe.zonesMapa.size, 0, "Caribe sozinho não fecha a zona Américas (falta América do Sul e do Norte e Central)");
+const africaOnly = achievementContext(realisticProgress, [perfectDeck({ region: "africa" })], {});
+assert.deepEqual([...africaOnly.zonesMapa], ["africa"], "zona de recorte único fecha com 1 partida só");
+const americasTwoOfThree = achievementContext(realisticProgress, [perfectDeck({ region: "caribe" }), perfectDeck({ region: "america-do-sul" })], {});
+assert.equal(americasTwoOfThree.zonesMapa.has("americas"), false, "2 dos 3 recortes americanos ainda não fecha a zona");
+const americasComplete = achievementContext(realisticProgress, [perfectDeck({ region: "caribe" }), perfectDeck({ region: "america-do-sul" }), perfectDeck({ region: "america-do-norte-central" })], {});
+assert.equal(americasComplete.zonesMapa.has("americas"), true, "os 3 recortes americanos fecham a zona Américas");
+const americasCompleteState = evaluateAchievementDefinitions(americasComplete);
+assert.equal(americasCompleteState.find((item) => item.id === "mapaRecorte1")?.unlocked, true, "1 recorte perfeito (Caribe) já basta pro 1º degrau");
+assert.equal(americasCompleteState.find((item) => item.id === "mapaZonas3")?.unlocked, false, "só 1 zona (Américas) fechada, o 2º degrau pede 3");
+assert.equal(americasCompleteState.find((item) => item.id === "capitaisRecorte1")?.unlocked, false, "zona isolada por modo, igual perfectRegions");
+assert.equal(sevenContext.zonesMapa.size, 5, "as 7 regiões perfeitas fecham as 5 zonas (3 delas viram só 1 zona: Américas)");
+assert.equal(evaluateAchievementDefinitions(sevenContext).find((item) => item.id === "mapaZonas3")?.unlocked, true, "5 zonas passa fácil do piso de 3");
+const exactlyThreeZones = achievementContext(realisticProgress, [perfectDeck({ region: "africa" }), perfectDeck({ region: "asia" }), perfectDeck({ region: "europa" })], {});
+assert.equal(exactlyThreeZones.zonesMapa.size, 3, "3 recortes de zona única = 3 zonas");
+assert.equal(evaluateAchievementDefinitions(exactlyThreeZones).find((item) => item.id === "mapaZonas3")?.unlocked, true, "bate exatamente o piso do 2º degrau");
+const onlyTwoZones = achievementContext(realisticProgress, [perfectDeck({ region: "africa" }), perfectDeck({ region: "asia" })], {});
+assert.equal(evaluateAchievementDefinitions(onlyTwoZones).find((item) => item.id === "mapaZonas3")?.unlocked, false, "2 zonas ainda não bate o piso de 3");
+
+// ---- grand slam: só fecha com os três modos (mapa+capitais+bandeiras) no 7 de 7 ao mesmo tempo.
+const threeModesSeven = sevenRegions
+  .concat(sevenRegions.map((s) => ({ ...s, family: "capitais", variant: "capital-pais", mode: "capital-pais" })))
+  .concat(sevenRegions.map((s) => ({ ...s, family: "bandeiras", variant: "bandeira-nome", mode: "bandeira-nome" })));
+const slamContext = achievementContext(realisticProgress, threeModesSeven, {});
+assert.equal(slamContext.perfectRegionsMapa.size, 7);
+assert.equal(slamContext.perfectRegionsCapitais.size, 7);
+assert.equal(slamContext.perfectRegionsBandeiras.size, 7);
+assert.equal(evaluateAchievementDefinitions(slamContext).find((item) => item.id === "tresPilaresSemFalhas")?.unlocked, true, "os três modos fechados ao mesmo tempo desbloqueiam o grand slam");
+
+// ---- cobertura nova: Silhueta, Históricas, Idiomas (distintos), Travel e Escrita nunca tinham conquista própria.
+const coverageSession = (family, correctIds) => ({
+  id: "cov-" + family, family, variant: family, mode: family, region: "mundo", complete: true,
+  rounds: correctIds.map((id) => ({ targetId: id, correct: true, responseTimeMs: 900 })),
+  correct: correctIds.length,
+});
+const coverageContext = achievementContext(realisticProgress, [
+  coverageSession("silhueta", ["p1", "p2", "p3"]),
+  coverageSession("historicas", ["h1", "h2"]),
+  coverageSession("idiomas", ["l1"]),
+  coverageSession("travel", ["r1", "r2"]),
+  coverageSession("escrita", ["e1", "e2", "e3", "e4"]),
+], {});
+assert.equal(coverageContext.silhouettes.size, 3, "silhuetas distintas acertadas");
+assert.equal(coverageContext.historicalEntities.size, 2, "entidades históricas distintas acertadas");
+assert.equal(coverageContext.languagesKnown.size, 1, "idiomas distintos reconhecidos");
+assert.equal(coverageContext.travelRoutes, 2, "rotas de Travel fechadas (cada rodada correta = 1 rota)");
+assert.equal(coverageContext.writtenCorrect, 4, "respostas digitadas certas (país + capital juntos)");
+// um erro no meio não conta, e família errada não vaza pro contador de outra
+const withMissAndWrongFamily = achievementContext(realisticProgress, [
+  { ...coverageSession("silhueta", ["p1"]), rounds: [{ targetId: "p1", correct: true, responseTimeMs: 900 }, { targetId: "p2", correct: false, responseTimeMs: 900 }] },
+  coverageSession("mapa", ["m1", "m2"]),
+], {});
+assert.equal(withMissAndWrongFamily.silhouettes.size, 1, "só o acerto conta, o erro não");
+assert.equal(withMissAndWrongFamily.historicalEntities.size, 0, "sessão de outro modo não vaza pro contador de históricas");
+
+console.log("achievements: 49 canonical rules pass");

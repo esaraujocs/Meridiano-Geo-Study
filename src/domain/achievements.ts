@@ -26,9 +26,50 @@ export type AchievementContext = {
   micro: number; continents: number; wholeContinent: boolean; masteryIndex: number;
   fit: boolean; evolved: boolean; titles: Set<string>; cosmo: boolean;
   byWater: number; lightning: number; confines: boolean;
+  /** Recortes (dos 7 regionais, Mundo à parte) fechados com o baralho inteiro e 100% de acerto, por modo. */
+  perfectRegionsMapa: Set<string>; perfectRegionsCapitais: Set<string>;
+  perfectRegionsBandeiras: Set<string>; perfectRegionsIdiomas: Set<string>;
+  /** As 5 zonas (ver ZONES) já fechadas, por modo — cada zona exige todo recorte dela em perfectRegions. */
+  zonesMapa: Set<string>; zonesCapitais: Set<string>; zonesBandeiras: Set<string>;
+  /** Cobertura dos modos que nunca tiveram conquista própria (ver seção "revisitada" de 23/09/2026). */
+  silhouettes: Set<string>; historicalEntities: Set<string>; languagesKnown: Set<string>;
+  travelRoutes: number; writtenCorrect: number;
 };
 const one = (f: (c: AchievementContext) => boolean) => ({ target: () => 1, progress: (c: AchievementContext) => f(c) ? 1 : 0 });
 const finiteTarget = (c: AchievementContext, min: number, fallback: number) => Math.max(min, Math.min(fallback, c.completed[0]?.rounds.length || fallback));
+
+// Um recorte só conta se for um único recorte regional (não Mundo, não uma seleção combinada de vários) —
+// "concluir o recorte" não faz sentido pra uma mistura de dois, o total muda.
+const NON_WORLD_REGIONS = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
+const singleRegionOf = (s: SurfaceSession): string | null => {
+  const region = s.regions?.length ? (s.regions.length === 1 ? s.regions[0] : null) : s.region;
+  return region && NON_WORLD_REGIONS.includes(region) ? region : null;
+};
+// "Baralho inteiro" só é verificável se a sessão gravou `roundLimit` — em partida antiga migrada esse campo
+// não existe (`undefined`), então ela nunca conta pra essas conquistas novas, mesmo se por acaso bateu 100%.
+const perfectRegionsFor = (sessions: readonly SurfaceSession[], family: string) => {
+  const regions = new Set<string>();
+  for (const s of sessions) {
+    if (s.family !== family || s.roundLimit !== null || !s.complete) continue;
+    if (!s.rounds.length || s.correct !== s.rounds.length) continue;
+    const region = singleRegionOf(s);
+    if (region) regions.add(region);
+  }
+  return regions;
+};
+
+// Os 7 recortes regionais agrupados em 5 zonas maiores, só para as conquistas "zona sem falhas" — não muda
+// a tela de Recorte nem exige uma partida combinada: cada recorte da zona ainda precisa ser fechado sozinho
+// (perfectRegionsFor já garante isso). Américas junta os 3 recortes americanos; os outros 4 já eram um só.
+const ZONES: { id: string; label: string; regions: string[] }[] = [
+  { id: "americas", label: "Américas", regions: ["caribe", "america-do-sul", "america-do-norte-central"] },
+  { id: "africa", label: "África", regions: ["africa"] },
+  { id: "asia", label: "Ásia", regions: ["asia"] },
+  { id: "europa", label: "Europa", regions: ["europa"] },
+  { id: "oceania", label: "Oceania", regions: ["pacifico"] },
+];
+const zonesFor = (perfectRegions: Set<string>) =>
+  new Set(ZONES.filter((zone) => zone.regions.every((region) => perfectRegions.has(region))).map((zone) => zone.id));
 
 export const ACHIEVEMENT_CATEGORIES = [
   { id: "hab", label: "Habilidade", icon: "target" },
@@ -46,27 +87,55 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   { id:"perfeita",category:"hab",rarity:3,name:"Partida limpa",description:"100% numa partida de 20 rodadas ou mais.",...one(c=>c.perfect20) },
   { id:"perfeitaGrande",category:"hab",rarity:4,name:"Impecável",description:"100% numa partida de 40 rodadas ou mais.",...one(c=>c.perfect40) },
   { id:"certeiro",category:"hab",rarity:2,name:"Mão firme",description:"Erro médio abaixo de 500 km numa partida completa de Clicar no mapa (acerto vale 0 km).",...one(c=>c.precise) },
+  { id:"travel20",category:"hab",rarity:3,name:"Trilha fechada",description:"Feche 20 rotas no modo Travel.",target:()=>20,progress:c=>c.travelRoutes},
+  { id:"escrita100",category:"hab",rarity:3,name:"Ortografia de campeão",description:"100 respostas certas digitadas (país ou capital), com acento e tudo.",target:()=>100,progress:c=>c.writtenCorrect},
   { id:"todosModos",category:"exp",rarity:1,name:"Quatro caminhos",description:"Jogue os quatro modos.",target:()=>4,progress:c=>c.modes.size},
   { id:"todosRecortes",category:"exp",rarity:2,name:"Sete mares",description:"Complete uma partida em cada recorte.",target:()=>7,progress:c=>c.regions.size},
-  { id:"voltaAoMundo",category:"exp",rarity:3,name:"Volta ao mundo",description:"Complete o baralho inteiro do recorte Mundo.",...one(c=>c.worldComplete) },
-  { id:"pacifico",category:"exp",rarity:2,name:"Chamado do Pacífico",description:"Complete uma partida no recorte Pacífico.",...one(c=>c.regions.has("oceania") || c.regions.has("pacifico")) },
+  { id:"voltaAoMundo",category:"exp",rarity:4,name:"Volta ao mundo",description:"Complete o baralho inteiro do recorte Mundo.",...one(c=>c.worldComplete) },
+  { id:"pacifico",category:"exp",rarity:1,name:"Chamado do Pacífico",description:"Complete uma partida no recorte Pacífico.",...one(c=>c.regions.has("oceania") || c.regions.has("pacifico")) },
   { id:"capitalRodada",category:"exp",rarity:2,name:"Turnê diplomática",description:"Complete partidas de capital em 3 recortes.",target:()=>3,progress:c=>c.capitalRegions.size},
-  { id:"dom50",category:"conh",rarity:2,name:"Cinquenta na ponta da língua",description:"Domine 50 países.",target:()=>50,progress:c=>c.dominated},
+  { id:"dom50",category:"conh",rarity:3,name:"Cinquenta na ponta da língua",description:"Domine 50 países.",target:()=>50,progress:c=>c.dominated},
   { id:"dom150",category:"conh",rarity:4,name:"Cento e cinquenta",description:"Domine 150 países.",target:()=>150,progress:c=>c.dominated},
-  { id:"band100",category:"conh",rarity:2,name:"Cem panos",description:"Acerte 100 bandeiras diferentes.",target:()=>100,progress:c=>c.flags},
+  { id:"band100",category:"conh",rarity:3,name:"Cem panos",description:"Acerte 100 bandeiras diferentes.",target:()=>100,progress:c=>c.flags},
   { id:"cap50",category:"conh",rarity:2,name:"Cinquenta capitais",description:"Acerte 50 capitais diferentes.",target:()=>50,progress:c=>c.capitals},
   { id:"cadaContinente",category:"conh",rarity:1,name:"Pé em cada continente",description:"Domine ao menos um país de cada continente.",target:()=>5,progress:c=>c.continents},
   { id:"continenteInteiro",category:"conh",rarity:4,name:"Continente na palma",description:"Domine todos os países de um continente.",...one(c=>c.wholeContinent) },
   { id:"micro",category:"conh",rarity:3,name:"Os que ninguém vê",description:"Domine 10 países com menos de 1.000 km².",target:()=>10,progress:c=>c.micro},
+  // Silhueta e Históricas nunca tiveram conquista própria; Idiomas só tinha as de recorte (ver seção acima).
+  // Mesmo padrão de dom50/dom150 e band100/cap50: contagem de entidades distintas já acertadas.
+  { id:"silhueta50",category:"conh",rarity:3,name:"Silhuetas na ponta dos dedos",description:"Reconheça 50 silhuetas de países diferentes.",target:()=>50,progress:c=>c.silhouettes.size},
+  { id:"silhueta150",category:"conh",rarity:4,name:"Contorno de cor",description:"Reconheça 150 silhuetas de países diferentes.",target:()=>150,progress:c=>c.silhouettes.size},
+  { id:"historicas50",category:"conh",rarity:3,name:"Colecionador de impérios",description:"Acerte 50 entidades históricas diferentes.",target:()=>50,progress:c=>c.historicalEntities.size},
+  { id:"historicas150",category:"conh",rarity:4,name:"Arquivista do tempo",description:"Acerte 150 entidades históricas diferentes.",target:()=>150,progress:c=>c.historicalEntities.size},
+  { id:"idiomas40",category:"conh",rarity:3,name:"Poliglota de vista",description:"Reconheça 40 idiomas diferentes pela escrita.",target:()=>40,progress:c=>c.languagesKnown.size},
   { id:"gExplorador",category:"evo",rarity:1,name:"Explorador",description:"Chegue a Explorador na maestria global.",...one(c=>c.masteryIndex>=2) },
   { id:"gNavegador",category:"evo",rarity:2,name:"Navegador",description:"Chegue a Navegador na maestria global.",...one(c=>c.masteryIndex>=3) },
   { id:"gGeografo",category:"evo",rarity:3,name:"Geógrafo",description:"Chegue a Geógrafo na maestria global.",...one(c=>c.masteryIndex>=4) },
-  { id:"forma",category:"evo",rarity:2,name:"Em boa forma",description:"90% de forma recente em algum pilar.",...one(c=>c.fit) },
+  { id:"forma",category:"evo",rarity:3,name:"Em boa forma",description:"90% de forma recente em algum pilar.",...one(c=>c.fit) },
   { id:"evoluiu",category:"evo",rarity:3,name:"Outro jogador",description:"Suas 5 últimas partidas estão 15 pontos acima das 5 primeiras.",...one(c=>c.evolved) },
   { id:"vexilologo",category:"dom",rarity:4,name:"Vexilólogo",description:"Especialista em Bandeiras, validado na escrita.",...one(c=>c.titles.has("Vexilólogo")) },
   { id:"cartografo",category:"dom",rarity:4,name:"Cartógrafo",description:"Especialista no Mapa.",...one(c=>c.titles.has("Cartógrafo")) },
   { id:"diplomata",category:"dom",rarity:4,name:"Diplomata",description:"Especialista em Capitais, validado na escrita.",...one(c=>c.titles.has("Diplomata")) },
   { id:"cosmografo",category:"dom",rarity:5,name:"Cosmógrafo",description:"Os três pilares no topo, com a escrita validada.",...one(c=>c.cosmo) },
+  // Escada de 3 degraus por modo — 1 recorte qualquer (Rara) → 3 das 5 zonas (Épica) → as 7 (Lendária).
+  // Evitei uma conquista nomeada por zona (Américas/África/...) × modo: eram 15 quase idênticas, só
+  // trocando a região — o degrau "3 de 5" já cobre a ideia de "cobrir o mundo" sem esse tanto de entradas.
+  // O 1º degrau usa o recorte cru (não a zona): a zona Américas sozinha exige os 3 recortes americanos,
+  // o que faria o primeiro degrau de todos os jeitos depender de qual recorte o jogador fecha primeiro.
+  { id:"mapaRecorte1",category:"dom",rarity:3,name:"Primeira fronteira sem erro",description:"100% no baralho inteiro de 1 recorte regional qualquer, no modo Mapa.",target:()=>1,progress:c=>c.perfectRegionsMapa.size},
+  { id:"mapaZonas3",category:"dom",rarity:4,name:"Metade do globo, zero erro",description:"100% no baralho inteiro de pelo menos 3 das 5 zonas (Américas, África, Ásia, Europa, Oceania), no modo Mapa.",target:()=>3,progress:c=>c.zonesMapa.size},
+  { id:"mapaSemFalhas",category:"dom",rarity:5,name:"Mapa sem falhas",description:"100% de acerto no baralho inteiro de cada um dos 7 recortes regionais, no modo Mapa (Clicar no mapa) — as 5 zonas fechadas.",target:()=>7,progress:c=>c.perfectRegionsMapa.size},
+  { id:"capitaisRecorte1",category:"dom",rarity:3,name:"Primeira embaixada perfeita",description:"100% no baralho inteiro de 1 recorte regional qualquer, no modo Capitais.",target:()=>1,progress:c=>c.perfectRegionsCapitais.size},
+  { id:"capitaisZonas3",category:"dom",rarity:4,name:"Corpo diplomático afiado",description:"100% no baralho inteiro de pelo menos 3 das 5 zonas (Américas, África, Ásia, Europa, Oceania), no modo Capitais.",target:()=>3,progress:c=>c.zonesCapitais.size},
+  { id:"capitaisSemFalhas",category:"dom",rarity:5,name:"Capitais sem falhas",description:"100% de acerto no baralho inteiro de cada um dos 7 recortes regionais, no modo Capitais (Clicar no mapa) — as 5 zonas fechadas.",target:()=>7,progress:c=>c.perfectRegionsCapitais.size},
+  { id:"bandeirasRecorte1",category:"dom",rarity:3,name:"Primeiro mastro sem erro",description:"100% no baralho inteiro de 1 recorte regional qualquer, no modo Bandeiras.",target:()=>1,progress:c=>c.perfectRegionsBandeiras.size},
+  { id:"bandeirasZonas3",category:"dom",rarity:4,name:"Hasteamento impecável",description:"100% no baralho inteiro de pelo menos 3 das 5 zonas (Américas, África, Ásia, Europa, Oceania), no modo Bandeiras.",target:()=>3,progress:c=>c.zonesBandeiras.size},
+  { id:"bandeirasSemFalhas",category:"dom",rarity:5,name:"Bandeiras sem falhas",description:"100% de acerto no baralho inteiro de cada um dos 7 recortes regionais, no modo Bandeiras (Atuais) — as 5 zonas fechadas.",target:()=>7,progress:c=>c.perfectRegionsBandeiras.size},
+  // Idiomas tem escopo bem menor (77 entradas ao todo, algumas regiões com só 3-4) — sem escada de zona,
+  // só um primeiro degrau (1 recorte qualquer) e o topo (os 7).
+  { id:"idiomasRecorte1",category:"dom",rarity:3,name:"Primeiro recorte de idiomas",description:"100% de acerto no baralho inteiro de um recorte regional, no modo Idiomas.",...one(c=>c.perfectRegionsIdiomas.size>=1) },
+  { id:"idiomasSemFalhas",category:"dom",rarity:5,name:"Idiomas sem falhas",description:"100% de acerto no baralho inteiro de cada um dos 7 recortes regionais, no modo Idiomas.",target:()=>7,progress:c=>c.perfectRegionsIdiomas.size},
+  { id:"tresPilaresSemFalhas",category:"dom",rarity:5,name:"Três pilares, zero falhas",description:"Mapa sem falhas, Capitais sem falhas e Bandeiras sem falhas ao mesmo tempo — os 7 recortes perfeitos nos três modos.",...one(c=>c.perfectRegionsMapa.size===7 && c.perfectRegionsCapitais.size===7 && c.perfectRegionsBandeiras.size===7) },
   { id:"pescador",category:"desc",rarity:3,hidden:true,name:"Pescador de ilhas",description:"Acerte 5 países tocando no mar.",target:()=>5,progress:c=>c.byWater},
   { id:"relampago",category:"desc",rarity:3,hidden:true,name:"Relâmpago",description:"10 acertos seguidos com menos de 1,5s cada.",target:()=>10,progress:c=>c.lightning},
   { id:"confins",category:"desc",rarity:4,hidden:true,name:"Confins do mapa",description:"Acerte Tuvalu, Nauru e Palau na mesma partida.",...one(c=>c.confines) },
@@ -79,6 +148,8 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
   const capitalRegions = new Set(completed.filter(s => s.variant === "capital" || s.mode.includes("capital"))
     .flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
   let bestStreak=0, byWater=0, lightning=0, flagsSet=new Set<string>(), capSet=new Set<string>(), perfect20=false, perfect40=false, precise=false, confines=false, worldComplete=false;
+  let travelRoutes=0, writtenCorrect=0;
+  const silhouettesSet=new Set<string>(), historicalSet=new Set<string>(), languagesSet=new Set<string>();
   for (const s of sessions) {
     let streak=0, rapid=0; const tiny=new Set<string>();
     for (const r of s.rounds) {
@@ -88,6 +159,12 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
       if (r.responseTimeMs === null || r.responseTimeMs >= 1500) { rapid=0; }
       if (s.family==="bandeiras" && r.correct) flagsSet.add(r.targetId);
       if ((s.variant==="capital" || s.mode.includes("capital")) && r.correct) capSet.add(r.targetId);
+      // Modos que nunca tiveram conquista própria (ver seção "revisitada" de 23/09/2026).
+      if (s.family==="silhueta" && r.correct) silhouettesSet.add(r.targetId);
+      if (s.family==="historicas" && r.correct) historicalSet.add(r.targetId);
+      if (s.family==="idiomas" && r.correct) languagesSet.add(r.targetId);
+      if (s.family==="travel" && r.correct) travelRoutes++;
+      if (s.family==="escrita" && r.correct) writtenCorrect++;
     }
     if (s.complete && s.rounds.length && s.correct===s.rounds.length) { if(s.rounds.length>=20) perfect20=true; if(s.rounds.length>=40) perfect40=true; }
     if (s.mode==="mapa" && s.complete) { const error = meanMapErrorKm(s.rounds); if (error && error.rounds >= MAP_ERROR_MIN_ROUNDS && error.km < MAP_ERROR_GOAL_KM) precise=true; }
@@ -124,9 +201,20 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
   if (strong("mapa")) titles.add("Cartógrafo");
   if (strong("capitais") && writingValidated) titles.add("Diplomata");
   const cosmo = ["bandeiras","mapa","capitais"].every(key => (progress.pillars[key]?.bayesianScore ?? 0) >= .9) && (progress.pillars.escrita?.correct ?? 0) > 0;
+  const perfectRegionsMapa = perfectRegionsFor(sessions, "mapa");
+  const perfectRegionsCapitais = perfectRegionsFor(sessions, "capitais");
+  const perfectRegionsBandeiras = perfectRegionsFor(sessions, "bandeiras");
+  const perfectRegionsIdiomas = perfectRegionsFor(sessions, "idiomas");
+  const zonesMapa = zonesFor(perfectRegionsMapa);
+  const zonesCapitais = zonesFor(perfectRegionsCapitais);
+  const zonesBandeiras = zonesFor(perfectRegionsBandeiras);
   return {progress,sessions,completed,modes,regions,capitalRegions,bestStreak,perfect20,perfect40,precise,worldComplete,
     dominated: mastered.length, flags: flagsSet.size, capitals: capSet.size, micro, continents, wholeContinent,
-    masteryIndex,fit,evolved,titles,cosmo,byWater,lightning,confines};
+    masteryIndex,fit,evolved,titles,cosmo,byWater,lightning,confines,
+    perfectRegionsMapa,perfectRegionsCapitais,perfectRegionsBandeiras,perfectRegionsIdiomas,
+    zonesMapa,zonesCapitais,zonesBandeiras,
+    silhouettes: silhouettesSet, historicalEntities: historicalSet, languagesKnown: languagesSet,
+    travelRoutes, writtenCorrect};
 }
 
 // Registros salvos: `{ id: "current:seq10", achievementId: "seq10" }` (perfil atual) ou `{ id: "seq10" }` (perfil clássico migrado).

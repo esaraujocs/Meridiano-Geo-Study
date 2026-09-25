@@ -23,6 +23,9 @@ export type SurfaceSession = {
   rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean }>;
   /** Rodadas jogadas: as listadas em `rounds` ou, em partida antiga já resumida, o total do resumo. */
   roundCount: number;
+  /** Tamanho pedido ao começar (10/20/50/100) ou `null` quando o jogador escolheu "Todas" — o baralho
+   * inteiro do recorte. `undefined` em partida antiga migrada, que não carrega esse dado. */
+  roundLimit?: number | null;
   /** Pilar gravado pelo perfil clássico migrado, quando existe. */
   column?: string;
   /** "pais" ou "capital" (assunto da partida). */
@@ -108,6 +111,7 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     complete: Boolean(value?.complete ?? value?.completa),
     rounds,
     roundCount: total,
+    roundLimit: value?.roundLimit === null ? null : typeof value?.roundLimit === "number" ? value.roundLimit : undefined,
     column: typeof value?.column === "string" ? value.column : undefined,
     subject: typeof value?.subject === "string" ? value.subject : typeof value?.assunto === "string" ? value.assunto : undefined,
     correct,
