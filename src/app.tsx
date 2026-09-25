@@ -101,7 +101,7 @@ export function App() {
     xp: 0,
     level: 1,
     xpBase: 0,
-    xpNext: 100,
+    xpNext: 50,
     rounds: 0,
     completedSessions: 0,
     dominated: 0,

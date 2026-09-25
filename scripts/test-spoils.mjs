@@ -160,14 +160,14 @@ assert.equal(view.formatDuration(160000), "2 min 40 s");
 assert.equal(view.formatDuration(48000), "48 s");
 assert.equal(view.formatDuration(120000), "2 min");
 assert.equal(view.formatDuration(-5), "0 s");
-assert.deepEqual([0, 99, 100, 299, 300].map(view.levelAt), [1, 1, 2, 2, 3]);
-assert.deepEqual(view.xpSegments(40, 75), [{ level: 1, span: 100, from: 40, to: 75, levelUp: false }]);
-assert.deepEqual(view.xpSegments(90, 130), [
-  { level: 1, span: 100, from: 90, to: 100, levelUp: true },
-  { level: 2, span: 200, from: 0, to: 30, levelUp: false },
+assert.deepEqual([0, 49, 50, 149, 150].map(view.levelAt), [1, 1, 2, 2, 3]);
+assert.deepEqual(view.xpSegments(20, 40), [{ level: 1, span: 50, from: 20, to: 40, levelUp: false }]);
+assert.deepEqual(view.xpSegments(45, 65), [
+  { level: 1, span: 50, from: 45, to: 50, levelUp: true },
+  { level: 2, span: 100, from: 0, to: 15, levelUp: false },
 ]);
-assert.equal(view.xpSegments(90, 320).length, 3, "duas subidas de nível");
-assert.equal(view.xpSegments(100, 100).length, 1);
+assert.equal(view.xpSegments(45, 160).length, 3, "duas subidas de nível");
+assert.equal(view.xpSegments(50, 50).length, 1);
 
 const session = {
   variant: "silhueta", startedAt: 1000, endedAt: 161000, complete: true, pace: "timed", timerSeconds: 30,

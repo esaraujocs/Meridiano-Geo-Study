@@ -79,11 +79,12 @@ const transformedPositive = migration.transformLegacy({ history: { sessoes: [
   { ini: 300, modo: "bn", completa: true, r: [["positive", true, 8000]] },
 ] } });
 assert.equal(economy.dominatedFromSessions(transformedPositive.sessions), 1);
-for (const [xp, level, base, next] of [[0, 1, 0, 100], [99, 1, 0, 100], [100, 2, 100, 300], [299, 2, 100, 300], [300, 3, 300, 600]]) {
-  let actual = 1;
-  while (50 * actual * (actual + 1) <= xp) actual += 1;
+const curve = await import(`file://${out}/player-level.js`);
+for (const [xp, level, base, next] of [[0, 1, 0, 50], [49, 1, 0, 50], [50, 2, 50, 150], [149, 2, 50, 150], [150, 3, 150, 300]]) {
+  const actual = curve.levelForXp(xp);
   assert.equal(actual, level);
-  assert.equal(50 * (actual - 1) * actual, base);
-  assert.equal(50 * actual * (actual + 1), next);
+  assert.equal(curve.xpForLevel(actual), base);
+  assert.equal(curve.xpForLevel(actual + 1), next);
 }
+assert.equal(curve.levelForXp(1e9) > 100, true, "sem teto de nível");
 console.log("economy rules: ok");

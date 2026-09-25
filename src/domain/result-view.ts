@@ -2,6 +2,7 @@
 import type { AnyQuizVariant } from "./types";
 import type { Pace, Spoils } from "./spoils";
 import { MAP_ERROR_GOAL_KM, meanMapErrorKm } from "./map-error.js";
+import { levelForXp, xpForLevel } from "./player-level.js";
 
 export type ResultSessionLike = {
   variant: AnyQuizVariant;
@@ -66,13 +67,11 @@ export function formatDuration(ms: number) {
 }
 const formatSeconds = (seconds: number) => (seconds >= 60 && seconds % 60 === 0 ? `${seconds / 60} min` : `${seconds} s`);
 
-// Níveis: o nível N começa em 50·(N−1)·N XP (mesma regra da economia).
-export const levelBase = (level: number) => 50 * (level - 1) * level;
-export const levelNext = (level: number) => 50 * level * (level + 1);
+// Níveis: a curva vive em player-level.ts (a mesma da economia).
+export const levelBase = (level: number) => xpForLevel(level);
+export const levelNext = (level: number) => xpForLevel(level + 1);
 export const levelAt = (xp: number) => {
-  let level = 1;
-  while (levelNext(level) <= xp) level += 1;
-  return level;
+  return levelForXp(xp);
 };
 
 export type XpSegment = { level: number; span: number; from: number; to: number; levelUp: boolean };

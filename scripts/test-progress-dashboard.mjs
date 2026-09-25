@@ -229,7 +229,7 @@ const old = groupHistory([{ ...d.history[0], startedAt: new Date(2025, 10, 3, 10
 assert.deepEqual(old.map((group) => group.label), ["Novembro 2025", "Julho"]);
 
 // perfil novo
-const empty = buildProgressDashboard({ now: NOW, sessions: [], records: [], meta, universe, dominatedIds: [], titleIds: [], pillars: {}, album: { discovered: 0, total: 7, distribution: [7, 0, 0, 0, 0, 0] }, economy: { level: 1, xp: 0, xpBase: 0, xpNext: 100, completedSessions: 0, rounds: 0 } });
+const empty = buildProgressDashboard({ now: NOW, sessions: [], records: [], meta, universe, dominatedIds: [], titleIds: [], pillars: {}, album: { discovered: 0, total: 7, distribution: [7, 0, 0, 0, 0, 0] }, economy: { level: 1, xp: 0, xpBase: 0, xpNext: 50, completedSessions: 0, rounds: 0 } });
 assert.equal(empty.empty, true);
 assert.equal(empty.hero.pct, 0);
 assert.equal(empty.hero.stageTitle, "Novato");

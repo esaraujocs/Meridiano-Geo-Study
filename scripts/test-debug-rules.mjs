@@ -16,10 +16,13 @@ import {
   xpForLevel,
 } from "../.tmp-debug-rules/debug-rules.js";
 
-// Nível <-> XP (mesma curva de queryEconomy: nível N pede 50·N·(N+1) no total).
+// Nível <-> XP (mesma curva de queryEconomy: o nível N começa em 25·(N−1)·N).
 assert.equal(xpForLevel(1), 0);
-assert.equal(xpForLevel(2), 100);
-assert.equal(xpForLevel(5), 1000);
+assert.equal(xpForLevel(2), 50);
+assert.equal(xpForLevel(5), 500);
+// marcos combinados: 10 ≈ 2.250, 20 ≈ 9.500, 30 ≈ 21.750, 40 ≈ 39.000, 50 ≈ 61.250
+assert.deepEqual([10, 20, 30, 40, 50].map(xpForLevel), [2250, 9500, 21750, 39000, 61250]);
+assert.equal(levelForXp(9031), 19, "perfil de 24/09 (9.031 XP) fica no nível 19");
 for (let level = 1; level <= 40; level++) {
   assert.equal(levelForXp(xpForLevel(level)), level, `início do nível ${level}`);
   assert.equal(levelForXp(xpForLevel(level + 1) - 1), level, `fim do nível ${level}`);

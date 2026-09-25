@@ -1,16 +1,12 @@
 // Regras puras das ferramentas de debug (sem IndexedDB), para poderem ser testadas.
+import { xpForLevel, levelForXp } from "./player-level.js";
 export type DebugColumns = { bandeiras: number; mapa: number; capitais: number; escrita?: number };
 
 export const MAX_DEBUG_LEVEL = 100;
 export const clampLevel = (value: number) => Math.max(1, Math.min(MAX_DEBUG_LEVEL, Math.floor(Number.isFinite(value) ? value : 1)));
 
-// Nível do jogador: cada nível N pede 50·N·(N+1) de XP no total (mesma regra de queryEconomy).
-export const xpForLevel = (level: number) => 50 * (level - 1) * level;
-export function levelForXp(xp: number) {
-  let level = 1;
-  while (50 * level * (level + 1) <= xp) level += 1;
-  return level;
-}
+// Nível do jogador: a curva vive em player-level.ts (a mesma de queryEconomy e da tela de resultado).
+export { xpForLevel, levelForXp };
 // Ajuste de XP que faz o nível calculado ser exatamente `target`, dado o XP real do perfil.
 export const xpAdjustFor = (target: number, realXp: number) => xpForLevel(clampLevel(target)) - realXp;
 

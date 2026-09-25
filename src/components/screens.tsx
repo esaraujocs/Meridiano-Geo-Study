@@ -259,8 +259,8 @@ export function Hub({
   ];
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
-  const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
-  const xpToNext = Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0));
+  const xpSpan = Math.max(1, (economy?.xpNext ?? 50) - (economy?.xpBase ?? 0));
+  const xpToNext = Math.max(0, (economy?.xpNext ?? 50) - (economy?.xp ?? 0));
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
   const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");

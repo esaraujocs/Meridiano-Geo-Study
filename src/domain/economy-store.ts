@@ -3,6 +3,7 @@ import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schem
 import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
 import { playerStatsFromSessions } from "./player-stats.js";
 import { XP_ADJUST_ID } from "./debug-rules.js";
+import { levelForXp, xpForLevel } from "./player-level.js";
 import { dominatedFromSessions } from "./dominated.js";
 import { ROUND_UNLOCKS, type RoundUnlockKey } from "./pace.js";
 import { themeById, themeUnlockKey } from "./themes.js";
@@ -139,10 +140,9 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const xpReal = rounds + dominated * 25;
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);
-  let level = 1;
-  while (50 * level * (level + 1) <= xp) level += 1;
-  const xpBase = 50 * (level - 1) * level;
-  const xpNext = 50 * level * (level + 1);
+  const level = levelForXp(xp);
+  const xpBase = xpForLevel(level);
+  const xpNext = xpForLevel(level + 1);
   return {
     balance: earned - spent,
     earned,
