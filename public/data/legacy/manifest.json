@@ -19,9 +19,9 @@
       "sha256": "c1e9381dcdb3b03717e914d689945aa9501c85489b79331db745378b6771d60d"
     },
     "languages.json": {
-      "bytes": 56998,
-      "sha256": "c1ff82fbc2af95044717e6811ebccc84444bb781ca00d19e453159d39422d8a3",
-      "entries": 123,
+      "bytes": 52349,
+      "sha256": "5e7fd497042884f8916ee94a95d1ab6048647665d387c917953726aba58e8c18",
+      "entries": 116,
       "additions": [
         "scripts/data/languages-americas-oceania.json",
         "scripts/data/languages-europa-asia.json",

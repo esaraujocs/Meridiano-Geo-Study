@@ -15,6 +15,15 @@ const document = JSON.parse(await readFile(languagesPath, "utf8"));
 const byId = new Map(document.entries.map((entry, index) => [entry.id, index]));
 
 const files = (await readdir(dataDir)).filter((name) => name.startsWith("languages-") && name.endsWith(".json")).sort();
+// Idiomas suspensos (scripts/data/suspensos/*.json): saem do acervo, mas o texto fica guardado até haver fonte conferível.
+const suspensosDir = new URL("suspensos/", dataDir);
+const suspensos = new Set();
+for (const name of (await readdir(suspensosDir).catch(() => [])).filter((n) => n.endsWith(".json"))) {
+  for (const entry of JSON.parse(await readFile(new URL(name, suspensosDir), "utf8"))) suspensos.add(entry.id);
+}
+document.entries = document.entries.filter((entry) => !suspensos.has(entry.id));
+byId.clear();
+document.entries.forEach((entry, index) => byId.set(entry.id, index));
 let added = 0, replaced = 0;
 for (const name of files) {
   const entries = JSON.parse(await readFile(new URL(name, dataDir), "utf8"));
@@ -45,4 +54,4 @@ manifest.files["languages.json"] = {
   additions: files.map((name) => `scripts/data/${name}`),
 };
 await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
-console.log(`languages.json: ${document.entries.length} idiomas (${added} novos, ${replaced} substituídos), ${Buffer.byteLength(text)} bytes`);
+console.log(`languages.json: ${document.entries.length} idiomas (${suspensos.size} suspensos, ${added} novos, ${replaced} substituídos), ${Buffer.byteLength(text)} bytes`);

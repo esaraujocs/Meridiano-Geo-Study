@@ -74,30 +74,6 @@
   "paises": "México (planalto central e Veracruz)"
  },
  {
-  "id": "lang-maia-iucateque",
-  "idioma": "Maia iucateque",
-  "script": "Tuláakal wíinik ku síijil jáalkʼab yetel keet u tsiikul yetel Najmal Sijnalil",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
-  "reg": "Americas",
-  "sub": "North America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em maia iucateque, acervo Unicode UDHR/ACNUDH (yua)",
-  "falantes": "cerca de 800 mil (Censo de 2020; 775 mil no México)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "México (Iucatã), Belize"
- },
- {
-  "id": "lang-purepecha",
-  "idioma": "Purépecha",
-  "script": "Iamendu k'uiripuecha janguarhiparini ka majku jarhati ka jurhimbekuecha jingoni kueraaŋasondikso ka",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
-  "reg": "Americas",
-  "sub": "North America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em purépecha, acervo Unicode UDHR/ACNUDH (tsz)",
-  "falantes": "cerca de 142 mil (Censo do México, 2020)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "México (Michoacán)"
- },
- {
   "id": "lang-kiche",
   "idioma": "K'iche'",
   "script": "Areʼ uxeʼ ojer tzij waral Kʼicheʼ ubʼiʼ",
@@ -108,42 +84,6 @@
   "falantes": "cerca de 1,05 milhão (Censo da Guatemala, 2019)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Guatemala (altiplano ocidental)"
- },
- {
-  "id": "lang-qeqchi",
-  "idioma": "Q'eqchi'",
-  "script": "Chijunil li poyanam juntaq'eet wankil xloq'al naq nake'yo'la, ut kama' ak reheb' naq wan xna'leb'eb ut nake'reek'a rib'",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
-  "reg": "Americas",
-  "sub": "Central America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em q'eqchi', acervo Unicode UDHR/ACNUDH (kek)",
-  "falantes": "cerca de 1,35 milhão (Censo da Guatemala, 2019)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "Guatemala, Belize"
- },
- {
-  "id": "lang-miskito",
-  "idioma": "Miskito",
-  "script": "Upla sut ba kulkanka lakara, airaitka nanira bara pri, sin, aikuki, baku takisa.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
-  "reg": "Americas",
-  "sub": "Central America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em miskito, acervo Unicode UDHR/ACNUDH (miq)",
-  "falantes": "cerca de 150 mil (2015–2021)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "Nicarágua, Honduras"
- },
- {
-  "id": "lang-garifuna",
-  "idioma": "Garífuna",
-  "script": "Sun gürigia nasíruati yuti lun, lidan úarani, lawiwanduní libágari kai le aubai labúsienra",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
-  "reg": "Americas",
-  "sub": "Central America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em garífuna, acervo Unicode UDHR/ACNUDH (cab)",
-  "falantes": "cerca de 119 mil (2001–2019)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "Belize, Honduras, Guatemala, Nicarágua"
  },
  {
   "id": "lang-portugues",
@@ -458,18 +398,6 @@
   "paises": "Palau"
  },
  {
-  "id": "lang-pohnpeiano",
-  "idioma": "Pohnpeiano",
-  "script": "Tohn sampa karos ipwiwei nan saledek oh duwepenehte nan arail wasa oh arail pwung.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
-  "reg": "Oceania",
-  "sub": "Micronesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em pohnpeiano, acervo Unicode UDHR/ACNUDH (pon)",
-  "falantes": "cerca de 29 mil (2001)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "Micronésia (Pohnpei)"
- },
- {
   "id": "lang-chuukes",
   "idioma": "Chuukês",
   "script": "Kapas mei manaw, kapas mei oochoch",
@@ -480,17 +408,5 @@
   "falantes": "cerca de 51 mil (censo de 2000)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Micronésia (Chuuk)"
- },
- {
-  "id": "lang-yapes",
-  "idioma": "Yapês",
-  "script": "Gubine gidii mani gargeleg nga faileng nibapuf mattʼawen nge rogon.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
-  "reg": "Oceania",
-  "sub": "Micronesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em yapês, acervo Unicode UDHR/ACNUDH (yap)",
-  "falantes": "cerca de 5 mil (2005)",
-  "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
-  "paises": "Micronésia (Yap)"
  }
 ]

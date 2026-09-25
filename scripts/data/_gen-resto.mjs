@@ -40,8 +40,8 @@ const atualiza = {
   "lang-alemao": { paises: "Alemanha, Áustria, Suíça, Liechtenstein" },
   "lang-frances": { paises: "França, RD Congo, Canadá, Mônaco", tambem: "Benin, Burkina Faso, Burundi, Camarões, República Centro-Africana, Congo, Costa do Marfim, Gabão, Guiné, Togo, Seychelles, Maurício" },
   "lang-arabe": { tambem: "Marrocos, Tunísia, Líbia, Mauritânia, Sudão, Somália, Djibuti, Eritreia, Comores, Chade, Bahrein, Catar, Kuwait, Omã, Emirados Árabes Unidos, Iraque, Síria, Jordânia, Líbano, Iêmen" },
-  "lang-ingles": { tambem: "Austrália, Bahamas, Barbados, Antígua e Barbuda, Dominica, Granada, São Cristóvão e Nevis, São Vicente e Granadinas, Trinidad e Tobago, Guiana, Gâmbia, Libéria, Serra Leoa, Uganda, Zâmbia, Malawi, Namíbia, Sudão do Sul, Nauru, Papua Nova Guiné" },
-  "lang-espanhol": { tambem: "Cuba, Costa Rica, El Salvador, Panamá, República Dominicana, Uruguai, Guiné Equatorial" },
+  "lang-ingles": { tambem: "Austrália, Bahamas, Barbados, Antígua e Barbuda, Dominica, Granada, São Cristóvão e Nevis, São Vicente e Granadinas, Trinidad e Tobago, Guiana, Gâmbia, Libéria, Serra Leoa, Uganda, Zâmbia, Malawi, Namíbia, Sudão do Sul, Nauru, Papua Nova Guiné, Belize" },
+  "lang-espanhol": { tambem: "Cuba, Costa Rica, El Salvador, Panamá, República Dominicana, Uruguai, Guiné Equatorial, Honduras, Nicarágua" },
   "lang-portugues": { tambem: "Cabo Verde, Guiné-Bissau, São Tomé e Príncipe, Timor-Leste" },
 };
 for (const [id, mudanca] of Object.entries(atualiza)) {
