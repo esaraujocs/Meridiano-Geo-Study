@@ -400,7 +400,15 @@ export function Game({
         center: camera.center,
         zoom: camera.zoom,
         attributionControl: { compact: true },
+        // O norte fica sempre para cima: sem girar (dedos, botão direito, teclado) nem inclinar.
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
+        maxPitch: 0,
+        bearing: 0,
       });
+      map.touchZoomRotate.disableRotation();
+      map.keyboard.disableRotation();
     } catch (error) {
       setMapError(
         error instanceof Error
