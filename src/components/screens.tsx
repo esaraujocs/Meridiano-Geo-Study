@@ -10,6 +10,7 @@ import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
 import { THEMES, isThemeOwned } from "../domain/themes";
+import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 
 export type { TopFamily };
 
@@ -51,6 +52,53 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
 
 // Painel de debug carregado só quando ligado (npm run dev, ou ?debug=1 em qualquer build).
 const DebugPanel = lazy(() => import("./debug-panel"));
+
+// Backup do progresso: o navegador guarda por endereço, então um arquivo é a forma de levar tudo para outro link/aparelho.
+function BackupRow() {
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const download = async () => {
+    setBusy(true);
+    try {
+      const file = await exportProgress();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([JSON.stringify(file)], { type: "application/json" }));
+      link.download = `meridiano-progresso-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      setMessage(`Arquivo salvo: ${file.stores.sessions.length} partidas, ${file.stores.progress.length} cartas, ${coinBalance(file.stores.ledger).toLocaleString("pt-BR")} moedas.`);
+    } catch { setMessage("Não foi possível exportar o progresso."); }
+    setBusy(false);
+  };
+  const upload = async (input: HTMLInputElement) => {
+    const chosen = input.files?.[0];
+    input.value = "";
+    if (!chosen) return;
+    setBusy(true);
+    try {
+      const file = parseBackup(await chosen.text());
+      if (!file) { setMessage("Este arquivo não é um backup do Meridiano."); setBusy(false); return; }
+      const plan = await previewImport(file);
+      if (plan.alreadyImported) { setMessage("Este arquivo já foi importado aqui. Nada mudou."); setBusy(false); return; }
+      const news = BACKUP_STORES.filter((name) => name !== "state").reduce((sum, name) => sum + plan.added[name], 0);
+      const ask = `Importar este progresso? Entram ${news} registros novos e ${plan.summed} cartas têm os acertos somados. Moedas: ${plan.coinsBefore.toLocaleString("pt-BR")} → ${plan.coinsAfter.toLocaleString("pt-BR")}. Nada do que já existe aqui é apagado.`;
+      if (!window.confirm(ask)) { setMessage("Importação cancelada."); setBusy(false); return; }
+      await importProgress(file);
+      setMessage("Progresso importado. Recarregando…");
+      window.setTimeout(() => window.location.reload(), 700);
+    } catch { setMessage("Falha ao importar; nada foi alterado."); setBusy(false); }
+  };
+  return <div className="cv-row">
+    <span className="cv-k">Progresso</span>
+    <div className="cv-ctl">
+      <p className="cv-hint">O navegador guarda o progresso por endereço: outro link ou aparelho começa do zero. Exporte um arquivo e importe onde quiser; ao importar, o que já existe é somado, nunca apagado.</p>
+      <div className="cv-chips">
+        <button type="button" className="cv-chip" disabled={busy} onClick={() => void download()}>Exportar progresso</button>
+        <label className="cv-chip" aria-disabled={busy}>Importar progresso<input type="file" accept="application/json,.json" hidden disabled={busy} onChange={(event) => void upload(event.currentTarget)} /></label>
+      </div>
+      {message && <p className="cv-hint" role="status">{message}</p>}
+    </div>
+  </div>;
+}
 
 export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore, offlineMap, onToggleOfflineMap, onDebugChange, onBack }: {
   data: Legacy;
@@ -118,6 +166,7 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
             <p className="cv-hint">Na Partida com tempo, uma barra curta acompanha a pergunta. Ligando esta opção, ela só aparece quando falta menos da metade do tempo.</p>
           </div>
         </div>
+        <BackupRow />
         <div className="cv-row cv-last">
           <span className="cv-k">Offline</span>
           <div className="cv-ctl">
