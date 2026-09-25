@@ -19,11 +19,13 @@
       "sha256": "c1e9381dcdb3b03717e914d689945aa9501c85489b79331db745378b6771d60d"
     },
     "languages.json": {
-      "bytes": 45481,
-      "sha256": "389cafd4d1c36e4225922248c683f57c02b18bc5cc7a4d6d59e4d4a1265042c3",
-      "entries": 77,
+      "bytes": 60921,
+      "sha256": "51cb1d7ec4ada05ad1f9a169b8cadfc88f5a7ec5076ece45da80af897a938148",
+      "entries": 123,
       "additions": [
-        "scripts/data/languages-americas-oceania.json"
+        "scripts/data/languages-americas-oceania.json",
+        "scripts/data/languages-europa-asia.json",
+        "scripts/data/languages-resto.json"
       ]
     }
   }

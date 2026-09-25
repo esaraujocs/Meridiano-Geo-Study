@@ -9,7 +9,8 @@ const languagesPath = new URL("public/data/legacy/languages.json", root);
 const manifestPath = new URL("public/data/legacy/manifest.json", root);
 const dataDir = new URL("scripts/data/", root);
 
-const REQUIRED = ["id", "idioma", "script", "significado", "reg", "sub", "fonte", "falantes", "ranking", "paises"];
+// falantes e ranking são opcionais: o cartão só mostra o que existe (melhor faltar do que inventar).
+const REQUIRED = ["id", "idioma", "script", "significado", "reg", "sub", "fonte", "paises"];
 const document = JSON.parse(await readFile(languagesPath, "utf8"));
 const byId = new Map(document.entries.map((entry, index) => [entry.id, index]));
 

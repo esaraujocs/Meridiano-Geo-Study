@@ -39,11 +39,11 @@
  {
   "id": "lang-navajo",
   "idioma": "Navajo",
-  "script": "Bilaʼashdaʼii tʼáá ałtsoh yiníkʼehgo bidizhchįh dóó aheełtʼeego ílį́į́go bee baahóchįʼ.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Hózhóogo naasháa doo",
+  "significado": "Caminharei em beleza (verso de abertura da oração do Caminho da Beleza)",
   "reg": "Americas",
   "sub": "North America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em navajo, acervo Unicode UDHR/ACNUDH (nav)",
+  "fonte": "Oração tradicional Diné (Beauty Way), com grafia como aparece nas fontes consultadas · The Beauty Way (Sallie Bingham) e Pathways to Hozho (CSEE)",
   "falantes": "cerca de 170 mil (2019)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Estados Unidos (Arizona, Novo México e Utah)"
@@ -63,11 +63,11 @@
  {
   "id": "lang-nauatle",
   "idioma": "Náuatle",
-  "script": "Nochi tlakamej uan siuamej kipiaj manoj kuali tlakatisej, nochi san se totlatechpouiltilis uan titlatepanitalojkej",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
+  "script": "In ixtli, in yollotl",
+  "significado": "O rosto, o coração (a pessoa inteira: identidade e caráter)",
   "reg": "Americas",
   "sub": "North America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em náuatle central, acervo Unicode UDHR/ACNUDH (nhn)",
+  "fonte": "Difrasismo náuatle clássico, dos antigos discursos huehuetlahtolli · Nahuatl Dictionary (Wired Humanities) e Dialnet (“In ixtli, in yollotl, un difrasismo náhuatl”)",
   "falantes": "cerca de 1,65 milhão (todas as variedades de náuatle; Censo do México, 2020)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "México (planalto central e Veracruz)"
@@ -147,11 +147,11 @@
  {
   "id": "lang-portugues",
   "idioma": "Português",
-  "script": "Todos os seres humanos nascem livres e iguais em dignidade e direitos.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Água mole em pedra dura, tanto bate até que fura.",
+  "significado": "A perseverança vence os obstáculos mais duros (a água, mole, acaba furando a pedra)",
   "reg": "Americas",
   "sub": "South America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em português do Brasil, acervo Unicode UDHR/ACNUDH (por_BR)",
+  "fonte": "Provérbio popular português · Wikcionário (pt) e Ciberdúvidas da Língua Portuguesa",
   "falantes": "269,4 milhões",
   "ranking": "8º mais falado do mundo",
   "paises": "Brasil, Portugal, Angola, Moçambique"
@@ -159,11 +159,11 @@
  {
   "id": "lang-quichua",
   "idioma": "Quíchua",
-  "script": "Llapa runan kay pachapi paqarin qispisqa, \"libre\" flisqa, allin kausaypi, chaninchasqa kausaypi kananpaq, yuyayniyoq",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
+  "script": "Ama qhilla, ama llulla, ama suwa",
+  "significado": "Não seja preguiçoso, não seja mentiroso, não seja ladrão",
   "reg": "Americas",
   "sub": "South America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em quíchua de Cusco, acervo Unicode UDHR/ACNUDH (quz)",
+  "fonte": "Princípios ético-morais assumidos pela Constituição da Bolívia (2009), art. 8º, I · popularmente atribuídos aos incas, mas historiadores contestam que seja um código inca original (não aparece nos cronistas antigos) · Georgetown PDBA, Infobae, blog PUCP Fort Da",
   "falantes": "cerca de 7,2 milhões (todas as variedades do quíchua; o cusquenho tem cerca de 1,5 milhão)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Peru, Bolívia, Equador"
@@ -171,11 +171,11 @@
  {
   "id": "lang-aimara",
   "idioma": "Aimará",
-  "script": "Taqpach jaqejh khuskat uñjatatäpjhewa munañapansa, lurañapansa, amuyasiñapansa",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
+  "script": "Suma qamaña",
+  "significado": "Viver bem (o bem viver aimará: harmonia com a comunidade e com a natureza)",
   "reg": "Americas",
   "sub": "South America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em aimará central, acervo Unicode UDHR/ACNUDH (ayr)",
+  "fonte": "Princípio ético-moral do Estado na Constituição da Bolívia (2009), art. 8º, I · Georgetown PDBA",
   "falantes": "cerca de 1,7 milhão (aimará central, 2007–2014)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Bolívia, Peru, Chile"
@@ -183,11 +183,11 @@
  {
   "id": "lang-guarani",
   "idioma": "Guarani",
-  "script": "Mayma yvypóra ou ko yvy ári iñapytlʼyre ha eteĩcha dignidad ha derecho jeguerekópe; ha ikatu rupi oikuaa añetéva ha añeteʼyva",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
+  "script": "Ñande reko",
+  "significado": "Nosso modo de ser e de viver (o jeito guarani de viver em harmonia)",
   "reg": "Americas",
   "sub": "South America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em guarani paraguaio, acervo Unicode UDHR/ACNUDH (gug) · texto também presente na Wikipédia",
+  "fonte": "Conceito central da cultura guarani · Secretaria Nacional de Cultura do Paraguai (cultura.gov.py); também na Constituição da Bolívia, art. 8º, I (“ñandereko”, vida harmoniosa)",
   "falantes": "6,3 milhões (guarani paraguaio)",
   "ranking": "160º mais falado do mundo (guarani paraguaio)",
   "paises": "Paraguai, Bolívia, Argentina, Brasil"
@@ -195,11 +195,11 @@
  {
   "id": "lang-mapudungun",
   "idioma": "Mapudungun",
-  "script": "Kom pu mogence kisuzuam mvlekey, kom cegeygvn, logkogeygvn ka piwkegeygvn",
-  "significado": "Abertura do artigo 1º da Declaração Universal dos Direitos Humanos, cuja frase completa diz: todos os seres humanos nascem livres e iguais em dignidade e direitos",
+  "script": "Küme mongen",
+  "significado": "Viver bem (o bem viver mapuche: equilíbrio entre as pessoas, a terra e o espiritual)",
   "reg": "Americas",
   "sub": "South America",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (trecho inicial da 1ª frase) · tradução oficial em mapudungun, acervo Unicode UDHR/ACNUDH (arn)",
+  "fonte": "Conceito central mapuche · Territorio en Conflicto (Jesuitas do Chile) e FIMI (a grafia varia: mongen/mogen)",
   "falantes": "cerca de 406 mil (2024)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Chile, Argentina"
@@ -243,11 +243,11 @@
  {
   "id": "lang-jamaicano",
   "idioma": "Crioulo jamaicano (patoá)",
-  "script": "Evribadi baan frii an iikwal wid rispek fi demself (digniti) an wid raits.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "One, one coco full basket",
+  "significado": "Um a um, os cocos enchem o cesto (o sucesso vem aos poucos)",
   "reg": "Americas",
   "sub": "Caribbean",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em crioulo jamaicano, acervo Unicode UDHR/ACNUDH (055) · texto também presente na Wikipédia",
+  "fonte": "Provérbio jamaicano tradicional · Jamaican Patwah (jamaicanpatwah.com) e Jamaica Information Service (jis.gov.jm)",
   "falantes": "cerca de 3,2 milhões (2000–2001)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Jamaica"
@@ -303,11 +303,11 @@
  {
   "id": "lang-havaiano",
   "idioma": "Havaiano",
-  "script": "Hānau kū’oko’a ‘ia nā kānaka apau loa, a ua kau like ka hanohano a me nā pono kīvila ma luna o kākou pākahi.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "I ka ʻōlelo nō ke ola, i ka ʻōlelo nō ka make.",
+  "significado": "Na palavra há vida, na palavra há morte (falar pode curar ou ferir)",
   "reg": "Oceania",
   "sub": "Polynesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em havaiano, acervo Unicode UDHR/ACNUDH (haw) · texto também presente na Wikipédia",
+  "fonte": "ʻŌlelo Noʻeau (provérbios havaianos), coletânea de Mary Kawena Pukui · UH Hilo (hilo.hawaii.edu/demo/proverbs.php) e Bishop Museum Press",
   "falantes": "cerca de 300 nativos (2006) e 22 a 24 mil como segunda língua",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Estados Unidos (Havaí)"
@@ -315,11 +315,11 @@
  {
   "id": "lang-samoano",
   "idioma": "Samoano",
-  "script": "O tagata soifua uma ua saoloto lo latou fananau mai, ma e tutusa o latou tulaga aloaia faapea a latou aia tatau.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "E pala le maʻa, a e le pala upu.",
+  "significado": "As pedras apodrecem, as palavras não (o que se diz permanece)",
   "reg": "Oceania",
   "sub": "Polynesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em samoano, acervo Unicode UDHR/ACNUDH (smo) · texto também presente na Wikipédia",
+  "fonte": "Provérbio samoano registrado por E. Schultz, “Proverbial Expressions of the Samoans”, Journal of the Polynesian Society (1949) · Wikipédia (Samoan proverbs) · Lingalot",
   "falantes": "cerca de 430 mil (2020–2022)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Samoa, Samoa Americana"
@@ -327,11 +327,11 @@
  {
   "id": "lang-tonganes",
   "idioma": "Tonganês",
-  "script": "Ko e kotoa ‘o ha’a tangata ‘oku fanau’i mai ‘oku tau’ataina pea tatau ‘i he ngeia mo e ngaahi totonu.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Ko e ʻOtua mo Tonga ko hoku tofiʻa",
+  "significado": "Deus e Tonga são a minha herança (lema nacional de Tonga)",
   "reg": "Oceania",
   "sub": "Polynesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em tonganês, acervo Unicode UDHR/ACNUDH (ton) · texto também presente na Wikipédia",
+  "fonte": "Lema nacional de Tonga · Wikipédia (List of national mottos)",
   "falantes": "cerca de 187 mil em Tonga (1998) e 73 mil no exterior",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Tonga"
@@ -375,11 +375,11 @@
  {
   "id": "lang-fijiano",
   "idioma": "Fijiano",
-  "script": "Era sucu ena galala na tamata yadua, era tautauvata ena nodra dokai kei na nodra dodonu.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Rerevaka na Kalou ka Doka na Tui",
+  "significado": "Temei a Deus e honrai o soberano (lema nacional de Fiji)",
   "reg": "Oceania",
   "sub": "Melanesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em fijiano, acervo Unicode UDHR/ACNUDH (fij) · texto também presente na Wikipédia",
+  "fonte": "Lema nacional de Fiji · Wikipédia (List of national mottos)",
   "falantes": "cerca de 340 mil como língua materna (censo de 1996) e 320 mil como segunda língua (1991)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Fiji"
@@ -387,11 +387,11 @@
  {
   "id": "lang-bislama",
   "idioma": "Bislama",
-  "script": "Evri man mo woman i bon fri mo ikwol long respek mo ol raet.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Long God yumi stanap",
+  "significado": "Com Deus nós resistimos (lema nacional de Vanuatu)",
   "reg": "Oceania",
   "sub": "Melanesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em bislama, acervo Unicode UDHR/ACNUDH (bis)",
+  "fonte": "Lema no brasão de armas de Vanuatu · Wikipédia (Coat of arms of Vanuatu)",
   "falantes": "cerca de 10 mil nativos (2011) e 200 mil como segunda língua",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Vanuatu"
@@ -435,11 +435,11 @@
  {
   "id": "lang-marshales",
   "idioma": "Marshalês",
-  "script": "Armij otemjej rej rujlok ilo anemkwoj im jonon utiej eo im maron ko air wot juon.",
-  "significado": "Todos os seres humanos nascem livres e iguais em dignidade e direitos (artigo 1º da Declaração Universal dos Direitos Humanos)",
+  "script": "Jepilpilin ke ejukaan",
+  "significado": "Realização por meio de esforço conjunto (lema nacional das Ilhas Marshall)",
   "reg": "Oceania",
   "sub": "Micronesia",
-  "fonte": "Declaração Universal dos Direitos Humanos, art. 1º (1ª frase) · tradução oficial em marshalês, acervo Unicode UDHR/ACNUDH (mah)",
+  "fonte": "Lema do selo nacional das Ilhas Marshall · Wikipédia (Seal of the Marshall Islands) e Marshall Islands Guide",
   "falantes": "cerca de 55 mil (dado de 1979)",
   "ranking": "fora do top 200 mundial (confirmado direto na base da Ethnologue)",
   "paises": "Ilhas Marshall"

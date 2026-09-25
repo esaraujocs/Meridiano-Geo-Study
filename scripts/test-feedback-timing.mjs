@@ -7,11 +7,6 @@ assert.equal(feedbackHoldMs(true, true), FEEDBACK_HOLD_MS.correct);
 assert.equal(feedbackHoldMs(false, false), FEEDBACK_HOLD_MS.wrongOptions);
 assert.equal(feedbackHoldMs(false, true), FEEDBACK_HOLD_MS.wrongTyped);
 
-// modos com cartão de aprendizado seguram o retorno também no acerto, sem passar de 3,5 s
-assert.equal(feedbackHoldMs(true, false, true), FEEDBACK_HOLD_MS.correctRich);
-assert.equal(feedbackHoldMs(false, false, true), FEEDBACK_HOLD_MS.wrongRich);
-assert.ok(FEEDBACK_HOLD_MS.correctRich > FEEDBACK_HOLD_MS.correct && FEEDBACK_HOLD_MS.wrongRich > FEEDBACK_HOLD_MS.correctRich && FEEDBACK_HOLD_MS.wrongRich <= 3500);
-
 // o erro fica mais tempo que o acerto, e o modo de escrita mais que o de alternativas (é preciso comparar a grafia)
 assert.ok(FEEDBACK_HOLD_MS.wrongOptions >= 2 * FEEDBACK_HOLD_MS.correct);
 assert.ok(FEEDBACK_HOLD_MS.wrongTyped > FEEDBACK_HOLD_MS.wrongOptions);

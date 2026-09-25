@@ -169,7 +169,8 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
     advance.schedule(async () => {
       if (exhausted) await finishSession(true);
       else next();
-    }, feedbackHoldMs(correct, writing, richMode), feedbackSkipAfterMs(correct));
+    // Idiomas tem cartão para ler: só continua quando a pessoa confirmar (botão ou Enter), sem passar sozinho.
+    }, feedbackHoldMs(correct, writing), feedbackSkipAfterMs(correct), richMode);
     if (correct) cueCorrect();
   };
   const submitWriting = (value = typed) => {
@@ -295,7 +296,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
                 <OptionMarks isTarget={choice.id === target.id} isPicked={choice.id === selectedChoice} verdict={answerResult} />
               </button>;
             })}</div>
-            {answerResult && (richMode || answerResult === "wrong") && <ContinueBar holdMs={feedbackHoldMs(answerResult === "correct", false, richMode)} onSkip={advance.skip} />}
+            {answerResult && (richMode || answerResult === "wrong") && <ContinueBar holdMs={richMode ? null : feedbackHoldMs(false, false)} onSkip={advance.skip} />}
             <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> escolhe</span><span><kbd>Enter</kbd> continua</span><span><kbd>Esc</kbd> sair</span></div>
           </>}
         </section>
@@ -314,6 +315,7 @@ function LanguageCard({ entry }: { entry: LanguageEntry }) {
     {entry.significado && <p>“{entry.significado}”</p>}
     <dl>
       <div><dt>Falado em</dt><dd>{entry.paises}</dd></div>
+      {entry.tambem && <div><dt>Também oficial em</dt><dd>{entry.tambem}</dd></div>}
       {entry.falantes && <div><dt>Falantes</dt><dd>{entry.falantes}</dd></div>}
     </dl>
   </section>;

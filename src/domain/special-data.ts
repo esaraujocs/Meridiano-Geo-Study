@@ -8,6 +8,8 @@ export type HistoricalEntity = {
 export type LanguageEntry = {
   id: string; idioma: string; script: string; translit?: string;
   paises: string; reg?: string;
+  /** Outros países onde o idioma é oficial (ou de uso oficial): aparece só no cartão, não nas alternativas do quiz. */
+  tambem?: string;
   /** Tradução do provérbio, quantos falam e a posição do idioma no mundo (vêm do acervo do modo clássico). */
   significado?: string; falantes?: string; ranking?: string;
 };

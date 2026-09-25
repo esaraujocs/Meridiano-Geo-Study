@@ -69,9 +69,9 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
 }
 
 /** Botão "Continuar" do retorno de um erro: enche durante o prazo e pula se tocado. */
-export function ContinueBar({ holdMs, onSkip }: { holdMs: number; onSkip: () => void }) {
-  return <button type="button" className="gs-continue" onClick={onSkip}>
-    <i style={{ animationDuration: `${holdMs}ms` }} aria-hidden="true" />
+export function ContinueBar({ holdMs, onSkip }: { holdMs: number | null; onSkip: () => void }) {
+  return <button type="button" className="gs-continue" onClick={() => onSkip()}>
+    {holdMs !== null && <i style={{ animationDuration: `${holdMs}ms` }} aria-hidden="true" />}
     <span>Continuar</span>
     <kbd aria-hidden="true">Enter</kbd>
   </button>;

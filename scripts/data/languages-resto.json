@@ -1,0 +1,253 @@
+[
+ {
+  "id": "lang-zulu",
+  "idioma": "Zulu",
+  "script": "Umuntu ngumuntu ngabantu",
+  "significado": "Uma pessoa é pessoa por meio das outras pessoas (base da filosofia ubuntu)",
+  "reg": "Africa",
+  "sub": "Southern Africa",
+  "fonte": "Provérbio nguni/zulu · Wikipédia (Ubuntu philosophy) e Internet Encyclopedia of Philosophy (Hunhu/Ubuntu in Traditional Southern African Thought)",
+  "paises": "África do Sul"
+ },
+ {
+  "id": "lang-xona",
+  "idioma": "Xona",
+  "script": "Chara chimwe hachitswanyi inda.",
+  "significado": "Um dedo sozinho não esmaga o piolho (sozinho não se resolve tudo)",
+  "reg": "Africa",
+  "sub": "Eastern Africa",
+  "fonte": "Tsumo (provérbio) xona tradicional · Duramazwi (dicionário xona) e ZimbOriginal",
+  "paises": "Zimbábue"
+ },
+ {
+  "id": "lang-wolof",
+  "idioma": "Wolof",
+  "script": "Nit nitay garabam.",
+  "significado": "A pessoa é o remédio da pessoa (a humanidade se realiza com a ajuda do outro)",
+  "reg": "Africa",
+  "sub": "Western Africa",
+  "fonte": "Provérbio wolof · Palais de Tokyo (“Ubuntu, nite et humanisme”) e TrustAfrica (“Nio ko Bokk”)",
+  "paises": "Senegal, Gâmbia"
+ },
+ {
+  "id": "lang-twi",
+  "idioma": "Twi (acã)",
+  "script": "Se wo were fi na wosankofa a yenkyi.",
+  "significado": "Não é errado voltar para buscar o que se esqueceu (o conceito de sankofa)",
+  "reg": "Africa",
+  "sub": "Western Africa",
+  "fonte": "Provérbio acã (twi), origem do símbolo adinkra Sankofa · Wikipédia (Sankofa); grafia sem ɛ/ɔ, como nas fontes",
+  "paises": "Gana"
+ },
+ {
+  "id": "lang-bambara",
+  "idioma": "Bambara",
+  "script": "Mɔgɔ mabɔ bɛ mɔgɔ ko diya.",
+  "significado": "A distância entre as pessoas torna a relação agradável",
+  "reg": "Africa",
+  "sub": "Western Africa",
+  "fonte": "Nsana (provérbio) bambara · An ka taa (curso de bambara/diúla)",
+  "paises": "Mali"
+ },
+ {
+  "id": "lang-malgaxe",
+  "idioma": "Malgaxe",
+  "script": "Ny atody tsy miady amim-bato.",
+  "significado": "O ovo não briga com a pedra",
+  "reg": "Africa",
+  "sub": "Eastern Africa",
+  "fonte": "Ohabolana (provérbio) malgaxe · Global Literature in Libraries Initiative, “Ohabolana: Malagasy Proverbs” (org. Abhay K., 2021)",
+  "paises": "Madagascar"
+ },
+ {
+  "id": "lang-quiniaruanda",
+  "idioma": "Quiniaruanda",
+  "script": "Ubumwe, Umurimo, Gukunda Igihugu",
+  "significado": "Unidade, trabalho, amor à pátria (lema nacional de Ruanda)",
+  "reg": "Africa",
+  "sub": "Eastern Africa",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Ruanda"
+ },
+ {
+  "id": "lang-sesoto",
+  "idioma": "Sesoto",
+  "script": "Khotso, Pula, Nala",
+  "significado": "Paz, chuva, prosperidade (lema nacional do Lesoto)",
+  "reg": "Africa",
+  "sub": "Southern Africa",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Lesoto"
+ },
+ {
+  "id": "lang-tswana",
+  "idioma": "Tswana",
+  "script": "Pula",
+  "significado": "Chuva (lema nacional de Botsuana; “pula” é também o nome da moeda)",
+  "reg": "Africa",
+  "sub": "Southern Africa",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Botsuana"
+ },
+ {
+  "id": "lang-suazi",
+  "idioma": "Suázi",
+  "script": "Siyinqaba",
+  "significado": "Somos a fortaleza (lema nacional de Essuatíni)",
+  "reg": "Africa",
+  "sub": "Southern Africa",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Essuatíni"
+ },
+ {
+  "id": "lang-urdu",
+  "idioma": "Urdu",
+  "script": "ایمان، اتحاد، تنظیم",
+  "translit": "Iman, Ittihad, Nazm",
+  "significado": "Fé, unidade, disciplina (lema nacional do Paquistão)",
+  "reg": "Asia",
+  "sub": "Southern Asia",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "falantes": "cerca de 246 milhões no total (Ethnologue 2026, via Wikipédia)",
+  "paises": "Paquistão"
+ },
+ {
+  "id": "lang-tuvaluano",
+  "idioma": "Tuvaluano",
+  "script": "Tuvalu mo te Atua",
+  "significado": "Tuvalu para o Todo-Poderoso (lema nacional de Tuvalu)",
+  "reg": "Oceania",
+  "sub": "Polynesia",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Tuvalu"
+ },
+ {
+  "id": "lang-gilbertes",
+  "idioma": "Gilbertês",
+  "script": "Te mauri, te raoi ao te tabomoa",
+  "significado": "Saúde, paz e prosperidade (lema nacional de Kiribati)",
+  "reg": "Oceania",
+  "sub": "Micronesia",
+  "fonte": "Lema nacional · Wikipédia (List of national mottos)",
+  "paises": "Kiribati"
+ },
+ {
+  "id": "lang-uzbeque",
+  "idioma": "Uzbeque",
+  "script": "Bir yigitga qirq hunar oz.",
+  "significado": "Quarenta ofícios são poucos para um jovem (nunca se sabe o bastante)",
+  "reg": "Asia",
+  "sub": "Central Asia",
+  "fonte": "Maqol (provérbio) uzbeque tradicional · portal Ziyouz (uzbek-xalq-maqollari) e Patrimônio Cultural Imaterial do Uzbequistão (ich.uz)",
+  "paises": "Uzbequistão"
+ },
+ {
+  "id": "lang-quirguiz",
+  "idioma": "Quirguiz",
+  "script": "Жети өлчөп бир кес.",
+  "translit": "Jeti ölçöp bir kes",
+  "significado": "Meça sete vezes, corte uma",
+  "reg": "Asia",
+  "sub": "Central Asia",
+  "fonte": "Makal-lakap (provérbio) quirguiz tradicional · coletânea “Кыргыз макал лакаптары” (tynchtykbek.narod.ru)",
+  "paises": "Quirguistão"
+ },
+ {
+  "id": "lang-turcomeno",
+  "idioma": "Turcomeno",
+  "script": "Ýedi ölçäp bir kes.",
+  "significado": "Meça sete vezes, corte uma",
+  "reg": "Asia",
+  "sub": "Central Asia",
+  "fonte": "Nakyl (provérbio) turcomeno tradicional · citado em textos turcomenos; coletânea “Türkmen nakyllary we atalar sözi” (G. Geldiýew, 2002)",
+  "paises": "Turcomenistão"
+ },
+ {
+  "id": "lang-divehi",
+  "idioma": "Divehi (maldivo)",
+  "script": "Kaandhey athugai dhai nugannaasheve",
+  "significado": "Não morda a mão que te alimenta",
+  "reg": "Asia",
+  "sub": "Southern Asia",
+  "fonte": "Haruba (provérbio) maldivo · The Edition (edition.mv, “Explaining harubas”); grafia latina como publicada, sem o original em thaana",
+  "paises": "Maldivas"
+ },
+ {
+  "id": "lang-alemao",
+  "idioma": "Alemão",
+  "script": "Der Apfel fällt nicht weit vom Stamm",
+  "significado": "A maçã não cai longe do tronco (filho de peixe, peixinho é)",
+  "reg": "Europe",
+  "sub": "Western Europe",
+  "fonte": "Sprichwort (provérbio) alemão tradicional, coletâneas desde o fim do séc. XVIII · de.wikipedia.org",
+  "falantes": "133 milhões",
+  "ranking": "12º mais falado do mundo",
+  "paises": "Alemanha, Áustria, Suíça, Liechtenstein"
+ },
+ {
+  "id": "lang-frances",
+  "idioma": "Francês",
+  "script": "Petit à petit, l'oiseau fait son nid",
+  "significado": "Pouco a pouco, o pássaro faz seu ninho (com paciência tudo se consegue)",
+  "reg": "Europe",
+  "sub": "Western Europe",
+  "fonte": "Provérbio francês tradicional, registrado em Philibert-Joseph Le Roux, \"Dictionnaire proverbial\" (1718) · linternaute.fr",
+  "falantes": "334 milhões",
+  "ranking": "6º mais falado do mundo",
+  "paises": "França, RD Congo, Canadá, Mônaco",
+  "tambem": "Benin, Burkina Faso, Burundi, Camarões, República Centro-Africana, Congo, Costa do Marfim, Gabão, Guiné, Togo, Seychelles, Maurício"
+ },
+ {
+  "id": "lang-arabe",
+  "idioma": "Árabe",
+  "script": "الوقت من ذهب",
+  "translit": "Al-waqtu min dhahab",
+  "significado": "O tempo é ouro",
+  "reg": "Asia",
+  "sub": "Western Asia",
+  "fonte": "Provérbio popular árabe, uso difundido em todo o mundo árabe",
+  "falantes": "335 milhões",
+  "ranking": "5º mais falado do mundo",
+  "paises": "Egito, Arábia Saudita, Argélia",
+  "tambem": "Marrocos, Tunísia, Líbia, Mauritânia, Sudão, Somália, Djibuti, Eritreia, Comores, Chade, Bahrein, Catar, Kuwait, Omã, Emirados Árabes Unidos, Iraque, Síria, Jordânia, Líbano, Iêmen"
+ },
+ {
+  "id": "lang-ingles",
+  "idioma": "Inglês",
+  "script": "A friend in need is a friend indeed",
+  "significado": "Um amigo na necessidade é um amigo de verdade (a amizade se revela nas dificuldades)",
+  "reg": "Europe",
+  "sub": "Northern Europe",
+  "fonte": "Provérbio inglês tradicional, raiz latina em Ênio (séc. III a.C.), registrado por John Heywood (1562) · phrases.org.uk",
+  "falantes": "1,49 bilhão",
+  "ranking": "1º mais falado do mundo",
+  "paises": "Estados Unidos, Reino Unido, Índia, Nigéria",
+  "tambem": "Austrália, Bahamas, Barbados, Antígua e Barbuda, Dominica, Granada, São Cristóvão e Nevis, São Vicente e Granadinas, Trinidad e Tobago, Guiana, Gâmbia, Libéria, Serra Leoa, Uganda, Zâmbia, Malawi, Namíbia, Sudão do Sul, Nauru, Papua Nova Guiné"
+ },
+ {
+  "id": "lang-espanhol",
+  "idioma": "Espanhol",
+  "script": "No hay mal que por bien no venga",
+  "significado": "Não há mal que não venha por bem (todo infortúnio pode trazer algo bom)",
+  "reg": "Europe",
+  "sub": "Southern Europe",
+  "fonte": "Refrán tradicional hispanofalante · Refranero Multilingüe, Centro Virtual Cervantes (cvc.cervantes.es)",
+  "falantes": "561 milhões",
+  "ranking": "4º mais falado do mundo",
+  "paises": "México, Espanha, Colômbia, Argentina",
+  "tambem": "Cuba, Costa Rica, El Salvador, Panamá, República Dominicana, Uruguai, Guiné Equatorial"
+ },
+ {
+  "id": "lang-portugues",
+  "idioma": "Português",
+  "script": "Água mole em pedra dura, tanto bate até que fura.",
+  "significado": "A perseverança vence os obstáculos mais duros (a água, mole, acaba furando a pedra)",
+  "reg": "Americas",
+  "sub": "South America",
+  "fonte": "Provérbio popular português · Wikcionário (pt) e Ciberdúvidas da Língua Portuguesa",
+  "falantes": "269,4 milhões",
+  "ranking": "8º mais falado do mundo",
+  "paises": "Brasil, Portugal, Angola, Moçambique",
+  "tambem": "Cabo Verde, Guiné-Bissau, São Tomé e Príncipe, Timor-Leste"
+ }
+]
