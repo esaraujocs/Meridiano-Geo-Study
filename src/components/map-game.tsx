@@ -475,7 +475,14 @@ export function Game({
     };
     const tapAt = (x: number, y: number, lngLat: { lng: number; lat: number }) => {
       const { id, point, byWater } = resolveAt(x, y);
-      answerId(id || "__water_click__", { byWater, distanceKm: distanceToTargetKm(lngLat.lng, lngLat.lat), point: point ?? [lngLat.lng, lngLat.lat] });
+      const distanceKm = distanceToTargetKm(lngLat.lng, lngLat.lat);
+      // Geografia real tem prioridade sobre qual polígono renderizou por cima no pixel clicado: alguns pares
+      // (ex. Saara Ocidental sob o Marrocos) têm o território menor com geometria própria e correta na fonte,
+      // mas o vizinho desenha uma reivindicação que cobre a mesma área, "roubando" todo clique ali. distanceKm
+      // já vem 0 quando o toque caiu de fato dentro do polígono do alvo (distanceToTargetKm/distanceToGeometriesKm),
+      // então um id resolvido diferente nessa condição é a sobreposição, não um erro real do jogador.
+      const resolvedId = id && id !== targetRef.current && distanceKm === 0 ? targetRef.current : id;
+      answerId(resolvedId || "__water_click__", { byWater, distanceKm, point: point ?? [lngLat.lng, lngLat.lat] });
     };
     map.on("click", (event: MapMouseEvent) => tapAt(event.point.x, event.point.y, event.lngLat));
      const handleKey = (event: KeyboardEvent) => {
