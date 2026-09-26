@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, Geometry } from "geojson";
 import type { Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion, regionLabel } from "../domain/regions";
+import { inSilhouetteDeck } from "../domain/silhouette";
 import { variantLabel } from "../domain/result-view";
 import { ContinueBar, GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
 import {
@@ -118,8 +119,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     geometryIndex().then(({ features }) => setFeatures(features)).catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, []);
   const ids = useMemo(() => features ? [...features.keys()].filter((id) => {
-    const meta = data.meta[id];
-    return meta && !meta.absorvido && meta.mapa !== false && inRegion(id, region, data);
+    return inSilhouetteDeck(data.meta[id]) && inRegion(id, region, data);
   }) : [], [features, data, region]);
   const optionsFor = (id: string) => shuffleAnswerOptions([id, ...shuffleAnswerOptions(ids.filter((item) => item !== id)).slice(0, 3)]);
   useEffect(() => {

@@ -237,6 +237,17 @@ assert.equal(guardedBad, 0, "com a garantia, nunca");
 assert.ok(sameWhenOneOwned, "quando já havia um modo da pessoa, o sorteio é o mesmo (a garantia não mexe à toa)");
 assert.deepEqual(M.drawLegs("bandeiras", "z", new Set()).map((l) => l.group), M.drawLegs("bandeiras", "z").map((l) => l.group), "sem modo nenhum liberado, nada a garantir");
 
+// a Silhueta pesa menos no sorteio de Mapas (tinha 2 dos 5 grupos: 40% dos tempos e 70% dos duelos); as Bandeiras seguem parelhas
+assert.equal(M.SILHOUETTE_WEIGHT, 0.4);
+{
+  const N = 20000, count = (ladder) => { let legs = 0, duels = 0; const byGroup = {}; for (let i = 0; i < N; i += 1) { const drawn = M.drawLegs(ladder, "w" + i); const sil = drawn.filter((leg) => leg.family === "silhueta").length; legs += sil; if (sil) duels += 1; for (const leg of drawn) byGroup[leg.group] = (byGroup[leg.group] ?? 0) + 1; } return { legs: legs / (2 * N), duels: duels / N, byGroup }; };
+  const mapas = count("mapas"), bandeiras = count("bandeiras");
+  assert.ok(mapas.legs > 0.20 && mapas.legs < 0.26, "Silhueta em ~23% dos tempos: " + mapas.legs);
+  assert.ok(mapas.duels > 0.40 && mapas.duels < 0.47, "e em ~44% dos duelos de Mapas: " + mapas.duels);
+  for (const group of ["mapa", "capitais-clique", "capitais-escrita"]) assert.ok(mapas.byGroup[group] / (2 * N) > 0.23 && mapas.byGroup[group] / (2 * N) < 0.29, group + " sai mais que a Silhueta");
+  for (const group of ["atuais", "escrita-pais", "historicas"]) assert.ok(Math.abs(bandeiras.byGroup[group] / (2 * N) - 1 / 3) < 0.02, "Bandeiras: " + group + " segue com peso igual");
+}
+
 // regra de moedas: o modo que você tem paga o normal; prévia paga como o modo base da escada
 assert.deepEqual(M.coinModeFor("mapas", { family: "escrita", variant: "escrita-capital" }, true), { family: "escrita", variant: "escrita-capital" });
 assert.deepEqual(M.coinModeFor("mapas", { family: "escrita", variant: "escrita-capital" }, false), { family: "mapa", variant: "mapa" });

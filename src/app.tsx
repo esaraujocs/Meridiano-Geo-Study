@@ -20,6 +20,7 @@ import { QuizGame } from "./components/quiz-game";
 import { SpecialQuiz } from "./components/special-quiz";
 import { GeometryGame } from "./components/geometry-games";
 import { inRegion, normalizeRegionSelection, REGION_ITEMS, regionLabel } from "./domain/regions";
+import { inSilhouetteDeck } from "./domain/silhouette";
 import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts, Screen } from "./domain/types";
 import { loadSpecialData, specialInRegion } from "./domain/special-data";
 import {
@@ -443,6 +444,16 @@ export function App() {
       : null,
     [data, features],
   );
+  // O baralho da Silhueta não tem as ilhas pequenas (silhouette.ts); a configuração conta o mesmo que a partida sorteia.
+  const silhouetteCounts = useMemo(
+    () => data
+      ? Object.fromEntries(REGION_ITEMS.map(([key]) => [
+        key,
+        features.filter((item) => inSilhouetteDeck(data.meta[item.id]) && inRegion(item.id, key, data)).length,
+      ])) as RegionCounts
+      : null,
+    [data, features],
+  );
   const familyCounts = useMemo(() => {
     if (!data) return null;
     const count = (selected: Family, selectedRegion: Region) =>
@@ -463,10 +474,10 @@ export function App() {
       escrita: regionCounts(variant === "escrita-capital" ? "capitais" : "bandeiras"),
       historicas: specialCounts.historicas,
       idiomas: specialCounts.idiomas,
-      silhueta: counts,
+      silhueta: silhouetteCounts,
        travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     } as Record<Family, RegionCounts>;
-  }, [data, features, specialCounts, travelCounts, onlyUn, variant]);
+  }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts]);
   const selectedCount = useMemo(() => {
     if (!data) return 0;
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
@@ -476,6 +487,7 @@ export function App() {
         (onlyUn && !isUnPresetEntity(id, meta))
       ) return false;
       if (family === "mapa") return features.some((item) => item.id === id);
+      if (family === "silhueta") return features.some((item) => item.id === id) && inSilhouetteDeck(meta);
       if (family === "bandeiras") return Boolean(meta.fl);
       if (family === "capitais") return Boolean(meta.cap && !meta.soBandeira);
       if (family === "escrita") return variant === "escrita-capital" ? Boolean(meta.cap) : Boolean(meta.fl);

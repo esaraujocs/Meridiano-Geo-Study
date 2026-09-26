@@ -28,13 +28,18 @@ export type ModeGroupDef = {
   /** Ajuste do bot neste modo: pontos de acerto (negativo = mais difícil, encolhe nas ligas altas) e fator de tempo. Chute inicial, para ajustar jogando. */
   accuracy: number;
   time: number;
+  /** Peso no sorteio (padrão 1). A Silhueta tinha 2 dos 5 grupos de Mapas e caía em ~70% dos duelos; com peso menor cai em ~45%. */
+  weight?: number;
 };
+
+/** Peso de cada grupo da Silhueta no sorteio de Mapas (os outros pesam 1). */
+export const SILHOUETTE_WEIGHT = 0.4;
 
 export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
   { group: "capitais-clique", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5 },
-  { group: "silhueta-opcoes", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2 },
-  { group: "silhueta-escrita", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.16, time: 1.9 },
+  { group: "silhueta-opcoes", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2, weight: SILHOUETTE_WEIGHT },
+  { group: "silhueta-escrita", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.16, time: 1.9, weight: SILHOUETTE_WEIGHT },
   { group: "capitais-escrita", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.18, time: 1.9 },
   { group: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
   { group: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
@@ -57,18 +62,28 @@ export const LEG_ROUNDS = 10;
 
 export type DuelLeg = { group: ModeGroup; family: Family; variant: AnyQuizVariant; rounds: number; deckSeed: number };
 
+/** Escolhe um grupo pelo peso (sempre gasta um número do sorteio, como a escolha simples gastava). */
+function pickWeighted(groups: readonly ModeGroupDef[], random: () => number) {
+  let roll = random() * groups.reduce((sum, item) => sum + (item.weight ?? 1), 0);
+  for (const item of groups) {
+    roll -= item.weight ?? 1;
+    if (roll < 0) return item;
+  }
+  return groups[groups.length - 1];
+}
+
 /** Sorteia os 2 tempos: dois grupos diferentes da escada, com sentido e baralho decididos pela semente.
  * Com `ownedGroups` (duelo contra bot), ao menos um tempo cai num modo que a pessoa tem, quando ela tem algum;
  * sem ele (duelo entre pessoas) o sorteio não depende de quem comprou o quê. */
 export function drawLegs(ladder: Ladder, seed: string, ownedGroups?: ReadonlySet<ModeGroup>): [DuelLeg, DuelLeg] {
   const random = mulberry32(hashSeed(`legs:${ladder}:${seed}`));
   const groups = groupsOfLadder(ladder);
-  const first = groups[Math.floor(random() * groups.length)];
+  const first = pickWeighted(groups, random);
   const rest = groups.filter((item) => item !== first);
-  let second = rest[Math.floor(random() * rest.length)];
+  let second = pickWeighted(rest, random);
   if (ownedGroups && !ownedGroups.has(first.group) && !ownedGroups.has(second.group)) {
     const owned = rest.filter((item) => ownedGroups.has(item.group));
-    if (owned.length) second = owned[Math.floor(random() * owned.length)];
+    if (owned.length) second = pickWeighted(owned, random);
   }
   const leg = (def: ModeGroupDef, index: number): DuelLeg => {
     const pick = def.variants[Math.floor(random() * def.variants.length)];

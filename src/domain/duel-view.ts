@@ -54,7 +54,7 @@ export const clockOf = (ms: number) => {
 export const secondsPer = (ms: number | null | undefined, answers: number) =>
   ms === null || ms === undefined || answers <= 0 ? null : Math.round((ms / answers / 1000) * 10) / 10;
 
-/** Vitórias seguidas até o duelo mais recente (em qualquer escada). */
+/** Vitórias seguidas até o duelo mais recente da lista. Quem chama passa só os duelos de uma escada: a sequência é por escada. */
 export function winStreak(duels: readonly Pick<DuelRecord, "at" | "id" | "outcome">[]) {
   const ordered = [...duels].sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1));
   let streak = 0;
