@@ -50,6 +50,7 @@ import { pickBot } from "./domain/bots";
 import { drawLegs, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
+import { ladderCards, nextMilestones } from "./domain/duel-view";
 import { DuelReveal } from "./components/duel-reveal";
 import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
@@ -139,6 +140,8 @@ export function App() {
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
+  const arenaCards = useMemo(() => ladderCards(duels, economy.unlocked), [duels, economy.unlocked]);
+  const arenaNext = useMemo(() => nextMilestones(duels), [duels]);
   const effectiveTier: RoundTier = isRoundTierUnlocked(roundTier, economy.unlocked) ? roundTier : "short";
   // Duelo: cada tempo é uma sessão de 10 rodadas com tempo, baralho da semente do duelo e, em modo de prévia, moedas do modo base.
   const sessionOptions = useMemo(() => duelRun && screen === "game"
@@ -483,11 +486,6 @@ export function App() {
   };
   // Escolhe a família de jogo e abre a configuração da partida (Hub e cards de pilar da tela de Progresso).
   const selectFamily = async (selected: Family) => {
-            if (duelMode) {
-              const ladder: Ladder | null = selected === "idiomas" ? null : selected === "bandeiras" || selected === "historicas" ? "bandeiras" : "mapas";
-              if (ladder) openDuel(ladder);
-              return;
-            }
             setFamily(selected);
             setRegion("mundo");
              const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
@@ -621,6 +619,7 @@ export function App() {
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={openLeague}
+          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel }}
          />
       )}
       {screen === "recorte" && (

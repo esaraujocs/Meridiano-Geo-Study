@@ -12,6 +12,10 @@ import type { TopFamily } from "../domain/match-config";
 import { THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
+import { DuelArenas } from "./duel-arenas";
+import type { LadderCard } from "../domain/duel-view";
+import type { Milestone } from "../domain/duel-rewards";
+import type { Ladder } from "../domain/duel-modes";
 import { LOCALES, LOCALE_NAMES, LOCALE_RELEASED, changeLocale, formatNumber, locale, t } from "../domain/i18n";
 
 export type { TopFamily };
@@ -209,6 +213,7 @@ export function Hub({
   trophies = 0,
   duelsPlayed = 0,
   onOpenLeague,
+  arenas,
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
@@ -228,6 +233,8 @@ export function Hub({
   trophies?: number;
   duelsPlayed?: number;
   onOpenLeague?: () => void;
+  /** Hub em Duelo: as arenas (uma por escada) e os próximos prêmios, no lugar dos cartões de modo. */
+  arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; onDuel: (ladder: Ladder) => void };
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -337,6 +344,7 @@ export function Hub({
       </div>
       <div className="hub-rule" aria-hidden="true" />
       <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} title={duelReady ? undefined : t.duel.lockedSwitch} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}{!duelReady && <Icon type="lock" size={12} />}</button></div>}</div>
+      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} onDuel={arenas.onDuel} onLeague={onOpenLeague} /> : (
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
@@ -359,7 +367,6 @@ export function Hub({
           const item = familyItems[index];
             const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
             const current = !carouselMode || position === familyTrackIndex;
-          const outsideDuel = duelMode && item.family === "idiomas";
           const isUnlocked = item.family === "idiomas"
             ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
             : unlocked(item.family, item.variant);
@@ -367,14 +374,14 @@ export function Hub({
             type="button"
              key={`${clone ? "clone" : "real"}-${item.family}`}
             data-fam={item.family}
-            className={`family ${current && carouselMode ? "active" : ""} ${(economy && !isUnlocked) || outsideDuel ? "locked" : ""}`}
-            onClick={() => { if (!outsideDuel) onSelect(item.family); }}
+            className={`family ${current && carouselMode ? "active" : ""} ${economy && !isUnlocked ? "locked" : ""}`}
+            onClick={() => onSelect(item.family)}
             aria-hidden={carouselMode && !current ? true : undefined}
             inert={carouselMode && !current ? true : undefined}
           >
              <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
             <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{outsideDuel ? t.duel.outsideDuel : isUnlocked ? t.hub.open : t.hub.locked}</span>{!outsideDuel && <span className="family-play">{duelMode ? t.duel.challenge : t.hub.play} <Icon type={duelMode ? "swords" : "arrow"} /></span>}</div>
+            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{t.hub.play} <Icon type="arrow" /></span></div>
           </button>;
         })}
         </div>
@@ -385,6 +392,7 @@ export function Hub({
           ))}
         </div>}
       </div>
+      )}
       <section className="hub-progress" aria-labelledby="hub-progress-title">
         <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
         <div className="hub-progress-grid">
