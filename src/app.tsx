@@ -56,7 +56,7 @@ export function App() {
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
-  const [onlyUn, setOnlyUn] = useState(false);
+  const [onlyUn, setOnlyUn] = useState(true);
   // Ritmo (Partida com tempo ou Treino) e quantas rodadas: lembrados entre as partidas.
   const [pace, setPaceState] = useState<Pace>(() => {
     try { const saved = localStorage.getItem("carta-pace"); return isPace(saved) ? saved : DEFAULT_PACE; } catch { return DEFAULT_PACE; }
