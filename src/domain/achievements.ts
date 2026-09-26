@@ -39,12 +39,13 @@ export type AchievementContext = {
 const one = (f: (c: AchievementContext) => boolean) => ({ target: () => 1, progress: (c: AchievementContext) => f(c) ? 1 : 0 });
 const finiteTarget = (c: AchievementContext, min: number, fallback: number) => Math.max(min, Math.min(fallback, c.completed[0]?.rounds.length || fallback));
 
-// Um recorte só conta se for um único recorte regional (não Mundo, não uma seleção combinada de vários) —
-// "concluir o recorte" não faz sentido pra uma mistura de dois, o total muda.
+// Recortes que a partida cobriu por inteiro: o baralho completo de uma seleção tem todos os países de cada recorte
+// dela, então 100% vale para cada um. O Mundo cobre os 7; "Caribe + Europa" cobre os dois. (Até 26/09 só contava
+// um recorte regional sozinho, e 100% no Mundo inteiro não fechava nenhum recorte.)
 const NON_WORLD_REGIONS = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
-const singleRegionOf = (s: SurfaceSession): string | null => {
-  const region = s.regions?.length ? (s.regions.length === 1 ? s.regions[0] : null) : s.region;
-  return region && NON_WORLD_REGIONS.includes(region) ? region : null;
+const regionsCoveredBy = (s: SurfaceSession): string[] => {
+  const selection = s.regions?.length ? s.regions : s.region ? [s.region] : [];
+  return selection.includes("mundo") ? NON_WORLD_REGIONS : selection.filter((region) => NON_WORLD_REGIONS.includes(region));
 };
 // "Baralho inteiro" só é verificável se a sessão gravou `roundLimit` — em partida antiga migrada esse campo
 // não existe (`undefined`), então ela nunca conta pra essas conquistas novas, mesmo se por acaso bateu 100%.
@@ -53,8 +54,7 @@ const perfectRegionsFor = (sessions: readonly SurfaceSession[], family: string) 
   for (const s of sessions) {
     if (s.family !== family || s.roundLimit !== null || !s.complete) continue;
     if (!s.rounds.length || s.correct !== s.rounds.length) continue;
-    const region = singleRegionOf(s);
-    if (region) regions.add(region);
+    for (const region of regionsCoveredBy(s)) regions.add(region);
   }
   return regions;
 };

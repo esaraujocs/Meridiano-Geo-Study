@@ -257,7 +257,7 @@ assert.equal(regionalContext.capitalRegions.size, 3, "capital achievements must 
 assert.equal(regionalContext.worldComplete, true, "all-region union must count as Mundo");
 
 // ---- "recorte sem falhas" (mapaSemFalhas/capitaisSemFalhas/bandeirasSemFalhas/idiomasSemFalhas):
-// baralho inteiro (roundLimit: null) + 100% de acerto + um recorte regional só (não Mundo, não combinado).
+// baralho inteiro (roundLimit: null) + 100% de acerto: vale para cada recorte que a partida cobriu (o Mundo cobre os 7).
 const perfectDeck = (overrides = {}) => ({
   id: "perfect-" + Math.random(),
   family: "mapa",
@@ -278,8 +278,12 @@ assert.equal(achievementContext(realisticProgress, [perfectDeck({ roundLimit: 20
 assert.equal(achievementContext(realisticProgress, [perfectDeck({ roundLimit: undefined })], {}).perfectRegionsMapa.size, 0, "partida sem o campo roundLimit (migrada) não conta");
 const missedOne = perfectDeck({ correct: 4, rounds: [...Array.from({ length: 4 }, (_, i) => ({ targetId: "c" + i, correct: true, responseTimeMs: 900 })), { targetId: "c4", correct: false, responseTimeMs: 900 }] });
 assert.equal(achievementContext(realisticProgress, [missedOne], {}).perfectRegionsMapa.size, 0, "menos de 100% não conta");
-assert.equal(achievementContext(realisticProgress, [perfectDeck({ region: "mundo" })], {}).perfectRegionsMapa.size, 0, "Mundo fica de fora (tem a conquista própria \"Volta ao mundo\")");
-assert.equal(achievementContext(realisticProgress, [perfectDeck({ region: undefined, regions: ["caribe", "europa"] })], {}).perfectRegionsMapa.size, 0, "seleção de vários recortes juntos não conta pra nenhum dos dois");
+const worldPerfect = achievementContext(realisticProgress, [perfectDeck({ region: "mundo", regions: ["mundo"] })], {});
+assert.equal(worldPerfect.perfectRegionsMapa.size, 7, "100% no baralho inteiro do Mundo fecha os 7 recortes");
+assert.equal(worldPerfect.zonesMapa.size, 5, "e as 5 zonas");
+assert.equal(evaluateAchievementDefinitions(worldPerfect).find((item) => item.id === "mapaSemFalhas")?.unlocked, true, "Mapa sem falhas numa partida só de Mundo");
+assert.deepEqual([...achievementContext(realisticProgress, [perfectDeck({ region: "caribe", regions: ["caribe", "europa"] })], {}).perfectRegionsMapa].sort(), ["caribe", "europa"], "seleção combinada conta para cada recorte dela");
+assert.equal(achievementContext(realisticProgress, [perfectDeck({ region: "mundo", regions: ["mundo"], roundLimit: 100 })], {}).perfectRegionsMapa.size, 0, "Mundo com corte de 100 rodadas não é o baralho inteiro");
 assert.equal(achievementContext(realisticProgress, [perfectDeck({ complete: false })], {}).perfectRegionsMapa.size, 0, "partida abandonada não conta");
 const sevenRegions = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"]
   .map((region) => perfectDeck({ region }));
