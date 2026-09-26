@@ -9,7 +9,7 @@ const out = join(tmpdir(), "carta-cega-duel-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 execFileSync("node_modules/.bin/tsc", [
-  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
+  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "src/domain/duel-view.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
   "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig",
 ], { stdio: "inherit" });
 const L = await import(pathToFileURL(join(out, "league.js")).href);
@@ -19,6 +19,7 @@ const R = await import(pathToFileURL(join(out, "duel-rewards.js")).href);
 const M = await import(pathToFileURL(join(out, "duel-modes.js")).href);
 const U = await import(pathToFileURL(join(out, "duel-run.js")).href);
 const S = await import(pathToFileURL(join(out, "spoils.js")).href);
+const V = await import(pathToFileURL(join(out, "duel-view.js")).href);
 
 // ---- Ligas e divisões ----
 let s = L.leagueOf(0);
@@ -376,5 +377,73 @@ const asPreview = S.computeSpoils({ variant: "mapa", pace: "timed", rounds: Arra
 const asOwned = S.computeSpoils({ variant: "escrita-capital", pace: "timed", rounds: Array.from({ length: 10 }, () => ({ correct: true })), complete: true, newCards: 0, levelUps: 0 });
 assert.ok(asOwned.hits.coins > asPreview.hits.coins, "o modo pago rende mais por acerto que o base");
 assert.equal(S.baseCoins("mapa"), 48);
+
+
+// ---- Telas: cartões das escadas, sequência, plano do resultado ----
+const dd = (n, at, ladder, outcome, delta) => ({ id: "duel:v" + n, sessionId: "v" + n, at, botId: "bot-ouro-0", ladder, family: "mapa", variant: "mapa", playerCorrect: 12, total: 20, botCorrect: 10, outcome, tiebreak: false, delta });
+const history = [dd(1, 1, "mapas", "win", 30), dd(2, 2, "mapas", "win", 30), dd(3, 3, "bandeiras", "loss", -5), dd(4, 4, "mapas", "win", 20), dd(5, 5, "mapas", "loss", -10), dd(6, 6, "mapas", "win", 40), dd(7, 7, "mapas", "draw", 0), dd(8, 8, "mapas", "win", 30)];
+const ladderList = V.ladderCards(history, []);
+assert.deepEqual(ladderList.map((c) => c.ladder), ["mapas", "bandeiras"]);
+assert.equal(ladderList[0].trophies, 140); assert.equal(ladderList[1].trophies, 0);
+assert.equal(ladderList[0].status.league, "bronze"); assert.equal(ladderList[0].duels, 7);
+assert.deepEqual(ladderList[0].form, ["loss", "win", "draw", "win", "win"].slice(0, 0).concat(["win", "loss", "win", "draw", "win"]), "os 5 últimos da escada, do mais antigo ao mais novo");
+assert.deepEqual(ladderList[1].form, ["loss"]);
+assert.deepEqual(ladderList[0].groups.map((g) => [g.group, g.owned]), [["mapa", true], ["capitais-clique", true], ["silhueta-opcoes", false], ["silhueta-escrita", false], ["capitais-escrita", false]]);
+assert.deepEqual(ladderList[1].groups.map((g) => [g.group, g.owned]), [["atuais", true], ["escrita-pais", false], ["historicas", false]]);
+assert.equal(V.ladderCards(history, ["escrita:escrita-pais"])[1].groups[1].owned, true);
+assert.equal(V.ladderCards([], [])[0].trophies, 0);
+assert.equal(V.winStreak(history), 1, "o último foi vitória e o anterior empate");
+assert.equal(V.winStreak([dd(1, 1, "mapas", "win", 1), dd(2, 2, "bandeiras", "win", 1), dd(3, 3, "mapas", "win", 1)]), 3, "vale em qualquer escada");
+assert.equal(V.winStreak([dd(1, 1, "mapas", "win", 1), dd(2, 2, "mapas", "loss", -1)]), 0); assert.equal(V.winStreak([]), 0);
+// próximos marcos: o de divisão da escada mais avançada e o de liga mais perto
+let nx = V.nextMilestones([]);
+assert.deepEqual(nx.map((m) => m.id), ["division:mapas:bronze:2", "league:prata"]);
+nx = V.nextMilestones([dd(1, 1, "bandeiras", "win", 200)]);
+assert.deepEqual(nx.map((m) => m.id), ["division:bandeiras:bronze:3", "league:prata"], "olha a escada com mais troféus");
+nx = V.nextMilestones([dd(1, 1, "mapas", "win", 2600)]);
+assert.deepEqual(nx.map((m) => m.id), [], "no Mestre não sobra marco");
+assert.equal(V.nextMilestones([dd(1, 1, "mapas", "win", 500)])[0].id, "division:mapas:prata:2");
+
+// plano do resultado: festa por importância
+const plan = (o) => V.resultPlan({ outcome: "win", playerCorrect: 12, botCorrect: 10, total: 20, before: 1240, after: 1261, streakAfter: 1, streakBefore: 0, milestones: 0, ...o });
+let pl = plan({});
+assert.deepEqual([pl.kind, pl.tier, pl.delta, pl.cross], ["win", "win", 21, null]);
+assert.deepEqual(pl.pills, [{ key: "delta", tone: "up", value: 21 }]);
+assert.equal(plan({ playerCorrect: 20, botCorrect: 9 }).tier, "perfect");
+assert.ok(plan({ playerCorrect: 20 }).particles > pl.particles);
+pl = plan({ streakAfter: 4 }); assert.deepEqual(pl.pills.map((p) => p.key), ["delta", "streak"]);
+assert.deepEqual(plan({ streakAfter: 2 }).pills.map((p) => p.key), ["delta"], "sequência curta não vira pílula");
+pl = plan({ before: 1320, after: 1352 }); assert.equal(pl.tier, "division-up"); assert.equal(pl.cross, null);
+assert.ok(pl.particles > 24 && pl.durationMs > 2200);
+assert.ok(plan({ before: 1320, after: 1352 }).pills.some((p) => p.key === "division"));
+pl = plan({ before: 1480, after: 1512, milestones: 1 }); assert.equal(pl.tier, "league-up");
+assert.deepEqual(pl.cross, { floorA: 1000, floorB: 1500, mid: 1500 }); assert.equal(pl.particles, 70);
+assert.deepEqual(pl.pills.map((p) => p.key), ["delta", "league", "marks"]);
+assert.equal(plan({ before: 0, after: 4 }).tier, "win");
+const lp = (o) => V.resultPlan({ outcome: "loss", playerCorrect: 9, botCorrect: 13, total: 20, before: 1240, after: 1223, streakAfter: 0, streakBefore: 0, milestones: 0, ...o });
+pl = lp({}); assert.deepEqual([pl.kind, pl.tier, pl.delta], ["loss", "loss", -17]);
+assert.deepEqual(pl.pills.map((p) => p.key), ["delta", "stay"]);
+assert.equal(lp({ playerCorrect: 12, botCorrect: 13 }).tier, "close");
+assert.equal(lp({ playerCorrect: 11, botCorrect: 13 }).tier, "close", "por até 2 acertos");
+assert.equal(lp({ playerCorrect: 10, botCorrect: 13 }).tier, "loss");
+assert.deepEqual(lp({ streakBefore: 4 }).pills.map((p) => p.key), ["delta", "broken", "stay"]);
+pl = lp({ before: 1170, after: 1148 }); assert.equal(pl.tier, "division-down"); assert.deepEqual(pl.pills.map((p) => p.key), ["delta", "kept"]);
+pl = lp({ before: 1010, after: 988 }); assert.equal(pl.tier, "league-down");
+assert.deepEqual(pl.cross, { floorA: 1000, floorB: 500, mid: 1000 });
+assert.equal(lp({ before: 0, after: 0 }).delta, 0);
+assert.deepEqual([V.resultPlan({ outcome: "draw", playerCorrect: 10, botCorrect: 10, total: 20, before: 1240, after: 1244, streakAfter: 0, streakBefore: 2, milestones: 0 }).tier], ["draw"]);
+// quadro da animação: a barra vai do começo ao fim, e na passagem de liga muda de faixa no meio
+const planSingle = V.resultPlan({ outcome: "win", playerCorrect: 12, botCorrect: 10, total: 20, before: 1240, after: 1261, streakAfter: 1, streakBefore: 0, milestones: 0 });
+assert.equal(V.trophyFrame(planSingle, 0).value, 1240); assert.equal(V.trophyFrame(planSingle, 1).value, 1261);
+assert.equal(V.trophyFrame(planSingle, -3).value, 1240); assert.equal(V.trophyFrame(planSingle, 9).value, 1261);
+assert.ok(V.trophyFrame(planSingle, 0.5).value > 1240 && V.trophyFrame(planSingle, 0.5).value < 1261);
+assert.equal(V.trophyFrame(planSingle, 0.5).floor, 1000);
+const planUp = V.resultPlan({ outcome: "win", playerCorrect: 16, botCorrect: 12, total: 20, before: 1480, after: 1512, streakAfter: 1, streakBefore: 0, milestones: 1 });
+assert.deepEqual([V.trophyFrame(planUp, 0).value, V.trophyFrame(planUp, 0).floor, V.trophyFrame(planUp, 0).phase], [1480, 1000, 0]);
+assert.deepEqual([V.trophyFrame(planUp, 0.5).value, V.trophyFrame(planUp, 0.5).floor, V.trophyFrame(planUp, 0.5).phase], [1500, 1500, 1]);
+assert.equal(V.trophyFrame(planUp, 1).value, 1512);
+const planDown = V.resultPlan({ outcome: "loss", playerCorrect: 7, botCorrect: 15, total: 20, before: 1010, after: 988, streakAfter: 0, streakBefore: 0, milestones: 0 });
+assert.deepEqual([V.trophyFrame(planDown, 0.49).floor, V.trophyFrame(planDown, 0.5).floor, V.trophyFrame(planDown, 0.5).value, V.trophyFrame(planDown, 1).value], [1000, 500, 1000, 988]);
+let lastValue = Infinity; for (let i = 0; i <= 20; i += 1) { const value = V.trophyFrame(planDown, i / 20).value; assert.ok(value <= lastValue + 1e-9, "a queda é monótona"); lastValue = value; }
 
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");
