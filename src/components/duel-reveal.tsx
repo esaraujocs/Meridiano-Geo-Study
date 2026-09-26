@@ -26,7 +26,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
 }) {
   const player = leagueOf(run.trophiesBefore);
   const playerLabel = leagueLabel(player.league, player.division);
-  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak);
+  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, Math.max(0, LEAGUES.indexOf(run.bot.league) - player.index));
   const legs = previewLegs(run, unlocked);
   const baseGroupLabel = t.duel.groups[LADDER_BASE_GROUP[run.ladder]];
   const canBuy = balance >= formatCost;

@@ -568,7 +568,15 @@ assert.deepEqual(mm(0, NaN), ["bronze", 1], "MMR inválido não quebra");
 assert.deepEqual(mm(1200, 1200), [L.leagueOf(1200).league, L.leagueOf(1200).division], "MMR igual aos troféus: a própria liga");
 // MMR: sobe mais quando vence um bot acima dele, cai menos quando perde por pouco
 assert.equal(X.MMR_K, 64);
-assert.equal(X.mmrChange(1000, 1000, "win", 8), 32);
+assert.equal(X.mmrChange(1000, 1000, "win", 8), 52, "32 do Elo (K 64) + 20 de dominância (vitória por 8 acertos)");
+assert.equal(X.mmrChange(1000, 1000, "win", 4), 27, "com 4 acertos de diferença ainda não há dominância (só o Elo)");
+assert.equal(X.mmrChange(1000, 1000, "win", 10), 62);
+assert.equal(X.mmrChange(1000, 1000, "loss", -10), -62, "perder de goleada também tira MMR");
+assert.equal(X.mmrChange(1400, 1000, "win", 10), 6, "MMR 400 acima do bot: a dominância some (senão o MMR fugia sem limite)");
+assert.ok(X.mmrChange(1200, 1000, "win", 10) > X.mmrChange(1400, 1000, "win", 10) && X.mmrChange(1200, 1000, "win", 10) < X.mmrChange(1000, 1000, "win", 10), "a dominância vai sumindo aos poucos");
+assert.deepEqual([0, 10, 20, 99, NaN].map((g) => X.kFor(g)), [160, 112, 64, 64, 64], "K de calibração cai de 160 a 64 nas 20 primeiras partidas");
+assert.ok(X.mmrChange(300, 500, "win", 5, 0) > X.mmrChange(300, 500, "win", 5, 30), "nas primeiras partidas o MMR anda mais depressa");
+assert.equal(X.MMR_MODEL, 3);
 assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
 assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");
 assert.equal(X.mmrChange(1000, 1000, "draw", 0), 0);
@@ -600,13 +608,25 @@ assert.deepEqual(plan({ streakBonus: 3, perfBonus: 5, streakAfter: 4 }).pills.ma
 assert.deepEqual(lp({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "stay"], "derrota não tem pílula de desempenho");
 
 // bônus por enfrentar bot de liga acima: desligado por padrão e, ligado, soma ao ganho e ao teto (50 + 20 = 70 duas ligas acima)
-assert.equal(X.LEAD_BONUS, 0, "o bônus está desligado enquanto se avalia");
+assert.deepEqual(X.LEAD_BONUS, [0, 0, 20], "só a vitória sobre bot duas ligas acima passa dos 50");
 const leadArgs = { trophies: 100, mmr: 300, streak: 4, outcome: "win", margin: 8 };
-assert.equal(X.trophyChange({ ...leadArgs, lead: 2 }).delta, 50, "sem o bônus ligado, a liga do bot não muda nada");
-assert.equal(X.trophyChange({ ...leadArgs, lead: 2, leadBonus: 10 }).delta, 70);
-assert.equal(X.trophyChange({ ...leadArgs, lead: 1, leadBonus: 10 }).delta, 60);
-assert.equal(X.trophyChange({ ...leadArgs, lead: 0, leadBonus: 10 }).delta, 50, "mesma liga: teto de sempre");
-assert.equal(X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4, lead: 2, leadBonus: 10 }).delta, X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4 }).delta, "a derrota não usa o bônus");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 2 }).delta, 70, "duas ligas acima: teto de 70");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 1 }).delta, 50, "uma liga acima: o teto de sempre");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 0 }).delta, 50, "mesma liga: o teto de sempre");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 1, leadBonus: [0, 10, 20] }).delta, 60, "outros valores continuam possíveis (simulador)");
+assert.equal(X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4, lead: 2 }).delta, X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4 }).delta, "a derrota não usa o bônus");
+assert.equal(X.trophyChange({ trophies: 4000, mmr: 4000, streak: 0, outcome: "win", margin: 0, lead: 2 }).delta, X.baseStakes(4000).win + Math.round(20 * X.baseStakes(4000).scale), "no alto o bônus encolhe junto com a vitória");
+assert.deepEqual(D.stakesRange(100, 100, 0, 0).win, [33, 41]);
+assert.deepEqual(D.stakesRange(100, 100, 0, 2).win, [53, 61], "a prévia inclui a liga do bot");
+// o duelo usa a liga do bot sorteado contra a liga da pessoa
+const dlead = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead", division: 3, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
+assert.equal(dlead.outcome, "win"); assert.equal(dlead.delta, 33 + dlead.streakBonus + dlead.perfBonus + 20, "bot de Ouro contra quem está no Bronze: +20");
+assert.equal(D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "lead", division: 2, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).delta <= 50, true, "bot da própria liga: teto de 50");
+// calibração: nas primeiras partidas o MMR anda mais
+const cal = (games) => D.resolveDuelLegs({ trophies: 100, mmr: 100, bot: ouro, seed: "cal", division: 1, games, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).mmrDelta;
+assert.ok(cal(0) > cal(40), "o primeiro duelo mexe mais no MMR que o quadragésimo");
+assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX }).games, 20, "sem contagem, conta como experiente");
+assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX, games: 3 }).games, 3);
 // relógio e segundos por resposta (tela do resultado)
 assert.deepEqual([0, 59400, 92000, 200000, 3599000, -5].map((ms) => V.clockOf(ms)), ["0:00", "0:59", "1:32", "3:20", "59:59", "0:00"]);
 assert.deepEqual([V.secondsPer(200000, 20), V.secondsPer(185000, 20), V.secondsPer(null, 20), V.secondsPer(5000, 0), V.secondsPer(undefined, 20)], [10, 9.3, null, null, null]);

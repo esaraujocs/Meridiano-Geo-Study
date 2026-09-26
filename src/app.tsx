@@ -182,11 +182,12 @@ export function App() {
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
     const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
     const mmr = mmrByLadder(duels)[ladder];
+    const games = duels.filter((duel) => duel.ladder === ladder).length;
     // matchmaking: o bot sai da liga do MMR (até 2 ligas acima e 1 abaixo da liga em troféus), então quem joga acima da liga enfrenta bots mais fortes
     const match = matchmaking(trophiesBefore, mmr);
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, legs, streak, mmr }));
+    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, legs, streak, mmr, games }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */

@@ -1,6 +1,7 @@
 // Um duelo em andamento (2 tempos de 10 rodadas): o estado, as opções de cada sessão e a resolução no fim. Lógica pura.
 import type { Bot } from "./bots.js";
 import type { AnyQuizVariant } from "./types";
+import { CALIB_GAMES } from "./mmr.js";
 import { LEGS, coinModeFor, isVariantOwned, type DuelLeg, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { resolveDuelLegs, type DuelLegsResult, type LegInput } from "./duel.js";
 
@@ -18,13 +19,15 @@ export type DuelRun = {
   streak: number;
   /** MMR escondido na escada antes deste duelo (muda o ganho e a perda de troféus). */
   mmr: number;
+  /** Duelos já jogados nesta escada (o MMR anda mais depressa nos primeiros). */
+  games: number;
   legs: readonly DuelLeg[];
   done: readonly LegDone[];
   /** Tempo em jogo (0 ou 1). */
   index: number;
 };
 
-export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[]; streak?: number; mmr?: number }): DuelRun => ({ ...input, streak: input.streak ?? 0, mmr: input.mmr ?? input.trophiesBefore, done: [], index: 0 });
+export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[]; streak?: number; mmr?: number; games?: number }): DuelRun => ({ ...input, streak: input.streak ?? 0, mmr: input.mmr ?? input.trophiesBefore, games: input.games ?? CALIB_GAMES, done: [], index: 0 });
 
 /** Opções da sessão de um tempo: sempre com tempo, 10 rodadas, baralho da semente e, se o modo é de prévia, as moedas do modo base. */
 export type LegSessionOptions = { pace: "timed"; roundLimit: number; deckSeed: number; coinVariant?: AnyQuizVariant; duel: { id: string; leg: number } };
@@ -55,5 +58,5 @@ export const isRunComplete = (run: DuelRun) => run.done.length >= LEGS;
 /** Fecha o duelo. Tempo que ficou por jogar (a pessoa saiu no meio) conta como zero acerto: desistir no 2º tempo é derrota, não escapatória. */
 export function resolveRun(run: DuelRun): DuelLegsResult {
   const legs: LegInput[] = run.legs.map((leg, index) => run.done[index] ?? { group: leg.group, rounds: leg.rounds, playerCorrect: 0, playerMs: null });
-  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division, streak: run.streak, mmr: run.mmr });
+  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division, streak: run.streak, mmr: run.mmr, games: run.games });
 }

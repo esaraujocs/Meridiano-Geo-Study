@@ -17,9 +17,9 @@ export const BASE_WIN = 33;
 export const BASE_LOSS = 27;
 /** O teto da vitória é o ganho-base + isto (50 no começo): sequência e desempenho boostam até aí. */
 export const WIN_CAP_EXTRA = 17;
-/** Bônus por enfrentar bot de liga acima da sua (por liga de diferença, até MATCH_UP): soma ao ganho e ao teto, então a vitória sobre um bot
- *  duas ligas acima pode passar dos 50 (até 50 + 2 × LEAD_BONUS). Desligado (0) enquanto se avalia; o simulador testa outros valores. */
-export const LEAD_BONUS = 0;
+/** Bônus por enfrentar bot de liga acima da sua, por liga de diferença (0, 1 ou 2): soma ao ganho e ao teto, então só a vitória sobre um bot
+ *  duas ligas acima passa dos 50 (até 50 + 20 = 70). Quem joga acima da própria liga é sorteado com bots de ligas mais altas (matchmaking). */
+export const LEAD_BONUS: readonly number[] = [0, 0, 20];
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
 export const PERF_SPAN = 8;
@@ -44,8 +44,19 @@ export const GAP_DOWN = 3;
 export const WIN_GAP = 0.35;
 export const LOSS_GAP = 0.3;
 export const WIN_FLOOR = 0.25;
-/** Velocidade do MMR (Elo): o mesmo tamanho dos troféus, para os dois andarem juntos. */
+/** Velocidade do MMR (Elo): o mesmo tamanho dos troféus, para os dois andarem juntos. Nas primeiras CALIB_GAMES partidas da escada o MMR anda
+ *  mais depressa (K de MMR_K_START caindo até MMR_K), para achar o nível de quem chega dominando sem esperar dezenas de duelos. */
 export const MMR_K = 64;
+export const MMR_K_START = 160;
+export const CALIB_GAMES = 20;
+export const kFor = (games: number) => MMR_K + (MMR_K_START - MMR_K) * clamp01(1 - (Number.isFinite(games) ? games : CALIB_GAMES) / CALIB_GAMES);
+/** Dominância: vencer por DOMINANCE_FROM+ acertos (cheio em DOMINANCE_FROM + DOMINANCE_SPAN) soma DOMINANCE pontos ao MMR mesmo contra bot fraco (e
+ *  perder assim tira), o que deixa o MMR correr na frente dos troféus de quem domina. Some quando o MMR já está DOMINANCE_FADE acima do bot; sem esse
+ *  limite o MMR fugia sem fim e o teto teórico deixava de existir. */
+export const DOMINANCE = 30;
+export const DOMINANCE_FROM = 4;
+export const DOMINANCE_SPAN = 6;
+export const DOMINANCE_FADE = 400;
 
 /** Matchmaking pelo MMR: o bot sai da liga do MMR, no máximo MATCH_UP ligas acima da liga em troféus e nunca abaixo dela (quem está com o MMR
  *  atrás dos troféus enfrenta os bots mais fracos da própria liga, não os de uma liga inferior). */
@@ -54,7 +65,7 @@ export const MATCH_DOWN = 0;
 
 /** Versão da conta do MMR. O MMR de um registro só vale se ele foi gravado nesta versão; os anteriores contam o MMR como o próprio delta
  *  (assim mudar a conta não deixa o MMR de quem já jogou preso ao valor de uma fórmula antiga). */
-export const MMR_MODEL = 2;
+export const MMR_MODEL = 3;
 
 /** Sequência: cada vitória seguida que a pessoa já tinha na escada soma STREAK_STEP troféus à próxima vitória, até STREAK_CAP vitórias
  *  (+12). Perder zera a sequência; o bônus só existe na vitória, a derrota não muda. */
@@ -99,7 +110,7 @@ export type TrophyInput = {
   /** Quantas ligas o bot está acima da liga da pessoa (matchmaking pelo MMR); só a vitória usa. */
   lead?: number;
   /** Bônus por liga de diferença (sem valor, LEAD_BONUS). */
-  leadBonus?: number;
+  leadBonus?: readonly number[];
 };
 export type TrophyChange = { delta: number; streakBonus: number; perfBonus: number };
 
@@ -114,7 +125,7 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
     const room = Math.max(0, win + Math.round(WIN_CAP_EXTRA * scale) - base);
     const streakApplied = Math.min(room, Math.round(streakBonus(streak) * hold));
     const perfApplied = Math.min(room - streakApplied, Math.round(PERF_MAX * hold * clamp01(margin / PERF_SPAN)));
-    const leadExtra = Math.round(Math.max(0, lead) * leadBonus * scale);
+    const leadExtra = Math.round((leadBonus[Math.min(Math.max(0, Math.floor(lead)), leadBonus.length - 1)] ?? 0) * scale);
     return { delta: Math.max(minWin, base + streakApplied + perfApplied + leadExtra), streakBonus: streakApplied, perfBonus: perfApplied };
   }
   if (outcome === "loss") {
@@ -124,18 +135,21 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
   return { delta: Math.round(0.5 * win * factors.win - 0.5 * loss * factors.loss), streakBonus: 0, perfBonus: 0 };
 }
 
-/** Quanto o duelo mexe no MMR: Elo contra a nota do bot, com o placar contando pelo desempenho (vitória apertada vale menos que goleada). */
-export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number) {
+/** Quanto o duelo mexe no MMR: Elo contra a nota do bot, com o placar contando pelo desempenho (vitória apertada vale menos que goleada), K de calibração
+ *  nas primeiras partidas da escada (`games` = duelos já jogados; sem valor, K normal) e o bônus de dominância. */
+export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number, games = CALIB_GAMES) {
   const score = outcome === "win" ? 0.85 + 0.15 * clamp01(margin / PERF_SPAN)
     : outcome === "loss" ? 0.15 * (1 - clamp01(Math.abs(margin) / PERF_SPAN))
       : 0.5;
-  return Math.round(MMR_K * (score - expectedScore(mmr, opponent)));
+  const crush = outcome === "draw" ? 0 : clamp01((Math.abs(margin) - DOMINANCE_FROM) / DOMINANCE_SPAN) * (outcome === "win" ? 1 : -1);
+  const dominance = DOMINANCE * crush * clamp01(1 - (mmr - opponent) / DOMINANCE_FADE);
+  return Math.round(kFor(games) * (score - expectedScore(mmr, opponent)) + dominance);
 }
 
 /** O que está em jogo antes do duelo, como faixa: vitória de `win[0]` (apertada) a `win[1]` (goleada); derrota de `loss[0]` (apertada) a
  *  `loss[1]` (goleada, negativos). O chão em zero vale nas duas. */
-export function stakesRange(trophies: number, mmr: number, streak = 0) {
+export function stakesRange(trophies: number, mmr: number, streak = 0, lead = 0) {
   const floor = (delta: number) => Math.max(0, trophies + delta) - Math.max(0, trophies);
-  const at = (outcome: "win" | "loss", margin: number) => floor(trophyChange({ trophies, mmr, streak, outcome, margin }).delta);
+  const at = (outcome: "win" | "loss", margin: number) => floor(trophyChange({ trophies, mmr, streak, outcome, margin, lead }).delta);
   return { win: [at("win", 0), at("win", PERF_SPAN)] as [number, number], loss: [at("loss", -1), at("loss", -(PERF_SPAN + 2))] as [number, number] };
 }

@@ -265,10 +265,10 @@ export const es: Messages = {
       howWin: (base: number, cap: number) => `${base} · hasta ${cap}`,
       howFalling: (base: number) => `${base}, disminuyendo`,
       howRising: (base: number) => `${base}, aumentando`,
-      howPoints: (base: number, perf: number, cap: number) => [
+      howPoints: (base: number, perf: number, cap: number, top: number) => [
         `Victoria: ${base} de base, más hasta +${perf} por rendimiento (aciertos por delante del rival) y +3 por victoria seguida (hasta +12), con un tope de ${cap} sobre la base.`,
         "Si juegas al nivel de tu liga (ganas y pierdes cerca del 50%), un nivel de juego escondido te sujeta: para subir hay que demostrar más, y por eso baja la ganancia de trofeos.",
-        "Si juegas por encima de la liga, ganas más, pierdes menos y el sorteo empieza a traer bots de ligas más altas. Si juegas por debajo, ganas menos y pierdes más.",
+        `Si juegas por encima de la liga, ganas más, pierdes menos y el sorteo empieza a traer bots de ligas más altas; vencer a un bot dos ligas por encima puede rendir hasta ${top}. Si juegas por debajo, ganas menos y pierdes más.`,
         "Una derrota ajustada cuesta menos; una goleada cuesta más. Los trofeos nunca bajan de cero.",
         "Desde Diamante la victoria rinde cada vez menos y la derrota cuesta cada vez más. Maestro no tiene techo, pero la curva se cierra: es el límite de quienes tienen el mejor rendimiento.",
       ],

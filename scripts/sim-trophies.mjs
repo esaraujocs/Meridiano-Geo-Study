@@ -1,6 +1,6 @@
 // Simulador dos troféus do Duelo (ferramenta de ajuste, não é teste): joga milhares de duelos de jogadores com uma "habilidade" fixa
 // (na escala dos troféus: habilidade 1250 empata com os bots do Ouro) e mostra como a subida se comporta com a tabela de mmr.ts.
-// Uso: node scripts/sim-trophies.mjs [jogadores por habilidade]
+// Uso: node scripts/sim-trophies.mjs [jogadores por habilidade] [taxa máxima de vitória, 0,85] [bônus por liga acima, ex. 0,0,20]
 import { execFileSync } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -16,14 +16,11 @@ const M = await import(pathToFileURL(join(out, "mmr.js")).href);
 
 const RUNS = Number(process.argv[2] || 200);
 // bônus por liga de diferença do adversário (0 = como está; 10 = teto de 70 contra bots duas ligas acima): node scripts/sim-trophies.mjs 200 10
-const LEAD = Number(process.argv[3] || 0);
-// experimentos do MMR (só no simulador): K de calibração nas primeiras 20 partidas e bônus de dominância (vitória ou derrota por 10+ acertos)
-const CALIB = Number(process.argv[4] || M.MMR_K);
-const DOM = Number(process.argv[5] || 0);
-const SKILLS = [300, 600, 900, 1250, 1600, 2000, 2400, 3000, 3600];
+const MAX_WIN_RATE = Number(process.argv[3] || 0.85);
+const LEAD_SCHEDULE = process.argv[4] ? process.argv[4].split(",").map(Number) : M.LEAD_BONUS;
+const SKILLS = [300, 600, 900, 1250, 1600, 2000, 2400, 2700, 3000, 3600];
 const CHECK = [25, 50, 100, 200, 400, 1000];
 const LONG = 3000;
-const MAX_WIN_RATE = 0.85;
 
 const mulberry32 = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const gauss = (random) => { let u = 0; while (u === 0) u = random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * random()); };
@@ -47,15 +44,12 @@ function play(skill, games, seed) {
     const margin = win ? size(3 + advantage) : -size(3 - advantage);
     const outcome = win ? "win" : "loss";
     const lead = M.matchmaking(trophies, mmr).index - L.leagueOf(trophies).index;
-    const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD });
+    const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD_SCHEDULE });
     if (change.delta >= 60) { big += 1; if (game <= 60) bigEarly += 1; }
     best = Math.max(best, change.delta);
     gapSum += mmr - trophies;
     if (bot > botRatingAt(trophies)) above += 1;
-    const kScale = (M.MMR_K + (CALIB - M.MMR_K) * Math.max(0, 1 - (game - 1) / 20)) / M.MMR_K;
-    // a dominância some quando o MMR já está 400 acima do bot (senão o MMR fugia sem limite)
-    const dominance = DOM * Math.min(1, Math.max(0, (Math.abs(margin) - 4) / 6)) * (win ? 1 : -1) * Math.max(0, Math.min(1, 1 - (mmr - bot) / 400));
-    const mmrAfter = Math.max(0, mmr + Math.round(M.mmrChange(mmr, bot, outcome, margin) * kScale + dominance));
+    const mmrAfter = Math.max(0, mmr + M.mmrChange(mmr, bot, outcome, margin, game - 1));
     trophies = Math.max(0, trophies + change.delta);
     mmr = mmrAfter;
     streak = win ? streak + 1 : 0;

@@ -1,7 +1,7 @@
 // Duelo contra bots: a pessoa joga a partida de sempre; o bot "joga" o mesmo número de rodadas (ver bots.ts) e o placar decide.
 // Quem acertar mais vence; empatou nos acertos, o menor tempo total desempata. Os troféus seguem uma conta tipo Elo.
 // O duelo v2 tem 2 tempos de 10 rodadas (ver duel-modes.ts) e troféus por escada (Mapas e Bandeiras).
-import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, type LeagueKey } from "./league.js";
+import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
 import { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, mmrChange, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange } from "./mmr.js";
@@ -32,6 +32,8 @@ export type DuelInput = {
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
   mmr?: number;
+  /** Duelos que a pessoa já jogou nesta escada (o MMR anda mais depressa nos primeiros). */
+  games?: number;
 };
 export type DuelResult = {
   botId: string;
@@ -51,7 +53,7 @@ export type DuelResult = {
 };
 
 /** Vencedor e troféus a partir dos números finais (a mesma conta para 1 tempo ou 2). */
-function settle(input: { trophies: number; mmr?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
+function settle(input: { trophies: number; mmr?: number; games?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
   const { trophies, bot, playerCorrect, botCorrect, playerMs, botMs } = input;
   const mmr = input.mmr ?? trophies;
   let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
@@ -61,15 +63,17 @@ function settle(input: { trophies: number; mmr?: number; division?: 1 | 2 | 3 | 
     tiebreak = true;
   }
   const margin = playerCorrect - botCorrect;
-  const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin });
+  // quantas ligas o bot está acima da liga da pessoa (o matchmaking pelo MMR traz bots de liga acima): soma ao ganho da vitória
+  const lead = Math.max(0, LEAGUES.indexOf(bot.league) - leagueOf(trophies).index);
+  const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead });
   const trophiesAfter = Math.max(0, trophies + change.delta);
-  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot, input.division ?? null), outcome, margin));
+  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot, input.division ?? null), outcome, margin, input.games));
   return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: change.streakBonus, perfBonus: change.perfBonus, mmrDelta: mmrAfter - mmr, mmrAfter };
 }
 
-export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak, mmr }: DuelInput): DuelResult {
+export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak, mmr, games }: DuelInput): DuelResult {
   const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
-  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, mmr, division: context?.division ?? null, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, mmr, games, division: context?.division ?? null, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Duelo em dois tempos ----
@@ -86,11 +90,13 @@ export type DuelLegsInput = {
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
   mmr?: number;
+  /** Duelos que a pessoa já jogou nesta escada. */
+  games?: number;
 };
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, mmr }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, mmr, games }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time } });
@@ -100,7 +106,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, m
   const botCorrect = results.reduce((sum, leg) => sum + leg.botCorrect, 0);
   const botMs = results.reduce((sum, leg) => sum + leg.botMs, 0);
   const playerMs = legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null;
-  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, games, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Registro dos duelos (um por duelo, guardado na loja `preferences`) ----
