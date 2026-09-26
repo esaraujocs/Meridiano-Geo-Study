@@ -4,7 +4,7 @@ import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
-import { LEAGUE_STAKES, LOSS_BLOWOUT, LOSS_CLOSE, PERF_MAX, WIN_CAP_EXTRA } from "../domain/mmr";
+import { BASE_WIN, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
 
@@ -113,17 +113,17 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
             <p>{t.duel.league.howLead}</p>
             <table>
               <thead><tr><th>{t.duel.league.howCols.league}</th><th>{t.duel.league.howCols.win}</th><th>{t.duel.league.howCols.loss}</th></tr></thead>
-              <tbody>{LEAGUES.map((league) => {
-                const { win, loss } = LEAGUE_STAKES[league];
-                const master = league === "mestre";
+              <tbody>{LEAGUES.map((league, index) => {
+                const start = baseStakes(leagueFloor(index));
+                const falling = baseStakes(leagueFloor(index) + LEAGUE_SPAN - 1).win < start.win || start.win < BASE_WIN;
                 return <tr key={league} className={league === status.league ? "is-now" : ""}>
                   <th scope="row">{t.duel.leagues[league]}</th>
-                  <td>{master ? t.duel.league.howMasterWin(win) : t.duel.league.howWin(win, win + WIN_CAP_EXTRA)}</td>
-                  <td>{master ? t.duel.league.howMasterLoss(loss) : t.duel.league.howLoss(Math.round(loss * LOSS_CLOSE), Math.round(loss * LOSS_BLOWOUT))}</td>
+                  <td>{falling ? t.duel.league.howFalling(start.win) : t.duel.league.howWin(start.win, start.win + WIN_CAP_EXTRA)}</td>
+                  <td>{falling ? t.duel.league.howRising(start.loss) : start.loss}</td>
                 </tr>;
               })}</tbody>
             </table>
-            <ul>{t.duel.league.howPoints(PERF_MAX, WIN_CAP_EXTRA).map((point, index) => <li key={index}>{point}</li>)}</ul>
+            <ul>{t.duel.league.howPoints(BASE_WIN, PERF_MAX, WIN_CAP_EXTRA).map((point, index) => <li key={index}>{point}</li>)}</ul>
           </details>
         </section>
 

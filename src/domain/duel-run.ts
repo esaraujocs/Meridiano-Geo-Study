@@ -12,6 +12,7 @@ export type DuelRun = {
   ladder: Ladder;
   bot: Bot;
   trophiesBefore: number;
+  /** Divisão do adversário sorteado (matchmaking pelo MMR): a força do bot acompanha a divisão. */
   division: 1 | 2 | 3 | null;
   /** Vitórias seguidas na escada antes deste duelo (bônus de sequência). */
   streak: number;

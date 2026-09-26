@@ -45,6 +45,7 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
+import { matchmaking } from "./domain/mmr";
 import { duelRecordId, mmrByLadder, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
 import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
@@ -181,9 +182,11 @@ export function App() {
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
     const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
     const mmr = mmrByLadder(duels)[ladder];
+    // matchmaking: o bot sai da liga do MMR (até 2 ligas acima e 1 abaixo da liga em troféus), então quem joga acima da liga enfrenta bots mais fortes
+    const match = matchmaking(trophiesBefore, mmr);
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(status.league, id, lastBotRef.current[ladder]), trophiesBefore, division: status.division, legs, streak, mmr }));
+    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, legs, streak, mmr }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */

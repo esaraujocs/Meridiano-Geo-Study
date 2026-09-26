@@ -4,7 +4,7 @@ import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP, groupsOfLadder, type ModeGroup } from "../domain/duel-modes";
 import { botLabel, leagueLabel, styleLabel } from "../domain/duel-labels";
 import { policyFor } from "../domain/economy-rules";
-import { divisionRoman, leagueOf } from "../domain/league";
+import { LEAGUES, divisionRoman, leagueOf } from "../domain/league";
 import { baseCoins } from "../domain/spoils";
 import { formatNumber as money, t } from "../domain/i18n";
 
@@ -72,6 +72,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
         <div className="rv-stakes">
           <span className="up">{t.duel.reveal.winRange(money(stakes.win[0]), money(stakes.win[1]))}</span>
           <span className="down">{stakes.loss[1] === 0 ? t.duel.reveal.noLoss : t.duel.reveal.loseRange(money(Math.abs(stakes.loss[0])), money(Math.abs(stakes.loss[1])))}</span>
+          {LEAGUES.indexOf(run.bot.league) > player.index && <span className="fire">{t.duel.reveal.higherBot}</span>}
           {run.streak > 0 && <span className="fire">{t.duel.reveal.streakStake(run.streak, streakBonus(run.streak))}</span>}
         </div>
         {!formatOwned && <p className="rv-note" role="status">{t.duel.reveal.needFormat}</p>}
