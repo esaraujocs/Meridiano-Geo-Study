@@ -393,7 +393,7 @@ export function Hub({
         </div>}
       </div>
       )}
-      <section className="hub-progress" aria-labelledby="hub-progress-title">
+      <section className={`hub-progress${duelMode && arenas ? " is-duel" : ""}`} aria-labelledby="hub-progress-title">
         <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
         <div className="hub-progress-grid">
           {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}

@@ -50,7 +50,8 @@ export function useLeaveGuard(duel = false): {
         onLeave={() => { const { onLeave } = pending; close(); onLeave(); }}
         onRestart={pending.onRestart ? () => { const run = pending.onRestart!; close(); run(); } : undefined}
       />;
-  return { noteAnswer, reset, guard, ask, asking: pending !== null, dialog };
+  // No duelo o aviso de sair não pausa nada (`asking` fica falso): o tempo da pergunta segue correndo por baixo.
+  return { noteAnswer, reset, guard, ask, asking: pending !== null && !duel, dialog };
 }
 
 function LeaveDialog({ rounds, verb, duel, coins, xp, onStay, onLeave, onRestart }: {

@@ -272,7 +272,7 @@ export function QuizGame({
       {leaveGuard.dialog}
       <div className="gs">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
-          <RoundTimer seconds={timerSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
+          <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
         </GameTopBar>
         <div className="gs-body">
           <main className="gs-stage">

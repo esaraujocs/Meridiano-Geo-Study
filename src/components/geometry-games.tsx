@@ -190,7 +190,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`}>
-        <RoundTimer seconds={settings.timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
+        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">
@@ -362,7 +362,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel("travel")} · ${regionLabel(region)}`}>
-        <RoundTimer seconds={settings.timerSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
+        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">

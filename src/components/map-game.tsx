@@ -681,7 +681,7 @@ export function Game({
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
-            <RoundTimer seconds={timerSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+            <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
           </div>
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
             {feedback || t.map.currentTarget(targetName)}

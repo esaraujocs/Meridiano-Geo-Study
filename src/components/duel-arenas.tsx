@@ -76,13 +76,13 @@ function Arena({ card, formatReady, formatCost, onDuel }: { card: LadderCard; fo
       </div>
       <div className="ar-modes-wrap">
         <small className="ar-k">{t.duel.arenas.inTheDraw}</small>
-        <div className="ar-modes">{card.groups.map(({ group, owned }) => <span key={group} className={`ar-chip${owned ? "" : " is-prev"}`}>{t.duel.groups[group]}{!owned && <><Icon type="lock" size={12} /><em>{t.duel.arenas.preview}</em></>}</span>)}</div>
+        <div className="ar-modes">{card.groups.map(({ group, owned }) => <span key={group} className={`ar-chip${owned ? "" : " is-prev"}`} title={owned ? undefined : t.duel.arenas.preview}>{t.duel.groups[group]}{!owned && <><Icon type="lock" size={12} /><span className="sr-only">{t.duel.arenas.preview}</span></>}</span>)}</div>
         <p className="ar-rule"><Icon type="info" size={16} /><span>{t.duel.arenas.previewRule(baseGroup, rate)}</span></p>
       </div>
       <div className="ar-foot">
         <button type="button" className="ar-go" style={{ background: COLOR[ladder] }} onClick={() => onDuel(ladder)}><Icon type="swords" size={18} /> {t.duel.arenas.duel}{!formatReady && <Icon type="lock" size={13} />}</button>
-        <button type="button" className="ar-friend" disabled title={t.duel.arenas.friendTitle}><Icon type="swords" size={16} /> {t.duel.arenas.friend} <em>{t.duel.arenas.friendSoon}</em></button>
-        <small>{formatReady ? t.duel.arenas.format : t.duel.arenas.needFormat(money(formatCost))}</small>
+        <button type="button" className="ar-friend" disabled title={t.duel.arenas.friendTitle} aria-label={`${t.duel.arenas.friend} · ${t.duel.arenas.friendSoon}`}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span><em>{t.duel.arenas.friendSoon}</em></button>
+        <small className={formatReady ? "ar-format" : "ar-need"}>{formatReady ? t.duel.arenas.format : t.duel.arenas.needFormat(money(formatCost))}</small>
       </div>
     </article>
   );

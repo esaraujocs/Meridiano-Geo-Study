@@ -9,6 +9,8 @@ type Props = {
   /** Muda a cada pergunta e devolve o tempo cheio. */
   resetKey: string | number;
   onExpire: () => void;
+  /** Falso no duelo: o tempo corre sempre, mesmo com a janela sem foco (não dá para ganhar tempo saindo da tela). */
+  pausable?: boolean;
 };
 
 const LOW_MS = 3000;
@@ -17,8 +19,9 @@ const MAX_STEP_MS = 500;
 // Barra de tempo curta e centrada junto da pergunta (uma barra larga varrendo a tela dá a sensação de que o tempo voa).
 // Esvazia dos dois lados para o centro, sem números nem pulso. Só este componente atualiza a cada quadro.
 // O tempo pausa sozinho quando o app sai de cena (aba escondida ou janela sem foco), para uma
-// notificação no celular não roubar tempo do jogador.
-export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
+// notificação no celular não roubar tempo do jogador. No duelo (`pausable` falso) nada pausa o tempo: nem a janela sem foco
+// nem o aviso de sair; o relógio segue o tempo real, mesmo que o navegador congele os quadros.
+export function RoundTimer({ seconds, running, resetKey, onExpire, pausable = true }: Props) {
   const total = (seconds ?? 0) * 1000;
   const remaining = useRef(total);
   const [left, setLeft] = useState(total);
@@ -35,7 +38,7 @@ export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
     const calm = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches
       || document.documentElement.dataset.reducedMotion === "true";
     let last = performance.now();
-    let away = document.hidden;
+    let away = pausable && document.hidden;
     let raf = 0;
     let timer = 0;
     let fired = false;
@@ -45,7 +48,7 @@ export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
     };
     function step() {
       const now = performance.now();
-      if (!away) remaining.current -= Math.min(now - last, MAX_STEP_MS);
+      if (!away) remaining.current -= pausable ? Math.min(now - last, MAX_STEP_MS) : now - last;
       last = now;
       if (remaining.current <= 0) {
         remaining.current = 0;
@@ -56,7 +59,7 @@ export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
       setLeft(remaining.current);
       schedule();
     }
-    const away$ = (value: boolean) => () => { away = value || document.hidden; last = performance.now(); };
+    const away$ = (value: boolean) => () => { if (!pausable) return; away = value || document.hidden; last = performance.now(); };
     const onVisibility = away$(false);
     const onBlur = away$(true);
     document.addEventListener("visibilitychange", onVisibility);
@@ -70,7 +73,7 @@ export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
       cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [seconds, running, resetKey]);
+  }, [seconds, running, resetKey, pausable]);
 
   if (seconds === null) return null;
   const fraction = total > 0 ? Math.max(0, Math.min(1, left / total)) : 0;

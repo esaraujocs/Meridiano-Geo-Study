@@ -126,6 +126,7 @@ export const pt = {
       next: "A seguir",
       go: (n: number) => `Começar o ${n}º tempo`,
       leaveNote: "Sair agora conta como derrota.",
+      auto: (n: number) => `O 2º tempo começa sozinho em ${n} s.`,
     },
     arenas: {
       sub: { mapas: "País, capital e silhueta", bandeiras: "Atuais, escrita e históricas" },

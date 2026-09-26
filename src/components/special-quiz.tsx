@@ -266,7 +266,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
-        <RoundTimer seconds={timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+        <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">

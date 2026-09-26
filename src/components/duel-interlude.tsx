@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icons";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP } from "../domain/duel-modes";
@@ -5,8 +6,24 @@ import { policyFor } from "../domain/economy-rules";
 import { baseCoins } from "../domain/spoils";
 import { formatNumber as money, t } from "../domain/i18n";
 
+/** Quanto a pessoa tem para ver o próximo modo antes de o 2º tempo começar sozinho. */
+export const INTERLUDE_SECONDS = 5;
+
 // Intervalo entre os dois tempos: o que foi o 1º tempo e o que vem a seguir (com a regra de moedas, se for prévia).
+// O 2º tempo começa sozinho depois de alguns segundos (o botão só adianta).
 export function DuelInterlude({ run, unlocked, onContinue }: { run: DuelRun; unlocked: readonly string[]; onContinue: () => void }) {
+  const [left, setLeft] = useState(INTERLUDE_SECONDS);
+  const go = useRef(onContinue);
+  go.current = onContinue;
+  useEffect(() => {
+    const deadline = performance.now() + INTERLUDE_SECONDS * 1000;
+    const timer = window.setInterval(() => {
+      const remaining = deadline - performance.now();
+      if (remaining <= 0) { window.clearInterval(timer); go.current(); return; }
+      setLeft(Math.ceil(remaining / 1000));
+    }, 200);
+    return () => window.clearInterval(timer);
+  }, []);
   const done = run.done[0];
   const legs = previewLegs(run, unlocked);
   const first = legs[0];
@@ -35,7 +52,8 @@ export function DuelInterlude({ run, unlocked, onContinue }: { run: DuelRun; unl
             {!next.owned && price > 0 && <span className="rv-buy">{t.duel.reveal.getMode(money(price))}</span>}
           </li>
         </ul>
-        <p className="rv-note">{t.duel.interlude.leaveNote}</p>
+        <span className="rv-auto" aria-hidden="true"><i style={{ animationDuration: `${INTERLUDE_SECONDS}s` }} /></span>
+        <p className="rv-note">{t.duel.interlude.auto(left)} {t.duel.interlude.leaveNote}</p>
         <button type="button" className="rs-btn primary rv-go" onClick={onContinue}><Icon type="swords" />{t.duel.interlude.go(2)}</button>
       </section>
     </main>
