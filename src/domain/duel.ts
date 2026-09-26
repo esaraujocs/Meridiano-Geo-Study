@@ -17,6 +17,12 @@ export const TROPHY_K = 32;
 /** Vitória sempre rende ao menos isto, e derrota tira ao menos isto (sem chegar a zero de tanto contar). */
 export const MIN_SWING = 4;
 
+/** Sequência: cada vitória seguida que a pessoa já tinha na escada soma STREAK_STEP troféus à próxima vitória, até STREAK_CAP vitórias
+ *  (+12). Perder zera a sequência; o bônus só existe na vitória, a derrota não muda. */
+export const STREAK_STEP = 3;
+export const STREAK_CAP = 4;
+export const streakBonus = (streak: number) => STREAK_STEP * Math.min(STREAK_CAP, Math.max(0, Math.floor(Number.isFinite(streak) ? streak : 0)));
+
 export const expectedScore = (rating: number, opponent: number) => 1 / (1 + Math.pow(10, (opponent - rating) / 400));
 
 export type DuelInput = {
@@ -29,6 +35,8 @@ export type DuelInput = {
   seed: string;
   /** Divisão e família jogada: mudam a força do bot (ver `botProfile`). */
   context?: BotContext;
+  /** Vitórias seguidas que a pessoa já tinha nesta escada antes do duelo. */
+  streak?: number;
 };
 export type DuelResult = {
   botId: string;
@@ -39,10 +47,12 @@ export type DuelResult = {
   tiebreak: boolean;
   delta: number;
   trophiesAfter: number;
+  /** Quanto do ganho veio da sequência de vitórias (já dentro de `delta`). */
+  streakBonus: number;
 };
 
 /** Vencedor e troféus a partir dos números finais (a mesma conta para 1 tempo ou 2). */
-function settle(input: { trophies: number; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number }) {
+function settle(input: { trophies: number; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
   const { trophies, bot, playerCorrect, botCorrect, playerMs, botMs } = input;
   let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
   let tiebreak = false;
@@ -52,23 +62,24 @@ function settle(input: { trophies: number; bot: Bot; playerCorrect: number; botC
   }
   const score = outcome === "win" ? 1 : outcome === "loss" ? 0 : 0.5;
   let delta = Math.round(TROPHY_K * (score - expectedScore(trophies, botRating(bot))));
-  if (outcome === "win") delta = Math.max(MIN_SWING, delta);
+  const bonus = outcome === "win" ? streakBonus(input.streak ?? 0) : 0;
+  if (outcome === "win") delta = Math.max(MIN_SWING, delta) + bonus;
   if (outcome === "loss") delta = Math.min(-MIN_SWING, delta);
   const trophiesAfter = Math.max(0, trophies + delta);
-  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter };
+  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: bonus };
 }
 
 /** O que está em jogo antes do duelo: troféus se vencer e se perder (com os pisos de MIN_SWING e o chão em zero). */
-export function previewStakes(trophies: number, bot: Pick<Bot, "league">) {
+export function previewStakes(trophies: number, bot: Pick<Bot, "league">, streak = 0) {
   const expected = expectedScore(trophies, botRating(bot));
-  const win = Math.max(MIN_SWING, Math.round(TROPHY_K * (1 - expected)));
+  const win = Math.max(MIN_SWING, Math.round(TROPHY_K * (1 - expected))) + streakBonus(streak);
   const loss = Math.min(-MIN_SWING, Math.round(TROPHY_K * (0 - expected)));
   return { win: Math.max(0, trophies + win) - Math.max(0, trophies), loss: Math.max(0, trophies + loss) - Math.max(0, trophies) };
 }
 
-export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context }: DuelInput): DuelResult {
+export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak }: DuelInput): DuelResult {
   const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
-  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs }) };
+  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Duelo em dois tempos ----
@@ -81,11 +92,13 @@ export type DuelLegsInput = {
   seed: string;
   /** Divisão da pessoa na liga da escada (a força do bot acompanha). */
   division: 1 | 2 | 3 | null;
+  /** Vitórias seguidas que a pessoa já tinha nesta escada (bônus de sequência). */
+  streak?: number;
 };
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time } });
@@ -95,7 +108,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division }: DuelLeg
   const botCorrect = results.reduce((sum, leg) => sum + leg.botCorrect, 0);
   const botMs = results.reduce((sum, leg) => sum + leg.botMs, 0);
   const playerMs = legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null;
-  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs }) };
+  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Registro dos duelos (um por duelo, guardado na loja `preferences`) ----
@@ -188,9 +201,11 @@ export type DuelView = {
   milestones: readonly Milestone[];
   ladder?: Ladder;
   legs?: readonly DuelLegRecord[];
-  /** Vitórias seguidas (em qualquer escada) antes e depois deste duelo. */
+  /** Vitórias seguidas na escada antes e depois deste duelo. */
   streakBefore: number;
   streakAfter: number;
+  /** Troféus que a sequência de vitórias acrescentou a este ganho. */
+  streakBonus: number;
   /** A pessoa saiu antes de terminar os dois tempos. */
   abandoned: boolean;
   /** Moedas de cada tempo (sem o bônus de partida completa) e se o tempo foi de prévia (paga como o modo base). Só na tela, não é gravado. */

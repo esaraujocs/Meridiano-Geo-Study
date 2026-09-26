@@ -1660,3 +1660,35 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
   .vl-read li{grid-template-columns:1fr auto;grid-template-areas:"t n" "b b"}
   .vl-read .t{grid-area:t}.vl-read .n{grid-area:n}.vl-read .bars{grid-area:b}.vl-read .flag{display:none}
 }
+
+/* ---- Duelo: sequência e layout do resultado no desktop ---- */
+.rv-stakes .fire{background:rgba(196,147,69,.2);color:#7a5518}
+.ar-streak{color:#7a5518!important;font-weight:700}
+.vh-card{overflow:hidden;overflow:clip}
+.vh-card>.sr-only{position:absolute}
+/* ordem do celular: as colunas somem e cada bloco vai para o seu lugar */
+.dr-card{display:flex;flex-direction:column}
+.dr-card>.dr-col{display:contents}
+.dr-card .vh-hero{order:1}.dr-card .vh-score{order:2}.dr-card .dr-meter{order:3}.dr-card .dr-prizes{order:4}.dr-card .vl-read{order:5}.dr-card .dr-legs{order:6}.dr-card .dr-consol{order:7}.dr-card .dr-loot{order:8}.dr-card .dr-rule{order:9}.dr-card .rs-actions{order:10}
+/* o botão de seguir aparece sem rolar: a barra de ações fica presa na base da janela */
+@media (min-width:761px){
+  .dr-card .rs-actions{position:sticky;bottom:10px;z-index:6;margin-top:16px;padding:10px;border:1px solid var(--line);border-radius:18px;background:rgba(243,233,210,.96);box-shadow:0 8px 24px rgba(36,59,58,.16)}
+  .vh-card.tier-4 .rs-actions{background:rgba(20,38,36,.96);border-color:rgba(246,239,223,.2)}
+}
+/* janela larga: duas colunas (o herói e o placar de um lado, os números do outro) para caber sem rolar */
+@media (min-width:1000px){
+  .dr-page{max-width:1100px}
+  .dr-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);column-gap:32px;align-items:start;padding:22px 28px 20px}
+  .dr-card>.dr-col{display:block}
+  .dr-card>.dr-col-a{grid-column:1;grid-row:1}
+  .dr-card>.dr-col-b{grid-column:2;grid-row:1;padding-top:8px}
+  .dr-card>.rs-actions{grid-column:1/-1;grid-row:2}
+  .dr-card .vh-title{font-size:48px}
+  .vh-card.is-loss .vh-title{font-size:44px}
+  .dr-card .vh-medalwrap{margin:0 0 14px}
+  .dr-card .vh-score{margin:4px 0 14px}
+  .dr-card .vh-score b{font-size:72px}
+  .dr-card .dr-meter{margin-bottom:12px}
+  .dr-card .dr-legs{margin-bottom:10px}
+}
+.vh-card.tier-4 .vh-pill.fire{background:rgba(196,147,69,.25);border-color:rgba(196,147,69,.7);color:#F1D296}

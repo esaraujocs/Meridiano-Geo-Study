@@ -1,5 +1,5 @@
 import { Icon } from "./icons";
-import { previewStakes } from "../domain/duel";
+import { previewStakes, streakBonus } from "../domain/duel";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP, groupsOfLadder, type ModeGroup } from "../domain/duel-modes";
 import { botLabel, leagueLabel, styleLabel } from "../domain/duel-labels";
@@ -26,7 +26,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
 }) {
   const player = leagueOf(run.trophiesBefore);
   const playerLabel = leagueLabel(player.league, player.division);
-  const stakes = previewStakes(run.trophiesBefore, run.bot);
+  const stakes = previewStakes(run.trophiesBefore, run.bot, run.streak);
   const legs = previewLegs(run, unlocked);
   const baseGroupLabel = t.duel.groups[LADDER_BASE_GROUP[run.ladder]];
   const canBuy = balance >= formatCost;
@@ -72,6 +72,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
         <div className="rv-stakes">
           <span className="up">{t.duel.reveal.winUpTo(money(stakes.win))}</span>
           <span className="down">{stakes.loss === 0 ? t.duel.reveal.noLoss : t.duel.reveal.loseUpTo(money(Math.abs(stakes.loss)))}</span>
+          {run.streak > 0 && <span className="fire">{t.duel.reveal.streakStake(run.streak, streakBonus(run.streak))}</span>}
         </div>
         {!formatOwned && <p className="rv-note" role="status">{t.duel.reveal.needFormat}</p>}
         <button type="button" className="rs-btn primary rv-go" disabled={busy || (!formatOwned && !canBuy)} onClick={formatOwned ? onStart : onBuyFormat}>

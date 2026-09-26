@@ -53,7 +53,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
   const legs = duel.legs ?? [];
   const plan = useMemo(() => resultPlan({
     outcome: duel.outcome, playerCorrect: duel.playerCorrect, botCorrect: duel.botCorrect, total: duel.total,
-    before: duel.trophiesBefore, after: duel.trophiesAfter, streakAfter: duel.streakAfter, streakBefore: duel.streakBefore, milestones: duel.milestones.length,
+    before: duel.trophiesBefore, after: duel.trophiesAfter, streakAfter: duel.streakAfter, streakBefore: duel.streakBefore, milestones: duel.milestones.length, streakBonus: duel.streakBonus,
   }), [duel]);
   const still = useMemo(() => reducedMotion(), []);
   const [progress, setProgress] = useState(still ? 1 : 0);
@@ -135,6 +135,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
     const value = pill.value ?? 0;
     switch (pill.key) {
       case "delta": return value === 0 ? r.pillNoLoss : r.pillTrophies(signed(value));
+      case "boost": return r.pillBoost(value);
       case "streak": return r.pillStreak(value);
       case "perfect": return r.pillPerfect(duel.playerCorrect, duel.total);
       case "division": return r.pillDivision;
@@ -168,6 +169,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
   return <section className={cardClass} data-league={status.league} aria-labelledby="rs-title">
     <p className="sr-only" role="status">{`${title}. ${t.duel.result.you} ${duel.playerCorrect}, ${duel.botName} ${duel.botCorrect}.`}</p>
     <div className="vh-shine" aria-hidden="true" />
+    <div className="dr-col dr-col-a">
     <div className="vh-hero">
       <div className="vh-medalwrap" aria-hidden="true">
         <span className="vh-ripple" /><span className="vh-ripple r2" />
@@ -185,25 +187,6 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
       <span aria-hidden="true" className={plan.kind === "draw" ? "" : won ? "l" : "w"}><small>{botFirst}</small><b>{score[1]}</b></span>
       <p>{note}</p>
     </div>
-
-    <div className={`dr-meter is-${meterLoss ? "loss" : "win"}`}>
-      <div className={`dr-emb lg-frame${glow ? " dr-glow" : ""}${thud ? " dr-shake" : ""}`}><b>{signed(frame.shown)}</b><small>{t.duel.result.trophies}</small><span key={pip} className="lg-pip dr-pop">{pip}</span></div>
-      <div className="dr-side">
-        <div className="dr-nums"><span>{format(duel.trophiesBefore)}</span><i>→</i><strong>{format(Math.round(frame.value))}</strong></div>
-        <div className="dr-track" role="img" aria-label={t.duel.result.total(format(duel.trophiesAfter))}>
-          <i className="dr-fill" style={{ width: `${frame.fill}%` }} />
-          <em className="dr-delta" style={{ left: `${frame.deltaFrom}%`, width: `${Math.max(0, frame.deltaTo - frame.deltaFrom)}%` }} />
-          {status.division !== null && [1, 2].map((division) => <span key={division} className={`dr-tick${frame.ticks[division - 1] ? " hit" : ""}`} style={{ left: `${(division * DIVISION_SPAN / frame.span) * 100}%` }}><s>{divisionRoman((division + 1) as 2 | 3)}</s></span>)}
-        </div>
-        <div className="dr-ends"><span>{lo}</span><span>{hi}</span></div>
-        <p className="dr-sub">{sub}{onLeague && <> <button type="button" className="pr-link dr-league-link" onClick={onLeague}>{t.duel.result.openLeague} →</button></>}</p>
-      </div>
-    </div>
-
-    <div className={`dr-prizes${duel.milestones.length > 0 && prizesVisible ? "" : " is-hidden"}`}>
-      {duel.milestones.map((milestone) => <div key={milestone.id} className="dr-prize"><span className="pz-ico"><Icon type="star" size={16} /></span><div><b>{t.duel.result.milestone(milestoneLabel(milestone), format(milestone.coins))}</b></div></div>)}
-    </div>
-
     {worst && legs.length > 1 && <section className="vl-read" aria-label={t.duel.result.readTitle}>
       <header><b>{t.duel.result.readTitle}</b><small>{t.duel.result.readSub}</small></header>
       <ul>{legs.map((leg, index) => {
@@ -223,6 +206,26 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
           : onStore && <button type="button" className="rs-btn" onClick={onStore}><Icon type="lock" />{t.duel.result.seeStore(worstLabel)}</button>}
       </p>
     </section>}
+    </div>
+    <div className="dr-col dr-col-b">
+    <div className={`dr-meter is-${meterLoss ? "loss" : "win"}`}>
+      <div className={`dr-emb lg-frame${glow ? " dr-glow" : ""}${thud ? " dr-shake" : ""}`}><b>{signed(frame.shown)}</b><small>{t.duel.result.trophies}</small><span key={pip} className="lg-pip dr-pop">{pip}</span></div>
+      <div className="dr-side">
+        <div className="dr-nums"><span>{format(duel.trophiesBefore)}</span><i>→</i><strong>{format(Math.round(frame.value))}</strong></div>
+        <div className="dr-track" role="img" aria-label={t.duel.result.total(format(duel.trophiesAfter))}>
+          <i className="dr-fill" style={{ width: `${frame.fill}%` }} />
+          <em className="dr-delta" style={{ left: `${frame.deltaFrom}%`, width: `${Math.max(0, frame.deltaTo - frame.deltaFrom)}%` }} />
+          {status.division !== null && [1, 2].map((division) => <span key={division} className={`dr-tick${frame.ticks[division - 1] ? " hit" : ""}`} style={{ left: `${(division * DIVISION_SPAN / frame.span) * 100}%` }}><s>{divisionRoman((division + 1) as 2 | 3)}</s></span>)}
+        </div>
+        <div className="dr-ends"><span>{lo}</span><span>{hi}</span></div>
+        <p className="dr-sub">{sub}{onLeague && <> <button type="button" className="pr-link dr-league-link" onClick={onLeague}>{t.duel.result.openLeague} →</button></>}</p>
+      </div>
+    </div>
+
+    <div className={`dr-prizes${duel.milestones.length > 0 && prizesVisible ? "" : " is-hidden"}`}>
+      {duel.milestones.map((milestone) => <div key={milestone.id} className="dr-prize"><span className="pz-ico"><Icon type="star" size={16} /></span><div><b>{t.duel.result.milestone(milestoneLabel(milestone), format(milestone.coins))}</b></div></div>)}
+    </div>
+
 
     {legs.length > 0 && <table className="dr-legs">
       <thead><tr><th><span className="sr-only">{t.duel.result.colLeg}</span></th><th>{t.duel.result.you}</th><th>{botFirst}</th><th>{t.duel.result.colCoins}</th></tr></thead>
@@ -247,6 +250,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
       {view.xpGain > 0 && <span className="rs-xp" ref={xpChipRef}>+{view.xpGain} XP</span>}
     </div>
     {previewLabels.length > 0 && <p className="dr-rule"><Icon type="info" size={16} /><span>{t.duel.result.previewRule(previewLabels.join(" · "), baseLabel)}</span></p>}
+    </div>
 
     <div className="rs-actions">
       <button type="button" className="rs-btn primary" onClick={onAgain}><Icon type="repeat" />{plan.kind === "loss" ? t.duel.result.retry : t.duel.result.again}</button>

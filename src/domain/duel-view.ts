@@ -11,6 +11,8 @@ export type LadderCard = {
   status: LeagueStatus;
   /** Últimos 5 resultados, do mais antigo para o mais novo. */
   form: DuelOutcome[];
+  /** Vitórias seguidas até agora nesta escada. */
+  streak: number;
   duels: number;
   groups: { group: ModeGroup; owned: boolean }[];
 };
@@ -25,6 +27,7 @@ export function ladderCards(duels: readonly DuelRecord[], unlocked: readonly str
       trophies: byLadder[ladder],
       status: leagueOf(byLadder[ladder]),
       form: mine.slice(-5).map((duel) => duel.outcome),
+      streak: winStreak(mine),
       duels: mine.length,
       groups: groupsOfLadder(ladder).map((def) => ({ group: def.group, owned: isGroupOwned(def, unlocked) })),
     };
@@ -51,7 +54,7 @@ export function winStreak(duels: readonly Pick<DuelRecord, "at" | "id" | "outcom
 }
 
 export type ResultTier = "win" | "perfect" | "division-up" | "league-up" | "loss" | "close" | "division-down" | "league-down" | "draw";
-export type PillKey = "delta" | "streak" | "perfect" | "division" | "league" | "broken" | "stay" | "close" | "kept" | "marks";
+export type PillKey = "delta" | "boost" | "streak" | "perfect" | "division" | "league" | "broken" | "stay" | "close" | "kept" | "marks";
 export type Pill = { key: PillKey; tone: "up" | "fire" | "gold" | "down" | "calm"; value?: number };
 
 export type ResultPlan = {
@@ -89,6 +92,8 @@ export function resultPlan(input: {
   streakBefore: number;
   /** Marcos que este duelo abriu. */
   milestones: number;
+  /** Troféus da sequência de vitórias dentro do ganho (0 se não houve). */
+  streakBonus?: number;
 }): ResultPlan {
   const { outcome, playerCorrect, botCorrect, total, before, after } = input;
   const from = leagueOf(before);
@@ -108,6 +113,7 @@ export function resultPlan(input: {
     : null;
   const pills: Pill[] = [];
   if (kind !== "draw") pills.push({ key: "delta", tone: kind === "win" ? "up" : "down", value: delta });
+  if (kind === "win" && (input.streakBonus ?? 0) > 0) pills.push({ key: "boost", tone: "fire", value: input.streakBonus });
   if (kind === "win") {
     if (tier === "perfect") pills.push({ key: "perfect", tone: "gold" });
     if (input.streakAfter >= STREAK_PILL) pills.push({ key: "streak", tone: "fire", value: input.streakAfter });

@@ -476,4 +476,36 @@ assert.equal(V.decisiveLeg([{ playerCorrect: 6, botCorrect: 6 }, { playerCorrect
 assert.deepEqual(V.worstLeg([{ playerCorrect: 6, botCorrect: 7 }, { playerCorrect: 3, botCorrect: 6 }]), { index: 1, margin: -3 });
 assert.equal(V.worstLeg([{ playerCorrect: 8, botCorrect: 7 }, { playerCorrect: 6, botCorrect: 6 }]), null);
 
+// sequência de vitórias: +3 por vitória anterior, até +12, só na vitória
+assert.deepEqual([0, 1, 2, 3, 4, 5, 20, -2, NaN].map((n) => D.streakBonus(n)), [0, 3, 6, 9, 12, 12, 12, 0, 0]);
+assert.deepEqual([D.STREAK_STEP, D.STREAK_CAP], [3, 4]);
+const stakes0 = D.previewStakes(1240, ouro);
+assert.equal(D.previewStakes(1240, ouro, 2).win, stakes0.win + 6, "a prévia da vitória inclui a sequência");
+assert.equal(D.previewStakes(1240, ouro, 9).win, stakes0.win + 12);
+assert.equal(D.previewStakes(1240, ouro, 3).loss, stakes0.loss, "a derrota não muda com a sequência");
+const winLegs = [{ group: legsX[0].group, rounds: 10, playerCorrect: 10, playerMs: 40000 }, { group: legsX[1].group, rounds: 10, playerCorrect: 10, playerMs: 50000 }];
+const lossLegs = [{ group: legsX[0].group, rounds: 10, playerCorrect: 0, playerMs: 40000 }, { group: legsX[1].group, rounds: 10, playerCorrect: 0, playerMs: 50000 }];
+const sw0 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: winLegs });
+const sw3 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: winLegs, streak: 3 });
+assert.equal(sw0.outcome, "win"); assert.equal(sw0.streakBonus, 0);
+assert.deepEqual([sw3.outcome, sw3.streakBonus, sw3.delta - sw0.delta, sw3.trophiesAfter - sw0.trophiesAfter], ["win", 9, 9, 9], "mesma partida, +9 pela sequência");
+const sl3 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: lossLegs, streak: 4 });
+assert.deepEqual([sl3.outcome, sl3.streakBonus, sl3.delta], ["loss", 0, D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: lossLegs }).delta], "derrota não ganha nem perde por causa da sequência");
+assert.equal(D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: winLegs, streak: 50 }).streakBonus, 12, "teto de +12");
+// a corrida do duelo leva a sequência até a resolução
+const runStreak = U.newDuelRun({ id: "run-1", ladder: "mapas", bot: ouro, trophiesBefore: 1240, division: 2, legs: legsX, streak: 2 });
+assert.equal(runStreak.streak, 2); assert.equal(runX.streak, 0, "sem sequência informada, zero");
+const doneAll = { ...runStreak, done: winLegs.map((leg) => ({ ...leg })), index: 1 };
+assert.equal(U.resolveRun(doneAll).streakBonus, 6);
+// cartão da escada mostra a sequência daquela escada (não a da outra)
+const streakCards = V.ladderCards([dd(1, 1, "mapas", "win", 16), dd(2, 2, "mapas", "win", 16), dd(3, 3, "bandeiras", "loss", -8), dd(4, 4, "mapas", "win", 16)], []);
+assert.deepEqual(streakCards.map((card) => [card.ladder, card.streak]), [["mapas", 3], ["bandeiras", 0]]);
+assert.equal(V.ladderCards([], []).every((card) => card.streak === 0), true);
+// pílula do bônus na vitória
+let boost = plan({ streakAfter: 4, streakBonus: 9 });
+assert.deepEqual(boost.pills.map((p) => p.key), ["delta", "boost", "streak"]);
+assert.equal(boost.pills[1].value, 9);
+assert.deepEqual(plan({ streakBonus: 0 }).pills.map((p) => p.key), ["delta"]);
+assert.deepEqual(lp({ streakBonus: 9 }).pills.map((p) => p.key), ["delta", "stay"], "na derrota não há pílula de bônus");
+
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");

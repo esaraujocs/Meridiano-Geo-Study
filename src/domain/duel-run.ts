@@ -13,13 +13,15 @@ export type DuelRun = {
   bot: Bot;
   trophiesBefore: number;
   division: 1 | 2 | 3 | null;
+  /** Vitórias seguidas na escada antes deste duelo (bônus de sequência). */
+  streak: number;
   legs: readonly DuelLeg[];
   done: readonly LegDone[];
   /** Tempo em jogo (0 ou 1). */
   index: number;
 };
 
-export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[] }): DuelRun => ({ ...input, done: [], index: 0 });
+export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[]; streak?: number }): DuelRun => ({ ...input, streak: input.streak ?? 0, done: [], index: 0 });
 
 /** Opções da sessão de um tempo: sempre com tempo, 10 rodadas, baralho da semente e, se o modo é de prévia, as moedas do modo base. */
 export type LegSessionOptions = { pace: "timed"; roundLimit: number; deckSeed: number; coinVariant?: AnyQuizVariant; duel: { id: string; leg: number } };
@@ -50,5 +52,5 @@ export const isRunComplete = (run: DuelRun) => run.done.length >= LEGS;
 /** Fecha o duelo. Tempo que ficou por jogar (a pessoa saiu no meio) conta como zero acerto: desistir no 2º tempo é derrota, não escapatória. */
 export function resolveRun(run: DuelRun): DuelLegsResult {
   const legs: LegInput[] = run.legs.map((leg, index) => run.done[index] ?? { group: leg.group, rounds: leg.rounds, playerCorrect: 0, playerMs: null });
-  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division });
+  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division, streak: run.streak });
 }

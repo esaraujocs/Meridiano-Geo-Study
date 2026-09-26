@@ -2,6 +2,7 @@ import { Icon } from "./icons";
 import { LADDER_BASE, LADDER_BASE_GROUP, type Ladder } from "../domain/duel-modes";
 import type { Milestone } from "../domain/duel-rewards";
 import type { LadderCard } from "../domain/duel-view";
+import { streakBonus } from "../domain/duel";
 import { DIVISION_SPAN, divisionRoman } from "../domain/league";
 import { leagueLabel, milestoneLabel, nextStep } from "../domain/duel-labels";
 import { baseCoins } from "../domain/spoils";
@@ -70,6 +71,7 @@ function Arena({ card, formatReady, formatCost, onDuel }: { card: LadderCard; fo
               ? <small>{t.duel.arenas.noDuelsYet}</small>
               : <span className="ar-form">{card.form.map((outcome, index) => <i key={index} className={outcome} role="img" aria-label={t.duel.arenas.formAria[outcome]}>{t.duel.arenas.form[outcome]}</i>)}</span>}
           </div>
+          {card.streak > 0 && <small className="ar-streak">{t.duel.arenas.streak(card.streak, streakBonus(card.streak))}</small>}
         </div>
       </div>
       <div className="ar-modes-wrap">

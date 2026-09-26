@@ -179,9 +179,10 @@ export function App() {
     const trophiesBefore = byLadder[ladder];
     const status = leagueOf(trophiesBefore);
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
+    const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(status.league, id, lastBotRef.current[ladder]), trophiesBefore, division: status.division, legs }));
+    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(status.league, id, lastBotRef.current[ladder]), trophiesBefore, division: status.division, legs, streak }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */
@@ -244,7 +245,7 @@ export function App() {
       botName: run.bot.name, botLeague: run.bot.league, botStyle: run.bot.style, botSpecialty: run.bot.specialty,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
-      streakBefore: winStreak(duels), streakAfter: winStreak(nextDuels), abandoned: run.done.length < LEGS,
+      streakBefore: run.streak, streakAfter: winStreak(nextDuels.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, abandoned: run.done.length < LEGS,
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
       legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),
