@@ -118,7 +118,7 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
   .desktop-nav button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:8px 13px;border-radius:99px}
   .desktop-nav button svg{width:18px;height:18px}.desktop-nav button[aria-current=page]{background:rgba(47,111,106,.12);color:#1e4b47}
   .top-actions .settings-button{border:1px solid var(--line);background:var(--paper)}
-  .hub-content{max-width:1120px;min-height:calc(100dvh - 68px);padding:18px 0 22px;display:flex;flex-direction:column;justify-content:center}
+  .hub-content{max-width:1120px;min-height:calc(100dvh - 68px);padding:18px 0 22px;display:flex;flex-direction:column;justify-content:flex-start}
   
   .hub-content>.section-label{margin-bottom:8px}.hub-content>.section-label h2,.hub-progress h2{font-size:22px}
   .hub-content .family-carousel{width:100%;max-width:none;margin:0}
@@ -1698,7 +1698,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 @media (prefers-reduced-motion:reduce){.rv-auto{display:none}}
 
 /* ---- Hub em Duelo compacto: cabe na tela sem rolar (desktop e celular) ---- */
-.hub-progress.is-duel{display:none!important}
+@media (max-height:924px){.hub-progress.is-duel{display:none!important}}
 .arena{gap:12px!important;padding:18px 20px!important}
 .ar-league{padding:12px;gap:14px}
 .ar-emblem{width:76px;height:76px;margin:5px 7px 5px 5px}
