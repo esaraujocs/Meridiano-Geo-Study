@@ -241,6 +241,12 @@ export const pt = {
       again: "Duelar de novo",
       retry: "Tentar de novo",
     },
+    rank: {
+      title: (ladder: string) => `Ranking · ${ladder}`,
+      sub: "Você e os bots, por enquanto: o ranking global chega junto com os outros jogadores.",
+      you: "Você",
+      bot: "bot",
+    },
     league: {
       eyebrow: (ladder: string) => `Duelos · ${ladder}`,
       tabsAria: "Escada",

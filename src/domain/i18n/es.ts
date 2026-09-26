@@ -241,6 +241,12 @@ export const es: Messages = {
       again: "Duelar otra vez",
       retry: "Intentar de nuevo",
     },
+    rank: {
+      title: (ladder: string) => `Ranking · ${ladder}`,
+      sub: "Tú y los bots por ahora: el ranking global llega con los demás jugadores.",
+      you: "Tú",
+      bot: "bot",
+    },
     league: {
       eyebrow: (ladder: string) => `Duelos · ${ladder}`,
       tabsAria: "Escalera",

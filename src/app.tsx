@@ -105,7 +105,14 @@ export function App() {
   const [leagueLadder, setLeagueLadder] = useState<Ladder | undefined>(undefined);
   const byLadder = useMemo(() => trophiesByLadder(duels), [duels]);
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
-  useEffect(() => { void listDuels().then(setDuels).catch(() => undefined); }, []);
+  useEffect(() => {
+    void listDuels().then(async (list) => {
+      setDuels(list);
+      // ao abrir: paga o que faltar (marco novo ou a diferença de um prêmio que foi aumentado) e atualiza o saldo
+      await claimDuelMilestones(trophiesByLadder(list)).catch(() => []);
+      void refreshEconomy();
+    }).catch(() => undefined);
+  }, []);
   // Só com ?debug=1: `__cartaDuelResult("t4")` no console abre o resultado de um cenário pronto (sem gravar nada).
   useEffect(() => {
     if (!isDebugEnabled()) return;
@@ -232,7 +239,7 @@ export function App() {
     setDuels(nextDuels);
     // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
     const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(trophiesByLadder(nextDuels))).catch(() => []);
-    if (milestones.length) void refreshEconomy(); else if (economyAfter) setEconomy(economyAfter);
+    void refreshEconomy();
     lastBotRef.current = { ...lastBotRef.current, [run.ladder]: run.bot.id };
     const played = legResults.current.filter((leg): leg is SessionResult => Boolean(leg?.spoils));
     if (played.length) {

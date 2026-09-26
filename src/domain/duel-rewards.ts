@@ -4,9 +4,10 @@
 import { DIVISION_SPAN, LEAGUES, leagueFloor, type LeagueKey } from "./league.js";
 import { LADDERS, type Ladder } from "./duel-modes.js";
 
-export const DIVISION_COINS = 500;
+// Um duelo rende perto de mil moedas, então o prêmio de uma divisão vale uns 2 ou 3 duelos e o de uma liga, de 10 a 150 (a subida é bem mais lenta).
+export const DIVISION_COINS = 2500;
 /** Entrar na liga: Prata, Ouro, Platina, Diamante e Mestre. */
-export const LEAGUE_COINS: Partial<Record<LeagueKey, number>> = { prata: 3000, ouro: 6000, platina: 12000, diamante: 24000, mestre: 48000 };
+export const LEAGUE_COINS: Partial<Record<LeagueKey, number>> = { prata: 10000, ouro: 20000, platina: 40000, diamante: 80000, mestre: 150000 };
 
 export type Milestone = {
   id: string;
@@ -38,6 +39,21 @@ export const milestoneLedgerId = (milestone: Pick<Milestone, "id">) => `grant:du
 /** O v1 tinha uma escada só e ids sem escada (\`division:bronze:2\`): esses créditos já pagos contam como da escada Mapas. */
 const legacyLedgerId = (milestone: Milestone) =>
   milestone.kind === "division" && milestone.ladder === "mapas" ? `grant:duel:division:${milestone.league}:${milestone.division}` : null;
+
+/** Diferença de um marco já pago com um valor menor (os prêmios foram aumentados): o crédito extra tem id por valor, então só é pago uma vez. */
+export const topupLedgerId = (milestone: Pick<Milestone, "id">, coins: number) => `grant:duel:topup:${milestone.id}:${coins}`;
+export function milestoneTopUps(trophies: number | TrophiesByLadder, paid: ReadonlyMap<string, number>) {
+  return reachedMilestones(trophies).flatMap((milestone) => {
+    const legacy = legacyLedgerId(milestone);
+    const base = Math.max(paid.get(milestoneLedgerId(milestone)) ?? 0, legacy ? paid.get(legacy) ?? 0 : 0);
+    if (base <= 0) return []; // ainda não pago: é o crédito normal
+    const prefix = `grant:duel:topup:${milestone.id}:`;
+    let extra = 0;
+    for (const [id, amount] of paid) if (id.startsWith(prefix)) extra += amount;
+    const amount = milestone.coins - base - extra;
+    return amount > 0 ? [{ milestone, id: topupLedgerId(milestone, milestone.coins), amount }] : [];
+  });
+}
 
 /** Troféus por escada; um número solto vale para a escada Mapas (o v1 tinha uma só). */
 export type TrophiesByLadder = Partial<Record<Ladder, number>>;

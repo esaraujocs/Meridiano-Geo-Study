@@ -1,7 +1,7 @@
 // Duelos no IndexedDB (loja `preferences`, id `duel:<sessão>`): entram no Exportar/Importar progresso, como as Favoritas.
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { DUEL_ID_PREFIX, DUEL_SOURCE, parseDuel, type DuelRecord } from "./duel.js";
-import { milestoneLedgerId, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
+import { milestoneLedgerId, milestoneTopUps, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
 
 const STORE = "preferences";
 
@@ -43,19 +43,27 @@ export async function saveDuel(record: DuelRecord) {
   } finally { database.close(); }
 }
 
-/** Credita no livro-caixa os marcos já alcançados que ainda não foram pagos (um crédito por marco, id único: nunca repete). */
+/** Credita no livro-caixa os marcos já alcançados que ainda não foram pagos (um crédito por marco, id único: nunca repete) e a diferença dos que
+ *  foram pagos com um valor menor. Devolve só os marcos novos (a diferença entra sem aparecer no resultado). */
 export async function claimDuelMilestones(trophies: number | TrophiesByLadder): Promise<Milestone[]> {
   const database = await openDatabase();
   try {
     return await new Promise<Milestone[]>((resolve, reject) => {
       const transaction = database.transaction("ledger", "readwrite");
       const store = transaction.objectStore("ledger");
-      const keys = store.getAllKeys();
+      const rows = store.getAll();
       let granted: Milestone[] = [];
-      keys.onsuccess = () => {
-        granted = pendingMilestones(trophies, new Set((keys.result as IDBValidKey[]).map(String)));
+      rows.onsuccess = () => {
+        const all = rows.result as { id?: unknown; amount?: unknown }[];
+        granted = pendingMilestones(trophies, new Set(all.map((row) => String(row.id))));
         for (const milestone of granted) {
           store.put({ id: milestoneLedgerId(milestone), kind: "credit", amount: milestone.coins, reason: "duel-milestone", source: milestone.id, createdAt: Date.now() });
+        }
+        // marcos já pagos com o valor antigo ganham a diferença (uma vez por valor)
+        const paid = new Map<string, number>();
+        for (const row of all) if (String(row.id).startsWith("grant:duel:") && typeof row.amount === "number") paid.set(String(row.id), row.amount);
+        for (const topup of milestoneTopUps(trophies, paid)) {
+          store.put({ id: topup.id, kind: "credit", amount: topup.amount, reason: "duel-milestone-topup", source: topup.milestone.id, createdAt: Date.now() });
         }
       };
       transaction.oncomplete = () => resolve(granted);

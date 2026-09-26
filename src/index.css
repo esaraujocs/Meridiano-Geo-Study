@@ -1698,7 +1698,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 @media (prefers-reduced-motion:reduce){.rv-auto{display:none}}
 
 /* ---- Hub em Duelo compacto: cabe na tela sem rolar (desktop e celular) ---- */
-@media (max-height:924px){.hub-progress.is-duel{display:none!important}}
+@media (max-height:940px){.hub-progress.is-duel{display:none!important}}
 .arena{gap:12px!important;padding:18px 20px!important}
 .ar-league{padding:12px;gap:14px}
 .ar-emblem{width:76px;height:76px;margin:5px 7px 5px 5px}
@@ -1748,3 +1748,30 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .dr-legs tr.dr-time td:first-child{font:600 14px 'Plus Jakarta Sans',sans-serif}
 .dr-legs tr.dr-time td:last-child{color:inherit}
 .dr-legs tr.dr-time small{white-space:nowrap}
+/* ---- Ranking (Hub em Duelo e Liga) ---- */
+.pz-rank{margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.pz-rank h3{margin:0 0 6px;font:500 15px 'Fraunces',serif}
+.pz-rank ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.pz-rank li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:4px 6px;border-radius:8px;font-size:13px}
+.pz-rank li.is-you{background:rgba(196,147,69,.18);font-weight:700}
+.pz-rank .rk-n{font:500 13px 'DM Mono',monospace;color:var(--muted)}
+.pz-rank .rk-nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pz-rank .rk-nm em,.rk-bot{margin-left:6px;padding:1px 6px;border-radius:999px;background:rgba(36,59,58,.1);color:var(--muted);font:600 10px 'Plus Jakarta Sans',sans-serif;font-style:normal;text-transform:uppercase;letter-spacing:.05em}
+.pz-rank strong{font:500 14px 'Fraunces',serif}
+.pz-rank li.rk-gap{display:block;padding:0 6px;text-align:center;color:var(--muted);line-height:.8}
+.pz-rank small{display:block;margin-top:6px;font-size:11px;line-height:1.35;color:var(--muted)}
+.lg-rank ol.rk{list-style:none;margin:0;padding:0}
+.lg-rank .rk-n{width:28px;font:500 14px 'DM Mono',monospace;color:var(--muted)}
+.lg-rank li.is-you{background:rgba(196,147,69,.18);border-radius:10px}
+.lg-rank li.rk-gap{padding:0 6px;text-align:center;color:var(--muted)}
+/* janela baixa (notebook): o ranking do painel sai, senão o painel ficaria mais alto que as arenas */
+@media (min-width:761px) and (max-height:800px){.pz-rank{display:none}}
+.pg-ring.lg-ring .lg-pip{color:var(--lg-ink,#fff8ea)}
+.lg-tabs .mode-switch button small{opacity:1}
+.pz-rank .rk-nm em,.rk-bot{color:#2f4340;background:rgba(36,59,58,.12)}
+.lg-rank li.is-you .rk-n,.lg-rank li.is-you small,.pz-rank li.is-you .rk-n{color:var(--ink)}
+.lg-frame-item.is-locked{opacity:1}
+.lg-frame-item.is-locked .hub-level{opacity:.5}
+.lg-frame-item.is-locked b,.lg-frame-item.is-locked small{color:#4b5d59}
+.lg-frame-item.is-locked .hub-level{opacity:1;filter:grayscale(.85)}
+.lg-frame-item.is-locked .hub-level strong{color:#3f504c}

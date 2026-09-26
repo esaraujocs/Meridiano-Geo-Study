@@ -4,6 +4,7 @@ import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
+import { leaderboard, rankWindow } from "../domain/leaderboard";
 import { BASE_WIN, LEAD_BONUS, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
@@ -29,6 +30,7 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
     ? nameOf(LEAGUES[status.index + 1])
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
+  const rank = rankWindow(leaderboard(ladder, trophies), 10);
   const recent = duels.filter((duel) => duel.ladder === ladder).sort((a, b) => b.at - a.at).slice(0, 6);
   return (
     <main className="content surface" data-surface="progress">
@@ -106,6 +108,17 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
               })}</ul>}
           </section>
         </div>
+
+        <section className="pr-card lg-rank" style={{ marginTop: 16 }}>
+          <header><div><h2>{t.duel.rank.title(t.duel.ladders[ladder])}</h2><p>{t.duel.rank.sub}</p></div></header>
+          <ol className="rk">{rank.map((line, index) => "gap" in line
+            ? <li key={`gap${index}`} className="rk-gap" aria-hidden="true">⋯</li>
+            : <li key={line.id} className={`rk-li${line.you ? " is-you" : ""}`} data-league={line.league}>
+              <span className="rk-n">{line.pos}</span>
+              <span className="pr-rname"><b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b><small>{t.duel.leagues[line.league]}</small></span>
+              <strong className="rk-val">{formatNumber(line.trophies)}</strong>
+            </li>)}</ol>
+        </section>
 
         <section className="pr-card lg-how" style={{ marginTop: 16 }}>
           <details>

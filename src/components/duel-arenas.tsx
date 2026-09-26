@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { Icon } from "./icons";
+import { leaderboard, rankWindow } from "../domain/leaderboard";
 import { LADDER_BASE, LADDER_BASE_GROUP, type Ladder } from "../domain/duel-modes";
 import type { Milestone } from "../domain/duel-rewards";
 import type { LadderCard } from "../domain/duel-view";
@@ -28,6 +30,9 @@ export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onLea
   onDuel: (ladder: Ladder) => void;
   onLeague?: () => void;
 }) {
+  // o ranking do painel é o da escada em que a pessoa está mais alta
+  const best = cards.reduce((top, card) => (card.trophies > top.trophies ? card : top), cards[0]);
+  const rank = useMemo(() => rankWindow(leaderboard(best.ladder, best.trophies), 3), [best.ladder, best.trophies]);
   return (
     <div className="arena-grid" role="region" aria-label={t.duel.modeDuel}>
       {cards.map((card) => <Arena key={card.ladder} card={card} formatReady={formatReady} formatCost={formatCost} onDuel={onDuel} />)}
@@ -40,7 +45,16 @@ export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onLea
             <span className="pz-t"><b>{milestoneLabel(milestone)}</b><small>{milestone.ladder ? t.duel.ladders[milestone.ladder] : t.duel.arenas.anyLadder} · {money(milestone.at)}</small></span>
             <strong>{t.duel.arenas.prizeCoins(money(milestone.coins))}</strong>
           </li>)}</ul>}
-        <p className="pz-note">{t.duel.arenas.themeNote}</p>
+        <section className="pz-rank" aria-label={t.duel.rank.title(t.duel.ladders[best.ladder])}>
+          <h3>{t.duel.rank.title(t.duel.ladders[best.ladder])}</h3>
+          <ol>{rank.map((line, index) => "gap" in line
+            ? <li key={`gap${index}`} className="rk-gap" aria-hidden="true">⋯</li>
+            : <li key={line.id} className={line.you ? "is-you" : ""} data-league={line.league}>
+              <span className="rk-n">{line.pos}</span>
+              <span className="rk-nm">{line.you ? t.duel.rank.you : line.name}{line.bot && <em>{t.duel.rank.bot}</em>}</span>
+              <strong>{money(line.trophies)}</strong>
+            </li>)}</ol>
+        </section>
         {onLeague && <button type="button" className="pr-link" onClick={onLeague}>{t.duel.arenas.seeLeague} <Icon type="arrow" size={16} /></button>}
       </aside>
     </div>

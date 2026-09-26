@@ -9,7 +9,7 @@ const out = join(tmpdir(), "carta-cega-duel-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 execFileSync("node_modules/.bin/tsc", [
-  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "src/domain/duel-view.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
+  "src/domain/league.ts", "src/domain/leaderboard.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "src/domain/duel-view.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
   "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig",
 ], { stdio: "inherit" });
 const L = await import(pathToFileURL(join(out, "league.js")).href);
@@ -20,6 +20,7 @@ const M = await import(pathToFileURL(join(out, "duel-modes.js")).href);
 const U = await import(pathToFileURL(join(out, "duel-run.js")).href);
 const S = await import(pathToFileURL(join(out, "spoils.js")).href);
 const V = await import(pathToFileURL(join(out, "duel-view.js")).href);
+const LB = await import(pathToFileURL(join(out, "leaderboard.js")).href);
 
 // ---- Ligas e divisões ----
 let s = L.leagueOf(0);
@@ -151,11 +152,12 @@ assert.equal(new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m))).size, 25, 
 const coinsAt = (trophies) => R.reachedMilestones(trophies).reduce((n, m) => n + m.coins, 0);
 assert.equal(R.reachedMilestones(0).length, 0);
 assert.equal(R.reachedMilestones(166).length, 0);
-assert.equal(coinsAt(167), 500, "Bronze II");
-assert.equal(coinsAt(334), 1000, "Bronze III");
-assert.equal(coinsAt(500), 1000 + 3000, "Prata: +3.000");
-assert.equal(coinsAt(1000), 1000 + 3000 + 1000 + 6000, "Ouro");
-assert.equal(coinsAt(2500), 5 * 1000 + 3000 + 6000 + 12000 + 24000 + 48000, "Mestre: tudo");
+assert.deepEqual([R.DIVISION_COINS, R.LEAGUE_COINS.prata, R.LEAGUE_COINS.ouro, R.LEAGUE_COINS.platina, R.LEAGUE_COINS.diamante, R.LEAGUE_COINS.mestre], [2500, 10000, 20000, 40000, 80000, 150000], "um duelo rende perto de mil: divisão vale uns 2-3 duelos");
+assert.equal(coinsAt(167), 2500, "Bronze II");
+assert.equal(coinsAt(334), 5000, "Bronze III");
+assert.equal(coinsAt(500), 5000 + 10000, "Prata: +10.000");
+assert.equal(coinsAt(1000), 5000 + 10000 + 5000 + 20000, "Ouro");
+assert.equal(coinsAt(2500), 5 * 5000 + 10000 + 20000 + 40000 + 80000 + 150000, "Mestre: tudo");
 assert.equal(R.MILESTONES.find((m) => m.id === "league:mestre").at, 2500);
 // os marcos casam com as ligas e divisões de league.ts
 for (const m of R.MILESTONES) {
@@ -165,6 +167,16 @@ for (const m of R.MILESTONES) {
   const before = L.leagueOf(m.at - 1);
   assert.ok(before.index < at.index || (before.division ?? 0) < (at.division ?? 99) || m.at === 0, `${m.id} abre exatamente em ${m.at}`);
 }
+// prêmios aumentados: quem já recebeu o valor antigo ganha a diferença, uma vez só
+const paidOld = new Map([["grant:duel:division:bronze:2", 500], ["grant:duel:league:prata", 3000]]);
+const tu = R.milestoneTopUps({ mapas: 700 }, paidOld);
+assert.deepEqual(tu.map((x) => [x.milestone.id, x.amount]), [["division:mapas:bronze:2", 2000], ["league:prata", 7000]], "o crédito antigo (sem escada) também conta; o que ainda não foi pago não é diferença, é crédito normal");
+assert.deepEqual(tu.map((x) => x.id), ["grant:duel:topup:division:mapas:bronze:2:2500", "grant:duel:topup:league:prata:10000"]);
+const paidNew = new Map([...paidOld, ...tu.map((x) => [x.id, x.amount])]);
+assert.equal(R.milestoneTopUps({ mapas: 700 }, paidNew).length, 0, "depois de paga a diferença, não repete");
+assert.equal(R.milestoneTopUps({ mapas: 100 }, paidOld).length, 0, "só marcos já alcançados");
+assert.equal(R.milestoneTopUps({ mapas: 700 }, new Map()).length, 0, "nada pago, nada de diferença");
+assert.equal(R.milestoneTopUps({ mapas: 700 }, new Map([["grant:duel:league:prata", 10000]])).length, 0, "já pago pelo valor atual");
 // pagar uma vez só: com o crédito já no livro, o marco não volta
 const ledger = new Set(["grant:duel:division:bronze:2"]);
 assert.deepEqual(R.pendingMilestones(340, ledger).map((m) => m.id), ["division:mapas:bronze:3"], "o crédito antigo (sem escada) vale para Mapas; a escada Mapas só deve o Bronze III");
@@ -630,5 +642,32 @@ assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore:
 // relógio e segundos por resposta (tela do resultado)
 assert.deepEqual([0, 59400, 92000, 200000, 3599000, -5].map((ms) => V.clockOf(ms)), ["0:00", "0:59", "1:32", "3:20", "59:59", "0:00"]);
 assert.deepEqual([V.secondsPer(200000, 20), V.secondsPer(185000, 20), V.secondsPer(null, 20), V.secondsPer(5000, 0), V.secondsPer(undefined, 20)], [10, 9.3, null, null, null]);
+
+// ---- Ranking (a pessoa e os 30 bots) ----
+const lb = LB.leaderboard("mapas", 847, 20000);
+assert.equal(lb.length, B.BOTS.length + 1);
+assert.deepEqual(lb.map((row) => row.pos), Array.from({ length: lb.length }, (_, i) => i + 1));
+assert.equal(lb.filter((row) => row.you).length, 1);
+assert.ok(lb.every((row, i) => i === 0 || lb[i - 1].trophies >= row.trophies), "do maior para o menor");
+assert.equal(lb[0].league, "mestre", "os bots do Mestre lideram");
+assert.deepEqual(LB.leaderboard("mapas", 847, 20000), lb, "mesmo dia, mesmo ranking");
+const lb2 = LB.leaderboard("mapas", 847, 20001);
+assert.ok(lb.some((row, i) => row.id !== lb2[i].id || row.trophies !== lb2[i].trophies), "de um dia para o outro os troféus dos bots mudam um pouco");
+for (const bot of B.BOTS) assert.ok(Math.abs(LB.botTrophies(bot, "mapas", 20000) - LB.botTrophies(bot, "mapas", 20001)) <= 2 * LB.DAILY_SWING + 1, "a variação diária é pequena");
+assert.ok(B.BOTS.some((bot) => LB.botTrophies(bot, "mapas", 20000) !== LB.botTrophies(bot, "bandeiras", 20000)), "cada escada tem os seus números");
+for (const bot of B.BOTS.filter((b) => b.league !== "mestre")) { const v = LB.botTrophies(bot, "bandeiras", 123); assert.ok(L.leagueOf(v).league === bot.league, bot.id + " fica na própria liga"); }
+assert.ok(LB.leaderboard("mapas", 0, 5).at(-1).you && LB.leaderboard("mapas", 99999, 5)[0].you, "com 0 troféus é o último; com muitos, o primeiro");
+assert.equal(LB.leaderboard("bandeiras", 500.4, 5).find((row) => row.you).trophies, 500);
+const tie = LB.leaderboard("mapas", LB.botTrophies(B.BOTS[7], "mapas", 5), 5);
+assert.ok(tie.find((row) => row.you).pos < tie.find((row) => row.id === B.BOTS[7].id).pos, "empate: a pessoa fica na frente");
+// janela curta: os primeiros e, se a pessoa está abaixo, um corte e a linha dela
+const mine = lb.find((row) => row.you);
+assert.ok(mine.pos > 4, "com 847 troféus a pessoa está abaixo do 4º");
+const wnd = LB.rankWindow(lb, 3);
+assert.deepEqual(wnd.slice(0, 3).map((row) => row.pos), [1, 2, 3]);
+assert.deepEqual([wnd.length, "gap" in wnd[3], wnd[4].you], [5, true, true]);
+assert.equal(LB.rankWindow(LB.leaderboard("mapas", 99999, 5), 3).length, 3, "no topo não há linha extra");
+const w4 = LB.rankWindow(lb.map((row, i) => ({ ...row, you: i === 3 })), 3);
+assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo depois do corte não precisa do sinal de corte");
 
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");
