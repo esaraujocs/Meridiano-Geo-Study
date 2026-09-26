@@ -3,7 +3,7 @@
 import { trophiesByLadder, type DuelOutcome, type DuelRecord } from "./duel.js";
 import { LADDERS, groupsOfLadder, isGroupOwned, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { MILESTONES, reachedMilestones, type Milestone } from "./duel-rewards.js";
-import { leagueFloor, leagueOf, LEAGUE_SPAN, type LeagueStatus } from "./league.js";
+import { DIVISION_SPAN, leagueFloor, leagueOf, LEAGUE_SPAN, type LeagueStatus } from "./league.js";
 
 export type LadderCard = {
   ladder: Ladder;
@@ -145,3 +145,59 @@ export function trophyFrame(plan: Pick<ResultPlan, "from" | "to" | "cross">, pro
   return { value: lerp(plan.from, plan.to, easeOut(p)), floor: leagueOf(plan.from).floor, span: LEAGUE_SPAN, phase: 0 as const };
 }
 
+
+export type MeterFrame = {
+  value: number;
+  /** Faixa em que a barra está (a liga) e se já passou da beirada numa mudança de liga. */
+  floor: number;
+  span: number;
+  phase: 0 | 1;
+  status: LeagueStatus;
+  /** Preenchimento da barra e o trecho ganho (verde) ou perdido (hachurado), em % da faixa. */
+  fill: number;
+  deltaFrom: number;
+  deltaTo: number;
+  /** Divisões II e III já alcançadas nesta faixa. */
+  ticks: [boolean, boolean];
+  /** Diferença de troféus já mostrada no emblema, com sinal. */
+  shown: number;
+};
+
+/** Tudo que a barra de troféus desenha num instante da animação (p de 0 a 1): valor, liga, preenchimento e o trecho ganho ou perdido. */
+export function meterLayout(plan: Pick<ResultPlan, "from" | "to" | "cross">, progress: number): MeterFrame {
+  const frame = trophyFrame(plan, progress);
+  const rising = plan.to >= plan.from;
+  const pct = (value: number) => Math.min(100, Math.max(0, ((value - frame.floor) / frame.span) * 100));
+  const status = leagueOf(frame.value);
+  const start = Math.max(plan.from, frame.floor);
+  const fill = rising ? pct(start) : pct(frame.value);
+  const deltaFrom = rising ? pct(start) : pct(frame.value);
+  const deltaTo = rising ? pct(frame.value) : pct(plan.from);
+  const master = frame.floor >= leagueFloor(5);
+  return {
+    value: frame.value, floor: frame.floor, span: frame.span, phase: frame.phase, status, fill, deltaFrom, deltaTo,
+    ticks: master ? [false, false] : [frame.value >= frame.floor + DIVISION_SPAN, frame.value >= frame.floor + 2 * DIVISION_SPAN],
+    shown: Math.round(frame.value - plan.from),
+  };
+}
+
+/** O tempo que decidiu o duelo: numa vitória, o único tempo em que a pessoa foi melhor; numa derrota, o único em que ficou atrás.
+ *  Null quando os dois tempos pesaram do mesmo lado (ou empataram). */
+export function decisiveLeg(legs: readonly { playerCorrect: number; botCorrect: number }[], kind: "win" | "loss" | "draw"): { index: number; margin: number } | null {
+  if (kind === "draw" || legs.length < 2) return null;
+  const margins = legs.map((leg) => leg.playerCorrect - leg.botCorrect);
+  const sign = kind === "win" ? 1 : -1;
+  const hits = margins.map((margin, index) => ({ margin, index })).filter((item) => item.margin * sign > 0);
+  const rest = margins.filter((margin) => margin * sign > 0).length;
+  return rest === 1 && hits.length === 1 ? hits[0] : null;
+}
+
+/** O tempo em que a pessoa mais ficou atrás (base do "Treinar"): null se nenhum tempo foi perdido. */
+export function worstLeg(legs: readonly { playerCorrect: number; botCorrect: number }[]): { index: number; margin: number } | null {
+  let worst: { index: number; margin: number } | null = null;
+  for (let index = 0; index < legs.length; index += 1) {
+    const margin = legs[index].playerCorrect - legs[index].botCorrect;
+    if (margin < 0 && (!worst || margin < worst.margin)) worst = { index, margin };
+  }
+  return worst;
+}

@@ -4,20 +4,16 @@ import { xpSegments, type ResultChip, type ResultView } from "../domain/result-v
 import { formatKm } from "../domain/map-error";
 import { formatNumber, t } from "../domain/i18n";
 import type { DuelView } from "../domain/duel";
-import { leagueLabel, milestoneLabel, styleLabel } from "../domain/duel-labels";
-import { groupDef } from "../domain/duel-modes";
-import { leagueOf } from "../domain/league";
+import type { ModeGroup } from "../domain/duel-modes";
+import { DuelResultCard, reducedMotion } from "./duel-result";
 
-type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void };
+type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void; onTrain?: (group: ModeGroup) => void; onStore?: () => void };
 type LevelState = { level: number; span: number; progress: number };
 
 const ARC = 2 * Math.PI * 15;
 const RING = 2 * Math.PI * 58;
 const CHIP_ICON: Record<ResultChip["key"], IconType> = { cards: "puzzle", levels: "trend", streak: "flame", timeouts: "clock" };
 const format = formatNumber;
-const reducedMotion = () =>
-  (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) ||
-  document.documentElement.dataset.reducedMotion === "true";
 const center = (element: HTMLElement | null): [number, number] => {
   const box = element?.getBoundingClientRect();
   return box ? [box.left + box.width / 2, box.top + box.height / 2] : [0, 0];
@@ -27,7 +23,7 @@ const pulse = (element: HTMLElement | null, scale = 1.08) =>
 
 // Resultado da partida: o essencial cabe numa tela (nota, moedas, XP e os botões); o resto fica em "Ver detalhes".
 // As moedas voam do cartão para a carteira do topo e o XP enche a barra de nível, como uma prestação de contas.
-export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }: Props) {
+export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, onTrain, onStore }: Props) {
   const start = xpSegments(view.xpBefore, view.xpBefore)[0];
   const [balance, setBalance] = useState(view.balanceBefore);
   const [level, setLevel] = useState<LevelState>({ level: start.level, span: start.span, progress: start.from });
@@ -85,7 +81,8 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
 
     (async () => {
       if (reducedMotion() || (view.coins <= 0 && !animateXp)) { settle(); return; }
-      await wait(650);
+      // no duelo o cartão faz a festa antes (o bloco das moedas só aparece depois dela)
+      await wait(duel ? 2000 : 650);
       if (cancelled) return;
       if (view.coins > 0) {
         const count = Math.min(16, Math.max(2, Math.ceil(view.coins / 30)));
@@ -131,7 +128,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
   }, []);
 
   const fraction = level.span > 0 ? Math.min(1, level.progress / level.span) : 0;
-  return <main className="rs-page" aria-labelledby="rs-title">
+  return <main className={`rs-page${duel ? " dr-page" : ""}`} aria-labelledby="rs-title">
     <div className="rs-wallet">
       <button type="button" className="rs-back" onClick={onHome}>{t.common.backHub}</button>
       <div className="rs-hud">
@@ -144,7 +141,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
     </div>
 
     <p className="sr-only" role="status">{t.result.srSummary(view.correct, view.total, view.coins, view.xpGain)}</p>
-    <section className="rs-card">
+    {duel ? <DuelResultCard duel={duel} view={view} lootCoinRef={lootCoinRef} xpChipRef={xpChipRef} onAgain={onAgain} onHome={onHome} onLeague={onLeague} onTrain={onTrain} onStore={onStore} /> : <section className="rs-card">
       <span className="eyebrow">{view.eyebrow}</span>
       <h1 id="rs-title" className="rs-title">{view.title}</h1>
       <div className="rs-score">
@@ -159,7 +156,6 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
           {view.xpGain > 0 && <span className="rs-xp" ref={xpChipRef}>+{view.xpGain} XP</span>}
         </div>
       </div>
-      {duel && <DuelPanel duel={duel} onLeague={onLeague} />}
       {view.training && <p className="rs-note">{t.result.trainingNote}</p>}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
@@ -173,28 +169,6 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
         <button type="button" className="rs-btn" aria-label={t.result.adjustAria} onClick={onAdjust}><Icon type="sliders" /><span className="rs-lbl">{t.result.adjust}</span></button>
         <button type="button" className="rs-btn" aria-label={t.result.homeAria} onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.result.home}</span></button>
       </div>
-    </section>
+    </section>}
   </main>;
-}
-
-const signedTrophies = (value: number) => (value > 0 ? `+${format(value)}` : value < 0 ? `−${format(Math.abs(value))}` : "0");
-const leagueTitle = (trophies: number) => { const status = leagueOf(trophies); return leagueLabel(status.league, status.division); };
-
-// Placar do duelo, troféus ganhos ou perdidos, mudança de liga e marcos que renderam moedas.
-function DuelPanel({ duel, onLeague }: { duel: DuelView; onLeague?: () => void }) {
-  const before = leagueOf(duel.trophiesBefore);
-  const after = leagueOf(duel.trophiesAfter);
-  const moved = after.index !== before.index ? (after.index > before.index ? "up" : "down") : null;
-  return <section className={`rs-duel is-${duel.outcome}`} aria-label={t.duel.result.eyebrow(duel.botName)}>
-    <div className="rs-duel-head"><Icon type="swords" /><span><b>{t.duel.result[duel.outcome]}</b><small>{t.duel.result.eyebrow(duel.botName)} · {styleLabel(duel.botStyle, duel.botSpecialty)}</small></span></div>
-    <div className="rs-duel-vs" role="img" aria-label={`${t.duel.result.you} ${duel.playerCorrect}, ${duel.botName} ${duel.botCorrect}`}>
-      <span><small>{t.duel.result.you}</small><b>{duel.playerCorrect}</b></span><em>x</em><span><small>{duel.botName}</small><b>{duel.botCorrect}</b></span>
-    </div>
-    <div className="rs-duel-trophies"><Icon type="achievements" /><b>{signedTrophies(duel.delta)}</b><small>{t.duel.result.trophies} · {t.duel.result.total(format(duel.trophiesAfter))} · {leagueTitle(duel.trophiesAfter)}</small></div>
-    {duel.legs && duel.legs.length > 0 && <ul className="rs-duel-legs">{duel.legs.map((leg, index) => <li key={index}>{t.duel.result.legRow(index + 1, t.duel.groups[groupDef(leg.group).group], leg.playerCorrect, leg.botCorrect)}</li>)}</ul>}
-    {duel.tiebreak && <p className="rs-duel-note">{t.duel.result.tiebreak}</p>}
-    {moved && <p className={`rs-duel-note is-${moved}`}>{moved === "up" ? t.duel.result.promoted(leagueTitle(duel.trophiesAfter)) : t.duel.result.demoted(leagueTitle(duel.trophiesAfter))}</p>}
-    {duel.milestones.map((milestone) => <p key={milestone.id} className="rs-duel-note is-up rs-duel-milestone"><Icon type="star" size={15} />{t.duel.result.milestone(milestoneLabel(milestone), format(milestone.coins))}</p>)}
-    {onLeague && <button type="button" className="rs-duel-link" onClick={onLeague}>{t.duel.result.openLeague}</button>}
-  </section>;
 }

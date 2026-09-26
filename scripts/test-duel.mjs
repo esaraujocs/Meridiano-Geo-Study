@@ -446,4 +446,34 @@ const planDown = V.resultPlan({ outcome: "loss", playerCorrect: 7, botCorrect: 1
 assert.deepEqual([V.trophyFrame(planDown, 0.49).floor, V.trophyFrame(planDown, 0.5).floor, V.trophyFrame(planDown, 0.5).value, V.trophyFrame(planDown, 1).value], [1000, 500, 1000, 988]);
 let lastValue = Infinity; for (let i = 0; i <= 20; i += 1) { const value = V.trophyFrame(planDown, i / 20).value; assert.ok(value <= lastValue + 1e-9, "a queda é monótona"); lastValue = value; }
 
+// medidor: valor, preenchimento e trecho ganho/perdido em cada instante
+let mf = V.meterLayout(planSingle, 0);
+assert.deepEqual([mf.value, mf.shown, mf.status.league, mf.status.division, mf.phase], [1240, 0, "ouro", 2, 0]);
+assert.ok(mf.fill > 47 && mf.fill < 49 && mf.deltaFrom === mf.fill && mf.deltaTo === mf.fill, "sem trecho no começo");
+mf = V.meterLayout(planSingle, 1);
+assert.deepEqual([mf.value, mf.shown, mf.status.division], [1261, 21, 2]);
+assert.ok(mf.deltaTo > mf.deltaFrom && mf.ticks[0] && !mf.ticks[1], "ganho verde e a divisão II já passou");
+mf = V.meterLayout(planUp, 0.5);
+assert.deepEqual([mf.floor, mf.value, mf.status.league, mf.fill], [1500, 1500, "platina", 0], "na passagem a barra recomeça vazia na liga nova");
+mf = V.meterLayout(planUp, 0.49); assert.equal(mf.floor, 1000); assert.ok(mf.deltaTo > 95, "a barra enche até a beirada antes de passar");
+assert.equal(V.meterLayout(planUp, 1).shown, 32);
+const planLoss = V.resultPlan({ outcome: "loss", playerCorrect: 9, botCorrect: 13, total: 20, before: 1240, after: 1223, streakAfter: 0, streakBefore: 0, milestones: 0 });
+mf = V.meterLayout(planLoss, 1);
+assert.deepEqual([mf.value, mf.shown], [1223, -17]);
+assert.ok(mf.fill < 47 && mf.deltaFrom === mf.fill && mf.deltaTo > mf.deltaFrom, "na derrota a barra recua e o trecho perdido fica à frente");
+mf = V.meterLayout(planDown, 0.5);
+assert.deepEqual([mf.floor, mf.value, mf.fill, mf.deltaTo], [500, 1000, 100, 100], "na queda de liga a barra reaparece cheia na liga anterior");
+assert.equal(V.meterLayout(planDown, 1).status.league, "prata");
+for (let i = 0; i <= 20; i += 1) { const frame = V.meterLayout(planDown, i / 20); assert.ok(frame.fill >= 0 && frame.fill <= 100 && frame.deltaTo <= 100 && frame.deltaFrom <= frame.deltaTo + 1e-9); }
+const planMaster = V.resultPlan({ outcome: "win", playerCorrect: 15, botCorrect: 10, total: 20, before: 2600, after: 2620, streakAfter: 1, streakBefore: 0, milestones: 0 });
+mf = V.meterLayout(planMaster, 1); assert.deepEqual([mf.status.league, mf.ticks, mf.status.division], ["mestre", [false, false], null]);
+// tempo decisivo e o que treinar
+assert.deepEqual(V.decisiveLeg([{ playerCorrect: 8, botCorrect: 6 }, { playerCorrect: 6, botCorrect: 5 }], "win"), null, "os dois tempos a favor: ninguém decidiu sozinho");
+assert.deepEqual(V.decisiveLeg([{ playerCorrect: 8, botCorrect: 6 }, { playerCorrect: 4, botCorrect: 6 }], "win"), { index: 0, margin: 2 });
+assert.deepEqual(V.decisiveLeg([{ playerCorrect: 6, botCorrect: 7 }, { playerCorrect: 3, botCorrect: 6 }], "loss"), null, "os dois tempos atrás");
+assert.deepEqual(V.decisiveLeg([{ playerCorrect: 6, botCorrect: 6 }, { playerCorrect: 3, botCorrect: 6 }], "loss"), { index: 1, margin: -3 });
+assert.equal(V.decisiveLeg([{ playerCorrect: 6, botCorrect: 6 }, { playerCorrect: 3, botCorrect: 6 }], "draw"), null);
+assert.deepEqual(V.worstLeg([{ playerCorrect: 6, botCorrect: 7 }, { playerCorrect: 3, botCorrect: 6 }]), { index: 1, margin: -3 });
+assert.equal(V.worstLeg([{ playerCorrect: 8, botCorrect: 7 }, { playerCorrect: 6, botCorrect: 6 }]), null);
+
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");

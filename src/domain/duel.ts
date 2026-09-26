@@ -188,6 +188,14 @@ export type DuelView = {
   milestones: readonly Milestone[];
   ladder?: Ladder;
   legs?: readonly DuelLegRecord[];
+  /** Vitórias seguidas (em qualquer escada) antes e depois deste duelo. */
+  streakBefore: number;
+  streakAfter: number;
+  /** A pessoa saiu antes de terminar os dois tempos. */
+  abandoned: boolean;
+  /** Moedas de cada tempo (sem o bônus de partida completa) e se o tempo foi de prévia (paga como o modo base). Só na tela, não é gravado. */
+  legCoins?: readonly number[];
+  legPreview?: readonly boolean[];
 };
 
 /** Soma o tempo das respostas; resposta que estourou o tempo sem registro vale o cronômetro inteiro. Sem dado suficiente, null. */

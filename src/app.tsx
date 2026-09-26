@@ -47,10 +47,11 @@ import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
 import { duelRecordId, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
-import { drawLegs, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
+import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
-import { ladderCards, nextMilestones } from "./domain/duel-view";
+import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
+import { DUEL_PREVIEW_NAMES, duelPreview } from "./domain/duel-preview";
 import { DuelReveal } from "./components/duel-reveal";
 import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
@@ -67,13 +68,15 @@ export function App() {
   const [error, setError] = useState("");
   // Duelo contra bots (liga no Hub): sempre Mundo inteiro, sem o filtro ONU; a escolha do solo fica guardada.
   const [duelMode, setDuelMode] = useState(false);
+  // "Treinar" no resultado de uma derrota: a próxima partida é um Treino curto do modo, no Mundo inteiro e sem o filtro ONU.
+  const [trainOnce, setTrainOnce] = useState(false);
   const [regionPref, setRegion] = useState<RegionSelection>("mundo");
-  const region: RegionSelection = duelMode ? "mundo" : regionPref;
+  const region: RegionSelection = duelMode || trainOnce ? "mundo" : regionPref;
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
   const [onlyUnPref, setOnlyUn] = useState(true);
-  const onlyUn = duelMode ? false : onlyUnPref;
+  const onlyUn = duelMode || trainOnce ? false : onlyUnPref;
   // Ritmo (Partida com tempo ou Treino) e quantas rodadas: lembrados entre as partidas.
   const [pace, setPaceState] = useState<Pace>(() => {
     try { const saved = localStorage.getItem("carta-pace"); return isPace(saved) ? saved : DEFAULT_PACE; } catch { return DEFAULT_PACE; }
@@ -102,6 +105,20 @@ export function App() {
   const byLadder = useMemo(() => trophiesByLadder(duels), [duels]);
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
   useEffect(() => { void listDuels().then(setDuels).catch(() => undefined); }, []);
+  // Só com ?debug=1: `__cartaDuelResult("t4")` no console abre o resultado de um cenário pronto (sem gravar nada).
+  useEffect(() => {
+    if (!isDebugEnabled()) return;
+    const target = window as unknown as Record<string, unknown>;
+    target.__cartaDuelResult = (name: string) => {
+      const preview = duelPreview(name);
+      if (!preview) return DUEL_PREVIEW_NAMES;
+      // passa pelo Hub para a tela do resultado nascer do zero a cada cenário
+      setScreen("hub");
+      window.setTimeout(() => { setLastDuel(preview.duel); setLastResult(preview.view); setScreen("result"); }, 60);
+      return name;
+    };
+    return () => { delete target.__cartaDuelResult; };
+  }, []);
   const [economyReady, setEconomyReady] = useState(false);
   const [lastResult, setLastResult] = useState<ResultView | null>(null);
   const [specialCounts, setSpecialCounts] = useState({
@@ -147,7 +164,8 @@ export function App() {
   // Duelo: cada tempo é uma sessão de 10 rodadas com tempo, baralho da semente do duelo e, em modo de prévia, moedas do modo base.
   const sessionOptions = useMemo(() => duelRun && screen === "game"
     ? legOptions(duelRun, economy.unlocked)
-    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, screen, economy.unlocked, pace, effectiveTier, family]);
+    : trainOnce ? { pace: "training" as Pace, roundLimit: 10 }
+    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, screen, economy.unlocked, trainOnce, pace, effectiveTier, family]);
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
   const startGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
@@ -157,6 +175,7 @@ export function App() {
   /** Sorteia adversário e tempos (a semente é o id) e abre a revelação; a pessoa não escolhe nada. */
   const openDuel = (ladder: Ladder) => {
     const id = newDuelId();
+    setTrainOnce(false);
     const trophiesBefore = byLadder[ladder];
     const status = leagueOf(trophiesBefore);
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
@@ -225,6 +244,10 @@ export function App() {
       botName: run.bot.name, botLeague: run.bot.league, botStyle: run.bot.style, botSpecialty: run.bot.specialty,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
+      streakBefore: winStreak(duels), streakAfter: winStreak(nextDuels), abandoned: run.done.length < LEGS,
+      // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
+      legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
+      legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),
     });
     setDuelRun(null);
     legResults.current = [null, null];
@@ -271,6 +294,17 @@ export function App() {
   const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") setCollectionRegion("mundo"); setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") setCollectionRegion("mundo"); setScreen(destination); };
+  /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
+  const trainGroup = async (group: ModeGroup) => {
+    const mode = groupDef(group).variants[0];
+    if (mode.family === "bandeiras" || mode.family === "historicas" || mode.family === "idiomas" || mode.family === "escrita") await loadSpecial();
+    setTrainOnce(true);
+    setFamily(mode.family);
+    setVariant(mode.variant);
+    economyBeforeRef.current = economy;
+    setLastDuel(null);
+    setScreen("game");
+  };
   const openLeague = (ladder?: Ladder) => { setLeagueLadder(ladder); setScreen("league"); };
   const openCollectionAt = (target: Region) => { setCollectionRegion(target); setScreen("collection"); };
   const restoreVariantContext = (familyKey: TopFamily, saved: string) => {
@@ -487,6 +521,7 @@ export function App() {
   };
   // Escolhe a família de jogo e abre a configuração da partida (Hub e cards de pilar da tela de Progresso).
   const selectFamily = async (selected: Family) => {
+            setTrainOnce(false);
             setFamily(selected);
             setRegion("mundo");
              const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
@@ -539,7 +574,7 @@ export function App() {
 
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
-      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
+      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
