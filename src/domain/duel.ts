@@ -67,7 +67,7 @@ function settle(input: { trophies: number; mmr?: number; games?: number; divisio
   const lead = Math.max(0, LEAGUES.indexOf(bot.league) - leagueOf(trophies).index);
   const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead });
   const trophiesAfter = Math.max(0, trophies + change.delta);
-  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot, input.division ?? null), outcome, margin, input.games));
+  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot, input.division ?? null), outcome, margin, input.games, input.streak ?? 0));
   return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: change.streakBonus, perfBonus: change.perfBonus, mmrDelta: mmrAfter - mmr, mmrAfter };
 }
 
@@ -99,7 +99,7 @@ export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: nu
 export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, mmr, games }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time } });
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time } });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);

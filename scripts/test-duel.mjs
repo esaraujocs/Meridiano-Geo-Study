@@ -589,6 +589,24 @@ assert.ok(X.mmrChange(1200, 1000, "win", 10) > X.mmrChange(1400, 1000, "win", 10
 assert.deepEqual([0, 10, 20, 99, NaN].map((g) => X.kFor(g)), [160, 112, 64, 64, 64], "K de calibração cai de 160 a 64 nas 20 primeiras partidas");
 assert.ok(X.mmrChange(300, 500, "win", 5, 0) > X.mmrChange(300, 500, "win", 5, 30), "nas primeiras partidas o MMR anda mais depressa");
 assert.equal(X.MMR_MODEL, 3);
+// especialista: bônus na família, penalidade fora e nada nas históricas (grupo neutro)
+const brunaBot = B.BOTS.find((b) => b.name === "Bruna Sul");
+const spec = (ctx) => B.botProfile(brunaBot, { division: 1, family: "bandeiras", ...ctx }).accuracy;
+assert.ok(spec({}) > spec({ neutral: true }) && spec({ neutral: true }) > B.botProfile(brunaBot, { division: 1, family: "mapa" }).accuracy, "dentro da família > neutro > fora dela");
+assert.equal(spec({ neutral: true }), B.botProfile(B.botsOfLeague("prata")[0], { division: 1, family: "bandeiras" }).accuracy, "neutro: igual ao bot constante da liga");
+assert.equal(M.groupDef("historicas").neutral, true); assert.equal(M.groupDef("atuais").neutral, undefined);
+const histLegs = [{ group: "historicas", rounds: 10, playerCorrect: 5, playerMs: 1 }, { group: "atuais", rounds: 10, playerCorrect: 5, playerMs: 1 }];
+const meanHist = (group) => { let n = 0; for (let g = 0; g < 400; g += 1) n += D.resolveDuelLegs({ trophies: 500, bot: brunaBot, seed: "h" + g, division: 3, legs: [{ ...histLegs[0], group }, histLegs[1]] }).legs[0].botCorrect; return n / 400; };
+assert.ok(meanHist("historicas") < 6.9 && meanHist("historicas") > 5.6, "Bruna acerta em torno de 6,2 das históricas (antes 7,3)");
+
+// sequência de vitórias no MMR: a partir da 3ª seguida soma 6 por vitória a mais, até 30, e some com o mesmo limite da dominância
+assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7, 20].map((n) => X.mmrChange(1000, 1000, "win", 4, 20, n)), [27, 27, 27, 33, 39, 45, 51, 57, 57], "streak = vitórias que a pessoa já tinha: 3 → +6 … teto +30");
+assert.equal(X.mmrChange(1000, 1000, "loss", -4, 20, 9), X.mmrChange(1000, 1000, "loss", -4), "a derrota não usa a sequência");
+assert.equal(X.mmrChange(1400, 1000, "win", 10, 20, 12), 6, "com o MMR 400 acima do bot a sequência também some");
+assert.ok(X.mmrChange(1200, 1000, "win", 6, 20, 9) > X.mmrChange(1200, 1000, "win", 6, 20, 0));
+assert.equal(X.STREAK_MMR_STEP * 5, X.STREAK_MMR_CAP);
+const mmrStreak = (streak) => D.resolveDuelLegs({ trophies: 500, mmr: 500, bot: ouro, seed: "hot", division: 1, games: 30, streak, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).mmrDelta;
+assert.ok(mmrStreak(8) > mmrStreak(0), "o duelo passa a sequência para o MMR");
 assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
 assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");
 assert.equal(X.mmrChange(1000, 1000, "draw", 0), 0);

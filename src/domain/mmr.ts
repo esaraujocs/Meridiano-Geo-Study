@@ -57,6 +57,10 @@ export const DOMINANCE = 30;
 export const DOMINANCE_FROM = 4;
 export const DOMINANCE_SPAN = 6;
 export const DOMINANCE_FADE = 400;
+/** Sequência de vitórias no MMR: a partir da 3ª vitória seguida, cada vitória a mais soma STREAK_MMR_STEP ao MMR (até STREAK_MMR_CAP), com o mesmo limite da
+ *  dominância. Quem emenda vitórias está claramente acima da própria liga, e sem isso o MMR (que anda menos que os troféus) nunca o levava a bots mais fortes. */
+export const STREAK_MMR_STEP = 6;
+export const STREAK_MMR_CAP = 30;
 
 /** Matchmaking pelo MMR: o bot sai da liga do MMR, no máximo MATCH_UP ligas acima da liga em troféus e nunca abaixo dela (quem está com o MMR
  *  atrás dos troféus enfrenta os bots mais fracos da própria liga, não os de uma liga inferior). */
@@ -136,14 +140,16 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
 }
 
 /** Quanto o duelo mexe no MMR: Elo contra a nota do bot, com o placar contando pelo desempenho (vitória apertada vale menos que goleada), K de calibração
- *  nas primeiras partidas da escada (`games` = duelos já jogados; sem valor, K normal) e o bônus de dominância. */
-export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number, games = CALIB_GAMES) {
+ *  nas primeiras partidas da escada (`games` = duelos já jogados; sem valor, K normal), o bônus de dominância e o da sequência de vitórias (`streak` = as que a
+ *  pessoa já tinha antes deste duelo). */
+export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number, games = CALIB_GAMES, streak = 0) {
   const score = outcome === "win" ? 0.85 + 0.15 * clamp01(margin / PERF_SPAN)
     : outcome === "loss" ? 0.15 * (1 - clamp01(Math.abs(margin) / PERF_SPAN))
       : 0.5;
   const crush = outcome === "draw" ? 0 : clamp01((Math.abs(margin) - DOMINANCE_FROM) / DOMINANCE_SPAN) * (outcome === "win" ? 1 : -1);
-  const dominance = DOMINANCE * crush * clamp01(1 - (mmr - opponent) / DOMINANCE_FADE);
-  return Math.round(kFor(games) * (score - expectedScore(mmr, opponent)) + dominance);
+  const fade = clamp01(1 - (mmr - opponent) / DOMINANCE_FADE);
+  const hot = outcome === "win" ? Math.min(STREAK_MMR_CAP, STREAK_MMR_STEP * Math.max(0, Math.floor(Number.isFinite(streak) ? streak : 0) - 2)) : 0;
+  return Math.round(kFor(games) * (score - expectedScore(mmr, opponent)) + DOMINANCE * crush * fade + hot * fade);
 }
 
 /** O que está em jogo antes do duelo, como faixa: vitória de `win[0]` (apertada) a `win[1]` (goleada); derrota de `loss[0]` (apertada) a

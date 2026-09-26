@@ -96,6 +96,8 @@ export type BotContext = {
   division: 1 | 2 | 3 | null;
   /** Família do Hub que está sendo jogada (só o especialista liga para isso). */
   family: BotFamily | null;
+  /** Modo em que a especialidade não vale nem para bem nem para mal (as bandeiras históricas: o especialista em bandeiras atuais não as domina). */
+  neutral?: boolean;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
   tuning?: { accuracy: number; time: number };
 };
@@ -112,7 +114,7 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
   let avgMs = base.avgMs;
   if (bot.style === "preciso") { accuracy += PRECISE.accuracy; avgMs *= PRECISE.time; }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
-  if (bot.style === "especialista" && bot.specialty) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
+  if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
   if (context.tuning) {
     accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, 0, 1);
     avgMs *= context.tuning.time;

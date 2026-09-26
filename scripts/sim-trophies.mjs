@@ -49,7 +49,7 @@ function play(skill, games, seed) {
     best = Math.max(best, change.delta);
     gapSum += mmr - trophies;
     if (bot > botRatingAt(trophies)) above += 1;
-    const mmrAfter = Math.max(0, mmr + M.mmrChange(mmr, bot, outcome, margin, game - 1));
+    const mmrAfter = Math.max(0, mmr + M.mmrChange(mmr, bot, outcome, margin, game - 1, streak));
     trophies = Math.max(0, trophies + change.delta);
     mmr = mmrAfter;
     streak = win ? streak + 1 : 0;
