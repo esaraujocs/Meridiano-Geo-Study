@@ -80,11 +80,23 @@ const transformedPositive = migration.transformLegacy({ history: { sessoes: [
 ] } });
 assert.equal(economy.dominatedFromSessions(transformedPositive.sessions), 1);
 const curve = await import(`file://${out}/player-level.js`);
-for (const [xp, level, base, next] of [[0, 1, 0, 50], [49, 1, 0, 50], [50, 2, 50, 150], [149, 2, 50, 150], [150, 3, 150, 300]]) {
+for (const [xp, level, base, next] of [[0, 1, 0, 100], [99, 1, 0, 100], [100, 2, 100, 300], [299, 2, 100, 300], [300, 3, 300, 600]]) {
   const actual = curve.levelForXp(xp);
   assert.equal(actual, level);
   assert.equal(curve.xpForLevel(actual), base);
   assert.equal(curve.xpForLevel(actual + 1), next);
 }
 assert.equal(curve.levelForXp(1e9) > 100, true, "sem teto de nível");
+// XP em dobro (26/09): 2 por rodada + 50 por país já dominado
+assert.equal(curve.xpFrom(10, 0), 20);
+assert.equal(curve.xpFrom(4000, 200), 18000);
+
+// domínio (26/09): acertar o mesmo país 3 vezes no mesmo modo não tira o domínio; só o erro tira
+const at = (targetId, correct, column, t) => ({ targetId, correct, column, answeredAt: t });
+const mixedThenSame = [completed([at("a", true, "mapa", 1), at("a", true, "bandeiras", 2), at("a", true, "capitais", 3), at("a", true, "capitais", 4), at("a", true, "capitais", 5), at("a", true, "capitais", 6)])];
+assert.equal(economy.dominatedFromSessions(mixedThenSame), 1, "três acertos seguidos em Capitais mantêm o domínio");
+const thenMiss = [...mixedThenSame, completed([at("a", false, "capitais", 7)])];
+assert.equal(economy.dominatedFromSessions(thenMiss), 0, "um erro tira o domínio de agora");
+assert.equal(economy.everDominatedFromSessions(thenMiss), 1, "mas o país continua contando para o XP");
+assert.equal(economy.everDominatedFromSessions([completed([at("b", true, "mapa", 1), at("b", true, "mapa", 2), at("b", true, "mapa", 3)])]), 0, "um modo só nunca domina");
 console.log("economy rules: ok");

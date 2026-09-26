@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatNumber, t } from "../domain/i18n";
+import { XP_PER_ROUND } from "../domain/player-level";
 
 type Verb = "leave" | "restart";
 type Single = { kind: "single"; run: () => void; verb: Verb };
+/** `xp` recebe o número de rodadas da partida; o XP mostrado é rodadas × XP_PER_ROUND (os países dominados só se somam no fim). */
 type Sheet = { kind: "sheet"; onLeave: () => void; onRestart?: () => void; coins: number; xp: number };
 type Pending = Single | Sheet;
 
@@ -69,7 +71,7 @@ function LeaveDialog({ rounds, verb, coins, xp, onStay, onLeave, onRestart }: {
       </p>
       {sheet && <div className="leave-pending">
         <div><small>{t.leave.pendingCoins}</small><b>$ {formatNumber(coins!)}</b></div>
-        <div><small>{t.leave.xpOnFinish}</small><b>+{xp}</b></div>
+        <div><small>{t.leave.xpOnFinish}</small><b>+{(xp ?? 0) * XP_PER_ROUND}</b></div>
       </div>}
       <div className="leave-actions">
         <button ref={stayRef} type="button" className="button" onClick={onStay}>{t.leave.stay}</button>

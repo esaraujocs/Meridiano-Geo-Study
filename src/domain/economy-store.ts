@@ -3,11 +3,11 @@ import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schem
 import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
 import { playerStatsFromSessions } from "./player-stats.js";
 import { XP_ADJUST_ID } from "./debug-rules.js";
-import { levelForXp, xpForLevel } from "./player-level.js";
-import { dominatedFromSessions } from "./dominated.js";
+import { levelForXp, xpForLevel, xpFrom } from "./player-level.js";
+import { dominatedFromSessions, everDominatedFromSessions } from "./dominated.js";
 import { ROUND_UNLOCKS, type RoundUnlockKey } from "./pace.js";
 import { themeById, themeUnlockKey } from "./themes.js";
-export { dominatedFromSessions, dominatedIdsFromSessions } from "./dominated.js";
+export { dominatedFromSessions, dominatedIdsFromSessions, everDominatedFromSessions, everDominatedIdsFromSessions } from "./dominated.js";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
 export type EconomySnapshot = {
@@ -136,8 +136,9 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   };
   const playerStats = playerStatsFromSessions(sessions as any[]);
   const rounds = playerStats.rounds;
+  // maestria mostra o domínio de agora; o XP conta todo país que já foi dominado, então nunca cai
   const dominated = dominatedFromSessions(sessions, progress);
-  const xpReal = rounds + dominated * 25;
+  const xpReal = xpFrom(rounds, everDominatedFromSessions(sessions, progress));
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);
   const level = levelForXp(xp);
