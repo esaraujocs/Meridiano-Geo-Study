@@ -568,36 +568,65 @@ assert.ok(X.trophyChange({ trophies: 3000, mmr: 3000, streak: 0, outcome: "draw"
 // no alto os bônus encolhem junto com a vitória (senão furavam o limite)
 const mw = X.trophyChange({ trophies: 4000, mmr: 4000, streak: 4, outcome: "win", margin: 8 });
 assert.ok(mw.delta <= X.baseStakes(4000).win + Math.round(X.WIN_CAP_EXTRA * X.baseStakes(4000).scale) && mw.streakBonus < 12, "bônus reduzidos no alto");
-// matchmaking: o bot sai da liga do MMR, presa a 2 ligas acima e nunca abaixo da liga em troféus
-const mm = (t, m) => { const st2 = X.matchmaking(t, m); return [st2.league, st2.division]; };
-assert.deepEqual(mm(100, 100), ["bronze", 1]);
-assert.deepEqual(mm(100, 900), ["prata", 3], "MMR na Prata: o bot vem da Prata");
-assert.deepEqual(mm(100, 2000), ["ouro", 3], "no máximo 2 ligas acima");
-assert.deepEqual(mm(1200, 100), ["ouro", 1], "nunca abaixo da própria liga, mesmo com o MMR lá embaixo");
-assert.deepEqual(mm(1200, 900), ["ouro", 1], "MMR na liga de baixo: enfrenta os mais fracos da própria liga");
-assert.deepEqual(mm(3000, 3000), ["mestre", null]);
-assert.deepEqual(mm(0, NaN), ["bronze", 1], "MMR inválido não quebra");
-assert.deepEqual(mm(1200, 1200), [L.leagueOf(1200).league, L.leagueOf(1200).division], "MMR igual aos troféus: a própria liga");
-// sequência quente: 5 vitórias seguidas sobem uma liga no sorteio e 10, duas (mesmo com o MMR parado nos troféus)
-const hotM = (t2, m, streak) => { const st2 = X.matchmaking(t2, m, streak); return [st2.league, st2.division]; };
-assert.deepEqual(X.HOT_STREAKS, [5, 10]);
-assert.deepEqual([0, 4, 5, 9, 10, 25].map((n) => hotM(1091, 1091, n)[0]), ["ouro", "ouro", "platina", "platina", "diamante", "diamante"]);
-assert.deepEqual(hotM(1091, 1091, 5), ["platina", 1], "a liga da sequência entra pela divisão I");
-assert.deepEqual(hotM(100, 100, 25), ["ouro", 1], "no máximo 2 ligas acima");
-assert.equal(hotM(3000, 3000, 25)[0], "mestre", "no Mestre não há liga acima");
-assert.deepEqual(hotM(1091, 1900, 5), hotM(1091, 1900, 0), "o MMR maior já vale mais que a sequência: vence o que tiver a liga mais alta");
-assert.deepEqual(hotM(1091, 1091, 0), mm(1091, 1091), "sem sequência, só o MMR");
-// MMR: sobe mais quando vence um bot acima dele, cai menos quando perde por pouco
-assert.equal(X.MMR_K, 64);
-assert.equal(X.mmrChange(1000, 1000, "win", 8), 52, "32 do Elo (K 64) + 20 de dominância (vitória por 8 acertos)");
-assert.equal(X.mmrChange(1000, 1000, "win", 4), 27, "com 4 acertos de diferença ainda não há dominância (só o Elo)");
-assert.equal(X.mmrChange(1000, 1000, "win", 10), 62);
-assert.equal(X.mmrChange(1000, 1000, "loss", -10), -62, "perder de goleada também tira MMR");
-assert.equal(X.mmrChange(1400, 1000, "win", 10), 6, "MMR 400 acima do bot: a dominância some (senão o MMR fugia sem limite)");
-assert.ok(X.mmrChange(1200, 1000, "win", 10) > X.mmrChange(1400, 1000, "win", 10) && X.mmrChange(1200, 1000, "win", 10) < X.mmrChange(1000, 1000, "win", 10), "a dominância vai sumindo aos poucos");
-assert.deepEqual([0, 10, 20, 99, NaN].map((g) => X.kFor(g)), [160, 112, 64, 64, 64], "K de calibração cai de 160 a 64 nas 20 primeiras partidas");
-assert.ok(X.mmrChange(300, 500, "win", 5, 0) > X.mmrChange(300, 500, "win", 5, 30), "nas primeiras partidas o MMR anda mais depressa");
-assert.equal(X.MMR_MODEL, 3);
+// incerteza do MMR: o passo K vai de 64 (assentado) a 160 (incerto)
+assert.deepEqual([X.K_MIN, X.K_MAX, X.SIGMA_MIN, X.SIGMA_MAX, X.SIGMA_START], [64, 160, 60, 250, 250]);
+assert.deepEqual([60, 155, 250, 999, 0, NaN].map((g) => X.kFor(g)), [64, 112, 160, 160, 64, 64], "K acompanha a incerteza, com limites");
+assert.equal(X.sigmaFromGames(0), 250); assert.equal(X.sigmaFromGames(200), 60, "com muitos duelos a incerteza chega ao piso");
+assert.ok(X.sigmaFromGames(5) > X.sigmaFromGames(15) && X.sigmaFromGames(15) > X.sigmaFromGames(30), "cai a cada duelo");
+assert.deepEqual([X.MMR_MODEL, X.MMR_VALID_MODELS], [4, [3, 4]]);
+// surpresa: vitórias reais menos esperadas, em desvios
+const smp = (score, expected) => ({ score, expected });
+const reps = (n, score, expected) => Array.from({ length: n }, () => smp(score, expected));
+assert.equal(X.surprise([]), 0); assert.equal(X.surprise(reps(2, 1, 0.5)), 0, "poucos duelos não dizem nada");
+assert.ok(Math.abs(X.surprise(reps(10, 1, 0.5)) - 5 / Math.sqrt(2.5)) < 1e-9, "10 vitórias contra bots de 50%: z ~ 3,2");
+assert.ok(X.surprise(reps(10, 1, 0.95)) < 1, "10 vitórias contra bots muito abaixo não surpreendem");
+assert.ok(X.surprise(reps(10, 0, 0.5)) < -3, "derrotas demais: surpresa negativa");
+assert.equal(X.surprise([...reps(5, 1, 0.5), ...reps(5, 0, 0.5)]), 0, "metade e metade: nada de surpresa");
+assert.equal(X.surprise([...reps(20, 0, 0.5), ...reps(10, 1, 0.5)]), X.surprise(reps(10, 1, 0.5)), "só a janela dos últimos 10 conta");
+assert.equal(X.surprise(reps(5, 1, 0.5)) > 2 && X.surprise(reps(3, 1, 0.9)) < 1, true, "5 vitórias contra bots de 50% surpreendem, 3 contra bots fracos não");
+// a incerteza cai a cada duelo e volta a subir com a surpresa
+assert.ok(Math.abs(X.sigmaNext(250, reps(5, 0.5, 0.5)) - 250 * 0.93) < 1e-9);
+assert.equal(X.sigmaNext(61, reps(5, 0.5, 0.5)), 60, "não passa do piso");
+const bouncedSigma = X.sigmaNext(60, reps(10, 1, 0.5));
+assert.ok(bouncedSigma > 200 && bouncedSigma <= 250, "uma sequência de vitórias inesperadas devolve a incerteza (e o passo do MMR) lá para cima");
+assert.equal(X.sigmaNext(60, reps(10, 1, 0.5).concat(reps(0, 1, 0.5))), bouncedSigma);
+assert.equal(X.sigmaNext(60, reps(10, 0, 0.5)), X.sigmaNext(60, reps(10, 1, 0.5)), "surpresa para os dois lados");
+assert.equal(X.sigmaNext(250, reps(10, 1, 0.3)), 250, "uma surpresa grande leva a incerteza ao máximo");
+// matchmaking: o rating do bot é o MMR mais o otimismo pela incerteza, preso entre a própria liga e 2 ligas acima
+assert.deepEqual([X.OPTIMISM, X.MATCH_UP, X.MASTER_MATCH_SPAN], [1, 2, 1000]);
+assert.equal(X.matchRating(1091, 1091), 1091, "MMR assentado: o próprio MMR");
+assert.equal(X.matchRating(1091, 1091, 250, 3), 1091 + 190, "incerto e vencendo: bot mais forte");
+assert.equal(X.matchRating(1091, 1300, 155, 0), 1300 + 95, "sem surpresa mas incerto: também sobe (o novo jogador é testado para cima)");
+assert.equal(X.matchRating(1091, 1091, 250, -3), 1000, "incerto e perdendo: mais fraco, mas nunca abaixo da própria liga");
+assert.equal(X.matchRating(1500, 1700, 250, -3), 1510, "perdendo: desce, ainda dentro da liga");
+assert.equal(X.matchRating(100, 5000), 1499, "no máximo 2 ligas acima");
+assert.equal(X.matchRating(3000, 9000), 3499, "no Mestre, mil troféus além do começo");
+assert.equal(X.matchRating(1200, 100), 1000, "nunca abaixo da própria liga, mesmo com o MMR lá embaixo");
+assert.equal(X.matchRating(0, NaN), 0, "MMR inválido não quebra");
+const mmkRes = X.matchmaking(1091, 1091, 250, 3);
+assert.deepEqual([mmkRes.league, mmkRes.division, mmkRes.rating], ["ouro", 2, 1281], "a liga e a divisão do rating sorteado");
+assert.equal(X.matchmaking(1091, 1091).rating, 1091);
+assert.equal(X.matchmaking(100, 100, 250, 4).league, "bronze", "num Bronze novo o rating de teste ainda é Bronze");
+assert.equal(X.matchmaking(100, 2000, 60, 0).league, "ouro", "2 ligas acima é o limite");
+// MMR: passo K pela incerteza; sobe mais quando vence um bot acima dele, cai menos quando perde por pouco
+assert.equal(X.mmrChange(1000, 1000, "win", 8), 32, "K 64, vitória por 8 acertos: metade do passo");
+assert.equal(X.mmrChange(1000, 1000, "win", 8, 250), 80, "incerteza máxima: K 160");
+assert.ok(X.mmrChange(1000, 1000, "win", 8, 155) > X.mmrChange(1000, 1000, "win", 8) && X.mmrChange(1000, 1000, "win", 8, 155) < X.mmrChange(1000, 1000, "win", 8, 250));
+assert.equal(X.mmrChange(1000, 1000, "loss", -8, 250), -80);
+assert.equal(X.mmrChange(1000, 1000, "draw", 0, 250), 0);
+// força contínua do bot pelo rating: passa pelos meios das ligas e sobe sem degraus
+assert.deepEqual([250, 750, 1250, 1750, 2250, 2750].map((r) => Math.round(B.baseAtRating(r).accuracy * 100)), [60, 68, 76, 84, 91, 96], "no meio de cada liga vale a base da liga");
+assert.deepEqual([250, 750, 1250, 1750, 2250, 2750].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 4600, 3800]);
+assert.ok(Math.abs(B.baseAtRating(500).accuracy - 0.64) < 1e-9, "entre duas ligas, interpolado");
+let lastAcc = 0, lastMs = Infinity;
+for (let r = 0; r <= 4200; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= 0.99 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }
+assert.ok(B.baseAtRating(0).accuracy < 0.6 && B.baseAtRating(0).accuracy >= 0.5, "abaixo do Bronze continua caindo, com piso");
+assert.equal(B.baseAtRating(B.RATING_TOP).accuracy, 0.99, "acima do Mestre chega a 99%");
+assert.equal(B.baseAtRating(NaN).accuracy, B.baseAtRating(0).accuracy);
+const constBot = B.botsOfLeague("prata")[0];
+assert.equal(B.botProfile(constBot, { division: 3, family: null, rating: 1000 }).accuracy, B.baseAtRating(1000).accuracy, "com rating, a divisão não pesa");
+assert.equal(B.botProfile(constBot, { division: 3, family: null }).accuracy, 0.68 + 2 * 0.02, "sem rating segue o caminho antigo (liga e divisão)");
+assert.ok(B.botProfile(constBot, { division: 1, family: null, rating: 3000 }).accuracy > B.botProfile(constBot, { division: 1, family: null, rating: 500 }).accuracy, "o mesmo bot fica mais forte com o rating");
 // especialista: bônus na família, penalidade fora e nada nas históricas (grupo neutro)
 const brunaBot = B.BOTS.find((b) => b.name === "Bruna Sul");
 const spec = (ctx) => B.botProfile(brunaBot, { division: 1, family: "bandeiras", ...ctx }).accuracy;
@@ -608,14 +637,6 @@ const histLegs = [{ group: "historicas", rounds: 10, playerCorrect: 5, playerMs:
 const meanHist = (group) => { let n = 0; for (let g = 0; g < 400; g += 1) n += D.resolveDuelLegs({ trophies: 500, bot: brunaBot, seed: "h" + g, division: 3, legs: [{ ...histLegs[0], group }, histLegs[1]] }).legs[0].botCorrect; return n / 400; };
 assert.ok(meanHist("historicas") < 6.9 && meanHist("historicas") > 5.6, "Bruna acerta em torno de 6,2 das históricas (antes 7,3)");
 
-// sequência de vitórias no MMR: a partir da 3ª seguida soma 6 por vitória a mais, até 30, e some com o mesmo limite da dominância
-assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7, 20].map((n) => X.mmrChange(1000, 1000, "win", 4, 20, n)), [27, 27, 27, 33, 39, 45, 51, 57, 57], "streak = vitórias que a pessoa já tinha: 3 → +6 … teto +30");
-assert.equal(X.mmrChange(1000, 1000, "loss", -4, 20, 9), X.mmrChange(1000, 1000, "loss", -4), "a derrota não usa a sequência");
-assert.equal(X.mmrChange(1400, 1000, "win", 10, 20, 12), 6, "com o MMR 400 acima do bot a sequência também some");
-assert.ok(X.mmrChange(1200, 1000, "win", 6, 20, 9) > X.mmrChange(1200, 1000, "win", 6, 20, 0));
-assert.equal(X.STREAK_MMR_STEP * 5, X.STREAK_MMR_CAP);
-const mmrStreak = (streak) => D.resolveDuelLegs({ trophies: 500, mmr: 500, bot: ouro, seed: "hot", division: 1, games: 30, streak, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).mmrDelta;
-assert.ok(mmrStreak(8) > mmrStreak(0), "o duelo passa a sequência para o MMR");
 assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
 assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");
 assert.equal(X.mmrChange(1000, 1000, "draw", 0), 0);
@@ -661,11 +682,50 @@ assert.deepEqual(D.stakesRange(100, 100, 0, 2).win, [53, 61], "a prévia inclui 
 const dlead = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead", division: 3, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
 assert.equal(dlead.outcome, "win"); assert.equal(dlead.delta, 33 + dlead.streakBonus + dlead.perfBonus + 20, "bot de Ouro contra quem está no Bronze: +20");
 assert.equal(D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "lead", division: 2, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).delta <= 50, true, "bot da própria liga: teto de 50");
-// calibração: nas primeiras partidas o MMR anda mais
-const cal = (games) => D.resolveDuelLegs({ trophies: 100, mmr: 100, bot: ouro, seed: "cal", division: 1, games, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] }).mmrDelta;
-assert.ok(cal(0) > cal(40), "o primeiro duelo mexe mais no MMR que o quadragésimo");
-assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX }).games, 20, "sem contagem, conta como experiente");
-assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX, games: 3 }).games, 3);
+// a incerteza decide o passo do MMR no duelo, e o duelo devolve a incerteza nova e o que o MMR esperava
+const sigDuel = (sigma, extra = {}) => D.resolveDuelLegs({ trophies: 100, mmr: 100, bot: ouro, seed: "sigDuel", division: 1, sigma, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)], ...extra });
+assert.ok(sigDuel(250).mmrDelta > sigDuel(60).mmrDelta, "com a incerteza no máximo o MMR anda bem mais por vitória");
+assert.equal(sigDuel(60).mmrDelta, sigDuel(undefined).mmrDelta, "sem incerteza informada vale a mínima");
+const rsig = sigDuel(60);
+assert.ok(rsig.mmrExp > 0 && rsig.mmrExp < 1 && rsig.mmrSigma >= 60 && rsig.mmrSigma <= 250);
+assert.equal(rsig.mmrExp, X.expectedScore(100, D.botRating(ouro, 1)), "sem rating, o esperado é contra o meio da divisão do bot");
+assert.equal(sigDuel(60, { rating: 1300 }).mmrExp, X.expectedScore(100, 1300), "com rating, contra o rating");
+assert.ok(sigDuel(60, { rating: 1300 }).mmrDelta > sigDuel(60, { rating: 300 }).mmrDelta, "vencer um bot de rating maior rende mais MMR");
+const hotSamples = Array.from({ length: 9 }, () => ({ score: 1, expected: 0.5 }));
+assert.ok(sigDuel(60, { recent: hotSamples }).mmrSigma > 200, "uma sequência de vitórias inesperadas devolve a incerteza depois deste duelo");
+assert.ok(sigDuel(60, { recent: [] }).mmrSigma <= 60 + 1e-9, "sem surpresa a incerteza segue no piso");
+// lead pelo rating: o bot é da liga do rating
+const dByRating = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead2", division: 3, rating: 1300, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
+assert.equal(dByRating.delta, 33 + dByRating.streakBonus + dByRating.perfBonus + 20, "rating de Ouro contra quem está no Bronze: +20");
+// a corrida leva rating, incerteza e surpresa
+const runWithSigma = U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 800, division: 2, rating: 1100, legs: legsX, sigma: 200, samples: hotSamples });
+assert.deepEqual([runWithSigma.rating, runWithSigma.sigma, runWithSigma.samples.length], [1100, 200, 9]);
+assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX }).sigma, 60, "sem informar, incerteza mínima");
+assert.deepEqual(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: legsX }).samples, []);
+const resWithSigma = U.resolveRun({ ...runWithSigma, done: winLegs.map((leg) => ({ ...leg })), index: 1 });
+assert.equal(resWithSigma.mmrExp, X.expectedScore(800, 1100), "a resolução usa o rating da corrida");
+// o estado do MMR deriva do histórico: MMR, incerteza, surpresa e duelos jogados
+const recV4 = (n, at, delta, mmrDelta, outcome, extra = {}) => ({ id: "duel:s" + n, at, delta, ladder: "mapas", outcome, mmrDelta, mmrVersion: 4, ...extra });
+const stA = D.mmrStateFromDuels([], "mapas");
+assert.deepEqual([stA.mmr, stA.sigma, stA.samples.length, stA.games], [0, 250, 0, 0], "sem histórico: incerteza máxima");
+const oldV3 = [recV4(1, 1, 30, 20, "win", { mmrVersion: 3 }), recV4(2, 2, 30, 22, "win", { mmrVersion: 3 })];
+const stB = D.mmrStateFromDuels(oldV3, "mapas");
+assert.deepEqual([stB.mmr, stB.games, stB.samples.length], [42, 2, 0], "a versão 3 ainda vale para o MMR");
+assert.equal(stB.sigma, X.sigmaFromGames(2), "sem incerteza gravada, vem da contagem de duelos");
+const newV4 = [...oldV3, recV4(3, 3, 40, 30, "win", { mmrSigma: 180, mmrExp: 0.5 }), recV4(4, 4, -20, -25, "loss", { mmrSigma: 170, mmrExp: 0.6 })];
+const stC = D.mmrStateFromDuels(newV4, "mapas");
+assert.deepEqual([stC.mmr, stC.sigma, stC.games], [47, 170, 4], "a incerteza é a do último duelo que a gravou");
+assert.deepEqual(stC.samples, [{ score: 1, expected: 0.5 }, { score: 0, expected: 0.6 }], "só entram na surpresa os duelos com o esperado gravado");
+assert.equal(D.mmrStateFromDuels([...newV4, { ...recV4(9, 9, 10, 10, "win"), ladder: "bandeiras" }], "mapas").games, 4, "cada escada tem o seu estado");
+const manyRecs = Array.from({ length: 15 }, (_, i) => recV4(100 + i, 100 + i, 5, 5, "win", { mmrSigma: 100, mmrExp: 0.5 }));
+assert.equal(D.mmrStateFromDuels(manyRecs, "mapas").samples.length, X.SURPRISE_WINDOW, "só os últimos duelos da janela");
+assert.equal(D.mmrStateFromDuels([recV4(1, 1, 30, 999, "win", { mmrVersion: 2, mmrSigma: 90, mmrExp: 0.5 })], "mapas").mmr, 30, "versão que não vale: conta o delta");
+assert.equal(D.mmrStateFromDuels([recV4(1, 1, 30, 999, "win", { mmrVersion: 2, mmrSigma: 90, mmrExp: 0.5 })], "mapas").sigma, X.sigmaFromGames(1), "e a incerteza dela também não vale");
+const parsedV4 = D.parseDuel({ ...rec(9, 9, 20), mmrDelta: 5, mmrVersion: 4, mmrSigma: 90.5, mmrExp: 0.42 });
+assert.deepEqual([parsedV4.mmrSigma, parsedV4.mmrExp], [90.5, 0.42]);
+assert.equal("mmrSigma" in D.parseDuel({ ...rec(9, 9, 20), mmrSigma: "x" }), false, "incerteza inválida é ignorada");
+assert.equal("mmrExp" in D.parseDuel(rec(8, 8, 20)), false);
+
 // relógio e segundos por resposta (tela do resultado)
 assert.deepEqual([0, 59400, 92000, 200000, 3599000, -5].map((ms) => V.clockOf(ms)), ["0:00", "0:59", "1:32", "3:20", "59:59", "0:00"]);
 assert.deepEqual([V.secondsPer(200000, 20), V.secondsPer(185000, 20), V.secondsPer(null, 20), V.secondsPer(5000, 0), V.secondsPer(undefined, 20)], [10, 9.3, null, null, null]);

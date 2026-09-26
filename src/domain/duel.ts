@@ -4,7 +4,7 @@
 import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
-import { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, mmrChange, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange } from "./mmr.js";
+import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
 
 /** Duelo v1 (uma partida só, 20 rodadas). O v2 usa LEGS x LEG_ROUNDS de duel-modes.ts. */
@@ -17,6 +17,7 @@ export const botRating = (bot: Pick<Bot, "league">, division: 1 | 2 | 3 | null =
 export type DuelOutcome = "win" | "loss" | "draw";
 // Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.
 export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
+export type { SurpriseSample };
 
 export type DuelInput = {
   trophies: number;
@@ -32,8 +33,9 @@ export type DuelInput = {
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
   mmr?: number;
-  /** Duelos que a pessoa já jogou nesta escada (o MMR anda mais depressa nos primeiros). */
-  games?: number;
+  /** Incerteza do MMR nesta escada e os duelos recentes (para a surpresa): decidem o passo do MMR. */
+  sigma?: number;
+  recent?: readonly SurpriseSample[];
 };
 export type DuelResult = {
   botId: string;
@@ -50,10 +52,13 @@ export type DuelResult = {
   /** Mudança do MMR escondido e o valor novo. */
   mmrDelta: number;
   mmrAfter: number;
+  /** Incerteza do MMR depois do duelo e o que o MMR esperava dele (guardados no registro). */
+  mmrSigma: number;
+  mmrExp: number;
 };
 
 /** Vencedor e troféus a partir dos números finais (a mesma conta para 1 tempo ou 2). */
-function settle(input: { trophies: number; mmr?: number; games?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
+function settle(input: { trophies: number; mmr?: number; sigma?: number; recent?: readonly SurpriseSample[]; rating?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
   const { trophies, bot, playerCorrect, botCorrect, playerMs, botMs } = input;
   const mmr = input.mmr ?? trophies;
   let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
@@ -64,16 +69,20 @@ function settle(input: { trophies: number; mmr?: number; games?: number; divisio
   }
   const margin = playerCorrect - botCorrect;
   // quantas ligas o bot está acima da liga da pessoa (o matchmaking pelo MMR traz bots de liga acima): soma ao ganho da vitória
-  const lead = Math.max(0, LEAGUES.indexOf(bot.league) - leagueOf(trophies).index);
+  const opponent = input.rating ?? botRating(bot, input.division ?? null);
+  const lead = Math.max(0, (input.rating === undefined ? LEAGUES.indexOf(bot.league) : leagueOf(opponent).index) - leagueOf(trophies).index);
   const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead });
   const trophiesAfter = Math.max(0, trophies + change.delta);
-  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot, input.division ?? null), outcome, margin, input.games, input.streak ?? 0));
-  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: change.streakBonus, perfBonus: change.perfBonus, mmrDelta: mmrAfter - mmr, mmrAfter };
+  const sigma = input.sigma ?? SIGMA_MIN;
+  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, opponent, outcome, margin, sigma));
+  const expected = expectedScore(mmr, opponent);
+  const mmrSigma = sigmaNext(sigma, [...(input.recent ?? []), { score: outcomeScore(outcome), expected }]);
+  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: change.streakBonus, perfBonus: change.perfBonus, mmrDelta: mmrAfter - mmr, mmrAfter, mmrSigma, mmrExp: expected };
 }
 
-export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak, mmr, games }: DuelInput): DuelResult {
+export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak, mmr, sigma, recent }: DuelInput): DuelResult {
   const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
-  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, mmr, games, division: context?.division ?? null, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, mmr, sigma, recent, rating: context?.rating, division: context?.division ?? null, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Duelo em dois tempos ----
@@ -84,29 +93,32 @@ export type DuelLegsInput = {
   bot: Bot;
   legs: readonly LegInput[];
   seed: string;
-  /** Divisão da pessoa na liga da escada (a força do bot acompanha). */
+  /** Divisão do adversário (a força do bot acompanha); com `rating` ele não pesa. */
   division: 1 | 2 | 3 | null;
+  /** Rating do bot sorteado pelo matchmaking: decide a força dele e é a nota contra a qual o MMR muda. */
+  rating?: number;
   /** Vitórias seguidas que a pessoa já tinha nesta escada (bônus de sequência). */
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
   mmr?: number;
-  /** Duelos que a pessoa já jogou nesta escada. */
-  games?: number;
+  /** Incerteza do MMR nesta escada e os duelos recentes (para a surpresa). */
+  sigma?: number;
+  recent?: readonly SurpriseSample[];
 };
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, mmr, games }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, streak, mmr, sigma, recent }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time } });
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time } });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);
   const botCorrect = results.reduce((sum, leg) => sum + leg.botCorrect, 0);
   const botMs = results.reduce((sum, leg) => sum + leg.botMs, 0);
   const playerMs = legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null;
-  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, games, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, sigma, recent, rating, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Registro dos duelos (um por duelo, guardado na loja `preferences`) ----
@@ -129,9 +141,12 @@ export type DuelRecord = {
   outcome: DuelOutcome;
   tiebreak: boolean;
   delta: number;
-  /** Mudança do MMR escondido neste duelo e a versão da conta que a calculou (sem os dois, ou de outra versão, o MMR conta o próprio delta). */
+  /** Mudança do MMR escondido neste duelo e a versão da conta que a calculou (sem os dois, ou de uma versão que não vale, o MMR conta o próprio delta). */
   mmrDelta?: number;
   mmrVersion?: number;
+  /** Incerteza do MMR depois deste duelo e o que o MMR esperava dele (versão 4 em diante). */
+  mmrSigma?: number;
+  mmrExp?: number;
   /** Só no duelo em dois tempos. */
   legs?: DuelLegRecord[];
 };
@@ -171,6 +186,8 @@ export function parseDuel(row: unknown): DuelRecord | null {
     delta: item.delta as number,
     ...(typeof item.mmrDelta === "number" && Number.isFinite(item.mmrDelta) ? { mmrDelta: item.mmrDelta } : {}),
     ...(typeof item.mmrVersion === "number" && Number.isFinite(item.mmrVersion) ? { mmrVersion: item.mmrVersion } : {}),
+    ...(typeof item.mmrSigma === "number" && Number.isFinite(item.mmrSigma) ? { mmrSigma: item.mmrSigma } : {}),
+    ...(typeof item.mmrExp === "number" && Number.isFinite(item.mmrExp) ? { mmrExp: item.mmrExp } : {}),
     ...(legs ? { legs } : {}),
   };
 }
@@ -184,11 +201,26 @@ export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
     .reduce((total, duel) => Math.max(0, total + duel.delta), 0);
 }
 /** O MMR escondido também é derivado do histórico: soma o `mmrDelta` (ou o `delta`, nos duelos antigos) na ordem dos duelos, sem passar de zero. */
+/** O MMR gravado no registro só vale se veio de uma versão da conta que ainda vale. */
+const validMmr = (duel: { mmrVersion?: number }) => duel.mmrVersion !== undefined && MMR_VALID_MODELS.includes(duel.mmrVersion);
+
+/** O estado do MMR de uma escada, derivado do histórico: o MMR, a incerteza (a do último duelo que a gravou ou, sem ela, a de quem jogou tantos
+ *  duelos sem surpresa), os duelos recentes para a surpresa e quantos duelos já foram jogados. */
+export function mmrStateFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "outcome" | "mmrDelta" | "mmrVersion" | "mmrSigma" | "mmrExp">[], ladder: Ladder) {
+  const list = [...duels].filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
+  const mmr = list.reduce((total, duel) => Math.max(0, total + (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
+  const last = [...list].reverse().find((duel) => validMmr(duel) && duel.mmrSigma !== undefined);
+  const samples: SurpriseSample[] = list
+    .filter((duel) => validMmr(duel) && duel.mmrExp !== undefined)
+    .slice(-SURPRISE_WINDOW)
+    .map((duel) => ({ score: outcomeScore(duel.outcome), expected: duel.mmrExp as number }));
+  return { mmr, sigma: last?.mmrSigma ?? sigmaFromGames(list.length), samples, games: list.length };
+}
 export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[], ladder?: Ladder) {
   return [...duels]
     .filter((duel) => !ladder || duel.ladder === ladder)
     .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
-    .reduce((total, duel) => Math.max(0, total + (duel.mmrVersion === MMR_MODEL && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
+    .reduce((total, duel) => Math.max(0, total + (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
 }
 export const mmrByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[]): Record<Ladder, number> =>
   Object.fromEntries(LADDERS.map((ladder) => [ladder, mmrFromDuels(duels, ladder)])) as Record<Ladder, number>;

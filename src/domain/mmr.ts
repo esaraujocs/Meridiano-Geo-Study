@@ -1,13 +1,14 @@
 // Troféus e nível de jogo escondido (MMR) do Duelo. Lógica pura.
 //
-// Os troféus (o que a pessoa vê) rendem o mesmo em quase toda a escada: a vitória vale BASE_WIN e a derrota custa BASE_LOSS, com um
-// extra na vitória pelo desempenho (acertos à frente do bot) e pela sequência. O MMR (o que a pessoa não vê) diz se ela joga melhor ou
-// pior do que a liga em que está e é ele que faz os troféus render mais ou menos:
-//  - jogando no nível da liga (ganhando e perdendo perto de 50%), o MMR segura a pessoa: ela sobe devagar, tem de provar mais;
-//  - jogando acima da liga, ganha mais, perde menos e o sorteio passa a trazer bots de ligas mais altas (matchmaking pelo MMR);
-//  - jogando abaixo, ganha menos e perde mais, com bots de ligas mais baixas.
-// Só no alto (a partir do Diamante) a vitória começa a render menos e a derrota a custar mais: o teto teórico, que separa quem tem o
-// melhor desempenho. Não há limite de troféus no Mestre, mas a curva vai se fechando.
+// Os troféus (o que a pessoa vê) rendem o mesmo em quase toda a escada: a vitória vale BASE_WIN e a derrota custa BASE_LOSS, com um extra na
+// vitória pelo desempenho (acertos à frente do bot) e pela sequência. O MMR (o que a pessoa não vê) diz se ela joga melhor ou pior do que a liga
+// em que está e é ele que faz os troféus render mais ou menos: jogando no nível da liga (~50%) o MMR segura a pessoa, acima da liga ela ganha
+// mais e perde menos, abaixo o contrário. Só no alto (a partir do Diamante) a vitória começa a render menos e a derrota a custar mais: o teto teórico.
+//
+// O MMR vem com uma incerteza (sigma), como no Glicko/TrueSkill: começa alta e cai a cada duelo, e o passo do MMR (K) acompanha a incerteza. Quando
+// os resultados fogem do esperado (uma "surpresa": vitórias demais, ou derrotas demais, para a força dos bots enfrentados) a incerteza volta a subir e
+// o MMR passa a andar depressa até se acertar. O adversário é escolhido pelo MMR mais um otimismo proporcional à incerteza (quem está em
+// surpresa positiva enfrenta bots mais fortes, em negativa, mais fracos), e a força do bot é contínua: acompanha o rating sorteado, sem saltos de liga.
 import { LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf } from "./league.js";
 
 export const expectedScore = (rating: number, opponent: number) => 1 / (1 + Math.pow(10, (opponent - rating) / 400));
@@ -18,7 +19,7 @@ export const BASE_LOSS = 27;
 /** O teto da vitória é o ganho-base + isto (50 no começo): sequência e desempenho boostam até aí. */
 export const WIN_CAP_EXTRA = 17;
 /** Bônus por enfrentar bot de liga acima da sua, por liga de diferença (0, 1 ou 2): soma ao ganho e ao teto, então só a vitória sobre um bot
- *  duas ligas acima passa dos 50 (até 50 + 20 = 70). Quem joga acima da própria liga é sorteado com bots de ligas mais altas (matchmaking). */
+ *  duas ligas acima passa dos 50 (até 50 + 20 = 70). */
 export const LEAD_BONUS: readonly number[] = [0, 0, 20];
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
@@ -44,35 +45,33 @@ export const GAP_DOWN = 3;
 export const WIN_GAP = 0.35;
 export const LOSS_GAP = 0.3;
 export const WIN_FLOOR = 0.25;
-/** Velocidade do MMR (Elo): o mesmo tamanho dos troféus, para os dois andarem juntos. Nas primeiras CALIB_GAMES partidas da escada o MMR anda
- *  mais depressa (K de MMR_K_START caindo até MMR_K), para achar o nível de quem chega dominando sem esperar dezenas de duelos. */
-export const MMR_K = 64;
-export const MMR_K_START = 160;
-export const CALIB_GAMES = 20;
-export const kFor = (games: number) => MMR_K + (MMR_K_START - MMR_K) * clamp01(1 - (Number.isFinite(games) ? games : CALIB_GAMES) / CALIB_GAMES);
-/** Dominância: vencer por DOMINANCE_FROM+ acertos (cheio em DOMINANCE_FROM + DOMINANCE_SPAN) soma DOMINANCE pontos ao MMR mesmo contra bot fraco (e
- *  perder assim tira), o que deixa o MMR correr na frente dos troféus de quem domina. Some quando o MMR já está DOMINANCE_FADE acima do bot; sem esse
- *  limite o MMR fugia sem fim e o teto teórico deixava de existir. */
-export const DOMINANCE = 30;
-export const DOMINANCE_FROM = 4;
-export const DOMINANCE_SPAN = 6;
-export const DOMINANCE_FADE = 400;
-/** Sequência de vitórias no MMR: a partir da 3ª vitória seguida, cada vitória a mais soma STREAK_MMR_STEP ao MMR (até STREAK_MMR_CAP), com o mesmo limite da
- *  dominância. Quem emenda vitórias está claramente acima da própria liga, e sem isso o MMR (que anda menos que os troféus) nunca o levava a bots mais fortes. */
-export const STREAK_MMR_STEP = 6;
-export const STREAK_MMR_CAP = 30;
 
-/** Matchmaking pelo MMR: o bot sai da liga do MMR, no máximo MATCH_UP ligas acima da liga em troféus e nunca abaixo dela (quem está com o MMR
- *  atrás dos troféus enfrenta os bots mais fracos da própria liga, não os de uma liga inferior). */
+/** Incerteza do MMR (sigma, na escala dos troféus): começa em SIGMA_START, cai a cada duelo (x SIGMA_DECAY) até SIGMA_MIN e o passo do MMR (K) vai
+ *  de K_MIN (incerteza mínima) a K_MAX (máxima). K_MIN é o passo de um MMR já assentado, do tamanho dos troféus, para os dois andarem juntos. */
+export const K_MIN = 64;
+export const K_MAX = 160;
+export const SIGMA_MIN = 60;
+export const SIGMA_MAX = 250;
+export const SIGMA_START = 250;
+export const SIGMA_DECAY = 0.93;
+/** Surpresa: nos últimos SURPRISE_WINDOW duelos (com ao menos SURPRISE_MIN), vitórias reais menos esperadas dividido pelo desvio esperado (z). A
+ *  incerteza sobe a partir de |z| = SURPRISE_FROM e chega ao máximo em SURPRISE_FULL. */
+export const SURPRISE_WINDOW = 10;
+export const SURPRISE_MIN = 3;
+export const SURPRISE_FROM = 1.5;
+export const SURPRISE_FULL = 3.5;
+
+/** Matchmaking: o rating do bot é o MMR mais OPTIMISM x (sigma - SIGMA_MIN), para cima em surpresa positiva e para baixo na negativa, preso entre o
+ *  começo da liga da pessoa (nunca abaixo dela) e o fim da liga MATCH_UP acima (no Mestre, MASTER_MATCH_SPAN troféus além do começo). */
+export const OPTIMISM = 1;
 export const MATCH_UP = 2;
-export const MATCH_DOWN = 0;
-/** Sequência quente: com HOT_STREAKS[0] vitórias seguidas o sorteio sobe uma liga e com HOT_STREAKS[1], duas (até MATCH_UP), mesmo que o MMR ainda
- *  não tenha alcançado a sequência. Perdeu, a sequência zera e o sorteio volta ao MMR. */
-export const HOT_STREAKS: readonly number[] = [5, 10];
+export const MASTER_MATCH_SPAN = 1000;
 
-/** Versão da conta do MMR. O MMR de um registro só vale se ele foi gravado nesta versão; os anteriores contam o MMR como o próprio delta
- *  (assim mudar a conta não deixa o MMR de quem já jogou preso ao valor de uma fórmula antiga). */
-export const MMR_MODEL = 3;
+/** Versão da conta do MMR. O MMR de um registro só vale se ele foi gravado numa versão de MMR_VALID_MODELS; os anteriores contam o MMR como o próprio
+ *  delta (assim mudar a conta não deixa o MMR de quem já jogou preso ao valor de uma fórmula antiga). A 4 acrescenta a incerteza e a esperança de cada
+ *  duelo; os registros da 3 continuam valendo para o MMR e a incerteza deles vem da contagem de duelos. */
+export const MMR_MODEL = 4;
+export const MMR_VALID_MODELS: readonly number[] = [3, 4];
 
 /** Sequência: cada vitória seguida que a pessoa já tinha na escada soma STREAK_STEP troféus à próxima vitória, até STREAK_CAP vitórias
  *  (+12). Perder zera a sequência; o bônus só existe na vitória, a derrota não muda. */
@@ -81,6 +80,7 @@ export const STREAK_CAP = 4;
 export const streakBonus = (streak: number) => STREAK_STEP * Math.min(STREAK_CAP, Math.max(0, Math.floor(Number.isFinite(streak) ? streak : 0)));
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
 
 /** Ganho e perda-base de quem está com esses troféus: iguais até a Platina e, no alto, encolhendo e crescendo com a altura. `scale` é quanto o
  *  ganho já encolheu (1 fora do alto): os bônus de sequência e desempenho encolhem na mesma proporção, senão furariam o limite. */
@@ -97,16 +97,49 @@ export function gapFactors(gap: number) {
   return { win: Math.max(WIN_FLOOR, 1 + WIN_GAP * g), loss: 1 - LOSS_GAP * g };
 }
 
-/** Com quem a pessoa enfrenta: a liga e a divisão do MMR (ou a liga da sequência quente, se maior), presas entre a liga em troféus (menos MATCH_DOWN) e MATCH_UP ligas acima dela. */
-export function matchmaking(trophies: number, mmr: number, streak = 0) {
-  const home = leagueOf(trophies).index;
-  const hot = HOT_STREAKS.filter((need) => streak >= need).length;
-  const wanted = Math.max(leagueOf(mmr).index, home + hot);
-  const index = Math.min(LEAGUES.length - 1, Math.max(0, Math.min(home + MATCH_UP, Math.max(home - MATCH_DOWN, wanted))));
-  const low = leagueFloor(index);
-  return leagueOf(Math.min(low + LEAGUE_SPAN - 1, Math.max(low, Math.floor(Number.isFinite(mmr) ? mmr : 0))));
+// ---- incerteza e surpresa ----
+/** Passo do MMR para uma incerteza (de K_MIN a K_MAX). */
+export const kFor = (sigma: number) => K_MIN + (K_MAX - K_MIN) * clamp01(((Number.isFinite(sigma) ? sigma : SIGMA_MIN) - SIGMA_MIN) / (SIGMA_MAX - SIGMA_MIN));
+/** Incerteza de quem já jogou `games` duelos e não teve surpresa nenhuma (para os registros sem incerteza gravada). */
+export const sigmaFromGames = (games: number) => Math.max(SIGMA_MIN, SIGMA_START * Math.pow(SIGMA_DECAY, Math.max(0, Number.isFinite(games) ? games : 0)));
+
+/** Um duelo para a conta da surpresa: o que aconteceu (1 vitória, 0 derrota, 0,5 empate) e o que o MMR esperava. */
+export type SurpriseSample = { score: number; expected: number };
+export const outcomeScore = (outcome: "win" | "loss" | "draw") => (outcome === "win" ? 1 : outcome === "loss" ? 0 : 0.5);
+
+/** Surpresa (z) dos últimos duelos: positiva se a pessoa venceu mais do que o MMR esperava, negativa se menos; 0 com poucos duelos. */
+export function surprise(samples: readonly SurpriseSample[]) {
+  const recent = samples.slice(-SURPRISE_WINDOW);
+  if (recent.length < SURPRISE_MIN) return 0;
+  const excess = recent.reduce((sum, sample) => sum + sample.score - sample.expected, 0);
+  const variance = recent.reduce((sum, sample) => sum + sample.expected * (1 - sample.expected), 0);
+  return excess / Math.sqrt(Math.max(variance, 0.5));
 }
 
+/** Incerteza depois de um duelo: cai um pouco e volta a subir se a surpresa dos últimos duelos (com este) foi grande. */
+export function sigmaNext(sigma: number, samples: readonly SurpriseSample[]) {
+  const settled = Math.max(SIGMA_MIN, (Number.isFinite(sigma) ? sigma : SIGMA_MIN) * SIGMA_DECAY);
+  const pushed = SIGMA_MIN + (SIGMA_MAX - SIGMA_MIN) * clamp01((Math.abs(surprise(samples)) - SURPRISE_FROM) / (SURPRISE_FULL - SURPRISE_FROM));
+  return Math.min(SIGMA_MAX, Math.max(settled, pushed));
+}
+
+// ---- matchmaking ----
+/** Rating do bot que a pessoa enfrenta: o MMR mais o otimismo pela incerteza (para cima com surpresa positiva ou nula, para baixo com a negativa),
+ *  preso entre o começo da liga da pessoa e o fim da liga MATCH_UP acima. */
+export function matchRating(trophies: number, mmr: number, sigma = SIGMA_MIN, z = 0) {
+  const home = leagueOf(trophies).index;
+  const topIndex = Math.min(LEAGUES.length - 1, home + MATCH_UP);
+  const high = leagueFloor(topIndex) + (topIndex === LEAGUES.length - 1 ? MASTER_MATCH_SPAN : LEAGUE_SPAN) - 1;
+  const bump = OPTIMISM * Math.max(0, (Number.isFinite(sigma) ? sigma : SIGMA_MIN) - SIGMA_MIN) * (z < 0 ? -1 : 1);
+  return Math.round(clamp((Number.isFinite(mmr) ? mmr : 0) + bump, leagueFloor(home), high));
+}
+/** O adversário: a liga e a divisão do rating sorteado (o bot sai dessa liga) e o próprio rating, que decide a força dele. */
+export function matchmaking(trophies: number, mmr: number, sigma = SIGMA_MIN, z = 0) {
+  const rating = matchRating(trophies, mmr, sigma, z);
+  return { ...leagueOf(rating), rating };
+}
+
+// ---- troféus ----
 export type TrophyInput = {
   trophies: number;
   mmr: number;
@@ -143,17 +176,13 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
   return { delta: Math.round(0.5 * win * factors.win - 0.5 * loss * factors.loss), streakBonus: 0, perfBonus: 0 };
 }
 
-/** Quanto o duelo mexe no MMR: Elo contra a nota do bot, com o placar contando pelo desempenho (vitória apertada vale menos que goleada), K de calibração
- *  nas primeiras partidas da escada (`games` = duelos já jogados; sem valor, K normal), o bônus de dominância e o da sequência de vitórias (`streak` = as que a
- *  pessoa já tinha antes deste duelo). */
-export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number, games = CALIB_GAMES, streak = 0) {
+/** Quanto o duelo mexe no MMR: Elo contra o rating do bot, com o placar contando pelo desempenho (vitória apertada vale menos que goleada) e o
+ *  passo K vindo da incerteza (`sigma`; sem valor, a mínima). */
+export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss" | "draw", margin: number, sigma = SIGMA_MIN) {
   const score = outcome === "win" ? 0.85 + 0.15 * clamp01(margin / PERF_SPAN)
     : outcome === "loss" ? 0.15 * (1 - clamp01(Math.abs(margin) / PERF_SPAN))
       : 0.5;
-  const crush = outcome === "draw" ? 0 : clamp01((Math.abs(margin) - DOMINANCE_FROM) / DOMINANCE_SPAN) * (outcome === "win" ? 1 : -1);
-  const fade = clamp01(1 - (mmr - opponent) / DOMINANCE_FADE);
-  const hot = outcome === "win" ? Math.min(STREAK_MMR_CAP, STREAK_MMR_STEP * Math.max(0, Math.floor(Number.isFinite(streak) ? streak : 0) - 2)) : 0;
-  return Math.round(kFor(games) * (score - expectedScore(mmr, opponent)) + DOMINANCE * crush * fade + hot * fade);
+  return Math.round(kFor(sigma) * (score - expectedScore(mmr, opponent)));
 }
 
 /** O que está em jogo antes do duelo, como faixa: vitória de `win[0]` (apertada) a `win[1]` (goleada); derrota de `loss[0]` (apertada) a

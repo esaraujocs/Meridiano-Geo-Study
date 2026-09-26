@@ -1,7 +1,7 @@
 // Bots do Duelo: 5 por liga, cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
 // com uma chance (que sobe com a divisão da pessoa e muda com o jeito dele) e "demora" um tempo, tudo sorteado com semente
 // (a sessão), então o mesmo duelo sempre dá o mesmo placar. Lógica pura.
-import { LEAGUES, type LeagueKey } from "./league.js";
+import { LEAGUES, leagueFloor, type LeagueKey } from "./league.js";
 
 export type BotFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 export type BotStyle = "constante" | "preciso" | "rapido" | "irregular" | "especialista";
@@ -24,6 +24,30 @@ export const LEAGUE_BASE: Record<LeagueKey, { accuracy: number; avgMs: number }>
   diamante: { accuracy: 0.91, avgMs: 4600 },
   mestre: { accuracy: 0.96, avgMs: 3800 },
 };
+/** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE). Abaixo do Bronze segue a
+ *  mesma inclinação (com piso) e acima do Mestre o acerto sobe até 99% em RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
+export const RATING_TOP = 3750;
+export function baseAtRating(rating: number): { accuracy: number; avgMs: number } {
+  const anchors = LEAGUES.map((league, index) => ({ at: leagueFloor(index) + 250, ...LEAGUE_BASE[league] }));
+  const value = Number.isFinite(rating) ? Math.max(0, rating) : 0;
+  const first = anchors[0];
+  const last = anchors[anchors.length - 1];
+  if (value <= first.at) {
+    const next = anchors[1];
+    const back = first.at - value;
+    return { accuracy: Math.max(0.5, first.accuracy - ((next.accuracy - first.accuracy) / (next.at - first.at)) * back), avgMs: Math.min(12000, first.avgMs + ((first.avgMs - next.avgMs) / (next.at - first.at)) * back) };
+  }
+  if (value >= last.at) {
+    const part = Math.min(1, (value - last.at) / (RATING_TOP - last.at));
+    return { accuracy: Math.min(0.99, last.accuracy + (0.99 - last.accuracy) * part), avgMs: last.avgMs * (1 - 0.25 * part) };
+  }
+  const index = anchors.findIndex((anchor) => anchor.at > value);
+  const low = anchors[index - 1];
+  const high = anchors[index];
+  const part = (value - low.at) / (high.at - low.at);
+  return { accuracy: low.accuracy + (high.accuracy - low.accuracy) * part, avgMs: low.avgMs + (high.avgMs - low.avgMs) * part };
+}
+
 /** Cada divisão acima da I deixa os bots da liga um pouco mais fortes (I, II, III → +0, +2, +4 pontos). */
 export const DIVISION_STEP = 0.02;
 export const PRECISE = { accuracy: 0.03, time: 1.35 };
@@ -96,6 +120,8 @@ export type BotContext = {
   division: 1 | 2 | 3 | null;
   /** Família do Hub que está sendo jogada (só o especialista liga para isso). */
   family: BotFamily | null;
+  /** Rating do bot (matchmaking pelo MMR): se vier, a base do acerto e do tempo é a do rating e a divisão não pesa. */
+  rating?: number;
   /** Modo em que a especialidade não vale nem para bem nem para mal (as bandeiras históricas: o especialista em bandeiras atuais não as domina). */
   neutral?: boolean;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
@@ -109,8 +135,8 @@ const clamp = (value: number, low: number, high: number) => Math.min(high, Math.
 
 /** Acerto, tempo médio e regularidade do bot naquele contexto. */
 export function botProfile(bot: Bot, context: BotContext): BotProfile {
-  const base = LEAGUE_BASE[bot.league];
-  let accuracy = base.accuracy + (context.division ? (context.division - 1) * DIVISION_STEP : 0);
+  const base = context.rating === undefined ? LEAGUE_BASE[bot.league] : baseAtRating(context.rating);
+  let accuracy = base.accuracy + (context.rating === undefined && context.division ? (context.division - 1) * DIVISION_STEP : 0);
   let avgMs = base.avgMs;
   if (bot.style === "preciso") { accuracy += PRECISE.accuracy; avgMs *= PRECISE.time; }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }

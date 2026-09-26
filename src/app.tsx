@@ -45,8 +45,8 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
-import { MMR_MODEL, matchmaking } from "./domain/mmr";
-import { duelRecordId, mmrByLadder, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
+import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
+import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
 import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
@@ -188,13 +188,13 @@ export function App() {
     const status = leagueOf(trophiesBefore);
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
     const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
-    const mmr = mmrByLadder(duels)[ladder];
-    const games = duels.filter((duel) => duel.ladder === ladder).length;
-    // matchmaking: o bot sai da liga do MMR (até 2 ligas acima e 1 abaixo da liga em troféus), então quem joga acima da liga enfrenta bots mais fortes
-    const match = matchmaking(trophiesBefore, mmr, streak);
+    const state = mmrStateFromDuels(duels, ladder);
+    // matchmaking: o rating do bot é o MMR mais o otimismo pela incerteza (para cima quando a pessoa vem vencendo mais do que o esperado), preso entre a
+    // própria liga e 2 ligas acima; o bot sai da liga desse rating e a força dele acompanha o rating
+    const match = matchmaking(trophiesBefore, state.mmr, state.sigma, surprise(state.samples));
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, legs, streak, mmr, games }));
+    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, rating: match.rating, legs, streak, mmr: state.mmr, sigma: state.sigma, samples: state.samples }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */
@@ -232,7 +232,7 @@ export function App() {
     const record: DuelRecord = {
       id: duelRecordId(run.id), sessionId: run.id, at: Date.now(), botId: run.bot.id, ladder: run.ladder,
       family: run.legs[0].family, variant: run.legs[0].variant, playerCorrect: outcome.playerCorrect, total: outcome.total, botCorrect: outcome.botCorrect,
-      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL,
+      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL, mmrSigma: outcome.mmrSigma, mmrExp: outcome.mmrExp,
       legs: outcome.legs.map((leg) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds })),
     };
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];

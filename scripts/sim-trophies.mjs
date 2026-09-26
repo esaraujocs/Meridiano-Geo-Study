@@ -1,5 +1,6 @@
 // Simulador dos troféus do Duelo (ferramenta de ajuste, não é teste): joga milhares de duelos de jogadores com uma "habilidade" fixa
-// (na escala dos troféus: habilidade 1250 empata com os bots do Ouro) e mostra como a subida se comporta com a tabela de mmr.ts.
+// (na escala dos troféus: habilidade 1250 empata com os bots do Ouro) e mostra como a subida se comporta com as regras de mmr.ts: MMR com
+// incerteza e surpresa, matchmaking pelo rating e força contínua do bot.
 // Uso: node scripts/sim-trophies.mjs [jogadores por habilidade] [taxa máxima de vitória, 0,85] [bônus por liga acima, ex. 0,0,20]
 import { execFileSync } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
@@ -15,7 +16,7 @@ const L = await import(pathToFileURL(join(out, "league.js")).href);
 const M = await import(pathToFileURL(join(out, "mmr.js")).href);
 
 const RUNS = Number(process.argv[2] || 200);
-// bônus por liga de diferença do adversário (0 = como está; 10 = teto de 70 contra bots duas ligas acima): node scripts/sim-trophies.mjs 200 10
+// ninguém vence mais de 85% dos duelos: o bot do Mestre acerta ~96% e a pessoa só o vence por acertos ou pelo tempo
 const MAX_WIN_RATE = Number(process.argv[3] || 0.85);
 const LEAD_SCHEDULE = process.argv[4] ? process.argv[4].split(",").map(Number) : M.LEAD_BONUS;
 const SKILLS = [300, 600, 900, 1250, 1600, 2000, 2400, 2700, 3000, 3600];
@@ -25,31 +26,33 @@ const LONG = 3000;
 const mulberry32 = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const gauss = (random) => { let u = 0; while (u === 0) u = random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * random()); };
 const median = (values) => { const sorted = [...values].sort((a, b) => a - b); return sorted[Math.floor(sorted.length / 2)]; };
-// o bot sai da liga do MMR (matchmaking), presa perto da liga em troféus
-const botRating = (trophies, mmr, streak) => { const match = M.matchmaking(trophies, mmr, streak); return L.leagueFloor(match.index) + (match.division ? (match.division - 1) * L.DIVISION_SPAN + L.DIVISION_SPAN / 2 : L.LEAGUE_SPAN / 2); };
 
 function play(skill, games, seed) {
   const random = mulberry32(seed);
-  let trophies = 0, mmr = 0, streak = 0;
+  let trophies = 0, mmr = 0, streak = 0, sigma = M.SIGMA_START;
+  const samples = [];
   const path = [0];
   const reached = new Array(L.LEAGUES.length).fill(null);
   reached[0] = 0;
   let wins = 0, gapSum = 0, above = 0, big = 0, best = 0, bigEarly = 0;
   for (let game = 1; game <= games; game += 1) {
-    const bot = botRating(trophies, mmr, streak);
-    // ninguém vence mais de 85% dos duelos: o bot do Mestre acerta 96% e a pessoa só o vence por acertos ou pelo tempo
-    const win = random() < Math.min(MAX_WIN_RATE, M.expectedScore(skill, bot));
-    const advantage = (skill - bot) / 100;
+    const z = M.surprise(samples);
+    const rating = M.matchRating(trophies, mmr, sigma, z);
+    const win = random() < Math.min(MAX_WIN_RATE, M.expectedScore(skill, rating));
+    const advantage = (skill - rating) / 100;
     const size = (mean) => Math.max(1, Math.min(15, Math.round(mean + gauss(random) * 2)));
     const margin = win ? size(3 + advantage) : -size(3 - advantage);
     const outcome = win ? "win" : "loss";
-    const lead = M.matchmaking(trophies, mmr, streak).index - L.leagueOf(trophies).index;
+    const lead = Math.max(0, L.leagueOf(rating).index - L.leagueOf(trophies).index);
     const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD_SCHEDULE });
     if (change.delta >= 60) { big += 1; if (game <= 60) bigEarly += 1; }
     best = Math.max(best, change.delta);
     gapSum += mmr - trophies;
-    if (bot > botRatingAt(trophies)) above += 1;
-    const mmrAfter = Math.max(0, mmr + M.mmrChange(mmr, bot, outcome, margin, game - 1, streak));
+    if (lead > 0) above += 1;
+    const expected = M.expectedScore(mmr, rating);
+    const mmrAfter = Math.max(0, mmr + M.mmrChange(mmr, rating, outcome, margin, sigma));
+    samples.push({ score: win ? 1 : 0, expected });
+    sigma = M.sigmaNext(sigma, samples);
     trophies = Math.max(0, trophies + change.delta);
     mmr = mmrAfter;
     streak = win ? streak + 1 : 0;
@@ -61,8 +64,6 @@ function play(skill, games, seed) {
   return { path, reached, wins, meanGap: gapSum / games, above: above / games, big: big / games, best, bigEarly: bigEarly / Math.min(60, games) };
 }
 
-// nota do bot que a pessoa enfrentaria sem matchmaking (na própria divisão dela)
-const botRatingAt = (trophies) => { const home = L.leagueOf(trophies); return L.leagueFloor(home.index) + (home.division ? (home.division - 1) * L.DIVISION_SPAN + L.DIVISION_SPAN / 2 : L.LEAGUE_SPAN / 2); };
 const pad = (value, size) => String(value).padStart(size);
 console.log(`Troféus por habilidade (mediana de ${RUNS} jogadores). Habilidade 1250 = empata com os bots do Ouro.`);
 console.log(["habil.", ...CHECK.map((n) => pad(`${n} jg`, 7)), pad(`${LONG} jg`, 8), pad("vit%", 5), pad("acima%", 7), pad("≥60%", 5), pad("máx", 4), pad("≥60 1as60", 10), pad("gap", 6), pad("liga", 9), "  jogos até cada liga (Prata, Ouro, Platina, Diamante, Mestre)"].join(" "));
