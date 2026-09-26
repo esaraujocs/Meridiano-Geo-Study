@@ -128,7 +128,7 @@ export const es: Messages = {
       next: "A continuación",
       go: (n: number) => `Empezar el ${n}.º tiempo`,
       leaveNote: "Salir ahora cuenta como derrota.",
-      auto: (n: number) => `El 2.º tiempo empieza solo en ${n} s.`,
+      auto: (n: number) => `El 2.º tiempo empieza solo en ${n} s, o pulsa Enter.`,
     },
     arenas: {
       sub: { mapas: "País, capital y silueta", bandeiras: "Actuales, escribir e históricas" },

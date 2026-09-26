@@ -128,7 +128,7 @@ export const en: Messages = {
       next: "Up next",
       go: (n: number) => `Start half ${n}`,
       leaveNote: "Leaving now counts as a loss.",
-      auto: (n: number) => `The 2nd half starts on its own in ${n}s.`,
+      auto: (n: number) => `The 2nd half starts on its own in ${n}s, or press Enter.`,
     },
     arenas: {
       sub: { mapas: "Country, capital and silhouette", bandeiras: "Current, typing and historical" },

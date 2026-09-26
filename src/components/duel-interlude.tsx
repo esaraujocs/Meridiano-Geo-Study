@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icons";
+import { useEnterKey } from "./use-enter-key";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP } from "../domain/duel-modes";
 import { policyFor } from "../domain/economy-rules";
@@ -24,6 +25,7 @@ export function DuelInterlude({ run, unlocked, onContinue }: { run: DuelRun; unl
     }, 200);
     return () => window.clearInterval(timer);
   }, []);
+  useEnterKey(onContinue);
   const done = run.done[0];
   const legs = previewLegs(run, unlocked);
   const first = legs[0];

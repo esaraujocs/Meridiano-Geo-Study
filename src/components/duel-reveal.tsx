@@ -1,4 +1,5 @@
 import { Icon } from "./icons";
+import { useEnterKey } from "./use-enter-key";
 import { stakesRange, streakBonus } from "../domain/duel";
 import { BASE_WIN, LEAD_BONUS, WIN_CAP_EXTRA } from "../domain/mmr";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
@@ -32,6 +33,8 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
   const legs = previewLegs(run, unlocked);
   const baseGroupLabel = t.duel.groups[LADDER_BASE_GROUP[run.ladder]];
   const canBuy = balance >= formatCost;
+  // Enter começa o duelo (comprar o corte de 20 rodadas continua sendo um clique deliberado)
+  useEnterKey(() => { if (formatOwned && !busy) onStart(); });
   return (
     <main className="content rv-page" data-league={player.league}>
       <button type="button" className="back" onClick={onBack}>← {t.duel.reveal.cancel}</button>

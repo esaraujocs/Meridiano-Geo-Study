@@ -635,7 +635,11 @@ assert.equal(spec({ neutral: true }), B.botProfile(B.botsOfLeague("prata")[0], {
 assert.equal(M.groupDef("historicas").neutral, true); assert.equal(M.groupDef("atuais").neutral, undefined);
 const histLegs = [{ group: "historicas", rounds: 10, playerCorrect: 5, playerMs: 1 }, { group: "atuais", rounds: 10, playerCorrect: 5, playerMs: 1 }];
 const meanHist = (group) => { let n = 0; for (let g = 0; g < 400; g += 1) n += D.resolveDuelLegs({ trophies: 500, bot: brunaBot, seed: "h" + g, division: 3, legs: [{ ...histLegs[0], group }, histLegs[1]] }).legs[0].botCorrect; return n / 400; };
-assert.ok(meanHist("historicas") < 6.9 && meanHist("historicas") > 5.6, "Bruna acerta em torno de 6,2 das históricas (antes 7,3)");
+assert.ok(meanHist("historicas") < 6.4 && meanHist("historicas") > 5.2, "Bruna (Prata III) acerta em torno de 5,8 das históricas (era 7,3 com a especialidade e 6,2 sem ela)");
+// as históricas são um tema de nicho: nas ligas baixas o bot acerta bem menos, no alto quase igual a antes
+const histAcc = (league) => B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("historicas").accuracy, time: M.groupDef("historicas").time } }).accuracy;
+assert.deepEqual(["bronze", "prata", "ouro", "platina", "diamante", "mestre"].map((l) => Math.round(histAcc(l) * 100)), [40, 52, 64, 76, 87, 94], "históricas: 40% no Bronze até 94% no Mestre");
+assert.ok(histAcc("prata") < B.botProfile(B.botsOfLeague("prata")[0], { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("atuais").accuracy, time: 1 } }).accuracy - 0.1, "na Prata as históricas ficam bem abaixo das bandeiras atuais");
 
 assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
 assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");

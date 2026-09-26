@@ -38,7 +38,7 @@ export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "capitais-escrita", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.18, time: 1.9 },
   { group: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
   { group: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
-  { group: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.14, time: 1.3 },
+  { group: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },
 ];
 export const groupDef = (group: ModeGroup): ModeGroupDef => MODE_GROUPS.find((item) => item.group === group) as ModeGroupDef;
 export const groupsOfLadder = (ladder: Ladder) => MODE_GROUPS.filter((item) => item.ladder === ladder);
