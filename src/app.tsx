@@ -98,6 +98,7 @@ export function App() {
   const legResults = useRef<(SessionResult | null)[]>([null, null]);
   const lastBotRef = useRef<Record<Ladder, string | null>>({ mapas: null, bandeiras: null });
   const [duelBusy, setDuelBusy] = useState(false);
+  const [leagueLadder, setLeagueLadder] = useState<Ladder | undefined>(undefined);
   const byLadder = useMemo(() => trophiesByLadder(duels), [duels]);
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
   useEffect(() => { void listDuels().then(setDuels).catch(() => undefined); }, []);
@@ -270,7 +271,7 @@ export function App() {
   const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") setCollectionRegion("mundo"); setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") setCollectionRegion("mundo"); setScreen(destination); };
-  const openLeague = () => setScreen("league");
+  const openLeague = (ladder?: Ladder) => { setLeagueLadder(ladder); setScreen("league"); };
   const openCollectionAt = (target: Region) => { setCollectionRegion(target); setScreen("collection"); };
   const restoreVariantContext = (familyKey: TopFamily, saved: string) => {
     const context = variantContextFor(familyKey, saved);
@@ -538,7 +539,7 @@ export function App() {
 
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
-      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={openLeague} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
+      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
@@ -551,7 +552,7 @@ export function App() {
     return <div className="app-shell grain"><DuelInterlude run={duelRun} unlocked={economy.unlocked} onContinue={() => startLeg(1)} /></div>;
   }
   if (screen === "league") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen trophies={trophies} duels={duels} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen duels={duels} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;
   }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
@@ -618,7 +619,7 @@ export function App() {
           onDuelMode={setDuelMode}
           trophies={trophies}
           duelsPlayed={duels.length}
-          onOpenLeague={openLeague}
+          onOpenLeague={() => openLeague()}
           arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel }}
          />
       )}

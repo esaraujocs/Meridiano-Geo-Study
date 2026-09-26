@@ -1509,3 +1509,10 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
   .arena h3{font-size:23px!important}
   .ar-foot{order:2}.ar-modes-wrap{order:3}
 }
+
+/* ---- Liga: abas por escada ---- */
+.lg-tabs{display:flex;justify-content:center;margin:0 0 16px}
+.lg-tabs .mode-switch button small{font:500 11px 'Plus Jakarta Sans',sans-serif;color:inherit;opacity:.75}
+.lg-page .pg-hero[data-ladder=mapas]{border-color:rgba(43,131,120,.35)}
+.lg-page .pg-hero[data-ladder=bandeiras]{border-color:rgba(194,90,66,.35)}
+@media (max-width:760px){.lg-tabs{justify-content:stretch}.lg-tabs .mode-switch{width:100%}.lg-tabs .mode-switch button{flex:1;justify-content:center;flex-wrap:wrap;gap:2px 6px;padding:7px 8px}}

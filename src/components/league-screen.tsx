@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Icon } from "./icons";
-import type { DuelRecord } from "../domain/duel";
+import { trophiesByLadder, type DuelRecord } from "../domain/duel";
+import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
@@ -12,20 +14,34 @@ const when = (at: number) => new Date(at).toLocaleString(undefined, { day: "2-di
 const along = (trophies: number) => Math.min(100, (trophies / MASTER_AT) * 100);
 const RING = 2 * Math.PI * 58;
 
-// Tela da Liga: troféus, régua de ligas e divisões, adversários (bots de teste), últimos duelos e as molduras do nível.
-export function LeagueScreen({ trophies, duels, onBack }: { trophies: number; duels: readonly DuelRecord[]; onBack: () => void }) {
+// Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
+// adversários (bots), últimos duelos da escada; as molduras do nível valem a melhor das duas.
+export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly DuelRecord[]; initialLadder?: Ladder; onBack: () => void }) {
+  const byLadder = trophiesByLadder(duels);
+  const best = LADDERS.reduce((top, item) => (byLadder[item] > byLadder[top] ? item : top), LADDERS[0]);
+  const [ladder, setLadder] = useState<Ladder>(initialLadder ?? best);
+  const trophies = byLadder[ladder];
+  const bestTrophies = byLadder[best];
   const status = leagueOf(trophies);
   const title = nameOf(status.league, status.division);
   const nextName = status.toNextDivision === null ? null : status.division === 3
     ? nameOf(LEAGUES[status.index + 1])
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
-  const recent = [...duels].sort((a, b) => b.at - a.at).slice(0, 6);
+  const recent = duels.filter((duel) => duel.ladder === ladder).sort((a, b) => b.at - a.at).slice(0, 6);
   return (
     <main className="content surface" data-surface="progress">
       <button className="back" onClick={onBack}>{t.common.backHub}</button>
       <section className="pr lg-page" aria-label={t.duel.league.title}>
-        <div className="pg-hero" data-league={status.league}>
+        <div className="lg-tabs" role="group" aria-label={t.duel.league.tabsAria}>
+          <div className="mode-switch">
+            {LADDERS.map((item) => {
+              const itemStatus = leagueOf(byLadder[item]);
+              return <button type="button" key={item} aria-pressed={ladder === item} onClick={() => setLadder(item)}><Icon type={item === "mapas" ? "map" : "flag"} size={15} />{t.duel.ladders[item]}<small>{nameOf(itemStatus.league, itemStatus.division)}</small></button>;
+            })}
+          </div>
+        </div>
+        <div className="pg-hero" data-league={status.league} data-ladder={ladder}>
           <div className="pg-hero-main">
             <div className="pg-ring lg-ring lg-frame" role="img" aria-label={t.duel.frameAria(title)}>
               <svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="var(--paper)" stroke="rgba(199,182,143,.7)" strokeWidth="8" /><circle cx="66" cy="66" r="58" fill="none" stroke="var(--lg)" strokeWidth="8" strokeLinecap="round" strokeDasharray={`${RING * ringFraction} ${RING}`} transform="rotate(-90 66 66)" /></svg>
@@ -33,7 +49,7 @@ export function LeagueScreen({ trophies, duels, onBack }: { trophies: number; du
               <span className="lg-pip">{divisionRoman(status.division) || "M"}</span>
             </div>
             <div className="pg-title">
-              <span className="pg-eyebrow">{t.duel.league.eyebrow}</span>
+              <span className="pg-eyebrow">{t.duel.league.eyebrow(t.duel.ladders[ladder])}</span>
               <h1>{title}</h1>
               <p>{nextName && status.toNextDivision !== null ? <b>{t.duel.league.toNext(formatNumber(status.toNextDivision), nextName)}</b> : t.duel.league.top}</p>
             </div>
@@ -94,7 +110,7 @@ export function LeagueScreen({ trophies, duels, onBack }: { trophies: number; du
           <header><div><h2>{t.duel.league.framesTitle}</h2><p>{t.duel.league.framesSub}</p></div></header>
           <div className="lg-frames">
             {LEAGUES.map((league, index) => {
-              const reached = trophies >= leagueFloor(index);
+              const reached = bestTrophies >= leagueFloor(index);
               return <div key={league} className={`lg-frame-item${reached ? "" : " is-locked"}`}>
                 <div className="hub-level lg-frame" data-league={league}><strong>20</strong><span className="lg-pip">{league === "mestre" ? "M" : "I"}</span></div>
                 <b>{t.duel.leagues[league]}</b>
