@@ -67,6 +67,7 @@ export function duelPreview(name: string): { duel: DuelView; view: ResultView } 
     outcome, tiebreak: Boolean(scenario.tiebreak), playerCorrect, botCorrect, total: 20, delta: scenario.to - scenario.from,
     trophiesBefore: scenario.from, trophiesAfter: scenario.to,
     milestones: (scenario.milestones ?? []).flatMap((id) => MILESTONES.filter((milestone) => milestone.id === id)),
+    ...(name === "tprata" ? { themeUnlocked: "prata" } : {}),
     ladder: "mapas", legs, streakBefore: scenario.streakBefore, streakAfter: scenario.streakAfter, streakBonus: scenario.bonus ?? 0, perfBonus: scenario.perf ?? 0, abandoned: Boolean(scenario.abandoned),
     legCoins: scenario.coins, legPreview: [false, true],
     legTimes: [{ playerMs: 92000, botMs: 100000 }, { playerMs: scenario.abandoned ? null : 108000, botMs: 85000 }],

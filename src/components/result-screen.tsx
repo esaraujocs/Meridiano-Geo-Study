@@ -7,7 +7,7 @@ import type { DuelView } from "../domain/duel";
 import type { ModeGroup } from "../domain/duel-modes";
 import { DuelResultCard, reducedMotion } from "./duel-result";
 
-type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void; onTrain?: (group: ModeGroup) => void; onStore?: () => void };
+type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void; onTrain?: (group: ModeGroup) => void; onStore?: () => void; onEquipTheme?: (id: string) => void };
 type LevelState = { level: number; span: number; progress: number };
 
 const ARC = 2 * Math.PI * 15;
@@ -23,7 +23,7 @@ const pulse = (element: HTMLElement | null, scale = 1.08) =>
 
 // Resultado da partida: o essencial cabe numa tela (nota, moedas, XP e os botões); o resto fica em "Ver detalhes".
 // As moedas voam do cartão para a carteira do topo e o XP enche a barra de nível, como uma prestação de contas.
-export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, onTrain, onStore }: Props) {
+export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, onTrain, onStore, onEquipTheme }: Props) {
   const start = xpSegments(view.xpBefore, view.xpBefore)[0];
   const [balance, setBalance] = useState(view.balanceBefore);
   const [level, setLevel] = useState<LevelState>({ level: start.level, span: start.span, progress: start.from });
@@ -141,7 +141,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, 
     </div>
 
     <p className="sr-only" role="status">{t.result.srSummary(view.correct, view.total, view.coins, view.xpGain)}</p>
-    {duel ? <DuelResultCard duel={duel} view={view} lootCoinRef={lootCoinRef} xpChipRef={xpChipRef} onAgain={onAgain} onHome={onHome} onLeague={onLeague} onTrain={onTrain} onStore={onStore} /> : <section className="rs-card">
+    {duel ? <DuelResultCard duel={duel} view={view} lootCoinRef={lootCoinRef} xpChipRef={xpChipRef} onAgain={onAgain} onHome={onHome} onLeague={onLeague} onTrain={onTrain} onStore={onStore} onEquipTheme={onEquipTheme} /> : <section className="rs-card">
       <span className="eyebrow">{view.eyebrow}</span>
       <h1 id="rs-title" className="rs-title">{view.title}</h1>
       <div className="rs-score">

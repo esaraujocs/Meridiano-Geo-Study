@@ -1,8 +1,11 @@
-// Temas do Hub (cores e pinceladas). O padrão é grátis; os outros se compram na Loja com moedas. Lógica pura.
+// Temas do Hub (cores e pinceladas). O padrão é grátis; os da Loja se compram com moedas; os de liga (um por liga) vêm de graça, uma vez, ao entrar
+// na liga e são do jogador para sempre. Lógica pura.
 import { t } from "./i18n/index.js";
+import { LEAGUES, type LeagueKey } from "./league.js";
+import { DEFAULT_MAP_PALETTE, type MapPalette } from "./map-palette.js";
 
 /** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). */
-export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash";
+export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata";
 
 export type Theme = {
   id: string;
@@ -15,6 +18,10 @@ export type Theme = {
   wash: boolean;
   /** As 4 cores dos modos (Mapa, Bandeiras, Capitais, Idiomas), só para a amostra da Loja. */
   swatches: readonly [string, string, string, string];
+  /** Tema de liga: não está à venda (`cost` 0) e é dado uma vez ao entrar nessa liga, em qualquer das duas escadas. */
+  league?: LeagueKey;
+  /** Cores do mapa em jogo; o que faltar vem do padrão. */
+  map?: Partial<MapPalette>;
 };
 
 export const DEFAULT_THEME = "pigmentos";
@@ -30,6 +37,12 @@ const THEME_SEEDS: readonly Theme[] = [
   { id: "pinceladas-terra", name: "Pinceladas · Terra", tagline: "As pinceladas verticais na paleta original do jogo.", treat: "brush-v", cost: 12000, wash: false, swatches: ["#2F6F6A", "#B65F47", "#C49345", "#7A8145"] },
   { id: "listras", name: "Listras", tagline: "Faixas largas, como listras de bandeira pintadas à mão.", treat: "brush-h", cost: 12000, wash: false, swatches: ["#2B8378", "#C25A42", "#BE8A2C", "#6F5DA6"] },
   { id: "atelie", name: "Ateliê", tagline: "Pinceladas por cima de aquarela: o mais pintado de todos.", treat: "brush-wash", cost: 18000, wash: true, swatches: ["#1F8A87", "#B94A76", "#D2782B", "#5561B5"] },
+  // Temas de liga: quanto mais alta a liga, mais prestigioso o tema (mais camadas: Hub, mapa, resultado, ornamentos e movimento).
+  {
+    id: "prata", name: "Prata · Gravura", tagline: "Chapa de prata gravada: papel pérola, hachura fina e o mapa em ardósia.", treat: "prata", cost: 0, wash: false, league: "prata",
+    swatches: ["#3A6A8A", "#8A4A4A", "#A99E76", "#5A6092"],
+    map: { ocean: "#0E161D", land: "#243440", outline: "#C2CDD4", marker: "#D3DCE1", markerStroke: "#3C4B56", graticule: "#B4C2CC" },
+  },
 ];
 /** Nome e frase de cada tema no idioma da interface (domain/i18n). */
 export const THEMES: readonly Theme[] = THEME_SEEDS.map((theme) => {
@@ -44,10 +57,24 @@ export const themeUnlockKey = (id: string): ThemeUnlockKey => `theme:${id}`;
 export const themeById = (id: string): Theme | undefined => THEMES.find((theme) => theme.id === id);
 export const isThemeId = (value: unknown): value is ThemeId => typeof value === "string" && THEMES.some((theme) => theme.id === value);
 
+export const isLeagueTheme = (theme: Theme) => Boolean(theme.league);
+/** Os temas da Loja (o padrão e os que se compram) e os de liga (que só vêm ao entrar na liga). */
+export const SHOP_THEMES: readonly Theme[] = THEMES.filter((theme) => !theme.league);
+export const LEAGUE_THEMES: readonly Theme[] = THEMES.filter((theme) => Boolean(theme.league));
+
 export const isThemeOwned = (id: string, unlocked: readonly string[]) => {
   const theme = themeById(id);
-  return Boolean(theme) && (theme!.cost === 0 || unlocked.includes(themeUnlockKey(id)));
+  if (!theme) return false;
+  // tema de liga tem preço 0 mas não é de graça: só vale com o desbloqueio dado ao entrar na liga
+  return theme.league ? unlocked.includes(themeUnlockKey(id)) : theme.cost === 0 || unlocked.includes(themeUnlockKey(id));
 };
+
+/** Os temas de liga a que a pessoa já tem direito, dado o índice da melhor liga que alcançou (nas duas escadas). */
+export const leagueThemesFor = (bestLeagueIndex: number): Theme[] =>
+  LEAGUE_THEMES.filter((theme) => LEAGUES.indexOf(theme.league as LeagueKey) <= bestLeagueIndex);
+
+/** As cores do mapa em jogo no tema (o que o tema não muda vem do padrão). */
+export const mapPaletteFor = (id: string | undefined): MapPalette => ({ ...DEFAULT_MAP_PALETTE, ...(themeById(id ?? "")?.map ?? {}) });
 
 /** O tema guardado só vale se for do jogador: sem ele (dados limpos, valor inválido) volta ao padrão. */
 export const resolveTheme = (saved: unknown, unlocked: readonly string[]): string =>

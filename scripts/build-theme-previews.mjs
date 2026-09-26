@@ -1,6 +1,6 @@
 // Gera as prévias dos temas para a Loja: uma miniatura WebP do Hub real em cada tema, em src/assets/themes/<id>.webp.
 // Uso: com o app servido (npm run build && npm run preview), rode `node scripts/build-theme-previews.mjs`.
-// Variáveis: BASE (padrão http://localhost:5000) e CHROME_PATH (padrão: Chrome do Windows). Rode de novo sempre que o CSS dos temas mudar.
+// Variáveis: BASE (padrão http://localhost:5000), CHROME_PATH (padrão: Chrome do Windows) e ONLY (ids separados por vírgula, para gerar só alguns). Rode de novo sempre que o CSS dos temas mudar.
 import puppeteer from "puppeteer-core";
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -49,7 +49,9 @@ async function freshWith(themeId) {
   await sleep(250);
 }
 
-for (const theme of THEMES) {
+// ONLY=prata,atlas gera só esses (o resto fica como está)
+const only = process.env.ONLY ? process.env.ONLY.split(",") : null;
+for (const theme of THEMES.filter((item) => !only || only.includes(item.id))) {
   await freshWith(theme.id);
   const box = await page.evaluate(() => {
     const rect = (selector) => document.querySelector(selector).getBoundingClientRect();

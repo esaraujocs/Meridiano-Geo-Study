@@ -9,7 +9,7 @@ import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
-import { THEMES, isThemeOwned } from "../domain/themes";
+import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import { DuelArenas } from "./duel-arenas";
@@ -141,7 +141,7 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
   }, []);
   const mapLabel = offlineMap === "installed" ? t.options.mapInstalled : offlineMap === "downloading" ? t.options.mapDownloading : offlineMap === "error" ? t.options.mapError : t.options.mapAvailable;
   const ownedThemes = THEMES.filter((item) => isThemeOwned(item.id, ownedUnlocks));
-  const toBuy = THEMES.length - ownedThemes.length;
+  const toBuy = SHOP_THEMES.filter((item) => !isThemeOwned(item.id, ownedUnlocks)).length;
   const mapBusy = offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable";
   // Mesmo molde da tela "Configure a partida": título simples e um cartão só, com uma linha rotulada por assunto.
   return <main className="content cv-page options-screen">

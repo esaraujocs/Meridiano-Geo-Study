@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { Icon } from "./icons";
+import { ThemeUnlockCard } from "./theme-unlock";
 import type { DuelView } from "../domain/duel";
 import { LADDER_BASE, LADDER_BASE_GROUP, groupDef, type ModeGroup } from "../domain/duel-modes";
 import { clockOf, decisiveLeg, meterLayout, resultPlan, secondsPer, worstLeg, type Pill, type ResultTier } from "../domain/duel-view";
@@ -45,11 +46,13 @@ type Props = {
   onTrain?: (group: ModeGroup) => void;
   /** Modo de prévia: leva à Loja para conhecê-lo. */
   onStore?: () => void;
+  /** Aplica o tema de liga conquistado neste duelo. */
+  onEquipTheme?: (id: string) => void;
 };
 
 // Resultado do duelo: a festa cresce com a importância (vitória, perfeita, divisão, liga) e a derrota tem o mesmo cuidado, com tom de
 // consolo. A barra de troféus anda do valor de antes ao de depois (e troca de liga no meio, se for o caso).
-export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, onHome, onLeague, onTrain, onStore }: Props) {
+export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, onHome, onLeague, onTrain, onStore, onEquipTheme }: Props) {
   const legs = duel.legs ?? [];
   const plan = useMemo(() => resultPlan({
     outcome: duel.outcome, playerCorrect: duel.playerCorrect, botCorrect: duel.botCorrect, total: duel.total,
@@ -190,6 +193,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
       <span aria-hidden="true" className={plan.kind === "draw" ? "" : won ? "l" : "w"}><small>{botFirst}</small><b>{score[1]}</b></span>
       <p>{note}</p>
     </div>
+    {duel.themeUnlocked && <ThemeUnlockCard themeId={duel.themeUnlocked} onEquip={onEquipTheme} />}
     {worst && legs.length > 1 && <section className="vl-read" aria-label={t.duel.result.readTitle}>
       <header><b>{t.duel.result.readTitle}</b><small>{t.duel.result.readSub}</small></header>
       <ul>{legs.map((leg, index) => {

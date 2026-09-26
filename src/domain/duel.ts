@@ -247,6 +247,8 @@ export type DuelView = {
   trophiesAfter: number;
   /** Marcos que este duelo abriu (moedas já creditadas). */
   milestones: readonly Milestone[];
+  /** Tema de liga que este duelo desbloqueou (id), se algum: o resultado avisa e oferece aplicar. */
+  themeUnlocked?: string;
   ladder?: Ladder;
   legs?: readonly DuelLegRecord[];
   /** Vitórias seguidas na escada antes e depois deste duelo. */

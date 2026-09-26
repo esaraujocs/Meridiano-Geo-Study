@@ -2,6 +2,8 @@
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { DUEL_ID_PREFIX, DUEL_SOURCE, parseDuel, type DuelRecord } from "./duel.js";
 import { milestoneLedgerId, milestoneTopUps, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
+import { leagueOf } from "./league.js";
+import { leagueThemesFor, themeUnlockKey } from "./themes.js";
 
 const STORE = "preferences";
 
@@ -37,6 +39,34 @@ export async function saveDuel(record: DuelRecord) {
       const transaction = database.transaction(STORE, "readwrite");
       transaction.objectStore(STORE).put({ ...record, source: DUEL_SOURCE });
       transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  } finally { database.close(); }
+}
+
+/** Dá os temas de liga a que a pessoa já tem direito (a melhor liga entre as duas escadas) e que ainda não estão desbloqueados. Cada tema é dado uma vez:
+ *  o desbloqueio fica gravado e não some se os troféus caírem. Devolve os ids que entraram agora. */
+export async function claimLeagueThemes(trophies: number | TrophiesByLadder): Promise<string[]> {
+  const best = typeof trophies === "number" ? trophies : Math.max(0, ...Object.values(trophies).map((value) => value ?? 0));
+  const themes = leagueThemesFor(leagueOf(best).index);
+  if (!themes.length) return [];
+  const database = await openDatabase();
+  try {
+    return await new Promise<string[]>((resolve, reject) => {
+      const transaction = database.transaction("unlocks", "readwrite");
+      const store = transaction.objectStore("unlocks");
+      const granted: string[] = [];
+      let pending = themes.length;
+      for (const theme of themes) {
+        const key = themeUnlockKey(theme.id);
+        const owned = store.get(key);
+        owned.onsuccess = () => {
+          if (!owned.result) { store.put({ id: key, key, source: "league", unlockedAt: Date.now() }); granted.push(theme.id); }
+          pending -= 1;
+        };
+      }
+      transaction.oncomplete = () => resolve(granted);
       transaction.onerror = () => reject(transaction.error);
       transaction.onabort = () => reject(transaction.error);
     });

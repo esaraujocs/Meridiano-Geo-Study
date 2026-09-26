@@ -1,0 +1,146 @@
+/* Temas de liga (um por liga, dados uma vez ao entrar nela). Quanto mais alta a liga, mais prestigioso o tema: mais camadas (Hub, mapa em jogo, resultado,
+   ornamentos e movimento). Mesma divisão dos temas da Loja: data-theme = paleta e materiais, data-treat = como o Hub é pintado. Os efeitos em movimento
+   respeitam a preferência de movimento reduzido. */
+
+/* ═══ PRATA · GRAVURA — chapa de prata gravada: papel pérola, tinta ardósia, hachura fina e medalhões de folha de prata ═══ */
+
+/* ── paleta e materiais ───────────────────────────────────── */
+:root[data-theme="prata"]{
+  color:#1B2731; background:#E9ECEC;
+  --paper:#EDF0F0; --surface:#DEE3E5; --ink:#1B2731; --muted:#46565F; --line:#AEB9BF;
+  --green:#33566E; --terracotta:#8C4A44;
+  --dark:#121B23; --dark-surface:#1B2731; --text-dark:#EEF2F3; --panel-2:#E4E8E9;
+  --h-mapa:#3A6A8A; --hb-mapa:#33607E; --h2-mapa:#4B86AB; --w-mapa:#86AECB; --hg-mapa:#33607E;
+  --h-band:#8A4A4A; --hb-band:#7E4142; --h2-band:#A3585A; --w-band:#C9908F; --hg-band:#7E4142;
+  --h-cap:#A99E76; --hb-cap:#A99E76; --h2-cap:#8B7F52; --w-cap:#D6CCA6; --hg-cap:#6E6440;
+  --h-idi:#5A6092; --hb-idi:#535989; --h2-idi:#7A82B6; --w-idi:#A9AFD6; --hg-idi:#535989;
+  --on-mapa:#F4F7F8; --on-band:#F6F1F0; --on-cap:#151C20; --on-idi:#F4F6FA;
+  --bar:linear-gradient(90deg,#8994A0,#DCE2E6 50%,#8994A0);
+  --rule:linear-gradient(90deg,transparent,#7A8890 6%,#B9C3C9 50%,#7A8890 94%,transparent);
+  /* folha de prata: reflexo claro, corpo cinza, sombra, reflexo de novo */
+  --silver:linear-gradient(135deg,#F8FAFB 0%,#C7CED2 24%,#8E989E 50%,#DDE3E6 74%,#A8B1B6 100%);
+  /* moldura de chapa gravada: filete claro por dentro e filete de tinta por fora */
+  --plate:inset 0 0 0 3px rgba(255,255,255,.78),inset 0 0 0 4px rgba(27,39,49,.17);
+  --plate-drop:0 16px 28px -22px rgba(27,39,49,.62);
+  --hatch:repeating-linear-gradient(115deg,rgba(27,39,49,.085) 0 1px,transparent 1px 5px);
+}
+
+/* ── fundo: papel pérola, quadrícula de meridianos e uma rosa dos ventos ao fundo ── */
+:root[data-treat="prata"] .app-shell:has(.hub-content,[data-surface]){
+  background:
+    url("./assets/themes/prata-compass.svg") no-repeat right -250px top -230px/700px,
+    linear-gradient(rgba(27,39,49,.05) 1px,transparent 1px) 0 0/72px 72px,
+    linear-gradient(90deg,rgba(27,39,49,.05) 1px,transparent 1px) 0 0/72px 72px,
+    radial-gradient(1100px 520px at 20% -8%,rgba(255,255,255,.92),transparent 65%),
+    linear-gradient(180deg,#EFF2F1,#E1E6E8);
+}
+:root[data-treat="prata"] .app-shell:before{opacity:.04}
+@media (min-width:1024px){:root[data-treat="prata"] .hub-rule{height:2px!important;opacity:1!important}}
+:root[data-treat="prata"] .hub-track{background:#C3CBD0;box-shadow:inset 0 1px 1px rgba(27,39,49,.25)}
+:root[data-treat="prata"] .hub-track i{background:linear-gradient(90deg,#33566E,#6F97B3)}
+:root[data-treat="prata"] .mode-switch{background:rgba(255,255,255,.7);border-color:#8C979E}
+:root[data-treat="prata"] .mode-switch button[aria-pressed=true]{background:linear-gradient(180deg,#E9EEF0,#CBD3D8);color:#1B2731;box-shadow:inset 0 0 0 1px rgba(27,39,49,.25),0 1px 0 #fff inset}
+:root[data-treat="prata"] .mode-switch button[aria-pressed=true]:last-child{background:linear-gradient(180deg,#33475A,#1E2C38);color:#F1F5F7;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+
+/* ── painéis do topo e cartões de progresso: chapa com moldura dupla ── */
+:root[data-treat="prata"] .hub-bar{background:linear-gradient(180deg,#F8F9F9,#E8ECED);border:1px solid #8C979E;border-radius:4px;box-shadow:var(--plate),var(--plate-drop)}
+:root[data-treat="prata"] .hub-level{box-shadow:0 0 0 4px rgba(51,86,110,.16)}
+:root[data-treat="prata"] .hub-progress-grid button{background:linear-gradient(180deg,#F8F9F9,#E9EDEE);border:1px solid #8C979E;border-left:7px solid var(--h);border-radius:0;box-shadow:var(--plate),0 12px 22px -20px rgba(27,39,49,.6)}
+:root[data-treat="prata"] .hub-progress-grid button:hover{border-color:#8C979E;filter:brightness(1.03)}
+:root[data-treat="prata"] .hub-progress-icon{background:radial-gradient(circle at 34% 28%,#fff,#E2E7E9 58%,#C1C9CE);color:var(--h);box-shadow:0 0 0 2px #F7F8F8,0 0 0 3px #8C979E,0 8px 14px -8px rgba(27,39,49,.5)}
+:root[data-treat="prata"] .hub-progress-bar{background:rgba(27,39,49,.12);border-radius:0}
+:root[data-treat="prata"] .hub-progress-bar i{background:linear-gradient(90deg,var(--h),color-mix(in srgb,var(--h) 55%,#fff))}
+:root[data-treat="prata"] .hub-progress-grid strong{color:color-mix(in srgb,var(--h) 60%,#101820)}
+
+/* ── cartões de modo: uma chapa por modo (I a IV), hachura no alto, medalhão de prata ── */
+:root[data-treat="prata"] .hub-content .family{position:relative;overflow:hidden;background:linear-gradient(180deg,#F8F9F8,#E8ECEC);border:1px solid #8C979E;border-radius:4px;box-shadow:var(--plate),var(--plate-drop)}
+:root[data-treat="prata"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="prata"] .hub-content .family::before{content:"";position:absolute;left:0;right:0;top:0;height:58%;pointer-events:none;background:var(--hatch),linear-gradient(180deg,color-mix(in srgb,var(--h) 38%,transparent),transparent 92%);-webkit-mask:linear-gradient(#000 35%,transparent);mask:linear-gradient(#000 35%,transparent)}
+:root[data-treat="prata"] .hub-content .family::after{content:"";position:absolute;inset:8px;border-radius:2px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(27,39,49,.26),inset 0 0 0 3px rgba(255,255,255,.7),inset 0 0 0 4px rgba(27,39,49,.12);z-index:2}
+:root[data-treat="prata"] .hub-content .family .family-visual{z-index:3}
+:root[data-treat="prata"] .hub-content .family .family-geo{opacity:.34;background:repeating-linear-gradient(22deg,transparent 0 15px,rgba(27,39,49,.24) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,rgba(27,39,49,.24) 23px 24px)}
+:root[data-treat="prata"] .hub-content .family-visual .family-icon{background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) 160% 0/260% 100% no-repeat,radial-gradient(circle at 34% 28%,#fff,#E1E6E8 58%,#BFC7CC);transition:background-position 1s cubic-bezier(.2,.7,.2,1);color:var(--h);border:0;box-shadow:0 0 0 3px #F8F9F8,0 0 0 5px var(--h),0 0 0 9px rgba(255,255,255,.6),0 0 0 10px rgba(27,39,49,.22),0 16px 24px -10px rgba(27,39,49,.55)}
+:root[data-treat="prata"] .hub-content .family-copy,:root[data-treat="prata"] .hub-content .family-footer{position:relative;z-index:3}
+:root[data-treat="prata"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 42%,#101820);text-shadow:0 1px 0 rgba(255,255,255,.9),0 -1px 0 rgba(27,39,49,.12)}
+:root[data-treat="prata"] .hub-content .family p,:root[data-treat="prata"] .hub-content .family-footer{color:#3A4953}
+:root[data-treat="prata"] .hub-content .family-play{background:linear-gradient(180deg,#2E4557,#1A2731);color:#EAF0F3;border:1px solid #7B8992;border-radius:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+:root[data-treat="prata"] .hub-content .family-play:hover{background:linear-gradient(180deg,var(--hb),color-mix(in srgb,var(--hb) 60%,#0d141a))}
+:root[data-treat="prata"] .hub-content .family-visual::before{position:absolute;left:-2px;top:-8px;z-index:4;font:500 9.5px 'DM Mono',monospace;letter-spacing:.16em;color:color-mix(in srgb,var(--h) 70%,#1B2731);text-transform:uppercase;content:"Chapa"}
+:root[data-treat="prata"] .family[data-fam="mapa"] .family-visual::before{content:"Chapa I"}
+:root[data-treat="prata"] .family[data-fam="bandeiras"] .family-visual::before{content:"Chapa II"}
+:root[data-treat="prata"] .family[data-fam="capitais"] .family-visual::before{content:"Chapa III"}
+:root[data-treat="prata"] .family[data-fam="idiomas"] .family-visual::before{content:"Chapa IV"}
+
+/* ── arenas do Duelo (as duas escadas) e o painel de prêmios ── */
+:root[data-treat="prata"] .arena::before{height:34%;opacity:.7}
+:root[data-treat="prata"] .arena .ar-league{background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(232,236,237,.85));border:1px solid rgba(27,39,49,.2);border-radius:3px;box-shadow:0 1px 0 #fff inset}
+:root[data-treat="prata"] .ar-ico{background:radial-gradient(circle at 34% 28%,#fff,#E1E6E8 58%,#BFC7CC);box-shadow:0 0 0 2px #F8F9F8,0 0 0 3px currentColor}
+:root[data-treat="prata"] .ar-tag{background:var(--silver);color:#17222B;text-shadow:0 1px 0 rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px rgba(27,39,49,.25)}
+:root[data-treat="prata"] .ar-chip{background:rgba(255,255,255,.66);border-color:rgba(27,39,49,.26);border-radius:3px}
+:root[data-treat="prata"] .ar-go{background:linear-gradient(180deg,#2E4557,#1A2731)!important;border:1px solid #7B8992!important;border-radius:3px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+:root[data-treat="prata"] .ar-friend{border-radius:3px}
+:root[data-treat="prata"] .ar-form .win{background:#33566E}.arena .ar-form .loss{background:#8C4A44}
+:root[data-treat="prata"] .arena-grid>aside,:root[data-treat="prata"] .arena-grid>section:last-child{background:linear-gradient(180deg,#F8F9F8,#E8ECEC);border:1px solid #8C979E;border-radius:4px;box-shadow:var(--plate),var(--plate-drop)}
+:root[data-treat="prata"] .mode-switch{border-radius:4px}
+
+/* ── partida no mapa: barra prateada e o alvo numa chapa escura de bordas duplas ── */
+:root[data-theme="prata"] .gs-head{background:linear-gradient(180deg,#F6F8F8,#DCE2E4);border-bottom:1px solid #8C979E;box-shadow:0 1px 0 #fff inset}
+:root[data-theme="prata"] .gs-progress>i{background:#C0C9CE}
+:root[data-theme="prata"] .gs-progress>i.now{background:var(--ink);box-shadow:0 0 0 3px rgba(27,39,49,.16)}
+:root[data-theme="prata"] .gs-progress .gs-track{background:#C0C9CE}
+:root[data-theme="prata"] .map-target-overlay{background:linear-gradient(180deg,rgba(29,41,51,.96),rgba(15,23,30,.97));border:1px solid #B9C3C9;border-radius:3px;padding:12px 44px 13px;color:#DCE3E7;box-shadow:inset 0 0 0 3px #131C24,inset 0 0 0 4px rgba(200,210,216,.55),0 14px 30px rgba(0,0,0,.4)}
+:root[data-theme="prata"] .map-target-overlay::before,:root[data-theme="prata"] .map-target-overlay::after{content:"";position:absolute;top:50%;width:26px;height:26px;margin-top:-13px;background:url("./assets/themes/prata-compass-light.svg") center/contain no-repeat;opacity:.9}
+:root[data-theme="prata"] .map-target-overlay::before{left:12px}
+:root[data-theme="prata"] .map-target-overlay::after{right:12px}
+:root[data-theme="prata"] .map-target-overlay span{color:#AEBAC2!important;letter-spacing:.24em}
+:root[data-theme="prata"] .map-target-overlay strong{color:#F5F8F9;text-shadow:0 1px 0 rgba(0,0,0,.45)}
+:root[data-theme="prata"] .map-target-overlay .round-timer i{background:#C8D2D8}
+:root[data-theme="prata"] .map-note{background:rgba(18,27,35,.92);border:1px solid rgba(200,210,216,.5);color:#DCE3E7}
+:root[data-theme="prata"] .map-target-overlay.is-correct{background:linear-gradient(180deg,rgba(28,104,84,.97),rgba(17,72,58,.97));border-color:#7FE3BF}
+:root[data-theme="prata"] .map-target-overlay.is-wrong{background:linear-gradient(180deg,rgba(112,52,44,.97),rgba(78,34,30,.97));border-color:#F19183}
+
+/* ── resultado: a chapa de prata, com um brilho que corre e faíscas de folha ── */
+:root[data-theme="prata"] .rs-card:not(.tier-4){background:linear-gradient(180deg,#F5F7F7,#E4E9EA);border-color:#8C979E;box-shadow:var(--plate)}
+:root[data-theme="prata"] .rs-card:not(.tier-4) .eyebrow{color:#33566E}
+:root[data-theme="prata"] .rs-btn.primary{background:linear-gradient(180deg,#33475A,#1E2C38);border:1px solid #6E7B84;color:#F1F5F7;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+/* vitória: tinta de aço em vez do verde; derrota segue no vermelho-tinta; subida de liga: chapa escura com filete de prata no lugar do dourado */
+:root[data-theme="prata"] .vh-card:not(.tier-4):not(.is-loss)::before{background:radial-gradient(120% 55% at 50% 0%,rgba(122,168,198,.30),transparent 62%)}
+:root[data-theme="prata"] .vh-card:not(.tier-4):not(.is-loss) .vh-title{color:#1E3E52}
+:root[data-theme="prata"] .vh-card:not(.tier-4):not(.is-loss) .vh-title::after{background:linear-gradient(90deg,#8FBAD6,#33566E)}
+:root[data-theme="prata"] .vh-card:not(.tier-4):not(.is-loss) .vh-score .w b{color:#25566F}
+:root[data-theme="prata"] .vh-card.tier-4{border-color:rgba(200,210,216,.8);box-shadow:0 18px 50px rgba(9,15,20,.45),0 0 0 4px rgba(200,210,216,.26)}
+:root[data-theme="prata"] .vh-card.tier-4::before{background:radial-gradient(120% 60% at 50% 0%,rgba(226,233,237,.30),transparent 62%)}
+:root[data-theme="prata"] .vh-card.tier-4 .vh-title{color:#E9EEF1;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+:root[data-theme="prata"] .vh-card.tier-4 .vh-title::after{background:linear-gradient(90deg,transparent,#E9EEF1 25%,#8F9BA3 75%,transparent)}
+:root[data-theme="prata"] .vh-card.tier-4 .vh-pill.gold,:root[data-theme="prata"] .vh-card.tier-4 .dr-legs .rv-tag{background:rgba(226,233,237,.14);border-color:rgba(226,233,237,.6);color:#E4EAEE}
+:root[data-theme="prata"] .vh-card.tier-4 .vh-pill.up{background:#2F5B76;color:#EAF4FA}
+
+/* ── celular: a barra de baixo também é chapa prateada ── */
+@media (max-width:760px){
+  :root[data-theme="prata"] .mobile-nav{background:linear-gradient(180deg,rgba(246,248,248,.98),rgba(222,228,230,.98));border-top:1px solid #8C979E;box-shadow:0 -1px 0 #fff inset}
+  :root[data-theme="prata"] .rs-actions{background:linear-gradient(180deg,rgba(246,248,248,.98),rgba(222,228,230,.98))}
+}
+
+/* movimento: o brilho só corre com o mouse em cima, e some com movimento reduzido */
+:root[data-treat="prata"] .hub-content .family:hover .family-icon,:root[data-treat="prata"] .hub-content .family:focus-within .family-icon{background-position:-60% 0,0 0}
+@media (prefers-reduced-motion:reduce){:root[data-treat="prata"] .hub-content .family-visual .family-icon{transition:none}}
+html[data-reduced-motion="true"] .hub-content .family-visual .family-icon{transition:none!important}
+
+/* ═══ comum aos temas de liga ═══ */
+/* aviso de tema conquistado, no resultado do duelo que abriu a liga: neutro, para valer no tema que a pessoa usa agora */
+.theme-unlock{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px 16px;padding:14px 16px;margin:14px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);text-align:left}
+.tu-swatch{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;width:64px;height:64px;padding:5px;border-radius:8px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.tu-swatch i{border-radius:5px}
+.tu-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tu-text small{font:500 10.5px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#245e58}
+.tu-text b{font:500 20px 'Fraunces',Georgia,serif}
+.tu-text span{font-size:12.5px;color:var(--muted)}
+.tu-actions{grid-column:1/-1;display:flex;gap:8px}
+.tu-actions button{flex:1;padding:9px 16px;border-radius:999px;font:700 13px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.tu-actions .tu-go{background:#2F6F6A;border-color:transparent;color:#fff4df}
+.tu-done{flex:1;text-align:center;font:700 13px 'Plus Jakarta Sans',sans-serif;color:#245e58;padding:9px 0}
+/* Loja: o selo de tema de liga e o texto da seção; tema de liga ainda não conquistado aparece em cinza */
+.store-card{position:relative}
+.store-badge{position:absolute;left:10px;top:10px;z-index:2;padding:5px 10px;border-radius:4px;background:#1E2C38;color:#EAF0F3;font:600 10.5px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;box-shadow:inset 0 0 0 1px rgba(200,210,216,.45)}
+.store-note{margin:-6px 0 16px;color:var(--muted);font-size:13.5px}
+.store-card.is-league.is-locked .store-thumb{filter:grayscale(.85) brightness(.92)}

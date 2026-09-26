@@ -4,6 +4,8 @@ import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
 import { inRegion, normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
+import { graticuleLines } from "../domain/map-palette";
+import { mapPaletteFor } from "../domain/themes";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
@@ -35,6 +37,8 @@ const ABSORBED_URL = "/data/absorbed-territories.geojson";
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
 const ANSWER_COLOR = "#4fe0a8";
+/** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores e a quadrícula opcional); o acerto e o erro têm cor fixa. */
+const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 export function Game({
@@ -306,6 +310,7 @@ export function Game({
     const activeFilter = markerFilter(markerIds);
     setMapReady(false);
     let map: maplibregl.Map;
+    const palette = currentPalette();
     try {
       map = new maplibregl.Map({
         container: mapEl.current,
@@ -320,14 +325,16 @@ export function Game({
                 "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
             },
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
+            ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines() as unknown as GeoJSON.FeatureCollection } } : {}),
             absorbed: { type: "geojson", data: ABSORBED_URL },
           },
           layers: [
             {
               id: "bg",
               type: "background",
-              paint: { "background-color": "#081825" },
+              paint: { "background-color": palette.ocean },
             },
+            ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": 0.2, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
             {
               id: "land",
               type: "fill",
@@ -335,8 +342,8 @@ export function Game({
               "source-layer": "countries",
               filter: ["==", "$type", "Polygon"],
               paint: {
-                "fill-color": "#164455",
-                "fill-outline-color": "#4c8890",
+                "fill-color": palette.land,
+                "fill-outline-color": palette.outline,
                 "fill-opacity": 0.82,
               },
             },
@@ -346,8 +353,8 @@ export function Game({
               source: "absorbed",
               filter: ["==", "$type", "Polygon"],
               paint: {
-                "fill-color": "#164455",
-                "fill-outline-color": "#4c8890",
+                "fill-color": palette.land,
+                "fill-outline-color": palette.outline,
                 "fill-opacity": 0.82,
               },
             },
@@ -359,9 +366,9 @@ export function Game({
               filter: ["==", "$type", "Point"],
               paint: {
                  "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 3.5, 3, 5, 5, 1.5],
-                 "circle-color": "#9db7b2",
+                 "circle-color": palette.marker,
                  "circle-opacity": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 3, 0.7, 5, 0.25],
-                 "circle-stroke-color": "#24423d",
+                 "circle-stroke-color": palette.markerStroke,
                 "circle-stroke-width": 1,
               },
             },
@@ -371,7 +378,7 @@ export function Game({
                source: "atlas",
                "source-layer": "countries",
                filter: ["==", "$type", "Point"],
-               paint: { "circle-radius": 14, "circle-color": "#9db7b2", "circle-opacity": 0.01 },
+               paint: { "circle-radius": 14, "circle-color": palette.marker, "circle-opacity": 0.01 },
              },
              ...MARKER_BAND_ZOOMS.map((band) => ({
               id: markerLayerId(band),
@@ -381,9 +388,9 @@ export function Game({
               filter: markerBandFilter(band, markerIds) as unknown as maplibregl.FilterSpecification,
               paint: {
                 "circle-radius": 4,
-                "circle-color": "#9db7b2",
+                "circle-color": palette.marker,
                 "circle-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
-                "circle-stroke-color": "#24423d",
+                "circle-stroke-color": palette.markerStroke,
                 "circle-stroke-width": 1,
                 "circle-stroke-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
               },
@@ -395,7 +402,7 @@ export function Game({
                filter: activeFilter as unknown as maplibregl.FilterSpecification,
                 paint: {
                   "circle-radius": MARKER_TOUCH_PX,
-                  "circle-color": "#9db7b2",
+                  "circle-color": palette.marker,
                   "circle-opacity": 0.01,
                 },
              },
@@ -567,6 +574,7 @@ export function Game({
     const map = mapRef.current;
     if (!map || !target || !mapReady || !map.isStyleLoaded()) return;
     const answerColor = ANSWER_COLOR;
+    const palette = currentPalette();
     const settled = Boolean(feedback);
     // Fora do alvo desta rodada: só fica marcado no Treino (revealNames), com todo país já perguntado até aqui.
     const marked = revealNames && revealed.length ? revealed : null;
@@ -578,7 +586,7 @@ export function Game({
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         "#ee7968",
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
-        "#164455",
+        palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
       map.setPaintProperty("absorbed-land", "fill-color", [
         "case",
@@ -587,7 +595,7 @@ export function Game({
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         "#ee7968",
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
-        "#164455",
+        palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
        map.setPaintProperty("pts", "circle-color", [
         "case",
@@ -596,7 +604,7 @@ export function Game({
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         "#ee7968",
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
-         "#9db7b2",
+         palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
       for (const band of MARKER_BAND_ZOOMS) {
         map.setPaintProperty(markerLayerId(band), "circle-color", [
@@ -606,7 +614,7 @@ export function Game({
         ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
         "#ee7968",
         ...(marked ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", marked]], answerColor] : []),
-        "#9db7b2",
+        palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
         const isRevealedTarget = ["all", settled, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]] as unknown as maplibregl.ExpressionSpecification;
         map.setPaintProperty(markerLayerId(band), "circle-radius", ["case", isRevealedTarget, 9, 4]);

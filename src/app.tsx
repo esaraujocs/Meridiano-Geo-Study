@@ -57,7 +57,7 @@ import { DUEL_PREVIEW_NAMES, duelPreview } from "./domain/duel-preview";
 import { DuelReveal } from "./components/duel-reveal";
 import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
-import { claimDuelMilestones, listDuels, saveDuel } from "./domain/duel-store";
+import { claimDuelMilestones, claimLeagueThemes, listDuels, saveDuel } from "./domain/duel-store";
 import { isDebugEnabled } from "./domain/debug-flag";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
@@ -111,6 +111,7 @@ export function App() {
       setDuels(list);
       // ao abrir: paga o que faltar (marco novo ou a diferença de um prêmio que foi aumentado) e atualiza o saldo
       await claimDuelMilestones(trophiesByLadder(list)).catch(() => []);
+      await claimLeagueThemes(trophiesByLadder(list)).catch(() => [] as string[]);
       void refreshEconomy();
     }).catch(() => undefined);
   }, []);
@@ -241,6 +242,8 @@ export function App() {
     setDuels(nextDuels);
     // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
     const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(trophiesByLadder(nextDuels))).catch(() => []);
+    // Tema de liga: dado uma vez ao entrar na liga (melhor das duas escadas); o resultado avisa quando foi este duelo que abriu.
+    const themesGranted = await claimLeagueThemes(trophiesByLadder(nextDuels)).catch(() => [] as string[]);
     void refreshEconomy();
     lastBotRef.current = { ...lastBotRef.current, [run.ladder]: run.bot.id };
     const played = legResults.current.filter((leg): leg is SessionResult => Boolean(leg?.spoils));
@@ -259,6 +262,7 @@ export function App() {
       botName: run.bot.name, botLeague: run.bot.league, botStyle: run.bot.style, botSpecialty: run.bot.specialty,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
+      ...(themesGranted.length ? { themeUnlocked: themesGranted[themesGranted.length - 1] } : {}),
       streakBefore: run.streak, streakAfter: winStreak(nextDuels.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: run.done.length < LEGS,
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
@@ -603,7 +607,7 @@ export function App() {
 
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
-      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
+      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onEquipTheme={setTheme} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
