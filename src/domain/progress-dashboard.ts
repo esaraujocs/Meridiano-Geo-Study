@@ -12,6 +12,10 @@ import {
   type SessionGroup,
 } from "./session-view.js";
 import { compareText, t } from "./i18n/index.js";
+import { botById } from "./bots.js";
+import type { DuelOutcome, DuelRecord } from "./duel.js";
+import type { Ladder, ModeGroup } from "./duel-modes.js";
+import { botLabel, styleLabel } from "./duel-labels.js";
 
 export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
@@ -26,6 +30,8 @@ export type PillarSnapshot = { seen: number; correct: number; bayesianScore: num
 export type DashboardInput = {
   now: number;
   sessions: readonly SurfaceSession[];
+  /** Os duelos gravados: cada um vira uma linha só no histórico, no lugar das duas partidas (tempos) que o compõem. */
+  duels?: readonly DuelRecord[];
   records: readonly ProgressRecordLike[];
   meta: Record<string, Meta>;
   /** ids jogáveis do atlas (denominador do domínio, o mesmo do Hub). */
@@ -60,10 +66,20 @@ export type PillarCard = {
 };
 export type RegionRow = { key: string; label: string; found: number; discovered: number; total: number; pct: number; world: boolean; tag: "good" | "warn" | null };
 export type ReviewItem = { id: string; name: string; place: string; flag?: string; pct: number; correct: number; tries: number; weak: string[] };
+type Miss = { id: string; name: string; flag?: string };
+/** Um tempo do duelo: o modo, o placar contra o bot e, se a partida ainda existe, o que a pessoa acertou e errou. */
+export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: number; total: number; playerMs: number | null; botMs: number | null; pattern: string; misses: Miss[] };
+export type DuelRow = {
+  ladder: Ladder; ladderLabel: string; botName: string; botLeague: string; botStyle: string;
+  outcome: DuelOutcome; tiebreak: boolean; playerCorrect: number; botCorrect: number; total: number; delta: number;
+  abandoned: boolean; playerMs: number | null; botMs: number | null; legs: DuelLegRow[];
+};
 export type SessionRow = {
   id: string; title: string; family: string; variant: string; group: SessionGroup; region: string;
   rounds: number; duration: string | null; pct: number | null; complete: boolean; startedAt: number; when: string;
-  pattern: string; avgTimeMs: number | null; bestStreak: number; misses: Array<{ id: string; name: string; flag?: string }>;
+  pattern: string; avgTimeMs: number | null; bestStreak: number; misses: Miss[];
+  /** Só nas linhas de duelo: adversário, placar, troféus e os dois tempos. */
+  duel?: DuelRow;
 };
 export type HistoryGroup = { key: string; label: string; sessions: number; rounds: number; pct: number | null; rows: SessionRow[] };
 
@@ -126,17 +142,23 @@ function timedRounds(session: SurfaceSession) {
   return session.rounds.map((round) => round.responseTimeMs).filter((ms): ms is number => typeof ms === "number" && ms >= 100 && ms <= 120_000);
 }
 
-function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number): SessionRow {
-  const label = sessionLabel(session);
-  const startedAt = startedAtOf(session);
-  const times = timedRounds(session);
-  const misses: SessionRow["misses"] = [];
+/** Os países errados, sem repetir (mesmo que tenha errado duas vezes). */
+function missesOf(rounds: SurfaceSession["rounds"], meta: Record<string, Meta>, flagOf: (id: string) => string | undefined): Miss[] {
+  const misses: Miss[] = [];
   const seen = new Set<string>();
-  for (const round of session.rounds) {
+  for (const round of rounds) {
     if (round.correct || !round.targetId || seen.has(round.targetId)) continue;
     seen.add(round.targetId);
     misses.push({ id: round.targetId, name: meta[round.targetId]?.pt ?? round.targetId, flag: flagOf(round.targetId) });
   }
+  return misses;
+}
+
+function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number): SessionRow {
+  const label = sessionLabel(session);
+  const startedAt = startedAtOf(session);
+  const times = timedRounds(session);
+  const misses = missesOf(session.rounds, meta, flagOf);
   return {
     id: session.id,
     title: `${label.family} · ${label.variant}`,
@@ -155,6 +177,74 @@ function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (
     bestStreak: longestStreak(session.rounds),
     misses,
   };
+}
+
+/** As partidas (tempos) de um duelo: as que trazem o id dele e, nos duelos de antes dos dois tempos, a única partida com o id do registro. */
+function legSessionsOf(record: DuelRecord, sessions: readonly SurfaceSession[]) {
+  return sessions
+    .filter((session) => session.duelId === record.sessionId || (!record.legs && session.id === record.sessionId))
+    .sort((a, b) => (a.duelLeg ?? 0) - (b.duelLeg ?? 0) || startedAtOf(a) - startedAtOf(b));
+}
+
+type LegSource = { group: ModeGroup | null; playerCorrect: number; botCorrect: number; total: number; playerMs?: number | null; botMs?: number };
+
+/** Uma linha por duelo, no lugar das partidas que o compõem (`used` diz quais sessões foram absorvidas). Sem as sessões, o registro sozinho basta. */
+function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceSession[], meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number) {
+  const used = new Set<string>();
+  const rows = duels.map((record): SessionRow => {
+    const mine = legSessionsOf(record, sessions);
+    mine.forEach((session) => used.add(session.id));
+    const bot = botById(record.botId);
+    const ladderLabel = t.duel.ladders[record.ladder];
+    const sources: LegSource[] = record.legs ?? [{ group: null, playerCorrect: record.playerCorrect, botCorrect: record.botCorrect, total: record.total }];
+    const legs: DuelLegRow[] = sources.map((leg, index) => {
+      const session = mine.find((item) => item.duelLeg === index) ?? (record.legs ? undefined : mine[0]);
+      const mode = leg.group ? t.duel.groups[leg.group] : session ? sessionLabel(session).variant : sessionLabel({ family: record.family, variant: record.variant }).variant;
+      return {
+        mode, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.total,
+        playerMs: typeof leg.playerMs === "number" ? leg.playerMs : null, botMs: typeof leg.botMs === "number" ? leg.botMs : null,
+        pattern: session ? session.rounds.slice(0, 30).map((round) => (round.correct ? "1" : "0")).join("") : "",
+        misses: session ? missesOf(session.rounds, meta, flagOf) : [],
+      };
+    });
+    const startedAt = mine.length ? Math.min(...mine.map(startedAtOf)) || record.at : record.at;
+    const spent = mine.reduce((sum, session) => sum + (session.startedAt && session.endedAt ? Math.max(0, session.endedAt - session.startedAt) : 0), 0);
+    const rounds = mine.flatMap((session) => session.rounds);
+    const abandoned = record.abandoned ?? (mine.length > 0 && (mine.length < (record.legs?.length ?? 1) || mine.some((session) => !session.complete)));
+    const seen = new Set<string>();
+    const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
+    return {
+      id: `duel:${record.sessionId}`,
+      title: t.progress.duelTitle(ladderLabel),
+      family: ladderLabel,
+      variant: "",
+      group: record.ladder === "mapas" ? "mapa" : "bandeiras",
+      region: mine[0] ? sessionRegionLabel(mine[0]) : t.regions.mundo[0],
+      rounds: record.total,
+      duration: formatDuration(spent),
+      pct: record.total ? roundPct(record.playerCorrect / record.total) : null,
+      complete: !abandoned,
+      startedAt,
+      when: relativeWhen(startedAt, now),
+      pattern: rounds.slice(0, 60).map((round) => (round.correct ? "1" : "0")).join(""),
+      avgTimeMs: mean(mine.flatMap(timedRounds)),
+      bestStreak: longestStreak(rounds),
+      misses,
+      duel: {
+        ladder: record.ladder, ladderLabel,
+        botName: bot ? botLabel(bot) : t.duel.opponent,
+        botLeague: bot ? t.duel.leagues[bot.league] : "",
+        botStyle: bot ? styleLabel(bot.style, bot.specialty) : "",
+        outcome: record.outcome, tiebreak: record.tiebreak,
+        playerCorrect: record.playerCorrect, botCorrect: record.botCorrect, total: record.total, delta: record.delta,
+        abandoned,
+        playerMs: legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null,
+        botMs: legs.every((leg) => leg.botMs !== null) ? legs.reduce((sum, leg) => sum + (leg.botMs as number), 0) : null,
+        legs,
+      },
+    };
+  });
+  return { rows, used };
 }
 
 export function buildProgressDashboard(input: DashboardInput): Dashboard {
@@ -389,7 +479,9 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
   };
 
   // ---- partidas (mais recentes primeiro)
-  const history = sessions.slice().reverse().map((session) => buildRow(session, meta, flagOf, now));
+  const duelRows = buildDuelRows(input.duels ?? [], sessions, meta, flagOf, now);
+  const history = [...sessions.filter((session) => !duelRows.used.has(session.id)).reverse().map((session) => buildRow(session, meta, flagOf, now)), ...duelRows.rows]
+    .sort((a, b) => b.startedAt - a.startedAt);
 
   return {
     empty: sessions.length === 0,

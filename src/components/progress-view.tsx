@@ -8,8 +8,10 @@ import {
   type Dashboard, type HistoryGroup, type PillarCard, type RegionRow, type ReviewItem, type SessionRow,
 } from "../domain/progress-dashboard";
 import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup } from "../domain/session-view";
+import { clockOf } from "../domain/duel-view";
 import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { Glyph } from "./achievement-art";
+import { Icon } from "./icons";
 import { ProgressHero } from "./progress-hero";
 import { compareText, t } from "../domain/i18n";
 
@@ -27,6 +29,27 @@ type FlagOf = (code?: string) => string | undefined;
 
 const LEVEL_COLORS = ["rgba(199,182,143,.7)", "#857b5f", "var(--rar-2, #2F6F6A)", "var(--rar-3, #AB7A1A)", "var(--rar-4, #B65F47)", "#C49345"];
 const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world" };
+const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0");
+
+// ---------- linhas de partida (o duelo é uma linha só: adversário, placar e troféus) ----------
+function RowIcon({ row }: { row: SessionRow }) {
+  return row.duel
+    ? <span className={`pr-sicon pr-sicon-duel is-${row.duel.outcome}`}><Icon type="swords" size={20} /></span>
+    : <span className="pr-sicon"><Glyph name={GROUP_ICON[row.group]} size={20} /></span>;
+}
+function RowTitle({ row }: { row: SessionRow }) {
+  return row.duel
+    ? <b>{row.title} <em className={`pr-oc is-${row.duel.outcome}`}>{t.progress.duelOutcome[row.duel.outcome]}</em></b>
+    : <b>{row.title}</b>;
+}
+function RowMeta({ row, when, flagIncomplete }: { row: SessionRow; when?: string; flagIncomplete?: boolean }) {
+  const lead = row.duel ? t.progress.duelVs(row.duel.botName, row.duel.botLeague) : row.region;
+  return <>
+    {lead} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}
+    {row.duel?.abandoned ? <> · <span className="pr-inc">{t.progress.duelLeft}</span></> : flagIncomplete && !row.complete ? <> · <span className="pr-inc">{t.progress.incomplete}</span></> : null}
+  </>;
+}
+const duelTrophiesText = (delta: number) => `${signed(delta)} ${t.duel.result.trophies}`;
 
 // ---------- topo ----------
 function StageTrack({ hero }: { hero: Dashboard["hero"] }) {
@@ -255,10 +278,12 @@ function Recent({ rows, onHistory, onGoHub }: { rows: SessionRow[]; onHistory: (
     <header><div><h2 id="pr-recentes">{t.progress.recent}</h2></div></header>
     {rows.length === 0
       ? <div className="pr-empty"><b>{t.progress.noMatches}</b><p>{t.progress.noMatchesHint}</p><button type="button" className="pr-cta-line" onClick={onGoHub}>{t.progress.goModes} <Glyph name="arrow" size={16} /></button></div>
-      : <ul>{rows.map((row) => <li key={row.id}>
-        <span className="pr-sicon"><Glyph name={GROUP_ICON[row.group]} size={20} /></span>
-        <div className="pr-s-main"><b>{row.title}</b><small>{row.region} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}</small></div>
-        <div className={`pr-s-res${row.pct !== null && row.pct < 60 ? " low" : ""}`}><b>{row.pct ?? 0}%</b><div className="pr-mini"><i style={{ width: `${row.pct ?? 0}%` }} /></div><small>{row.when}</small></div>
+      : <ul>{rows.map((row) => <li key={row.id} className={row.duel ? "is-duel" : undefined}>
+        <RowIcon row={row} />
+        <div className="pr-s-main"><RowTitle row={row} /><small><RowMeta row={row} when={row.duel ? row.when : undefined} /></small></div>
+        {row.duel
+          ? <div className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, duelTrophiesText(row.duel.delta))}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b><small>{duelTrophiesText(row.duel.delta)}</small></div>
+          : <div className={`pr-s-res${row.pct !== null && row.pct < 60 ? " low" : ""}`}><b>{row.pct ?? 0}%</b><div className="pr-mini"><i style={{ width: `${row.pct ?? 0}%` }} /></div><small>{row.when}</small></div>}
       </li>)}</ul>}
     {rows.length > 0 && <button type="button" className="pr-link pr-link-center" onClick={onHistory}>{t.progress.allHistory} <Glyph name="arrow" size={16} /></button>}
   </section>;
@@ -270,13 +295,16 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
   const when = group === "hoje" || group === "ontem" ? formatClock(row.startedAt) : formatShortDate(row.startedAt);
   const pct = row.pct ?? 0;
   return <article className={`pr-sess${open ? " is-open" : ""}`}>
-    <button type="button" className="pr-sess-row" aria-expanded={open} onClick={onToggle}>
-      <span className="pr-sicon"><Glyph name={GROUP_ICON[row.group]} size={20} /></span>
-      <span className="pr-s-main"><b>{row.title}</b><small>{row.region} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""} · {when}{!row.complete && <> · <span className="pr-inc">{t.progress.incomplete}</span></>}</small></span>
-      <span className={`pr-s-res${pct < 60 ? " low" : ""}`}><b>{pct}%</b><span className="pr-mini"><i style={{ width: `${pct}%` }} /></span></span>
+    <button type="button" className={`pr-sess-row${row.duel ? " is-duel" : ""}`} aria-expanded={open} onClick={onToggle}>
+      <RowIcon row={row} />
+      <span className="pr-s-main"><RowTitle row={row} /><small><RowMeta row={row} when={when} flagIncomplete /></small></span>
+      {row.duel
+        ? <span className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, duelTrophiesText(row.duel.delta))}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b><small>{duelTrophiesText(row.duel.delta)}</small></span>
+        : <span className={`pr-s-res${pct < 60 ? " low" : ""}`}><b>{pct}%</b><span className="pr-mini"><i style={{ width: `${pct}%` }} /></span></span>}
       <span className={`pr-chev${open ? " down" : ""}`}><Glyph name="chevron" size={18} stroke={2} /></span>
     </button>
-    {open && <div className="pr-sess-detail">
+    {open && row.duel && <DuelDetail row={row} duel={row.duel} flagOf={flagOf} />}
+    {open && !row.duel && <div className="pr-sess-detail">
       <div className="pr-sd-top">
         {row.pattern && <div className="pr-strip" role="img" aria-label={t.progress.stripAria(row.pattern.split("").filter((c) => c === "1").length, row.pattern.length)}>{row.pattern.split("").map((c, index) => <i key={index} className={c === "1" ? "ok" : "no"} />)}</div>}
         <dl>
@@ -292,8 +320,28 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
   </article>;
 }
 
+function DuelDetail({ row, duel, flagOf }: { row: SessionRow; duel: NonNullable<SessionRow["duel"]>; flagOf: FlagOf }) {
+  return <div className="pr-sess-detail pr-duel-detail">
+    <p className="pr-duel-vs"><b>{duel.botName}</b>{(duel.botLeague || duel.botStyle) && <span>{[duel.botLeague, duel.botStyle].filter(Boolean).join(" · ")}</span>}</p>
+    {duel.tiebreak && <p className="pr-duel-note">{t.duel.result.tiebreak}</p>}
+    <div className="pr-duel-legs">{duel.legs.map((leg, index) => <div className="pr-duel-leg" key={index}>
+      <div className="pr-duel-leg-h"><b>{duel.legs.length > 1 ? t.duel.result.legTitle(index + 1, leg.mode) : leg.mode}</b><div className="pr-duel-leg-r"><span>{leg.playerCorrect} × {leg.botCorrect}</span>{leg.playerMs !== null ? <small>{clockOf(leg.playerMs)}</small> : null}</div></div>
+      {leg.pattern && <div className="pr-strip" role="img" aria-label={t.progress.stripAria(leg.pattern.split("").filter((c) => c === "1").length, leg.pattern.length)}>{leg.pattern.split("").map((c, i) => <i key={i} className={c === "1" ? "ok" : "no"} />)}</div>}
+      {leg.pattern && <div className="pr-sd-miss">{leg.misses.length === 0
+        ? <span>{t.progress.noErrors}</span>
+        : <><span>{t.progress.youMissed}</span>{leg.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{leg.misses.length > 8 && <span>+{leg.misses.length - 8}</span>}</>}</div>}
+    </div>)}</div>
+    <div className="pr-sd-top"><dl>
+      <div><dt>{t.progress.duelTrophies}</dt><dd>{signed(duel.delta)}</dd></div>
+      {duel.playerMs !== null && <div><dt>{t.progress.duelYourTime}</dt><dd>{clockOf(duel.playerMs)}</dd></div>}
+      {duel.botMs !== null && <div><dt>{t.progress.duelBotTime(duel.botName)}</dt><dd>{clockOf(duel.botMs)}</dd></div>}
+      {row.avgTimeMs !== null && <div><dt>{t.progress.avgTime}</dt><dd>{formatSeconds(row.avgTimeMs)}</dd></div>}
+    </dl></div>
+  </div>;
+}
+
 function History({ rows, now, flagOf }: { rows: SessionRow[]; now: number; flagOf: FlagOf }) {
-  const [filter, setFilter] = useState<"todas" | SessionGroup>("todas");
+  const [filter, setFilter] = useState<"todas" | "duelo" | SessionGroup>("todas");
   const [region, setRegion] = useState("todos");
   const [onlyComplete, setOnlyComplete] = useState(false);
   const [visible, setVisible] = useState(PAGE);
@@ -304,16 +352,18 @@ function History({ rows, now, flagOf }: { rows: SessionRow[]; now: number; flagO
     return map;
   }, [rows]);
   const regions = useMemo(() => [...new Set(rows.map((row) => row.region))].sort(compareText), [rows]);
-  const filtered = useMemo(() => rows.filter((row) => (filter === "todas" || row.group === filter) && (region === "todos" || row.region === region) && (!onlyComplete || row.complete)), [rows, filter, region, onlyComplete]);
+  const duelCount = useMemo(() => rows.filter((row) => row.duel).length, [rows]);
+  const filtered = useMemo(() => rows.filter((row) => (filter === "todas" || (filter === "duelo" ? Boolean(row.duel) : row.group === filter)) && (region === "todos" || row.region === region) && (!onlyComplete || row.complete)), [rows, filter, region, onlyComplete]);
   const shown = useMemo(() => filtered.slice(0, visible), [filtered, visible]);
   const groups: HistoryGroup[] = useMemo(() => groupHistory(shown, now), [shown, now]);
-  const chips: Array<{ key: "todas" | SessionGroup; label: string; icon?: string; count: number }> = [
+  const chips: Array<{ key: "todas" | "duelo" | SessionGroup; label: string; icon?: string; count: number }> = [
     { key: "todas", label: t.progress.all, count: rows.length },
     { key: "bandeiras", label: t.sessions.groups.bandeiras, icon: "flag", count: counts.get("bandeiras") ?? 0 },
     { key: "mapa", label: t.sessions.groups.mapa, icon: "map", count: counts.get("mapa") ?? 0 },
     { key: "capitais", label: t.sessions.groups.capitais, icon: "pin", count: counts.get("capitais") ?? 0 },
     { key: "historicas", label: t.sessions.groups.historicas, count: counts.get("historicas") ?? 0 },
     { key: "idiomas", label: t.sessions.groups.idiomas, count: counts.get("idiomas") ?? 0 },
+    { key: "duelo", label: t.progress.duelChip, count: duelCount },
   ];
   if (rows.length === 0) return <div className="pr-card"><div className="pr-empty"><b>{t.progress.noMatches}</b><p>{t.progress.historyEmptyHint}</p></div></div>;
   return <>
@@ -375,6 +425,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
   const dashboard = useMemo(() => buildProgressDashboard({
     now,
     sessions: state.sessions,
+    duels: state.duels,
     records: state.progress.records ?? [],
     meta: data.meta,
     universe: data.mapEntityIds,

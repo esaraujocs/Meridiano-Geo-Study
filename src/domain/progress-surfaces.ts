@@ -10,6 +10,7 @@ import type { Region } from "./types.js";
 import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals } from "./pillars.js";
 import { dominatedIdsFromSessions } from "./dominated.js";
 import { t } from "./i18n/index.js";
+import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
 
 export type SurfaceSession = {
   id: string;
@@ -31,6 +32,9 @@ export type SurfaceSession = {
   column?: string;
   /** "pais" ou "capital" (assunto da partida). */
   subject?: string;
+  /** Duelo a que a partida pertence e o número do tempo (0 ou 1); só nas partidas jogadas dentro de um duelo. */
+  duelId?: string;
+  duelLeg?: number;
   correct: number;
   accuracy: number | null;
   averageTime: number | null;
@@ -115,6 +119,8 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     roundLimit: value?.roundLimit === null ? null : typeof value?.roundLimit === "number" ? value.roundLimit : undefined,
     column: typeof value?.column === "string" ? value.column : undefined,
     subject: typeof value?.subject === "string" ? value.subject : typeof value?.assunto === "string" ? value.assunto : undefined,
+    duelId: typeof value?.duelId === "string" ? value.duelId : undefined,
+    duelLeg: typeof value?.duelLeg === "number" ? value.duelLeg : undefined,
     correct,
     accuracy: total ? correct / total : null,
     averageTime: times.length ? times.reduce((sum: number, time: number) => sum + time, 0) / times.length : null,
@@ -219,13 +225,15 @@ export function evaluateAchievements(progress: ProgressSnapshot, sessions: Surfa
 }
 export async function querySurfaces(data?: Legacy) {
   const db = await openDb();
-  const [rawSessions, progress, achievements, historical] = await Promise.all([
+  const [rawSessions, progress, achievements, historical, preferences] = await Promise.all([
     all<any>(db.transaction("sessions", "readonly").objectStore("sessions")),
     all<any>(db.transaction("progress", "readonly").objectStore("progress")),
     all<any>(db.transaction("achievements", "readonly").objectStore("achievements")),
     all<any>(db.transaction("historicalCollection", "readonly").objectStore("historicalCollection")),
+    all<any>(db.transaction("preferences", "readonly").objectStore("preferences")),
   ]);
   db.close();
+  const duels = preferences.filter((row) => String(row?.id ?? "").startsWith(DUEL_ID_PREFIX)).map(parseDuel).filter((item): item is DuelRecord => item !== null);
   const sessions = rawSessions.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
   const universe = canonicalCurrentIds(data?.meta);
   const snapshot = deriveProgress(progress, universe, sessions);
@@ -243,7 +251,7 @@ export async function querySurfaces(data?: Legacy) {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl, record?.columns);
   }) : [];
-   return { sessions, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
+   return { sessions, duels, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
 }
 
 export async function queryCollectionSummary(data: Legacy) {

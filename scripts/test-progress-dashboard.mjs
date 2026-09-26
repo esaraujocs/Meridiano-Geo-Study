@@ -228,6 +228,40 @@ assert.equal(groups[1].pct, 76);
 const old = groupHistory([{ ...d.history[0], startedAt: new Date(2025, 10, 3, 10).getTime() }, { ...d.history[0], startedAt: new Date(2026, 6, 3, 10).getTime() }], NOW);
 assert.deepEqual(old.map((group) => group.label), ["Novembro 2025", "Julho"]);
 
+// duelo: uma linha só no histórico (as duas partidas que o compõem somem da lista, mas seguem contando para maestria e pilares)
+const duelTargets = ["br", "ar", "fr", "de", "jm", "br", "ar", "fr", "de", "jm"];
+const legSession = (id, leg, startedAt, pattern, complete = true) => normalizeSession({ id, family: "bandeiras", variant: "nome-bandeira", region: "mundo", regions: ["mundo"], startedAt, endedAt: startedAt + 90_000, complete, duelId: "dz1", duelLeg: leg, rounds: rounds(duelTargets, pattern, 2000, null) });
+const duelSessions = [legSession("dl0", 0, at(20, 8, 40), "1111011110"), legSession("dl1", 1, at(20, 8, 42), "1010110111")];
+assert.deepEqual([duelSessions[1].duelId, duelSessions[1].duelLeg], ["dz1", 1], "a partida guarda a que duelo e a que tempo pertence");
+const duelRecord = { id: "duel:dz1", sessionId: "dz1", at: at(20, 8, 44), botId: "bot-prata-4", ladder: "bandeiras", family: "bandeiras", variant: "nome-bandeira", playerCorrect: 15, total: 20, botCorrect: 12, outcome: "win", tiebreak: false, delta: 37, legs: [
+  { group: "atuais", playerCorrect: 8, botCorrect: 6, total: 10, playerMs: 30_000, botMs: 40_000 },
+  { group: "historicas", playerCorrect: 7, botCorrect: 6, total: 10, playerMs: 35_000, botMs: 42_000 },
+] };
+const withDuel = build({ sessions: [...sessions, ...duelSessions], duels: [duelRecord] });
+assert.equal(withDuel.history.length, 5, "4 partidas soltas + 1 duelo (e não 6: os dois tempos viram uma linha)");
+assert.ok(!withDuel.history.some((row) => row.id === "dl0" || row.id === "dl1"), "os tempos não aparecem como partidas");
+const duelRow = withDuel.history[0];
+assert.equal(withDuel.recent[0].id, duelRow.id, "o duelo também abre as recentes");
+assert.equal(duelRow.title, "Duelo · Bandeiras");
+assert.deepEqual([duelRow.rounds, duelRow.pct, duelRow.complete, duelRow.duration, duelRow.region], [20, 75, true, "3 min", "Mundo"]);
+assert.deepEqual([duelRow.duel.botName, duelRow.duel.botLeague, duelRow.duel.outcome, duelRow.duel.playerCorrect, duelRow.duel.botCorrect, duelRow.duel.delta], ["Bruna Sul", "Prata", "win", 15, 12, 37]);
+assert.match(duelRow.duel.botStyle, /^Especialista/);
+assert.deepEqual(duelRow.duel.legs.map((leg) => [leg.mode, leg.playerCorrect, leg.botCorrect, leg.pattern]), [["Bandeiras atuais", 8, 6, "1111011110"], ["Históricas", 7, 6, "1010110111"]]);
+assert.deepEqual(duelRow.duel.legs[0].misses.map((miss) => miss.name), ["Jamaica"], "o que errou em cada tempo");
+assert.deepEqual([duelRow.duel.playerMs, duelRow.duel.botMs], [65_000, 82_000], "o tempo dos dois é a soma dos tempos");
+assert.equal(duelRow.duel.abandoned, false);
+assert.equal(duelRow.avgTimeMs, 2000);
+assert.equal(groupHistory(withDuel.history, NOW)[0].sessions, 2, "hoje: a partida s4 e o duelo, que conta como 1 partida (e não 3)");
+const bothLegs = build({ sessions: [...sessions, ...duelSessions] });
+assert.equal(bothLegs.history.length, 6, "sem o registro do duelo, as partidas continuam aparecendo (nada some)");
+const left = build({ sessions: [...sessions, legSession("dl0", 0, at(20, 8, 40), "111", false)], duels: [{ ...duelRecord, playerCorrect: 3, botCorrect: 7, outcome: "loss", delta: -27, legs: duelRecord.legs.map((leg) => ({ ...leg, playerCorrect: 0 })), abandoned: true }] }).history[0];
+assert.deepEqual([left.complete, left.duel.abandoned, left.duel.outcome], [false, true, "loss"]);
+const orphan = build({ sessions, duels: [{ ...duelRecord, legs: duelRecord.legs.map(({ playerMs, botMs, ...leg }) => leg) }] }).history[0];
+assert.deepEqual([orphan.pattern, orphan.region, orphan.duel.playerMs, orphan.duel.legs[0].pattern, orphan.duration], ["", "Mundo", null, "", null], "sem as partidas (ou sem os tempos gravados), o registro sozinho basta");
+const v1 = build({ sessions: [...sessions, normalizeSession({ id: "old1", family: "bandeiras", variant: "nome-bandeira", region: "mundo", regions: ["mundo"], startedAt: at(20, 8, 40), endedAt: at(20, 8, 45), complete: true, rounds: rounds(duelTargets, "1111011110", 2000, null) })], duels: [{ id: "duel:old1", sessionId: "old1", at: at(20, 8, 46), botId: "bot-bronze", ladder: "bandeiras", family: "bandeiras", variant: "nome-bandeira", playerCorrect: 9, total: 10, botCorrect: 6, outcome: "win", tiebreak: false, delta: 30 }] });
+assert.equal(v1.history.length, 5, "duelo antigo (uma partida só) também vira uma linha");
+assert.deepEqual([v1.history[0].duel.botName, v1.history[0].duel.legs.length, v1.history[0].duel.legs[0].mode], ["Bot Bronze", 1, "Nome → bandeira"], "bot antigo sem nome vira Bot + liga");
+
 // perfil novo
 const empty = buildProgressDashboard({ now: NOW, sessions: [], records: [], meta, universe, dominatedIds: [], titleIds: [], pillars: {}, album: { discovered: 0, total: 7, distribution: [7, 0, 0, 0, 0, 0] }, economy: { level: 1, xp: 0, xpBase: 0, xpNext: 50, completedSessions: 0, rounds: 0 } });
 assert.equal(empty.empty, true);

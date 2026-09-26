@@ -125,7 +125,8 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, s
 export const DUEL_ID_PREFIX = "duel:";
 export const DUEL_SOURCE = "duel-v1";
 
-export type DuelLegRecord = { group: ModeGroup; playerCorrect: number; botCorrect: number; total: number };
+/** `playerMs` e `botMs` (tempo gasto no tempo, em ms) só existem nos duelos gravados depois do histórico unificado. */
+export type DuelLegRecord = { group: ModeGroup; playerCorrect: number; botCorrect: number; total: number; playerMs?: number | null; botMs?: number };
 export type DuelRecord = {
   id: string;
   sessionId: string;
@@ -149,6 +150,8 @@ export type DuelRecord = {
   mmrExp?: number;
   /** Só no duelo em dois tempos. */
   legs?: DuelLegRecord[];
+  /** A pessoa saiu antes de terminar os dois tempos (o que faltou valeu zero). Sem o campo, o histórico deduz pelas sessões. */
+  abandoned?: boolean;
 };
 
 export const duelRecordId = (sessionId: string) => `${DUEL_ID_PREFIX}${sessionId}`;
@@ -189,6 +192,7 @@ export function parseDuel(row: unknown): DuelRecord | null {
     ...(typeof item.mmrSigma === "number" && Number.isFinite(item.mmrSigma) ? { mmrSigma: item.mmrSigma } : {}),
     ...(typeof item.mmrExp === "number" && Number.isFinite(item.mmrExp) ? { mmrExp: item.mmrExp } : {}),
     ...(legs ? { legs } : {}),
+    ...(typeof item.abandoned === "boolean" ? { abandoned: item.abandoned } : {}),
   };
 }
 

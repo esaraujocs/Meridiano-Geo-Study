@@ -233,7 +233,8 @@ export function App() {
       id: duelRecordId(run.id), sessionId: run.id, at: Date.now(), botId: run.bot.id, ladder: run.ladder,
       family: run.legs[0].family, variant: run.legs[0].variant, playerCorrect: outcome.playerCorrect, total: outcome.total, botCorrect: outcome.botCorrect,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL, mmrSigma: outcome.mmrSigma, mmrExp: outcome.mmrExp,
-      legs: outcome.legs.map((leg) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds })),
+      legs: outcome.legs.map((leg, index) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds, playerMs: run.done[index]?.playerMs ?? null, botMs: leg.botMs })),
+      abandoned: run.done.length < LEGS,
     };
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];
     setDuels(nextDuels);
