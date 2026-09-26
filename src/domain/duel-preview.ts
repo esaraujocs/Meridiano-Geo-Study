@@ -30,6 +30,7 @@ const SCENARIOS: Record<string, Scenario> = {
   t2: { from: 1240, to: 1286, legs: [[10, 10], [10, 10]], bot: [5, 4], streakBefore: 4, streakAfter: 5, bonus: 12, perf: 4, coins: [480, 320], completion: 280 },
   t3: { from: 1320, to: 1352, legs: [[8, 10], [7, 10]], bot: [6, 6], streakBefore: 0, streakAfter: 1, coins: [420, 300], completion: 100 },
   t4: { from: 1480, to: 1512, legs: [[8, 10], [8, 10]], bot: [6, 6], streakBefore: 1, streakAfter: 2, bonus: 3, milestones: ["league:platina"], coins: [430, 310], completion: 100 },
+  tprata: { from: 486, to: 531, legs: [[8, 10], [7, 10]], bot: [6, 5], streakBefore: 2, streakAfter: 3, bonus: 6, perf: 3, milestones: ["league:prata"], coins: [412, 296], completion: 100 },
   loss: { from: 1240, to: 1215, legs: [[6, 10], [3, 10]], bot: [7, 6], streakBefore: 4, streakAfter: 0, coins: [302, 144], completion: 0 },
   close: { from: 1240, to: 1218, legs: [[7, 10], [6, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [340, 280], completion: 0 },
   ddiv: { from: 1170, to: 1142, legs: [[4, 10], [4, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [180, 170], completion: 0 },
