@@ -114,8 +114,7 @@ export const es: Messages = {
       winRange: (lo: string, hi: string) => (lo === hi ? `Ganar: +${lo}` : `Ganar: +${lo} a +${hi}`),
       loseRange: (lo: string, hi: string) => (lo === hi ? `Perder: −${lo}` : `Perder: −${lo} a −${hi}`),
       noLoss: "Perder: sin perder trofeos",
-      higherBot: "Rival de una liga por encima de la tuya",
-      higherBot2: (top: number) => `Rival dos ligas por encima: la victoria rinde hasta ${top}`,
+      higherBot: (max: string) => `Rival por encima de tu nivel: la victoria rinde hasta ${max}`,
       streakStake: (n: number, bonus: number) => `Racha de ${n} ${plural(n, "victoria", "victorias")}: +${bonus} si ganas`,
       start: "Empezar duelo",
       cancel: "Cancelar",
@@ -275,7 +274,7 @@ export const es: Messages = {
       howPoints: (base: number, perf: number, cap: number, top: number) => [
         `Victoria: ${base} de base, más hasta +${perf} por rendimiento (aciertos por delante del rival) y +3 por victoria seguida (hasta +12), con un tope de ${cap} sobre la base.`,
         "Si juegas al nivel de tu liga (ganas y pierdes cerca del 50%), un nivel de juego escondido te sujeta: para subir hay que demostrar más, y por eso baja la ganancia de trofeos.",
-        `Si juegas por encima de la liga, ganas más, pierdes menos y el sorteo empieza a traer bots de ligas más altas; vencer a un bot dos ligas por encima puede rendir hasta ${top}. Si juegas por debajo, ganas menos y pierdes más.`,
+        `Si juegas por encima de la liga, ganas más, pierdes menos y el sorteo empieza a traer bots de ligas más altas; cuanto más te supera el bot, más rinde la victoria (hasta ${top} contra un bot dos ligas por encima). Si juegas por debajo, ganas menos y pierdes más.`,
         "Una derrota ajustada cuesta menos; una goleada cuesta más. Los trofeos nunca bajan de cero.",
         "Desde Diamante la victoria rinde cada vez menos y la derrota cuesta cada vez más. Maestro no tiene techo, pero la curva se cierra: es el límite de quienes tienen el mejor rendimiento.",
       ],

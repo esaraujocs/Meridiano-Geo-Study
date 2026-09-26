@@ -1,7 +1,7 @@
 // Simulador dos troféus do Duelo (ferramenta de ajuste, não é teste): joga milhares de duelos de jogadores com uma "habilidade" fixa
 // (na escala dos troféus: habilidade 1250 empata com os bots do Ouro) e mostra como a subida se comporta com as regras de mmr.ts: MMR com
 // incerteza e surpresa, matchmaking pelo rating e força contínua do bot.
-// Uso: node scripts/sim-trophies.mjs [jogadores por habilidade] [taxa máxima de vitória, 0,85] [bônus por liga acima, ex. 0,0,20]
+// Uso: node scripts/sim-trophies.mjs [jogadores por habilidade] [taxa máxima de vitória, 0,85] [troféus de bônus por liga acima, 10]
 import { execFileSync } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -18,7 +18,7 @@ const M = await import(pathToFileURL(join(out, "mmr.js")).href);
 const RUNS = Number(process.argv[2] || 200);
 // ninguém vence mais de 85% dos duelos: o bot do Mestre acerta ~96% e a pessoa só o vence por acertos ou pelo tempo
 const MAX_WIN_RATE = Number(process.argv[3] || 0.85);
-const LEAD_SCHEDULE = process.argv[4] ? process.argv[4].split(",").map(Number) : M.LEAD_BONUS;
+const LEAD_BONUS = process.argv[4] ? Number(process.argv[4]) : M.LEAD_PER_LEAGUE;
 const SKILLS = [300, 600, 900, 1250, 1600, 2000, 2400, 2700, 3000, 3600];
 const CHECK = [25, 50, 100, 200, 400, 1000];
 const LONG = 3000;
@@ -43,8 +43,8 @@ function play(skill, games, seed) {
     const size = (mean) => Math.max(1, Math.min(15, Math.round(mean + gauss(random) * 2)));
     const margin = win ? size(3 + advantage) : -size(3 - advantage);
     const outcome = win ? "win" : "loss";
-    const lead = Math.max(0, L.leagueOf(rating).index - L.leagueOf(trophies).index);
-    const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD_SCHEDULE });
+    const lead = M.leadOf(rating, trophies);
+    const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD_BONUS });
     if (change.delta >= 60) { big += 1; if (game <= 60) bigEarly += 1; }
     best = Math.max(best, change.delta);
     gapSum += mmr - trophies;

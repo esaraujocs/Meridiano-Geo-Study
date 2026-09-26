@@ -4,7 +4,7 @@
 import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
-import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
+import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
 
 /** Duelo v1 (uma partida só, 20 rodadas). O v2 usa LEGS x LEG_ROUNDS de duel-modes.ts. */
@@ -16,7 +16,7 @@ export const botRating = (bot: Pick<Bot, "league">, division: 1 | 2 | 3 | null =
 
 export type DuelOutcome = "win" | "loss" | "draw";
 // Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.
-export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
+export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, leadOf, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
 export type { SurpriseSample };
 
 export type DuelInput = {
@@ -68,9 +68,9 @@ function settle(input: { trophies: number; mmr?: number; sigma?: number; recent?
     tiebreak = true;
   }
   const margin = playerCorrect - botCorrect;
-  // quantas ligas o bot está acima da liga da pessoa (o matchmaking pelo MMR traz bots de liga acima): soma ao ganho da vitória
+  // quantas ligas o bot está acima da pessoa (crescente, pelo rating): soma ao ganho da vitória
   const opponent = input.rating ?? botRating(bot, input.division ?? null);
-  const lead = Math.max(0, (input.rating === undefined ? LEAGUES.indexOf(bot.league) : leagueOf(opponent).index) - leagueOf(trophies).index);
+  const lead = input.rating === undefined ? Math.max(0, LEAGUES.indexOf(bot.league) - leagueOf(trophies).index) : leadOf(opponent, trophies);
   const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead });
   const trophiesAfter = Math.max(0, trophies + change.delta);
   const sigma = input.sigma ?? SIGMA_MIN;

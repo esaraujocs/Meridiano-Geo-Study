@@ -18,9 +18,11 @@ export const BASE_WIN = 33;
 export const BASE_LOSS = 27;
 /** O teto da vitória é o ganho-base + isto (50 no começo): sequência e desempenho boostam até aí. */
 export const WIN_CAP_EXTRA = 17;
-/** Bônus por enfrentar bot de liga acima da sua, por liga de diferença (0, 1 ou 2): soma ao ganho e ao teto, então só a vitória sobre um bot
- *  duas ligas acima passa dos 50 (até 50 + 20 = 70). */
-export const LEAD_BONUS: readonly number[] = [0, 0, 20];
+/** Bônus por enfrentar um bot acima do nível da pessoa, crescente e sem degraus: LEAD_PER_LEAGUE troféus por liga de diferença (500 troféus de rating
+ *  acima dos troféus da pessoa), até LEAD_MAX ligas. Soma ao ganho e ao teto, então com o bot meia liga acima o teto já passa dos 50 e só com um bot duas
+ *  ligas acima chega a 50 + 20 = 70. */
+export const LEAD_PER_LEAGUE = 10;
+export const LEAD_MAX = 2;
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
 export const PERF_SPAN = 8;
@@ -81,6 +83,9 @@ export const streakBonus = (streak: number) => STREAK_STEP * Math.min(STREAK_CAP
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
+
+/** Quantas ligas o rating do bot está acima dos troféus da pessoa (0 se está abaixo), até LEAD_MAX. */
+export const leadOf = (rating: number, trophies: number) => clamp(((Number.isFinite(rating) ? rating : 0) - (Number.isFinite(trophies) ? trophies : 0)) / LEAGUE_SPAN, 0, LEAD_MAX);
 
 /** Ganho e perda-base de quem está com esses troféus: iguais até a Platina e, no alto, encolhendo e crescendo com a altura. `scale` é quanto o
  *  ganho já encolheu (1 fora do alto): os bônus de sequência e desempenho encolhem na mesma proporção, senão furariam o limite. */
@@ -148,15 +153,15 @@ export type TrophyInput = {
   outcome: "win" | "loss" | "draw";
   /** Acertos da pessoa menos os do bot. */
   margin: number;
-  /** Quantas ligas o bot está acima da liga da pessoa (matchmaking pelo MMR); só a vitória usa. */
+  /** Quantas ligas o bot está acima da pessoa (ver leadOf; pode ser fracionário); só a vitória usa. */
   lead?: number;
-  /** Bônus por liga de diferença (sem valor, LEAD_BONUS). */
-  leadBonus?: readonly number[];
+  /** Bônus por liga de diferença (sem valor, LEAD_PER_LEAGUE). */
+  leadBonus?: number;
 };
 export type TrophyChange = { delta: number; streakBonus: number; perfBonus: number };
 
 /** Quanto o duelo mexe nos troféus (antes do chão em zero): o valor-base, o MMR, a sequência e o desempenho. */
-export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadBonus = LEAD_BONUS }: TrophyInput): TrophyChange {
+export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadBonus = LEAD_PER_LEAGUE }: TrophyInput): TrophyChange {
   const { win, loss, scale, minWin } = baseStakes(trophies);
   const factors = gapFactors(mmr - trophies);
   if (outcome === "win") {
@@ -166,7 +171,7 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
     const room = Math.max(0, win + Math.round(WIN_CAP_EXTRA * scale) - base);
     const streakApplied = Math.min(room, Math.round(streakBonus(streak) * hold));
     const perfApplied = Math.min(room - streakApplied, Math.round(PERF_MAX * hold * clamp01(margin / PERF_SPAN)));
-    const leadExtra = Math.round((leadBonus[Math.min(Math.max(0, Math.floor(lead)), leadBonus.length - 1)] ?? 0) * scale);
+    const leadExtra = Math.round(clamp(Number.isFinite(lead) ? lead : 0, 0, LEAD_MAX) * leadBonus * scale);
     return { delta: Math.max(minWin, base + streakApplied + perfApplied + leadExtra), streakBonus: streakApplied, perfBonus: perfApplied };
   }
   if (outcome === "loss") {

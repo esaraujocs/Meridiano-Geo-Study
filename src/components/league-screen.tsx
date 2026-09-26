@@ -5,7 +5,7 @@ import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
 import { leaderboard, rankWindow } from "../domain/leaderboard";
-import { BASE_WIN, LEAD_BONUS, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
+import { BASE_WIN, LEAD_MAX, LEAD_PER_LEAGUE, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
 
@@ -136,7 +136,7 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
                 </tr>;
               })}</tbody>
             </table>
-            <ul>{t.duel.league.howPoints(BASE_WIN, PERF_MAX, WIN_CAP_EXTRA, BASE_WIN + WIN_CAP_EXTRA + (LEAD_BONUS[LEAD_BONUS.length - 1] ?? 0)).map((point, index) => <li key={index}>{point}</li>)}</ul>
+            <ul>{t.duel.league.howPoints(BASE_WIN, PERF_MAX, WIN_CAP_EXTRA, BASE_WIN + WIN_CAP_EXTRA + LEAD_PER_LEAGUE * LEAD_MAX).map((point, index) => <li key={index}>{point}</li>)}</ul>
           </details>
         </section>
 

@@ -672,16 +672,19 @@ assert.deepEqual(plan({ streakBonus: 3, perfBonus: 5, streakAfter: 4 }).pills.ma
 assert.deepEqual(lp({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "stay"], "derrota não tem pílula de desempenho");
 
 // bônus por enfrentar bot de liga acima: desligado por padrão e, ligado, soma ao ganho e ao teto (50 + 20 = 70 duas ligas acima)
-assert.deepEqual(X.LEAD_BONUS, [0, 0, 20], "só a vitória sobre bot duas ligas acima passa dos 50");
+assert.deepEqual([X.LEAD_PER_LEAGUE, X.LEAD_MAX], [10, 2], "10 troféus por liga acima, até 2 ligas: teto de 70");
+// leadOf: quantas ligas o rating do bot passa dos troféus da pessoa (crescente, sem degraus)
+assert.equal(X.leadOf(1281, 1091), 0.38); assert.equal(X.leadOf(1000, 1091), 0, "bot abaixo: nada"); assert.equal(X.leadOf(3000, 1000), 2, "no máximo 2 ligas"); assert.equal(X.leadOf(NaN, 100), 0);
 const leadArgs = { trophies: 100, mmr: 300, streak: 4, outcome: "win", margin: 8 };
-assert.equal(X.trophyChange({ ...leadArgs, lead: 2 }).delta, 70, "duas ligas acima: teto de 70");
-assert.equal(X.trophyChange({ ...leadArgs, lead: 1 }).delta, 50, "uma liga acima: o teto de sempre");
-assert.equal(X.trophyChange({ ...leadArgs, lead: 0 }).delta, 50, "mesma liga: o teto de sempre");
-assert.equal(X.trophyChange({ ...leadArgs, lead: 1, leadBonus: [0, 10, 20] }).delta, 60, "outros valores continuam possíveis (simulador)");
+assert.deepEqual([0, 0.25, 0.5, 1, 1.5, 2, 5].map((lead) => X.trophyChange({ ...leadArgs, lead }).delta), [50, 53, 55, 60, 65, 70, 70], "o teto sobe de 50 a 70 aos poucos, não de uma vez");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 2, leadBonus: 5 }).delta, 60, "outros valores continuam possíveis (simulador)");
+assert.equal(X.trophyChange({ ...leadArgs, lead: -3 }).delta, 50, "bot abaixo não tira nada");
+assert.equal(X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "win", margin: 0, lead: 1 }).delta, 33 + 10, "sem sequência nem desempenho o bônus soma direto ao ganho");
 assert.equal(X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4, lead: 2 }).delta, X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4 }).delta, "a derrota não usa o bônus");
 assert.equal(X.trophyChange({ trophies: 4000, mmr: 4000, streak: 0, outcome: "win", margin: 0, lead: 2 }).delta, X.baseStakes(4000).win + Math.round(20 * X.baseStakes(4000).scale), "no alto o bônus encolhe junto com a vitória");
 assert.deepEqual(D.stakesRange(100, 100, 0, 0).win, [33, 41]);
 assert.deepEqual(D.stakesRange(100, 100, 0, 2).win, [53, 61], "a prévia inclui a liga do bot");
+assert.deepEqual(D.stakesRange(100, 100, 0, 0.5).win, [38, 46], "e cresce aos poucos com a força do bot");
 // o duelo usa a liga do bot sorteado contra a liga da pessoa
 const dlead = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead", division: 3, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
 assert.equal(dlead.outcome, "win"); assert.equal(dlead.delta, 33 + dlead.streakBonus + dlead.perfBonus + 20, "bot de Ouro contra quem está no Bronze: +20");
@@ -701,6 +704,8 @@ assert.ok(sigDuel(60, { recent: [] }).mmrSigma <= 60 + 1e-9, "sem surpresa a inc
 // lead pelo rating: o bot é da liga do rating
 const dByRating = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead2", division: 3, rating: 1300, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
 assert.equal(dByRating.delta, 33 + dByRating.streakBonus + dByRating.perfBonus + 20, "rating de Ouro contra quem está no Bronze: +20");
+const dNear = D.resolveDuelLegs({ trophies: 1091, bot: ouro, seed: "lead3", division: 2, rating: 1281, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
+assert.equal(dNear.delta, 33 + dNear.streakBonus + dNear.perfBonus + 4, "rating 190 acima dos troféus: +4 (0,38 liga x 10), sem degrau");
 // a corrida leva rating, incerteza e surpresa
 const runWithSigma = U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 800, division: 2, rating: 1100, legs: legsX, sigma: 200, samples: hotSamples });
 assert.deepEqual([runWithSigma.rating, runWithSigma.sigma, runWithSigma.samples.length], [1100, 200, 9]);
