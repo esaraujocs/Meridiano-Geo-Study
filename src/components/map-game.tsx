@@ -7,7 +7,7 @@ import { inRegion, normalizeRegionSelection, REGION_CAMERA, regionLabel } from "
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
-import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
@@ -60,7 +60,8 @@ export function Game({
 }) {
   const engineFamily = family ?? "mapa";
   const engineVariant = variant ?? "mapa";
-  const { pace, roundLimit, timerSeconds } = sessionSettings(options, engineVariant);
+  const settings = sessionSettings(options, engineVariant);
+  const { pace, roundLimit, timerSeconds } = settings;
   // No Treino (sem cronômetro, rende 50%) cada país/capital perguntado fica marcado no mapa com o nome
   // escrito, acertando ou errando — é o que diferencia Treino de Partida além do cronômetro/moedas.
   const revealNames = pace === "training";
@@ -91,7 +92,7 @@ export function Game({
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<GeoFeature>> | null>(null);
   const queuedRoundsRef = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
   const leaveGuard = useLeaveGuard();
-  const log = useRoundLog(engineVariant, pace);
+  const log = useRoundLog(settings.coinVariant ?? engineVariant, pace);
   const featureSignature = mapDeckSignature(features.map((item) => item.id));
   // Territórios absorvidos (Guadalupe, Martinica...) nunca são alvo, mas aparecem com o recorte;
   // seguem a mesma regra do "Só ONU" das demais entidades pequenas (não são membros).
@@ -110,6 +111,8 @@ export function Game({
       pace,
       roundLimit,
       timerSeconds,
+      coinVariant: settings.coinVariant,
+      duel: settings.duel,
     });
     pendingSessionRef.current = pending;
     pending
@@ -188,7 +191,7 @@ export function Game({
     setTimedOut(false);
     setSerial((value) => value + 1);
   };
-  const newDeck = () => createFiniteDeck(features, seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000), roundLimit);
+  const newDeck = () => createFiniteDeck(features, deckSeedFor(seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
 
   useEffect(() => {
     deckRef.current = newDeck();

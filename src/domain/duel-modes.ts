@@ -47,6 +47,9 @@ export const LADDER_BASE: Record<Ladder, ModeVariant> = {
   bandeiras: { family: "bandeiras", variant: "nome-bandeira" },
 };
 
+/** O grupo do modo base de cada escada (o que as moedas de prévia imitam). */
+export const LADDER_BASE_GROUP: Record<Ladder, ModeGroup> = { mapas: "mapa", bandeiras: "atuais" };
+
 export const LEGS = 2;
 export const LEG_ROUNDS = 10;
 
@@ -70,6 +73,13 @@ export function drawLegs(ladder: Ladder, seed: string, ownedGroups?: ReadonlySet
     return { group: def.group, family: pick.family, variant: pick.variant, rounds: LEG_ROUNDS, deckSeed: hashSeed(`deck:${seed}:${index}:${def.group}`) };
   };
   return [leg(first, 0), leg(second, 1)];
+}
+
+/** Um tempo de um grupo escolhido à mão (teste com ?debug=1): o sentido e o baralho ainda vêm da semente. */
+export function legOfGroup(group: ModeGroup, seed: string, index: number): DuelLeg {
+  const def = groupDef(group);
+  const pick = def.variants[Math.floor(mulberry32(hashSeed(`variant:${seed}:${index}`))() * def.variants.length)];
+  return { group, family: pick.family, variant: pick.variant, rounds: LEG_ROUNDS, deckSeed: hashSeed(`deck:${seed}:${index}:${group}`) };
 }
 
 /** Modo liberado: grátis ou já comprado (o desbloqueio vale para o modo, não para o recorte). */

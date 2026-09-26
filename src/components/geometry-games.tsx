@@ -16,7 +16,7 @@ import {
   travelDestinationIds,
 } from "../domain/legacy-geometry";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
-import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
@@ -38,7 +38,7 @@ function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "t
   const queued = useRef<SessionRound[]>([]);
   useEffect(() => {
     let alive = true;
-    pending.current = startLearningSession({ family, variant, region, ...settings });
+    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel });
     pending.current.then((handle) => {
       if (alive) {
         ref.current = handle;
@@ -88,7 +88,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const settings = sessionSettings(options, engineVariant);
   const session = useSession("silhueta", engineVariant, region, settings);
   const leaveGuard = useLeaveGuard();
-  const log = useRoundLog(engineVariant, settings.pace);
+  const log = useRoundLog(settings.coinVariant ?? engineVariant, settings.pace);
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
     if (destination === "home") location.href = "/";
@@ -124,7 +124,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const optionsFor = (id: string) => shuffleAnswerOptions([id, ...shuffleAnswerOptions(ids.filter((item) => item !== id)).slice(0, 3)]);
   useEffect(() => {
     if (ids.length) {
-       deck.current = createFiniteDeck(ids, seedFromParts("silhueta", variant ?? "silhueta", JSON.stringify(region), ids.join("|")) ^ Math.floor(Math.random() * 0x100000000), settings.roundLimit);
+       deck.current = createFiniteDeck(ids, deckSeedFor(seedFromParts("silhueta", variant ?? "silhueta", JSON.stringify(region), ids.join("|")), settings.deckSeed), settings.roundLimit);
        const first = deck.current.draw();
        if (!first) return;
        setTarget(first);

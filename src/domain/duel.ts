@@ -58,6 +58,14 @@ function settle(input: { trophies: number; bot: Bot; playerCorrect: number; botC
   return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter };
 }
 
+/** O que está em jogo antes do duelo: troféus se vencer e se perder (com os pisos de MIN_SWING e o chão em zero). */
+export function previewStakes(trophies: number, bot: Pick<Bot, "league">) {
+  const expected = expectedScore(trophies, botRating(bot));
+  const win = Math.max(MIN_SWING, Math.round(TROPHY_K * (1 - expected)));
+  const loss = Math.min(-MIN_SWING, Math.round(TROPHY_K * (0 - expected)));
+  return { win: Math.max(0, trophies + win) - Math.max(0, trophies), loss: Math.max(0, trophies + loss) - Math.max(0, trophies) };
+}
+
 export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context }: DuelInput): DuelResult {
   const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
   return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs }) };

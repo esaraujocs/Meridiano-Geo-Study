@@ -18,6 +18,10 @@ export function shuffleSeeded<T>(items: readonly T[], seed = 1): T[] {
   return result;
 }
 
+/** Semente do baralho de uma partida: a combinação das cartas com um sorteio, ou a semente combinada do duelo, se houver. */
+export const deckSeedFor = (base: number, forced?: number) =>
+  forced !== undefined ? forced >>> 0 : (base ^ Math.floor(Math.random() * 0x100000000)) >>> 0;
+
 export function seedFromParts(...parts: (string | number)[]) {
   let hash = 2166136261;
   for (const part of parts.join("|")) {

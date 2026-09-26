@@ -53,6 +53,11 @@ export type CurrentLearningSession = {
   endedAt: number | null;
   complete: boolean;
   rounds: LearningRound[];
+  /** Duelo: as moedas são calculadas por este modo em vez do jogado (modo de prévia paga como o modo base). */
+  coinVariant?: AnyQuizVariant;
+  /** Duelo a que a sessão pertence e o número do tempo (0 ou 1). */
+  duelId?: string;
+  duelLeg?: number;
   /** Ritmo (Partida com tempo ou Treino), tamanho pedido e segundos por pergunta. */
   pace?: Pace;
   roundLimit?: number | null;
@@ -128,6 +133,8 @@ export async function startLearningSession(input: {
   pace?: Pace;
   roundLimit?: number | null;
   timerSeconds?: number | null;
+  coinVariant?: AnyQuizVariant;
+  duel?: { id: string; leg: number };
 }): Promise<LearningSessionHandle> {
   const database = await openDatabase();
   const idle = (): LearningSessionHandle => {
@@ -164,6 +171,8 @@ export async function startLearningSession(input: {
     roundLimit: input.roundLimit ?? null,
     timerSeconds: input.timerSeconds ?? null,
     promotions: [],
+    ...(input.coinVariant ? { coinVariant: input.coinVariant } : {}),
+    ...(input.duel ? { duelId: input.duel.id, duelLeg: input.duel.leg } : {}),
   };
   const transaction = database.transaction(SESSIONS_STORE, "readwrite");
   transaction.objectStore(SESSIONS_STORE).put(session);
@@ -189,7 +198,7 @@ export async function startLearningSession(input: {
           // Só a partida terminada paga moedas (e conta XP); sair no meio guarda o aprendizado, sem recompensa.
           const spoils = complete
             ? computeSpoils({
-              variant: current.variant,
+              variant: current.coinVariant ?? current.variant,
               pace: current.pace ?? "timed",
               rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight })),
               complete,

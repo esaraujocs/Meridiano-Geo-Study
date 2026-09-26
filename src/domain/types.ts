@@ -74,6 +74,8 @@ export type Screen =
    | "options"
   | "store"
   | "league"
+  | "duel-reveal"
+  | "duel-interlude"
   | "result";
 
 export type RegionCounts = Record<Region, number>;

@@ -94,6 +94,22 @@ export function emptySpoils(pace: Pace): Spoils {
   };
 }
 
+/** Soma dos espólios de várias sessões (os dois tempos de um duelo): a mesma decomposição, com a melhor sequência e a precisão ponderadas. */
+export function mergeSpoils(parts: readonly Spoils[]): Spoils {
+  const sum = (pick: (spoils: Spoils) => number) => parts.reduce((total, spoils) => total + pick(spoils), 0);
+  const weighted = parts.length ? Math.round(sum((spoils) => spoils.completion.pct) / parts.length) : 0;
+  return {
+    pace: parts[0]?.pace ?? "timed",
+    factor: parts[0]?.factor ?? 1,
+    hits: { count: sum((s) => s.hits.count), coins: sum((s) => s.hits.coins) },
+    streak: { best: Math.max(0, ...parts.map((s) => s.streak.best)), coins: sum((s) => s.streak.coins) },
+    newCards: { count: sum((s) => s.newCards.count), coins: sum((s) => s.newCards.coins) },
+    levelUps: { count: sum((s) => s.levelUps.count), coins: sum((s) => s.levelUps.coins) },
+    completion: { pct: weighted, coins: sum((s) => s.completion.coins) },
+    total: sum((s) => s.total),
+  };
+}
+
 export function computeSpoils(input: SpoilsInput): Spoils {
   const factor = input.pace === "training" ? TRAINING_COIN_FACTOR : 1;
   let hitCount = 0;

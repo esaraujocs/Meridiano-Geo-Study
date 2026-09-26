@@ -15,7 +15,7 @@ import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import type { AnyQuizVariant, Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion } from "../domain/regions";
 import { addHistoricalCollection } from "../domain/progress-surfaces";
-import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
 import { t } from "../domain/i18n";
@@ -25,7 +25,8 @@ type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
 
 export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: Props & { onEnd?: (result: SessionResult | null) => void }) {
-  const { pace, roundLimit, timerSeconds } = sessionSettings(options, variant);
+  const settings = sessionSettings(options, variant);
+  const { pace, roundLimit, timerSeconds } = settings;
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
   const [languages, setLanguages] = useState<LanguageEntry[]>([]);
   const [flags, setFlags] = useState<FlagCatalog>({});
@@ -45,7 +46,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   const [runKey, setRunKey] = useState(0);
   const advance = useAdvance();
   const leaveGuard = useLeaveGuard();
-  const log = useRoundLog(variant, pace);
+  const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const inputRef = useRef<HTMLInputElement>(null);
   const committedTarget = useRef<string | null>(null);
   const timer = useRef<number | null>(null);
@@ -82,6 +83,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
       mode: writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
       subject: writing ? (variant === "escrita-capital" ? "capital" : "pais") : "",
       pace, roundLimit, timerSeconds,
+      coinVariant: settings.coinVariant, duel: settings.duel,
     });
     pendingSession.current = handle;
     handle.then((value) => {
@@ -136,7 +138,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
        const key = `${variant}|${JSON.stringify(region)}|${pool.map((item) => item.id).join("|")}`;
       if (deckKey.current === key) return;
       deckKey.current = key;
-       deck.current = createFiniteDeck<any>(pool, seedFromParts(variant, JSON.stringify(region), pool.map((item) => item.id).join("|")) ^ Math.floor(Math.random() * 0x100000000), roundLimit);
+       deck.current = createFiniteDeck<any>(pool, deckSeedFor(seedFromParts(variant, JSON.stringify(region), pool.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
       next();
     }
   }, [pool, variant, region, runKey]);

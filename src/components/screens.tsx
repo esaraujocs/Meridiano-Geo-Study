@@ -359,6 +359,7 @@ export function Hub({
           const item = familyItems[index];
             const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
             const current = !carouselMode || position === familyTrackIndex;
+          const outsideDuel = duelMode && item.family === "idiomas";
           const isUnlocked = item.family === "idiomas"
             ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
             : unlocked(item.family, item.variant);
@@ -366,14 +367,14 @@ export function Hub({
             type="button"
              key={`${clone ? "clone" : "real"}-${item.family}`}
             data-fam={item.family}
-            className={`family ${current && carouselMode ? "active" : ""} ${economy && !isUnlocked ? "locked" : ""}`}
-            onClick={() => onSelect(item.family)}
+            className={`family ${current && carouselMode ? "active" : ""} ${(economy && !isUnlocked) || outsideDuel ? "locked" : ""}`}
+            onClick={() => { if (!outsideDuel) onSelect(item.family); }}
             aria-hidden={carouselMode && !current ? true : undefined}
             inert={carouselMode && !current ? true : undefined}
           >
              <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
             <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{duelMode ? t.duel.challenge : t.hub.play} <Icon type={duelMode ? "swords" : "arrow"} /></span></div>
+            <div className="family-footer"><span>{outsideDuel ? t.duel.outsideDuel : isUnlocked ? t.hub.open : t.hub.locked}</span>{!outsideDuel && <span className="family-play">{duelMode ? t.duel.challenge : t.hub.play} <Icon type={duelMode ? "swords" : "arrow"} /></span>}</div>
           </button>;
         })}
         </div>

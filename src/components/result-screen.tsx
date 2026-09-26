@@ -5,6 +5,7 @@ import { formatKm } from "../domain/map-error";
 import { formatNumber, t } from "../domain/i18n";
 import type { DuelView } from "../domain/duel";
 import { leagueLabel, milestoneLabel, styleLabel } from "../domain/duel-labels";
+import { groupDef } from "../domain/duel-modes";
 import { leagueOf } from "../domain/league";
 
 type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void };
@@ -190,6 +191,7 @@ function DuelPanel({ duel, onLeague }: { duel: DuelView; onLeague?: () => void }
       <span><small>{t.duel.result.you}</small><b>{duel.playerCorrect}</b></span><em>x</em><span><small>{duel.botName}</small><b>{duel.botCorrect}</b></span>
     </div>
     <div className="rs-duel-trophies"><Icon type="achievements" /><b>{signedTrophies(duel.delta)}</b><small>{t.duel.result.trophies} · {t.duel.result.total(format(duel.trophiesAfter))} · {leagueTitle(duel.trophiesAfter)}</small></div>
+    {duel.legs && duel.legs.length > 0 && <ul className="rs-duel-legs">{duel.legs.map((leg, index) => <li key={index}>{t.duel.result.legRow(index + 1, t.duel.groups[groupDef(leg.group).group], leg.playerCorrect, leg.botCorrect)}</li>)}</ul>}
     {duel.tiebreak && <p className="rs-duel-note">{t.duel.result.tiebreak}</p>}
     {moved && <p className={`rs-duel-note is-${moved}`}>{moved === "up" ? t.duel.result.promoted(leagueTitle(duel.trophiesAfter)) : t.duel.result.demoted(leagueTitle(duel.trophiesAfter))}</p>}
     {duel.milestones.map((milestone) => <p key={milestone.id} className="rs-duel-note is-up rs-duel-milestone"><Icon type="star" size={15} />{t.duel.result.milestone(milestoneLabel(milestone), format(milestone.coins))}</p>)}

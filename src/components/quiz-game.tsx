@@ -9,7 +9,7 @@ import {
   type LearningSessionHandle,
   type SessionResult,
 } from "../domain/learning-store";
-import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
+import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
@@ -41,7 +41,8 @@ export function QuizGame({
   onBack: () => void;
   onEnd?: (result: SessionResult | null) => void;
 }) {
-  const { pace, roundLimit, timerSeconds } = sessionSettings(options, variant);
+  const settings = sessionSettings(options, variant);
+  const { pace, roundLimit, timerSeconds } = settings;
   const [flags, setFlags] = useState<FlagCatalog | null>(null);
   const [error, setError] = useState("");
   const [target, setTarget] = useState("");
@@ -56,7 +57,7 @@ export function QuizGame({
   const settledRef = useRef("");
   const advance = useAdvance();
   const leaveGuard = useLeaveGuard();
-  const log = useRoundLog(variant, pace);
+  const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const timer = useRef<number | null>(null);
   const targetStartedAtRef = useRef(0);
   const sessionRef = useRef<LearningSessionHandle | null>(null);
@@ -66,7 +67,7 @@ export function QuizGame({
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
 
   const openSession = () => {
-    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds });
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {
@@ -167,7 +168,7 @@ export function QuizGame({
     settledRef.current = "";
     setSerial((value) => value + 1);
   };
-  const newDeck = () => createFiniteDeck(pool, seedFromParts(family, variant, JSON.stringify(region), pool.join("|")) ^ Math.floor(Math.random() * 0x100000000), roundLimit);
+  const newDeck = () => createFiniteDeck(pool, deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed), roundLimit);
 
   useEffect(() => {
     if (pool.length >= 4) {

@@ -6,7 +6,16 @@ import { t } from "./i18n/index.js";
 /** Tamanho da partida: 10 grátis; 20, 50, 100 e todas (baralho completo) são compradas. */
 export type RoundTier = "short" | "long" | "fifty" | "hundred" | "all";
 export const ROUND_TIERS: readonly RoundTier[] = ["short", "long", "fifty", "hundred", "all"];
-export type SessionOptions = { pace: Pace; roundLimit: number | null };
+export type SessionOptions = {
+  pace: Pace;
+  roundLimit: number | null;
+  /** Duelo: semente do baralho (dois jogadores com a mesma semente recebem as mesmas cartas na mesma ordem). */
+  deckSeed?: number;
+  /** Duelo: o modo que paga as moedas, quando não é o próprio (modo de prévia paga como o modo base da escada). */
+  coinVariant?: AnyQuizVariant;
+  /** Duelo: a que duelo e a que tempo esta sessão pertence. */
+  duel?: { id: string; leg: number };
+};
 
 /** Desbloqueios de rodadas: valem para todos os modos, para sempre. Comprar um corte maior inclui os menores. */
 export const ROUND_UNLOCKS = [
@@ -77,5 +86,11 @@ export const isRoundTier = (value: unknown): value is RoundTier => ROUND_TIERS.i
 /** Ritmo, tamanho e tempo por pergunta que um jogo usa. Sem opções (uso direto do motor): sem cronômetro e baralho completo. */
 export function sessionSettings(options: SessionOptions | undefined, variant: AnyQuizVariant) {
   const pace: Pace = options?.pace ?? "training";
-  return { pace, roundLimit: options?.roundLimit ?? null, timerSeconds: paceSecondsFor(pace, variant) };
+  // Só leva as chaves do duelo quando existem (o solo continua com {pace, roundLimit, timerSeconds}).
+  const duel: Pick<SessionOptions, "deckSeed" | "coinVariant" | "duel"> = {
+    ...(options?.deckSeed !== undefined ? { deckSeed: options.deckSeed } : {}),
+    ...(options?.coinVariant ? { coinVariant: options.coinVariant } : {}),
+    ...(options?.duel ? { duel: options.duel } : {}),
+  };
+  return { pace, roundLimit: options?.roundLimit ?? null, timerSeconds: paceSecondsFor(pace, variant), ...duel };
 }

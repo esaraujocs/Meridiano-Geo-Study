@@ -9,7 +9,7 @@ const out = join(tmpdir(), "carta-cega-duel-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 execFileSync("node_modules/.bin/tsc", [
-  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
+  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
   "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig",
 ], { stdio: "inherit" });
 const L = await import(pathToFileURL(join(out, "league.js")).href);
@@ -17,6 +17,8 @@ const B = await import(pathToFileURL(join(out, "bots.js")).href);
 const D = await import(pathToFileURL(join(out, "duel.js")).href);
 const R = await import(pathToFileURL(join(out, "duel-rewards.js")).href);
 const M = await import(pathToFileURL(join(out, "duel-modes.js")).href);
+const U = await import(pathToFileURL(join(out, "duel-run.js")).href);
+const S = await import(pathToFileURL(join(out, "spoils.js")).href);
 
 // ---- Ligas e divisões ----
 let s = L.leagueOf(0);
@@ -306,5 +308,73 @@ const claimed = new Set([R.milestoneLedgerId({ id: "league:prata" })]);
 assert.equal(R.pendingMilestones({ mapas: 510, bandeiras: 520 }, claimed).some((m) => m.id === "league:prata"), false, "já pago: nenhuma escada repete");
 assert.deepEqual(idsOf(R.pendingMilestones({ mapas: 200, bandeiras: 200 }, new Set(["grant:duel:division:bronze:2"]))), ["division:bandeiras:bronze:2"], "o crédito antigo sem escada cobre só Mapas");
 assert.equal(R.pendingMilestones(200, new Set()).length, 1, "número solto vale para Mapas");
+
+
+// ---- Duelo em andamento ----
+const legsX = M.drawLegs("mapas", "run-1");
+const runX = U.newDuelRun({ id: "run-1", ladder: "mapas", bot: ouro, trophiesBefore: 1240, division: 2, legs: legsX });
+assert.equal(runX.index, 0); assert.equal(runX.done.length, 0); assert.equal(U.isRunComplete(runX), false);
+const free = [];
+const o0 = U.legOptions(runX, free);
+assert.deepEqual([o0.pace, o0.roundLimit, o0.deckSeed, o0.duel], ["timed", 10, legsX[0].deckSeed, { id: "run-1", leg: 0 }]);
+const ownAll = M.MODE_GROUPS.flatMap((g) => g.variants).map((v) => v.family + ":" + v.variant);
+assert.equal(U.legOptions(runX, ownAll).coinVariant, undefined, "modo que você tem paga o próprio modo: sem troca");
+// modo de prévia: moedas do modo base da escada
+const prevRun = U.newDuelRun({ id: "p", ladder: "mapas", bot: ouro, trophiesBefore: 0, division: 1, legs: [M.legOfGroup("capitais-escrita", "p", 0), M.legOfGroup("mapa", "p", 1)] });
+assert.equal(U.legOptions(prevRun, []).coinVariant, "mapa", "Capitais · escrita sem comprar paga como Clicar no mapa");
+assert.equal(U.legOptions(prevRun, [], 1).coinVariant, undefined, "e o modo grátis não troca nada");
+assert.equal(U.legOptions(prevRun, ["escrita:escrita-capital"], 0).coinVariant, undefined, "comprado, paga o próprio");
+const prevB = U.newDuelRun({ id: "pb", ladder: "bandeiras", bot: ouro, trophiesBefore: 0, division: 1, legs: [M.legOfGroup("historicas", "pb", 0), M.legOfGroup("atuais", "pb", 1)] });
+assert.equal(U.legOptions(prevB, []).coinVariant, "nome-bandeira");
+assert.deepEqual(U.previewLegs(prevRun, []).map((p) => [p.leg.group, p.owned, p.coin.variant]), [["capitais-escrita", false, "mapa"], ["mapa", true, "mapa"]]);
+// legOfGroup: sentido da semente
+const senses = new Set(Array.from({ length: 60 }, (_, i) => M.legOfGroup("atuais", "x" + i, 0).variant));
+assert.deepEqual([...senses].sort(), ["bandeira-nome", "nome-bandeira"]);
+assert.deepEqual(M.legOfGroup("mapa", "a", 0), M.legOfGroup("mapa", "a", 0));
+// andamento
+const r1 = U.recordLeg(runX, { group: legsX[0].group, rounds: 10, playerCorrect: 7, playerMs: 40000 });
+assert.equal(r1.index, 1); assert.equal(r1.done.length, 1); assert.equal(U.isRunComplete(r1), false);
+const r2 = U.recordLeg(r1, { group: legsX[1].group, rounds: 10, playerCorrect: 6, playerMs: 50000 });
+assert.equal(r2.index, 1, "não passa do 2º tempo"); assert.equal(U.isRunComplete(r2), true);
+assert.equal(runX.done.length, 0, "não muda o estado anterior");
+const full = U.resolveRun(r2);
+assert.equal(full.playerCorrect, 13); assert.equal(full.total, 20);
+assert.deepEqual(full, D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: [{ group: legsX[0].group, rounds: 10, playerCorrect: 7, playerMs: 40000 }, { group: legsX[1].group, rounds: 10, playerCorrect: 6, playerMs: 50000 }] }));
+// desistir no 2º tempo: o tempo que faltou conta zero
+const forfeit = U.resolveRun(r1);
+assert.equal(forfeit.playerCorrect, 7); assert.equal(forfeit.total, 20); assert.equal(forfeit.legs[1].playerCorrect, 0);
+assert.ok(forfeit.playerCorrect <= full.playerCorrect);
+// desistir sem jogar nada: zero acertos, derrota
+const none = U.resolveRun(runX);
+assert.equal(none.playerCorrect, 0); assert.equal(none.outcome, "loss");
+
+// ---- Riscos antes do duelo ----
+const st = D.previewStakes(1240, ouro);
+assert.ok(st.win >= D.MIN_SWING && st.loss <= -D.MIN_SWING);
+assert.ok(D.previewStakes(1240, B.botsOfLeague("diamante")[0]).win > st.win, "vencer um bot mais forte vale mais");
+assert.ok(D.previewStakes(1240, B.botsOfLeague("bronze")[0]).loss < st.loss, "perder para um bot mais fraco custa mais");
+assert.equal(D.previewStakes(3, B.botsOfLeague("bronze")[0]).loss, -3, "o chão em zero vale na prévia");
+assert.equal(D.previewStakes(0, B.botsOfLeague("bronze")[0]).loss, 0);
+// a prévia bate com o que a resolução entrega quando vence ou perde
+const chk = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "k", division: 2, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
+assert.equal(chk.outcome, "win"); assert.equal(chk.delta, st.win);
+const chk2 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "k", division: 2, legs: [legIn("mapa", 0), legIn("capitais-escrita", 0)] });
+assert.equal(chk2.delta, st.loss);
+
+// ---- Soma dos espólios dos dois tempos ----
+const spoilsOf = (variant, correct) => S.computeSpoils({ variant, pace: "timed", rounds: correct.map((c) => ({ correct: c })), complete: true, newCards: 1, levelUps: 0 });
+const sp1 = spoilsOf("mapa", [true, true, false, true, true, true, false, true, true, true]);
+const sp2 = spoilsOf("mapa", [true, false, false, true, true, false, true, true, false, true]);
+const sm = S.mergeSpoils([sp1, sp2]);
+assert.equal(sm.total, sp1.total + sp2.total);
+assert.equal(sm.hits.count, sp1.hits.count + sp2.hits.count); assert.equal(sm.hits.coins, sp1.hits.coins + sp2.hits.coins);
+assert.equal(sm.newCards.count, 2); assert.equal(sm.streak.best, Math.max(sp1.streak.best, sp2.streak.best));
+assert.equal(sm.total, sm.hits.coins + sm.streak.coins + sm.newCards.coins + sm.levelUps.coins + sm.completion.coins, "a soma bate com as linhas");
+assert.deepEqual(S.mergeSpoils([sp1]).total, sp1.total); assert.equal(S.mergeSpoils([]).total, 0);
+// prévia paga como o modo base: mesmos acertos, valor do modo base
+const asPreview = S.computeSpoils({ variant: "mapa", pace: "timed", rounds: Array.from({ length: 10 }, () => ({ correct: true })), complete: true, newCards: 0, levelUps: 0 });
+const asOwned = S.computeSpoils({ variant: "escrita-capital", pace: "timed", rounds: Array.from({ length: 10 }, () => ({ correct: true })), complete: true, newCards: 0, levelUps: 0 });
+assert.ok(asOwned.hits.coins > asPreview.hits.coins, "o modo pago rende mais por acerto que o base");
+assert.equal(S.baseCoins("mapa"), 48);
 
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");
