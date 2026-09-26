@@ -45,6 +45,15 @@ export function nextMilestones(duels: readonly DuelRecord[]): Milestone[] {
   return [division, league].filter((milestone): milestone is Milestone => Boolean(milestone)).sort((a, b) => a.at - b.at);
 }
 
+/** Tempo no relógio: 1:32 (minutos e segundos). */
+export const clockOf = (ms: number) => {
+  const total = Math.max(0, Math.round(ms / 1000));
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+};
+/** Segundos por resposta, com uma casa (null se não há resposta ou tempo). */
+export const secondsPer = (ms: number | null | undefined, answers: number) =>
+  ms === null || ms === undefined || answers <= 0 ? null : Math.round((ms / answers / 1000) * 10) / 10;
+
 /** Vitórias seguidas até o duelo mais recente (em qualquer escada). */
 export function winStreak(duels: readonly Pick<DuelRecord, "at" | "id" | "outcome">[]) {
   const ordered = [...duels].sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1));

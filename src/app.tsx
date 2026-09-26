@@ -253,6 +253,9 @@ export function App() {
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
       legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),
+      legTimes: outcome.legs.map((leg, index) => ({ playerMs: run.done[index]?.playerMs ?? null, botMs: leg.botMs })),
+      playerMs: run.done.length >= LEGS && run.done.every((leg) => leg.playerMs !== null) ? run.done.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null,
+      botMs: outcome.botMs,
     });
     setDuelRun(null);
     legResults.current = [null, null];

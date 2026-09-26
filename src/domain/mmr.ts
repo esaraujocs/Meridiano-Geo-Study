@@ -17,6 +17,9 @@ export const BASE_WIN = 33;
 export const BASE_LOSS = 27;
 /** O teto da vitória é o ganho-base + isto (50 no começo): sequência e desempenho boostam até aí. */
 export const WIN_CAP_EXTRA = 17;
+/** Bônus por enfrentar bot de liga acima da sua (por liga de diferença, até MATCH_UP): soma ao ganho e ao teto, então a vitória sobre um bot
+ *  duas ligas acima pode passar dos 50 (até 50 + 2 × LEAD_BONUS). Desligado (0) enquanto se avalia; o simulador testa outros valores. */
+export const LEAD_BONUS = 0;
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
 export const PERF_SPAN = 8;
@@ -93,11 +96,15 @@ export type TrophyInput = {
   outcome: "win" | "loss" | "draw";
   /** Acertos da pessoa menos os do bot. */
   margin: number;
+  /** Quantas ligas o bot está acima da liga da pessoa (matchmaking pelo MMR); só a vitória usa. */
+  lead?: number;
+  /** Bônus por liga de diferença (sem valor, LEAD_BONUS). */
+  leadBonus?: number;
 };
 export type TrophyChange = { delta: number; streakBonus: number; perfBonus: number };
 
 /** Quanto o duelo mexe nos troféus (antes do chão em zero): o valor-base, o MMR, a sequência e o desempenho. */
-export function trophyChange({ trophies, mmr, streak, outcome, margin }: TrophyInput): TrophyChange {
+export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadBonus = LEAD_BONUS }: TrophyInput): TrophyChange {
   const { win, loss, scale, minWin } = baseStakes(trophies);
   const factors = gapFactors(mmr - trophies);
   if (outcome === "win") {
@@ -107,7 +114,8 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin }: TrophyI
     const room = Math.max(0, win + Math.round(WIN_CAP_EXTRA * scale) - base);
     const streakApplied = Math.min(room, Math.round(streakBonus(streak) * hold));
     const perfApplied = Math.min(room - streakApplied, Math.round(PERF_MAX * hold * clamp01(margin / PERF_SPAN)));
-    return { delta: Math.max(minWin, base + streakApplied + perfApplied), streakBonus: streakApplied, perfBonus: perfApplied };
+    const leadExtra = Math.round(Math.max(0, lead) * leadBonus * scale);
+    return { delta: Math.max(minWin, base + streakApplied + perfApplied + leadExtra), streakBonus: streakApplied, perfBonus: perfApplied };
   }
   if (outcome === "loss") {
     const severity = LOSS_CLOSE + (LOSS_BLOWOUT - LOSS_CLOSE) * clamp01((Math.abs(margin) - 1) / (PERF_SPAN + 1));

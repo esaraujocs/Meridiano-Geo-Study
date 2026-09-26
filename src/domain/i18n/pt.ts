@@ -225,6 +225,8 @@ export const pt = {
       nowIn: (league: string) => `Você está em ${league}.`,
       colCoins: "Moedas",
       colLeg: "Tempo",
+      timeTotal: "Tempo total",
+      perAnswer: (seconds: string) => `${seconds} s/resp.`,
       legTitle: (n: number, mode: string) => `${n}º tempo · ${mode}`,
       legPerHit: (n: number) => `${n} por acerto`,
       legPreview: (base: string) => `prévia: paga como ${base}`,

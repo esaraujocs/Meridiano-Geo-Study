@@ -216,6 +216,10 @@ export type DuelView = {
   perfBonus: number;
   /** A pessoa saiu antes de terminar os dois tempos. */
   abandoned: boolean;
+  /** Tempo de cada tempo: o da pessoa (null se não deu para saber) e o simulado do bot; e a soma dos dois tempos (o desempate usa a soma). */
+  legTimes?: readonly { playerMs: number | null; botMs: number }[];
+  playerMs?: number | null;
+  botMs?: number;
   /** Moedas de cada tempo (sem o bônus de partida completa) e se o tempo foi de prévia (paga como o modo base). Só na tela, não é gravado. */
   legCoins?: readonly number[];
   legPreview?: readonly boolean[];

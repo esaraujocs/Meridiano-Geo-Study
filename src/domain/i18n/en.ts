@@ -225,6 +225,8 @@ export const en: Messages = {
       nowIn: (league: string) => `You are in ${league}.`,
       colCoins: "Coins",
       colLeg: "Half",
+      timeTotal: "Total time",
+      perAnswer: (seconds: string) => `${seconds} s/ans.`,
       legTitle: (n: number, mode: string) => `Half ${n} · ${mode}`,
       legPerHit: (n: number) => `${n} per hit`,
       legPreview: (base: string) => `preview: pays like ${base}`,

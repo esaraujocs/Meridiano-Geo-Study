@@ -599,4 +599,16 @@ assert.deepEqual(plan({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "perf
 assert.deepEqual(plan({ streakBonus: 3, perfBonus: 5, streakAfter: 4 }).pills.map((p) => p.key), ["delta", "perf", "boost", "streak"]);
 assert.deepEqual(lp({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "stay"], "derrota não tem pílula de desempenho");
 
+// bônus por enfrentar bot de liga acima: desligado por padrão e, ligado, soma ao ganho e ao teto (50 + 20 = 70 duas ligas acima)
+assert.equal(X.LEAD_BONUS, 0, "o bônus está desligado enquanto se avalia");
+const leadArgs = { trophies: 100, mmr: 300, streak: 4, outcome: "win", margin: 8 };
+assert.equal(X.trophyChange({ ...leadArgs, lead: 2 }).delta, 50, "sem o bônus ligado, a liga do bot não muda nada");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 2, leadBonus: 10 }).delta, 70);
+assert.equal(X.trophyChange({ ...leadArgs, lead: 1, leadBonus: 10 }).delta, 60);
+assert.equal(X.trophyChange({ ...leadArgs, lead: 0, leadBonus: 10 }).delta, 50, "mesma liga: teto de sempre");
+assert.equal(X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4, lead: 2, leadBonus: 10 }).delta, X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4 }).delta, "a derrota não usa o bônus");
+// relógio e segundos por resposta (tela do resultado)
+assert.deepEqual([0, 59400, 92000, 200000, 3599000, -5].map((ms) => V.clockOf(ms)), ["0:00", "0:59", "1:32", "3:20", "59:59", "0:00"]);
+assert.deepEqual([V.secondsPer(200000, 20), V.secondsPer(185000, 20), V.secondsPer(null, 20), V.secondsPer(5000, 0), V.secondsPer(undefined, 20)], [10, 9.3, null, null, null]);
+
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");

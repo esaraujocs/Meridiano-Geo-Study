@@ -1743,3 +1743,8 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .ar-emblem b{color:var(--ink)}
 [data-league=bronze] .ar-tag,[data-league=bronze] .lg-pip{background:#8A5A2B}
 [data-league=mestre] .ar-tag,[data-league=mestre] .lg-pip{background:#7A4FAE}
+.dr-legs td>small{display:block;font:400 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--muted)}
+.dr-legs tr.dr-time td{border-top:1px solid rgba(199,182,143,.55);font:500 17px 'Fraunces',serif}
+.dr-legs tr.dr-time td:first-child{font:600 14px 'Plus Jakarta Sans',sans-serif}
+.dr-legs tr.dr-time td:last-child{color:inherit}
+.dr-legs tr.dr-time small{white-space:nowrap}

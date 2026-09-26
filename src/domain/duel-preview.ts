@@ -68,6 +68,8 @@ export function duelPreview(name: string): { duel: DuelView; view: ResultView } 
     milestones: (scenario.milestones ?? []).flatMap((id) => MILESTONES.filter((milestone) => milestone.id === id)),
     ladder: "mapas", legs, streakBefore: scenario.streakBefore, streakAfter: scenario.streakAfter, streakBonus: scenario.bonus ?? 0, perfBonus: scenario.perf ?? 0, abandoned: Boolean(scenario.abandoned),
     legCoins: scenario.coins, legPreview: [false, true],
+    legTimes: [{ playerMs: 92000, botMs: 100000 }, { playerMs: scenario.abandoned ? null : 108000, botMs: 85000 }],
+    playerMs: scenario.abandoned ? null : 200000, botMs: 185000,
   };
   return { duel, view: { ...view, eyebrow: t.duel.reveal.eyebrow(t.duel.ladders.mapas) } };
 }

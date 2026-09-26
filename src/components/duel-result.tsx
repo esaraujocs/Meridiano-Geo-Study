@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObjec
 import { Icon } from "./icons";
 import type { DuelView } from "../domain/duel";
 import { LADDER_BASE, LADDER_BASE_GROUP, groupDef, type ModeGroup } from "../domain/duel-modes";
-import { decisiveLeg, meterLayout, resultPlan, worstLeg, type Pill, type ResultTier } from "../domain/duel-view";
+import { clockOf, decisiveLeg, meterLayout, resultPlan, secondsPer, worstLeg, type Pill, type ResultTier } from "../domain/duel-view";
 import { leagueLabel, milestoneLabel, nextStep } from "../domain/duel-labels";
 import { DIVISION_SPAN, LEAGUES, divisionRoman, leagueOf } from "../domain/league";
 import { baseCoins } from "../domain/spoils";
 import type { ResultView } from "../domain/result-view";
-import { formatNumber as format, t } from "../domain/i18n";
+import { formatNumber as format, intlLocale, t } from "../domain/i18n";
 
 export const reducedMotion = () =>
   (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) ||
@@ -159,6 +159,8 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
   const baseLabel = t.duel.groups[LADDER_BASE_GROUP[ladder]];
   const previewLabels = legs.filter((_, index) => duel.legPreview?.[index]).map((leg) => t.duel.groups[groupDef(leg.group).group]);
   const completion = view.lines.find((line) => line.key === "completion");
+  const legTime = (ms: number | null | undefined) => (ms === null || ms === undefined ? "—" : clockOf(ms));
+  const perAnswer = (ms: number | null | undefined) => { const seconds = secondsPer(ms, duel.total); return seconds === null ? "" : t.duel.result.perAnswer(seconds.toLocaleString(intlLocale, { maximumFractionDigits: 1 })); };
   const worst = plan.kind === "loss" && !duel.abandoned ? worstLeg(legs) : null;
   const worstOwned = worst ? !duel.legPreview?.[worst.index] : false;
   const worstLabel = worst ? t.duel.groups[groupDef(legs[worst.index].group).group] : "";
@@ -237,9 +239,10 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
           const rate = baseCoins(preview ? LADDER_BASE[ladder].variant : def.variants[0].variant);
           return <tr key={index}>
             <td>{t.duel.result.legTitle(index + 1, t.duel.groups[def.group])}{preview && <span className="rv-tag"><Icon type="lock" size={12} />{t.duel.reveal.preview}</span>}<small>{preview ? t.duel.result.legPreview(baseLabel) : t.duel.result.legPerHit(rate)}</small></td>
-            <td>{leg.playerCorrect}</td><td>{leg.botCorrect}</td><td>+{format(duel.legCoins?.[index] ?? 0)}</td>
+            <td>{leg.playerCorrect}<small>{legTime(duel.legTimes?.[index]?.playerMs)}</small></td><td>{leg.botCorrect}<small>{legTime(duel.legTimes?.[index]?.botMs)}</small></td><td>+{format(duel.legCoins?.[index] ?? 0)}</td>
           </tr>;
         })}
+        {duel.legTimes && <tr className="dr-time"><td>{t.duel.result.timeTotal}</td><td>{legTime(duel.playerMs)}<small>{perAnswer(duel.playerMs)}</small></td><td>{legTime(duel.botMs)}<small>{perAnswer(duel.botMs)}</small></td><td /></tr>}
         {completion && <tr className="dr-bonus"><td>{completion.label}<small>{completion.note}</small></td><td /><td /><td>+{format(completion.coins)}</td></tr>}
       </tbody>
     </table>}
