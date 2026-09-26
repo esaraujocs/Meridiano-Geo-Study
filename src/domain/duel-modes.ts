@@ -28,19 +28,20 @@ export type ModeGroupDef = {
   /** Ajuste do bot neste modo: pontos de acerto (negativo = mais difícil, encolhe nas ligas altas) e fator de tempo. Chute inicial, para ajustar jogando. */
   accuracy: number;
   time: number;
-  /** Peso no sorteio (padrão 1). A Silhueta tinha 2 dos 5 grupos de Mapas e caía em ~70% dos duelos; com peso menor cai em ~45%. */
+  /** Peso no sorteio (padrão 1). Silhueta e Capitais têm 2 grupos cada em Mapas (2 de 5) e dominavam o sorteio; com peso menor o Clicar no mapa, o modo base, sai mais. */
   weight?: number;
 };
 
-/** Peso de cada grupo da Silhueta no sorteio de Mapas (os outros pesam 1). */
-export const SILHOUETTE_WEIGHT = 0.4;
+/** Peso de cada grupo da Silhueta e de cada grupo de Capitais no sorteio de Mapas (o Clicar no mapa pesa 1). */
+export const SILHOUETTE_WEIGHT = 0.25;
+export const CAPITALS_WEIGHT = 0.5;
 
 export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
-  { group: "capitais-clique", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5 },
+  { group: "capitais-clique", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5, weight: CAPITALS_WEIGHT },
   { group: "silhueta-opcoes", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2, weight: SILHOUETTE_WEIGHT },
-  { group: "silhueta-escrita", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.16, time: 1.9, weight: SILHOUETTE_WEIGHT },
-  { group: "capitais-escrita", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.18, time: 1.9 },
+  { group: "silhueta-escrita", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.24, time: 1.9, weight: SILHOUETTE_WEIGHT },
+  { group: "capitais-escrita", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT },
   { group: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
   { group: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
   { group: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },

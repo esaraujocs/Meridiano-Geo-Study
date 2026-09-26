@@ -237,15 +237,31 @@ assert.equal(guardedBad, 0, "com a garantia, nunca");
 assert.ok(sameWhenOneOwned, "quando já havia um modo da pessoa, o sorteio é o mesmo (a garantia não mexe à toa)");
 assert.deepEqual(M.drawLegs("bandeiras", "z", new Set()).map((l) => l.group), M.drawLegs("bandeiras", "z").map((l) => l.group), "sem modo nenhum liberado, nada a garantir");
 
-// a Silhueta pesa menos no sorteio de Mapas (tinha 2 dos 5 grupos: 40% dos tempos e 70% dos duelos); as Bandeiras seguem parelhas
-assert.equal(M.SILHOUETTE_WEIGHT, 0.4);
+// Silhueta e Capitais pesam menos no sorteio de Mapas (2 grupos cada, de 5: Silhueta em 40% dos tempos e 70% dos duelos, Capitais em 51% dos tempos); as Bandeiras seguem parelhas
+assert.equal(M.SILHOUETTE_WEIGHT, 0.25); assert.equal(M.CAPITALS_WEIGHT, 0.5);
 {
   const N = 20000, count = (ladder) => { let legs = 0, duels = 0; const byGroup = {}; for (let i = 0; i < N; i += 1) { const drawn = M.drawLegs(ladder, "w" + i); const sil = drawn.filter((leg) => leg.family === "silhueta").length; legs += sil; if (sil) duels += 1; for (const leg of drawn) byGroup[leg.group] = (byGroup[leg.group] ?? 0) + 1; } return { legs: legs / (2 * N), duels: duels / N, byGroup }; };
   const mapas = count("mapas"), bandeiras = count("bandeiras");
   assert.ok(mapas.legs > 0.20 && mapas.legs < 0.26, "Silhueta em ~23% dos tempos: " + mapas.legs);
-  assert.ok(mapas.duels > 0.40 && mapas.duels < 0.47, "e em ~44% dos duelos de Mapas: " + mapas.duels);
-  for (const group of ["mapa", "capitais-clique", "capitais-escrita"]) assert.ok(mapas.byGroup[group] / (2 * N) > 0.23 && mapas.byGroup[group] / (2 * N) < 0.29, group + " sai mais que a Silhueta");
+  assert.ok(mapas.duels > 0.40 && mapas.duels < 0.47, "e em ~43% dos duelos de Mapas: " + mapas.duels);
+  const share = (group) => mapas.byGroup[group] / (2 * N);
+  assert.ok(share("mapa") > 0.31 && share("mapa") < 0.38, "o Clicar no mapa, o modo base, é o mais sorteado: " + share("mapa"));
+  for (const group of ["capitais-clique", "capitais-escrita"]) assert.ok(share(group) > 0.19 && share(group) < 0.24, group + " ~21%");
+  assert.ok(share("capitais-clique") + share("capitais-escrita") < 0.47, "Capitais somadas caíram de 51% para ~43% dos tempos");
+  for (const group of ["silhueta-opcoes", "silhueta-escrita"]) assert.ok(share(group) > 0.09 && share(group) < 0.14, group + " ~11%");
   for (const group of ["atuais", "escrita-pais", "historicas"]) assert.ok(Math.abs(bandeiras.byGroup[group] / (2 * N) - 1 / 3) < 0.02, "Bandeiras: " + group + " segue com peso igual");
+}
+
+// calibragem: digitar a capital é o modo mais duro (sem chute de alternativa), então o bot das ligas baixas acerta pouco ali
+{
+  const constante = B.BOTS.find((bot) => bot.style === "constante");
+  const at = (group, rating) => { const def = M.groupDef(group); return B.botProfile(constante, { division: null, family: null, rating, neutral: true, tuning: { accuracy: def.accuracy, time: def.time } }).accuracy; };
+  const mids = L.LEAGUES.map((league, index) => L.leagueFloor(index) + 250);
+  const cap = mids.map((rating) => at("capitais-escrita", rating));
+  assert.ok(cap[0] < 0.28 && cap[1] < 0.42 && cap[2] < 0.57, "Bronze, Prata e Ouro erram bastante na capital escrita: " + cap.map((v) => Math.round(v * 100)));
+  assert.ok(cap[5] > 0.88, "o Mestre segue acertando quase tudo");
+  assert.ok(cap.every((value, index) => index === 0 || value > cap[index - 1]), "e cada liga acerta mais que a anterior");
+  for (const rating of mids) assert.ok(at("capitais-escrita", rating) < at("silhueta-escrita", rating) && at("silhueta-escrita", rating) < at("escrita-pais", rating) && at("escrita-pais", rating) < at("atuais", rating), "capital escrita é o mais difícil dos modos digitados, depois silhueta escrita, escrita de país e alternativas");
 }
 
 // regra de moedas: o modo que você tem paga o normal; prévia paga como o modo base da escada
@@ -266,7 +282,7 @@ const plain = (bot, division) => B.botProfile(bot, { division, family: null });
 const tuned = (bot, division) => B.botProfile(bot, { division, family: null, tuning: hard });
 assert.ok(Math.abs((tuned(bronze, 1).accuracy - plain(bronze, 1).accuracy) - hard.accuracy) < 1e-9, "no Bronze o ajuste vale por inteiro");
 assert.ok(tuned(ouro, 1).accuracy < plain(ouro, 1).accuracy && tuned(ouro, 1).accuracy > plain(ouro, 1).accuracy + hard.accuracy, "no Ouro vale menos");
-assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.03, "no Mestre quase não pesa");
+assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.04, "no Mestre quase não pesa (o modo mais duro tira uns 3,6 pontos)");
 assert.equal(tuned(bronze, 1).avgMs, Math.round(plain(bronze, 1).avgMs * hard.time), "o tempo do bot cresce com a dificuldade do modo");
 for (const g of M.MODE_GROUPS) for (const league of L.LEAGUES) { const p = B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: null, tuning: g }); assert.ok(p.accuracy >= 0.05 && p.accuracy <= 0.99, g.group + league); }
 // modo mais difícil = bot erra mais, e a média simulada acompanha
