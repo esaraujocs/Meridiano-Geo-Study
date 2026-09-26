@@ -10,8 +10,7 @@ import type { Pace } from "../domain/spoils";
 import { flagDirectionFromVariant, flagSelection, type FlagCategory, type FlagDirection } from "../domain/flag-configuration";
 import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
-
-const money = (value: number) => value.toLocaleString("pt-BR");
+import { formatNumber as money, t } from "../domain/i18n";
 
 // Tela "Configure a partida": Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -60,7 +59,7 @@ export function Recorte({
   onBuyRounds: (key: RoundUnlockKey) => Promise<unknown>;
   presetApi: PresetApi;
 }) {
-  const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
+  const familyLabel = t.families[topFamily];
   const selectedRegions = normalizeRegionSelection(region);
   const policyRegion = selectedRegions.length === 1 ? selectedRegions[0] : "mundo";
   const selectedCount = selectedCountProp ?? (selectedRegions.length === 1 && selectedRegions[0] === "mundo"
@@ -124,7 +123,7 @@ export function Recorte({
   const canBuyActive = !activeOwned && activePolicy ? canUnlock(activePolicy, balance, economy?.sessions ?? 0, 0) : false;
   const roundCap = roundLimitFor(roundTier, family);
   const deckCount = roundCap === null ? selectedCount : Math.min(selectedCount, roundCap);
-  const regionText = selectedRegions.length === 1 ? REGION_ITEMS.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : `${selectedRegions.length} recortes`;
+  const regionText = selectedRegions.length === 1 ? REGION_ITEMS.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : t.regions.many(selectedRegions.length);
   const summary = configSummary({ mode: active, direction: flagDirection, variant, pace, rounds: deckCount, regionText, count: selectedCount });
   const showFilter = family !== "historicas" && family !== "idiomas";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
@@ -148,23 +147,23 @@ export function Recorte({
 
   const modeHint = !activeOwned
     ? canBuyActive
-      ? `Este modo custa ${money(activeCost)} moedas e fica seu para sempre.`
-      : `Faltam ${money(activeCost - balance)} moedas para liberar (saldo ${money(balance)}).`
+      ? t.config.modeCost(money(activeCost))
+      : t.config.modeMissing(money(activeCost - balance), money(balance))
     : active.hint;
 
   return (
     <main className="content cv-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
       <div className="cv-top">
-        <button type="button" className="back" onClick={onBack}>← Hub</button>
-        <div className="hub-coin" aria-label={`${money(balance)} moedas`}><i aria-hidden="true">$</i><strong>{money(balance)}</strong></div>
+        <button type="button" className="back" onClick={onBack}>{t.common.backHub}</button>
+        <div className="hub-coin" aria-label={`${money(balance)} ${t.common.coins}`}><i aria-hidden="true">$</i><strong>{money(balance)}</strong></div>
       </div>
       <div className="cv">
-        <header className="cv-head"><span className="eyebrow">{familyLabel} · nova partida</span><h1>Configure a partida</h1></header>
-        <section className="cv-card" aria-label="Configuração da partida">
+        <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
+        <section className="cv-card" aria-label={t.config.cardAria}>
           <div className="cv-row">
-            <span className="cv-k">Modo</span>
+            <span className="cv-k">{t.config.mode}</span>
             <div className="cv-ctl">
-              <div className="cv-chips cv-modes" role="group" aria-label="Modo">
+              <div className="cv-chips cv-modes" role="group" aria-label={t.config.mode}>
                 {modes.map((mode) => {
                   const modeOwned = owned(mode.family, mode.variant);
                   const cost = priceOf(mode.family, mode.variant);
@@ -174,26 +173,26 @@ export function Recorte({
                   </button>;
                 })}
               </div>
-              {active.direction && <div className="cv-chips cv-sub" role="group" aria-label="Direção">
+              {active.direction && <div className="cv-chips cv-sub" role="group" aria-label={t.config.direction}>
                 {(["name-to-flag", "flag-to-name"] as const).map((direction) => <button type="button" key={direction} className="cv-chip" aria-pressed={flagDirection === direction} onClick={() => pickDirection(direction)}><span className="cv-l"><span>{directionLabel(direction)}</span></span></button>)}
               </div>}
               <p className="cv-hint" role="status">{modeHint}</p>
             </div>
           </div>
           <div className="cv-row">
-            <span className="cv-k">Ritmo</span>
+            <span className="cv-k">{t.config.pace}</span>
             <div className="cv-ctl">
-              <div className="cv-chips" role="group" aria-label="Ritmo">
-                <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>Partida · {formatSeconds(timerSecondsFor(variant), variant).replace(" por rota", "")}</span></span></button>
-                <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>Treino</span></span></button>
+              <div className="cv-chips" role="group" aria-label={t.config.pace}>
+                <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
+                <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
               </div>
               <p className="cv-hint">{paceHint(pace, variant)}</p>
             </div>
           </div>
           <div className="cv-row">
-            <span className="cv-k">Rodadas</span>
+            <span className="cv-k">{t.config.rounds}</span>
             <div className="cv-ctl">
-              <div className="cv-chips cv-rounds" role="group" aria-label="Rodadas">
+              <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>
                 {roundChips(family, selectedCount).map(({ tier, label }) => {
                   const unlock = roundUnlockFor(tier);
                   const tierOwned = isRoundTierUnlocked(tier, economy?.unlocked ?? []);
@@ -205,24 +204,24 @@ export function Recorte({
               </div>
               {pending && <p className="cv-hint cv-confirm" role="status">
                 {balance >= pending.cost
-                  ? <>Liberar <b>{pending.label.toLowerCase()}</b> em todos os modos por {money(pending.cost)} moedas? <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>Liberar</button></>
-                  : <>Faltam {money(pending.cost - balance)} moedas para liberar {pending.label.toLowerCase()} (saldo {money(balance)}).</>}
+                  ? <>{t.config.unlockRounds(pending.label.toLowerCase(), money(pending.cost))} <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>{t.config.unlock}</button></>
+                  : <>{t.config.missingRounds(money(pending.cost - balance), pending.label.toLowerCase(), money(balance))}</>}
               </p>}
             </div>
           </div>
           <div className={`cv-row${showFilter ? "" : " cv-last"}`}>
-            <span className="cv-k">Recorte</span>
+            <span className="cv-k">{t.config.region}</span>
             <div className="cv-ctl">
-              <div className="cv-chips cv-region" role="group" aria-label="Recortes disponíveis">
+              <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
                 {REGION_ITEMS.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={counts[key] === 0} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key]}</em></span></button>)}
               </div>
-              {selectedCount === 0 && <p className="cv-hint">Sem cartas neste recorte para este modo.</p>}
+              {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
             </div>
           </div>
           {showFilter && <div className="cv-row cv-last">
-            <span className="cv-k">Filtro</span>
+            <span className="cv-k">{t.config.filter}</span>
             <div className="cv-ctl">
-              <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>Só membros da ONU</span></button>
+              <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>{t.config.onlyUn}</span></button>
             </div>
           </div>}
         </section>
@@ -237,7 +236,7 @@ export function Recorte({
           <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
           <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
           <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
-            {activeOwned ? <>Começar<span className="cv-go-l"> partida</span></> : <>Liberar<span className="cv-go-l"> por</span> {money(activeCost)}</>} <Icon type="arrow" />
+            {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
           </button>
         </div>
       </div>

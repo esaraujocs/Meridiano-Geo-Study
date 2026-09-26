@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { t } from "../domain/i18n";
 
 type Props = {
   /** Segundos da pergunta; sem valor (Treino) o cronômetro nem aparece. */
@@ -75,7 +76,7 @@ export function RoundTimer({ seconds, running, resetKey, onExpire }: Props) {
   const fraction = total > 0 ? Math.max(0, Math.min(1, left / total)) : 0;
   const low = left <= LOW_MS;
   const early = fraction > 0.5;
-  return <div className={`round-timer${low ? " is-low" : ""}${early ? " is-early" : ""}${running ? "" : " is-idle"}`} role="timer" aria-label={`Tempo da pergunta: ${seconds} segundos`}>
+  return <div className={`round-timer${low ? " is-low" : ""}${early ? " is-early" : ""}${running ? "" : " is-idle"}`} role="timer" aria-label={t.timer.aria(seconds)}>
     <i style={{ transform: `scaleX(${fraction})` }} />
   </div>;
 }

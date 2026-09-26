@@ -9,6 +9,7 @@ import { matchesSearch, type ProgressColumns } from "./collection-view.js";
 import type { Region } from "./types.js";
 import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals } from "./pillars.js";
 import { dominatedIdsFromSessions } from "./dominated.js";
+import { t } from "./i18n/index.js";
 
 export type SurfaceSession = {
   id: string;
@@ -167,11 +168,12 @@ export function deriveProgress(records: any[], universe?: string[], sessions?: S
 }
 export function collectionCard(id: string, meta: Meta | undefined, mastery = 0, flag?: string, columns?: ProgressColumns): CollectionCard {
   const fields: Array<[string, string]> = [];
-  if (mastery >= 1) fields.push(["Região", meta?.reg ?? "—"]);
-  if (mastery >= 2) fields.push(["Capital", meta?.cap ?? "—"]);
-  if (mastery >= 3) fields.push(["Idioma", "—"]);
-  if (mastery >= 4) fields.push(["ONU", meta?.un ? "membro" : "não membro"]);
-  if (mastery >= 5) fields.push(["Status", "carta completa"]);
+  const labels = t.collection.cardFields;
+  if (mastery >= 1) fields.push([labels.region, meta?.reg ?? "—"]);
+  if (mastery >= 2) fields.push([labels.capital, meta?.cap ?? "—"]);
+  if (mastery >= 3) fields.push([labels.language, "—"]);
+  if (mastery >= 4) fields.push([labels.un, meta?.un ? labels.member : labels.nonMember]);
+  if (mastery >= 5) fields.push([labels.status, labels.complete]);
   return { id, name: meta?.pt ?? id, region: meta?.reg, sub: meta?.sub, un: meta?.un, flag, mastery, fields, columns };
 }
 const regionForCard = (card: CollectionCard, region: Region | "todas") =>
@@ -211,8 +213,8 @@ export function evaluateAchievements(progress: ProgressSnapshot, sessions: Surfa
   // Kept only as an app-local compatibility view for old fixtures and clients.
   // It is never part of the canonical catalog or persisted by querySurfaces.
   const first = evaluated.find(item => item.id === "primeira");
-  if (first) evaluated.push({ ...first, id: "first-session", name: "Primeiro traço", description: "Conclua uma sessão.", unlocked: sessions.length > 0, deprecated: true });
-  evaluated.push({ id: "coverage-10", name: "Primeira dezena", description: "Descubra 10 entidades.", unlocked: progress.discovered >= 10, deprecated: true, target: 10, current: progress.discovered });
+  if (first) evaluated.push({ ...first, id: "first-session", name: t.achievementsView.legacyFirst[0], description: t.achievementsView.legacyFirst[1], unlocked: sessions.length > 0, deprecated: true });
+  evaluated.push({ id: "coverage-10", name: t.achievementsView.legacyCoverage[0], description: t.achievementsView.legacyCoverage[1], unlocked: progress.discovered >= 10, deprecated: true, target: 10, current: progress.discovered });
   return evaluated;
 }
 export async function querySurfaces(data?: Legacy) {

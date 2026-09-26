@@ -1,3 +1,5 @@
+import { t } from "./i18n/index.js";
+
 export const MAP_URL = "/maps/carta-boundary-candidate.pmtiles";
 export const MAP_BYTES = 27_823_584;
 export const MAP_VERSION =
@@ -23,10 +25,10 @@ export async function hasOfflineMap() {
 
 export async function downloadOfflineMap() {
   const file = await getMapFile(true);
-  if (!file) throw new Error("Não foi possível criar o arquivo offline.");
+  if (!file) throw new Error(t.errors.offlineCreate);
   const response = await fetch(MAP_URL);
   if (!response.ok) {
-    throw new Error(`Falha ao baixar o mapa (${response.status}).`);
+    throw new Error(t.errors.offlineDownload(response.status));
   }
   const writable = await file.createWritable();
   try {
@@ -72,7 +74,7 @@ async function getOpfsRoot(): Promise<OpfsRoot> {
     getDirectory?: () => Promise<OpfsRoot>;
   };
   if (typeof storage.getDirectory !== "function") {
-    throw new Error("Este navegador não oferece armazenamento offline (OPFS).");
+    throw new Error(t.errors.offlineUnsupported);
   }
   return storage.getDirectory();
 }
@@ -93,7 +95,7 @@ async function verifyMapSize() {
   const file = await getMapFile(false);
   if (!file || (await file.getFile()).size !== MAP_BYTES) {
     await removeOfflineMap();
-    throw new Error("O mapa baixado não tem o tamanho esperado.");
+    throw new Error(t.errors.offlineSize);
   }
   return true;
 }

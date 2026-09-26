@@ -19,6 +19,7 @@ import { REGION_ITEMS } from "../domain/regions";
 import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
 import { ProgressHero } from "./progress-hero";
+import { t } from "../domain/i18n";
 
 type SurfaceState = Awaited<ReturnType<typeof querySurfaces>>;
 type Props = { state: SurfaceState; meta: Record<string, Meta>; names?: Record<string, string>; initialRegion?: Region };
@@ -49,11 +50,11 @@ function CountryCard({ card, meta, src, onOpen }: { card: CollectionCard; meta: 
   if (card.mastery <= 0) {
     return <li><div className="col-card is-empty">
       <div className="col-frame"><Meridian /><span className="col-q" aria-hidden="true">?</span></div>
-      <div className="col-meta"><span className="col-name">Não descoberta</span><div className="col-foot"><Pips level={0} /><span className="col-rl">—</span></div></div>
+      <div className="col-meta"><span className="col-name">{t.collection.notFound}</span><div className="col-foot"><Pips level={0} /><span className="col-rl">—</span></div></div>
     </div></li>;
   }
   const sub = card.mastery >= 2 && meta?.cap ? meta.cap : placeLabel(meta);
-  return <li><button type="button" className={`col-card col-l${level}`} data-card-id={card.id} onClick={onOpen} aria-haspopup="dialog" aria-label={`${card.name}, nível ${level}, ${LEVEL_NAMES[level]}. Abrir carta`}>
+  return <li><button type="button" className={`col-card col-l${level}`} data-card-id={card.id} onClick={onOpen} aria-haspopup="dialog" aria-label={t.collection.cardAria(card.name, level, LEVEL_NAMES[level])}>
     <Frame src={src} />
     <div className="col-meta"><span className="col-name">{card.name}</span><span className="col-sub">{sub}</span><div className="col-foot"><Pips level={level} /><span className="col-rl">{LEVEL_NAMES[level]}</span></div></div>
   </button></li>;
@@ -64,10 +65,10 @@ function HistoricalCardView({ card, src, onOpen }: { card: HistoricalAlbumCard; 
   if (!card.discovered) {
     return <li><div className="col-card is-empty">
       <div className="col-frame"><Meridian /><span className="col-q" aria-hidden="true">?</span></div>
-      <div className="col-meta"><span className="col-name">Não descoberta</span><div className="col-foot"><span className="col-tag">{tag}</span></div></div>
+      <div className="col-meta"><span className="col-name">{t.collection.notFound}</span><div className="col-foot"><span className="col-tag">{tag}</span></div></div>
     </div></li>;
   }
-  return <li><button type="button" className="col-card col-l2 is-historical" data-card-id={card.id} onClick={onOpen} aria-haspopup="dialog" aria-label={`${card.name}, ${tag}. Abrir carta`}>
+  return <li><button type="button" className="col-card col-l2 is-historical" data-card-id={card.id} onClick={onOpen} aria-haspopup="dialog" aria-label={t.collection.historicalCardAria(card.name, tag)}>
     <Frame src={src} />
     <div className="col-meta"><span className="col-name">{card.name}</span><span className="col-sub col-period">{historicalPeriod(card.value)}</span><div className="col-foot"><span className={`col-tag is-${card.type}`}>{tag}</span><span className="col-tick"><Glyph name="check" size={16} stroke={2.4} /></span></div></div>
   </button></li>;
@@ -97,12 +98,12 @@ function CardDialog({ title, src, onClose, onPrev, onNext, children, side }: Det
     <div className="col-dialog-body" ref={bodyRef} tabIndex={-1}>
       <span className="col-grab" aria-hidden="true" />
       <div className="col-dialog-tools">
-        <button type="button" className="col-round" onClick={onPrev} disabled={!onPrev} aria-label="Carta anterior"><Glyph name="left" /></button>
-        <button type="button" className="col-round" onClick={onNext} disabled={!onNext} aria-label="Próxima carta"><Glyph name="right" /></button>
-        <button type="button" className="col-round" onClick={onClose} aria-label="Fechar"><Glyph name="x" /></button>
+        <button type="button" className="col-round" onClick={onPrev} disabled={!onPrev} aria-label={t.collection.prev}><Glyph name="left" /></button>
+        <button type="button" className="col-round" onClick={onNext} disabled={!onNext} aria-label={t.collection.next}><Glyph name="right" /></button>
+        <button type="button" className="col-round" onClick={onClose} aria-label={t.collection.close}><Glyph name="x" /></button>
       </div>
       <div className="col-dialog-left">
-        <div className="col-bigframe">{src && <img src={src} alt={`Bandeira: ${title}`} />}</div>
+        <div className="col-bigframe">{src && <img src={src} alt={t.collection.flagAlt(title)} />}</div>
         {side}
       </div>
       <div className="col-dialog-right">{children}</div>
@@ -116,14 +117,14 @@ function CountryDetail({ card, meta, names, src, onClose, onPrev, onNext }: { ca
   const hint = nextLevelHint(card.name, level, card.columns);
   const modes = modesDone(card.columns);
   return <CardDialog title={card.name} src={src} onClose={onClose} onPrev={onPrev} onNext={onNext} side={<>
-    <div className={`col-levelbox col-l${level}`}><div><span className="col-rl">Nível {level}</span><b>{LEVEL_NAMES[level]}</b></div><Pips level={level} /></div>
-    <ol className={`col-ladder col-l${level}`} aria-label="Camadas da carta">
+    <div className={`col-levelbox col-l${level}`}><div><span className="col-rl">{t.collection.level(level)}</span><b>{LEVEL_NAMES[level]}</b></div><Pips level={level} /></div>
+    <ol className={`col-ladder col-l${level}`} aria-label={t.collection.layersAria}>
       {LEVEL_STEPS.map((step) => <li key={step.level} className={`col-step ${step.level < level ? "is-done" : step.level === level ? "is-current" : ""}`} aria-current={step.level === level ? "step" : undefined}>
-        <u aria-hidden="true">{step.level}</u><div><b>{step.title}</b><small>Abre: {step.opens}</small></div>
+        <u aria-hidden="true">{step.level}</u><div><b>{step.title}</b><small>{t.collection.opens(step.opens)}</small></div>
       </li>)}
     </ol>
   </>}>
-    <div className="col-headline"><span className="col-eyebrow">{placeLabel(meta)}</span><h2 id="col-dialog-title">{card.name}</h2><p>{level} de 5 camadas abertas</p></div>
+    <div className="col-headline"><span className="col-eyebrow">{placeLabel(meta)}</span><h2 id="col-dialog-title">{card.name}</h2><p>{t.collection.layersOpen(level)}</p></div>
     <div className="col-fields">
       {rows.map((row) => row.unlocked
         ? <div key={row.key} className={`col-fld ${row.wide ? "is-wide" : ""}`}><span className="k">{row.label}</span>
@@ -131,26 +132,26 @@ function CountryDetail({ card, meta, names, src, onClose, onPrev, onNext }: { ca
               ? <ul className="col-chips-list">{row.list.map((name) => <li key={name}>{name}</li>)}</ul>
               : <span className={`v ${row.key === "nota" ? "is-note" : ""} ${row.text ? "" : "is-missing"}`}>{row.text ?? "—"}</span>}
           </div>
-        : <div key={row.key} className={`col-fld is-locked ${row.wide ? "is-wide" : ""}`}><span className="k"><span className="kk"><Glyph name="lock" size={12} stroke={2} />{row.label}</span><span className="need">Nível {row.minLevel}</span></span>
-            <span className="sk" aria-hidden="true" /><span className="sk is-short" aria-hidden="true" /><span className="sr-only">Abre no nível {row.minLevel}</span>
+        : <div key={row.key} className={`col-fld is-locked ${row.wide ? "is-wide" : ""}`}><span className="k"><span className="kk"><Glyph name="lock" size={12} stroke={2} />{row.label}</span><span className="need">{t.collection.level(row.minLevel)}</span></span>
+            <span className="sk" aria-hidden="true" /><span className="sk is-short" aria-hidden="true" /><span className="sr-only">{t.collection.opensAt(row.minLevel)}</span>
           </div>)}
     </div>
-    {hint ? <div className="col-next"><b>Próxima camada · Nível {hint.next} ({LEVEL_NAMES[hint.next]})</b><p>{hint.text}</p>
-      <ul className="col-modes" aria-label="Modos em que a carta já foi acertada">{modes.map((mode) => <li key={mode.key} className={mode.done ? "is-done" : ""}>{mode.done && <Glyph name="check" size={14} stroke={2.4} />}{mode.label}<span className="sr-only">{mode.done ? " (acertado)" : " (ainda não)"}</span></li>)}</ul>
-    </div> : <div className="col-next is-complete"><b>Carta completa</b><p>Todas as camadas estão abertas.</p></div>}
+    {hint ? <div className="col-next"><b>{t.collection.nextLayer(hint.next, LEVEL_NAMES[hint.next])}</b><p>{hint.text}</p>
+      <ul className="col-modes" aria-label={t.collection.modesAria}>{modes.map((mode) => <li key={mode.key} className={mode.done ? "is-done" : ""}>{mode.done && <Glyph name="check" size={14} stroke={2.4} />}{mode.label}<span className="sr-only">{mode.done ? t.collection.modeDone : t.collection.modeNotYet}</span></li>)}</ul>
+    </div> : <div className="col-next is-complete"><b>{t.collection.complete}</b><p>{t.collection.completeHint}</p></div>}
   </CardDialog>;
 }
 
 function HistoricalDetail({ card, src, onClose, onPrev, onNext }: { card: HistoricalAlbumCard; src?: string; onClose: () => void; onPrev?: () => void; onNext?: () => void }) {
   const entity = card.value as HistoricalEntity | undefined;
   const facts: Array<[string, string]> = [
-    ["Tipo", historicalTypeLabel(card.type)], ["Período", historicalPeriod(entity)], ["Capital", entity?.cap ?? ""], ["Sucessor", entity?.sucessor ?? ""],
+    [t.collection.type, historicalTypeLabel(card.type)], [t.collection.period, historicalPeriod(entity)], [t.collection.capital, entity?.cap ?? ""], [t.collection.successor, entity?.sucessor ?? ""],
   ];
-  return <CardDialog title={card.name} src={src} onClose={onClose} onPrev={onPrev} onNext={onNext} side={<div className="col-levelbox col-l2"><div><span className="col-rl">Coleção histórica</span><b>Descoberta</b></div><span className="col-tick"><Glyph name="check" size={20} stroke={2.4} /></span></div>}>
+  return <CardDialog title={card.name} src={src} onClose={onClose} onPrev={onPrev} onNext={onNext} side={<div className="col-levelbox col-l2"><div><span className="col-rl">{t.collection.historicalCollection}</span><b>{t.collection.discovered}</b></div><span className="col-tick"><Glyph name="check" size={20} stroke={2.4} /></span></div>}>
     <div className="col-headline"><span className="col-eyebrow">{placeLabel({ reg: card.region, sub: card.sub })}</span><h2 id="col-dialog-title">{card.name}</h2><p>{historicalPeriod(entity)}</p></div>
     <div className="col-fields">
       {facts.filter(([, value]) => value).map(([label, value]) => <div key={label} className="col-fld"><span className="k">{label}</span><span className="v">{value}</span></div>)}
-      {entity?.fato && <div className="col-fld is-wide"><span className="k">Nota histórica</span><span className="v is-note">{entity.fato}</span></div>}
+      {entity?.fato && <div className="col-fld is-wide"><span className="k">{t.collection.historicalNote}</span><span className="v is-note">{entity.fato}</span></div>}
     </div>
   </CardDialog>;
 }
@@ -205,61 +206,61 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
 
   const missing = cards.length - discovered;
   const heroLegend = isCountries
-    ? <>{[1, 2, 3, 4, 5].map((n) => <li key={n} className={`col-l${n}`}><span className="pg-dot" />{LEVEL_NAMES[n]} <b>{counts[n]}</b></li>)}<li><span className="pg-dot is-none" />Faltando <b>{counts[0]}</b></li></>
+    ? <>{[1, 2, 3, 4, 5].map((n) => <li key={n} className={`col-l${n}`}><span className="pg-dot" />{LEVEL_NAMES[n]} <b>{counts[n]}</b></li>)}<li><span className="pg-dot is-none" />{t.collection.missingLabel} <b>{counts[0]}</b></li></>
     : <>{Object.entries(HISTORICAL_TYPES).map(([key, item]) => {
         const group = allHistorical.filter((card) => card.type === key);
         return <li key={key}><span className={`pg-dot is-${key}`} />{item.plural} <b>{group.filter((card) => card.discovered).length}/{group.length}</b></li>;
       })}</>;
 
-  return <section className="col" aria-label="Álbum de coleção">
+  return <section className="col" aria-label={t.collection.aria}>
     <ProgressHero
       value={isCountries ? discovered : historicalDiscovered} total={isCountries ? cards.length : allHistorical.length}
-      ringLabel={isCountries ? `${discovered} de ${cards.length} cartas descobertas` : `${historicalDiscovered} de ${allHistorical.length} cartas históricas descobertas`}
-      eyebrow={isCountries ? "Perfil local · Coleção" : "Perfil local · Coleção histórica"} title={isCountries ? "Coleção" : "Históricas"}
-      lede={isCountries ? "Cada carta se abre em camadas: quanto mais modos você acerta, mais ela revela." : "Impérios, países extintos e movimentos que já tiveram bandeira própria."}
+      ringLabel={isCountries ? t.collection.ringCountries(discovered, cards.length) : t.collection.ringHistorical(historicalDiscovered, allHistorical.length)}
+      eyebrow={isCountries ? t.collection.eyebrow : t.collection.eyebrowHistorical} title={isCountries ? t.collection.title : t.collection.titleHistorical}
+      lede={isCountries ? t.collection.lede : t.collection.ledeHistorical}
       summary={isCountries
-        ? (missing > 0 ? <b>Faltam {missing} para completar o atlas.</b> : <b>Atlas completo.</b>)
-        : (allHistorical.length - historicalDiscovered > 0 ? <b>Faltam {allHistorical.length - historicalDiscovered} para completar.</b> : <b>Coleção completa.</b>)}
-      legendLabel={isCountries ? "Cartas por nível" : "Cartas históricas por tipo"} legend={heroLegend}
+        ? (missing > 0 ? <b>{t.collection.missingAtlas(missing)}</b> : <b>{t.collection.atlasComplete}</b>)
+        : (allHistorical.length - historicalDiscovered > 0 ? <b>{t.collection.missing(allHistorical.length - historicalDiscovered)}</b> : <b>{t.collection.complete2}</b>)}
+      legendLabel={isCountries ? t.collection.legend : t.collection.legendHistorical} legend={heroLegend}
     />
 
     <div className="col-toolbar">
-      <div className="col-tabs" role="group" aria-label="Álbum">
-        <button type="button" className="col-tab" aria-pressed={isCountries} onClick={() => switchAlbum("countries")}>Países <em>{discovered}/{cards.length}</em></button>
-        <button type="button" className="col-tab" aria-pressed={!isCountries} onClick={() => switchAlbum("historical")}>Históricas <em>{historicalDiscovered}/{allHistorical.length}</em></button>
+      <div className="col-tabs" role="group" aria-label={t.collection.album}>
+        <button type="button" className="col-tab" aria-pressed={isCountries} onClick={() => switchAlbum("countries")}>{t.collection.countries} <em>{discovered}/{cards.length}</em></button>
+        <button type="button" className="col-tab" aria-pressed={!isCountries} onClick={() => switchAlbum("historical")}>{t.collection.historical} <em>{historicalDiscovered}/{allHistorical.length}</em></button>
       </div>
       <div className="col-tools">
-        {isCountries && <label className="col-switch"><input type="checkbox" checked={unOnly} onChange={(event) => setUnOnly(event.target.checked)} /><i aria-hidden="true" />Só ONU</label>}
-        <label className="col-search"><Glyph name="search" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isCountries ? "Buscar país…" : "Buscar entidade…"} aria-label={isCountries ? "Buscar país" : "Buscar entidade histórica"} /></label>
+        {isCountries && <label className="col-switch"><input type="checkbox" checked={unOnly} onChange={(event) => setUnOnly(event.target.checked)} /><i aria-hidden="true" />{t.collection.onlyUn}</label>}
+        <label className="col-search"><Glyph name="search" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isCountries ? t.collection.searchCountry : t.collection.searchEntity} aria-label={isCountries ? t.collection.searchCountryAria : t.collection.searchEntityAria} /></label>
       </div>
     </div>
 
-    <div className="col-frow"><span className="col-flabel">Recorte</span>
-      <div className="pg-chips" role="group" aria-label="Filtrar por recorte">
+    <div className="col-frow"><span className="col-flabel">{t.collection.region}</span>
+      <div className="pg-chips" role="group" aria-label={t.collection.regionFilter}>
         {REGION_ITEMS.map(([key, name]) => <button type="button" className="pg-chip" key={key} aria-pressed={region === key} onClick={(event) => { setRegion(key); pick(event.currentTarget); }}>{name}</button>)}
       </div>
     </div>
     {isCountries
-      ? <div className="col-frow"><span className="col-flabel">Nível</span>
-          <div className="pg-chips" role="group" aria-label="Filtrar por nível">
-            {([["todas", "Todas", cards.length], ["descobertas", "Descobertas", discovered], ["faltando", "Faltando", counts[0]]] as const).map(([key, label, count]) => <button type="button" className="pg-chip" key={key} aria-pressed={level === key} onClick={(event) => { setLevel(key); pick(event.currentTarget); }}>{label} <em>{count}</em></button>)}
+      ? <div className="col-frow"><span className="col-flabel">{t.collection.levelLabel}</span>
+          <div className="pg-chips" role="group" aria-label={t.collection.levelFilter}>
+            {([["todas", t.collection.all, cards.length], ["descobertas", t.collection.discoveredPlural, discovered], ["faltando", t.collection.missingLabel, counts[0]]] as const).map(([key, label, count]) => <button type="button" className="pg-chip" key={key} aria-pressed={level === key} onClick={(event) => { setLevel(key); pick(event.currentTarget); }}>{label} <em>{count}</em></button>)}
             <span className="col-sep" aria-hidden="true" />
             {([1, 2, 3, 4, 5] as const).map((n) => <button type="button" className={`pg-chip col-l${n}`} key={n} aria-pressed={level === String(n)} onClick={(event) => { setLevel(String(n) as LevelFilter); pick(event.currentTarget); }}><span className="pg-dot" aria-hidden="true" />{LEVEL_NAMES[n]} <em>{counts[n]}</em></button>)}
           </div>
         </div>
-      : <div className="col-frow"><span className="col-flabel">Tipo</span>
-          <div className="pg-chips" role="group" aria-label="Filtrar por tipo e estado">
-            <button type="button" className="pg-chip" aria-pressed={historicalType === "todos"} onClick={(event) => { setHistoricalType("todos"); pick(event.currentTarget); }}>Todos <em>{allHistorical.length}</em></button>
+      : <div className="col-frow"><span className="col-flabel">{t.collection.typeLabel}</span>
+          <div className="pg-chips" role="group" aria-label={t.collection.typeFilter}>
+            <button type="button" className="pg-chip" aria-pressed={historicalType === "todos"} onClick={(event) => { setHistoricalType("todos"); pick(event.currentTarget); }}>{t.collection.allTypes} <em>{allHistorical.length}</em></button>
             {Object.entries(HISTORICAL_TYPES).map(([key, item]) => <button type="button" className="pg-chip" key={key} aria-pressed={historicalType === key} onClick={(event) => { setHistoricalType(key); pick(event.currentTarget); }}>{item.label} <em>{allHistorical.filter((card) => card.type === key).length}</em></button>)}
             <span className="col-sep" aria-hidden="true" />
-            {([["descobertas", "Descobertas", historicalDiscovered], ["faltando", "Faltando", allHistorical.length - historicalDiscovered]] as const).map(([key, label, count]) => <button type="button" className="pg-chip" key={key} aria-pressed={historicalState === key} onClick={(event) => { setHistoricalState(historicalState === key ? "todas" : key); pick(event.currentTarget); }}>{label} <em>{count}</em></button>)}
+            {([["descobertas", t.collection.discoveredPlural, historicalDiscovered], ["faltando", t.collection.missingLabel, allHistorical.length - historicalDiscovered]] as const).map(([key, label, count]) => <button type="button" className="pg-chip" key={key} aria-pressed={historicalState === key} onClick={(event) => { setHistoricalState(historicalState === key ? "todas" : key); pick(event.currentTarget); }}>{label} <em>{count}</em></button>)}
           </div>
         </div>}
 
-    <div className="col-gh"><h2>{isCountries ? "Países" : "Históricas"}</h2><span className="col-count" aria-live="polite">{shown === total ? `${total} cartas` : `${shown} de ${total} cartas`}</span><span className="col-rule" /><span className="col-order"><Glyph name="sort" size={16} />Ordem A–Z</span></div>
+    <div className="col-gh"><h2>{isCountries ? t.collection.countries : t.collection.historical}</h2><span className="col-count" aria-live="polite">{shown === total ? t.collection.cards(total) : t.collection.cardsOf(shown, total)}</span><span className="col-rule" /><span className="col-order"><Glyph name="sort" size={16} />{t.collection.order}</span></div>
 
     {shown === 0
-      ? <div className="col-empty"><p>{total === 0 ? "Carregando o acervo…" : "Nenhuma carta encontrada com esses filtros."}</p>{total > 0 && <button type="button" className="pg-chip" onClick={clearFilters}>Limpar filtros</button>}</div>
+      ? <div className="col-empty"><p>{total === 0 ? t.collection.loading : t.collection.none}</p>{total > 0 && <button type="button" className="pg-chip" onClick={clearFilters}>{t.collection.clear}</button>}</div>
       : <ul className="col-grid">
           {isCountries
             ? visible.map((card) => <CountryCard key={card.id} card={card} meta={meta[card.id]} src={src(flags, card.flag)} onOpen={() => openCard(card.id)} />)

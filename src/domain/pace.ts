@@ -1,6 +1,7 @@
 // Ritmo da partida (Treino ou Partida com tempo) e quantidade de rodadas. Lógica pura.
 import type { AnyQuizVariant, Family } from "./types";
 import type { Pace } from "./spoils.js";
+import { t } from "./i18n/index.js";
 
 /** Tamanho da partida: 10 grátis; 20, 50, 100 e todas (baralho completo) são compradas. */
 export type RoundTier = "short" | "long" | "fifty" | "hundred" | "all";
@@ -9,10 +10,10 @@ export type SessionOptions = { pace: Pace; roundLimit: number | null };
 
 /** Desbloqueios de rodadas: valem para todos os modos, para sempre. Comprar um corte maior inclui os menores. */
 export const ROUND_UNLOCKS = [
-  { tier: "long" as const, key: "rounds:20" as const, label: "20 rodadas", cost: 3000 },
-  { tier: "fifty" as const, key: "rounds:50" as const, label: "50 rodadas", cost: 8000 },
-  { tier: "hundred" as const, key: "rounds:100" as const, label: "100 rodadas", cost: 20000 },
-  { tier: "all" as const, key: "rounds:all" as const, label: "Baralho completo", cost: 85000 },
+  { tier: "long" as const, key: "rounds:20" as const, label: t.roundUnlocks.long, cost: 3000 },
+  { tier: "fifty" as const, key: "rounds:50" as const, label: t.roundUnlocks.fifty, cost: 8000 },
+  { tier: "hundred" as const, key: "rounds:100" as const, label: t.roundUnlocks.hundred, cost: 20000 },
+  { tier: "all" as const, key: "rounds:all" as const, label: t.roundUnlocks.all, cost: 85000 },
 ];
 export type RoundUnlockKey = (typeof ROUND_UNLOCKS)[number]["key"];
 export const roundUnlockFor = (tier: RoundTier) => ROUND_UNLOCKS.find((item) => item.tier === tier) ?? null;
@@ -32,7 +33,7 @@ export function roundChips(family: Family, total: number): { tier: RoundTier; la
   const covering = coveringTier(family, total);
   return ROUND_TIERS.slice(0, ROUND_TIERS.indexOf(covering) + 1).map((tier) => ({
     tier,
-    label: tier !== covering ? String(roundLimitFor(tier, family)) : tier === "short" ? String(total) : `Todas · ${total}`,
+    label: tier !== covering ? String(roundLimitFor(tier, family)) : tier === "short" ? String(total) : t.config.allRounds(total),
   }));
 }
 /** Um corte guardado maior do que o recorte precisa aparece como o corte que cobre o recorte. */

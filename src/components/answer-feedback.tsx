@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { t } from "../domain/i18n";
 
 export type Verdict = "" | "correct" | "wrong";
 
@@ -20,23 +21,23 @@ export function OptionMarks({ isTarget, isPicked, verdict }: { isTarget: boolean
   if (isTarget) {
     return <>
       <span className="opt-mark" aria-hidden="true">✓</span>
-      {verdict === "wrong" && <span className="opt-tag">Resposta certa</span>}
-      <span className="sr-only"> Resposta certa.</span>
+      {verdict === "wrong" && <span className="opt-tag">{t.feedback.rightAnswer}</span>}
+      <span className="sr-only">{t.feedback.rightAnswerSr}</span>
     </>;
   }
-  if (isPicked) return <><span className="opt-mark opt-mark-miss" aria-hidden="true">✕</span><span className="sr-only"> Sua resposta, errada.</span></>;
+  if (isPicked) return <><span className="opt-mark opt-mark-miss" aria-hidden="true">✕</span><span className="sr-only">{t.feedback.wrongPickSr}</span></>;
   return null;
 }
 
 /** Cartão com a resposta certa, para os modos de escrita: no erro fica visível para a pessoa comparar com o que digitou. */
 export function AnswerReveal({ verdict, expected, typed, timedOut }: { verdict: Exclude<Verdict, "">; expected: string; typed?: string; timedOut?: boolean }) {
   if (verdict === "correct") {
-    return <div className="reveal reveal-ok" aria-hidden="true"><span className="reveal-mark">✓</span><div><small>Certo</small><b>{expected}</b></div></div>;
+    return <div className="reveal reveal-ok" aria-hidden="true"><span className="reveal-mark">✓</span><div><small>{t.feedback.correct}</small><b>{expected}</b></div></div>;
   }
   const shown = typed?.trim();
   return <div className="reveal reveal-miss" aria-hidden="true">
-    <div><small>Resposta certa</small><b>{expected}</b>{shown && !timedOut ? <em>Você digitou: {shown}</em> : null}</div>
-    <span className="reveal-skip">toque para continuar</span>
+    <div><small>{t.feedback.rightAnswer}</small><b>{expected}</b>{shown && !timedOut ? <em>{t.feedback.youTyped(shown)}</em> : null}</div>
+    <span className="reveal-skip">{t.feedback.tapToContinue}</span>
   </div>;
 }
 

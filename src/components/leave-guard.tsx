@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { formatNumber, t } from "../domain/i18n";
 
 type Verb = "leave" | "restart";
 type Single = { kind: "single"; run: () => void; verb: Verb };
@@ -61,19 +62,19 @@ function LeaveDialog({ rounds, verb, coins, xp, onStay, onLeave, onRestart }: {
   const sheet = coins !== undefined;
   return <div className="leave-backdrop" onPointerDown={(event) => event.stopPropagation()}>
     <div className="leave-card" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-text">
-      <h2 id="leave-title">{restart ? "Recomeçar a partida?" : "Sair da partida?"}</h2>
+      <h2 id="leave-title">{restart ? t.leave.restartTitle : t.leave.leaveTitle}</h2>
       <p id="leave-text">
-        Você já respondeu {rounds} {rounds === 1 ? "pergunta" : "perguntas"}. Só quem termina a partida ganha moedas e XP, então {restart ? "recomeçar" : "sair"} agora não paga nada.
-        O que você acertou continua salvo nas suas cartas.
+        {t.leave.body(rounds, restart)}
+        {" "}{t.leave.kept}
       </p>
       {sheet && <div className="leave-pending">
-        <div><small>Moedas pendentes</small><b>$ {coins!.toLocaleString("pt-BR")}</b></div>
-        <div><small>XP ao terminar</small><b>+{xp}</b></div>
+        <div><small>{t.leave.pendingCoins}</small><b>$ {formatNumber(coins!)}</b></div>
+        <div><small>{t.leave.xpOnFinish}</small><b>+{xp}</b></div>
       </div>}
       <div className="leave-actions">
-        <button ref={stayRef} type="button" className="button" onClick={onStay}>Continuar jogando</button>
-        {onRestart && <button type="button" className="button leave-secondary" onClick={onRestart}>Recomeçar</button>}
-        <button type="button" className="button leave-quit" onClick={onLeave}>{restart ? "Recomeçar sem ganhar" : "Sair sem ganhar"}</button>
+        <button ref={stayRef} type="button" className="button" onClick={onStay}>{t.leave.stay}</button>
+        {onRestart && <button type="button" className="button leave-secondary" onClick={onRestart}>{t.leave.restart}</button>}
+        <button type="button" className="button leave-quit" onClick={onLeave}>{restart ? t.leave.restartNoGain : t.leave.leaveNoGain}</button>
       </div>
     </div>
   </div>;

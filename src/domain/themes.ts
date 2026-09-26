@@ -1,4 +1,5 @@
 // Temas do Hub (cores e pinceladas). O padrão é grátis; os outros se compram na Loja com moedas. Lógica pura.
+import { t } from "./i18n/index.js";
 
 /** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). */
 export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash";
@@ -18,7 +19,7 @@ export type Theme = {
 
 export const DEFAULT_THEME = "pigmentos";
 
-export const THEMES: readonly Theme[] = [
+const THEME_SEEDS: readonly Theme[] = [
   { id: "pigmentos", name: "Pigmentos", tagline: "Uma cor para cada modo: teal, terracota, latão e violeta.", treat: "tint", cost: 0, wash: false, swatches: ["#2B8378", "#C25A42", "#BE8A2C", "#6F5DA6"] },
   { id: "aquarela", name: "Aquarela", tagline: "Cartões de vidro sobre manchas de cor que se misturam.", treat: "aquarela", cost: 6000, wash: true, swatches: ["#1F7C74", "#B84E38", "#A87719", "#5D4C99"] },
   { id: "atlas", name: "Atlas", tagline: "Pranchas de mapa impresso, com curvas de nível e rampa de altitude.", treat: "atlas", cost: 8000, wash: false, swatches: ["#3D7C93", "#AE5238", "#C29A44", "#6C8A58"] },
@@ -30,6 +31,11 @@ export const THEMES: readonly Theme[] = [
   { id: "listras", name: "Listras", tagline: "Faixas largas, como listras de bandeira pintadas à mão.", treat: "brush-h", cost: 12000, wash: false, swatches: ["#2B8378", "#C25A42", "#BE8A2C", "#6F5DA6"] },
   { id: "atelie", name: "Ateliê", tagline: "Pinceladas por cima de aquarela: o mais pintado de todos.", treat: "brush-wash", cost: 18000, wash: true, swatches: ["#1F8A87", "#B94A76", "#D2782B", "#5561B5"] },
 ];
+/** Nome e frase de cada tema no idioma da interface (domain/i18n). */
+export const THEMES: readonly Theme[] = THEME_SEEDS.map((theme) => {
+  const [name, tagline] = t.themes[theme.id] ?? [theme.name, theme.tagline];
+  return { ...theme, name, tagline };
+});
 
 export type ThemeId = (typeof THEMES)[number]["id"];
 export type ThemeUnlockKey = `theme:${string}`;

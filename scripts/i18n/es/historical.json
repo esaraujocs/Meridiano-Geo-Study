@@ -1,0 +1,767 @@
+{
+ "ottoman": {
+  "name": "Imperio otomano",
+  "cap": "Constantinopla",
+  "sucessor": "Turquía",
+  "fato": "Una de las dinastías más grandes y duraderas de la historia, dominó el sudeste de Europa, Oriente Medio y el norte de África durante más de 600 años."
+ },
+ "austria-hungria": {
+  "name": "Austria-Hungría",
+  "cap": "Viena",
+  "sucessor": "Austria y Hungría",
+  "fato": "Monarquía dual que unía los tronos austríaco y húngaro bajo un mismo emperador; se disolvió en varios países al final de la Primera Guerra Mundial."
+ },
+ "alemanha-nazista": {
+  "name": "Alemania nazi",
+  "cap": "Berlín",
+  "sucessor": "Alemania",
+  "fato": "Régimen totalitario liderado por Adolf Hitler; su derrota en la Segunda Guerra Mundial en 1945 puso fin al llamado Tercer Reich."
+ },
+ "alemanha-oriental": {
+  "name": "Alemania Oriental (RDA)",
+  "cap": "Berlín Este",
+  "sucessor": "Alemania",
+  "fato": "Estado socialista del lado soviético de la Guerra Fría; se reunificó con Alemania Occidental en 1990, tras la caída del Muro de Berlín."
+ },
+ "urss": {
+  "name": "Unión Soviética (URSS)",
+  "cap": "Moscú",
+  "sucessor": "Rusia y otros 14 países",
+  "fato": "El país más grande del mundo en superficie; su disolución en 1991 dio origen a 15 países independientes, entre ellos Rusia."
+ },
+ "iugoslavia": {
+  "name": "Yugoslavia (RFS)",
+  "cap": "Belgrado",
+  "sucessor": "Serbia, Croacia, Bosnia y otros",
+  "fato": "Federación socialista liderada por Tito que unía seis repúblicas balcánicas; se fragmentó en guerras violentas en los años noventa."
+ },
+ "tchecoslovaquia": {
+  "name": "Checoslovaquia",
+  "cap": "Praga",
+  "sucessor": "Chequia y Eslovaquia",
+  "fato": "Creada tras la Primera Guerra Mundial; se disolvió pacíficamente en 1993 en el episodio conocido como el Divorcio de Terciopelo."
+ },
+ "manchukuo": {
+  "name": "Manchukuo",
+  "cap": "Hsinking",
+  "sucessor": "China",
+  "fato": "Estado títere creado por Japón en Manchuria; desapareció con la derrota japonesa en la Segunda Guerra Mundial."
+ },
+ "vietna-sul": {
+  "name": "Vietnam del Sur",
+  "cap": "Saigón",
+  "sucessor": "Vietnam",
+  "fato": "República apoyada por EE. UU. en la guerra de Vietnam; cayó con la caída de Saigón, lo que llevó a la reunificación del país bajo el Norte."
+ },
+ "katanga": {
+  "name": "Estado de Katanga",
+  "cap": "Élisabethville",
+  "sucessor": "República Democrática del Congo",
+  "fato": "Secesión de la recién independizada República Democrática del Congo, rica en minerales; reincorporada por la fuerza tras una intervención de la ONU."
+ },
+ "biafra": {
+  "name": "Biafra",
+  "cap": "Enugu",
+  "sucessor": "Nigeria",
+  "fato": "Secesión del sudeste de Nigeria, mayoritariamente igbo; la guerra civil que siguió terminó con su reincorporación al país."
+ },
+ "confederados": {
+  "name": "Estados Confederados de América",
+  "cap": "Richmond",
+  "sucessor": "Estados Unidos",
+  "fato": "Unión de estados esclavistas del sur de EE. UU. que se separó de la Unión y provocó la guerra de Secesión; derrotada en 1865."
+ },
+ "imperio-alemao": {
+  "name": "Imperio alemán",
+  "cap": "Berlín",
+  "sucessor": "Alemania",
+  "fato": "La unificación de Alemania bajo el liderazgo de Prusia; se disolvió con la derrota en la Primera Guerra Mundial y dio paso a la República de Weimar."
+ },
+ "reino-italia": {
+  "name": "Reino de Italia",
+  "cap": "Roma",
+  "sucessor": "Italia",
+  "fato": "La unificación italiana bajo la Casa de Saboya; se convirtió en república tras un referéndum popular al final de la Segunda Guerra Mundial."
+ },
+ "persia-qajar": {
+  "name": "Persia (dinastía kayar)",
+  "cap": "Teherán",
+  "sucessor": "Irán",
+  "fato": "Dinastía persa depuesta por un golpe militar que llevó al poder a Reza Jan y fundó la dinastía Pahlaví."
+ },
+ "ira-pahlavi": {
+  "name": "Irán (Estado Imperial, Pahlaví)",
+  "cap": "Teherán",
+  "sucessor": "Irán",
+  "fato": "Monarquía modernizadora de los sahs Reza y Mohammad Reza Pahlaví; derrocada por la Revolución iraní de 1979."
+ },
+ "mogol": {
+  "name": "Imperio mogol",
+  "cap": "Delhi",
+  "sucessor": "India, Pakistán y Bangladés",
+  "fato": "Uno de los mayores imperios de la historia india; disuelto de hecho tras la Rebelión de la India de 1857, cuando la India pasó a ser colonia directa británica."
+ },
+ "camboja-democratico": {
+  "name": "Kampuchea Democrática (Jemeres Rojos)",
+  "cap": "Nom Pen",
+  "sucessor": "Camboya",
+  "fato": "Régimen de los Jemeres Rojos liderado por Pol Pot, marcado por un genocidio; derrocado por la invasión vietnamita."
+ },
+ "tibete": {
+  "name": "Tíbet",
+  "cap": "Lhasa",
+  "sucessor": "China",
+  "fato": "Independiente de hecho tras la caída de la dinastía Qing; anexado por China en 1951, sigue siendo un territorio disputado."
+ },
+ "afeganistao-rdc": {
+  "name": "Afganistán (República Democrática)",
+  "cap": "Kabul",
+  "sucessor": "Afganistán",
+  "fato": "Régimen comunista de la Guerra Fría apoyado por la Unión Soviética; cayó tras la retirada soviética y el avance de los muyahidines."
+ },
+ "reino-egito": {
+  "name": "Reino de Egipto",
+  "cap": "El Cairo",
+  "sucessor": "Egipto",
+  "fato": "Monarquía semiindependiente bajo influencia británica; derrocada por la Revolución egipcia de 1952, liderada por Nasser."
+ },
+ "rau": {
+  "name": "República Árabe Unida",
+  "cap": "El Cairo",
+  "sucessor": "Egipto y Siria",
+  "fato": "Unión política entre Egipto y Siria; Siria se retiró en 1961, pero Egipto mantuvo el nombre oficial hasta 1971."
+ },
+ "zanzibar": {
+  "name": "Sultanato de Zanzíbar",
+  "cap": "Zanzíbar (ciudad)",
+  "sucessor": "Tanzania",
+  "fato": "Sultanato comercial en el océano Índico; se fusionó con Tanganica poco después de una revolución y formó Tanzania."
+ },
+ "transvaal": {
+  "name": "República Sudafricana (Transvaal)",
+  "cap": "Pretoria",
+  "sucessor": "Sudáfrica",
+  "fato": "República bóer rica en oro; anexada por el Imperio británico tras la segunda guerra bóer."
+ },
+ "orange": {
+  "name": "Estado Libre de Orange",
+  "cap": "Bloemfontein",
+  "sucessor": "Sudáfrica",
+  "fato": "Otra república bóer independiente; anexada por los británicos en la misma guerra que acabó con el Transvaal."
+ },
+ "congo-leopoldo": {
+  "name": "Estado Libre del Congo",
+  "cap": "Boma",
+  "sucessor": "República Democrática del Congo",
+  "fato": "Propiedad personal del rey Leopoldo II de Bélgica, no una colonia belga; tristemente célebre por los abusos cometidos contra la población local."
+ },
+ "etiope": {
+  "name": "Imperio etíope",
+  "cap": "Adís Abeba",
+  "sucessor": "Etiopía",
+  "fato": "Uno de los estados más antiguos del mundo, nunca colonizado de verdad; la monarquía cayó con un golpe militar que instaló el régimen comunista del Derg."
+ },
+ "sokoto": {
+  "name": "Califato de Sokoto",
+  "cap": "Sokoto",
+  "sucessor": "Nigeria",
+  "fato": "Uno de los mayores estados islámicos precoloniales de África; anexado por los británicos, hoy forma parte del norte de Nigeria."
+ },
+ "texas": {
+  "name": "República de Texas",
+  "cap": "Austin",
+  "sucessor": "Estados Unidos",
+  "fato": "Independiente de México tras la Revolución de Texas; anexada por EE. UU., se convirtió en el estado de Texas."
+ },
+ "havai": {
+  "name": "Reino de Hawái",
+  "cap": "Honolulu",
+  "sucessor": "Estados Unidos",
+  "fato": "Monarquía polinesia unificada por Kamehameha I; derrocada por un golpe apoyado por intereses comerciales estadounidenses y anexada a EE. UU. en 1898."
+ },
+ "commonwealth-inglaterra": {
+  "name": "Mancomunidad de Inglaterra",
+  "cap": "Londres",
+  "sucessor": "Reino Unido",
+  "fato": "República que siguió a la ejecución del rey Carlos I en la guerra civil inglesa; la monarquía se restauró en 1660 con Carlos II."
+ },
+ "reino-romenia": {
+  "name": "Reino de Rumania",
+  "cap": "Bucarest",
+  "sucessor": "Rumania",
+  "fato": "Monarquía rumana que atravesó las dos guerras mundiales; abolida cuando los comunistas obligaron al rey Miguel I a abdicar."
+ },
+ "china-cinco-cores": {
+  "name": "China (Gobierno de Beiyang)",
+  "cap": "Pekín",
+  "sucessor": "China",
+  "fato": "Primer gobierno republicano chino tras la caída de la dinastía Qing; la \"bandera de los cinco colores\" representaba la unión de cinco etnias."
+ },
+ "iemen-norte": {
+  "name": "Yemen del Norte",
+  "cap": "Saná",
+  "sucessor": "Yemen",
+  "fato": "La República Árabe de Yemen, formada tras la caída del imanato zaidí; se unificó con Yemen del Sur en 1990 y formó el Yemen actual."
+ },
+ "iemen-sul": {
+  "name": "Yemen del Sur",
+  "cap": "Adén",
+  "sucessor": "Yemen",
+  "fato": "La República Democrática Popular de Yemen, único estado marxista del mundo árabe; se unificó con Yemen del Norte en 1990."
+ },
+ "birmania-socialista": {
+  "name": "Birmania socialista",
+  "cap": "Rangún",
+  "sucessor": "Birmania",
+  "fato": "La República Socialista de la Unión de Birmania, bajo un régimen militar de partido único; cayó tras masivas protestas populares en 1988."
+ },
+ "india-britanica": {
+  "name": "India británica",
+  "cap": "Nueva Delhi",
+  "sucessor": "India, Pakistán y Bangladés",
+  "fato": "Dominio directo de la Corona británica sobre el subcontinente indio; dividida en la independencia de 1947 en la India y Pakistán."
+ },
+ "congo-leopoldville": {
+  "name": "Congo-Léopoldville",
+  "cap": "Léopoldville",
+  "sucessor": "República Democrática del Congo",
+  "fato": "Nombre del país justo después de la independencia de Bélgica, antes de ser Zaire y luego República Democrática del Congo; es la primera bandera de la etapa republicana, cambiada ya en 1963."
+ },
+ "rodesia-norte": {
+  "name": "Rodesia del Norte",
+  "cap": "Lusaka",
+  "sucessor": "Zambia",
+  "fato": "Protectorado británico que se independizó como Zambia en 1964; distinto de la vecina Rodesia del Sur (que declaró la independencia unilateral en 1965)."
+ },
+ "somalilandia-britanica": {
+  "name": "Somalilandia británica",
+  "cap": "Hargeisa",
+  "sucessor": "Somalia",
+  "fato": "Protectorado británico en el Cuerno de África; fue independiente solo unos días en 1960 antes de unirse a la antigua Somalia italiana y formar Somalia."
+ },
+ "america-central-federal": {
+  "name": "República Federal de Centroamérica",
+  "cap": "Ciudad de Guatemala",
+  "sucessor": "Guatemala, Honduras, El Salvador, Nicaragua y Costa Rica",
+  "fato": "Unión federal que sucedió al México imperial en la región; se fragmentó en Guatemala, Honduras, El Salvador, Nicaragua y Costa Rica."
+ },
+ "west-florida": {
+  "name": "República de Florida Occidental",
+  "cap": "Saint Francisville",
+  "sucessor": "Estados Unidos",
+  "fato": "Independencia de colonos estadounidenses contra España; duró solo 74 días antes de ser anexada por Estados Unidos y dio origen a la \"bandera de la estrella solitaria\"."
+ },
+ "confederacao-argentina": {
+  "name": "Confederación Argentina",
+  "cap": "Buenos Aires",
+  "sucessor": "Argentina",
+  "fato": "Unión confederada de las provincias argentinas bajo el liderazgo de Juan Manuel de Rosas; dio paso a la Argentina centralizada de hoy."
+ },
+ "italia-salo": {
+  "name": "República Social Italiana (Saló)",
+  "cap": "Saló",
+  "sucessor": "Italia",
+  "fato": "Estado títere nazi liderado por Mussolini en el norte de Italia tras su destitución; extinguido con la derrota alemana en la Segunda Guerra Mundial."
+ },
+ "trieste": {
+  "name": "Territorio Libre de Trieste",
+  "cap": "Trieste",
+  "sucessor": "Italia",
+  "fato": "Ciudad-estado independiente creada por la ONU tras la Segunda Guerra Mundial, disputada entre Italia y Yugoslavia; repartida entre ambos países en 1954."
+ },
+ "danzig": {
+  "name": "Ciudad Libre de Dánzig",
+  "cap": "Dánzig",
+  "sucessor": "Polonia",
+  "fato": "Ciudad-estado bajo la protección de la Sociedad de Naciones tras la Primera Guerra Mundial, de mayoría alemana; anexada por la Alemania nazi en 1939, detonante de la invasión de Polonia."
+ },
+ "sikkim": {
+  "name": "Reino de Sikkim",
+  "cap": "Gangtok",
+  "sucessor": "India",
+  "fato": "Reino himalayo entre la India y el Tíbet; anexado por la India en 1975 tras un referéndum, se convirtió en el estado indio de Sikkim."
+ },
+ "paquistao-oriental": {
+  "name": "Pakistán Oriental",
+  "cap": "Daca",
+  "sucessor": "Bangladés",
+  "fato": "Parte oriental de Pakistán, separada geográficamente por la India; se independizó como Bangladés tras la guerra de liberación de 1971."
+ },
+ "ceilao-britanico": {
+  "name": "Ceilán británico",
+  "cap": "Colombo",
+  "sucessor": "Sri Lanka",
+  "fato": "Colonia británica en la isla hoy conocida como Sri Lanka; se independizó en 1948 como dominio de la Commonwealth."
+ },
+ "alto-volta": {
+  "name": "Alto Volta",
+  "cap": "Uagadugú",
+  "sucessor": "Burkina Faso",
+  "fato": "Nombre del país hoy conocido como Burkina Faso antes de la revolución de Thomas Sankara, que cambió el nombre y la bandera en 1984."
+ },
+ "rodesia-niassalandia": {
+  "name": "Federación de Rodesia y Nyasalandia",
+  "cap": "Salisbury",
+  "sucessor": "Zambia, Zimbabue y Malaui",
+  "fato": "Unión de las colonias británicas que hoy son Zambia, Zimbabue y Malaui; disuelta por la presión de los movimientos de independencia africanos."
+ },
+ "rodesia-sul-colonial": {
+  "name": "Rodesia del Sur",
+  "cap": "Salisbury",
+  "sucessor": "Zimbabue",
+  "fato": "Colonia autónoma británica anterior a la Rodesia independiente (UDI) de 1965; se convirtió en Zimbabue en 1980."
+ },
+ "cisplatina": {
+  "name": "Provincia Cisplatina",
+  "cap": "Montevideo",
+  "sucessor": "Uruguay",
+  "fato": "Territorio anexado por el Imperio del Brasil, correspondiente al actual Uruguay; se independizó tras la guerra del Brasil."
+ },
+ "nova-granada": {
+  "name": "Estados Unidos de la Nueva Granada",
+  "cap": "Bogotá",
+  "sucessor": "Colombia",
+  "fato": "Unión federal de provincias que precedió a la Colombia moderna; rebautizada Estados Unidos de Colombia en 1863."
+ },
+ "nigeria-britanica": {
+  "name": "Nigeria británica",
+  "cap": "Lagos",
+  "sucessor": "Nigeria",
+  "fato": "Colonia británica formada por la fusión de los protectorados del norte y del sur; independiente en 1960 como Nigeria."
+ },
+ "austria-imperio": {
+  "name": "Imperio austríaco"
+ },
+ "baviera-reino": {
+  "name": "Reino de Baviera"
+ },
+ "bukhara": {
+  "name": "Emirato de Bujará"
+ },
+ "burundi-reino": {
+  "name": "Reino de Burundi"
+ },
+ "espanha-segunda-republica": {
+  "name": "Segunda República española"
+ },
+ "iraque-reino": {
+  "name": "Reino de Irak"
+ },
+ "laos-reino": {
+  "name": "Reino de Laos"
+ },
+ "palestina-mandato": {
+  "name": "Palestina (Mandato británico)"
+ },
+ "portugal-reino": {
+  "name": "Reino de Portugal"
+ },
+ "baden-reino": {
+  "name": "Gran Ducado de Baden"
+ },
+ "wurttemberg-reino": {
+  "name": "Reino de Wurtemberg"
+ },
+ "saxonia-reino": {
+  "name": "Reino de Sajonia"
+ },
+ "hesse-grao-ducado": {
+  "name": "Gran Ducado de Hesse"
+ },
+ "hamburgo-cidade-livre": {
+  "name": "Ciudad Libre de Hamburgo"
+ },
+ "vestfalia-reino": {
+  "name": "Reino de Westfalia"
+ },
+ "varsovia-ducado": {
+  "name": "Ducado de Varsovia"
+ },
+ "cracovia-republica": {
+  "name": "República de Cracovia"
+ },
+ "parma-ducado": {
+  "name": "Ducado de Parma"
+ },
+ "etruria-reino": {
+  "name": "Reino de Etruria"
+ },
+ "khiva-canato": {
+  "name": "Kanato de Jiva"
+ },
+ "herat-emirado": {
+  "name": "Emirato de Herat"
+ },
+ "sarawak-reino": {
+  "name": "Reino de Sarawak"
+ },
+ "hyderabad-estado": {
+  "name": "Estado de Hyderabad"
+ },
+ "siao-reino": {
+  "name": "Reino de Siam"
+ },
+ "turquestao-oriental": {
+  "name": "República del Turquestán Oriental"
+ },
+ "tuva-republica": {
+  "name": "República Popular de Tuvá"
+ },
+ "borneo-norte": {
+  "name": "Borneo del Norte"
+ },
+ "khmer-republica": {
+  "name": "República Jemer"
+ },
+ "natalia-republica": {
+  "name": "República de Natalia"
+ },
+ "nieuwe-republiek": {
+  "name": "Nueva República (Vryheid)"
+ },
+ "marrocos-1666": {
+  "name": "Sultanato de Marruecos (antes del protectorado)"
+ },
+ "stellaland-republica": {
+  "name": "República de Stellaland"
+ },
+ "griqualand-east": {
+  "name": "Griqualandia Oriental"
+ },
+ "yucatan-republica": {
+  "name": "República de Yucatán"
+ },
+ "baixa-california": {
+  "name": "República de Baja California"
+ },
+ "mosquitia-reino": {
+  "name": "Reino de la Mosquitia"
+ },
+ "los-altos-estado": {
+  "name": "Estado de Los Altos"
+ },
+ "piratini-republica": {
+  "name": "República Riograndense (Piratini)"
+ },
+ "acre-estado": {
+  "name": "Estado Independiente de Acre"
+ },
+ "oldenburg-ducado": {
+  "name": "Gran Ducado de Oldemburgo"
+ },
+ "nassau-ducado": {
+  "name": "Ducado de Nassau"
+ },
+ "bremen-cidade-livre": {
+  "name": "Ciudad Libre de Bremen"
+ },
+ "anhalt-ducado": {
+  "name": "Ducado de Anhalt"
+ },
+ "cospaia-republica": {
+  "name": "República de Cospaia"
+ },
+ "elba-principado": {
+  "name": "Principado de Elba"
+ },
+ "courland-ducado": {
+  "name": "Ducado de Curlandia"
+ },
+ "ragusa-republica": {
+  "name": "República de Ragusa"
+ },
+ "corsega-reino": {
+  "name": "República Corsa"
+ },
+ "galicia-lodomeria-reino": {
+  "name": "Reino de Galitzia y Lodomeria"
+ },
+ "maratha-imperio": {
+  "name": "Confederación Maratha"
+ },
+ "sikh-imperio": {
+  "name": "Imperio sij"
+ },
+ "travancore-estado": {
+  "name": "Estado de Travancore"
+ },
+ "tunisia-otomana-pre1831": {
+  "name": "Túnez otomano (antes de 1831)"
+ },
+ "tripolitania-regencia": {
+  "name": "Regencia de Trípoli"
+ },
+ "argelia-regencia": {
+  "name": "Regencia de Argel"
+ },
+ "barotseland-reino": {
+  "name": "Reino de Barotselandia"
+ },
+ "california-republica": {
+  "name": "República de California"
+ },
+ "rio-grande-republica": {
+  "name": "República del Río Grande"
+ },
+ "araucania-reino": {
+  "name": "Reino de la Araucanía y la Patagonia"
+ },
+ "vermont-republica": {
+  "name": "República de Vermont"
+ },
+ "georgia-drg": {
+  "name": "República Democrática de Georgia"
+ },
+ "wallachia-principado": {
+  "name": "Principado de Valaquia"
+ },
+ "moldavia-principado": {
+  "name": "Principado de Moldavia"
+ },
+ "schwarzburg-principado": {
+  "name": "Principados de Schwarzburgo"
+ },
+ "reuss-principado": {
+  "name": "Principado de Reuss"
+ },
+ "lucca-republica": {
+  "name": "República de Lucca"
+ },
+ "hejaz-reino": {
+  "name": "Reino del Hiyaz"
+ },
+ "nejd-sultanato": {
+  "name": "Sultanato de Néyed"
+ },
+ "kokand-canato": {
+  "name": "Kanato de Kokand"
+ },
+ "sul-arabia-federacao": {
+  "name": "Federación de Arabia del Sur"
+ },
+ "vietna-imperio-1945": {
+  "name": "Imperio de Vietnam (1945)"
+ },
+ "johor-sultanato": {
+  "name": "Sultanato de Johor (1855-1865)"
+ },
+ "merina-reino": {
+  "name": "Reino de Merina"
+ },
+ "kanem-bornu-imperio": {
+  "name": "Imperio Kanem-Bornu"
+ },
+ "cherokee-braves": {
+  "name": "Nación Cheroqui (época confederada)"
+ },
+ "muskogee-estado": {
+  "name": "Estado de Muskogee"
+ },
+ "tahiti-reino": {
+  "name": "Reino de Tahití"
+ },
+ "german-new-guinea": {
+  "name": "Nueva Guinea Alemana"
+ },
+ "uvea-reino": {
+  "name": "Reino de Uvea (Wallis)"
+ },
+ "ryukyu-reino": {
+  "name": "Reino de Ryukyu"
+ },
+ "turquestao-oriental-1933": {
+  "name": "Primera República del Turquestán Oriental"
+ },
+ "saar-protetorado": {
+  "name": "Protectorado del Sarre"
+ },
+ "bosnia-reino-medieval": {
+  "name": "Reino medieval de Bosnia"
+ },
+ "buganda-reino": {
+  "name": "Reino de Buganda"
+ },
+ "adal-sultanato": {
+  "name": "Sultanato de Adal"
+ },
+ "harar-emirado": {
+  "name": "Emirato de Harar"
+ },
+ "bunyoro-reino": {
+  "name": "Reino de Bunyoro"
+ },
+ "ndzuwani-sultanato": {
+  "name": "Sultanato de Ndzuwani (Anjouan)"
+ },
+ "menabe-reino": {
+  "name": "Reino de Menabe"
+ },
+ "patagonia-galesa": {
+  "name": "Colonia galesa en la Patagonia"
+ },
+ "iroquois-confederacao": {
+  "name": "Confederación iroquesa"
+ },
+ "grito-lares-1868": {
+  "name": "Grito de Lares"
+ },
+ "cespedes-cuba-1868": {
+  "name": "Cuba (Grito de Yara)"
+ },
+ "bau-reino": {
+  "name": "Reino de Bau"
+ },
+ "circassia": {
+  "name": "Circasia"
+ },
+ "imamado-caucaso": {
+  "name": "Imanato del Cáucaso"
+ },
+ "kangleipak-reino": {
+  "name": "Reino de Kangleipak (Manipur)"
+ },
+ "cochin-reino": {
+  "name": "Reino de Cochín"
+ },
+ "bengal-sultanato": {
+  "name": "Sultanato de Bengala"
+ },
+ "loango-reino": {
+  "name": "Reino de Loango"
+ },
+ "lunda-reino": {
+  "name": "Reino de Lunda"
+ },
+ "ezo-republica": {
+  "name": "República de Ezo"
+ },
+ "sedang-reino": {
+  "name": "Reino de Sedang"
+ },
+ "teutonic-order": {
+  "name": "Estado de la Orden Teutónica"
+ },
+ "dutch-republic": {
+  "name": "República de las Siete Provincias Unidas"
+ },
+ "tavolara-reino": {
+  "name": "Reino de Tavolara"
+ },
+ "seborga-principado": {
+  "name": "Principado de Seborga (medieval)"
+ },
+ "crimeia-canato": {
+  "name": "Kanato de Crimea"
+ },
+ "novgorod-republica": {
+  "name": "República de Nóvgorod"
+ },
+ "nogai-horda": {
+  "name": "Horda de Nogái"
+ },
+ "kazan-canato": {
+  "name": "Kanato de Kazán"
+ },
+ "ankole-reino": {
+  "name": "Reino de Ankole"
+ },
+ "toro-reino": {
+  "name": "Reino de Toro"
+ },
+ "kongo-reino": {
+  "name": "Reino del Congo"
+ },
+ "republica-piratas-1706": {
+  "name": "República de los Piratas"
+ },
+ "delhi-sultanato": {
+  "name": "Sultanato de Delhi"
+ },
+ "rif-republica": {
+  "name": "República del Rif"
+ },
+ "jabal-druze-estado": {
+  "name": "Estado de Yebel Druso"
+ },
+ "veneza-republica": {
+  "name": "República de Venecia"
+ },
+ "mali-imperio": {
+  "name": "Imperio de Malí"
+ },
+ "papal-estados": {
+  "name": "Estados Pontificios"
+ },
+ "milan-ducado": {
+  "name": "Ducado de Milán"
+ },
+ "sacro-imperio": {
+  "name": "Sacro Imperio Romano Germánico"
+ },
+ "boemia-reino": {
+  "name": "Reino de Bohemia"
+ },
+ "navarra-reino": {
+  "name": "Reino de Navarra"
+ },
+ "lituania-grao-ducado": {
+  "name": "Gran Ducado de Lituania"
+ },
+ "jerusalem-reino": {
+  "name": "Reino de Jerusalén"
+ },
+ "borgonha-ducado": {
+  "name": "Ducado de Borgoña"
+ },
+ "bulgaria-2imperio": {
+  "name": "Segundo Imperio búlgaro"
+ },
+ "templarios-ordem": {
+  "name": "Orden del Temple"
+ },
+ "genova-republica": {
+  "name": "República de Génova"
+ },
+ "aceh-sultanato": {
+  "name": "Sultanato de Aceh"
+ },
+ "kandy-reino": {
+  "name": "Reino de Kandy"
+ },
+ "vijayanagara-imperio": {
+  "name": "Imperio Vijayanagara"
+ },
+ "formosa-republica": {
+  "name": "República de Formosa"
+ },
+ "ashanti-imperio": {
+  "name": "Imperio asante"
+ },
+ "wassoulou-imperio": {
+  "name": "Imperio Wassoulou"
+ },
+ "dahomey-reino": {
+  "name": "Reino de Dahomey"
+ },
+ "haiti-reino": {
+  "name": "Reino de Haití"
+ },
+ "gran-colombia": {
+  "name": "Gran Colombia"
+ },
+ "brasil-imperio": {
+  "name": "Imperio del Brasil"
+ },
+ "castela-leao": {
+  "name": "Corona de Castilla y León"
+ },
+ "flandres-condado": {
+  "name": "Condado de Flandes"
+ },
+ "saboia-ducado": {
+  "name": "Ducado de Saboya"
+ },
+ "napoles-napoleonico": {
+  "name": "Reino de Nápoles (napoleónico)"
+ }
+}

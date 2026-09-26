@@ -5,6 +5,7 @@ import { isPace, isRoundTier, roundLimitFor, type RoundTier } from "./pace.js";
 import type { Pace } from "./spoils.js";
 import { selectedMode, variantContextFor, type TopFamily } from "./match-config.js";
 import { normalizeRegionSelection, REGION_ITEMS } from "./regions.js";
+import { MESSAGES, t, type Messages } from "./i18n/index.js";
 
 export const MAX_PRESETS_PER_FAMILY = 5;
 export const MAX_PRESET_NAME = 40;
@@ -41,18 +42,24 @@ const cleanName = (name: string) => name.replace(/\s+/g, " ").trim().slice(0, MA
 
 const familyOf = (config: PresetConfig): Family => variantContextFor(config.topFamily, config.variant)?.family ?? "mapa";
 
-/** Nome sugerido: modo · recorte · rodadas (+ Treino / ONU quando valem). */
-export function defaultPresetName(config: PresetConfig) {
+/** Nome sugerido: modo · recorte · rodadas (+ Treino / ONU quando valem), no idioma da interface (ou no pedido). */
+export function defaultPresetName(config: PresetConfig, messages: Messages = t) {
   const family = familyOf(config);
   const mode = selectedMode(config.topFamily, family, config.variant);
-  const regionLabels = config.region.map((key) => REGION_ITEMS.find(([item]) => item === key)?.[1] ?? key);
-  const regionText = regionLabels.length > 2 ? `${regionLabels.length} recortes` : regionLabels.join(" + ");
+  const regionLabels = config.region.map((key) => messages.regions[key]?.[0] ?? key);
+  const regionText = regionLabels.length > 2 ? messages.regions.many(regionLabels.length) : regionLabels.join(" + ");
   const limit = roundLimitFor(config.roundTier, family);
-  const parts = [mode.label, regionText, limit === null ? "Todas" : String(limit)];
-  if (config.pace === "training") parts.push("Treino");
-  if (config.onlyUn) parts.push("ONU");
+  const parts = [messages.modes[mode.key as keyof Messages["modes"]]?.[0] ?? mode.label, regionText, limit === null ? messages.presets.all : String(limit)];
+  if (config.pace === "training") parts.push(messages.presets.training);
+  if (config.onlyUn) parts.push(messages.presets.un);
   return parts.join(" · ");
 }
+
+/** O nome é o sugerido (em qualquer idioma)? Então ele acompanha a configuração e o idioma da interface. */
+export const isAutoName = (preset: Preset) =>
+  Object.values(MESSAGES).some((messages) => preset.name === defaultPresetName(preset, messages));
+/** Nome para mostrar: o sugerido sai no idioma atual; nome dado pela pessoa fica como está. */
+export const presetLabel = (preset: Preset) => (isAutoName(preset) ? defaultPresetName(preset) : preset.name);
 
 /** Valida um registro lido do banco; null se estiver estragado ou de uma versão desconhecida. */
 export function parsePreset(value: unknown): Preset | null {
@@ -103,7 +110,7 @@ export function updatePreset(list: readonly Preset[], id: string, draft: PresetD
   const config = configOf({ ...draft, topFamily: current.topFamily });
   const clash = list.find((item) => item.id !== id && sameConfig(item, config));
   if (clash) return { ok: false, error: "duplicate", existing: clash };
-  const autoNamed = current.name === defaultPresetName(current);
+  const autoNamed = isAutoName(current);
   const preset: Preset = { ...current, ...config, name: autoNamed ? defaultPresetName(config) : current.name, updatedAt: now };
   return { ok: true, list: list.map((item) => (item.id === id ? preset : item)), preset };
 }

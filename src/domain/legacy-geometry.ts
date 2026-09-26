@@ -1,6 +1,7 @@
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
 import type { Legacy } from "./types";
+import { t } from "./i18n/index.js";
 
 type GeometryData = {
   topo: any;
@@ -12,7 +13,7 @@ let featureCache: Map<string, Feature<Geometry>> | null = null;
 
 export function loadLegacyGeometry() {
   pending ??= fetch("/data/legacy-map.json").then(async (response) => {
-    if (!response.ok) throw new Error("Falha ao carregar geometrias para este modo.");
+    if (!response.ok) throw new Error(t.errors.geometryFailed);
     return response.json();
   });
   return pending;

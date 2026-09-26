@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeSpoils, type Pace, type Tier } from "../domain/spoils";
 import type { AnyQuizVariant } from "../domain/types";
+import { formatNumber as money, t } from "../domain/i18n";
 
 /** Uma rodada já respondida, como o topo do jogo precisa dela (certa/errada) e como o espólio pendente é calculado. */
 export type RoundResult = { correct: boolean; tier?: Tier; weight?: number };
@@ -22,7 +23,6 @@ export function useRoundLog(variant: AnyQuizVariant, pace: Pace) {
 }
 
 const MAX_SEGMENTS = 20;
-const money = (value: number) => value.toLocaleString("pt-BR");
 
 /**
  * Topo único de todos os modos: sair, progresso (um segmento por rodada, certa ou errada), sequência e moedas pendentes.
@@ -44,10 +44,10 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
   const segmented = total > 0 && total <= MAX_SEGMENTS;
   return <header className="gs-head">
     <div className="gs-top">
-    <button type="button" className="gs-x" aria-label="Sair da partida" onClick={onExit}>
+    <button type="button" className="gs-x" aria-label={t.shell.exit} onClick={onExit}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" /></svg>
     </button>
-    <div className="gs-progress" role="img" aria-label={`Pergunta ${Math.min(done + 1, total)} de ${total}, ${hits} ${hits === 1 ? "acerto" : "acertos"}`}>
+    <div className="gs-progress" role="img" aria-label={t.shell.progressAria(Math.min(done + 1, total), total, hits)}>
       {segmented
         ? Array.from({ length: total }, (_, index) => {
           const state = index < done ? (results[index].correct ? "ok" : "miss") : index === done ? "now" : "";
@@ -55,11 +55,11 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
         })
         : <><span className="gs-track"><i style={{ width: `${total ? (done / total) * 100 : 0}%` }} /></span><b>{done}/{total}</b></>}
     </div>
-    <span className="gs-chip gs-streak" title="Acertos seguidos" aria-label={`Sequência: ${streak}`}>
+    <span className="gs-chip gs-streak" title={t.shell.streakTitle} aria-label={t.shell.streakAria(streak)}>
       <svg width="14" height="16" viewBox="0 0 24 28" aria-hidden="true"><path fill="currentColor" d="M12 1c1 5 7 7.5 7 15a7 7 0 0 1-14 0c0-3 1.5-5 3-6.5.3 2 1.2 3 2.2 3.5C10 9 10.5 5 12 1z" /></svg>
       {streak}
     </span>
-    <span className="gs-chip gs-coins" title="Moedas desta partida: caem na carteira quando ela termina" aria-label={`Moedas pendentes: ${money(pending)}`}>
+    <span className="gs-chip gs-coins" title={t.shell.coinsTitle} aria-label={t.shell.coinsAria(money(pending))}>
       <b aria-hidden="true">$</b>{money(pending)}
     </span>
     </div>
@@ -72,7 +72,7 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
 export function ContinueBar({ holdMs, onSkip }: { holdMs: number | null; onSkip: () => void }) {
   return <button type="button" className="gs-continue" onClick={() => onSkip()}>
     {holdMs !== null && <i style={{ animationDuration: `${holdMs}ms` }} aria-hidden="true" />}
-    <span>Continuar</span>
+    <span>{t.common.continue}</span>
     <kbd aria-hidden="true">Enter</kbd>
   </button>;
 }

@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ProgressHero } from "./progress-hero";
 import { THEMES, isThemeOwned, missingCoins, themeById, type Theme } from "../domain/themes";
 import type { EconomySnapshot } from "../domain/economy-store";
-
-const money = (value: number) => value.toLocaleString("pt-BR");
+import { formatNumber as money, t } from "../domain/i18n";
 
 // Prévias do Hub de cada tema (geradas por scripts/build-theme-previews.mjs). Sem a imagem, a amostra de cores ocupa o lugar.
 const PREVIEWS = import.meta.glob("../assets/themes/*.webp", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
@@ -24,8 +23,8 @@ function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAs
   const preview = previewFor(theme.id);
   return <article className={`store-card${active ? " is-active" : ""}${owned ? "" : " is-locked"}`} aria-labelledby={`theme-${theme.id}`}>
     {preview
-      ? <img className="store-thumb" src={preview} alt={`Prévia do Hub no tema ${theme.name}`} loading="lazy" width={640} height={323} />
-      : <div className="store-thumb store-thumb-fallback" role="img" aria-label={`Cores do tema ${theme.name}`} style={{ background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }} />}
+      ? <img className="store-thumb" src={preview} alt={t.store.previewAlt(theme.name)} loading="lazy" width={640} height={323} />
+      : <div className="store-thumb store-thumb-fallback" role="img" aria-label={t.store.colorsAria(theme.name)} style={{ background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }} />}
     <div className="store-body">
       <div className="store-head">
         <h3 id={`theme-${theme.id}`}>{theme.name}</h3>
@@ -33,16 +32,16 @@ function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAs
       </div>
       <p>{theme.tagline}</p>
       <div className="store-foot">
-        {owned ? <span className="store-state">{theme.cost === 0 ? "Padrão" : "Comprado"}</span>
-          : <span className="store-price" aria-label={`${money(theme.cost)} moedas`}><i aria-hidden="true">$</i>{money(theme.cost)}</span>}
-        {active ? <button type="button" className="store-btn is-current" disabled aria-current="true">Em uso</button>
-          : owned ? <button type="button" className="store-btn primary" onClick={onEquip}>Usar</button>
-          : missing > 0 ? <button type="button" className="store-btn" disabled aria-label={`${theme.name}: faltam ${money(missing)} moedas`}>Faltam {money(missing)}</button>
-          : <button type="button" className="store-btn primary" disabled={busy} onClick={onAskBuy} aria-expanded={pending}>Comprar</button>}
+        {owned ? <span className="store-state">{theme.cost === 0 ? t.store.default : t.store.bought}</span>
+          : <span className="store-price" aria-label={t.store.priceAria(money(theme.cost))}><i aria-hidden="true">$</i>{money(theme.cost)}</span>}
+        {active ? <button type="button" className="store-btn is-current" disabled aria-current="true">{t.store.inUse}</button>
+          : owned ? <button type="button" className="store-btn primary" onClick={onEquip}>{t.store.use}</button>
+          : missing > 0 ? <button type="button" className="store-btn" disabled aria-label={t.store.missingAria(theme.name, money(missing))}>{t.store.missing(money(missing))}</button>
+          : <button type="button" className="store-btn primary" disabled={busy} onClick={onAskBuy} aria-expanded={pending}>{t.store.buy}</button>}
       </div>
       {pending && <p className="store-confirm" role="status">
-        Comprar <b>{theme.name}</b> por {money(theme.cost)} moedas? Ele já passa a ser usado.
-        <span><button type="button" className="store-btn primary" disabled={busy} onClick={onConfirm}>Confirmar</button><button type="button" className="store-btn" disabled={busy} onClick={onCancel}>Cancelar</button></span>
+        {(() => { const [a, name, b] = t.store.confirmText(theme.name, money(theme.cost)); return <>{a}<b>{name}</b>{b}</>; })()}
+        <span><button type="button" className="store-btn primary" disabled={busy} onClick={onConfirm}>{t.store.confirm}</button><button type="button" className="store-btn" disabled={busy} onClick={onCancel}>{t.store.cancel}</button></span>
       </p>}
     </div>
   </article>;
@@ -56,23 +55,23 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
   const active = themeById(activeTheme) ?? THEMES[0];
   const buy = async (theme: Theme) => {
     setBusy(true);
-    try { await onBuy(theme.id); setNotice(`${theme.name} comprado e aplicado ao Hub.`); }
-    catch { setNotice("Não foi possível comprar: o saldo mudou. Confira as moedas e tente de novo."); }
+    try { await onBuy(theme.id); setNotice(t.store.boughtNotice(theme.name)); }
+    catch { setNotice(t.store.buyFailed); }
     setPending(null);
     setBusy(false);
   };
-  const equip = (theme: Theme) => { onEquip(theme.id); setNotice(`${theme.name} aplicado ao Hub.`); };
+  const equip = (theme: Theme) => { onEquip(theme.id); setNotice(t.store.equipped(theme.name)); };
 
-  return <section className="store" aria-label="Loja">
+  return <section className="store" aria-label={t.store.aria}>
     <ProgressHero
-      value={ownedCount} total={THEMES.length} ringLabel={`${ownedCount} de ${THEMES.length} temas do Hub`}
-      eyebrow="Perfil local · Loja" title="Loja"
-      lede="Cores e pinceladas para o Hub. Tudo se paga com as moedas que você ganha jogando."
-      summary={<><b>Saldo:</b> {money(economy.balance)} moedas. Um tema comprado é seu para sempre.</>}
-      legendLabel="Resumo da Loja"
-      legend={<><li>Em uso <b>{active.name}</b></li><li>Temas <b>{ownedCount}/{THEMES.length}</b></li></>}
+      value={ownedCount} total={THEMES.length} ringLabel={t.store.ringLabel(ownedCount, THEMES.length)}
+      eyebrow={t.store.eyebrow} title={t.store.title}
+      lede={t.store.lede}
+      summary={<><b>{t.store.balance}</b>{t.store.balanceText(money(economy.balance))}</>}
+      legendLabel={t.store.legend}
+      legend={<><li>{t.store.inUseLegend} <b>{active.name}</b></li><li>{t.store.themes} <b>{ownedCount}/{THEMES.length}</b></li></>}
     />
-    <div className="store-sec"><h2>Temas do Hub</h2><span>{THEMES.length - ownedCount > 0 ? `${THEMES.length - ownedCount} para comprar` : "todos comprados"}</span></div>
+    <div className="store-sec"><h2>{t.store.hubThemes}</h2><span>{THEMES.length - ownedCount > 0 ? t.store.toBuy(THEMES.length - ownedCount) : t.store.allBought}</span></div>
     <p className="store-notice" role="status" aria-live="polite">{notice}</p>
     <div className="store-grid">
       {THEMES.map((theme) => <ThemeCard

@@ -1,5 +1,6 @@
 import type { Family, Legacy, QuizVariant, RegionSelection } from "./types";
 import { inRegion } from "./regions";
+import { t } from "./i18n/index.js";
 
 export type FlagCatalog = Record<string, string>;
 
@@ -18,9 +19,9 @@ export function flagSource(value: string) {
 
 export function loadFlags(): Promise<FlagCatalog> {
   flagsPromise ??= fetch("/data/legacy/flags.json").then(async (response) => {
-    if (!response.ok) throw new Error("Falha ao carregar as bandeiras.");
+    if (!response.ok) throw new Error(t.errors.flagsFailed);
     const payload = (await response.json()) as { flags?: FlagCatalog };
-    if (!payload.flags) throw new Error("Catálogo de bandeiras inválido.");
+    if (!payload.flags) throw new Error(t.errors.flagsInvalid);
     const flags = { ...payload.flags };
     const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
     const overrides = overrideResponse.ok

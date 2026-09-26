@@ -29,6 +29,7 @@ import {
 import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
 import { mapDeckSignature } from "../domain/map-round-engine";
 import { distanceToGeometriesKm, haversineKm, nearestWithin, SEA_TAP_PX } from "../domain/map-nearest";
+import { t } from "../domain/i18n";
 
 const ABSORBED_URL = "/data/absorbed-territories.geojson";
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
@@ -232,7 +233,7 @@ export function Game({
     // No Treino, o alvo da rodada fica marcado no mapa com o nome — acertando ou errando.
     setRevealed((list) => (list.includes(targetRef.current) ? list : [...list, targetRef.current]));
     if (round.correct) {
-      feedbackRef.current = `Acertou: ${data.meta[targetRef.current]?.pt ?? "alvo"}`;
+      feedbackRef.current = t.map.hit(data.meta[targetRef.current]?.pt ?? t.map.targetFallback);
       setScore((value) => value + 1);
       setStreak((value) => value + 1);
       setFeedback(feedbackRef.current);
@@ -244,7 +245,7 @@ export function Game({
          } else nextTarget();
        }, HIT_FEEDBACK_MS);
     } else {
-      feedbackRef.current = "Ainda não. O alvo está marcado no mapa.";
+      feedbackRef.current = t.map.miss;
       setStreak(0);
       setWrong(true);
       setFeedback(feedbackRef.current);
@@ -266,7 +267,7 @@ export function Game({
       timedOut: true,
       tier: entityTier(data.meta, targetRef.current),
     });
-    feedbackRef.current = "Tempo esgotado. O alvo está marcado no mapa.";
+    feedbackRef.current = t.map.timeUp;
     setSelectedAnswer("");
     setTimedOut(true);
     setStreak(0);
@@ -413,7 +414,7 @@ export function Game({
       setMapError(
         error instanceof Error
           ? error.message
-          : "Este navegador não conseguiu iniciar o mapa.",
+          : t.map.startFailed,
       );
       return;
     }
@@ -423,7 +424,7 @@ export function Game({
       const message =
         event.error instanceof Error
           ? event.error.message
-          : "Falha ao carregar os dados cartográficos.";
+          : t.map.loadFailed;
       setMapError(message);
     };
     map.on("load", handleLoad);
@@ -612,7 +613,7 @@ export function Game({
       setMapError(
         error instanceof Error
           ? error.message
-          : "Falha ao atualizar o destaque do alvo.",
+          : t.map.highlightFailed,
       );
     }
   }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames]);
@@ -646,23 +647,22 @@ export function Game({
   const totalRounds = deckRef.current?.size ?? features.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
   useGameKeys({ exit });
-  const targetName = nameFor(target) ?? "carregando";
+  const targetName = nameFor(target) ?? t.map.loading;
   if (mapError) {
     return (
       <div className="app-shell">
         <main className="content">
            <button className="back" onClick={() => void leaveSession()}>
-             ← Sair da partida
+             {t.common.exitGame}
           </button>
            <div className="diagnostic" style={{ marginTop: 32 }}>
-            <div className="eyebrow">Mapa indisponível</div>
+            <div className="eyebrow">{t.map.unavailable}</div>
             <p>
-              <strong>WebGL2 é necessário para abrir este recorte.</strong>{" "}
-              Atualize o navegador ou ative a aceleração de hardware e tente
-              novamente.
+              <strong>{t.map.webgl}</strong>{" "}
+              {t.map.webglHelp}
             </p>
             <p className="mono">{mapError}</p>
-              <p className="map-keyboard-hint">Foque o mapa, mova com as setas, use +/− e pressione Enter.</p>
+              <p className="map-keyboard-hint">{t.map.keyboardHelp}</p>
           </div>
         </main>
       </div>
@@ -674,26 +674,26 @@ export function Game({
       {leaveGuard.dialog}
       <div className="gs gs-map-screen">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
-        <main className="map-wrap" aria-label="Mapa e alvo">
+        <main className="map-wrap" aria-label={t.map.wrapAria}>
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
-            <span>{feedback ? (wrong ? (timedOut ? "Tempo esgotado" : "Ainda não") : "Acertou") : (engineFamily === "capitais" ? "País da capital" : "Encontre")}</span>
+            <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
             <RoundTimer seconds={timerSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
           </div>
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-            {feedback || `Alvo atual: ${targetName}`}
+            {feedback || t.map.currentTarget(targetName)}
           </p>
-          <p className="map-keyboard-hint">Setas movem o mapa; + e − controlam o zoom; Enter responde no centro da mira.</p>
-          <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>Enter responde</span></div>
+          <p className="map-keyboard-hint">{t.map.keyboardHint}</p>
+          <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>{t.map.crosshair}</span></div>
           <div className="map-hud">
-            <div className="map-note">Clique no mapa ou use setas, +/− e Enter</div>
+            <div className="map-note">{t.map.note}</div>
           </div>
           <div
             ref={mapEl}
             className="map"
             role="application"
             tabIndex={0}
-            aria-label={`Mapa interativo: encontre ${targetName}; setas movem o mapa, Enter responde`}
+            aria-label={t.map.mapAria(targetName)}
             onFocus={(event) => event.currentTarget.parentElement?.classList.add("map-focused")}
             onBlur={(event) => event.currentTarget.parentElement?.classList.remove("map-focused")}
           />

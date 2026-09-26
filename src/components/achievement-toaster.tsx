@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { achievementToasts } from "../domain/achievement-toast";
+import { t } from "../domain/i18n";
 import { RARITY_LABELS, rarityLevel } from "../domain/achievement-summary";
 import { ACHIEVEMENT_ICON, Glyph, Medallion } from "./achievement-art";
 
@@ -50,12 +51,12 @@ export function AchievementToaster() {
         <span className="ach-toast-burst" aria-hidden="true">{burst(PARTICLES[rarity]).map((style, index) => <i key={index} style={style} />)}</span>
       </div>
       <div className="ach-toast-text">
-        <span className="ach-toast-kicker">Nova conquista · {RARITY_LABELS[rarity]}</span>
+        <span className="ach-toast-kicker">{t.achievementsView.toastKicker(RARITY_LABELS[rarity])}</span>
         <strong>{current.name}</strong>
         <span className="ach-toast-desc">{current.description}</span>
       </div>
-      {queue.length > 1 && <span className="ach-toast-more" aria-label={`mais ${queue.length - 1} na fila`}>+{queue.length - 1}</span>}
-      <button type="button" className="ach-toast-close" onClick={() => setLeaving(true)} aria-label="Fechar aviso"><Glyph name="x" size={16} stroke={2} /></button>
+      {queue.length > 1 && <span className="ach-toast-more" aria-label={t.achievementsView.toastMore(queue.length - 1)}>+{queue.length - 1}</span>}
+      <button type="button" className="ach-toast-close" onClick={() => setLeaving(true)} aria-label={t.achievementsView.toastClose}><Glyph name="x" size={16} stroke={2} /></button>
     </div>}
   </div>;
 }

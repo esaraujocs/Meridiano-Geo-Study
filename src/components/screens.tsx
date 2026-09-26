@@ -11,17 +11,18 @@ import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
 import { THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
+import { LOCALES, LOCALE_NAMES, LOCALE_RELEASED, changeLocale, formatNumber, locale, t } from "../domain/i18n";
 
 export type { TopFamily };
 
 export function Header({ legacy, economy, current = "hub", onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "store" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
   const items = [
-    ["hub", "Modos", "map"], ["collection", "Coleção", "collection"],
-    ["achievements", "Achievements", "achievements"], ["progress", "Progresso", "progress"],
-    ["store", "Loja", "store"],
+    ["hub", t.nav.modes, "map"], ["collection", t.nav.collection, "collection"],
+    ["achievements", t.nav.achievements, "achievements"], ["progress", t.nav.progress, "progress"],
+    ["store", t.nav.store, "store"],
   ] as const;
   // no celular a Loja abre pela moeda do Hub; o lugar dela na barra de baixo é das Opções
-  const mobileItems = [...items.slice(0, 4), ["options", "Opções", "settings"] as const];
+  const mobileItems = [...items.slice(0, 4), ["options", t.nav.options, "settings"] as const];
   return (
     <>
     <header className="topbar">
@@ -38,12 +39,12 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
         <BrandLogo />
         <span>MERIDIANO</span>
       </a>
-      <nav className="desktop-nav" aria-label="Navegação principal">
+      <nav className="desktop-nav" aria-label={t.nav.main}>
         {items.map(([key, label, icon]) => <button key={key} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
       </nav>
-      <div className="top-actions"><button className="settings-button" aria-label="Abrir Opções" aria-current={current === "options" ? "page" : undefined} title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
+      <div className="top-actions"><button className="settings-button" aria-label={t.nav.openOptions} aria-current={current === "options" ? "page" : undefined} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
     </header>
-    <nav className="mobile-nav" aria-label="Navegação principal">
+    <nav className="mobile-nav" aria-label={t.nav.main}>
       {mobileItems.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
     </nav>
     </>
@@ -63,10 +64,10 @@ function BackupRow() {
       const file = await exportProgress();
       const link = document.createElement("a");
       link.href = URL.createObjectURL(new Blob([JSON.stringify(file)], { type: "application/json" }));
-      link.download = `meridiano-progresso-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download = `${t.backup.fileName}-${new Date().toISOString().slice(0, 10)}.json`;
       link.click();
-      setMessage(`Arquivo salvo: ${file.stores.sessions.length} partidas, ${file.stores.progress.length} cartas, ${coinBalance(file.stores.ledger).toLocaleString("pt-BR")} moedas.`);
-    } catch { setMessage("Não foi possível exportar o progresso."); }
+      setMessage(t.backup.saved(file.stores.sessions.length, file.stores.progress.length, formatNumber(coinBalance(file.stores.ledger))));
+    } catch { setMessage(t.backup.exportFailed); }
     setBusy(false);
   };
   const upload = async (input: HTMLInputElement) => {
@@ -76,24 +77,24 @@ function BackupRow() {
     setBusy(true);
     try {
       const file = parseBackup(await chosen.text());
-      if (!file) { setMessage("Este arquivo não é um backup do Meridiano."); setBusy(false); return; }
+      if (!file) { setMessage(t.backup.notBackup); setBusy(false); return; }
       const plan = await previewImport(file);
-      if (plan.alreadyImported) { setMessage("Este arquivo já foi importado aqui. Nada mudou."); setBusy(false); return; }
+      if (plan.alreadyImported) { setMessage(t.backup.alreadyImported); setBusy(false); return; }
       const news = BACKUP_STORES.filter((name) => name !== "state").reduce((sum, name) => sum + plan.added[name], 0);
-      const ask = `Importar este progresso? Entram ${news} registros novos e ${plan.summed} cartas têm os acertos somados. Moedas: ${plan.coinsBefore.toLocaleString("pt-BR")} → ${plan.coinsAfter.toLocaleString("pt-BR")}. Nada do que já existe aqui é apagado.`;
-      if (!window.confirm(ask)) { setMessage("Importação cancelada."); setBusy(false); return; }
+      const ask = t.backup.confirm(news, plan.summed, formatNumber(plan.coinsBefore), formatNumber(plan.coinsAfter));
+      if (!window.confirm(ask)) { setMessage(t.backup.cancelled); setBusy(false); return; }
       await importProgress(file);
-      setMessage("Progresso importado. Recarregando…");
+      setMessage(t.backup.imported);
       window.setTimeout(() => window.location.reload(), 700);
-    } catch { setMessage("Falha ao importar; nada foi alterado."); setBusy(false); }
+    } catch { setMessage(t.backup.importFailed); setBusy(false); }
   };
   return <div className="cv-row">
-    <span className="cv-k">Progresso</span>
+    <span className="cv-k">{t.backup.label}</span>
     <div className="cv-ctl">
-      <p className="cv-hint">O navegador guarda o progresso por endereço: outro link ou aparelho começa do zero. Exporte um arquivo e importe onde quiser; ao importar, o que já existe é somado, nunca apagado.</p>
+      <p className="cv-hint">{t.backup.hint}</p>
       <div className="cv-chips">
-        <button type="button" className="cv-chip" disabled={busy} onClick={() => void download()}>Exportar progresso</button>
-        <label className="cv-chip" aria-disabled={busy}>Importar progresso<input type="file" accept="application/json,.json" hidden disabled={busy} onChange={(event) => void upload(event.currentTarget)} /></label>
+        <button type="button" className="cv-chip" disabled={busy} onClick={() => void download()}>{t.backup.export}</button>
+        <label className="cv-chip" aria-disabled={busy}>{t.backup.import}<input type="file" accept="application/json,.json" hidden disabled={busy} onChange={(event) => void upload(event.currentTarget)} /></label>
       </div>
       {message && <p className="cv-hint" role="status">{message}</p>}
     </div>
@@ -113,7 +114,7 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
 }) {
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
   const [timerLate, setTimerLate] = useState(() => localStorage.getItem("carta-timer-late") === "1");
-  const [cacheReport, setCacheReport] = useState("Consultando cache do app…");
+  const [cacheReport, setCacheReport] = useState(t.options.cacheChecking);
   useEffect(() => {
     document.documentElement.dataset.timerReveal = timerLate ? "late" : "always";
     localStorage.setItem("carta-timer-late", timerLate ? "1" : "0");
@@ -123,60 +124,69 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
     localStorage.setItem("carta-reduced-motion", reducedMotion ? "1" : "0");
   }, [reducedMotion]);
   useEffect(() => {
-    if (!("caches" in window)) { setCacheReport("Cache offline não disponível neste navegador."); return; }
+    if (!("caches" in window)) { setCacheReport(t.options.cacheUnavailable); return; }
     caches.keys().then(async (keys) => {
       const entries = (await Promise.all(keys.map((key) => caches.open(key).then((cache) => cache.keys())))).flat();
       const paths = entries.map((request) => new URL(request.url).pathname);
       const app = paths.some((path) => path === "/" || path.endsWith(".js") || path.endsWith(".css"));
       const data = paths.some((path) => /data|json|geo|special/i.test(path));
       const flags = paths.some((path) => /flag|bandeir/i.test(path));
-      setCacheReport(`App (shell): ${app ? "cacheado" : "precacheado no build"} · dados (catálogo, mapa-base, históricas e idiomas): ${data ? "cacheados" : "precacheados pelo service worker"} · bandeiras atuais/históricas: ${flags ? "cacheadas" : "precacheadas pelo service worker"}`);
-    }).catch(() => setCacheReport("Não foi possível consultar o cache offline."));
+      setCacheReport(t.options.cacheReport(app, data, flags));
+    }).catch(() => setCacheReport(t.options.cacheFailed));
   }, []);
-  const mapLabel = offlineMap === "installed" ? "Baixado" : offlineMap === "downloading" ? "Baixando…" : offlineMap === "error" ? "Falha — tentar novamente" : "Disponível para baixar";
+  const mapLabel = offlineMap === "installed" ? t.options.mapInstalled : offlineMap === "downloading" ? t.options.mapDownloading : offlineMap === "error" ? t.options.mapError : t.options.mapAvailable;
   const ownedThemes = THEMES.filter((item) => isThemeOwned(item.id, ownedUnlocks));
   const toBuy = THEMES.length - ownedThemes.length;
   const mapBusy = offlineMap === "checking" || offlineMap === "downloading" || offlineMap === "unavailable";
   // Mesmo molde da tela "Configure a partida": título simples e um cartão só, com uma linha rotulada por assunto.
   return <main className="content cv-page options-screen">
-    <div className="cv-top"><button type="button" className="back" onClick={onBack}>← Hub</button></div>
+    <div className="cv-top"><button type="button" className="back" onClick={onBack}>{t.common.backHub}</button></div>
     <div className="cv">
-      <header className="cv-head"><span className="eyebrow">Preferências · este aparelho</span><h1>Opções</h1></header>
-      <section className="cv-card" aria-label="Preferências e disponibilidade offline">
-        <div className="cv-row">
-          <span className="cv-k">Aparência</span>
+      <header className="cv-head"><span className="eyebrow">{t.options.eyebrow}</span><h1>{t.options.title}</h1></header>
+      <section className="cv-card" aria-label={t.options.cardAria}>
+        {(LOCALE_RELEASED || isDebugEnabled()) && <div className="cv-row">
+          <span className="cv-k">{t.options.language}</span>
           <div className="cv-ctl">
-            <div className="cv-chips" role="group" aria-label="Tema do Hub">
+            <div className="cv-chips" role="group" aria-label={t.options.language}>
+              {LOCALES.map((item) => <button type="button" key={item} lang={item} className="cv-chip" aria-pressed={locale === item} onClick={() => { if (item !== locale) changeLocale(item); }}>{LOCALE_NAMES[item]}</button>)}
+            </div>
+            <p className="cv-hint">{t.options.languageHint}</p>
+          </div>
+        </div>}
+        <div className="cv-row">
+          <span className="cv-k">{t.options.appearance}</span>
+          <div className="cv-ctl">
+            <div className="cv-chips" role="group" aria-label={t.options.themeGroup}>
               {ownedThemes.map((item) => <button type="button" key={item.id} className="cv-chip" aria-pressed={theme === item.id} onClick={() => onTheme(item.id)}>{item.name}</button>)}
             </div>
-            <p className="cv-hint">{toBuy > 0 ? `${toBuy} ${toBuy === 1 ? "tema" : "temas"} para comprar na Loja.` : "Você já tem todos os temas."} <button type="button" className="cv-buy" onClick={onOpenStore}>Abrir a Loja</button></p>
+            <p className="cv-hint">{toBuy > 0 ? t.options.themesToBuy(toBuy) : t.options.allThemes} <button type="button" className="cv-buy" onClick={onOpenStore}>{t.options.openStore}</button></p>
           </div>
         </div>
         <div className="cv-row">
-          <span className="cv-k">Movimento</span>
+          <span className="cv-k">{t.options.motion}</span>
           <div className="cv-ctl">
-            <button type="button" role="switch" aria-checked={reducedMotion} className="cv-switch" onClick={() => setReducedMotion(!reducedMotion)}><i aria-hidden="true" /><span>Movimento reduzido</span></button>
-            <p className="cv-hint">Desativa transições e animações decorativas.</p>
+            <button type="button" role="switch" aria-checked={reducedMotion} className="cv-switch" onClick={() => setReducedMotion(!reducedMotion)}><i aria-hidden="true" /><span>{t.options.reducedMotion}</span></button>
+            <p className="cv-hint">{t.options.reducedMotionHint}</p>
           </div>
         </div>
         <div className="cv-row">
-          <span className="cv-k">Barra de tempo</span>
+          <span className="cv-k">{t.options.timerBar}</span>
           <div className="cv-ctl">
-            <button type="button" role="switch" aria-checked={timerLate} className="cv-switch" onClick={() => setTimerLate(!timerLate)}><i aria-hidden="true" /><span>Mostrar só na segunda metade</span></button>
-            <p className="cv-hint">Na Partida com tempo, uma barra curta acompanha a pergunta. Ligando esta opção, ela só aparece quando falta menos da metade do tempo.</p>
+            <button type="button" role="switch" aria-checked={timerLate} className="cv-switch" onClick={() => setTimerLate(!timerLate)}><i aria-hidden="true" /><span>{t.options.timerLate}</span></button>
+            <p className="cv-hint">{t.options.timerHint}</p>
           </div>
         </div>
         <BackupRow />
         <div className="cv-row cv-last">
-          <span className="cv-k">Offline</span>
+          <span className="cv-k">{t.options.offline}</span>
           <div className="cv-ctl">
-            <p className="cv-hint offline-status">App e dados locais: {cacheReport}</p>
-            <p className="cv-hint offline-status">Mapa: {mapLabel} · 27,7 MB</p>
-            <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? "Remover mapa" : "Baixar mapa · 27,7 MB"}</button></div>
+            <p className="cv-hint offline-status">{t.options.appData(cacheReport)}</p>
+            <p className="cv-hint offline-status">{t.options.mapStatus(mapLabel)}</p>
+            <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? t.options.removeMap : t.options.downloadMap}</button></div>
           </div>
         </div>
       </section>
-      {isDebugEnabled() && <section className="options-grid" aria-label="Ferramentas de debug"><Suspense fallback={<article className="surface-card dbg"><p>Carregando ferramentas de debug…</p></article>}><DebugPanel data={data} onChange={onDebugChange} /></Suspense></section>}
+      {isDebugEnabled() && <section className="options-grid" aria-label={t.options.debugAria}><Suspense fallback={<article className="surface-card dbg"><p>{t.options.debugLoading}</p></article>}><DebugPanel data={data} onChange={onDebugChange} /></Suspense></section>}
     </div>
   </main>;
 }
@@ -205,7 +215,6 @@ export function Hub({
   achievementSummary?: AchievementSummary;
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
-  const formatNumber = (value: number) => value.toLocaleString("pt-BR");
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
   const [familyTrackTransition, setFamilyTrackTransition] = useState(false);
   const [carouselMode, setCarouselMode] = useState(
@@ -252,10 +261,10 @@ export function Hub({
     );
   };
   const familyItems: Array<{ family: Family; variant: AnyQuizVariant; label: string; description: string; icon: Parameters<typeof Icon>[0]["type"]; color?: string }> = [
-    { family: "mapa", variant: "mapa", label: "Mapa", description: "Localizar países e territórios.", icon: "map" },
-    { family: "bandeiras", variant: "bandeira-nome", label: "Bandeiras", description: "Reconhecimento visual e escrita.", icon: "flag", color: "var(--coral)" },
-    { family: "capitais", variant: "capital-pais", label: "Capitais", description: "Recuperação de nomes.", icon: "capital", color: "var(--gold)" },
-    { family: "idiomas", variant: "idioma-nome", label: "Idiomas", description: "Reconhecer idiomas pela escrita e pelos países.", icon: "language", color: "var(--terracotta)" },
+    { family: "mapa", variant: "mapa", label: t.families.mapa, description: t.hub.familyDescriptions.mapa, icon: "map" },
+    { family: "bandeiras", variant: "bandeira-nome", label: t.families.bandeiras, description: t.hub.familyDescriptions.bandeiras, icon: "flag", color: "var(--coral)" },
+    { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", color: "var(--gold)" },
+    { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language", color: "var(--terracotta)" },
   ];
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
@@ -265,9 +274,9 @@ export function Hub({
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
   const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");
   const progressTiles = [
-    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: "Coleção · cartas descobertas", pct: ratioPercent(collectionSummary.discovered, collectionSummary.total), caption: collectionCaption(collectionSummary.discovered, collectionSummary.total) },
-    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: "Achievements desbloqueados", pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
-    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: "Maestria · ver progresso", pct: masteryPct, caption: profile.caption },
+    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: t.hub.tileCollection, pct: ratioPercent(collectionSummary.discovered, collectionSummary.total), caption: collectionCaption(collectionSummary.discovered, collectionSummary.total) },
+    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
+    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct, caption: profile.caption },
   ] as const;
   const visibleFamilyIndexes = carouselMode
     ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]
@@ -275,7 +284,7 @@ export function Hub({
   return (
     <main className="content hub-content">
       <h1 className="sr-only">Meridiano</h1>
-      <div className="hub-bar" aria-label="Perfil de atividade">
+      <div className="hub-bar" aria-label={t.hub.profileAria}>
         <svg className="hub-meridian" width="300" height="300" viewBox="0 0 170 170" aria-hidden="true">
           <defs><clipPath id="hub-globe"><circle cx="85" cy="85" r="78" /></clipPath></defs>
           <circle cx="85" cy="85" r="78" fill="none" strokeWidth="1" opacity=".5" />
@@ -283,33 +292,33 @@ export function Hub({
         </svg>
         <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
         <div className="hub-player">
-          <div className="hub-level" role="img" aria-label={`Nível ${level}, ${xpInLevel} de ${xpSpan} XP`}>
+          <div className="hub-level" role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
             <strong>{level}</strong>
-            <span className="hub-level-cap">nível</span>
+            <span className="hub-level-cap">{t.hub.levelCap}</span>
           </div>
           <div className="hub-head">
-            <span className="hub-eyebrow">Nível {level} · {xpInLevel}/{xpSpan} XP</span>
+            <span className="hub-eyebrow">{t.hub.levelLine(level, xpInLevel, xpSpan)}</span>
             <p className="hub-title">{profile.title}</p>
-            {profile.earned.length > 0 && <ul className="hub-badges" aria-label="Títulos conquistados">{profile.earned.map((title) => <li key={title.id} className="hub-badge"><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
+            {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge"><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
             <p className="hub-mastery"><b>{masteryHead}</b>{masteryRest.length > 0 && ` · ${masteryRest.join(" · ")}`}</p>
           </div>
           <div className="hub-xp">
-            <span className="hub-xp-label">Nível {level} · {xpInLevel} / {xpSpan} XP</span>
-            <div className="hub-track" role="progressbar" aria-label="Progresso de XP" aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
-            <span className="hub-xp-next">{xpToNext} para o próximo</span>
+            <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}</span>
+            <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
+            <span className="hub-xp-next">{t.hub.xpToNext(xpToNext)}</span>
           </div>
         </div>
         <div className="hub-stats">
-          <div className="hub-totals" aria-label="Estatísticas do jogador"><span><small>Partidas</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>Rodadas</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
-          <button type="button" className="hub-coin" aria-label={`${(economy?.balance ?? 0).toLocaleString("pt-BR")} moedas · abrir a Loja`} title="Loja" onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{(economy?.balance ?? 0).toLocaleString("pt-BR")}</strong><Icon type="store" size={17} /></button>
-          <button type="button" className="hub-gear" aria-label="Abrir Opções" title="Opções" onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
+          <div className="hub-totals" aria-label={t.hub.statsAria}><span><small>{t.hub.matches}</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>{t.hub.rounds}</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
+          <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><Icon type="store" size={17} /></button>
+          <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
         </div>
       </div>
       <div className="hub-rule" aria-hidden="true" />
-      <div className="section-label"><h2>Modos</h2></div>
+      <div className="section-label"><h2>{t.hub.modesTitle}</h2></div>
       <div className="family-carousel">
-          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label="Modo anterior" onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
+          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
           className={`family-grid ${carouselMode ? "is-carousel" : ""}`}
           style={carouselMode ? {
@@ -318,7 +327,7 @@ export function Hub({
           } as CSSProperties : undefined}
           onTransitionEnd={carouselMode ? finishFamilyTrack : undefined}
           role="region"
-           aria-label="Modos de jogo"
+           aria-label={t.hub.modesRegion}
           onTouchStart={(event) => { event.currentTarget.dataset.x = String(event.touches[0].clientX); }}
           onTouchEnd={(event) => {
             const start = Number(event.currentTarget.dataset.x);
@@ -344,19 +353,19 @@ export function Hub({
           >
              <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
             <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{isUnlocked ? "aberta" : "bloqueada"}</span><span className="family-play">Jogar <Icon type="arrow" /></span></div>
+            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{t.hub.play} <Icon type="arrow" /></span></div>
           </button>;
         })}
         </div>
-          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="Próximo modo" onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
-        {carouselMode && <div className="carousel-dots" aria-label="Posição no carrossel">
+          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label={t.hub.nextMode} onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
+        {carouselMode && <div className="carousel-dots" aria-label={t.hub.carouselPosition}>
           {Array.from({ length: familyCount }, (_, index) => (
-            <button type="button" key={index} aria-label={`Ir para família ${index + 1}`} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
+            <button type="button" key={index} aria-label={t.hub.goToFamily(index + 1)} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
           ))}
         </div>}
       </div>
       <section className="hub-progress" aria-labelledby="hub-progress-title">
-        <div className="section-label"><h2 id="hub-progress-title">Seu progresso</h2></div>
+        <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
         <div className="hub-progress-grid">
           {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}
         </div>

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Icon } from "./icons";
 import type { TopFamily } from "../domain/match-config";
-import { MAX_PRESETS_PER_FAMILY, MAX_PRESET_NAME, configOf, presetsFor, sameConfig, type Preset, type PresetDraft, type PresetResult } from "../domain/presets";
+import { MAX_PRESETS_PER_FAMILY, MAX_PRESET_NAME, configOf, presetLabel, presetsFor, sameConfig, type Preset, type PresetDraft, type PresetResult } from "../domain/presets";
+import { t } from "../domain/i18n";
 
 export type PresetApi = {
   list: Preset[];
@@ -35,50 +36,50 @@ export function PresetBar({ api, topFamily, draft, canSave, onApplied }: {
     const result = api.save(draft);
     if (result.ok) {
       setSelectedId(result.preset.id);
-      setMessage(result.preset.favorite ? `Salva como “${result.preset.name}” e marcada ★ (favorita principal desta família).` : `Salva como “${result.preset.name}”.`);
+      setMessage(result.preset.favorite ? t.presets.savedFavorite(presetLabel(result.preset)) : t.presets.saved(presetLabel(result.preset)));
     } else if (result.error === "duplicate" && result.existing) {
       setSelectedId(result.existing.id);
-      setMessage(`Esta configuração já está salva como “${result.existing.name}”.`);
+      setMessage(t.presets.duplicate(presetLabel(result.existing)));
     } else {
-      setMessage(`Você já tem ${MAX_PRESETS_PER_FAMILY} favoritas nesta família. Apague uma para salvar outra.`);
+      setMessage(t.presets.limit(MAX_PRESETS_PER_FAMILY));
     }
   };
   const update = () => {
     if (!selected) return;
     const result = api.update(selected.id, draft);
-    setMessage(result.ok ? `“${result.preset.name}” atualizada com a configuração da tela.` : result.existing ? `Outra favorita já tem esta configuração: “${result.existing.name}”.` : "Não foi possível atualizar.");
+    setMessage(result.ok ? t.presets.updated(presetLabel(result.preset)) : result.existing ? t.presets.clash(presetLabel(result.existing)) : t.presets.updateFailed);
   };
   const remove = () => {
-    if (!selected || !window.confirm(`Apagar a favorita “${selected.name}”?`)) return;
+    if (!selected || !window.confirm(t.presets.confirmDelete(presetLabel(selected)))) return;
     api.remove(selected.id);
     setSelectedId(null);
     setRenaming(null);
-    setMessage("Favorita apagada.");
+    setMessage(t.presets.deleted);
   };
 
-  return <section className="cv-favs" aria-label="Favoritas">
+  return <section className="cv-favs" aria-label={t.presets.aria}>
     <div className="cv-favs-head">
-      <span className="cv-k">Favoritas</span>
-      <button type="button" className="cv-chip cv-favs-add" disabled={!canSave || full} title={full ? `Limite de ${MAX_PRESETS_PER_FAMILY} favoritas por família` : undefined} onClick={save}>+ Salvar esta configuração</button>
+      <span className="cv-k">{t.presets.title}</span>
+      <button type="button" className="cv-chip cv-favs-add" disabled={!canSave || full} title={full ? t.presets.limitTitle(MAX_PRESETS_PER_FAMILY) : undefined} onClick={save}>{t.presets.save}</button>
     </div>
     {mine.length > 0
-      ? <div className="cv-chips cv-favs-list" role="group" aria-label="Favoritas desta família">
+      ? <div className="cv-chips cv-favs-list" role="group" aria-label={t.presets.listAria}>
         {mine.map((item) => <button type="button" key={item.id} className="cv-chip" aria-pressed={selectedId === item.id} onClick={() => { api.apply(item); onApplied(item); setSelectedId(item.id); setRenaming(null); setMessage(""); }}>
-          <span className="cv-l">{item.favorite && <span className="cv-star" aria-label="favorita">★</span>}<span>{item.name}</span></span>
+          <span className="cv-l">{item.favorite && <span className="cv-star" aria-label={t.presets.favoriteAria}>★</span>}<span>{presetLabel(item)}</span></span>
         </button>)}
       </div>
-      : <p className="cv-hint">Monte a partida acima e salve para reusar depois.</p>}
+      : <p className="cv-hint">{t.presets.empty}</p>}
     {selected && <div className="cv-favs-actions">
-      <button type="button" className="cv-chip" disabled={!changed || !canSave} onClick={update}>Atualizar com a tela</button>
-      <button type="button" className="cv-chip" disabled={selected.favorite} onClick={() => { api.favorite(selected.id); setMessage(`“${selected.name}” agora é a ★ (principal).`); }}>{selected.favorite ? "★ Principal" : "Marcar ★"}</button>
-      <button type="button" className="cv-chip" onClick={() => setRenaming(selected.name)}>Renomear</button>
-      <button type="button" className="cv-chip" onClick={remove}>Apagar</button>
+      <button type="button" className="cv-chip" disabled={!changed || !canSave} onClick={update}>{t.presets.updateWithScreen}</button>
+      <button type="button" className="cv-chip" disabled={selected.favorite} onClick={() => { api.favorite(selected.id); setMessage(t.presets.nowMain(presetLabel(selected))); }}>{selected.favorite ? t.presets.isMain : t.presets.makeMain}</button>
+      <button type="button" className="cv-chip" onClick={() => setRenaming(presetLabel(selected))}>{t.presets.rename}</button>
+      <button type="button" className="cv-chip" onClick={remove}>{t.presets.delete}</button>
     </div>}
-    {selected && changed && <p className="cv-hint">A tela tem ajustes que ainda não estão em “{selected.name}”.</p>}
-    {renaming !== null && selected && <form className="cv-favs-rename" onSubmit={(event) => { event.preventDefault(); api.rename(selected.id, renaming); setRenaming(null); setMessage("Nome atualizado."); }}>
-      <input value={renaming} maxLength={MAX_PRESET_NAME} aria-label="Nome da favorita" autoFocus onChange={(event) => setRenaming(event.target.value)} />
-      <button type="submit" className="cv-chip">Salvar nome</button>
-      <button type="button" className="cv-chip" onClick={() => setRenaming(null)}>Cancelar</button>
+    {selected && changed && <p className="cv-hint">{t.presets.pending(presetLabel(selected))}</p>}
+    {renaming !== null && selected && <form className="cv-favs-rename" onSubmit={(event) => { event.preventDefault(); api.rename(selected.id, renaming); setRenaming(null); setMessage(t.presets.renamed); }}>
+      <input value={renaming} maxLength={MAX_PRESET_NAME} aria-label={t.presets.nameField} autoFocus onChange={(event) => setRenaming(event.target.value)} />
+      <button type="submit" className="cv-chip">{t.presets.saveName}</button>
+      <button type="button" className="cv-chip" onClick={() => setRenaming(null)}>{t.presets.cancel}</button>
     </form>}
     {message && <p className="cv-hint" role="status"><Icon type="star" size={12} /> {message}</p>}
   </section>;

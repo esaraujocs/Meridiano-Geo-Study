@@ -26,6 +26,7 @@ import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { TypedAnswerInput } from "./typed-answer-input";
+import { t } from "../domain/i18n";
 
 type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; options?: SessionOptions; onBack: () => void; onEnd?: (result: SessionResult | null) => void };
 type Destination = "recorte" | "home" | "result";
@@ -98,6 +99,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const [target, setTarget] = useState("");
   const [typed, setTyped] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [timedOutRound, setTimedOutRound] = useState(false);
   const [answerResult, setAnswerResult] = useState<"correct" | "wrong" | "">("");
   const [selectedSilhouette, setSelectedSilhouette] = useState("");
   const [locked, setLocked] = useState(false);
@@ -157,7 +159,8 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     setScore((current) => current + (correct ? 1 : 0));
     setStreak((current) => correct ? current + 1 : 0);
     setLocked(true); setAnswerResult(correct ? "correct" : "wrong");
-    setFeedback(correct ? "Certo!" : timedOut ? "Tempo esgotado." : "Não foi dessa vez.");
+    setFeedback(correct ? t.common.correct : timedOut ? t.common.timeUp : t.common.wrong);
+    setTimedOutRound(timedOut);
     leaveGuard.noteAnswer();
     log.push({ correct, tier: entityTier(data.meta, target) });
     session.recordRound({
@@ -191,25 +194,25 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">
-          <div className="gs-kicker">Que país tem esta forma?</div>
-          <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label="Silhueta geográfica"><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
+          <div className="gs-kicker">{t.silhouette.kicker}</div>
+          <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label={t.silhouette.aria}><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
           <div className={`gs-ribbon${answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {answerResult ? feedback : ""}
-            {answerResult === "wrong" && <span className="sr-only"> A resposta certa é {targetName}.</span>}
+            {answerResult === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(targetName)}</span>}
           </div>
         </main>
-        <section className="gs-tray" aria-label="Respostas">
+        <section className="gs-tray" aria-label={t.common.answersRegion}>
           {typedMode ? <>
             <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-              <TypedAnswerInput key={target} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} answers={aliases(data.meta[target])} />
+              <TypedAnswerInput key={target} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} answers={aliases(data.meta[target])} />
               <button className="go" disabled={locked || !typed.trim()}>Responder</button>
             </form>
             {answerResult
-              ? <AnswerReveal verdict={answerResult} expected={targetName} typed={typed} timedOut={feedback.startsWith("Tempo esgotado")} />
-              : <div className="gs-hintline">Vale sem acento e sem maiúscula.</div>}
+              ? <AnswerReveal verdict={answerResult} expected={targetName} typed={typed} timedOut={timedOutRound} />
+              : <div className="gs-hintline">{t.common.typingHint}</div>}
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> responde e continua</span><span><kbd>Esc</kbd> sair</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
             <div className="quiz-options gs-opts">{choices.map((id, index) => <button className={`${optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked} key={id} onClick={() => {
               if (locked) return;
@@ -221,7 +224,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
               <OptionMarks isTarget={id === target} isPicked={id === selectedSilhouette} verdict={answerResult} />
             </button>)}</div>
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, false)} onSkip={flow.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> escolhe</span><span><kbd>Enter</kbd> continua</span><span><kbd>Esc</kbd> sair</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> {t.common.keyChoose}</span><span><kbd>Enter</kbd> {t.common.keyContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </>}
         </section>
       </div>
@@ -247,7 +250,8 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
   const [guesses, setGuesses] = useState<string[]>([]);
   const [attempts, setAttempts] = useState(0);
   const [hints, setHints] = useState(0);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedbackState] = useState<{ kind: "" | "ok" | "no" | "info" | "done"; text: string }>({ kind: "", text: "" });
+  const setFeedback = (kind: "" | "ok" | "no" | "info" | "done", text = "") => setFeedbackState({ kind, text });
   const [over, setOver] = useState(false);
   const [error, setError] = useState("");
   const [score, setScore] = useState(0);
@@ -283,7 +287,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
         return;
       }
       const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
-      if (!nextRoute) { setError("Não há rota jogável para o próximo destino."); return; }
+      if (!nextRoute) { setError(t.travel.noRoute); return; }
       setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setOver(false); overRef.current = false; setRound((current) => current + 1); destinationStarted.current = Date.now();
       requestAnimationFrame(() => inputRef.current?.focus());
     }, delay, skipAfter);
@@ -310,7 +314,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
     if (!route || !value.trim() || over || overRef.current) return;
     const result = evaluateTravelGuess(data.meta, intermediates, guesses, value);
     if (result.kind === "duplicate") {
-      setFeedback("Esse país já foi usado; tente o próximo da rota.");
+      setFeedback("no", t.travel.duplicate);
       setTyped("");
       return;
     }
@@ -320,7 +324,11 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
     if (correct) setGuesses(newGuesses);
     const complete = correct && newGuesses.length === intermediates.length;
     const failed = !correct && nextAttempts >= 10;
-    setFeedback(complete ? "Rota concluída. Excelente navegação." : failed ? `Tentativas esgotadas. Rota: ${route.map((id) => data.meta[id]?.pt ?? id).join(" → ")}` : correct ? "Trecho correto. Continue a rota." : "Esse país não é o próximo trecho.");
+    const routeText = route.map((id) => data.meta[id]?.pt ?? id).join(" → ");
+    if (complete) setFeedback("done", t.travel.complete);
+    else if (failed) setFeedback("no", t.travel.failed(routeText));
+    else if (correct) setFeedback("ok", t.travel.correct);
+    else setFeedback("no", t.travel.wrong);
     setAttempts(nextAttempts);
     setTyped("");
     if (complete || failed) closeRoute(route, complete, newGuesses, nextAttempts, value);
@@ -328,14 +336,14 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
   };
   const timeUp = () => {
     if (!route || over || overRef.current) return;
-    setFeedback(`Tempo esgotado. Rota: ${route.map((id) => data.meta[id]?.pt ?? id).join(" → ")}`);
+    setFeedback("no", t.travel.timeUp(route.map((id) => data.meta[id]?.pt ?? id).join(" → ")));
     setTyped("");
     closeRoute(route, false, guesses, attempts, typed, true);
   };
   const hint = () => {
     if (hints >= 3 || !next || over) return;
     setHints((value) => value + 1);
-    setFeedback(`Pista: o próximo país é ${data.meta[next]?.pt ?? next}.`);
+    setFeedback("info", t.travel.hint(data.meta[next]?.pt ?? next));
   };
   const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: destinationDeck.current?.size ?? destinations.length });
   useGameKeys({ exit, enabled: Boolean(route) });
@@ -345,10 +353,11 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
   if (!activeRoute) return <LoadingGeometry />;
   const routeFeatures = activeRoute.map((id) => features.get(id)).filter(Boolean) as Feature<Geometry>[];
   const routePath = pathForFeatures(routeFeatures, 420, 190);
-  const bad = feedback.startsWith("Esse país") || feedback.startsWith("Tentativas") || feedback.startsWith("Tempo esgotado");
+  const bad = feedback.kind === "no";
+  const done = feedback.kind === "done";
   const total = destinationDeck.current?.size ?? destinations.length;
   const failedRoute = over && guesses.length < intermediates.length;
-  const feedbackKind = feedback.startsWith("Rota concluída") ? "ok" : bad ? "no" : feedback.startsWith("Pista") ? "info" : feedback ? "ok" : "";
+  const feedbackKind = done ? "ok" : feedback.kind;
   const nameOf = (id: string) => data.meta[id]?.pt ?? id;
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
@@ -357,27 +366,27 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">
-          <div className="gs-kicker">Destino: <b>{nameOf(activeRoute.at(-1)!)}</b></div>
-          <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label="Geometrias da rota"><path d={routePath.d} /></svg></div>
-          <ol className="gs-route" aria-label="Rota">
+          <div className="gs-kicker">{t.travel.destination} <b>{nameOf(activeRoute.at(-1)!)}</b></div>
+          <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label={t.travel.routeAria}><path d={routePath.d} /></svg></div>
+          <ol className="gs-route" aria-label={t.travel.route}>
             <li className="rc start">{nameOf(activeRoute[0])}</li>
             {guesses.map((id) => <li key={id} className="rc done">{nameOf(id)}</li>)}
             {intermediates.slice(guesses.length).map((id) => failedRoute
               ? <li key={id} className="rc missed">{nameOf(id)}</li>
-              : <li key={id} className="rc" aria-label="país ainda não descoberto">?</li>)}
+              : <li key={id} className="rc" aria-label={t.travel.unknown}>?</li>)}
             <li className="rc end">{nameOf(activeRoute.at(-1)!)}</li>
           </ol>
-          <div className="gs-stats"><span>Tentativas <b>{attempts}/10</b></span><span>Pistas <b>{hints}/3</b></span></div>
-          <div className={`gs-ribbon wrap${feedbackKind ? ` on ${feedbackKind}` : ""}`} role="status" aria-live="polite">{feedback}</div>
+          <div className="gs-stats"><span>{t.travel.attempts} <b>{attempts}/10</b></span><span>{t.travel.hints} <b>{hints}/3</b></span></div>
+          <div className={`gs-ribbon wrap${feedbackKind ? ` on ${feedbackKind}` : ""}`} role="status" aria-live="polite">{feedback.text}</div>
         </main>
-        <section className="gs-tray" aria-label="Respostas">
+        <section className="gs-tray" aria-label={t.common.answersRegion}>
           <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-            <TypedAnswerInput key={activeRoute.at(-1)} className={feedback.startsWith("Rota concluída") ? "answer-success" : bad ? "answer-error" : ""} inputRef={inputRef} aria-label="Próximo país" value={typed} disabled={over} onChange={setTyped} onCommit={submit} answers={ids.flatMap((id) => aliases(data.meta[id]))} ambiguitySafe />
-            <button className="go" disabled={over || !typed.trim()}>Responder</button>
+            <TypedAnswerInput key={activeRoute.at(-1)} className={done ? "answer-success" : bad ? "answer-error" : ""} inputRef={inputRef} aria-label={t.travel.nextCountry} value={typed} disabled={over} onChange={setTyped} onCommit={submit} answers={ids.flatMap((id) => aliases(data.meta[id]))} ambiguitySafe />
+            <button className="go" disabled={over || !typed.trim()}>{t.common.answer}</button>
           </form>
-          <div className="gs-hintline gs-hintrow"><span>Digite o {guesses.length + 1}º país da rota, na ordem.</span><button type="button" className="gs-link" onClick={hint} disabled={hints >= 3 || over}>Pista ({3 - hints})</button></div>
-          {over && !feedback.startsWith("Rota concluída") && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
-          <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> responde</span><span><kbd>Esc</kbd> sair</span></div>
+          <div className="gs-hintline gs-hintrow"><span>{t.travel.typeNth(guesses.length + 1)}</span><button type="button" className="gs-link" onClick={hint} disabled={hints >= 3 || over}>{t.travel.hintButton(3 - hints)}</button></div>
+          {over && !done && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
+          <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswer}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
         </section>
       </div>
     </div>
@@ -385,8 +394,8 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
 }
 
 function LoadingGeometry() {
-  return <div className="app-shell"><main className="content"><div className="eyebrow">Preparando geometria</div><h1>Carregando o contorno.</h1></main></div>;
+  return <div className="app-shell"><main className="content"><div className="eyebrow">{t.silhouette.preparing}</div><h1>{t.silhouette.loading}</h1></main></div>;
 }
 function GeometryError({ error, onBack }: { error: string; onBack: () => void }) {
-  return <div className="app-shell"><main className="content"><button className="back" onClick={onBack}>← Escolher recorte</button><div className="diagnostic"><b>Geometria indisponível</b><p>{error}</p></div></main></div>;
+  return <div className="app-shell"><main className="content"><button className="back" onClick={onBack}>{t.silhouette.backToRegion}</button><div className="diagnostic"><b>{t.silhouette.unavailable}</b><p>{error}</p></div></main></div>;
 }

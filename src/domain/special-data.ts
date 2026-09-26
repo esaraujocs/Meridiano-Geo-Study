@@ -1,5 +1,7 @@
 import { regionMatches } from "./regions.js";
 import type { RegionSelection } from "./types.js";
+import { t } from "./i18n/index.js";
+import { localizeSpecial } from "./i18n/content.js";
 
 export type HistoricalEntity = {
   id: string; pt: string; reg?: string; sub?: string; fl?: string;
@@ -21,7 +23,7 @@ export function loadSpecialData() {
     fetch("/data/legacy/historical-flags.json"),
     fetch("/data/legacy/languages.json"),
   ]).then(async ([historical, flags, languages]) => {
-    if (!historical.ok || !flags.ok || !languages.ok) throw new Error("Falha ao carregar acervo especial.");
+    if (!historical.ok || !flags.ok || !languages.ok) throw new Error(t.app.specialFailed);
     const [h, f, l] = await Promise.all([historical.json(), flags.json(), languages.json()]);
     const historicalFlags = { ...(f.flags ?? {}) };
     const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
@@ -31,7 +33,8 @@ export function loadSpecialData() {
     for (const [id, override] of Object.entries(overrides)) {
       if (historicalFlags[id] && override.src) historicalFlags[id] = override.src;
     }
-    return { historical: h.entities ?? [], historicalFlags, languages: l.entries ?? [] };
+    const localized = await localizeSpecial<HistoricalEntity, LanguageEntry>(h.entities ?? [], l.entries ?? []);
+    return { historical: localized.historical, historicalFlags, languages: localized.languages };
   });
   return promise;
 }
@@ -46,6 +49,10 @@ export function languagePool(entries: LanguageEntry[], region: RegionSelection) 
 }
 export function normalizeAnswer(value: string) {
   return value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9]+/g, " ").trim();
+}
+/** Respostas aceitas para a capital: a do idioma da interface e as variantes (ex.: Kyiv/Kiev). */
+export function acceptedCapitalAnswers(value: { cap?: string; capAl?: string[] }) {
+  return [value.cap, ...(value.capAl ?? [])].filter((item): item is string => Boolean(item)).map(normalizeAnswer);
 }
 export function acceptedWritingAnswers(value: { pt?: string; en?: string; al?: string | string[] }) {
   return [value.pt, value.en, ...(Array.isArray(value.al) ? value.al : [value.al])]

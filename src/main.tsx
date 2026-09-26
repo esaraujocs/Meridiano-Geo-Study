@@ -4,10 +4,14 @@ import { AchievementToaster } from "./components/achievement-toaster";
 import { applyDebugFlagFromUrl } from "./domain/debug-flag";
 import { ThemeFilters } from "./components/theme-decor";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, themeAttributes } from "./domain/themes";
+import { intlLocale, t } from "./domain/i18n";
 import "./index.css";
 import "./themes.css";
 
 applyDebugFlagFromUrl();
+// Idioma da página (leitores de tela, hifenização) e título da aba no idioma escolhido.
+document.documentElement.lang = intlLocale;
+document.title = t.app.title;
 // A preferência de movimento reduzido vale desde a abertura (antes só era aplicada depois de visitar Opções).
 try { document.documentElement.dataset.reducedMotion = localStorage.getItem("carta-reduced-motion") === "1" ? "true" : "false"; } catch { /* sem armazenamento */ }
 try { document.documentElement.dataset.timerReveal = localStorage.getItem("carta-timer-late") === "1" ? "late" : "always"; } catch { /* sem armazenamento */ }

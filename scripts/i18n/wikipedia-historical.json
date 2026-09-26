@@ -1,0 +1,1024 @@
+{
+ "ottoman": {
+  "pt": "Império Otomano",
+  "article": "Império Otomano",
+  "en": "Ottoman Empire",
+  "es": "Imperio otomano"
+ },
+ "austria-hungria": {
+  "pt": "Áustria-Hungria",
+  "article": "Áustria-Hungria",
+  "en": "Austria-Hungary",
+  "es": "Imperio austrohúngaro"
+ },
+ "alemanha-nazista": {
+  "pt": "Alemanha Nazista",
+  "article": "Alemanha Nazista",
+  "en": "Nazi Germany",
+  "es": "Alemania nazi"
+ },
+ "alemanha-oriental": {
+  "pt": "Alemanha Oriental (RDA)"
+ },
+ "urss": {
+  "pt": "União Soviética (URSS)"
+ },
+ "iugoslavia": {
+  "pt": "Iugoslávia (RSF)"
+ },
+ "tchecoslovaquia": {
+  "pt": "Tchecoslováquia",
+  "article": "Checoslováquia",
+  "en": "Czechoslovakia",
+  "es": "Checoslovaquia"
+ },
+ "manchukuo": {
+  "pt": "Manchukuo",
+  "article": "Manchukuo",
+  "en": "Manchukuo",
+  "es": "Manchukuo"
+ },
+ "vietna-sul": {
+  "pt": "Vietnã do Sul",
+  "article": "Vietname do Sul",
+  "en": "South Vietnam",
+  "es": "Vietnam del Sur"
+ },
+ "katanga": {
+  "pt": "Estado de Katanga",
+  "article": "Estado do Catanga",
+  "en": "State of Katanga",
+  "es": "Estado de Katanga"
+ },
+ "biafra": {
+  "pt": "Biafra",
+  "article": "Biafra",
+  "en": "Biafra",
+  "es": "Biafra"
+ },
+ "confederados": {
+  "pt": "Estados Confederados da América",
+  "article": "Estados Confederados da América",
+  "en": "Confederate States of America",
+  "es": "Estados Confederados de América"
+ },
+ "imperio-alemao": {
+  "pt": "Império Alemão",
+  "article": "Império Alemão",
+  "en": "German Empire",
+  "es": "Imperio alemán"
+ },
+ "reino-italia": {
+  "pt": "Reino da Itália",
+  "article": "Reino de Itália",
+  "en": "Kingdom of Italy (disambiguation)",
+  "es": "Reino de Italia"
+ },
+ "persia-qajar": {
+  "pt": "Pérsia (dinastia Qajar)"
+ },
+ "ira-pahlavi": {
+  "pt": "Irã (Estado Imperial, Pahlavi)"
+ },
+ "mogol": {
+  "pt": "Império Mogol",
+  "article": "Império Mogol",
+  "en": "Mughal Empire",
+  "es": "Imperio mogol"
+ },
+ "camboja-democratico": {
+  "pt": "Camboja Democrático (Khmer Vermelho)"
+ },
+ "tibete": {
+  "pt": "Tibete",
+  "article": "Tibete",
+  "en": "Tibet",
+  "es": "Tíbet"
+ },
+ "afeganistao-rdc": {
+  "pt": "Afeganistão (Rep. Democrática)"
+ },
+ "reino-egito": {
+  "pt": "Reino do Egito",
+  "article": "Reino do Egito",
+  "en": "Kingdom of Egypt",
+  "es": "Reino de Egipto"
+ },
+ "rau": {
+  "pt": "República Árabe Unida",
+  "article": "República Árabe Unida",
+  "en": "United Arab Republic",
+  "es": "República Árabe Unida"
+ },
+ "zanzibar": {
+  "pt": "Sultanato de Zanzibar",
+  "article": "Sultanato de Zanzibar",
+  "en": "Sultanate of Zanzibar",
+  "es": "Sultanato de Zanzíbar"
+ },
+ "transvaal": {
+  "pt": "República Sul-Africana (Transvaal)"
+ },
+ "orange": {
+  "pt": "Estado Livre de Orange",
+  "article": "Estado Livre de Orange",
+  "en": "Orange Free State",
+  "es": "Estado Libre de Orange"
+ },
+ "congo-leopoldo": {
+  "pt": "Estado Livre do Congo",
+  "article": "Estado Livre do Congo",
+  "en": "Congo Free State",
+  "es": "Estado Libre del Congo"
+ },
+ "etiope": {
+  "pt": "Império Etíope",
+  "article": "Império Etíope",
+  "en": "Ethiopian Empire",
+  "es": "Imperio etíope"
+ },
+ "sokoto": {
+  "pt": "Califado de Sokoto",
+  "article": "Califado de Socoto",
+  "en": "Sokoto Caliphate",
+  "es": "Califato de Sokoto"
+ },
+ "texas": {
+  "pt": "República do Texas",
+  "article": "República do Texas",
+  "en": "Republic of Texas",
+  "es": "República de Texas"
+ },
+ "havai": {
+  "pt": "Reino do Havaí",
+  "article": "Reino do Havaí",
+  "en": "Hawaiian Kingdom",
+  "es": "Reino de Hawái"
+ },
+ "commonwealth-inglaterra": {
+  "pt": "Comunidade da Inglaterra",
+  "article": "Comunidade da Inglaterra",
+  "en": "Commonwealth of England",
+  "es": "Mancomunidad de Inglaterra"
+ },
+ "reino-romenia": {
+  "pt": "Reino da Romênia",
+  "article": "Reino da Romênia",
+  "en": "Kingdom of Romania",
+  "es": "Reino de Rumania"
+ },
+ "china-cinco-cores": {
+  "pt": "China (Governo de Pequim)"
+ },
+ "iemen-norte": {
+  "pt": "Iêmen do Norte",
+  "article": "Iêmen do Norte",
+  "en": "North Yemen"
+ },
+ "iemen-sul": {
+  "pt": "Iêmen do Sul",
+  "article": "Iémen do Sul",
+  "en": "South Yemen",
+  "es": "Yemen del Sur"
+ },
+ "birmania-socialista": {
+  "pt": "Birmânia Socialista"
+ },
+ "india-britanica": {
+  "pt": "Índia Britânica",
+  "article": "Índia britânica",
+  "en": "British Raj",
+  "es": "India británica"
+ },
+ "congo-leopoldville": {
+  "pt": "Congo-Léopoldville",
+  "article": "República do Congo (Léopoldville)",
+  "en": "First Congolese Republic",
+  "es": "República del Congo (1960-1971)"
+ },
+ "rodesia-norte": {
+  "pt": "Rodésia do Norte",
+  "article": "Rodésia do Norte",
+  "en": "Northern Rhodesia",
+  "es": "Rodesia del Norte"
+ },
+ "somalilandia-britanica": {
+  "pt": "Somalilândia Britânica",
+  "article": "Somalilândia Britânica",
+  "en": "British Somaliland",
+  "es": "Somalilandia británica"
+ },
+ "america-central-federal": {
+  "pt": "República Federal da América Central",
+  "article": "República Federal da América Central",
+  "en": "Federal Republic of Central America",
+  "es": "República Federal de Centroamérica"
+ },
+ "west-florida": {
+  "pt": "República da Flórida Ocidental",
+  "article": "República da Flórida Ocidental",
+  "en": "Republic of West Florida",
+  "es": "República de Florida Occidental"
+ },
+ "confederacao-argentina": {
+  "pt": "Confederação Argentina",
+  "article": "Confederação Argentina",
+  "en": "Argentine Confederation",
+  "es": "Confederación Argentina"
+ },
+ "italia-salo": {
+  "pt": "República Social Italiana (Salò)"
+ },
+ "trieste": {
+  "pt": "Território Livre de Trieste",
+  "article": "Território Livre de Trieste",
+  "en": "Free Territory of Trieste",
+  "es": "Territorio libre de Trieste"
+ },
+ "danzig": {
+  "pt": "Cidade Livre de Danzig",
+  "article": "Cidade Livre de Danzigue",
+  "en": "Free City of Danzig",
+  "es": "Ciudad Libre de Dánzig"
+ },
+ "sikkim": {
+  "pt": "Reino de Sikkim",
+  "article": "Reino de Siquim",
+  "en": "Kingdom of Sikkim",
+  "es": "Reino de Sikkim"
+ },
+ "paquistao-oriental": {
+  "pt": "Paquistão Oriental",
+  "article": "Paquistão Oriental",
+  "en": "East Pakistan",
+  "es": "Pakistán Oriental"
+ },
+ "ceilao-britanico": {
+  "pt": "Ceilão Britânico",
+  "article": "Ceilão britânico",
+  "en": "British Ceylon",
+  "es": "Ceilán británico"
+ },
+ "alto-volta": {
+  "pt": "Alto Volta",
+  "article": "Alto Volta",
+  "en": "Republic of Upper Volta",
+  "es": "Alto Volta"
+ },
+ "rodesia-niassalandia": {
+  "pt": "Federação da Rodésia e Niassalândia",
+  "article": "Federação da Rodésia e Niassalândia",
+  "en": "Federation of Rhodesia and Nyasaland",
+  "es": "Federación de Rodesia y Nyasalandia"
+ },
+ "rodesia-sul-colonial": {
+  "pt": "Rodésia do Sul",
+  "article": "Rodésia do Sul",
+  "en": "Southern Rhodesia",
+  "es": "Rodesia del Sur"
+ },
+ "cisplatina": {
+  "pt": "Província Cisplatina",
+  "article": "Cisplatina (província)",
+  "en": "Cisplatina",
+  "es": "Provincia Cisplatina"
+ },
+ "nova-granada": {
+  "pt": "Estados Unidos da Nova Granada"
+ },
+ "nigeria-britanica": {
+  "pt": "Nigéria Britânica"
+ },
+ "austria-imperio": {
+  "pt": "Império Austríaco",
+  "article": "Império Austríaco",
+  "en": "Austrian Empire",
+  "es": "Imperio austríaco"
+ },
+ "baviera-reino": {
+  "pt": "Reino da Baviera",
+  "article": "Reino da Baviera",
+  "en": "Kingdom of Bavaria",
+  "es": "Reino de Baviera"
+ },
+ "bukhara": {
+  "pt": "Emirado de Bukhara",
+  "article": "Emirado de Bucara",
+  "en": "Emirate of Bukhara",
+  "es": "Emirato de Bujará"
+ },
+ "burundi-reino": {
+  "pt": "Reino do Burundi",
+  "article": "Reino de Burundi",
+  "en": "Kingdom of Burundi",
+  "es": "Reino de Burundi"
+ },
+ "espanha-segunda-republica": {
+  "pt": "Segunda República Espanhola",
+  "article": "Segunda República Espanhola",
+  "en": "Second Spanish Republic",
+  "es": "Segunda República española"
+ },
+ "iraque-reino": {
+  "pt": "Reino do Iraque",
+  "article": "Reino do Iraque",
+  "en": "Kingdom of Iraq",
+  "es": "Reino de Irak"
+ },
+ "laos-reino": {
+  "pt": "Reino do Laos",
+  "article": "Reino do Laos",
+  "en": "Kingdom of Laos",
+  "es": "Reino de Laos"
+ },
+ "palestina-mandato": {
+  "pt": "Palestina (Mandato Britânico)"
+ },
+ "portugal-reino": {
+  "pt": "Reino de Portugal",
+  "article": "Reino de Portugal",
+  "en": "Kingdom of Portugal",
+  "es": "Reino de Portugal"
+ },
+ "baden-reino": {
+  "pt": "Grão-Ducado de Baden",
+  "article": "Grão-Ducado de Baden",
+  "en": "Grand Duchy of Baden",
+  "es": "Gran Ducado de Baden"
+ },
+ "wurttemberg-reino": {
+  "pt": "Reino de Württemberg",
+  "article": "Reino de Württemberg",
+  "en": "Kingdom of Württemberg",
+  "es": "Reino de Wurtemberg"
+ },
+ "saxonia-reino": {
+  "pt": "Reino da Saxônia",
+  "article": "Reino da Saxônia",
+  "en": "Kingdom of Saxony",
+  "es": "Reino de Sajonia"
+ },
+ "hesse-grao-ducado": {
+  "pt": "Grão-Ducado de Hesse",
+  "article": "Grão-Ducado de Hesse",
+  "en": "Grand Duchy of Hesse",
+  "es": "Hesse-Darmstadt"
+ },
+ "hamburgo-cidade-livre": {
+  "pt": "Cidade Livre de Hamburgo",
+  "article": "Hamburgo",
+  "en": "Hamburg",
+  "es": "Hamburgo"
+ },
+ "vestfalia-reino": {
+  "pt": "Reino da Vestfália",
+  "article": "Reino de Vestfália",
+  "en": "Kingdom of Westphalia",
+  "es": "Reino de Westfalia"
+ },
+ "varsovia-ducado": {
+  "pt": "Grão-Ducado de Varsóvia"
+ },
+ "cracovia-republica": {
+  "pt": "República de Cracóvia",
+  "article": "Cidade Livre de Cracóvia",
+  "en": "Free City of Cracow",
+  "es": "República de Cracovia"
+ },
+ "parma-ducado": {
+  "pt": "Ducado de Parma",
+  "article": "Ducado de Parma e Placência",
+  "en": "Duchy of Parma and Piacenza",
+  "es": "Ducado de Parma"
+ },
+ "etruria-reino": {
+  "pt": "Reino da Etrúria",
+  "article": "Reino da Etrúria",
+  "en": "Kingdom of Etruria",
+  "es": "Reino de Etruria"
+ },
+ "khiva-canato": {
+  "pt": "Canato de Khiva",
+  "article": "Canato de Quiva",
+  "en": "Khanate of Khiva",
+  "es": "Kanato de Jiva"
+ },
+ "herat-emirado": {
+  "pt": "Emirado de Herat"
+ },
+ "sarawak-reino": {
+  "pt": "Reino de Sarawak",
+  "article": "Reino de Sarauaque",
+  "en": "Raj of Sarawak",
+  "es": "Reino de Sarawak"
+ },
+ "hyderabad-estado": {
+  "pt": "Estado de Hyderabad",
+  "article": "Estado de Haiderabade",
+  "en": "Hyderabad State",
+  "es": "Estado de Hyderabad (1724-1948)"
+ },
+ "siao-reino": {
+  "pt": "Reino do Sião",
+  "article": "Sião (desambiguação)"
+ },
+ "turquestao-oriental": {
+  "pt": "República do Turquestão Oriental"
+ },
+ "tuva-republica": {
+  "pt": "República Popular de Tuva",
+  "article": "República Popular de Tuva",
+  "en": "Tuvan People's Republic",
+  "es": "República Popular de Tuvá"
+ },
+ "borneo-norte": {
+  "pt": "Bornéu do Norte",
+  "article": "Bornéu do Norte",
+  "en": "North Borneo",
+  "es": "Borneo Septentrional británico"
+ },
+ "khmer-republica": {
+  "pt": "República Khmer",
+  "article": "República Quemer",
+  "en": "Khmer Republic",
+  "es": "República Jemer"
+ },
+ "natalia-republica": {
+  "pt": "República de Natalia"
+ },
+ "nieuwe-republiek": {
+  "pt": "Nova República (Vryheid)"
+ },
+ "marrocos-1666": {
+  "pt": "Sultanato de Marrocos (pré-protetorado)"
+ },
+ "stellaland-republica": {
+  "pt": "República de Stellaland"
+ },
+ "griqualand-east": {
+  "pt": "Griqualand Oriental"
+ },
+ "yucatan-republica": {
+  "pt": "República do Yucatán",
+  "article": "República do Iucatã",
+  "en": "Republic of Yucatán",
+  "es": "República de Yucatán"
+ },
+ "baixa-california": {
+  "pt": "República da Baixa Califórnia",
+  "article": "República da Baixa Califórnia",
+  "en": "Republic of Baja California",
+  "es": "República de Baja California"
+ },
+ "mosquitia-reino": {
+  "pt": "Reino da Mosquítia"
+ },
+ "los-altos-estado": {
+  "pt": "Estado de Los Altos",
+  "article": "Estado de Los Altos",
+  "en": "Los Altos (state)",
+  "es": "Estado de Los Altos"
+ },
+ "piratini-republica": {
+  "pt": "República Rio-Grandense (Piratini)"
+ },
+ "acre-estado": {
+  "pt": "Estado Independente do Acre",
+  "article": "República do Acre",
+  "en": "Republic of Acre",
+  "es": "República de Acre"
+ },
+ "oldenburg-ducado": {
+  "pt": "Grão-Ducado de Oldenburgo"
+ },
+ "nassau-ducado": {
+  "pt": "Ducado de Nassau",
+  "article": "Ducado de Nassau",
+  "en": "Duchy of Nassau",
+  "es": "Ducado de Nassau"
+ },
+ "bremen-cidade-livre": {
+  "pt": "Cidade Livre de Bremen",
+  "article": "Bremen (estado)",
+  "en": "Bremen (state)",
+  "es": "Bremen (estado)"
+ },
+ "anhalt-ducado": {
+  "pt": "Ducado de Anhalt",
+  "article": "Anhalt",
+  "en": "Anhalt"
+ },
+ "cospaia-republica": {
+  "pt": "República de Cospaia",
+  "article": "República de Cospaia",
+  "en": "Republic of Cospaia",
+  "es": "República de Cospaia"
+ },
+ "elba-principado": {
+  "pt": "Principado de Elba",
+  "article": "Principado de Elba",
+  "en": "Principality of Elba",
+  "es": "Principado de Elba"
+ },
+ "courland-ducado": {
+  "pt": "Ducado da Curlândia",
+  "article": "Ducado da Curlândia e Semigália",
+  "en": "Duchy of Courland and Semigallia",
+  "es": "Ducado de Curlandia y Semigalia"
+ },
+ "ragusa-republica": {
+  "pt": "República de Ragusa",
+  "article": "República de Ragusa",
+  "en": "Republic of Ragusa",
+  "es": "República de Ragusa"
+ },
+ "corsega-reino": {
+  "pt": "República da Córsega"
+ },
+ "galicia-lodomeria-reino": {
+  "pt": "Reino da Galícia e Lodoméria",
+  "article": "Reino da Galícia e Lodoméria",
+  "en": "Kingdom of Galicia and Lodomeria",
+  "es": "Reino de Galicia y Lodomeria"
+ },
+ "maratha-imperio": {
+  "pt": "Confederação Marata"
+ },
+ "sikh-imperio": {
+  "pt": "Império Sikh",
+  "article": "Império Sique",
+  "en": "Sikh Empire",
+  "es": "Imperio sij"
+ },
+ "travancore-estado": {
+  "pt": "Estado de Travancore"
+ },
+ "tunisia-otomana-pre1831": {
+  "pt": "Tunísia Otomana (pré-1831)"
+ },
+ "tripolitania-regencia": {
+  "pt": "Regência da Tripolitânia"
+ },
+ "argelia-regencia": {
+  "pt": "Regência de Argel",
+  "article": "Argélia otomana",
+  "en": "Regency of Algiers",
+  "es": "Regencia de Argel"
+ },
+ "barotseland-reino": {
+  "pt": "Reino de Barotselândia"
+ },
+ "california-republica": {
+  "pt": "República da Califórnia",
+  "article": "República da Califórnia",
+  "en": "California Republic",
+  "es": "República de California"
+ },
+ "rio-grande-republica": {
+  "pt": "República do Rio Grande",
+  "article": "República do Rio Grande",
+  "en": "Republic of the Rio Grande",
+  "es": "República del Río Grande"
+ },
+ "araucania-reino": {
+  "pt": "Reino da Araucânia e Patagônia",
+  "article": "Reino da Araucânia e Patagônia",
+  "en": "Kingdom of Araucanía and Patagonia",
+  "es": "Reino de la Araucanía y la Patagonia"
+ },
+ "vermont-republica": {
+  "pt": "República de Vermont",
+  "article": "República de Vermont",
+  "en": "Vermont Republic",
+  "es": "República de Vermont"
+ },
+ "georgia-drg": {
+  "pt": "República Democrática da Geórgia",
+  "article": "República Democrática da Geórgia",
+  "en": "Democratic Republic of Georgia",
+  "es": "República Democrática de Georgia"
+ },
+ "wallachia-principado": {
+  "pt": "Principado da Valáquia",
+  "article": "Valáquia",
+  "en": "Wallachia",
+  "es": "Valaquia"
+ },
+ "moldavia-principado": {
+  "pt": "Principado da Moldávia",
+  "article": "Principado da Moldávia",
+  "en": "Moldavia",
+  "es": "Principado de Moldavia"
+ },
+ "schwarzburg-principado": {
+  "pt": "Principados de Schwarzburg"
+ },
+ "reuss-principado": {
+  "pt": "Principado de Reuss"
+ },
+ "lucca-republica": {
+  "pt": "República de Lucca",
+  "article": "República de Luca",
+  "en": "Republic of Lucca",
+  "es": "República de Lucca"
+ },
+ "hejaz-reino": {
+  "pt": "Reino do Hejaz",
+  "article": "Reino do Hejaz",
+  "en": "Kingdom of Hejaz",
+  "es": "Reino del Hiyaz"
+ },
+ "nejd-sultanato": {
+  "pt": "Sultanato de Nejd"
+ },
+ "kokand-canato": {
+  "pt": "Canato de Coacande"
+ },
+ "sul-arabia-federacao": {
+  "pt": "Federação da Arábia do Sul",
+  "article": "Federação da Arábia do Sul",
+  "en": "Federation of South Arabia",
+  "es": "Federación de Arabia del Sur"
+ },
+ "vietna-imperio-1945": {
+  "pt": "Império do Vietnã (1945)"
+ },
+ "johor-sultanato": {
+  "pt": "Sultanato de Johor (1855-1865)"
+ },
+ "merina-reino": {
+  "pt": "Reino de Merina"
+ },
+ "kanem-bornu-imperio": {
+  "pt": "Império de Kanem-Bornu",
+  "article": "Império de Canem",
+  "en": "Kanem–Bornu Empire",
+  "es": "Imperio Kanem-Bornu"
+ },
+ "cherokee-braves": {
+  "pt": "Nação Cherokee (era confederada)"
+ },
+ "muskogee-estado": {
+  "pt": "Estado de Muskogee",
+  "article": "Estado de Muskogee",
+  "en": "State of Muskogee",
+  "es": "Estado de Muskogee"
+ },
+ "tahiti-reino": {
+  "pt": "Reino do Taiti",
+  "article": "Reino do Taiti",
+  "en": "Kingdom of Tahiti",
+  "es": "Reino de Tahití"
+ },
+ "german-new-guinea": {
+  "pt": "Nova Guiné Alemã",
+  "article": "Nova Guiné Alemã",
+  "en": "German New Guinea",
+  "es": "Nueva Guinea Alemana"
+ },
+ "uvea-reino": {
+  "pt": "Reino de Uvea (Wallis)"
+ },
+ "ryukyu-reino": {
+  "pt": "Reino de Ryukyu",
+  "article": "Reino de Ryukyu",
+  "en": "Ryukyu Kingdom",
+  "es": "Reino de Ryūkyū"
+ },
+ "turquestao-oriental-1933": {
+  "pt": "Primeira República do Turquestão Oriental",
+  "article": "Primeira República do Turquestão Oriental",
+  "en": "First East Turkestan Republic",
+  "es": "Primera República del Turquestán Oriental"
+ },
+ "saar-protetorado": {
+  "pt": "Protetorado do Sarre"
+ },
+ "bosnia-reino-medieval": {
+  "pt": "Reino Medieval da Bósnia"
+ },
+ "buganda-reino": {
+  "pt": "Reino de Buganda",
+  "article": "Reino de Buganda",
+  "en": "Buganda",
+  "es": "Buganda"
+ },
+ "adal-sultanato": {
+  "pt": "Sultanato de Adal",
+  "article": "Sultanato de Adal",
+  "en": "Adal Sultanate",
+  "es": "Sultanato de Adel"
+ },
+ "harar-emirado": {
+  "pt": "Emirado de Harar"
+ },
+ "bunyoro-reino": {
+  "pt": "Reino de Bunyoro",
+  "article": "Bunyoro",
+  "en": "Bunyoro",
+  "es": "Bunyoro"
+ },
+ "ndzuwani-sultanato": {
+  "pt": "Sultanato de Ndzuwani (Anjouan)"
+ },
+ "menabe-reino": {
+  "pt": "Reino de Menabe"
+ },
+ "patagonia-galesa": {
+  "pt": "Colônia Galesa da Patagônia"
+ },
+ "iroquois-confederacao": {
+  "pt": "Confederação Iroquesa",
+  "article": "Iroqueses",
+  "en": "Haudenosaunee",
+  "es": "Iroqués"
+ },
+ "grito-lares-1868": {
+  "pt": "Grito de Lares",
+  "article": "Grito de Lares",
+  "en": "Grito de Lares",
+  "es": "Grito de Lares"
+ },
+ "cespedes-cuba-1868": {
+  "pt": "Cuba (Grito de Yara)"
+ },
+ "bau-reino": {
+  "pt": "Reino de Bau"
+ },
+ "circassia": {
+  "pt": "Circássia",
+  "article": "Circássia",
+  "en": "Circassia",
+  "es": "Circasia"
+ },
+ "imamado-caucaso": {
+  "pt": "Imamado do Cáucaso"
+ },
+ "kangleipak-reino": {
+  "pt": "Reino de Kangleipak (Manipur)"
+ },
+ "cochin-reino": {
+  "pt": "Reino de Cochin"
+ },
+ "bengal-sultanato": {
+  "pt": "Sultanato de Bengala"
+ },
+ "loango-reino": {
+  "pt": "Reino de Loango",
+  "article": "Reino de Loango",
+  "en": "Kingdom of Loango",
+  "es": "Reino de Loango"
+ },
+ "lunda-reino": {
+  "pt": "Reino de Lunda",
+  "article": "Reino Lunda",
+  "en": "Lunda Empire",
+  "es": "Imperio lunda"
+ },
+ "ezo-republica": {
+  "pt": "República de Ezo",
+  "article": "República de Ezo",
+  "en": "Republic of Ezo",
+  "es": "República de Ezo"
+ },
+ "sedang-reino": {
+  "pt": "Reino de Sedang",
+  "article": "Reino de Sedang",
+  "en": "Kingdom of Sedang",
+  "es": "Reino de los Sedang"
+ },
+ "teutonic-order": {
+  "pt": "Estado da Ordem Teutônica",
+  "article": "Estado da Ordem Teutónica",
+  "en": "State of the Teutonic Order",
+  "es": "Estado monástico de los Caballeros Teutónicos"
+ },
+ "dutch-republic": {
+  "pt": "República das Sete Províncias Unidas",
+  "article": "Províncias Unidas dos Países Baixos",
+  "en": "Dutch Republic",
+  "es": "Provincias Unidas de los Países Bajos"
+ },
+ "tavolara-reino": {
+  "pt": "Reino de Tavolara",
+  "article": "Tavolara",
+  "en": "Tavolara Island",
+  "es": "Tavolara"
+ },
+ "seborga-principado": {
+  "pt": "Principado de Seborga (medieval)"
+ },
+ "crimeia-canato": {
+  "pt": "Canato da Crimeia",
+  "article": "Canato da Crimeia",
+  "en": "Crimean Khanate",
+  "es": "Kanato de Crimea"
+ },
+ "novgorod-republica": {
+  "pt": "República de Novgorod",
+  "article": "República da Novogárdia",
+  "en": "Novgorod Republic",
+  "es": "República de Nóvgorod"
+ },
+ "nogai-horda": {
+  "pt": "Horda Nogai",
+  "article": "Horda Nogai",
+  "en": "Nogai Horde",
+  "es": "Horda de Nogái"
+ },
+ "kazan-canato": {
+  "pt": "Canato de Cazã",
+  "article": "Canato de Cazã",
+  "en": "Khanate of Kazan",
+  "es": "Kanato de Kazán"
+ },
+ "ankole-reino": {
+  "pt": "Reino de Ankole",
+  "article": "Reino de Ancolé",
+  "en": "Ankole",
+  "es": "Ankole"
+ },
+ "toro-reino": {
+  "pt": "Reino de Toro",
+  "article": "Reino de Toro",
+  "en": "Tooro Kingdom",
+  "es": "Toro (reino)"
+ },
+ "kongo-reino": {
+  "pt": "Reino do Congo",
+  "article": "Reino do Congo",
+  "en": "Kingdom of Kongo",
+  "es": "Reino del Congo"
+ },
+ "republica-piratas-1706": {
+  "pt": "República dos Piratas",
+  "article": "República dos Piratas",
+  "en": "Flying Gang",
+  "es": "República pirata"
+ },
+ "delhi-sultanato": {
+  "pt": "Sultanato de Delhi",
+  "article": "Sultanato de Deli",
+  "en": "Delhi Sultanate",
+  "es": "Sultanato de Delhi"
+ },
+ "rif-republica": {
+  "pt": "República do Rife",
+  "article": "República do Rife",
+  "en": "Republic of the Rif",
+  "es": "República del Rif"
+ },
+ "jabal-druze-estado": {
+  "pt": "Estado de Jabal Druze"
+ },
+ "veneza-republica": {
+  "pt": "República de Veneza",
+  "article": "República de Veneza",
+  "en": "Republic of Venice",
+  "es": "República de Venecia"
+ },
+ "mali-imperio": {
+  "pt": "Império do Mali",
+  "article": "Império do Mali",
+  "en": "Mali Empire",
+  "es": "Imperio de Mali"
+ },
+ "papal-estados": {
+  "pt": "Estados Papais",
+  "article": "Estados Papais",
+  "en": "Papal States",
+  "es": "Estados Pontificios"
+ },
+ "milan-ducado": {
+  "pt": "Ducado de Milão",
+  "article": "Ducado de Milão",
+  "en": "Duchy of Milan",
+  "es": "Ducado de Milán"
+ },
+ "sacro-imperio": {
+  "pt": "Sacro Império Romano-Germânico",
+  "article": "Sacro Império Romano-Germânico",
+  "en": "Holy Roman Empire",
+  "es": "Sacro Imperio Romano Germánico"
+ },
+ "boemia-reino": {
+  "pt": "Reino da Boêmia",
+  "article": "Reino da Boémia",
+  "en": "Kingdom of Bohemia",
+  "es": "Reino de Bohemia"
+ },
+ "navarra-reino": {
+  "pt": "Reino de Navarra",
+  "article": "Reino de Navarra",
+  "en": "Kingdom of Navarre",
+  "es": "Reino de Navarra"
+ },
+ "lituania-grao-ducado": {
+  "pt": "Grão-Ducado da Lituânia",
+  "article": "Grão-Ducado da Lituânia",
+  "en": "Grand Duchy of Lithuania",
+  "es": "Gran Ducado de Lituania"
+ },
+ "jerusalem-reino": {
+  "pt": "Reino de Jerusalém",
+  "article": "Reino de Jerusalém",
+  "en": "Kingdom of Jerusalem",
+  "es": "Reino de Jerusalén"
+ },
+ "borgonha-ducado": {
+  "pt": "Ducado de Borgonha",
+  "article": "Ducado da Borgonha",
+  "en": "Duchy of Burgundy",
+  "es": "Ducado de Borgoña"
+ },
+ "bulgaria-2imperio": {
+  "pt": "Segundo Império Búlgaro",
+  "article": "Segundo Império Búlgaro",
+  "en": "Second Bulgarian Empire",
+  "es": "Segundo Imperio búlgaro"
+ },
+ "templarios-ordem": {
+  "pt": "Ordem dos Templários",
+  "article": "Ordem dos Templários",
+  "en": "Knights Templar",
+  "es": "Caballeros templarios"
+ },
+ "genova-republica": {
+  "pt": "República de Genova"
+ },
+ "aceh-sultanato": {
+  "pt": "Sultanato de Aceh",
+  "article": "Sultanato de Achém",
+  "en": "Aceh Sultanate",
+  "es": "Sultanato de Aceh"
+ },
+ "kandy-reino": {
+  "pt": "Reino de Kandy",
+  "article": "Reino de Cândia (Seri Lanca)",
+  "en": "Kingdom of Kandy",
+  "es": "Reino de Kandy"
+ },
+ "vijayanagara-imperio": {
+  "pt": "Império Vijayanagara",
+  "article": "Reino de Bisnaga",
+  "en": "Vijayanagara Empire",
+  "es": "Imperio vijayanagara"
+ },
+ "formosa-republica": {
+  "pt": "República de Formosa",
+  "article": "República de Formosa",
+  "en": "Republic of Formosa",
+  "es": "República de Taiwán (1895)"
+ },
+ "ashanti-imperio": {
+  "pt": "Império Ashanti",
+  "article": "Império Axânti",
+  "en": "Asante Empire",
+  "es": "Imperio asante"
+ },
+ "wassoulou-imperio": {
+  "pt": "Império Wassoulou"
+ },
+ "dahomey-reino": {
+  "pt": "Reino do Daomé",
+  "article": "Reino do Daomé",
+  "en": "Dahomey",
+  "es": "Reino de Dahomey"
+ },
+ "haiti-reino": {
+  "pt": "Reino do Haiti",
+  "article": "Reino do Haiti",
+  "en": "Kingdom of Haiti",
+  "es": "Reino de Haití"
+ },
+ "gran-colombia": {
+  "pt": "Grã-Colômbia",
+  "article": "Grã-Colômbia",
+  "en": "Gran Colombia",
+  "es": "Gran Colombia"
+ },
+ "brasil-imperio": {
+  "pt": "Império do Brasil",
+  "article": "Império do Brasil",
+  "en": "Empire of Brazil",
+  "es": "Imperio del Brasil"
+ },
+ "castela-leao": {
+  "pt": "Coroa de Castela e Leão"
+ },
+ "flandres-condado": {
+  "pt": "Condado de Flandres",
+  "article": "Condado da Flandres",
+  "en": "County of Flanders",
+  "es": "Condado de Flandes"
+ },
+ "saboia-ducado": {
+  "pt": "Ducado de Saboia",
+  "article": "Ducado de Saboia",
+  "en": "Duchy of Savoy",
+  "es": "Ducado de Saboya"
+ },
+ "napoles-napoleonico": {
+  "pt": "Reino de Nápoles (napoleônico)"
+ }
+}

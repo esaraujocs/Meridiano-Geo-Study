@@ -2,6 +2,8 @@ export type Meta = {
   pt?: string;
   en?: string;
   cap?: string;
+  /** Outras grafias aceitas da capital (só nos idiomas traduzidos). */
+  capAl?: string[];
   fl?: string;
   reg?: string;
   sub?: string;

@@ -1,4 +1,5 @@
 import type { Legacy, Region, RegionSelection } from "./types";
+import { t } from "./i18n/index.js";
 const REGION_KEYS: Region[] = ["caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
 export function normalizeRegionSelection(selection: RegionSelection): Region[] {
   const values = Array.isArray(selection) ? selection : [selection];
@@ -59,19 +60,12 @@ export function inRegion(id: string, region: RegionSelection, data: Legacy) {
   return regionMatches(data.meta[id], region);
 }
 
-export const REGION_ITEMS: [Region, string, string][] = [
-  ["mundo", "Mundo", "A extensão completa do atlas"],
-  ["caribe", "Caribe", "Ilhas, istmos e mares próximos"],
-  ["pacifico", "Pacífico", "Oceania, Melanésia e Micronésia"],
-  ["europa", "Europa", "Do Atlântico aos Urais"],
-  ["africa", "África", "Norte, Sahel e África subsaariana"],
-  ["asia", "Ásia", "Do Levante ao Pacífico"],
-  ["america-do-sul", "América do Sul", "Andes, Cone Sul e Amazônia"],
-  ["america-do-norte-central", "América do Norte e Central", "Do Ártico ao istmo"],
-];
+const REGION_ORDER: Region[] = ["mundo", "caribe", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
+/** [chave, nome, descrição] de cada recorte, no idioma da interface. */
+export const REGION_ITEMS: [Region, string, string][] = REGION_ORDER.map((key) => [key, t.regions[key][0], t.regions[key][1]]);
 
 export function regionLabel(region: RegionSelection) {
   const normalized = normalizeRegionSelection(region);
   if (normalized.length === 1) return REGION_ITEMS.find(([key]) => key === normalized[0])?.[1] ?? normalized[0];
-  return `${normalized.length} recortes`;
+  return t.regions.many(normalized.length);
 }

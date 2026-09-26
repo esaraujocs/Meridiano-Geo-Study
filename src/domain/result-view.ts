@@ -3,6 +3,7 @@ import type { AnyQuizVariant } from "./types";
 import type { Pace, Spoils } from "./spoils";
 import { MAP_ERROR_GOAL_KM, meanMapErrorKm } from "./map-error.js";
 import { levelForXp, xpForLevel } from "./player-level.js";
+import { t } from "./i18n/index.js";
 
 export type ResultSessionLike = {
   variant: AnyQuizVariant;
@@ -40,32 +41,17 @@ export type ResultView = {
   mapError: { km: number; goalKm: number | null } | null;
 };
 
-const VARIANT_LABEL: Record<AnyQuizVariant, string> = {
-  mapa: "Mapa",
-  silhueta: "Silhueta · escrita",
-  "silhueta-opcoes": "Silhueta · alternativas",
-  travel: "Travel",
-  "bandeira-nome": "Bandeira → nome",
-  "nome-bandeira": "Nome → bandeira",
-  "capital-pais": "Capital → país",
-  "pais-capital": "País → capital",
-  "escrita-pais": "Escrita · país",
-  "escrita-capital": "Escrita · capital",
-  "historica-nome": "Histórica → nome",
-  "nome-historica": "Nome → histórica",
-  "idioma-nome": "Idioma → nome",
-  "idioma-pais": "Idioma → países",
-};
+const VARIANT_LABEL: Record<AnyQuizVariant, string> = t.variants;
 export const variantLabel = (variant: AnyQuizVariant) => VARIANT_LABEL[variant] ?? variant;
 
 export function formatDuration(ms: number) {
   const total = Math.max(0, Math.round(ms / 1000));
-  if (total < 60) return `${total} s`;
+  if (total < 60) return t.time.seconds(total);
   const minutes = Math.floor(total / 60);
   const seconds = total % 60;
-  return seconds ? `${minutes} min ${seconds} s` : `${minutes} min`;
+  return seconds ? t.time.minutesSeconds(minutes, seconds) : t.time.minutes(minutes);
 }
-const formatSeconds = (seconds: number) => (seconds >= 60 && seconds % 60 === 0 ? `${seconds / 60} min` : `${seconds} s`);
+const formatSeconds = (seconds: number) => (seconds >= 60 && seconds % 60 === 0 ? t.time.minutes(seconds / 60) : t.time.seconds(seconds));
 
 // Níveis: a curva vive em player-level.ts (a mesma da economia).
 export const levelBase = (level: number) => xpForLevel(level);
@@ -103,10 +89,10 @@ export function buildResultView(input: {
   const total = session.rounds.length;
   const correct = session.rounds.filter((round) => round.correct).length;
   const timeouts = session.rounds.filter((round) => round.timedOut).length;
-  const unit = session.variant === "travel" ? "por rota" : "por pergunta";
+  const unit = session.variant === "travel" ? t.time.perRoute : t.time.perQuestion;
   const paceLabel = training
-    ? "Treino · sem tempo"
-    : session.timerSeconds ? `Partida · ${formatSeconds(session.timerSeconds)} ${unit}` : "Partida";
+    ? t.result.trainingNoTime
+    : session.timerSeconds ? t.result.timedPace(formatSeconds(session.timerSeconds), unit) : t.result.timed;
   const factor = spoils?.factor ?? 1;
   const perCard = (coins: number) => Math.round(coins * factor);
 
@@ -114,31 +100,30 @@ export function buildResultView(input: {
   const chips: ResultChip[] = [];
   if (spoils) {
     if (spoils.hits.count > 0) {
-      lines.push({ key: "hits", label: "Acertos", note: `${spoils.hits.count} × ~${Math.round(spoils.hits.coins / spoils.hits.count)}`, coins: spoils.hits.coins });
+      lines.push({ key: "hits", label: t.result.hits, note: `${spoils.hits.count} × ~${Math.round(spoils.hits.coins / spoils.hits.count)}`, coins: spoils.hits.coins });
     }
     if (spoils.streak.coins > 0) {
-      lines.push({ key: "streak", label: "Sequência", note: `melhor série: ${spoils.streak.best}`, coins: spoils.streak.coins });
+      lines.push({ key: "streak", label: t.result.streak, note: t.result.bestStreak(spoils.streak.best), coins: spoils.streak.coins });
     }
     if (spoils.newCards.count > 0) {
-      lines.push({ key: "cards", label: "Cartas novas", note: `${spoils.newCards.count} × ${perCard(60)}`, coins: spoils.newCards.coins });
-      chips.push({ key: "cards", text: `${spoils.newCards.count} ${spoils.newCards.count === 1 ? "carta nova" : "cartas novas"}` });
+      lines.push({ key: "cards", label: t.result.newCards, note: `${spoils.newCards.count} × ${perCard(60)}`, coins: spoils.newCards.coins });
+      chips.push({ key: "cards", text: t.result.newCardsChip(spoils.newCards.count) });
     }
     if (spoils.levelUps.count > 0) {
-      lines.push({ key: "levels", label: "Cartas que subiram", note: `${spoils.levelUps.count} × ${perCard(30)}`, coins: spoils.levelUps.coins });
-      chips.push({ key: "levels", text: `${spoils.levelUps.count} ${spoils.levelUps.count === 1 ? "subiu de nível" : "subiram de nível"}` });
+      lines.push({ key: "levels", label: t.result.levelUps, note: `${spoils.levelUps.count} × ${perCard(30)}`, coins: spoils.levelUps.coins });
+      chips.push({ key: "levels", text: t.result.levelUpsChip(spoils.levelUps.count) });
     }
     if (spoils.completion.coins > 0) {
-      lines.push({ key: "completion", label: "Bônus de partida", note: `${spoils.completion.pct}% de acerto`, coins: spoils.completion.coins });
+      lines.push({ key: "completion", label: t.result.completion, note: t.result.completionNote(spoils.completion.pct), coins: spoils.completion.coins });
     }
-    if (spoils.streak.best >= 2) chips.push({ key: "streak", text: `Melhor sequência ${spoils.streak.best}` });
+    if (spoils.streak.best >= 2) chips.push({ key: "streak", text: t.result.bestStreakChip(spoils.streak.best) });
   }
-  if (timeouts > 0) chips.push({ key: "timeouts", text: `${timeouts} ${timeouts === 1 ? "tempo esgotado" : "tempos esgotados"}` });
+  if (timeouts > 0) chips.push({ key: "timeouts", text: t.result.timeoutsChip(timeouts) });
 
-  const kind = training ? "Treino" : "Partida";
   const tapMode = session.variant === "mapa" || session.variant === "capital-pais";
   const error = tapMode ? meanMapErrorKm(session.rounds) : null;
   return {
-    title: session.complete ? `${kind} concluíd${training ? "o" : "a"}` : `${kind} encerrad${training ? "o" : "a"}`,
+    title: t.result.title(training, session.complete),
     eyebrow: `${variantLabel(session.variant)} · ${input.regionLabel}`,
     correct,
     total,

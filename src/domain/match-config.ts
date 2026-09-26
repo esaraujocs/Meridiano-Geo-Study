@@ -2,6 +2,7 @@
 import type { AnyQuizVariant, Family } from "./types";
 import { timerSecondsFor } from "./pace.js";
 import { hitRange, type Pace } from "./spoils.js";
+import { t } from "./i18n/index.js";
 
 export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language";
@@ -21,27 +22,34 @@ export type ModeOption = {
   hint: string;
 };
 
-const MODES: Record<TopFamily, ModeOption[]> = {
+type ModeSeed = Omit<ModeOption, "label" | "hint">;
+const withText = (mode: ModeSeed): ModeOption => {
+  const [label, hint] = t.modes[mode.key as keyof typeof t.modes];
+  return { ...mode, label, hint };
+};
+const MODE_SEEDS: Record<TopFamily, ModeSeed[]> = {
   mapa: [
-    { key: "mapa", label: "Clicar no mapa", icon: "map", family: "mapa", variant: "mapa", hint: "Toque no país ou território pedido." },
-    { key: "silhueta-opcoes", label: "Silhueta · alternativas", icon: "eye", family: "silhueta", variant: "silhueta-opcoes", hint: "Reconheça o contorno entre 4 nomes." },
-    { key: "silhueta", label: "Silhueta · escrita", icon: "type", family: "silhueta", variant: "silhueta", hint: "Reconheça o contorno e digite o nome." },
-    { key: "travel", label: "Travel", icon: "route", family: "travel", variant: "travel", hint: "Digite os países do caminho terrestre entre dois países." },
+    { key: "mapa", icon: "map", family: "mapa", variant: "mapa" },
+    { key: "silhueta-opcoes", icon: "eye", family: "silhueta", variant: "silhueta-opcoes" },
+    { key: "silhueta", icon: "type", family: "silhueta", variant: "silhueta" },
+    { key: "travel", icon: "route", family: "travel", variant: "travel" },
   ],
   bandeiras: [
-    { key: "atuais", label: "Atuais", icon: "flag", family: "bandeiras", variant: "nome-bandeira", flag: "current", direction: true, hint: "Bandeiras de hoje. Escolha o sentido logo abaixo." },
-    { key: "escrita-pais", label: "Escrita", icon: "type", family: "escrita", variant: "escrita-pais", flag: "writing", hint: "Veja a bandeira e digite o nome do país." },
-    { key: "historicas", label: "Históricas", icon: "layers", family: "historicas", variant: "nome-historica", flag: "historical", direction: true, hint: "Impérios e países que não existem mais. Escolha o sentido logo abaixo." },
+    { key: "atuais", icon: "flag", family: "bandeiras", variant: "nome-bandeira", flag: "current", direction: true },
+    { key: "escrita-pais", icon: "type", family: "escrita", variant: "escrita-pais", flag: "writing" },
+    { key: "historicas", icon: "layers", family: "historicas", variant: "nome-historica", flag: "historical", direction: true },
   ],
   capitais: [
-    { key: "capital-pais", label: "Clicar no mapa", icon: "map", family: "capitais", variant: "capital-pais", hint: "Veja a capital e toque no país dela." },
-    { key: "escrita-capital", label: "Escrita", icon: "type", family: "escrita", variant: "escrita-capital", hint: "Veja o país e digite a capital." },
+    { key: "capital-pais", icon: "map", family: "capitais", variant: "capital-pais" },
+    { key: "escrita-capital", icon: "type", family: "escrita", variant: "escrita-capital" },
   ],
   idiomas: [
-    { key: "idioma-nome", label: "Nome do idioma", icon: "language", family: "idiomas", variant: "idioma-nome", hint: "Leia uma frase na escrita original e escolha o nome do idioma." },
-    { key: "idioma-pais", label: "Países do idioma", icon: "language", family: "idiomas", variant: "idioma-pais", hint: "Leia uma frase na escrita original e descubra em quais países ele é falado." },
+    { key: "idioma-nome", icon: "language", family: "idiomas", variant: "idioma-nome" },
+    { key: "idioma-pais", icon: "language", family: "idiomas", variant: "idioma-pais" },
   ],
 };
+
+const MODES = Object.fromEntries(Object.entries(MODE_SEEDS).map(([top, list]) => [top, list.map(withText)])) as Record<TopFamily, ModeOption[]>;
 
 /** Família do motor e variante correspondentes a um modo guardado (null se não existir). */
 export function variantContextFor(topFamily: TopFamily, saved: string): { family: Family; variant: AnyQuizVariant } | null {
@@ -65,25 +73,21 @@ export function selectedMode(top: TopFamily, family: Family, variant: AnyQuizVar
 }
 
 export const directionLabel = (direction: "name-to-flag" | "flag-to-name") =>
-  direction === "name-to-flag" ? "Nome → bandeira" : "Bandeira → nome";
+  direction === "name-to-flag" ? t.config.nameToFlag : t.config.flagToName;
 
 export function formatSeconds(seconds: number, variant: AnyQuizVariant) {
-  const text = seconds >= 60 && seconds % 60 === 0 ? `${seconds / 60} min` : `${seconds} s`;
-  return variant === "travel" ? `${text} por rota` : text;
+  const text = seconds >= 60 && seconds % 60 === 0 ? t.time.minutes(seconds / 60) : t.time.seconds(seconds);
+  return variant === "travel" ? `${text} ${t.time.perRoute}` : text;
 }
 
 export function paceHint(pace: Pace, variant: AnyQuizVariant) {
   if (pace === "training") {
     // Só nos modos que clicam no mapa (mapa/capital-pais) o Treino também marca o país perguntado.
-    const marking = variant === "mapa" || variant === "capital-pais"
-      ? " Cada país perguntado fica marcado no mapa com o nome, acertando ou errando."
-      : "";
-    return `Sem cronômetro. Rende só 50% das moedas.${marking}`;
+    const marking = variant === "mapa" || variant === "capital-pais" ? t.config.trainingMarks : "";
+    return `${t.config.trainingHint}${marking}`;
   }
   const time = formatSeconds(timerSecondsFor(variant), variant);
-  return variant === "travel"
-    ? `${time}. Acabou o tempo, a rota conta como erro.`
-    : `${time} por pergunta. Acabou o tempo, conta como erro.`;
+  return variant === "travel" ? t.config.timedTravelHint(time) : t.config.timedHint(time);
 }
 
 export type ConfigSummary = { title: string; sub: string; earn: string; earnUnit: string };
@@ -100,12 +104,12 @@ export function configSummary(input: {
 }): ConfigSummary {
   const { mode, variant, pace } = input;
   const [low, high] = hitRange(variant, pace);
-  const time = pace === "timed" ? `Partida ${formatSeconds(timerSecondsFor(variant), variant).replace(" por rota", "")}` : "Treino";
-  const unit = variant === "travel" ? "por país da rota" : "por acerto";
+  const time = pace === "timed" ? t.config.summaryTimed(formatSeconds(timerSecondsFor(variant), "mapa")) : t.config.training;
+  const unit = variant === "travel" ? t.config.perRouteCountry : t.config.perHit;
   return {
     title: mode.direction && input.direction ? `${mode.label} · ${directionLabel(input.direction)}` : mode.label,
-    sub: `${time} · ${input.rounds} rodadas · ${input.regionText} (${input.count})`,
-    earn: low === high ? String(low) : `${low} a ${high}`,
-    earnUnit: pace === "training" ? `moedas ${unit} · 50%` : `moedas ${unit}`,
+    sub: t.config.summarySub(time, input.rounds, input.regionText, input.count),
+    earn: low === high ? String(low) : t.config.earnRange(low, high),
+    earnUnit: pace === "training" ? t.config.coinsUnitTraining(unit) : t.config.coinsUnit(unit),
   };
 }

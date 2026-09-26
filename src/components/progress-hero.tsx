@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from "react";
+import { t } from "../domain/i18n";
 
 type Props = {
   value: number;
@@ -31,7 +32,7 @@ export function ProgressHero({ value, total, ringLabel, eyebrow, title, lede, su
     <div className="pg-hero-main">
       <div className="pg-ring" role="img" aria-label={ringLabel}>
         <svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="var(--paper)" stroke="rgba(199,182,143,.7)" strokeWidth="8" />{value > 0 && total > 0 && <circle cx="66" cy="66" r="58" fill="none" stroke="#2F6F6A" strokeWidth="8" strokeLinecap="round" strokeDasharray={`${circumference * Math.min(1, value / total)} ${circumference}`} transform="rotate(-90 66 66)" />}</svg>
-        <div><b>{ringValue ?? value}</b><span>{ringCaption ?? `de ${total}`}</span></div>
+        <div><b>{ringValue ?? value}</b><span>{ringCaption ?? t.hero.of(total)}</span></div>
       </div>
       <div className="pg-title">
         <span className="pg-eyebrow">{eyebrow}</span>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Icon, type IconType } from "./icons";
 import { xpSegments, type ResultChip, type ResultView } from "../domain/result-view";
 import { formatKm } from "../domain/map-error";
+import { formatNumber, t } from "../domain/i18n";
 
 type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void };
 type LevelState = { level: number; span: number; progress: number };
@@ -9,7 +10,7 @@ type LevelState = { level: number; span: number; progress: number };
 const ARC = 2 * Math.PI * 15;
 const RING = 2 * Math.PI * 58;
 const CHIP_ICON: Record<ResultChip["key"], IconType> = { cards: "puzzle", levels: "trend", streak: "flame", timeouts: "clock" };
-const format = (value: number) => value.toLocaleString("pt-BR");
+const format = formatNumber;
 const reducedMotion = () =>
   (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) ||
   document.documentElement.dataset.reducedMotion === "true";
@@ -128,44 +129,44 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome }: Props) {
   const fraction = level.span > 0 ? Math.min(1, level.progress / level.span) : 0;
   return <main className="rs-page" aria-labelledby="rs-title">
     <div className="rs-wallet">
-      <button type="button" className="rs-back" onClick={onHome}>← Hub</button>
+      <button type="button" className="rs-back" onClick={onHome}>{t.common.backHub}</button>
       <div className="rs-hud">
         <div className={`rs-level${levelUp ? " is-levelup" : ""}`} ref={levelRef}>
           <svg viewBox="0 0 36 36" width="34" height="34" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(199,182,143,.8)" strokeWidth="4" /><circle cx="18" cy="18" r="15" fill="none" stroke="#2F6F6A" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${ARC * fraction} ${ARC}`} transform="rotate(-90 18 18)" /></svg>
-          <span><b>Nível {level.level}</b><small>{Math.round(level.progress)} / {level.span} XP</small></span>
+          <span><b>{t.result.level(level.level)}</b><small>{Math.round(level.progress)} / {level.span} XP</small></span>
         </div>
-        <div className="rs-coinchip" ref={chipRef}><span className="rs-coin" ref={walletCoinRef} aria-hidden="true">$</span><strong>{format(balance)}<span className="sr-only"> moedas</span></strong></div>
+        <div className="rs-coinchip" ref={chipRef}><span className="rs-coin" ref={walletCoinRef} aria-hidden="true">$</span><strong>{format(balance)}<span className="sr-only"> {t.common.coins}</span></strong></div>
       </div>
     </div>
 
-    <p className="sr-only" role="status">{view.correct} de {view.total} acertos. Você ganhou {view.coins} moedas{view.xpGain > 0 ? ` e ${view.xpGain} XP` : ""}.</p>
+    <p className="sr-only" role="status">{t.result.srSummary(view.correct, view.total, view.coins, view.xpGain)}</p>
     <section className="rs-card">
       <span className="eyebrow">{view.eyebrow}</span>
       <h1 id="rs-title" className="rs-title">{view.title}</h1>
       <div className="rs-score">
-        <div className="rs-ring" role="img" aria-label={`${view.pct}% de acerto`}>
+        <div className="rs-ring" role="img" aria-label={t.result.pctAria(view.pct)}>
           <svg viewBox="0 0 132 132" width="88" height="88" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="var(--paper)" stroke="rgba(199,182,143,.7)" strokeWidth="9" /><circle cx="66" cy="66" r="58" fill="none" stroke="#2F6F6A" strokeWidth="9" strokeLinecap="round" strokeDasharray={`${RING * view.pct / 100} ${RING}`} transform="rotate(-90 66 66)" /></svg>
           <b>{view.pct}%</b>
         </div>
-        <div className="rs-scoretext"><b>{view.correct} de {view.total}</b><small>{view.duration} · {view.paceLabel}</small>{view.mapError && <small className="rs-maperr">Erro médio <b>{formatKm(view.mapError.km)}</b>{view.mapError.goalKm !== null && (view.mapError.km < view.mapError.goalKm ? ` · dentro da meta de Mão firme (${formatKm(view.mapError.goalKm)})` : ` · Mão firme pede menos de ${formatKm(view.mapError.goalKm)}`)}</small>}</div>
+        <div className="rs-scoretext"><b>{t.result.score(view.correct, view.total)}</b><small>{view.duration} · {view.paceLabel}</small>{view.mapError && <small className="rs-maperr">{t.result.meanError} <b>{formatKm(view.mapError.km)}</b>{view.mapError.goalKm !== null && (view.mapError.km < view.mapError.goalKm ? t.result.withinGoal(formatKm(view.mapError.goalKm)) : t.result.goalAsks(formatKm(view.mapError.goalKm)))}</small>}</div>
         <div className="rs-loot">
           <span className="rs-coin rs-loot-coin" ref={lootCoinRef} aria-hidden="true">$</span>
-          <div><b>+{format(view.coins)}</b><small>moedas · saldo {format(view.balanceBefore)} → {format(view.balanceAfter)}</small></div>
+          <div><b>+{format(view.coins)}</b><small>{t.result.coinsLine(format(view.balanceBefore), format(view.balanceAfter))}</small></div>
           {view.xpGain > 0 && <span className="rs-xp" ref={xpChipRef}>+{view.xpGain} XP</span>}
         </div>
       </div>
-      {view.training && <p className="rs-note">Treino paga 50% das moedas. Na Partida com tempo o valor é cheio.</p>}
+      {view.training && <p className="rs-note">{t.result.trainingNote}</p>}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
-        <button type="button" className="rs-toggle" aria-expanded={open} aria-controls="rs-details" onClick={() => setOpen((value) => !value)}>{open ? "Esconder detalhes" : "Ver detalhes"} <Icon type="chevron" /></button>
+        <button type="button" className="rs-toggle" aria-expanded={open} aria-controls="rs-details" onClick={() => setOpen((value) => !value)}>{open ? t.result.hideDetails : t.result.showDetails} <Icon type="chevron" /></button>
         <div className={`rs-details${open ? " is-open" : ""}`} id="rs-details" hidden={!open}>
           <ul>{view.lines.map((line) => <li key={line.key}><span><b>{line.label}</b><small>{line.note}</small></span><strong>+{format(line.coins)}</strong></li>)}</ul>
         </div>
       </>}
       <div className="rs-actions">
-        <button type="button" className="rs-btn primary" onClick={onAgain}><Icon type="repeat" />Jogar<span className="rs-lbl"> de novo</span></button>
-        <button type="button" className="rs-btn" aria-label="Ajustar a partida" onClick={onAdjust}><Icon type="sliders" /><span className="rs-lbl">Ajustar</span></button>
-        <button type="button" className="rs-btn" aria-label="Voltar ao Hub" onClick={onHome}><Icon type="home" /><span className="rs-lbl">Hub</span></button>
+        <button type="button" className="rs-btn primary" onClick={onAgain}><Icon type="repeat" />{t.result.again}<span className="rs-lbl">{t.result.againTail}</span></button>
+        <button type="button" className="rs-btn" aria-label={t.result.adjustAria} onClick={onAdjust}><Icon type="sliders" /><span className="rs-lbl">{t.result.adjust}</span></button>
+        <button type="button" className="rs-btn" aria-label={t.result.homeAria} onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.result.home}</span></button>
       </div>
     </section>
   </main>;

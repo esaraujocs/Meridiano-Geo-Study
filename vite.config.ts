@@ -33,6 +33,8 @@ const injectPrecacheManifest = () => ({
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
+      // conteúdo traduzido (ver scripts/i18n/build-i18n.mjs): pequeno, vai junto para o jogo abrir offline em qualquer idioma
+      ...["en", "es"].flatMap((locale) => ["catalog", "historical", "languages"].map((file) => `/data/i18n/${locale}/${file}.json`)),
       ...assets.map((asset) => `/${asset}`),
     ];
     const serviceWorker = new URL("sw.js", dist);

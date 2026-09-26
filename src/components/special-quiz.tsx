@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flagSource, loadFlags, type FlagCatalog } from "../domain/quiz";
-import { acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, normalizeAnswer, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
+import { acceptedCapitalAnswers, acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, normalizeAnswer, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
@@ -18,6 +18,7 @@ import { addHistoricalCollection } from "../domain/progress-surfaces";
 import { createFiniteDeck, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
+import { t } from "../domain/i18n";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void };
 type Choice = { id: string; label: string; flag?: string };
@@ -159,7 +160,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
     if (correct && historicalMode) {
       void addHistoricalCollection(target.id, target);
     }
-    setLocked(true); setTimedOutRound(timedOut); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? "Certo!" : timedOut ? "Tempo esgotado." : "Não foi dessa vez.");
+    setLocked(true); setTimedOutRound(timedOut); setAnswerResult(correct ? "correct" : "wrong"); setFeedback(correct ? t.common.correct : timedOut ? t.common.timeUp : t.common.wrong);
     recordRound({
       targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(),
       tier: entityTier(data.meta, target.id),
@@ -175,10 +176,10 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   };
   const submitWriting = (value = typed) => {
     if (!target || locked) return;
-    const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {});
+    const expected = variant === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
     const normalized = normalizeAnswer(value);
     if (!normalized) return;
-    const correct = Array.isArray(expected) ? expected.includes(normalized) : normalized === normalizeAnswer(expected as string);
+    const correct = expected.includes(normalized);
     answer(target.id, value, correct);
   };
   // O tempo da pergunta acabou: conta como erro; na escrita, o que já estava digitado fica registrado.
@@ -238,8 +239,8 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
     choose: (index) => { if (writing || locked) return; const choice = choices[index]; if (choice) answer(choice.id, choice.label); },
     enabled: Boolean(target),
   });
-  if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>← Sair da partida</button><div className="diagnostic">{error}</div></main></div>;
-  if (!target) return <div className="app-shell"><main className="content"><div className="eyebrow">Preparando acervo</div><h1>Carregando material.</h1></main></div>;
+  if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>{t.common.exitGame}</button><div className="diagnostic">{error}</div></main></div>;
+  if (!target) return <div className="app-shell"><main className="content"><div className="eyebrow">{t.common.preparingCollection}</div><h1>{t.common.loadingMaterial}</h1></main></div>;
   const targetFlag = "fl" in target
     ? (historicalMode ? historicalFlags[target.fl?.toLowerCase() ?? ""] : flags[target.fl?.toLowerCase() ?? ""])
     : undefined;
@@ -249,17 +250,17 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   const stimulus = writing && variant === "escrita-capital"
     ? <div className={bigClass(data.meta[target.id]?.pt)}>{data.meta[target.id]?.pt}</div>
     : writing
-      ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira apresentada como estímulo visual" /></div>
+      ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.flagStimulus} /></div>
       : historicalMode && variant === "historica-nome"
-        ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt="Bandeira histórica apresentada como estímulo visual" /></div>
+        ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.historicalFlagStimulus} /></div>
         : <div className={"script" in target ? `gs-big script${(stimulusText?.length ?? 0) > 110 ? " xlong" : (stimulusText?.length ?? 0) > 60 ? " long" : ""}` : bigClass(stimulusText)}>{stimulusText}</div>;
   const kicker = writing
-    ? (variant === "escrita-capital" ? "Qual é a capital deste país?" : "Qual é o nome deste país?")
+    ? (variant === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)
     : historicalMode
-      ? (variant === "historica-nome" ? "Qual entidade usava esta bandeira?" : "Escolha a bandeira correta")
-      : languageName ? "Que idioma é este?" : "A que países este idioma está ligado?";
+      ? (variant === "historica-nome" ? t.quiz.whichEntityFlag : t.quiz.pickFlag)
+      : languageName ? t.quiz.whichLanguage : t.quiz.whichCountriesLanguage;
   const flagOptions = variant === "nome-historica";
-  const writingAnswers = (() => { const expected = variant === "escrita-capital" ? ("cap" in target ? target.cap : "") : acceptedWritingAnswers(data.meta[target.id] ?? {}); return (Array.isArray(expected) ? expected : [expected]).filter((answer): answer is string => Boolean(answer)); })();
+  const writingAnswers = variant === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
@@ -272,32 +273,32 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
           <div className={`gs-ribbon${answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {answerResult ? feedback : ""}
-            {answerResult === "wrong" && <span className="sr-only"> A resposta certa é {String(expectedLabel(target))}.</span>}
+            {answerResult === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(String(expectedLabel(target)))}</span>}
           </div>
           {answerResult && richMode && "script" in target && <LanguageCard entry={target as LanguageEntry} />}
         </main>
-        <section className="gs-tray" aria-label="Respostas">
+        <section className="gs-tray" aria-label={t.common.answersRegion}>
           {writing ? <>
             <form className="gs-field" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}>
-              <TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label="Resposta" autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} answers={writingAnswers} />
-              <button className="go" disabled={locked || !typed.trim()}>Responder</button>
+              <TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} answers={writingAnswers} />
+              <button className="go" disabled={locked || !typed.trim()}>{t.common.answer}</button>
             </form>
             {answerResult
               ? <AnswerReveal verdict={answerResult} expected={String(expectedLabel(target))} typed={typed} timedOut={timedOutRound} />
-              : <div className="gs-hintline">Vale sem acento e sem maiúscula.</div>}
+              : <div className="gs-hintline">{t.common.typingHint}</div>}
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={advance.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> responde e continua</span><span><kbd>Esc</kbd> sair</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
             <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>{choices.map((choice, index) => {
               const historicalFlag = choice.flag ? historicalFlags[choice.flag.toLowerCase()] : undefined;
               return <button key={choice.id} className={`${optionClass(choice.id === target.id, choice.id === selectedChoice, answerResult)} gs-opt`} aria-invalid={locked && choice.id === selectedChoice && answerResult === "wrong" ? true : undefined} disabled={locked} onClick={() => answer(choice.id, choice.label)}>
                 <span className="gs-key" aria-hidden="true">{index + 1}</span>
-                {variant === "nome-historica" && historicalFlag ? <OptionFlag src={flagSource(historicalFlag)} alt="Alternativa visual de bandeira histórica" /> : <span className="gs-opt-label">{choice.label}</span>}
+                {variant === "nome-historica" && historicalFlag ? <OptionFlag src={flagSource(historicalFlag)} alt={t.common.historicalFlagOption} /> : <span className="gs-opt-label">{choice.label}</span>}
                 <OptionMarks isTarget={choice.id === target.id} isPicked={choice.id === selectedChoice} verdict={answerResult} />
               </button>;
             })}</div>
             {answerResult && (richMode || answerResult === "wrong") && <ContinueBar holdMs={richMode ? null : feedbackHoldMs(false, false)} onSkip={advance.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> escolhe</span><span><kbd>Enter</kbd> continua</span><span><kbd>Esc</kbd> sair</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> {t.common.keyChoose}</span><span><kbd>Enter</kbd> {t.common.keyContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </>}
         </section>
       </div>
@@ -309,14 +310,14 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
 function LanguageCard({ entry }: { entry: LanguageEntry }) {
   // A posição vem com notas entre parênteses em alguns idiomas; no cartão fica só a frase curta.
   const rank = entry.ranking?.replace(/\s*\([^)]*\)\s*$/, "");
-  return <section className="gs-lang" aria-label={`Sobre ${entry.idioma}`}>
+  return <section className="gs-lang" aria-label={t.language.about(entry.idioma)}>
     <div className="gs-lang-head"><b>{entry.idioma}</b>{rank && <span>{rank}</span>}</div>
     {entry.translit && <em>{entry.translit}</em>}
     {entry.significado && <p>“{entry.significado}”</p>}
     <dl>
-      <div><dt>Falado em</dt><dd>{entry.paises}</dd></div>
-      {entry.tambem && <div><dt>Também oficial em</dt><dd>{entry.tambem}</dd></div>}
-      {entry.falantes && <div><dt>Falantes</dt><dd>{entry.falantes}</dd></div>}
+      <div><dt>{t.language.spokenIn}</dt><dd>{entry.paises}</dd></div>
+      {entry.tambem && <div><dt>{t.language.alsoOfficial}</dt><dd>{entry.tambem}</dd></div>}
+      {entry.falantes && <div><dt>{t.language.speakers}</dt><dd>{entry.falantes}</dd></div>}
     </dl>
   </section>;
 }

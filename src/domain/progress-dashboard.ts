@@ -11,6 +11,7 @@ import {
   MONTH_NAMES, addDays, dayKey, formatDuration, formatShortDate, relativeWhen, sessionLabel, sessionRegionLabel, shortMonth, startOfDay,
   type SessionGroup,
 } from "./session-view.js";
+import { compareText, t } from "./i18n/index.js";
 
 export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
@@ -69,7 +70,7 @@ export type HistoryGroup = { key: string; label: string; sessions: number; round
 export type Dashboard = {
   empty: boolean;
   hero: {
-    pct: number; dominated: number; total: number; stageTitle: string; stageIndex: number;
+    pct: number; dominated: number; total: number; stageTitle: string; stageIndex: number; cosmographer: boolean;
     stages: Array<{ name: string; at: string }>;
     next: { name: string; at: number } | null; missing: number | null;
     titles: Array<{ id: string; label: string; earned: boolean }>;
@@ -101,11 +102,11 @@ export type Dashboard = {
 };
 
 const PILLAR_META: Array<{ key: PillarCard["key"]; label: string; titleId: "vexilologo" | "cartografo" | "diplomata" }> = [
-  { key: "bandeiras", label: "Bandeiras", titleId: "vexilologo" },
-  { key: "mapa", label: "Mapa", titleId: "cartografo" },
-  { key: "capitais", label: "Capitais", titleId: "diplomata" },
+  { key: "bandeiras", label: t.progress.pillarLabels.bandeiras, titleId: "vexilologo" },
+  { key: "mapa", label: t.progress.pillarLabels.mapa, titleId: "cartografo" },
+  { key: "capitais", label: t.progress.pillarLabels.capitais, titleId: "diplomata" },
 ];
-const PILLAR_WORD: Record<PillarKey, string> = { bandeiras: "Bandeira", mapa: "Mapa", capitais: "Capital", escrita: "Escrita" };
+const PILLAR_WORD: Record<PillarKey, string> = t.progress.pillarWords;
 
 const startedAtOf = (session: SurfaceSession) => session.startedAt ?? session.endedAt ?? 0;
 const mean = (values: number[]) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null);
@@ -171,17 +172,18 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
   let stageIndex = 0;
   MASTERY_STAGES.forEach((stage, index) => { if (pct >= stage.from) stageIndex = index; });
   if (cosmographer) stageIndex = MASTERY_STAGES.length;
-  const stages = [...MASTERY_STAGES.map((stage) => ({ name: stage.title as string, at: `${stage.from}%` })), { name: "Cosmógrafo", at: "3 títulos" }];
+  const stages = [...MASTERY_STAGES.map((stage) => ({ name: stage.title as string, at: `${stage.from}%` })), { name: t.titles.cosmografo, at: t.titles.threeTitles }];
   const hero: Dashboard["hero"] = {
     pct, dominated, total,
     stageTitle: profile.title,
     stageIndex,
+    cosmographer,
     stages,
     next: profile.next ? { name: profile.next.title, at: profile.next.at } : null,
     missing: profile.next ? Math.max(0, Math.ceil((profile.next.at / 100) * total) - dominated) : null,
     titles: [
       ...PILLAR_TITLES.map((title) => ({ id: title.id as string, label: title.label, earned: input.titleIds.includes(title.id) })),
-      { id: "cosmografo", label: "Cosmógrafo", earned: cosmographer },
+      { id: "cosmografo", label: t.titles.cosmografo, earned: cosmographer },
     ],
   };
 
@@ -230,7 +232,8 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
     const scorePct = score === null ? null : roundPct(score);
     const status = snapshot?.status ?? "sem evidência";
     const tone: PillarTone = earned ? "earned" : status === "forte" ? "good" : status === "revisar" ? "warn" : "mid";
-    const statusLabel = earned ? "Título conquistado" : status === "forte" ? "Forte" : status === "em desenvolvimento" ? "Em desenvolvimento" : status === "revisar" ? "Revisar" : status === "diagnóstico" ? "Poucos dados" : "Sem dados";
+    const labels = t.progress.status;
+    const statusLabel = earned ? labels.earned : status === "forte" ? labels.forte : status === "em desenvolvimento" ? labels.desenvolvimento : status === "revisar" ? labels.revisar : status === "diagnóstico" ? labels.diagnostico : labels.none;
     const flags = roundsByPillar[key] ?? [];
     const window = (from: number, to: number) => { const part = flags.slice(from, to); return part.length >= 10 ? roundPct(part.filter(Boolean).length / part.length) : null; };
     const formNow = window(Math.max(0, flags.length - FORM_WINDOW), flags.length);
@@ -284,7 +287,7 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
   }
   const weak = [...tally.entries()]
     .filter(([, item]) => item.tries >= REVIEW_MIN_TRIES && item.correct / item.tries < REVIEW_BELOW)
-    .sort((a, b) => a[1].correct / a[1].tries - b[1].correct / b[1].tries || b[1].tries - a[1].tries || (meta[a[0]]?.pt ?? "").localeCompare(meta[b[0]]?.pt ?? "", "pt-BR"));
+    .sort((a, b) => a[1].correct / a[1].tries - b[1].correct / b[1].tries || b[1].tries - a[1].tries || compareText(meta[a[0]]?.pt ?? "", meta[b[0]]?.pt ?? ""));
   const review: Dashboard["review"] = {
     total: weak.length,
     items: weak.slice(0, 30).map(([id, item]) => ({
@@ -407,9 +410,9 @@ export function groupHistory(rows: readonly SessionRow[], now: number): HistoryG
     const date = new Date(row.startedAt);
     let key: string;
     let label: string;
-    if (day === today) { key = "hoje"; label = "Hoje"; }
-    else if (day === yesterday) { key = "ontem"; label = "Ontem"; }
-    else if (day >= monday) { key = "semana"; label = "Esta semana"; }
+    if (day === today) { key = "hoje"; label = t.dates.todayGroup; }
+    else if (day === yesterday) { key = "ontem"; label = t.dates.yesterdayGroup; }
+    else if (day >= monday) { key = "semana"; label = t.dates.thisWeek; }
     else {
       key = `${date.getFullYear()}-${date.getMonth()}`;
       label = `${MONTH_NAMES[date.getMonth()]}${date.getFullYear() === new Date(now).getFullYear() ? "" : ` ${date.getFullYear()}`}`;

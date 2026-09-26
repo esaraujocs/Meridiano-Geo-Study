@@ -42,6 +42,7 @@ import { freshUnlocks, nearAchievements } from "./domain/achievement-summary";
 import { EMPTY_ACHIEVEMENT_SUMMARY, TITLE_IDS, type AchievementSummary } from "./domain/hub-profile";
 import { achievementToasts } from "./domain/achievement-toast";
 import { queryCollectionSummary, querySurfaces } from "./domain/progress-surfaces";
+import { t } from "./domain/i18n";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
@@ -372,10 +373,10 @@ export function App() {
         <Header />
         <main className="content">
           <div className="diagnostic">
-            <b>Não foi possível abrir o atlas.</b>
+            <b>{t.app.errorTitle}</b>
             <p>{error}</p>
             <button className="button" onClick={() => location.reload()}>
-              Tentar novamente
+              {t.app.retry}
             </button>
           </div>
         </main>
@@ -388,11 +389,9 @@ export function App() {
       <div className="app-shell">
         <Header />
         <main className="content">
-          <div className="eyebrow">Meridiano / inicializando</div>
-          <h1 style={{ marginTop: 20 }}>Preparando o atlas.</h1>
-          <p className="lede">
-            Carregando a geometria legada e conferindo entidades jogáveis.
-          </p>
+          <div className="eyebrow">{t.app.loadingEyebrow}</div>
+          <h1 style={{ marginTop: 20 }}>{t.app.loadingTitle}</h1>
+          <p className="lede">{t.app.loadingLede}</p>
         </main>
       </div>
     );
@@ -401,13 +400,13 @@ export function App() {
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
       ? <ResultScreen view={lastResult} onAgain={startGame} onAdjust={() => setScreen("recorte")} onHome={() => setScreen("hub")} />
-      : <main className="content"><button className="back" onClick={() => setScreen("hub")}>← Hub</button></main>}</div>;
+      : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
      return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} /></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>← Hub</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
   }
   if (screen === "options") {
     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {

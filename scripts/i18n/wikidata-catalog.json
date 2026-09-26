@@ -1,0 +1,6815 @@
+{
+ "4": {
+  "qid": "Q889",
+  "name": {
+   "en": "Afghanistan",
+   "es": "Afganistán",
+   "pt": "Afeganistão"
+  },
+  "aliases": {
+   "en": [
+    "Affghanistan",
+    "Affghanisthan",
+    "Affghaunistan",
+    "Afghania",
+    "Afghanisthan",
+    "Afghaunistan",
+    "Afghaunistaun"
+   ]
+  },
+  "cap": {
+   "qid": "Q5838",
+   "en": "Kabul",
+   "es": "Kabul",
+   "pt": "Cabul"
+  }
+ },
+ "8": {
+  "qid": "Q222",
+  "name": {
+   "en": "Albania",
+   "es": "Albania",
+   "pt": "Albânia"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Albania",
+    "People's Republic of Albania",
+    "People's Socialist Republic of Albania",
+    "Republika Popullore e Shqiperise",
+    "Republika Popullore Socialiste e Shqiperise",
+    "Shqipërisë"
+   ],
+   "es": [
+    "República de Albania"
+   ]
+  },
+  "cap": {
+   "qid": "Q19689",
+   "en": "Tirana",
+   "es": "Tirana",
+   "pt": "Tirana"
+  }
+ },
+ "10": {
+  "qid": "Q51",
+  "name": {
+   "en": "Antarctica",
+   "es": "Antártida",
+   "pt": "Antártida"
+  },
+  "aliases": {
+   "es": [
+    "Antártica",
+    "Antártica o Antártida",
+    "Antártico",
+    "Antártida o Antártica",
+    "continente antártico",
+    "continente austral"
+   ]
+  }
+ },
+ "12": {
+  "qid": "Q262",
+  "name": {
+   "en": "Algeria",
+   "es": "Argelia",
+   "pt": "Argélia"
+  },
+  "aliases": {
+   "en": [
+    "Djazaïr",
+    "Dzayer",
+    "People's Democratic Republic of Algeria"
+   ],
+   "es": [
+    "República Argelina Democrática y Popular",
+    "República Democrática Popular de Argelia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3561",
+   "en": "Algiers",
+   "es": "Argel",
+   "pt": "Argel"
+  }
+ },
+ "16": {
+  "qid": "Q16641",
+  "name": {
+   "en": "American Samoa",
+   "es": "Samoa Americana",
+   "pt": "Samoa Americana"
+  },
+  "aliases": {
+   "en": [
+    "as",
+    "American Sāmoa",
+    "East Samoa",
+    "ISO 3166-1:AS",
+    "Samoa (American)",
+    "Samoa, United States",
+    "Territory of American Samoa",
+    "U.S. Samoa",
+    "US Samoa"
+   ],
+   "es": [
+    "Samoa de los Estados Unidos",
+    "Samoa Estadounidense",
+    "Territorio de Samoa Americana"
+   ]
+  },
+  "cap": {
+   "qid": "Q51678",
+   "en": "Pago Pago",
+   "es": "Pago Pago",
+   "pt": "Pago Pago"
+  }
+ },
+ "20": {
+  "qid": "Q228",
+  "name": {
+   "en": "Andorra",
+   "es": "Andorra",
+   "pt": "Andorra"
+  },
+  "aliases": {
+   "en": [
+    "Principality of Andorra",
+    "Principality of the Valleys of Andorra"
+   ],
+   "es": [
+    "Principado de Andorra"
+   ]
+  },
+  "cap": {
+   "qid": "Q1863",
+   "en": "Andorra la Vella",
+   "es": "Andorra la Vieja",
+   "pt": "Andorra-a-Velha"
+  }
+ },
+ "24": {
+  "qid": "Q916",
+  "name": {
+   "en": "Angola",
+   "es": "Angola",
+   "pt": "Angola"
+  },
+  "aliases": {
+   "en": [
+    "Ngola",
+    "ao",
+    "Republic of Angola"
+   ],
+   "es": [
+    "República de Angola"
+   ]
+  },
+  "cap": {
+   "qid": "Q3897",
+   "en": "Luanda",
+   "es": "Luanda",
+   "pt": "Luanda"
+  }
+ },
+ "28": {
+  "qid": "Q781",
+  "name": {
+   "en": "Antigua and Barbuda",
+   "es": "Antigua y Barbuda",
+   "pt": "Antígua e Barbuda"
+  },
+  "aliases": {
+   "en": [
+    "Antigua-Barbuda",
+    "Antigua & Barbuda",
+    "Antigua–Barbuda"
+   ]
+  },
+  "cap": {
+   "qid": "Q36262",
+   "es": "Saint John",
+   "pt": "São João"
+  }
+ },
+ "31": {
+  "qid": "Q227",
+  "name": {
+   "en": "Azerbaijan",
+   "es": "Azerbaiyán",
+   "pt": "Azerbaijão"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Azerbaijan"
+   ],
+   "es": [
+    "República de Azerbaiyán"
+   ]
+  },
+  "cap": {
+   "qid": "Q9248",
+   "en": "Baku",
+   "es": "Bakú",
+   "pt": "Baku"
+  }
+ },
+ "32": {
+  "qid": "Q414",
+  "name": {
+   "en": "Argentina",
+   "es": "Argentina",
+   "pt": "Argentina"
+  },
+  "aliases": {
+   "en": [
+    "Argentine Republic",
+    "Republic of Argentina",
+    "Republica Argentina"
+   ],
+   "es": [
+    "República Argentina",
+    "Nación Argentina"
+   ]
+  },
+  "cap": {
+   "qid": "Q1486",
+   "en": "Buenos Aires",
+   "es": "Buenos Aires",
+   "pt": "Buenos Aires"
+  }
+ },
+ "36": {
+  "qid": "Q408",
+  "name": {
+   "en": "Australia",
+   "es": "Australia",
+   "pt": "Austrália"
+  },
+  "aliases": {
+   "en": [
+    "Down Under",
+    "Oz",
+    "Stria",
+    "Commonwealth of Australia",
+    "New Holland",
+    "Straya",
+    "Nova Hollandia",
+    "Aussieland",
+    "New Hollandia",
+    "Stralia",
+    "The Commonwealth of Australia",
+    "'Straya"
+   ],
+   "es": [
+    "Mancomunidad de Australia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3114",
+   "en": "Canberra",
+   "es": "Canberra",
+   "pt": "Camberra"
+  }
+ },
+ "40": {
+  "qid": "Q40",
+  "name": {
+   "en": "Austria",
+   "es": "Austria",
+   "pt": "Áustria"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Austria"
+   ],
+   "es": [
+    "República de Austria"
+   ]
+  },
+  "cap": {
+   "qid": "Q1741",
+   "en": "Vienna",
+   "es": "Viena",
+   "pt": "Viena"
+  }
+ },
+ "44": {
+  "qid": "Q778",
+  "name": {
+   "en": "The Bahamas",
+   "es": "Bahamas",
+   "pt": "Bahamas"
+  },
+  "aliases": {
+   "en": [
+    "Bahamas",
+    "bs",
+    "Bahama Islands",
+    "Commonwealth of the Bahamas",
+    "Commonwealth of The Bahamas",
+    "Bahamas, The"
+   ],
+   "es": [
+    "Mancomunidad de las Bahamas"
+   ]
+  },
+  "cap": {
+   "qid": "Q2467",
+   "en": "Nassau",
+   "es": "Nasáu",
+   "pt": "Nassau"
+  }
+ },
+ "48": {
+  "qid": "Q398",
+  "name": {
+   "en": "Bahrain",
+   "es": "Baréin",
+   "pt": "Bahrein"
+  },
+  "aliases": {
+   "en": [
+    "bh",
+    "Bahrein Islands",
+    "Dawlat al-Bahrain",
+    "ISO 3166-1:BH",
+    "Kingdom of Bahrain",
+    "Mamlakat al-Baḥrayn"
+   ],
+   "es": [
+    "Bahrain",
+    "Bahráin",
+    "Bahréin",
+    "Barein",
+    "Reino de Barein",
+    "Reino de Baréin"
+   ]
+  },
+  "cap": {
+   "qid": "Q3882",
+   "en": "Manama",
+   "es": "Manama",
+   "pt": "Manama"
+  }
+ },
+ "50": {
+  "qid": "Q902",
+  "name": {
+   "en": "Bangladesh",
+   "es": "Bangladés",
+   "pt": "Bangladesh"
+  },
+  "aliases": {
+   "en": [
+    "bd",
+    "Bangla Desh",
+    "Country of Bengal",
+    "Land of Bengal",
+    "People's Republic of Bangladesh"
+   ],
+   "es": [
+    "Bangladesh",
+    "República Popular de Bangladés"
+   ]
+  },
+  "cap": {
+   "qid": "Q1354",
+   "en": "Dhaka",
+   "es": "Daca",
+   "pt": "Daca"
+  }
+ },
+ "51": {
+  "qid": "Q399",
+  "name": {
+   "en": "Armenia",
+   "es": "Armenia",
+   "pt": "Arménia"
+  },
+  "aliases": {
+   "en": [
+    "Hayastan",
+    "Hayastani Hanrapetut’yun",
+    "Republic of Armenia",
+    "Հայաստան"
+   ],
+   "es": [
+    "Hayastan",
+    "República de Armenia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1953",
+   "en": "Yerevan",
+   "es": "Ereván",
+   "pt": "Erevã"
+  }
+ },
+ "52": {
+  "qid": "Q244",
+  "name": {
+   "en": "Barbados",
+   "es": "Barbados",
+   "pt": "Barbados"
+  },
+  "aliases": {
+   "en": [
+    "BAR",
+    "Barbadoes",
+    "bb"
+   ]
+  },
+  "cap": {
+   "qid": "Q36168",
+   "en": "Bridgetown",
+   "es": "Bridgetown",
+   "pt": "Bridgetown"
+  }
+ },
+ "56": {
+  "qid": "Q31",
+  "name": {
+   "en": "Belgium",
+   "es": "Bélgica",
+   "pt": "Bélgica"
+  },
+  "aliases": {
+   "en": [
+    "Kingdom of Belgium"
+   ],
+   "es": [
+    "Reino de Bélgica"
+   ]
+  },
+  "cap": {
+   "qid": "Q239",
+   "en": "Brussels",
+   "es": "Bruselas",
+   "pt": "Bruxelas"
+  }
+ },
+ "60": {
+  "qid": "Q23635",
+  "name": {
+   "en": "Bermuda",
+   "es": "Bermudas",
+   "pt": "Bermudas"
+  },
+  "aliases": {
+   "en": [
+    "Somers Isles",
+    "Bermudas",
+    "bm",
+    "Atlantic/Bermuda",
+    "Barmuda",
+    "Barmuda I.",
+    "Barmuda Isl.",
+    "Barmuda Islands",
+    "Barmudas",
+    "Bermoothes",
+    "Bermuda Islands",
+    "Bermudian Islands",
+    "Colony of Bermuda",
+    "Devil's Isles",
+    "Isle of Devils",
+    "Somers Islands",
+    "Summer's Isles",
+    "Summers' Isles",
+    "Territory of Bermuda",
+    "The Somers Isles",
+    "Virgineola"
+   ],
+   "es": [
+    "Bermuda",
+    "Isla Saint David's",
+    "Islas Bermudas",
+    "Islas Saint Davids"
+   ]
+  },
+  "cap": {
+   "qid": "Q30985",
+   "en": "Hamilton",
+   "es": "Hamilton",
+   "pt": "Hamilton"
+  }
+ },
+ "64": {
+  "qid": "Q917",
+  "name": {
+   "en": "Bhutan",
+   "es": "Bután",
+   "pt": "Butão"
+  },
+  "aliases": {
+   "en": [
+    "bt",
+    "BHU",
+    "Kingdom of Bhutan"
+   ],
+   "es": [
+    "Reino de Bután",
+    "Bhután"
+   ]
+  },
+  "cap": {
+   "qid": "Q9270",
+   "en": "Thimphu",
+   "es": "Timbu",
+   "pt": "Thimbu"
+  }
+ },
+ "68": {
+  "qid": "Q750",
+  "name": {
+   "en": "Bolivia",
+   "es": "Bolivia",
+   "pt": "Bolívia"
+  },
+  "aliases": {
+   "en": [
+    "Bolivia (Plurinational State of)",
+    "Plurinational State of Bolivia",
+    "Republic of Bolivia"
+   ],
+   "es": [
+    "República de Bolivia",
+    "Estado Plurinacional de Bolivia"
+   ]
+  },
+  "cap": {
+   "qid": "Q2907",
+   "en": "Sucre",
+   "es": "Sucre",
+   "pt": "Sucre"
+  }
+ },
+ "70": {
+  "qid": "Q225",
+  "name": {
+   "en": "Bosnia and Herzegovina",
+   "es": "Bosnia y Herzegovina",
+   "pt": "Bósnia e Herzegovina"
+  },
+  "aliases": {
+   "en": [
+    "ba",
+    "B&H",
+    "Bosnia & Herzegovina",
+    "Bosnia and Hercegovina",
+    "Bosnia-Herzegovina"
+   ],
+   "es": [
+    "Bosnia-Herzegovia",
+    "República de Bosnia"
+   ]
+  },
+  "cap": {
+   "qid": "Q11194",
+   "en": "Sarajevo",
+   "es": "Sarajevo",
+   "pt": "Sarajevo"
+  }
+ },
+ "72": {
+  "qid": "Q963",
+  "name": {
+   "en": "Botswana",
+   "es": "Botsuana",
+   "pt": "Botsuana"
+  },
+  "aliases": {
+   "en": [
+    "Lefatshe la Botswana",
+    "Republic of Botswana",
+    "bw"
+   ],
+   "es": [
+    "República de Botsuana"
+   ]
+  },
+  "cap": {
+   "qid": "Q3919",
+   "en": "Gaborone",
+   "es": "Gaborone",
+   "pt": "Gaborone"
+  }
+ },
+ "74": {
+  "qid": "Q23408",
+  "name": {
+   "en": "Bouvet Island",
+   "es": "Isla Bouvet",
+   "pt": "Ilha Bouvet"
+  },
+  "aliases": {}
+ },
+ "76": {
+  "qid": "Q155",
+  "name": {
+   "en": "Brazil",
+   "es": "Brasil",
+   "pt": "Brasil"
+  },
+  "aliases": {
+   "en": [
+    "Federative Republic of Brazil"
+   ],
+   "es": [
+    "República Federativa de Brasil",
+    "República Federativa del Brasil"
+   ]
+  },
+  "cap": {
+   "qid": "Q2844",
+   "en": "Brasília",
+   "es": "Brasilia",
+   "pt": "Brasília"
+  }
+ },
+ "84": {
+  "qid": "Q242",
+  "name": {
+   "en": "Belize",
+   "es": "Belice",
+   "pt": "Belize"
+  },
+  "aliases": {
+   "en": [
+    "bz"
+   ]
+  },
+  "cap": {
+   "qid": "Q3043",
+   "en": "Belmopan",
+   "es": "Belmopán",
+   "pt": "Belmopan"
+  }
+ },
+ "86": {
+  "qid": "Q43448",
+  "name": {
+   "en": "British Indian Ocean Territory",
+   "es": "Territorio Británico del Océano Índico",
+   "pt": "Território Britânico do Oceano Índico"
+  },
+  "aliases": {
+   "en": [
+    "🇮🇴",
+    "io",
+    "BIOT",
+    "The British Indian Ocean Territory"
+   ],
+   "es": [
+    "Archipielago Chagos",
+    "Islas Chagos",
+    "Territorio Británico en el Océano Índico",
+    "Territorios Británicos Del Océano Índico"
+   ]
+  },
+  "cap": {
+   "qid": "Q184851",
+   "en": "Diego Garcia",
+   "es": "Diego García",
+   "pt": "Diego Garcia"
+  }
+ },
+ "90": {
+  "qid": "Q685",
+  "name": {
+   "en": "Solomon Islands",
+   "es": "Islas Salomón",
+   "pt": "Ilhas Salomão"
+  },
+  "aliases": {
+   "en": [
+    "the Solomon Islands",
+    "SOL",
+    "sb"
+   ],
+   "es": [
+    "Islas Solomón"
+   ]
+  },
+  "cap": {
+   "qid": "Q40921",
+   "en": "Honiara",
+   "es": "Honiara",
+   "pt": "Honiara"
+  }
+ },
+ "92": {
+  "qid": "Q25305",
+  "name": {
+   "en": "British Virgin Islands",
+   "es": "Islas Vírgenes Británicas",
+   "pt": "Ilhas Virgens Britânicas"
+  },
+  "aliases": {
+   "en": [
+    "IVB",
+    "vg",
+    "B.V.I.",
+    "BVI",
+    "Virgin Islands of the United Kingdom",
+    "Virgin Islands, United Kingdom"
+   ],
+   "es": [
+    "Islas Vírgenes"
+   ]
+  },
+  "cap": {
+   "qid": "Q179431",
+   "en": "Road Town",
+   "es": "Road Town",
+   "pt": "Road Town"
+  }
+ },
+ "96": {
+  "qid": "Q921",
+  "name": {
+   "en": "Brunei",
+   "es": "Brunéi",
+   "pt": "Brunei"
+  },
+  "aliases": {
+   "en": [
+    "bn",
+    "Nation of Brunei, the Abode of Peace",
+    "Negara Brunei Darussalam"
+   ],
+   "es": [
+    "Bruney",
+    "Estado de Brunéi, Morada de la Paz",
+    "Estado de Bruney Darussalam"
+   ]
+  },
+  "cap": {
+   "qid": "Q9279",
+   "en": "Bandar Seri Begawan",
+   "es": "Bandar Seri Begawan",
+   "pt": "Bandar Seri Begawan"
+  }
+ },
+ "100": {
+  "qid": "Q219",
+  "name": {
+   "en": "Bulgaria",
+   "es": "Bulgaria",
+   "pt": "Bulgária"
+  },
+  "aliases": {
+   "en": [
+    "Bulgarian Republic",
+    "Republic of Bulgaria"
+   ],
+   "es": [
+    "República de Bulgaria"
+   ]
+  },
+  "cap": {
+   "qid": "Q472",
+   "en": "Sofia",
+   "es": "Sofía",
+   "pt": "Sófia"
+  }
+ },
+ "104": {
+  "qid": "Q836",
+  "name": {
+   "en": "Myanmar",
+   "es": "Birmania",
+   "pt": "Myanmar"
+  },
+  "aliases": {
+   "en": [
+    "Union of Burma",
+    "Republic of the Union of Myanmar"
+   ],
+   "es": [
+    "Miagmá",
+    "Miamá",
+    "Mianmá",
+    "República de la Unión de Myanmar",
+    "Unión de Myanmar"
+   ]
+  },
+  "cap": {
+   "qid": "Q37400",
+   "en": "Naypyidaw",
+   "es": "Naipyidó",
+   "pt": "Naypyidaw"
+  }
+ },
+ "108": {
+  "qid": "Q967",
+  "name": {
+   "en": "Burundi",
+   "es": "Burundi",
+   "pt": "Burundi"
+  },
+  "aliases": {
+   "en": [
+    "bi",
+    "Gouvernement du Burundi",
+    "Republic of Burundi",
+    "Republika y'Uburundi"
+   ],
+   "es": [
+    "República de Burundi"
+   ]
+  },
+  "cap": {
+   "qid": "Q167551",
+   "en": "Gitega",
+   "es": "Guitega",
+   "pt": "Guitega"
+  }
+ },
+ "112": {
+  "qid": "Q184",
+  "name": {
+   "en": "Belarus",
+   "es": "Bielorrusia",
+   "pt": "Bielorrússia"
+  },
+  "aliases": {
+   "en": [
+    "by",
+    "White Russia",
+    "Belorussia",
+    "Bielaruś",
+    "Bielorussia",
+    "Byeloruss",
+    "Byelorussia",
+    "Republic of Belarus",
+    "Respublika Belarus'",
+    "Respublika Bielaruś",
+    "White Ruthenia"
+   ],
+   "es": [
+    "Belarús",
+    "República de Belarús"
+   ]
+  },
+  "cap": {
+   "qid": "Q2280",
+   "en": "Minsk",
+   "es": "Minsk",
+   "pt": "Minsk"
+  }
+ },
+ "116": {
+  "qid": "Q424",
+  "name": {
+   "en": "Cambodia",
+   "es": "Camboya",
+   "pt": "Camboja"
+  },
+  "aliases": {
+   "en": [
+    "Kamboja",
+    "Kingdom of Cambodia",
+    "kh",
+    "Camboya",
+    "Campuchia",
+    "Kambodzha",
+    "Kampuchea"
+   ],
+   "es": [
+    "Reino de Camboya"
+   ]
+  },
+  "cap": {
+   "qid": "Q1850",
+   "en": "Phnom Penh",
+   "es": "Nom Pen",
+   "pt": "Phnom Penh"
+  }
+ },
+ "120": {
+  "qid": "Q1009",
+  "name": {
+   "en": "Cameroon",
+   "es": "Camerún",
+   "pt": "Camarões"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Cameroon"
+   ],
+   "es": [
+    "República de Camerún"
+   ]
+  },
+  "cap": {
+   "qid": "Q3808",
+   "en": "Yaoundé",
+   "es": "Yaundé",
+   "pt": "Iaundé"
+  }
+ },
+ "124": {
+  "qid": "Q16",
+  "name": {
+   "en": "Canada",
+   "es": "Canadá",
+   "pt": "Canadá"
+  },
+  "aliases": {
+   "en": [
+    "CA",
+    "CAN"
+   ],
+   "es": [
+    "Dominio de Canadá",
+    "Norteamérica Británica"
+   ]
+  },
+  "cap": {
+   "qid": "Q1930",
+   "en": "Ottawa",
+   "es": "Ottawa",
+   "pt": "Ottawa"
+  }
+ },
+ "132": {
+  "qid": "Q1011",
+  "name": {
+   "en": "Cape Verde",
+   "es": "Cabo Verde",
+   "pt": "Cabo Verde"
+  },
+  "aliases": {
+   "en": [
+    "Cape Verde Islands",
+    "Republic of Cabo Verde",
+    "Republic of Cape Verde"
+   ],
+   "es": [
+    "República de Cabo Verde"
+   ]
+  },
+  "cap": {
+   "qid": "Q3751",
+   "en": "Praia",
+   "es": "Praia",
+   "pt": "Praia"
+  }
+ },
+ "136": {
+  "qid": "Q5785",
+  "name": {
+   "en": "Cayman Islands",
+   "es": "Islas Caimán",
+   "pt": "Ilhas Cayman"
+  },
+  "aliases": {
+   "en": [
+    "Caymans",
+    "CAY",
+    "ky"
+   ],
+   "es": [
+    "Cayman Islands",
+    "Islas Caiman"
+   ]
+  },
+  "cap": {
+   "qid": "Q172996",
+   "en": "George Town",
+   "es": "George Town",
+   "pt": "George Town"
+  }
+ },
+ "140": {
+  "qid": "Q929",
+  "name": {
+   "en": "Central African Republic",
+   "es": "República Centroafricana",
+   "pt": "República Centro-Africana"
+  },
+  "aliases": {
+   "en": [
+    "Central Africa",
+    "cf"
+   ]
+  },
+  "cap": {
+   "qid": "Q3832",
+   "en": "Bangui",
+   "es": "Bangui",
+   "pt": "Bangui"
+  }
+ },
+ "144": {
+  "qid": "Q854",
+  "name": {
+   "en": "Sri Lanka",
+   "es": "Sri Lanka",
+   "pt": "Sri Lanka"
+  },
+  "aliases": {
+   "en": [
+    "SRI",
+    "Ceylan",
+    "ce",
+    "Serendib",
+    "Taprobane",
+    "sri",
+    "Srilanka",
+    "Democratic Socialist Republic of Sri Lanka",
+    "Lanka, Sri",
+    "lk",
+    "lke"
+   ],
+   "es": [
+    "Ceilán",
+    "Esrilanca",
+    "Heladiva",
+    "República Democrática Socialista de Sri Lanka"
+   ]
+  },
+  "cap": {
+   "qid": "Q35381",
+   "en": "Colombo",
+   "es": "Colombo",
+   "pt": "Colombo"
+  }
+ },
+ "148": {
+  "qid": "Q657",
+  "name": {
+   "en": "Chad",
+   "es": "Chad",
+   "pt": "Chade"
+  },
+  "aliases": {
+   "en": [
+    "GUM",
+    "CHA",
+    "td",
+    "Republic of Chad"
+   ],
+   "es": [
+    "República de Chad"
+   ]
+  },
+  "cap": {
+   "qid": "Q3659",
+   "en": "N'Djamena",
+   "es": "Yamena",
+   "pt": "Jamena"
+  }
+ },
+ "152": {
+  "qid": "Q298",
+  "name": {
+   "en": "Chile",
+   "es": "Chile",
+   "pt": "Chile"
+  },
+  "aliases": {
+   "en": [
+    "CHI",
+    "Republic of Chile"
+   ]
+  },
+  "cap": {
+   "qid": "Q2887",
+   "en": "Santiago",
+   "es": "Santiago de Chile",
+   "pt": "Santiago"
+  }
+ },
+ "156": {
+  "qid": "Q148",
+  "name": {
+   "en": "People's Republic of China",
+   "es": "República Popular China",
+   "pt": "China"
+  },
+  "aliases": {
+   "en": [
+    "cn",
+    "Red China",
+    "Communist China",
+    "China PR",
+    "P.R.C.",
+    "PR China",
+    "The PRC",
+    "the People's Republic of China"
+   ],
+   "es": [
+    "China Popular",
+    "República Popular de China"
+   ]
+  },
+  "cap": {
+   "qid": "Q956",
+   "en": "Beijing",
+   "es": "Pekín",
+   "pt": "Pequim"
+  }
+ },
+ "158": {
+  "qid": "Q865",
+  "name": {
+   "en": "Taiwan",
+   "es": "República de China",
+   "pt": "Taiwan"
+  },
+  "aliases": {
+   "en": [
+    "ROC",
+    "Chinese Taipei",
+    "TWN",
+    "Taiwan",
+    "Republic of China (Taiwan)",
+    "TW",
+    "Republic of China",
+    "Nationalist China",
+    "Free China",
+    "Taiwan ROC",
+    "Chunghwa Minkuo",
+    "Chunghwa Minkwo",
+    "The ROC",
+    "China, Republic of",
+    "Chinese Republic"
+   ],
+   "es": [
+    "Taiwán",
+    "China",
+    "China Nacionalista",
+    "Taipéi",
+    "China Taipei",
+    "China Taipéi",
+    "China libre",
+    "China ROC",
+    "Taiwán ROC"
+   ]
+  },
+  "cap": {
+   "qid": "Q1867",
+   "en": "Taipei",
+   "es": "Taipéi",
+   "pt": "Taipé"
+  }
+ },
+ "162": {
+  "qid": "Q31063",
+  "name": {
+   "en": "Christmas Island",
+   "es": "Isla de Navidad",
+   "pt": "Ilha Christmas"
+  },
+  "aliases": {
+   "en": [
+    "cx",
+    "Christmas Island, Other Territories",
+    "Christmas Island, Other Territories, Australia",
+    "Territory of Christmas Island"
+   ],
+   "es": [
+    "Isla Christmas"
+   ]
+  },
+  "cap": {
+   "qid": "Q30980",
+   "en": "Flying Fish Cove",
+   "es": "Flying Fish Cove",
+   "pt": "Flying Fish Cove"
+  }
+ },
+ "166": {
+  "qid": "Q36004",
+  "name": {
+   "en": "Cocos (Keeling) Islands",
+   "es": "islas Cocos",
+   "pt": "Ilhas Cocos"
+  },
+  "aliases": {
+   "en": [
+    "Cocos Islands",
+    "cc",
+    "Keeling Islands",
+    "Territory of the Cocos (Keeling) Islands"
+   ],
+   "es": [
+    "Coco Islands",
+    "Isla de Cocos",
+    "Islas Keeling",
+    "Keeling",
+    "Keeling Islands",
+    "Las Islas Cocos"
+   ]
+  },
+  "cap": {
+   "qid": "Q48675",
+   "en": "West Island",
+   "es": "West Island",
+   "pt": "West Island"
+  }
+ },
+ "170": {
+  "qid": "Q739",
+  "name": {
+   "en": "Colombia",
+   "es": "Colombia",
+   "pt": "Colômbia"
+  },
+  "aliases": {
+   "en": [
+    "Colombiá",
+    "Republic of Colombia",
+    "The Republic of Colombia"
+   ],
+   "es": [
+    "República de Colombia",
+    "🇨🇴"
+   ]
+  },
+  "cap": {
+   "qid": "Q2841",
+   "en": "Bogotá",
+   "es": "Bogotá",
+   "pt": "Bogotá"
+  }
+ },
+ "174": {
+  "qid": "Q970",
+  "name": {
+   "en": "Comoros",
+   "es": "Comoras",
+   "pt": "Comores"
+  },
+  "aliases": {
+   "en": [
+    "the Comoros",
+    "km",
+    "al-Ittiḥād al-Qumurī",
+    "Juzur al-Qamar",
+    "Juzur al-Qumur",
+    "Massiwa ya komori",
+    "ouvoimoja wakomori",
+    "Udzima wa Komori",
+    "Union des Comores",
+    "Union of the Comoros"
+   ],
+   "es": [
+    "Comores",
+    "Unión de las Comoras"
+   ]
+  },
+  "cap": {
+   "qid": "Q3901",
+   "en": "Moroni",
+   "es": "Moroni",
+   "pt": "Moroni"
+  }
+ },
+ "175": {
+  "qid": "Q17063",
+  "name": {
+   "en": "Mayotte",
+   "es": "Mayotte",
+   "pt": "Mayotte"
+  },
+  "aliases": {
+   "en": [
+    "Department of Mayotte"
+   ]
+  },
+  "cap": {
+   "qid": "Q132676",
+   "en": "Mamoudzou",
+   "es": "Mamoudzou",
+   "pt": "Mamoudzou"
+  }
+ },
+ "178": {
+  "qid": "Q971",
+  "name": {
+   "en": "Republic of the Congo",
+   "es": "Congo",
+   "pt": "República do Congo"
+  },
+  "aliases": {
+   "en": [
+    "Congo",
+    "CGO",
+    "cg",
+    "Congo (Brazzaville)",
+    "Congo Republic",
+    "Congo-Brazzaville",
+    "Rep. Congo",
+    "Republic of Congo",
+    "Republique du Congo",
+    "République du Congo"
+   ],
+   "es": [
+    "República del Congo",
+    "Congo Brazzaville"
+   ]
+  },
+  "cap": {
+   "qid": "Q3844",
+   "en": "Brazzaville",
+   "es": "Brazzaville",
+   "pt": "Brazavile"
+  }
+ },
+ "180": {
+  "qid": "Q974",
+  "name": {
+   "en": "Democratic Republic of the Congo",
+   "es": "República Democrática del Congo",
+   "pt": "República Democrática do Congo"
+  },
+  "aliases": {
+   "en": [
+    "DRC",
+    "D.R.C.",
+    "COD",
+    "cd",
+    "Congo (Kinshasa)",
+    "Dem. Rep. Congo",
+    "Dem. Republic of Congo",
+    "Dem. Republic of the Congo",
+    "Democratic Republic of Congo",
+    "DR Congo"
+   ],
+   "es": [
+    "Congo Kinshasa"
+   ]
+  },
+  "cap": {
+   "qid": "Q3838",
+   "en": "Kinshasa",
+   "es": "Kinsasa",
+   "pt": "Quinxassa"
+  }
+ },
+ "184": {
+  "qid": "Q26988",
+  "name": {
+   "en": "Cook Islands",
+   "es": "Islas Cook",
+   "pt": "Ilhas Cook"
+  },
+  "aliases": {
+   "en": [
+    "COK",
+    "ck",
+    "Hervey Islands",
+    "Cook Group"
+   ]
+  },
+  "cap": {
+   "qid": "Q170482",
+   "en": "Avarua",
+   "es": "Avarua",
+   "pt": "Avarua"
+  }
+ },
+ "188": {
+  "qid": "Q800",
+  "name": {
+   "en": "Costa Rica",
+   "es": "Costa Rica",
+   "pt": "Costa Rica"
+  },
+  "aliases": {
+   "en": [
+    "cr",
+    "Republic of Costa Rica"
+   ],
+   "es": [
+    "República de Costa Rica"
+   ]
+  },
+  "cap": {
+   "qid": "Q3070",
+   "en": "San José",
+   "es": "San José",
+   "pt": "San José"
+  }
+ },
+ "191": {
+  "qid": "Q224",
+  "name": {
+   "en": "Croatia",
+   "es": "Croacia",
+   "pt": "Croácia"
+  },
+  "aliases": {
+   "en": [
+    "HR",
+    "CRO",
+    "RH",
+    "HRV",
+    "Republic of Croatia"
+   ],
+   "es": [
+    "República de Croacia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1435",
+   "en": "Zagreb",
+   "es": "Zagreb",
+   "pt": "Zagreb"
+  }
+ },
+ "192": {
+  "qid": "Q241",
+  "name": {
+   "en": "Cuba",
+   "es": "Cuba",
+   "pt": "Cuba"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Cuba",
+    "cu"
+   ],
+   "es": [
+    "República de Cuba"
+   ]
+  },
+  "cap": {
+   "qid": "Q1563",
+   "en": "Havana",
+   "es": "La Habana",
+   "pt": "Havana"
+  }
+ },
+ "196": {
+  "qid": "Q229",
+  "name": {
+   "en": "Cyprus",
+   "es": "Chipre",
+   "pt": "Chipre"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Cyprus",
+    "Greek Administration of Southern Cyprus",
+    "Greek Cypriot State"
+   ],
+   "es": [
+    "República de Chipre"
+   ]
+  },
+  "cap": {
+   "qid": "Q3856",
+   "en": "Nicosia",
+   "es": "Nicosia",
+   "pt": "Nicósia"
+  }
+ },
+ "203": {
+  "qid": "Q213",
+  "name": {
+   "en": "Czech Republic",
+   "es": "República Checa",
+   "pt": "Chéquia"
+  },
+  "aliases": {
+   "en": [
+    "Czechia",
+    "the Czech Republic"
+   ],
+   "es": [
+    "Chequia",
+    "Bohemia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1085",
+   "en": "Prague",
+   "es": "Praga",
+   "pt": "Praga"
+  }
+ },
+ "204": {
+  "qid": "Q962",
+  "name": {
+   "en": "Benin",
+   "es": "Benín",
+   "pt": "Benim"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Benin"
+   ],
+   "es": [
+    "República de Benín"
+   ]
+  },
+  "cap": {
+   "qid": "Q3799",
+   "en": "Porto-Novo",
+   "es": "Porto Novo",
+   "pt": "Porto Novo"
+  }
+ },
+ "208": {
+  "qid": "Q35",
+  "name": {
+   "en": "Denmark",
+   "es": "Dinamarca",
+   "pt": "Dinamarca"
+  },
+  "aliases": {
+   "en": [
+    "Danmark",
+    "Dania",
+    "TAN",
+    "dk",
+    "Danemark",
+    "Denmark proper",
+    "metropolitan Denmark"
+   ]
+  },
+  "cap": {
+   "qid": "Q1748",
+   "en": "Copenhagen",
+   "es": "Copenhague",
+   "pt": "Copenhaga"
+  }
+ },
+ "212": {
+  "qid": "Q784",
+  "name": {
+   "en": "Dominica",
+   "es": "Dominica",
+   "pt": "Dominica"
+  },
+  "aliases": {
+   "en": [
+    "DOM",
+    "dm",
+    "Commonwealth of Dominica",
+    "Island of Dominica",
+    "The Commonwealth of Dominica",
+    "Wai'tu kubuli",
+    "Wai‘tu kubuli"
+   ],
+   "es": [
+    "Mancomunidad de Dominica"
+   ]
+  },
+  "cap": {
+   "qid": "Q36281",
+   "en": "Roseau",
+   "es": "Roseau",
+   "pt": "Roseau"
+  }
+ },
+ "214": {
+  "qid": "Q786",
+  "name": {
+   "en": "Dominican Republic",
+   "es": "República Dominicana",
+   "pt": "República Dominicana"
+  },
+  "aliases": {
+   "en": [
+    "RD",
+    "Dominicana",
+    "DomRep",
+    "Republica Dominicana",
+    "República Dominicana"
+   ]
+  },
+  "cap": {
+   "qid": "Q34820",
+   "en": "Santo Domingo",
+   "es": "Santo Domingo",
+   "pt": "São Domingos"
+  }
+ },
+ "218": {
+  "qid": "Q736",
+  "name": {
+   "en": "Ecuador",
+   "es": "Ecuador",
+   "pt": "Equador"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Ecuador",
+    "Republic of the Equator",
+    "The Ecuadorian State",
+    "Republic of Equator"
+   ],
+   "es": [
+    "el Ecuador",
+    "Estado Ecuatoriano"
+   ]
+  },
+  "cap": {
+   "qid": "Q2900",
+   "en": "Quito",
+   "es": "Quito",
+   "pt": "Quito"
+  }
+ },
+ "222": {
+  "qid": "Q792",
+  "name": {
+   "en": "El Salvador",
+   "es": "El Salvador",
+   "pt": "El Salvador"
+  },
+  "aliases": {
+   "en": [
+    "Salvador",
+    "ESA",
+    "sv",
+    "Republic of El Salvador"
+   ],
+   "es": [
+    "República de El Salvador"
+   ]
+  },
+  "cap": {
+   "qid": "Q3110",
+   "en": "San Salvador",
+   "es": "San Salvador",
+   "pt": "San Salvador"
+  }
+ },
+ "226": {
+  "qid": "Q983",
+  "name": {
+   "en": "Equatorial Guinea",
+   "es": "Guinea Ecuatorial",
+   "pt": "Guiné Equatorial"
+  },
+  "aliases": {
+   "en": [
+    "GEQ",
+    "gq",
+    "Republic of Equatorial Guinea"
+   ],
+   "es": [
+    "República de Guinea Ecuatorial"
+   ]
+  },
+  "cap": {
+   "qid": "Q1140136",
+   "en": "Ciudad de la Paz",
+   "es": "Ciudad de la Paz",
+   "pt": "Ciudad de la Paz"
+  }
+ },
+ "231": {
+  "qid": "Q115",
+  "name": {
+   "en": "Ethiopia",
+   "es": "Etiopía",
+   "pt": "Etiópia"
+  },
+  "aliases": {
+   "en": [
+    "et",
+    "Federal Democratic Republic of Ethiopia"
+   ],
+   "es": [
+    "Asamblea Parlamentaria Federal",
+    "República Democrática Federal de Etiopía"
+   ]
+  },
+  "cap": {
+   "qid": "Q3624",
+   "en": "Addis Ababa",
+   "es": "Adís Abeba",
+   "pt": "Adis Abeba"
+  }
+ },
+ "232": {
+  "qid": "Q986",
+  "name": {
+   "en": "Eritrea",
+   "es": "Eritrea",
+   "pt": "Eritreia"
+  },
+  "aliases": {
+   "en": [
+    "er",
+    "Ertrā",
+    "Iritriyā",
+    "State of Eritrea"
+   ],
+   "es": [
+    "Estado de Eritrea"
+   ]
+  },
+  "cap": {
+   "qid": "Q3642",
+   "en": "Asmara",
+   "es": "Asmara",
+   "pt": "Asmara"
+  }
+ },
+ "233": {
+  "qid": "Q191",
+  "name": {
+   "en": "Estonia",
+   "es": "Estonia",
+   "pt": "Estónia"
+  },
+  "aliases": {
+   "en": [
+    "ee",
+    "Estland",
+    "Eesti Vabariik",
+    "Republic of Estonia"
+   ],
+   "es": [
+    "República de Estonia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1770",
+   "en": "Tallinn",
+   "es": "Tallin",
+   "pt": "Tallinn"
+  }
+ },
+ "234": {
+  "qid": "Q4628",
+  "name": {
+   "en": "Faroe Islands",
+   "es": "Islas Feroe",
+   "pt": "Ilhas Feroe"
+  },
+  "aliases": {
+   "en": [
+    "Faroese Islands",
+    "Farre I.",
+    "Farre Is.",
+    "Farre Isl.",
+    "Farre Islands",
+    "Foroyar",
+    "Føroyar",
+    "the Faeroe Islands",
+    "Færøyene",
+    "Farre",
+    "fo",
+    "Faeroes",
+    "Sheep Islands",
+    "Faroes",
+    "Atlantic/Faroe",
+    "Faer Oer",
+    "Fær Øer",
+    "Færeyjar",
+    "Faeroe Is",
+    "Faeroe Islands",
+    "Faeroe Isles",
+    "Faeroer",
+    "Færøer",
+    "Faeroerne",
+    "Færoes",
+    "Faeroyene",
+    "Far Oer",
+    "Fareo islands",
+    "Faroe Island",
+    "Faröe Islands",
+    "Faroe Isles",
+    "Faroer",
+    "Färöer",
+    "the Faroe Islands",
+    "🇫🇴",
+    "Færøerne"
+   ],
+   "es": [
+    "Faeroerne",
+    "Færøerne",
+    "Feroe",
+    "Feroé",
+    "Føroyar",
+    "Isla feroe",
+    "Islas Faroe",
+    "Islas Feroé",
+    "Islas Feroes"
+   ]
+  },
+  "cap": {
+   "qid": "Q10704",
+   "en": "Tórshavn",
+   "es": "Tórshavn",
+   "pt": "Tórshavn"
+  }
+ },
+ "238": {
+  "qid": "Q9648",
+  "name": {
+   "en": "Falkland Islands",
+   "es": "Islas Malvinas",
+   "pt": "Ilhas Malvinas"
+  },
+  "aliases": {
+   "en": [
+    "Falklands",
+    "FK",
+    "Islas Malvinas",
+    "FLK",
+    "Malvinas",
+    "Malvinas Islands"
+   ],
+   "es": [
+    "Malvinas",
+    "Islas Falklands"
+   ]
+  },
+  "cap": {
+   "qid": "Q12245",
+   "en": "Stanley",
+   "es": "Puerto Argentino",
+   "pt": "Stanley"
+  }
+ },
+ "239": {
+  "qid": "Q35086",
+  "name": {
+   "en": "South Georgia and the South Sandwich Islands",
+   "es": "Islas Georgias del Sur y Sandwich del Sur",
+   "pt": "Ilhas Geórgia do Sul e Sandwich do Sul"
+  },
+  "aliases": {
+   "en": [
+    "South Georgia",
+    "South Sandwich Islands",
+    "gs",
+    "SGSSI",
+    "South Georgia and South Sandwich Islands"
+   ],
+   "es": [
+    "Georgia del Sur e Islas Sandwich del Sur",
+    "IGSSS",
+    "Islas Georgias del Sur e Islas Sandwich del Sur",
+    "Islas Georgias del Sur y las Islas Sandwich del Sur",
+    "Georgia del Sur y las Islas Sandwich del Sur",
+    "Territorio Británico de Ultramar de las Islas Georgias del Sur y Sándwich del Sur"
+   ]
+  }
+ },
+ "242": {
+  "qid": "Q712",
+  "name": {
+   "en": "Fiji",
+   "es": "Fiyi",
+   "pt": "Fiji"
+  },
+  "aliases": {
+   "en": [
+    "Viti",
+    "fj",
+    "Fijī",
+    "Fijī Gaṇarājya",
+    "Matanitu Tugalala o Viti",
+    "Republic of Fiji",
+    "Republic of the Fiji Islands"
+   ],
+   "es": [
+    "Fiji",
+    "República de Fiji",
+    "República de Fiyi"
+   ]
+  },
+  "cap": {
+   "qid": "Q38807",
+   "en": "Suva",
+   "es": "Suva",
+   "pt": "Suva"
+  }
+ },
+ "246": {
+  "qid": "Q33",
+  "name": {
+   "en": "Finland",
+   "es": "Finlandia",
+   "pt": "Finlândia"
+  },
+  "aliases": {
+   "en": [
+    "fi",
+    "Finnia",
+    "Land of Thousand Lakes",
+    "Republic of Finland",
+    "Republiken Finland",
+    "Suomen tasavalta"
+   ],
+   "es": [
+    "República de Finlandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1757",
+   "en": "Helsinki",
+   "es": "Helsinki",
+   "pt": "Helsínquia"
+  }
+ },
+ "248": {
+  "qid": "Q5689",
+  "name": {
+   "en": "Åland",
+   "es": "Åland",
+   "pt": "Åland"
+  },
+  "aliases": {
+   "en": [
+    "ax",
+    "Aaland",
+    "Aaland Islands",
+    "Åland Islands",
+    "Aland",
+    "Ahvenanmaa",
+    "Aland Islands",
+    "Aland Isles",
+    "Åland region"
+   ],
+   "es": [
+    "Ahvenanmaa",
+    "Islas Åland"
+   ]
+  },
+  "cap": {
+   "qid": "Q48329",
+   "en": "Mariehamn",
+   "es": "Mariehamn",
+   "pt": "Mariehamn"
+  }
+ },
+ "250": {
+  "qid": "Q142",
+  "name": {
+   "en": "France",
+   "es": "Francia",
+   "pt": "França"
+  },
+  "aliases": {
+   "en": [
+    "French Republic"
+   ],
+   "es": [
+    "República Francesa"
+   ]
+  },
+  "cap": {
+   "qid": "Q90",
+   "en": "Paris",
+   "es": "París",
+   "pt": "Paris"
+  }
+ },
+ "254": {
+  "qid": "Q3769",
+  "name": {
+   "en": "French Guiana",
+   "es": "Guayana Francesa",
+   "pt": "Guiana Francesa"
+  },
+  "aliases": {
+   "en": [
+    "Guiana",
+    "Guyane",
+    "Guiana, France"
+   ],
+   "es": [
+    "Departamento de Guayana"
+   ]
+  },
+  "cap": {
+   "qid": "Q44401",
+   "en": "Cayenne",
+   "es": "Cayena",
+   "pt": "Caiena"
+  }
+ },
+ "258": {
+  "qid": "Q30971",
+  "name": {
+   "en": "French Polynesia",
+   "es": "Polinesia Francesa",
+   "pt": "Polinésia Francesa"
+  },
+  "aliases": {
+   "en": [
+    "pf",
+    "French Oceania",
+    "French Establishments in Oceania",
+    "French Settlements in Oceania",
+    "Territory of French Polynesia"
+   ],
+   "es": [
+    "Francopolinesio"
+   ]
+  },
+  "cap": {
+   "qid": "Q130800",
+   "en": "Papeete",
+   "es": "Papeete",
+   "pt": "Papeete"
+  }
+ },
+ "260": {
+  "qid": "Q129003",
+  "name": {
+   "en": "French Southern and Antarctic Lands",
+   "es": "Tierras Australes y Antárticas Francesas",
+   "pt": "Terras Austrais e Antárticas Francesas"
+  },
+  "aliases": {
+   "en": [
+    "French Southern Territories",
+    "tf"
+   ],
+   "es": [
+    "Territorios Australes Franceses",
+    "Tierras Australes y Antarticas Francesas"
+   ]
+  },
+  "cap": {
+   "qid": "Q839559",
+   "en": "Port-aux-Français",
+   "es": "Port-aux-Français",
+   "pt": "Port-aux-Français"
+  }
+ },
+ "262": {
+  "qid": "Q977",
+  "name": {
+   "en": "Djibouti",
+   "es": "Yibuti",
+   "pt": "Djibouti"
+  },
+  "aliases": {
+   "en": [
+    "dj",
+    "Jabuuti",
+    "Gabuuti",
+    "Jībūtī",
+    "Republic of Djibouti"
+   ],
+   "es": [
+    "Djibouti",
+    "República de Yibuti"
+   ]
+  },
+  "cap": {
+   "qid": "Q3604",
+   "en": "Djibouti",
+   "es": "Ciudad de Yibuti",
+   "pt": "Djibouti"
+  }
+ },
+ "266": {
+  "qid": "Q1000",
+  "name": {
+   "en": "Gabon",
+   "es": "Gabón",
+   "pt": "Gabão"
+  },
+  "aliases": {
+   "en": [
+    "ga",
+    "GAB",
+    "Gabonese Republic",
+    "Republique Gabonaise",
+    "République Gabonaise"
+   ],
+   "es": [
+    "República Gabonesa"
+   ]
+  },
+  "cap": {
+   "qid": "Q3825",
+   "en": "Libreville",
+   "es": "Libreville",
+   "pt": "Libreville"
+  }
+ },
+ "268": {
+  "qid": "Q230",
+  "name": {
+   "en": "Georgia",
+   "es": "Georgia",
+   "pt": "Geórgia"
+  },
+  "aliases": {
+   "en": [
+    "Georgia (Sakartvelo)",
+    "Georgia (country)",
+    "Sakartvelo",
+    "Republic of Georgia"
+   ],
+   "es": [
+    "República de Georgia"
+   ]
+  },
+  "cap": {
+   "qid": "Q994",
+   "en": "Tbilisi",
+   "es": "Tiflis",
+   "pt": "Tiblíssi"
+  }
+ },
+ "270": {
+  "qid": "Q1005",
+  "name": {
+   "en": "The Gambia",
+   "es": "Gambia",
+   "pt": "Gâmbia"
+  },
+  "aliases": {
+   "en": [
+    "Gambia",
+    "Islamic Republic of the Gambia",
+    "Republic of the Gambia"
+   ],
+   "es": [
+    "República de Gambia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3726",
+   "en": "Banjul",
+   "es": "Banjul",
+   "pt": "Banjul"
+  }
+ },
+ "275": {
+  "qid": "Q219060",
+  "name": {
+   "en": "Palestine",
+   "es": "Palestina",
+   "pt": "Estado da Palestina"
+  },
+  "aliases": {
+   "en": [
+    "State of Palestine",
+    "PSE",
+    "Palestinian Authority",
+    "Palestinian National Authority"
+   ],
+   "es": [
+    "Estado de Palestina"
+   ]
+  },
+  "cap": {
+   "qid": "Q158119",
+   "en": "Ramallah",
+   "es": "Ramala",
+   "pt": "Ramallah"
+  }
+ },
+ "276": {
+  "qid": "Q183",
+  "name": {
+   "en": "Germany",
+   "es": "Alemania",
+   "pt": "Alemanha"
+  },
+  "aliases": {
+   "en": [
+    "Federal Republic of Germany",
+    "FRG",
+    "BRD",
+    "DE",
+    "DEU"
+   ],
+   "es": [
+    "República Federal de Alemania"
+   ]
+  },
+  "cap": {
+   "qid": "Q64",
+   "en": "Berlin",
+   "es": "Berlín",
+   "pt": "Berlim"
+  }
+ },
+ "288": {
+  "qid": "Q117",
+  "name": {
+   "en": "Ghana",
+   "es": "Ghana",
+   "pt": "Gana"
+  },
+  "aliases": {
+   "es": [
+    "República de Ghana"
+   ]
+  },
+  "cap": {
+   "qid": "Q3761",
+   "en": "Accra",
+   "es": "Acra",
+   "pt": "Acra"
+  }
+ },
+ "292": {
+  "qid": "Q1410",
+  "name": {
+   "en": "Gibraltar",
+   "es": "Gibraltar",
+   "pt": "Gibraltar"
+  },
+  "aliases": {
+   "en": [
+    "gi",
+    "Gib"
+   ],
+   "es": [
+    "la Roca"
+   ]
+  },
+  "cap": {
+   "qid": "Q1410",
+   "en": "Gibraltar",
+   "es": "Gibraltar",
+   "pt": "Gibraltar"
+  }
+ },
+ "296": {
+  "qid": "Q710",
+  "name": {
+   "en": "Kiribati",
+   "es": "Kiribati",
+   "pt": "Quiribáti"
+  },
+  "aliases": {
+   "en": [
+    "ki",
+    "Republic of Kiribati"
+   ],
+   "es": [
+    "República de Kiribati"
+   ]
+  },
+  "cap": {
+   "qid": "Q131233",
+   "en": "South Tarawa",
+   "es": "Tarawa Sur",
+   "pt": "Tarawa do Sul"
+  }
+ },
+ "300": {
+  "qid": "Q41",
+  "name": {
+   "en": "Greece",
+   "es": "Grecia",
+   "pt": "Grécia"
+  },
+  "aliases": {
+   "en": [
+    "Hellas",
+    "el",
+    "gr",
+    "Hellenic Republic",
+    "Ellada",
+    "Greek Republic",
+    "Hellas, Greece"
+   ],
+   "es": [
+    "Hélade",
+    "Hellás",
+    "República Helénica"
+   ]
+  },
+  "cap": {
+   "qid": "Q1524",
+   "en": "Athens",
+   "es": "Atenas",
+   "pt": "Atenas"
+  }
+ },
+ "304": {
+  "qid": "Q223",
+  "name": {
+   "en": "Greenland",
+   "es": "Groenlandia",
+   "pt": "Gronelândia"
+  },
+  "aliases": {
+   "en": [
+    "GL",
+    "GRL",
+    "Groenland",
+    "Kalaallit Nunaat",
+    "Greenlandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q226",
+   "en": "Nuuk",
+   "es": "Nuuk",
+   "pt": "Nuuk"
+  }
+ },
+ "308": {
+  "qid": "Q769",
+  "name": {
+   "en": "Grenada",
+   "es": "Granada",
+   "pt": "Granada"
+  },
+  "aliases": {
+   "en": [
+    "GRN",
+    "gd"
+   ],
+   "es": [
+    "Isla de Granada"
+   ]
+  },
+  "cap": {
+   "qid": "Q41547",
+   "en": "St. George's",
+   "es": "Saint George",
+   "pt": "São Jorge"
+  }
+ },
+ "312": {
+  "qid": "Q17012",
+  "name": {
+   "en": "Guadeloupe",
+   "es": "Guadalupe",
+   "pt": "Guadalupe"
+  },
+  "aliases": {
+   "en": [
+    "971",
+    "gp",
+    "Gwada",
+    "Gwadloup",
+    "Karukera"
+   ]
+  },
+  "cap": {
+   "qid": "Q167024",
+   "en": "Basse-Terre",
+   "es": "Basse-Terre",
+   "pt": "Basse-Terre"
+  }
+ },
+ "316": {
+  "qid": "Q16635",
+  "name": {
+   "en": "Guam",
+   "es": "Guam",
+   "pt": "Guam"
+  },
+  "aliases": {
+   "en": [
+    "GUM",
+    "GU",
+    "Guahan",
+    "Guåhan",
+    "Guåhån",
+    "Guam (USA)",
+    "Island of Guam",
+    "ISO 3166-1:GU",
+    "Territory of Guam",
+    "US-GU"
+   ],
+   "es": [
+    "San Juan",
+    "🇬🇺",
+    "Guaham",
+    "Guahan",
+    "Guåhån",
+    "Guajam",
+    "Guaján",
+    "Isla de San Juan",
+    "Territorio de Guam"
+   ]
+  },
+  "cap": {
+   "qid": "Q30988",
+   "en": "Hagåtña",
+   "es": "Agaña",
+   "pt": "Hagåtña"
+  }
+ },
+ "320": {
+  "qid": "Q774",
+  "name": {
+   "en": "Guatemala",
+   "es": "Guatemala",
+   "pt": "Guatemala"
+  },
+  "aliases": {
+   "en": [
+    "GT",
+    "GTM",
+    "gt",
+    "Republic of Guatemala"
+   ]
+  },
+  "cap": {
+   "qid": "Q1555",
+   "en": "Guatemala City",
+   "es": "Ciudad de Guatemala",
+   "pt": "Cidade da Guatemala"
+  }
+ },
+ "324": {
+  "qid": "Q1006",
+  "name": {
+   "en": "Guinea",
+   "es": "Guinea",
+   "pt": "Guiné"
+  },
+  "aliases": {
+   "en": [
+    "gn",
+    "GUI",
+    "Guinea-Conakry",
+    "Republic of Guinea"
+   ],
+   "es": [
+    "Guinea Francesa",
+    "Guinea-Conakri",
+    "República de Guinea"
+   ]
+  },
+  "cap": {
+   "qid": "Q3733",
+   "en": "Conakry",
+   "es": "Conakri",
+   "pt": "Conacri"
+  }
+ },
+ "328": {
+  "qid": "Q734",
+  "name": {
+   "en": "Guyana",
+   "es": "Guyana",
+   "pt": "Guiana"
+  },
+  "aliases": {
+   "en": [
+    "gy",
+    "Co-operative Republic of Guyana",
+    "Republic of Guyana"
+   ],
+   "es": [
+    "República Cooperativa de Guyana"
+   ]
+  },
+  "cap": {
+   "qid": "Q10717",
+   "en": "Georgetown",
+   "es": "Georgetown",
+   "pt": "Georgetown"
+  }
+ },
+ "332": {
+  "qid": "Q790",
+  "name": {
+   "en": "Haiti",
+   "es": "Haití",
+   "pt": "Haiti"
+  },
+  "aliases": {
+   "en": [
+    "Hayti",
+    "ht",
+    "HAI",
+    "Ayiti",
+    "Haitian Republic",
+    "Republic of Haiti"
+   ],
+   "es": [
+    "República de Haití"
+   ]
+  },
+  "cap": {
+   "qid": "Q34261",
+   "en": "Port-au-Prince",
+   "es": "Puerto Príncipe",
+   "pt": "Porto Príncipe"
+  }
+ },
+ "334": {
+  "qid": "Q131198",
+  "name": {
+   "en": "Heard Island and McDonald Islands",
+   "es": "Islas Heard y McDonald",
+   "pt": "Ilha Heard e Ilhas McDonald"
+  },
+  "aliases": {
+   "en": [
+    "hm",
+    "HMD",
+    "Heard and Macdonald Islands",
+    "Heard and McDonald Islands",
+    "HIMI",
+    "Territory of Heard Island and McDonald Islands"
+   ],
+   "es": [
+    "Heard",
+    "Isla Heard",
+    "Isla Heard e Islas McDonald",
+    "Isla McDonald",
+    "Islas McDonald"
+   ]
+  }
+ },
+ "336": {
+  "qid": "Q237",
+  "name": {
+   "en": "Vatican City",
+   "es": "Ciudad del Vaticano",
+   "pt": "Vaticano"
+  },
+  "aliases": {
+   "en": [
+    "Vatican",
+    "The Vatican",
+    "Holy See",
+    "Papal State",
+    "Città del Vaticano",
+    "State of Vatican City",
+    "Stato della Città del Vaticano",
+    "Status Civitatis Vaticanae",
+    "Vatican City State"
+   ],
+   "es": [
+    "Vaticano",
+    "Santa Sede",
+    "Estado de la Ciudad del Vaticano"
+   ]
+  },
+  "cap": {
+   "qid": "Q237",
+   "en": "Vatican City",
+   "es": "Ciudad del Vaticano",
+   "pt": "Vaticano"
+  }
+ },
+ "340": {
+  "qid": "Q783",
+  "name": {
+   "en": "Honduras",
+   "es": "Honduras",
+   "pt": "Honduras"
+  },
+  "aliases": {
+   "en": [
+    "HON",
+    "hn",
+    "Honduran Republic",
+    "Republic of Honduras"
+   ],
+   "es": [
+    "Higueras",
+    "Guaymuras",
+    "República de Honduras"
+   ]
+  },
+  "cap": {
+   "qid": "Q3238",
+   "en": "Tegucigalpa",
+   "es": "Tegucigalpa",
+   "pt": "Tegucigalpa"
+  }
+ },
+ "344": {
+  "qid": "Q8646",
+  "name": {
+   "en": "Hong Kong",
+   "es": "Hong Kong",
+   "pt": "Hong Kong"
+  },
+  "aliases": {
+   "en": [
+    "Hong Kong, China",
+    "Hongkong",
+    "HKSAR",
+    "Hong Kong SAR",
+    "Hong Kong SAR, China",
+    "Hong Kong Special Administrative Region",
+    "Hong Kong Special Administrative Region of the People's Republic of China"
+   ],
+   "es": [
+    "Xianggang"
+   ]
+  }
+ },
+ "348": {
+  "qid": "Q28",
+  "name": {
+   "en": "Hungary",
+   "es": "Hungría",
+   "pt": "Hungria"
+  },
+  "aliases": {},
+  "cap": {
+   "qid": "Q1781",
+   "en": "Budapest",
+   "es": "Budapest",
+   "pt": "Budapeste"
+  }
+ },
+ "352": {
+  "qid": "Q189",
+  "name": {
+   "en": "Iceland",
+   "es": "Islandia",
+   "pt": "Islândia"
+  },
+  "aliases": {
+   "en": [
+    "Ysland",
+    "Icelandic republic",
+    "Isl.",
+    "Republic of Iceland"
+   ],
+   "es": [
+    "República de Islandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1764",
+   "en": "Reykjavík",
+   "es": "Reikiavik",
+   "pt": "Reykjavík"
+  }
+ },
+ "356": {
+  "qid": "Q668",
+  "name": {
+   "en": "India",
+   "es": "India",
+   "pt": "Índia"
+  },
+  "aliases": {
+   "en": [
+    "Hindustan",
+    "Bharata",
+    "Tianzhu",
+    "Hindoostan",
+    "Al Hind",
+    "Bharatvarsh",
+    "Tenjiku",
+    "Bharat Ganarajya",
+    "Indostan",
+    "Republic of India"
+   ],
+   "es": [
+    "La India",
+    "República de la India"
+   ]
+  },
+  "cap": {
+   "qid": "Q987",
+   "en": "New Delhi",
+   "es": "Nueva Delhi",
+   "pt": "Nova Deli"
+  }
+ },
+ "360": {
+  "qid": "Q252",
+  "name": {
+   "en": "Indonesia",
+   "es": "Indonesia",
+   "pt": "Indonésia"
+  },
+  "aliases": {
+   "en": [
+    "id",
+    "Republic of Indonesia"
+   ],
+   "es": [
+    "República de Indonesia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3630",
+   "en": "Jakarta",
+   "es": "Yakarta",
+   "pt": "Jacarta"
+  }
+ },
+ "364": {
+  "qid": "Q794",
+  "name": {
+   "en": "Iran",
+   "es": "Irán",
+   "pt": "Irão"
+  },
+  "aliases": {
+   "en": [
+    "ir",
+    "Islamic Rep. Iran",
+    "Islamic Republic of Iran",
+    "IRI"
+   ],
+   "es": [
+    "República Islámica de Irán",
+    "República Islámica del Irán"
+   ]
+  },
+  "cap": {
+   "qid": "Q3616",
+   "en": "Tehran",
+   "es": "Teherán",
+   "pt": "Teerão"
+  }
+ },
+ "368": {
+  "qid": "Q796",
+  "name": {
+   "en": "Iraq",
+   "es": "Irak",
+   "pt": "Iraque"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Iraq",
+    "iq"
+   ],
+   "es": [
+    "Iraq",
+    "República de Irak",
+    "República de Iraq"
+   ]
+  },
+  "cap": {
+   "qid": "Q1530",
+   "en": "Baghdad",
+   "es": "Bagdad",
+   "pt": "Bagdá"
+  }
+ },
+ "372": {
+  "qid": "Q27",
+  "name": {
+   "en": "Ireland",
+   "es": "Irlanda",
+   "pt": "Irlanda"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Ireland",
+    "Southern Ireland",
+    "Irish Republic"
+   ],
+   "es": [
+    "República de Irlanda"
+   ]
+  },
+  "cap": {
+   "qid": "Q1761",
+   "en": "Dublin",
+   "es": "Dublín",
+   "pt": "Dublin"
+  }
+ },
+ "376": {
+  "qid": "Q801",
+  "name": {
+   "en": "Israel",
+   "es": "Israel",
+   "pt": "Israel"
+  },
+  "aliases": {
+   "en": [
+    "State of Israel",
+    "ISR",
+    "il",
+    "Yisrael"
+   ],
+   "es": [
+    "Estado de Israel"
+   ]
+  },
+  "cap": {
+   "qid": "Q1218",
+   "en": "Jerusalem",
+   "es": "Jerusalén",
+   "pt": "Jerusalém"
+  }
+ },
+ "380": {
+  "qid": "Q38",
+  "name": {
+   "en": "Italy",
+   "es": "Italia",
+   "pt": "Itália"
+  },
+  "aliases": {
+   "en": [
+    "Italian Republic",
+    "Republic of Italy"
+   ],
+   "es": [
+    "República Italiana"
+   ]
+  },
+  "cap": {
+   "qid": "Q220",
+   "en": "Rome",
+   "es": "Roma",
+   "pt": "Roma"
+  }
+ },
+ "384": {
+  "qid": "Q1008",
+  "name": {
+   "en": "Ivory Coast",
+   "es": "Costa de Marfil",
+   "pt": "Costa do Marfim"
+  },
+  "aliases": {
+   "en": [
+    "ci",
+    "Cote d'Ivoire",
+    "Cote d'lvoire",
+    "Cote Ivoire",
+    "Cote-d'Ivoire",
+    "Côte-d'Ivoire",
+    "Republic of Cote d'Ivoire",
+    "Republic of Côte d'Ivoire",
+    "Republic of Ivory Coast",
+    "Republic of the Ivory Coast",
+    "The Ivory Coast"
+   ],
+   "es": [
+    "República de Costa de Marfil"
+   ]
+  },
+  "cap": {
+   "qid": "Q3768",
+   "en": "Yamoussoukro",
+   "es": "Yamusukro",
+   "pt": "Yamoussoukro"
+  }
+ },
+ "388": {
+  "qid": "Q766",
+  "name": {
+   "en": "Jamaica",
+   "es": "Jamaica",
+   "pt": "Jamaica"
+  },
+  "aliases": {
+   "en": [
+    "JA",
+    "Commonwealth of Jamaica"
+   ]
+  },
+  "cap": {
+   "qid": "Q34692",
+   "en": "Kingston",
+   "es": "Kingston",
+   "pt": "Kingston"
+  }
+ },
+ "392": {
+  "qid": "Q17",
+  "name": {
+   "en": "Japan",
+   "es": "Japón",
+   "pt": "Japão"
+  },
+  "aliases": {
+   "en": [
+    "Land of the Rising Sun",
+    "Iapan",
+    "Iapon",
+    "Land of Rising Sun",
+    "Nihon-koku",
+    "Nippon-koku",
+    "State of Japan"
+   ],
+   "es": [
+    "Estado de Japón"
+   ]
+  },
+  "cap": {
+   "qid": "Q1490",
+   "en": "Tokyo",
+   "es": "Tokio",
+   "pt": "Tóquio"
+  }
+ },
+ "398": {
+  "qid": "Q232",
+  "name": {
+   "en": "Kazakhstan",
+   "es": "Kazajistán",
+   "pt": "Cazaquistão"
+  },
+  "aliases": {
+   "en": [
+    "kz",
+    "Qazaqstan",
+    "Republic of Kazakhstan",
+    "Republic of Qazaqstan"
+   ],
+   "es": [
+    "Qazaqstan",
+    "Kazajastán",
+    "Kazajia",
+    "Kazakstán",
+    "República de Kazajistán"
+   ]
+  },
+  "cap": {
+   "qid": "Q1520",
+   "en": "Astana",
+   "es": "Astaná",
+   "pt": "Astana"
+  }
+ },
+ "400": {
+  "qid": "Q810",
+  "name": {
+   "en": "Jordan",
+   "es": "Jordania",
+   "pt": "Jordânia"
+  },
+  "aliases": {
+   "en": [
+    "HKJ",
+    "Yarden",
+    "Giordania",
+    "Hashemite Kingdom of Jordan",
+    "ISO 3166-1:JO",
+    "Kingdom of Jordan",
+    "State of Jordan"
+   ],
+   "es": [
+    "Reino Hachemita de Jordania"
+   ]
+  },
+  "cap": {
+   "qid": "Q3805",
+   "en": "Amman",
+   "es": "Amán",
+   "pt": "Amã"
+  }
+ },
+ "404": {
+  "qid": "Q114",
+  "name": {
+   "en": "Kenya",
+   "es": "Kenia",
+   "pt": "Quénia"
+  },
+  "aliases": {
+   "en": [
+    "ke",
+    "Republic of Kenya"
+   ],
+   "es": [
+    "Kenya",
+    "República de Kenia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3870",
+   "en": "Nairobi",
+   "es": "Nairobi",
+   "pt": "Nairóbi"
+  }
+ },
+ "408": {
+  "qid": "Q423",
+  "name": {
+   "en": "North Korea",
+   "es": "Corea del Norte",
+   "pt": "Coreia do Norte"
+  },
+  "aliases": {
+   "en": [
+    "DPR Korea",
+    "kp",
+    "Democratic People's Republic of Korea",
+    "DPRK",
+    "N. Korea"
+   ],
+   "es": [
+    "Corea Popular",
+    "Norcorea",
+    "República Popular Democrática de Corea",
+    "RPDC"
+   ]
+  },
+  "cap": {
+   "qid": "Q18808",
+   "en": "Pyongyang",
+   "es": "Pionyang",
+   "pt": "Pyongyang"
+  }
+ },
+ "410": {
+  "qid": "Q884",
+  "name": {
+   "en": "South Korea",
+   "es": "Corea del Sur",
+   "pt": "Coreia do Sul"
+  },
+  "aliases": {
+   "en": [
+    "Hanguk",
+    "Daehan Minguk",
+    "Daehanminguk",
+    "Korea Republic",
+    "Rep. Korea",
+    "S. Korea",
+    "Republic of Korea",
+    "Silla",
+    "Choson",
+    "Korea (South)"
+   ],
+   "es": [
+    "República de Corea",
+    "Sudcorea",
+    "Surcorea"
+   ]
+  },
+  "cap": {
+   "qid": "Q8684",
+   "en": "Seoul",
+   "es": "Seúl",
+   "pt": "Seul"
+  }
+ },
+ "414": {
+  "qid": "Q817",
+  "name": {
+   "en": "Kuwait",
+   "es": "Kuwait",
+   "pt": "Kuwait"
+  },
+  "aliases": {
+   "en": [
+    "kw",
+    "State of Kuwait"
+   ],
+   "es": [
+    "Estado de Kuwait"
+   ]
+  },
+  "cap": {
+   "qid": "Q35178",
+   "en": "Kuwait City",
+   "es": "Ciudad de Kuwait",
+   "pt": "Kuwait"
+  }
+ },
+ "417": {
+  "qid": "Q813",
+  "name": {
+   "en": "Kyrgyzstan",
+   "es": "Kirguistán",
+   "pt": "Quirguistão"
+  },
+  "aliases": {
+   "en": [
+    "kg",
+    "Kyrgyz Republic"
+   ],
+   "es": [
+    "Kirguisia",
+    "Kirguizistán",
+    "República Kirguisa"
+   ]
+  },
+  "cap": {
+   "qid": "Q9361",
+   "en": "Bishkek",
+   "es": "Biskek",
+   "pt": "Bisqueque"
+  }
+ },
+ "418": {
+  "qid": "Q819",
+  "name": {
+   "en": "Laos",
+   "es": "Laos",
+   "pt": "Laos"
+  },
+  "aliases": {
+   "en": [
+    "la",
+    "Lao PDR",
+    "Lao People's Democratic Republic"
+   ],
+   "es": [
+    "República Democrática Popular Lao"
+   ]
+  },
+  "cap": {
+   "qid": "Q9326",
+   "en": "Vientiane",
+   "es": "Vientián",
+   "pt": "Vienciana"
+  }
+ },
+ "422": {
+  "qid": "Q822",
+  "name": {
+   "en": "Lebanon",
+   "es": "Líbano",
+   "pt": "Líbano"
+  },
+  "aliases": {
+   "en": [
+    "lb",
+    "Lebanese Republic",
+    "Lubnan",
+    "Republic of Lebanon",
+    "State of Lebanon"
+   ],
+   "es": [
+    "República Libanesa"
+   ]
+  },
+  "cap": {
+   "qid": "Q3820",
+   "en": "Beirut",
+   "es": "Beirut",
+   "pt": "Beirute"
+  }
+ },
+ "426": {
+  "qid": "Q1013",
+  "name": {
+   "en": "Lesotho",
+   "es": "Lesoto",
+   "pt": "Lesoto"
+  },
+  "aliases": {
+   "en": [
+    "ls",
+    "Kingdom of Lesotho",
+    "LES",
+    "The Mountain Kingdom"
+   ],
+   "es": [
+    "Lesotho",
+    "Reino de Lesotho",
+    "Reino de Lesoto"
+   ]
+  },
+  "cap": {
+   "qid": "Q3909",
+   "en": "Maseru",
+   "es": "Maseru",
+   "pt": "Maseru"
+  }
+ },
+ "428": {
+  "qid": "Q211",
+  "name": {
+   "en": "Latvia",
+   "es": "Letonia",
+   "pt": "Letónia"
+  },
+  "aliases": {
+   "en": [
+    "lv",
+    "Latveja",
+    "Latvejas Republika",
+    "Latvian Republic",
+    "Latvija",
+    "Latvijas Republika",
+    "Leţmо̄",
+    "Leţmо̄ Vabāmо̄",
+    "Republic of Latvia"
+   ],
+   "es": [
+    "República de Letonia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1773",
+   "en": "Riga",
+   "es": "Riga",
+   "pt": "Riga"
+  }
+ },
+ "430": {
+  "qid": "Q1014",
+  "name": {
+   "en": "Liberia",
+   "es": "Liberia",
+   "pt": "Libéria"
+  },
+  "aliases": {
+   "en": [
+    "Liber",
+    "lr",
+    "Republic of Liberia"
+   ],
+   "es": [
+    "República de Liberia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3748",
+   "en": "Monrovia",
+   "es": "Monrovia",
+   "pt": "Monróvia"
+  }
+ },
+ "434": {
+  "qid": "Q1016",
+  "name": {
+   "en": "Libya",
+   "es": "Libia",
+   "pt": "Líbia"
+  },
+  "aliases": {
+   "en": [
+    "LBA",
+    "State of Libya",
+    "ly"
+   ],
+   "es": [
+    "Estado de Libia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3579",
+   "en": "Tripoli",
+   "es": "Trípoli",
+   "pt": "Trípoli"
+  }
+ },
+ "438": {
+  "qid": "Q347",
+  "name": {
+   "en": "Liechtenstein",
+   "es": "Liechtenstein",
+   "pt": "Liechtenstein"
+  },
+  "aliases": {
+   "en": [
+    "li",
+    "FL",
+    "Principality of Liechtenstein"
+   ],
+   "es": [
+    "Principado de Liechtenstein"
+   ]
+  },
+  "cap": {
+   "qid": "Q1844",
+   "en": "Vaduz",
+   "es": "Vaduz",
+   "pt": "Vaduz"
+  }
+ },
+ "440": {
+  "qid": "Q37",
+  "name": {
+   "en": "Lithuania",
+   "es": "Lituania",
+   "pt": "Lituânia"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Lithuania"
+   ],
+   "es": [
+    "República de Lituania"
+   ]
+  },
+  "cap": {
+   "qid": "Q216",
+   "en": "Vilnius",
+   "es": "Vilna",
+   "pt": "Vilnius"
+  }
+ },
+ "442": {
+  "qid": "Q32",
+  "name": {
+   "en": "Luxembourg",
+   "es": "Luxemburgo",
+   "pt": "Luxemburgo"
+  },
+  "aliases": {
+   "en": [
+    "Grand Duchy of Luxembourg"
+   ],
+   "es": [
+    "Gran Ducado de Luxemburgo"
+   ]
+  },
+  "cap": {
+   "qid": "Q1842",
+   "en": "Luxembourg",
+   "es": "Luxemburgo",
+   "pt": "Luxemburgo"
+  }
+ },
+ "446": {
+  "qid": "Q14773",
+  "name": {
+   "en": "Macau",
+   "es": "Macao",
+   "pt": "Macau"
+  },
+  "aliases": {
+   "en": [
+    "Aomen",
+    "Macao S.A.R.",
+    "Macao SAR",
+    "Macao SAR, China",
+    "Macao Special Administrative Region",
+    "Macao Special Administrative Region of the People's Republic of China",
+    "Macau SAR",
+    "Macau SAR, China",
+    "Macau Special Administrative Region",
+    "Macau Special Administrative Region of the People's Republic of China"
+   ],
+   "es": [
+    "Provincia de Macao"
+   ]
+  }
+ },
+ "450": {
+  "qid": "Q1019",
+  "name": {
+   "en": "Madagascar",
+   "es": "Madagascar",
+   "pt": "Madagáscar"
+  },
+  "aliases": {
+   "en": [
+    "Malagascar",
+    "Malagaskar",
+    "mg",
+    "Republic of Madagascar"
+   ],
+   "es": [
+    "República de Madagascar",
+    "República Malgache"
+   ]
+  },
+  "cap": {
+   "qid": "Q3915",
+   "en": "Antananarivo",
+   "es": "Antananarivo",
+   "pt": "Antananarivo"
+  }
+ },
+ "454": {
+  "qid": "Q1020",
+  "name": {
+   "en": "Malawi",
+   "es": "Malaui",
+   "pt": "Malawi"
+  },
+  "aliases": {
+   "en": [
+    "MAW",
+    "mw",
+    "Republic of Malawi"
+   ],
+   "es": [
+    "Malawi",
+    "República de Malaui"
+   ]
+  },
+  "cap": {
+   "qid": "Q3876",
+   "en": "Lilongwe",
+   "es": "Lilongüe",
+   "pt": "Lilongué"
+  }
+ },
+ "458": {
+  "qid": "Q833",
+  "name": {
+   "en": "Malaysia",
+   "es": "Malasia",
+   "pt": "Malásia"
+  },
+  "aliases": {
+   "en": [
+    "Federation of Malaysia",
+    "Malaysia Federation"
+   ]
+  },
+  "cap": {
+   "qid": "Q1865",
+   "en": "Kuala Lumpur",
+   "es": "Kuala Lumpur",
+   "pt": "Kuala Lumpur"
+  }
+ },
+ "462": {
+  "qid": "Q826",
+  "name": {
+   "en": "Maldives",
+   "es": "Maldivas",
+   "pt": "Maldivas"
+  },
+  "aliases": {
+   "en": [
+    "MDV",
+    "mv",
+    "Republic of Maldives"
+   ],
+   "es": [
+    "República de Maldivas"
+   ]
+  },
+  "cap": {
+   "qid": "Q9347",
+   "en": "Malé",
+   "es": "Malé",
+   "pt": "Malé"
+  }
+ },
+ "466": {
+  "qid": "Q912",
+  "name": {
+   "en": "Mali",
+   "es": "Mali",
+   "pt": "Mali"
+  },
+  "aliases": {
+   "en": [
+    "ml",
+    "Republic of Mali"
+   ],
+   "es": [
+    "República de Malí",
+    "Malí",
+    "República de Mali"
+   ]
+  },
+  "cap": {
+   "qid": "Q3703",
+   "en": "Bamako",
+   "es": "Bamako",
+   "pt": "Bamako"
+  }
+ },
+ "470": {
+  "qid": "Q233",
+  "name": {
+   "en": "Malta",
+   "es": "Malta",
+   "pt": "Malta"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Malta"
+   ],
+   "es": [
+    "República de Malta"
+   ]
+  },
+  "cap": {
+   "qid": "Q23800",
+   "en": "Valletta",
+   "es": "La Valeta",
+   "pt": "Valeta"
+  }
+ },
+ "474": {
+  "qid": "Q17054",
+  "name": {
+   "en": "Martinique",
+   "es": "Martinica",
+   "pt": "Martinica"
+  },
+  "aliases": {
+   "en": [
+    "Madiana",
+    "Jouanacaëra",
+    "Madinina",
+    "Martinica",
+    "Matinik",
+    "Matinino",
+    "Matnik",
+    "Territorial Collectivity of Martinique",
+    "Wanakaera"
+   ],
+   "es": [
+    "🇲🇶"
+   ]
+  },
+  "cap": {
+   "qid": "Q81621",
+   "en": "Fort-de-France",
+   "es": "Fort-de-France",
+   "pt": "Forte de França"
+  }
+ },
+ "478": {
+  "qid": "Q1025",
+  "name": {
+   "en": "Mauritania",
+   "es": "Mauritania",
+   "pt": "Mauritânia"
+  },
+  "aliases": {
+   "en": [
+    "Agawej",
+    "Gannaar",
+    "Gànnaar",
+    "Islamic Republic of Mauritania",
+    "Mauretania",
+    "Moritani",
+    "mr",
+    "Muritanya",
+    "Murutaane"
+   ],
+   "es": [
+    "República Islámica de Mauritania"
+   ]
+  },
+  "cap": {
+   "qid": "Q3688",
+   "en": "Nouakchott",
+   "es": "Nuakchot",
+   "pt": "Nouakchott"
+  }
+ },
+ "480": {
+  "qid": "Q1027",
+  "name": {
+   "en": "Mauritius",
+   "es": "Mauricio",
+   "pt": "Maurícia"
+  },
+  "aliases": {
+   "en": [
+    "Maurice",
+    "MRI",
+    "MU",
+    "Moris",
+    "Republic of Mauritius"
+   ],
+   "es": [
+    "República de Mauricio"
+   ]
+  },
+  "cap": {
+   "qid": "Q3929",
+   "en": "Port Louis",
+   "es": "Port Louis",
+   "pt": "Port Louis"
+  }
+ },
+ "484": {
+  "qid": "Q96",
+  "name": {
+   "en": "Mexico",
+   "es": "México",
+   "pt": "México"
+  },
+  "aliases": {
+   "en": [
+    "United States of Mexico",
+    "United Mexican States",
+    "mx",
+    "MXN",
+    "Mexican Republic",
+    "Mexican United States",
+    "US of M"
+   ],
+   "es": [
+    "Méjico",
+    "MXN",
+    "República Mexicana",
+    "Estados Unidos Mexicanos",
+    "Estados Unidos Mejicanos",
+    "República Mejicana"
+   ]
+  },
+  "cap": {
+   "qid": "Q1489",
+   "en": "Mexico City",
+   "es": "Ciudad de México",
+   "pt": "Cidade do México"
+  }
+ },
+ "492": {
+  "qid": "Q235",
+  "name": {
+   "en": "Monaco",
+   "es": "Mónaco",
+   "pt": "Mónaco"
+  },
+  "aliases": {
+   "en": [
+    "mc",
+    "Fort-Hercule",
+    "Mùnegu",
+    "Principality and Diocese of Monaco",
+    "Principality of Monaco",
+    "Principato di Monaco",
+    "Principatu de Mu̍negu",
+    "Prinçipatu de Mùnegu",
+    "Principauté de Monaco"
+   ],
+   "es": [
+    "Principado de Mónaco"
+   ]
+  },
+  "cap": {
+   "qid": "Q235",
+   "en": "Monaco",
+   "es": "Mónaco",
+   "pt": "Mónaco"
+  }
+ },
+ "496": {
+  "qid": "Q711",
+  "name": {
+   "en": "Mongolia",
+   "es": "Mongolia",
+   "pt": "Mongólia"
+  },
+  "aliases": {
+   "en": [
+    "Mongol State",
+    "State of Mongolia"
+   ]
+  },
+  "cap": {
+   "qid": "Q23430",
+   "en": "Ulaanbaatar",
+   "es": "Ulán Bator",
+   "pt": "Ulã Bator"
+  }
+ },
+ "498": {
+  "qid": "Q217",
+  "name": {
+   "en": "Moldova",
+   "es": "Moldavia",
+   "pt": "Moldávia"
+  },
+  "aliases": {
+   "en": [
+    "Moldavia",
+    "Republic of Moldova",
+    "Republica Moldova"
+   ],
+   "es": [
+    "República de Moldovia",
+    "República de Moldova"
+   ]
+  },
+  "cap": {
+   "qid": "Q21197",
+   "en": "Chișinău",
+   "es": "Chisináu",
+   "pt": "Chișinău"
+  }
+ },
+ "499": {
+  "qid": "Q236",
+  "name": {
+   "en": "Montenegro",
+   "es": "Montenegro",
+   "pt": "Montenegro"
+  },
+  "aliases": {
+   "en": [
+    "ME",
+    "Republic of Montenegro"
+   ]
+  },
+  "cap": {
+   "qid": "Q23564",
+   "en": "Podgorica",
+   "es": "Podgorica",
+   "pt": "Podgorica"
+  }
+ },
+ "500": {
+  "qid": "Q13353",
+  "name": {
+   "en": "Montserrat",
+   "es": "Montserrat",
+   "pt": "Monserrate"
+  },
+  "aliases": {
+   "en": [
+    "MS",
+    "MSR",
+    "ms",
+    "Island of Montserrat"
+   ],
+   "es": [
+    "🇲🇸"
+   ]
+  },
+  "cap": {
+   "qid": "Q30990",
+   "en": "Plymouth",
+   "es": "Plymouth",
+   "pt": "Plymouth"
+  }
+ },
+ "504": {
+  "qid": "Q1028",
+  "name": {
+   "en": "Morocco",
+   "es": "Marruecos",
+   "pt": "Marrocos"
+  },
+  "aliases": {
+   "en": [
+    "al-Maġrib",
+    "Kingdom of Morocco",
+    "Lmaġrib",
+    "Maroc",
+    "Marocco"
+   ],
+   "es": [
+    "Reino de Marruecos"
+   ]
+  },
+  "cap": {
+   "qid": "Q3551",
+   "en": "Rabat",
+   "es": "Rabat",
+   "pt": "Rabat"
+  }
+ },
+ "508": {
+  "qid": "Q1029",
+  "name": {
+   "en": "Mozambique",
+   "es": "Mozambique",
+   "pt": "Moçambique"
+  },
+  "aliases": {
+   "en": [
+    "Moçambique",
+    "mz",
+    "Republic of Mozambique",
+    "República de Moçambique"
+   ],
+   "es": [
+    "República de Mozambique"
+   ]
+  },
+  "cap": {
+   "qid": "Q3889",
+   "en": "Maputo",
+   "es": "Maputo",
+   "pt": "Maputo"
+  }
+ },
+ "512": {
+  "qid": "Q842",
+  "name": {
+   "en": "Oman",
+   "es": "Omán",
+   "pt": "Omã"
+  },
+  "aliases": {
+   "en": [
+    "Uman",
+    "om",
+    "omn",
+    "Sultanate of Oman"
+   ],
+   "es": [
+    "Sultanato de Omán"
+   ]
+  },
+  "cap": {
+   "qid": "Q3826",
+   "en": "Muscat",
+   "es": "Mascate",
+   "pt": "Mascate"
+  }
+ },
+ "516": {
+  "qid": "Q1030",
+  "name": {
+   "en": "Namibia",
+   "es": "Namibia",
+   "pt": "Namíbia"
+  },
+  "aliases": {
+   "en": [
+    "na",
+    "Republic of Namibia"
+   ],
+   "es": [
+    "República de Namibia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3935",
+   "en": "Windhoek",
+   "es": "Windhoek",
+   "pt": "Windhoek"
+  }
+ },
+ "520": {
+  "qid": "Q697",
+  "name": {
+   "en": "Nauru",
+   "es": "Nauru",
+   "pt": "Naoero"
+  },
+  "aliases": {
+   "en": [
+    "Pleasant Island",
+    "Naoero",
+    "Republic of Nauru",
+    "Republic of Naoero"
+   ],
+   "es": [
+    "República de Nauru",
+    "Naoero",
+    "Naurú",
+    "República de Naoero",
+    "República de Naurú"
+   ]
+  },
+  "cap": {
+   "qid": "Q31026",
+   "en": "Yaren District",
+   "es": "Yaren",
+   "pt": "Yaren"
+  }
+ },
+ "524": {
+  "qid": "Q837",
+  "name": {
+   "en": "Nepal",
+   "es": "Nepal",
+   "pt": "Nepal"
+  },
+  "aliases": {
+   "en": [
+    "Palpa",
+    "Balbo",
+    "Nekbal",
+    "Bal-bo",
+    "Bal-po'i yul",
+    "Bal-yul",
+    "Balpo",
+    "Balpo-yul",
+    "Federal Democratic Republic of Nepal",
+    "Naipál",
+    "Naipala",
+    "Naipála",
+    "Ne-pel",
+    "Necbal",
+    "Nehpal",
+    "Nei-pal",
+    "Nekpal",
+    "Népaal",
+    "Nepál",
+    "Népál",
+    "Nepall",
+    "Nepaul",
+    "Nercerri",
+    "Ni-po-lo",
+    "Ni-po-louo",
+    "Niepal",
+    "Nipal",
+    "Pa-eul-pou",
+    "Pa-le-pou",
+    "Pa-lo-pou",
+    "Pai-pou",
+    "Paï-pou",
+    "Palpou"
+   ],
+   "es": [
+    "República Federal Democrática de Nepal"
+   ]
+  },
+  "cap": {
+   "qid": "Q3037",
+   "en": "Kathmandu",
+   "es": "Katmandú",
+   "pt": "Catmandu"
+  }
+ },
+ "528": {
+  "qid": "Q29999",
+  "name": {
+   "en": "Kingdom of the Netherlands",
+   "es": "Reino de los Países Bajos",
+   "pt": "Reino dos Países Baixos"
+  },
+  "aliases": {
+   "en": [
+    "Netherlands",
+    "the Netherlands",
+    "Nederlanden",
+    "Kingdom of Netherlands"
+   ],
+   "es": [
+    "Países Bajos"
+   ]
+  }
+ },
+ "531": {
+  "qid": "Q25279",
+  "name": {
+   "en": "Curaçao",
+   "es": "Curazao",
+   "pt": "Curaçau"
+  },
+  "aliases": {
+   "en": [
+    "Country of Curaçao",
+    "Curacau",
+    "Curaçoa",
+    "Curazao",
+    "Curaςao",
+    "Curocao",
+    "Island Territory of Curaçao",
+    "ISO 3166-1:CW"
+   ],
+   "es": [
+    "🇨🇼",
+    "Isla de Curazao"
+   ]
+  },
+  "cap": {
+   "qid": "Q132679",
+   "en": "Willemstad",
+   "es": "Willemstad",
+   "pt": "Willemstad"
+  }
+ },
+ "533": {
+  "qid": "Q21203",
+  "name": {
+   "en": "Aruba",
+   "es": "Aruba",
+   "pt": "Aruba"
+  },
+  "aliases": {
+   "en": [
+    "aw",
+    "Country of Aruba",
+    "Island of Aruba"
+   ],
+   "es": [
+    "aw",
+    "Isla de Aruba"
+   ]
+  },
+  "cap": {
+   "qid": "Q131243",
+   "en": "Oranjestad",
+   "es": "Oranjestad",
+   "pt": "Oranjestad"
+  }
+ },
+ "534": {
+  "qid": "Q26273",
+  "name": {
+   "en": "Sint Maarten",
+   "es": "San Martín",
+   "pt": "São Martinho"
+  },
+  "aliases": {
+   "en": [
+    "SX",
+    "NL-SX",
+    "Saint Martin (Dutch part)",
+    "Sint Martin",
+    "St. Maarten",
+    "sxm",
+    "Saint Martin",
+    "Sint Maarten (Dutch part)",
+    "St Martin"
+   ],
+   "es": [
+    "SX",
+    "Sint Maarten",
+    "St. Maarten",
+    "Sint Maarten Land",
+    "🇸🇽"
+   ]
+  },
+  "cap": {
+   "qid": "Q30958",
+   "en": "Philipsburg",
+   "es": "Philipsburg",
+   "pt": "Philipsburg"
+  }
+ },
+ "535": {
+  "qid": "Q27561",
+  "name": {
+   "en": "Caribbean Netherlands",
+   "es": "Caribe neerlandés",
+   "pt": "Países Baixos Caribenhos"
+  },
+  "aliases": {
+   "en": [
+    "BES islands",
+    "Bonaire, Saint Eustatius and Saba"
+   ],
+   "es": [
+    "🇧🇶",
+    "Caribe Neerlandés",
+    "Caribisch Nederland",
+    "Islas BES",
+    "Karibische Niederlande"
+   ]
+  }
+ },
+ "540": {
+  "qid": "Q33788",
+  "name": {
+   "en": "New Caledonia",
+   "es": "Nueva Caledonia",
+   "pt": "Nova Caledónia"
+  },
+  "aliases": {
+   "en": [
+    "New Cal",
+    "Territory of New Caledonia and Dependencies"
+   ],
+   "es": [
+    "Canaquía",
+    "Neocaledonio",
+    "Nouvelle Calédonie",
+    "Nouvelle-Caledonie"
+   ]
+  },
+  "cap": {
+   "qid": "Q9733",
+   "en": "Nouméa",
+   "es": "Numea",
+   "pt": "Nouméa"
+  }
+ },
+ "548": {
+  "qid": "Q686",
+  "name": {
+   "en": "Vanuatu",
+   "es": "Vanuatu",
+   "pt": "Vanuatu"
+  },
+  "aliases": {
+   "en": [
+    "van",
+    "VAN",
+    "vu",
+    "Republic of Vanuatu",
+    "vut"
+   ],
+   "es": [
+    "República de Vanuatu"
+   ]
+  },
+  "cap": {
+   "qid": "Q37806",
+   "en": "Port Vila",
+   "es": "Port Vila",
+   "pt": "Porto Vila"
+  }
+ },
+ "554": {
+  "qid": "Q664",
+  "name": {
+   "en": "New Zealand",
+   "es": "Nueva Zelanda",
+   "pt": "Nova Zelândia"
+  },
+  "aliases": {
+   "en": [
+    "nz",
+    "Dominion of New Zealand",
+    "Aotearoa New Zealand"
+   ],
+   "es": [
+    "Nueva Zelandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q23661",
+   "en": "Wellington",
+   "es": "Wellington",
+   "pt": "Wellington"
+  }
+ },
+ "558": {
+  "qid": "Q811",
+  "name": {
+   "en": "Nicaragua",
+   "es": "Nicaragua",
+   "pt": "Nicarágua"
+  },
+  "aliases": {
+   "en": [
+    "NCA",
+    "NI",
+    "NIC",
+    "ni",
+    "Republic of Nicaragua"
+   ],
+   "es": [
+    "República de Nicaragua"
+   ]
+  },
+  "cap": {
+   "qid": "Q3274",
+   "en": "Managua",
+   "es": "Managua",
+   "pt": "Managua"
+  }
+ },
+ "562": {
+  "qid": "Q1032",
+  "name": {
+   "en": "Niger",
+   "es": "Níger",
+   "pt": "Níger"
+  },
+  "aliases": {
+   "en": [
+    "ne",
+    "Republic Niger",
+    "Republic of Niger",
+    "Republic of the Niger",
+    "The Niger"
+   ],
+   "es": [
+    "Niger",
+    "República del Níger"
+   ]
+  },
+  "cap": {
+   "qid": "Q3674",
+   "en": "Niamey",
+   "es": "Niamey",
+   "pt": "Niamey"
+  }
+ },
+ "566": {
+  "qid": "Q1033",
+  "name": {
+   "en": "Nigeria",
+   "es": "Nigeria",
+   "pt": "Nigéria"
+  },
+  "aliases": {
+   "en": [
+    "Federal Republic of Nigeria",
+    "Naija"
+   ],
+   "es": [
+    "República Federal de Nigeria"
+   ]
+  },
+  "cap": {
+   "qid": "Q3787",
+   "en": "Abuja",
+   "es": "Abuya"
+  }
+ },
+ "570": {
+  "qid": "Q34020",
+  "name": {
+   "en": "Niue",
+   "es": "Niue",
+   "pt": "Niue"
+  },
+  "aliases": {
+   "en": [
+    "nu"
+   ],
+   "es": [
+    "Isla Niue"
+   ]
+  },
+  "cap": {
+   "qid": "Q30966",
+   "en": "Alofi",
+   "es": "Alofi",
+   "pt": "Alofi"
+  }
+ },
+ "574": {
+  "qid": "Q31057",
+  "name": {
+   "en": "Norfolk Island",
+   "es": "Isla Norfolk",
+   "pt": "Ilha Norfolk"
+  },
+  "aliases": {
+   "en": [
+    "Norfolk Island, Australia",
+    "Norfolk Island, Other Territories",
+    "Norfolk Island, Other Territories, Australia",
+    "Territory of Norfolk Island"
+   ],
+   "es": [
+    "Norfolk",
+    "Isla de Norfolk",
+    "Islas Norfolk"
+   ]
+  },
+  "cap": {
+   "qid": "Q30963",
+   "en": "Kingston",
+   "es": "Kingston",
+   "pt": "Kingston"
+  }
+ },
+ "578": {
+  "qid": "Q20",
+  "name": {
+   "en": "Norway",
+   "es": "Noruega",
+   "pt": "Noruega"
+  },
+  "aliases": {
+   "en": [
+    "Kingdom of Norway"
+   ],
+   "es": [
+    "Reino de Noruega"
+   ]
+  }
+ },
+ "580": {
+  "qid": "Q16644",
+  "name": {
+   "en": "Northern Mariana Islands",
+   "es": "Islas Marianas del Norte",
+   "pt": "Marianas Setentrionais"
+  },
+  "aliases": {
+   "en": [
+    "Commonwealth of the Northern Mariana Islands",
+    "the Northern Mariana Islands",
+    "MP",
+    "mp",
+    "NMI",
+    "CNMI",
+    "Commonwealth of the Northern Maria Islands",
+    "ISO 3166-1:MP",
+    "nmi",
+    "Northern Marianas",
+    "US-MP"
+   ],
+   "es": [
+    "Islas Marianas Septentrionales",
+    "Mancomunidad de las Islas Marías del Norte"
+   ]
+  },
+  "cap": {
+   "qid": "Q49755159",
+   "en": "Saipan"
+  }
+ },
+ "581": {
+  "qid": "Q16645",
+  "name": {
+   "en": "United States Minor Outlying Islands",
+   "es": "Islas ultramarinas de Estados Unidos",
+   "pt": "Ilhas Menores Distantes dos Estados Unidos"
+  },
+  "aliases": {
+   "en": [
+    "um",
+    "U.S. Minor Outlying Islands",
+    "US Minor Outlying Islands",
+    "US-UM",
+    "USMOI"
+   ]
+  }
+ },
+ "583": {
+  "qid": "Q702",
+  "name": {
+   "en": "Federated States of Micronesia",
+   "es": "Estados Federados de Micronesia",
+   "pt": "Micronésia"
+  },
+  "aliases": {
+   "en": [
+    "Micronesia",
+    "FSM",
+    "fm",
+    "Fed. Sts. Micronesia",
+    "Fed. Sts. of Micronesia",
+    "Federated States of Micronesia, FSM"
+   ],
+   "es": [
+    "Micronesia"
+   ]
+  },
+  "cap": {
+   "qid": "Q42751",
+   "en": "Palikir",
+   "es": "Palikir",
+   "pt": "Paliquir"
+  }
+ },
+ "584": {
+  "qid": "Q709",
+  "name": {
+   "en": "Marshall Islands",
+   "es": "Islas Marshall",
+   "pt": "Ilhas Marshall"
+  },
+  "aliases": {
+   "en": [
+    "mh",
+    "Republic of the Marshall Islands"
+   ],
+   "es": [
+    "Islas de los Pintados",
+    "República de las Islas Marshall"
+   ]
+  },
+  "cap": {
+   "qid": "Q12919",
+   "en": "Majuro",
+   "es": "Majuro",
+   "pt": "Majuro"
+  }
+ },
+ "585": {
+  "qid": "Q695",
+  "name": {
+   "en": "Palau",
+   "es": "Palaos",
+   "pt": "Palau"
+  },
+  "aliases": {
+   "en": [
+    "Belau",
+    "pw",
+    "Pellew",
+    "Peeloo",
+    "Pelew",
+    "Pelew islands",
+    "Republic of Belau",
+    "Republic of Palau"
+   ],
+   "es": [
+    "Palau",
+    "República de Palaos"
+   ]
+  },
+  "cap": {
+   "qid": "Q515229",
+   "en": "Ngerulmud",
+   "es": "Ngerulmud",
+   "pt": "Ngerulmud"
+  }
+ },
+ "586": {
+  "qid": "Q843",
+  "name": {
+   "en": "Pakistan",
+   "es": "Pakistán",
+   "pt": "Paquistão"
+  },
+  "aliases": {
+   "en": [
+    "pk",
+    "Islamic Republic of Pakistan",
+    "Republic of Pakistan",
+    "Hồi Quốc",
+    "Tây Hồi"
+   ],
+   "es": [
+    "Paquistán",
+    "República Islámica del Pakistán",
+    "República Islámica del Paquistán"
+   ]
+  },
+  "cap": {
+   "qid": "Q1362",
+   "en": "Islamabad",
+   "es": "Islamabad",
+   "pt": "Islamabad"
+  }
+ },
+ "591": {
+  "qid": "Q804",
+  "name": {
+   "en": "Panama",
+   "es": "Panamá",
+   "pt": "Panamá"
+  },
+  "aliases": {
+   "en": [
+    "pa",
+    "Republic of Panama"
+   ],
+   "es": [
+    "República de Panamá"
+   ]
+  },
+  "cap": {
+   "qid": "Q3306",
+   "en": "Panama City",
+   "es": "Ciudad de Panamá",
+   "pt": "Cidade do Panamá"
+  }
+ },
+ "598": {
+  "qid": "Q691",
+  "name": {
+   "en": "Papua New Guinea",
+   "es": "Papúa Nueva Guinea",
+   "pt": "Papua-Nova Guiné"
+  },
+  "aliases": {
+   "en": [
+    "Independent State of Papua New Guinea"
+   ],
+   "es": [
+    "Estado Independiente de Papua Nueva Guinea",
+    "Estado Independiente de Papúa Nueva Guinea",
+    "Papua Nueva Guinea"
+   ]
+  },
+  "cap": {
+   "qid": "Q36526",
+   "en": "Port Moresby",
+   "es": "Puerto Moresby",
+   "pt": "Port Moresby"
+  }
+ },
+ "600": {
+  "qid": "Q733",
+  "name": {
+   "en": "Paraguay",
+   "es": "Paraguay",
+   "pt": "Paraguai"
+  },
+  "aliases": {
+   "en": [
+    "Heart of South America",
+    "Republic of Paraguay"
+   ],
+   "es": [
+    "República del Paraguay"
+   ]
+  },
+  "cap": {
+   "qid": "Q2933",
+   "en": "Asunción",
+   "es": "Asunción",
+   "pt": "Assunção"
+  }
+ },
+ "604": {
+  "qid": "Q419",
+  "name": {
+   "en": "Peru",
+   "es": "Perú",
+   "pt": "Peru"
+  },
+  "aliases": {
+   "en": [
+    "per",
+    "pe",
+    "Republic of Peru",
+    "Republica del Peru"
+   ],
+   "es": [
+    "República del Perú"
+   ]
+  },
+  "cap": {
+   "qid": "Q2868",
+   "en": "Lima",
+   "es": "Lima",
+   "pt": "Lima"
+  }
+ },
+ "608": {
+  "qid": "Q928",
+  "name": {
+   "en": "Philippines",
+   "es": "Filipinas",
+   "pt": "Filipinas"
+  },
+  "aliases": {
+   "en": [
+    "RP",
+    "Republic of the Philippines",
+    "Philippine Islands",
+    "The Philippines"
+   ],
+   "es": [
+    "República de Filipinas"
+   ]
+  },
+  "cap": {
+   "qid": "Q1461",
+   "en": "Manila",
+   "es": "Manila",
+   "pt": "Manila"
+  }
+ },
+ "612": {
+  "qid": "Q35672",
+  "name": {
+   "en": "Pitcairn Islands",
+   "es": "Islas Pitcairn",
+   "pt": "Ilhas Pitcairn"
+  },
+  "aliases": {
+   "en": [
+    "pn",
+    "Occas Island",
+    "Pitcairn, Henderson, Ducie and Oeno Islands"
+   ],
+   "es": [
+    "Las Islas Pitcairn"
+   ]
+  },
+  "cap": {
+   "qid": "Q48273",
+   "en": "Adamstown",
+   "es": "Adamstown",
+   "pt": "Adamstown"
+  }
+ },
+ "616": {
+  "qid": "Q36",
+  "name": {
+   "en": "Poland",
+   "es": "Polonia",
+   "pt": "Polónia"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Poland"
+   ],
+   "es": [
+    "República de Polonia"
+   ]
+  },
+  "cap": {
+   "qid": "Q270",
+   "en": "Warsaw",
+   "es": "Varsovia",
+   "pt": "Varsóvia"
+  }
+ },
+ "620": {
+  "qid": "Q45",
+  "name": {
+   "en": "Portugal",
+   "es": "Portugal",
+   "pt": "Portugal"
+  },
+  "aliases": {
+   "en": [
+    "POR",
+    "Portuguese Republic"
+   ],
+   "es": [
+    "República de Portugal"
+   ]
+  },
+  "cap": {
+   "qid": "Q597",
+   "en": "Lisbon",
+   "es": "Lisboa",
+   "pt": "Lisboa"
+  }
+ },
+ "624": {
+  "qid": "Q1007",
+  "name": {
+   "en": "Guinea-Bissau",
+   "es": "Guinea-Bisáu",
+   "pt": "Guiné-Bissau"
+  },
+  "aliases": {
+   "en": [
+    "GBS",
+    "gw",
+    "Republic of Guinea-Bissau"
+   ],
+   "es": [
+    "Guinea-Bisau",
+    "Guinea-Bissau",
+    "República de Guinea-Bisáu"
+   ]
+  },
+  "cap": {
+   "qid": "Q3739",
+   "en": "Bissau",
+   "es": "Bisáu",
+   "pt": "Bissau"
+  }
+ },
+ "626": {
+  "qid": "Q574",
+  "name": {
+   "en": "Timor-Leste",
+   "es": "Timor Oriental",
+   "pt": "Timor-Leste"
+  },
+  "aliases": {
+   "en": [
+    "East Timor",
+    "TL",
+    "Democratic Republic of Timor-Leste"
+   ],
+   "es": [
+    "República Democrática de Timor Oriental"
+   ]
+  },
+  "cap": {
+   "qid": "Q9310",
+   "en": "Dili",
+   "es": "Dili",
+   "pt": "Díli"
+  }
+ },
+ "630": {
+  "qid": "Q1183",
+  "name": {
+   "en": "Puerto Rico",
+   "es": "Puerto Rico",
+   "pt": "Porto Rico"
+  },
+  "aliases": {
+   "en": [
+    "Borinquen",
+    "Porto Rico",
+    "Borikén",
+    "Boriquén",
+    "Commonwealth of Puerto Rico",
+    "Free Associated State of Puerto Rico",
+    "Island of Enchantment",
+    "Isle of Enchantment",
+    "Territory of Puerto Rico",
+    "Territory of Porto Rico"
+   ],
+   "es": [
+    "Estado Libre Asociado de Puerto Rico",
+    "Isla del Encanto",
+    "Mancomunidad de Puerto Rico",
+    "Territorio de Puerto Rico",
+    "Territorio Estadounidense de Puerto Rico"
+   ]
+  },
+  "cap": {
+   "qid": "Q41211",
+   "en": "San Juan",
+   "es": "San Juan",
+   "pt": "San Juan"
+  }
+ },
+ "634": {
+  "qid": "Q846",
+  "name": {
+   "en": "Qatar",
+   "es": "Catar",
+   "pt": "Catar"
+  },
+  "aliases": {
+   "en": [
+    "qat",
+    "qa",
+    "State of Qatar"
+   ],
+   "es": [
+    "Estado de Catar"
+   ]
+  },
+  "cap": {
+   "qid": "Q3861",
+   "en": "Doha",
+   "es": "Doha",
+   "pt": "Doha"
+  }
+ },
+ "638": {
+  "qid": "Q17070",
+  "name": {
+   "en": "Réunion",
+   "es": "Reunión",
+   "pt": "Reunião"
+  },
+  "aliases": {
+   "en": [
+    "re",
+    "La Réunion",
+    "La Reunion",
+    ".re",
+    "Bourbon Island",
+    "Île de la Réunion",
+    "Île de La Réunion",
+    "La Réunion Island",
+    "Reunion Island",
+    "ISO 3166-1:RE",
+    "Île de Bourbon"
+   ]
+  },
+  "cap": {
+   "qid": "Q47045",
+   "en": "Saint-Denis",
+   "es": "Saint-Denis",
+   "pt": "Saint-Denis"
+  }
+ },
+ "642": {
+  "qid": "Q218",
+  "name": {
+   "en": "Romania",
+   "es": "Rumania",
+   "pt": "Roménia"
+  },
+  "aliases": {
+   "en": [
+    "Roumania",
+    "Rumania"
+   ],
+   "es": [
+    "Rumanía"
+   ]
+  },
+  "cap": {
+   "qid": "Q19660",
+   "en": "Bucharest",
+   "es": "Bucarest",
+   "pt": "Bucareste"
+  }
+ },
+ "643": {
+  "qid": "Q159",
+  "name": {
+   "en": "Russia",
+   "es": "Rusia",
+   "pt": "Rússia"
+  },
+  "aliases": {
+   "en": [
+    "Russian Federation"
+   ],
+   "es": [
+    "Federación de Rusia",
+    "Federación Rusa"
+   ]
+  },
+  "cap": {
+   "qid": "Q649",
+   "en": "Moscow",
+   "es": "Moscú",
+   "pt": "Moscovo"
+  }
+ },
+ "646": {
+  "qid": "Q1037",
+  "name": {
+   "en": "Rwanda",
+   "es": "Ruanda",
+   "pt": "Ruanda"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Rwanda",
+    "The Land of a Thousand Hills"
+   ],
+   "es": [
+    "República Ruandesa",
+    "🇷🇼",
+    "Rwanda"
+   ]
+  },
+  "cap": {
+   "qid": "Q3859",
+   "en": "Kigali",
+   "es": "Kigali",
+   "pt": "Quigali"
+  }
+ },
+ "652": {
+  "qid": "Q25362",
+  "name": {
+   "en": "Saint Barthélemy",
+   "es": "San Bartolomé",
+   "pt": "São Bartolomeu"
+  },
+  "aliases": {
+   "en": [
+    "Saint-Barthélémy",
+    "St. Barts",
+    "Collectivite de Saint-Barthelemy",
+    "Collectivité de Saint-Barthélemy",
+    "Collectivity of Saint Barthelemy",
+    "Collectivity of Saint Barthélemy",
+    "Ile Saint-Barthelemy",
+    "Ile Saint-Barthélemy",
+    "Île Saint-Barthélemy",
+    "Ouanalao",
+    "Saint Barth",
+    "Saint Barthélémy",
+    "Saint Barths",
+    "Saint Barts",
+    "Saint Bartz",
+    "St barthelemy",
+    "St barths",
+    "St barts",
+    "St. Barth",
+    "St. Barthelemy",
+    "St. Barthélemy",
+    "St. Barths"
+   ],
+   "es": [
+    "Collectivite d'outre-mer de Saint-Barthelemy",
+    "Collectivité d'outre-mer de Saint-Barthélemy",
+    "Isla de Saint Barthelemy",
+    "Isla de Saint Barthèlemy",
+    "Isla de Saint-Barthelemy",
+    "Isla de Saint-Barthèlemy",
+    "Isla de San Bartolome",
+    "Isla de San Bartolomé",
+    "Saint Barth",
+    "Saint-Barth",
+    "Saint-Barthélémy",
+    "San Bartalome",
+    "San Bartalomé",
+    "San Bartolome"
+   ]
+  },
+  "cap": {
+   "qid": "Q34112",
+   "en": "Gustavia",
+   "es": "Gustavia",
+   "pt": "Gustávia"
+  }
+ },
+ "654": {
+  "qid": "Q192184",
+  "name": {
+   "en": "Saint Helena, Ascension and Tristan da Cunha",
+   "es": "Santa Elena, Ascensión y Tristán de Acuña",
+   "pt": "Santa Helena, Ascensão e Tristão da Cunha"
+  },
+  "aliases": {
+   "en": [
+    "Saint Helena and Dependencies",
+    "Saint Helena, Ascension, and Tristan da Cunha"
+   ],
+   "es": [
+    "Santa Elena",
+    "Ascension y Tristan da Cunha",
+    "Ascension y Tristán da Cunha",
+    "Ascensión y Tristan da Cunha",
+    "Ascensión y Tristán da Cunha",
+    "Islas Santa Elena",
+    "Saint Helena",
+    "Santa Helena, Ascensión y Tristán de Acuña"
+   ]
+  },
+  "cap": {
+   "qid": "Q30970",
+   "en": "Jamestown",
+   "es": "Jamestown",
+   "pt": "Jamestown"
+  }
+ },
+ "659": {
+  "qid": "Q763",
+  "name": {
+   "en": "Saint Kitts and Nevis",
+   "es": "San Cristóbal y Nieves",
+   "pt": "São Cristóvão e Neves"
+  },
+  "aliases": {
+   "en": [
+    "SKN",
+    "Federation of Saint Christopher and Nevis",
+    "Federation of Saint Kitts and Nevis",
+    "Kitts & Nevis",
+    "Kitts and Nevis",
+    "Saint Christopher and Nevis",
+    "St Kitts & Nevis",
+    "St Kitts and Nevis",
+    "St. Kitts & Nevis",
+    "St. Kitts and Nevis"
+   ],
+   "es": [
+    "Federación de San Cristóbal y Nieves"
+   ]
+  },
+  "cap": {
+   "qid": "Q41295",
+   "en": "Basseterre",
+   "es": "Basseterre",
+   "pt": "Basseterre"
+  }
+ },
+ "660": {
+  "qid": "Q25228",
+  "name": {
+   "en": "Anguilla",
+   "es": "Anguila",
+   "pt": "Anguila"
+  },
+  "aliases": {
+   "en": [
+    "AIA",
+    "ai",
+    "Malliouhana"
+   ],
+   "es": [
+    "Anguilla",
+    "Archipielago Anguila",
+    "Archipiélago Anguila",
+    "Archipielago de Anguila",
+    "Archipiélago de Anguila"
+   ]
+  },
+  "cap": {
+   "qid": "Q30994",
+   "en": "The Valley",
+   "es": "El Valle",
+   "pt": "The Valley"
+  }
+ },
+ "662": {
+  "qid": "Q760",
+  "name": {
+   "en": "Saint Lucia",
+   "es": "Santa Lucía",
+   "pt": "Santa Lúcia"
+  },
+  "aliases": {
+   "en": [
+    "St Lucia",
+    "St. Lucia",
+    "lca",
+    "Hewanorra",
+    "Iyonola",
+    "lc"
+   ]
+  },
+  "cap": {
+   "qid": "Q41699",
+   "en": "Castries",
+   "es": "Castries",
+   "pt": "Castries"
+  }
+ },
+ "663": {
+  "qid": "Q126125",
+  "name": {
+   "en": "Saint-Martin",
+   "es": "San Martín",
+   "pt": "São Martinho"
+  },
+  "aliases": {
+   "en": [
+    "Saint Martin (French part)",
+    "St. Martin",
+    "St Martin",
+    "Collectivity of Saint Martin",
+    "FR-MF",
+    "mf",
+    "Saint Martin (France)",
+    "St. Martin (French part)"
+   ],
+   "es": [
+    "San Martin",
+    "Colectividad de San Martin",
+    "Colectividad de San Martín",
+    "Collectivite de Saint Martin",
+    "Collectivité de Saint Martin",
+    "Collectivite de Saint-Martin",
+    "Collectivité de Saint-Martin"
+   ]
+  },
+  "cap": {
+   "qid": "Q200605",
+   "en": "Marigot",
+   "es": "Marigot",
+   "pt": "Marigot"
+  }
+ },
+ "666": {
+  "qid": "Q34617",
+  "name": {
+   "en": "Saint Pierre and Miquelon",
+   "es": "San Pedro y Miquelón",
+   "pt": "Saint-Pierre e Miquelon"
+  },
+  "aliases": {
+   "en": [
+    "Territorial Collectivity of Saint Pierre and Miquelon",
+    "pm",
+    "FR-PM",
+    "Saint Pierre & Miquelon",
+    "Saint-Pierre & Miquelon",
+    "Saint-Pierre and Miquelon",
+    "St Pierre & Miquelon",
+    "St Pierre and Miquelon",
+    "St-Pierre & Miquelon",
+    "St. Pierre & Miquelon",
+    "St. Pierre and Miquelon",
+    "St.-Pierre & Miquelon",
+    "St.-Pierre and Miquelon"
+   ],
+   "es": [
+    "Saint-Pierre y Miquelon",
+    "San Pedro y Miguelon",
+    "San Pedro y Miguelón",
+    "San Pedro y Miquelon",
+    "San Pier y Miquelon",
+    "San Pier y Miquelón",
+    "Once Mil Vírgenes",
+    "Saint Pierre y Miquelon",
+    "Saint Pierre y Miquelón"
+   ]
+  },
+  "cap": {
+   "qid": "Q185678",
+   "en": "Saint-Pierre",
+   "es": "San Pedro",
+   "pt": "Saint-Pierre"
+  }
+ },
+ "670": {
+  "qid": "Q757",
+  "name": {
+   "en": "Saint Vincent and the Grenadines",
+   "es": "San Vicente y las Granadinas",
+   "pt": "São Vicente e Granadinas"
+  },
+  "aliases": {
+   "en": [
+    "St. Vincent",
+    "St Vincent",
+    "Saint Vincent",
+    "vc",
+    "St Vincent and the Grenadines",
+    "St. Vincent and the Grenadines",
+    "vct"
+   ]
+  },
+  "cap": {
+   "qid": "Q41474",
+   "en": "Kingstown",
+   "es": "Kingstown",
+   "pt": "Kingstown"
+  }
+ },
+ "674": {
+  "qid": "Q238",
+  "name": {
+   "en": "San Marino",
+   "es": "San Marino",
+   "pt": "San Marino"
+  },
+  "aliases": {
+   "en": [
+    "sm",
+    "Most Serene Republic of San Marino"
+   ],
+   "es": [
+    "Serenísima República de San Marino",
+    "República de San Marino"
+   ]
+  },
+  "cap": {
+   "qid": "Q1848",
+   "en": "San Marino",
+   "es": "San Marino",
+   "pt": "San Marino"
+  }
+ },
+ "678": {
+  "qid": "Q1039",
+  "name": {
+   "en": "São Tomé and Príncipe",
+   "es": "Santo Tomé y Príncipe",
+   "pt": "São Tomé e Príncipe"
+  },
+  "aliases": {
+   "en": [
+    "Sao Tome and Principe",
+    "Democratic Republic of São Tomé and Príncipe",
+    "Sao Tome & Principe",
+    "São Tomé og Príncipe",
+    "st"
+   ],
+   "es": [
+    "República Democrática de Santo Tomé y Príncipe"
+   ]
+  },
+  "cap": {
+   "qid": "Q3932",
+   "en": "São Tomé",
+   "es": "Santo Tomé",
+   "pt": "São Tomé"
+  }
+ },
+ "682": {
+  "qid": "Q851",
+  "name": {
+   "en": "Saudi Arabia",
+   "es": "Arabia Saudí",
+   "pt": "Arábia Saudita"
+  },
+  "aliases": {
+   "en": [
+    "Kingdom of Saudi Arabia",
+    "Saudi"
+   ],
+   "es": [
+    "Reino de Arabia Saudí",
+    "Reino de Arabia Saudita",
+    "Arabia Saudita"
+   ]
+  },
+  "cap": {
+   "qid": "Q3692",
+   "en": "Riyadh",
+   "es": "Riad",
+   "pt": "Riade"
+  }
+ },
+ "686": {
+  "qid": "Q1041",
+  "name": {
+   "en": "Senegal",
+   "es": "Senegal",
+   "pt": "Senegal"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Senegal"
+   ],
+   "es": [
+    "República de Senegal"
+   ]
+  },
+  "cap": {
+   "qid": "Q3718",
+   "en": "Dakar",
+   "es": "Dakar",
+   "pt": "Dacar"
+  }
+ },
+ "688": {
+  "qid": "Q403",
+  "name": {
+   "en": "Serbia",
+   "es": "Serbia",
+   "pt": "Sérvia"
+  },
+  "aliases": {
+   "en": [
+    "RS",
+    "Republic of Serbia"
+   ],
+   "es": [
+    "Servia",
+    "República de Serbia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3711",
+   "en": "Belgrade",
+   "es": "Belgrado",
+   "pt": "Belgrado"
+  }
+ },
+ "690": {
+  "qid": "Q1042",
+  "name": {
+   "en": "Seychelles",
+   "es": "Seychelles",
+   "pt": "Seychelles"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Seychelles",
+    "sc",
+    "SEY"
+   ],
+   "es": [
+    "República de las Seychelles"
+   ]
+  },
+  "cap": {
+   "qid": "Q3940",
+   "en": "Victoria",
+   "es": "Victoria",
+   "pt": "Victoria"
+  }
+ },
+ "694": {
+  "qid": "Q1044",
+  "name": {
+   "en": "Sierra Leone",
+   "es": "Sierra Leona",
+   "pt": "Serra Leoa"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Sierra Leone",
+    "sl",
+    "SLE"
+   ],
+   "es": [
+    "República de Sierra Leona"
+   ]
+  },
+  "cap": {
+   "qid": "Q3780",
+   "en": "Freetown",
+   "es": "Freetown",
+   "pt": "Freetown"
+  }
+ },
+ "702": {
+  "qid": "Q334",
+  "name": {
+   "en": "Singapore",
+   "es": "Singapur",
+   "pt": "Singapura"
+  },
+  "aliases": {
+   "en": [
+    "Garden City",
+    "sg",
+    "Lion City",
+    "Singapore City",
+    "Republic of Singapore",
+    "S'pore"
+   ],
+   "es": [
+    "Ciudad de Singapur",
+    "República de Singapur"
+   ]
+  },
+  "cap": {
+   "qid": "Q334",
+   "en": "Singapore",
+   "es": "Singapur",
+   "pt": "Singapura"
+  }
+ },
+ "703": {
+  "qid": "Q214",
+  "name": {
+   "en": "Slovakia",
+   "es": "Eslovaquia",
+   "pt": "Eslováquia"
+  },
+  "aliases": {
+   "en": [
+    "SVK",
+    "SK",
+    "Slovak Republic"
+   ],
+   "es": [
+    "República Eslovaca"
+   ]
+  },
+  "cap": {
+   "qid": "Q1780",
+   "en": "Bratislava",
+   "es": "Bratislava",
+   "pt": "Bratislava"
+  }
+ },
+ "704": {
+  "qid": "Q881",
+  "name": {
+   "en": "Vietnam",
+   "es": "Vietnam",
+   "pt": "Vietname"
+  },
+  "aliases": {
+   "en": [
+    "VNM",
+    "VN",
+    "Viet Nam",
+    "SRV",
+    "VIE",
+    "Socialist Republic of Viet Nam",
+    "Socialist Republic of Vietnam",
+    "Việt Nam"
+   ],
+   "es": [
+    "República Socialista de Vietnam",
+    "Viet Nam"
+   ]
+  },
+  "cap": {
+   "qid": "Q1858",
+   "en": "Hanoi",
+   "es": "Hanói",
+   "pt": "Hanói"
+  }
+ },
+ "705": {
+  "qid": "Q215",
+  "name": {
+   "en": "Slovenia",
+   "es": "Eslovenia",
+   "pt": "Eslovénia"
+  },
+  "aliases": {
+   "en": [
+    "si",
+    "svn",
+    "Slovenija",
+    "Republic of Slovenia",
+    "slo"
+   ],
+   "es": [
+    "República de Eslovenia",
+    "🇸🇮"
+   ]
+  },
+  "cap": {
+   "qid": "Q437",
+   "en": "Ljubljana",
+   "es": "Liubliana",
+   "pt": "Liubliana"
+  }
+ },
+ "706": {
+  "qid": "Q1045",
+  "name": {
+   "en": "Somalia",
+   "es": "Somalia",
+   "pt": "Somália"
+  },
+  "aliases": {
+   "en": [
+    "Federal Republic of Somalia"
+   ],
+   "es": [
+    "República Federal de Somalia",
+    "Somalía"
+   ]
+  },
+  "cap": {
+   "qid": "Q2449",
+   "en": "Mogadishu",
+   "es": "Mogadiscio",
+   "pt": "Mogadixo"
+  }
+ },
+ "710": {
+  "qid": "Q258",
+  "name": {
+   "en": "South Africa",
+   "es": "Sudáfrica",
+   "pt": "África do Sul"
+  },
+  "aliases": {
+   "en": [
+    "SA",
+    "RSA",
+    "R.S.A.",
+    "Republic of South Africa",
+    "zaf"
+   ],
+   "es": [
+    "República de Sudáfrica"
+   ]
+  },
+  "cap": {
+   "qid": "Q3926",
+   "en": "Pretoria",
+   "es": "Pretoria",
+   "pt": "Pretória"
+  }
+ },
+ "716": {
+  "qid": "Q954",
+  "name": {
+   "en": "Zimbabwe",
+   "es": "Zimbabue",
+   "pt": "Zimbábue"
+  },
+  "aliases": {
+   "en": [
+    "Rhodesia",
+    "Southern Rhodesia",
+    "Zimbabwe Rhodesia",
+    "Republic of Zimbabwe"
+   ],
+   "es": [
+    "República de Zimbabue",
+    "Zimbagüe"
+   ]
+  },
+  "cap": {
+   "qid": "Q3921",
+   "en": "Harare",
+   "es": "Harare",
+   "pt": "Harare"
+  }
+ },
+ "724": {
+  "qid": "Q29",
+  "name": {
+   "en": "Spain",
+   "es": "España",
+   "pt": "Espanha"
+  },
+  "aliases": {
+   "en": [
+    "Kingdom of Spain"
+   ],
+   "es": [
+    "Reino de España"
+   ]
+  },
+  "cap": {
+   "qid": "Q2807",
+   "en": "Madrid",
+   "es": "Madrid",
+   "pt": "Madrid"
+  }
+ },
+ "728": {
+  "qid": "Q958",
+  "name": {
+   "en": "South Sudan",
+   "es": "Sudán del Sur",
+   "pt": "Sudão do Sul"
+  },
+  "aliases": {
+   "en": [
+    "ss",
+    "SSD",
+    "Southern Sudan",
+    "Republic of South Sudan"
+   ],
+   "es": [
+    "República de Sudán del Sur"
+   ]
+  },
+  "cap": {
+   "qid": "Q1947",
+   "en": "Juba",
+   "es": "Yuba",
+   "pt": "Juba"
+  }
+ },
+ "729": {
+  "qid": "Q1049",
+  "name": {
+   "en": "Sudan",
+   "es": "Sudán",
+   "pt": "Sudão"
+  },
+  "aliases": {
+   "en": [
+    "al-Sudan",
+    "as-Sudan",
+    "as-Sūdān",
+    "North Sudan",
+    "Republic of Sudan",
+    "Republic of the Sudan",
+    "sd",
+    "Soudan",
+    "SUD",
+    "the Sudan"
+   ],
+   "es": [
+    "República de Sudán"
+   ]
+  },
+  "cap": {
+   "qid": "Q1963",
+   "en": "Khartoum",
+   "es": "Jartum",
+   "pt": "Cartum"
+  }
+ },
+ "732": {
+  "qid": "Q6250",
+  "name": {
+   "en": "Western Sahara",
+   "es": "Sahara Occidental",
+   "pt": "Sara Ocidental"
+  },
+  "aliases": {
+   "en": [
+    "Southern Provinces",
+    "West Sahara",
+    "Spanish Sahara"
+   ],
+   "es": [
+    "Sáhara Occidental"
+   ]
+  }
+ },
+ "740": {
+  "qid": "Q730",
+  "name": {
+   "en": "Suriname",
+   "es": "Surinam",
+   "pt": "Suriname"
+  },
+  "aliases": {
+   "en": [
+    "sr",
+    "Surinam",
+    "Dutch Guiana",
+    "Republic of Surinam",
+    "Republic of Suriname",
+    "Surrinam"
+   ],
+   "es": [
+    "República de Surinam"
+   ]
+  },
+  "cap": {
+   "qid": "Q3001",
+   "en": "Paramaribo",
+   "es": "Paramaribo",
+   "pt": "Paramaribo"
+  }
+ },
+ "744": {
+  "qid": "Q842829",
+  "name": {
+   "en": "Svalbard and Jan Mayen",
+   "es": "Svalbard y Jan Mayen",
+   "pt": "Svalbard e Jan Mayen"
+  },
+  "aliases": {
+   "en": [
+    "🇸🇯",
+    "sj"
+   ]
+  }
+ },
+ "748": {
+  "qid": "Q1050",
+  "name": {
+   "en": "Eswatini",
+   "es": "Suazilandia",
+   "pt": "Essuatíni"
+  },
+  "aliases": {
+   "en": [
+    "Swaziland",
+    "eSwatini",
+    "Kingdom of Eswatini",
+    "Kingdom of Swaziland",
+    "sz",
+    "Umbuso weSwatini"
+   ],
+   "es": [
+    "Esuatini",
+    "Reino de Esuatini",
+    "Reino de Suazilandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q101418",
+   "en": "Lobamba",
+   "es": "Lobamba",
+   "pt": "Lobamba"
+  }
+ },
+ "752": {
+  "qid": "Q34",
+  "name": {
+   "en": "Sweden",
+   "es": "Suecia",
+   "pt": "Suécia"
+  },
+  "aliases": {
+   "en": [
+    "Kingdom of Sweden",
+    "se",
+    "Swedish Kingdom"
+   ],
+   "es": [
+    "Reino de Suecia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1754",
+   "en": "Stockholm",
+   "es": "Estocolmo",
+   "pt": "Estocolmo"
+  }
+ },
+ "756": {
+  "qid": "Q39",
+  "name": {
+   "en": "Switzerland",
+   "es": "Suiza",
+   "pt": "Suíça"
+  },
+  "aliases": {
+   "en": [
+    "Swiss",
+    "Confoederatio Helvetica",
+    "Swiss Confederation"
+   ],
+   "es": [
+    "Confederación Suiza",
+    "Confederación Helvética"
+   ]
+  },
+  "cap": {
+   "qid": "Q70",
+   "en": "Bern",
+   "es": "Berna",
+   "pt": "Berna"
+  }
+ },
+ "760": {
+  "qid": "Q858",
+  "name": {
+   "en": "Syria",
+   "es": "Siria",
+   "pt": "Síria"
+  },
+  "aliases": {
+   "en": [
+    "Surya",
+    "Syrian Arab Republic"
+   ],
+   "es": [
+    "República Árabe Siria"
+   ]
+  },
+  "cap": {
+   "qid": "Q3766",
+   "en": "Damascus",
+   "es": "Damasco",
+   "pt": "Damasco"
+  }
+ },
+ "762": {
+  "qid": "Q863",
+  "name": {
+   "en": "Tajikistan",
+   "es": "Tayikistán",
+   "pt": "Tajiquistão"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Tajikistan",
+    "tj"
+   ],
+   "es": [
+    "República de Tayikistán",
+    "Tajikistán"
+   ]
+  },
+  "cap": {
+   "qid": "Q9365",
+   "en": "Dushanbe",
+   "es": "Dusambé",
+   "pt": "Duchambe"
+  }
+ },
+ "764": {
+  "qid": "Q869",
+  "name": {
+   "en": "Thailand",
+   "es": "Tailandia",
+   "pt": "Tailândia"
+  },
+  "aliases": {
+   "en": [
+    "th",
+    "Thai",
+    "Kingdom of Siam",
+    "Kingdom of Thailand",
+    "The Kingdom of Siam",
+    "The Kingdom of Thailand",
+    "Prathet Thai",
+    "Ratcha-anachak Thai"
+   ],
+   "es": [
+    "Reino de Tailandia"
+   ]
+  },
+  "cap": {
+   "qid": "Q1861",
+   "en": "Bangkok",
+   "es": "Bangkok",
+   "pt": "Banguecoque"
+  }
+ },
+ "768": {
+  "qid": "Q945",
+  "name": {
+   "en": "Togo",
+   "es": "Togo",
+   "pt": "Togo"
+  },
+  "aliases": {
+   "en": [
+    "tg",
+    "Togolese Republic"
+   ],
+   "es": [
+    "República Togolesa"
+   ]
+  },
+  "cap": {
+   "qid": "Q3792",
+   "en": "Lomé",
+   "es": "Lomé",
+   "pt": "Lomé"
+  }
+ },
+ "772": {
+  "qid": "Q36823",
+  "name": {
+   "en": "Tokelau",
+   "es": "Tokelau",
+   "pt": "Tokelau"
+  },
+  "aliases": {
+   "en": [
+    "tk",
+    "Tokelau Islands",
+    "Union Islands"
+   ]
+  }
+ },
+ "776": {
+  "qid": "Q678",
+  "name": {
+   "en": "Tonga",
+   "es": "Tonga",
+   "pt": "Tonga"
+  },
+  "aliases": {
+   "en": [
+    "to",
+    "TGA",
+    "Kingdom of Tonga",
+    "Tonga Islands",
+    "Friendly Islands"
+   ],
+   "es": [
+    "Reino de Tonga"
+   ]
+  },
+  "cap": {
+   "qid": "Q38834",
+   "en": "Nukuʻalofa",
+   "es": "Nukualofa",
+   "pt": "Nuku'alofa"
+  }
+ },
+ "780": {
+  "qid": "Q754",
+  "name": {
+   "en": "Trinidad and Tobago",
+   "es": "Trinidad y Tobago",
+   "pt": "Trindade e Tobago"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Trinidad and Tobago",
+    "tt",
+    "Trinidad & Tobago"
+   ],
+   "es": [
+    "República de Trinidad y Tobago",
+    "Trinidad y Tabago"
+   ]
+  },
+  "cap": {
+   "qid": "Q39178",
+   "en": "Port of Spain",
+   "es": "Puerto España",
+   "pt": "Port of Spain"
+  }
+ },
+ "784": {
+  "qid": "Q878",
+  "name": {
+   "en": "United Arab Emirates",
+   "es": "Emiratos Árabes Unidos",
+   "pt": "Emirados Árabes Unidos"
+  },
+  "aliases": {
+   "en": [
+    "Emirates",
+    "ae",
+    "the United Arab Emirates",
+    "the Emirates",
+    "the U.A.E.",
+    "the UAE",
+    "U.A.E."
+   ],
+   "es": [
+    "EAU"
+   ]
+  },
+  "cap": {
+   "qid": "Q1519",
+   "en": "Abu Dhabi",
+   "es": "Abu Dhabi",
+   "pt": "Abu Dhabi"
+  }
+ },
+ "788": {
+  "qid": "Q948",
+  "name": {
+   "en": "Tunisia",
+   "es": "Túnez",
+   "pt": "Tunísia"
+  },
+  "aliases": {
+   "en": [
+    "tn",
+    "Republic of Tunisia",
+    "Tunisian Republic"
+   ],
+   "es": [
+    "Tunicia",
+    "República Tunecina"
+   ]
+  },
+  "cap": {
+   "qid": "Q3572",
+   "en": "Tunis",
+   "es": "Túnez",
+   "pt": "Tunes"
+  }
+ },
+ "792": {
+  "qid": "Q43",
+  "name": {
+   "en": "Turkey",
+   "es": "Turquía",
+   "pt": "Turquia"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Turkey",
+    "Republic of Türkiye"
+   ],
+   "es": [
+    "República de Turquía",
+    "República Turca"
+   ]
+  },
+  "cap": {
+   "qid": "Q3640",
+   "en": "Ankara",
+   "es": "Ankara",
+   "pt": "Ancara"
+  }
+ },
+ "795": {
+  "qid": "Q874",
+  "name": {
+   "en": "Turkmenistan",
+   "es": "Turkmenistán",
+   "pt": "Turquemenistão"
+  },
+  "aliases": {
+   "en": [
+    "TKM",
+    "tm",
+    "Turkmenia"
+   ],
+   "es": [
+    "Turcmenistán",
+    "Türkmenistán"
+   ]
+  },
+  "cap": {
+   "qid": "Q23438",
+   "en": "Ashgabat",
+   "es": "Asjabad",
+   "pt": "Asgabate"
+  }
+ },
+ "796": {
+  "qid": "Q18221",
+  "name": {
+   "en": "Turks and Caicos Islands",
+   "es": "Islas Turcas y Caicos",
+   "pt": "Ilhas Turcas e Caicos"
+  },
+  "aliases": {
+   "en": [
+    "TCI",
+    "Turks & Caicos",
+    "tc",
+    "Turks and Caicos"
+   ]
+  },
+  "cap": {
+   "qid": "Q34205",
+   "en": "Cockburn Town",
+   "es": "Cockburn Town",
+   "pt": "Cockburn Town"
+  }
+ },
+ "798": {
+  "qid": "Q672",
+  "name": {
+   "en": "Tuvalu",
+   "es": "Tuvalu",
+   "pt": "Tuvalu"
+  },
+  "aliases": {
+   "en": [
+    "tv",
+    "TUV",
+    "Ellice Islands"
+   ],
+   "es": [
+    "Islas Ellice"
+   ]
+  },
+  "cap": {
+   "qid": "Q34126",
+   "en": "Funafuti",
+   "es": "Funafuti",
+   "pt": "Funafuti"
+  }
+ },
+ "800": {
+  "qid": "Q1036",
+  "name": {
+   "en": "Uganda",
+   "es": "Uganda",
+   "pt": "Uganda"
+  },
+  "aliases": {
+   "en": [
+    "+256",
+    "Ouganda",
+    "Pearl of Africa",
+    "Republic of Uganda",
+    "The Republic of Uganda",
+    "ug",
+    "Ugandah"
+   ],
+   "es": [
+    "República de Uganda"
+   ]
+  },
+  "cap": {
+   "qid": "Q3894",
+   "en": "Kampala",
+   "es": "Kampala",
+   "pt": "Campala"
+  }
+ },
+ "804": {
+  "qid": "Q212",
+  "name": {
+   "en": "Ukraine",
+   "es": "Ucrania",
+   "pt": "Ucrânia"
+  },
+  "aliases": {
+   "en": [
+    "Ukrainia",
+    "Ukraina",
+    "Ukr.",
+    "Ukraïna"
+   ],
+   "es": [
+    "Ukraina",
+    "Ukrainia",
+    "🇺🇦",
+    "Ucraina"
+   ]
+  },
+  "cap": {
+   "qid": "Q1899",
+   "en": "Kyiv",
+   "es": "Kiev",
+   "pt": "Kiev"
+  }
+ },
+ "807": {
+  "qid": "Q221",
+  "name": {
+   "en": "North Macedonia",
+   "es": "Macedonia del Norte",
+   "pt": "Macedónia do Norte"
+  },
+  "aliases": {
+   "en": [
+    "Macedonia",
+    "NM",
+    "MK",
+    "Makedonia",
+    "MKD",
+    "Former Yugoslav Republic of Macedonia",
+    "FYR Macedonia",
+    "Republic of Macedonia",
+    "Republic of North Macedonia"
+   ],
+   "es": [
+    "Antigua República Yugoslava de Macedonia",
+    "Ex República Yugoslava de Macedonia",
+    "República de Macedonia",
+    "República de Macedonia del Norte"
+   ]
+  },
+  "cap": {
+   "qid": "Q384",
+   "en": "Skopje",
+   "es": "Skopie",
+   "pt": "Skopje"
+  }
+ },
+ "818": {
+  "qid": "Q79",
+  "name": {
+   "en": "Egypt",
+   "es": "Egipto",
+   "pt": "Egito"
+  },
+  "aliases": {
+   "en": [
+    "Misr",
+    "Republic of Egypt",
+    "Arab Rep. Egypt",
+    "Arab Republic of Egypt",
+    "Rep. Egypt"
+   ],
+   "es": [
+    "República Árabe de Egipto"
+   ]
+  },
+  "cap": {
+   "qid": "Q85",
+   "en": "Cairo",
+   "es": "El Cairo",
+   "pt": "Cairo"
+  }
+ },
+ "826": {
+  "qid": "Q145",
+  "name": {
+   "en": "United Kingdom",
+   "es": "Reino Unido",
+   "pt": "Reino Unido"
+  },
+  "aliases": {
+   "en": [
+    "G B",
+    "Great Britain and Northern Ireland",
+    "U K",
+    "United Kingdom of Great Britain and Northern Ireland",
+    "Great Britain",
+    "the United Kingdom of Great Britain and Northern Ireland",
+    "the UK",
+    "the United Kingdom"
+   ],
+   "es": [
+    "Reino Unido de Gran Bretaña e Irlanda del Norte",
+    "Reino Unido de la Gran Bretaña e Irlanda del Norte",
+    "El Reino Unido"
+   ]
+  },
+  "cap": {
+   "qid": "Q84",
+   "en": "London",
+   "es": "Londres",
+   "pt": "Londres"
+  }
+ },
+ "831": {
+  "qid": "Q25230",
+  "name": {
+   "en": "Guernsey",
+   "es": "Guernsey",
+   "pt": "Guernsey"
+  },
+  "aliases": {
+   "en": [
+    "gg",
+    "GBG",
+    "Lisia",
+    "Bailiwick of Guernsey",
+    "Bailliage de Guernesey",
+    "Bailliage dé Guernési",
+    "GB-GSY",
+    "Giernési",
+    "Great Britain Guernsey",
+    "XA-GG"
+   ],
+   "es": [
+    "Bailía de Guernsey",
+    "Bailia del Guernsey",
+    "Bailía del Guernsey",
+    "Bailiazgo de Guernsey",
+    "GB-GSY",
+    "🇬🇬"
+   ]
+  },
+  "cap": {
+   "qid": "Q174262",
+   "en": "Saint Peter Port",
+   "es": "Saint Peter Port",
+   "pt": "Saint Peter Port"
+  }
+ },
+ "832": {
+  "qid": "Q785",
+  "name": {
+   "en": "Jersey"
+  },
+  "aliases": {
+   "en": [
+    "Bailliage de Jerri",
+    "Bailliage de Jèrri",
+    "Bailliage de Jersey",
+    "Balliwick of Jersey",
+    "I. Iersey",
+    "I. Jersey",
+    "Iersey I.",
+    "Jèrri",
+    "Jersey I.",
+    "Isle of Jersey",
+    "Iersey",
+    "je",
+    "Jersey Island",
+    "Jerri"
+   ],
+   "es": [
+    "bailía de Jersey",
+    "Bailiazgo de Jersey"
+   ]
+  },
+  "cap": {
+   "qid": "Q147738",
+   "en": "Saint Helier",
+   "es": "Saint Helier",
+   "pt": "Saint Helier"
+  }
+ },
+ "833": {
+  "qid": "Q9676",
+  "name": {
+   "en": "Isle of Man",
+   "es": "Isla de Man",
+   "pt": "Ilha de Man"
+  },
+  "aliases": {
+   "en": [
+    "Man",
+    "the Isle of Man",
+    "Mann",
+    "Manx",
+    "I. M.",
+    "I. Man",
+    "I. Mann",
+    "I. Mannin",
+    "Isle of Mann"
+   ]
+  },
+  "cap": {
+   "qid": "Q18569",
+   "en": "Douglas",
+   "es": "Douglas",
+   "pt": "Douglas"
+  }
+ },
+ "834": {
+  "qid": "Q924",
+  "name": {
+   "en": "Tanzania",
+   "es": "Tanzania",
+   "pt": "Tanzânia"
+  },
+  "aliases": {
+   "en": [
+    "United Republic of Tanzania",
+    "Tanzania, United Republic of",
+    "tz",
+    "tza",
+    "United Republic of Tanganyika and Zanzibar"
+   ],
+   "es": [
+    "República Unida de Tanzania",
+    "República Unida de Tanzanía"
+   ]
+  },
+  "cap": {
+   "qid": "Q3866",
+   "en": "Dodoma",
+   "es": "Dodoma",
+   "pt": "Dodoma"
+  }
+ },
+ "840": {
+  "qid": "Q30",
+  "name": {
+   "en": "United States",
+   "es": "Estados Unidos",
+   "pt": "Estados Unidos"
+  },
+  "aliases": {
+   "en": [
+    "the States",
+    "the U.S.",
+    "the U.S. of A",
+    "the U.S. of America",
+    "the U.S.A.",
+    "the United States of America",
+    "the US",
+    "the US of A",
+    "the US of America",
+    "U. S.",
+    "U. S. A.",
+    "U.S. of America",
+    "US of A",
+    "US of America",
+    "the United States",
+    "United States of America",
+    "the USA",
+    "Murica",
+    "Merica"
+   ],
+   "es": [
+    "EE.UU.",
+    "EE.UU. de América",
+    "EEUU",
+    "los Estados",
+    "Los Estados Unidos",
+    "Los Estados Unidos de América",
+    "Estados Unidos de América",
+    "Unión Americana"
+   ]
+  },
+  "cap": {
+   "qid": "Q61",
+   "en": "Washington, D.C.",
+   "es": "Washington D. C.",
+   "pt": "Washington, D.C."
+  }
+ },
+ "850": {
+  "qid": "Q11703",
+  "name": {
+   "en": "United States Virgin Islands",
+   "es": "Islas Vírgenes de los Estados Unidos",
+   "pt": "Ilhas Virgens Americanas"
+  },
+  "aliases": {
+   "en": [
+    "American Virgin Islands",
+    "the United States Virgin Islands",
+    "Virgin Islands of the United States",
+    "U.S. Virgin Islands",
+    "US Virgin Islands"
+   ],
+   "es": [
+    "Islas Vírgenes Estadounidenses",
+    "🇻🇮"
+   ]
+  },
+  "cap": {
+   "qid": "Q51681",
+   "en": "Charlotte Amalie",
+   "es": "Charlotte Amalie",
+   "pt": "Charlotte Amalie"
+  }
+ },
+ "854": {
+  "qid": "Q965",
+  "name": {
+   "en": "Burkina Faso",
+   "es": "Burkina Faso",
+   "pt": "Burquina Fasso"
+  },
+  "aliases": {
+   "en": [
+    "bf",
+    "Republic of Burkina Faso",
+    "Republic of Upper Volta (-1984)"
+   ]
+  },
+  "cap": {
+   "qid": "Q3777",
+   "en": "Ouagadougou",
+   "es": "Uagadugú",
+   "pt": "Uagadugu"
+  }
+ },
+ "858": {
+  "qid": "Q77",
+  "name": {
+   "en": "Uruguay",
+   "es": "Uruguay",
+   "pt": "Uruguai"
+  },
+  "aliases": {
+   "en": [
+    "uy",
+    "URU",
+    "Eastern Republic of Uruguay",
+    "Oriental Republic of Uruguay"
+   ],
+   "es": [
+    "República Oriental de Uruguay"
+   ]
+  },
+  "cap": {
+   "qid": "Q1335",
+   "en": "Montevideo",
+   "es": "Montevideo",
+   "pt": "Montevidéu"
+  }
+ },
+ "860": {
+  "qid": "Q265",
+  "name": {
+   "en": "Uzbekistan",
+   "es": "Uzbekistán",
+   "pt": "Usbequistão"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Uzbekistan"
+   ],
+   "es": [
+    "República de Uzbekistán"
+   ]
+  },
+  "cap": {
+   "qid": "Q269",
+   "en": "Tashkent",
+   "es": "Taskent",
+   "pt": "Tasquente"
+  }
+ },
+ "862": {
+  "qid": "Q717",
+  "name": {
+   "en": "Venezuela",
+   "es": "Venezuela",
+   "pt": "Venezuela"
+  },
+  "aliases": {
+   "en": [
+    "Republic of Venezuela",
+    "Bolivarian Republic of Venezuela",
+    "BR Venezuela"
+   ],
+   "es": [
+    "República de Venezuela",
+    "Estados Unidos de Venezuela",
+    "RB Venezuela",
+    "República Bolivariana de Venezuela"
+   ]
+  },
+  "cap": {
+   "qid": "Q1533",
+   "en": "Caracas",
+   "es": "Caracas",
+   "pt": "Caracas"
+  }
+ },
+ "876": {
+  "qid": "Q35555",
+  "name": {
+   "en": "Wallis and Futuna",
+   "es": "Wallis y Futuna",
+   "pt": "Wallis e Futuna"
+  },
+  "aliases": {
+   "en": [
+    "Wallis & Futuna",
+    "Wallis and Futuna Islands"
+   ],
+   "es": [
+    "Colectividad de Wallis y Futuna",
+    "Islas Wallis y Futuna",
+    "Territorio de las Islas Wallis y Futuna",
+    "Uvea mo Futuna",
+    "Wallis y Fortuna"
+   ]
+  },
+  "cap": {
+   "qid": "Q31002",
+   "en": "Mata-Utu",
+   "es": "Mata-Utu",
+   "pt": "Mata-Utu"
+  }
+ },
+ "882": {
+  "qid": "Q683",
+  "name": {
+   "en": "Samoa",
+   "es": "Samoa",
+   "pt": "Samoa"
+  },
+  "aliases": {
+   "en": [
+    "ws",
+    "SAM",
+    "Western Samoa",
+    "Independent State of Samoa"
+   ],
+   "es": [
+    "Estado Independiente de Samoa"
+   ]
+  },
+  "cap": {
+   "qid": "Q36260",
+   "en": "Apia",
+   "es": "Apia",
+   "pt": "Apia"
+  }
+ },
+ "887": {
+  "qid": "Q805",
+  "name": {
+   "en": "Yemen",
+   "es": "Yemen",
+   "pt": "Iémen"
+  },
+  "aliases": {
+   "en": [
+    "ye",
+    "Rep. Yemen",
+    "Republic of Yemen"
+   ],
+   "es": [
+    "República de Yemen"
+   ]
+  },
+  "cap": {
+   "qid": "Q2471",
+   "en": "Sanaa",
+   "es": "Saná",
+   "pt": "Sana"
+  }
+ },
+ "894": {
+  "qid": "Q953",
+  "name": {
+   "en": "Zambia",
+   "es": "Zambia",
+   "pt": "Zâmbia"
+  },
+  "aliases": {
+   "en": [
+    "Zed",
+    "Republic of Zambia"
+   ],
+   "es": [
+    "República de Zambia"
+   ]
+  },
+  "cap": {
+   "qid": "Q3881",
+   "en": "Lusaka",
+   "es": "Lusaka",
+   "pt": "Lusaca"
+  }
+ },
+ "926": {
+  "qid": "Q1246",
+  "name": {
+   "en": "Kosovo",
+   "es": "Kosovo",
+   "pt": "Kosovo"
+  },
+  "aliases": {
+   "en": [
+    "KOS",
+    "XK",
+    "KV",
+    "Kosova",
+    "Republic of Kosovo",
+    "RKS",
+    "XKX"
+   ],
+   "es": [
+    "Republica de Kosovo",
+    "República de Kosovo",
+    "XK",
+    "🇽🇰"
+   ]
+  },
+  "cap": {
+   "qid": "Q25270",
+   "en": "Pristina",
+   "es": "Pristina",
+   "pt": "Pristina"
+  }
+ },
+ "gb-eng": {
+  "qid": "Q21",
+  "name": {
+   "en": "England",
+   "es": "Inglaterra",
+   "pt": "Inglaterra"
+  },
+  "aliases": {
+   "en": [
+    "England, UK",
+    "England, United Kingdom"
+   ]
+  },
+  "cap": {
+   "qid": "Q84",
+   "en": "London",
+   "es": "Londres",
+   "pt": "Londres"
+  }
+ },
+ "gb-sct": {
+  "qid": "Q22",
+  "name": {
+   "en": "Scotland",
+   "es": "Escocia",
+   "pt": "Escócia"
+  },
+  "aliases": {
+   "en": [
+    "Caledonia",
+    "Scot",
+    "Alba",
+    "Scotland, United Kingdom"
+   ],
+   "es": [
+    "Caledonia"
+   ]
+  },
+  "cap": {
+   "qid": "Q23436",
+   "en": "Edinburgh",
+   "es": "Edimburgo",
+   "pt": "Edimburgo"
+  }
+ },
+ "gb-wls": {
+  "qid": "Q25",
+  "name": {
+   "en": "Wales",
+   "es": "Gales",
+   "pt": "País de Gales"
+  },
+  "aliases": {
+   "es": [
+    "Cambria",
+    "Principado de Gales"
+   ]
+  },
+  "cap": {
+   "qid": "Q10690",
+   "en": "Cardiff"
+  }
+ },
+ "gb-nir": {
+  "qid": "Q26",
+  "name": {
+   "en": "Northern Ireland",
+   "es": "Irlanda del Norte",
+   "pt": "Irlanda do Norte"
+  },
+  "aliases": {
+   "en": [
+    "NI",
+    "The North",
+    "NIR",
+    "N. Ireland",
+    "North Ireland",
+    "The Six Counties",
+    "Tuaisceart Éireann",
+    "UKN"
+   ],
+   "es": [
+    "Irlanda del N.",
+    "Irlanda Septentrional",
+    "N. Irlanda",
+    "Norirlanda",
+    "Norlin Airlann",
+    "Tuaisceart Éireann"
+   ]
+  },
+  "cap": {
+   "qid": "Q10686",
+   "en": "Belfast",
+   "es": "Belfast",
+   "pt": "Belfast"
+  }
+ },
+ "sh-ac": {
+  "qid": "Q46197",
+  "name": {
+   "en": "Ascension Island",
+   "es": "Isla Ascensión",
+   "pt": "Ilha de Ascensão"
+  },
+  "aliases": {
+   "en": [
+    "AC",
+    "Ascension",
+    "ac"
+   ],
+   "es": [
+    "Ascensión",
+    "Ascension",
+    "Ascension Island",
+    "Isla Ascension",
+    "Wildeawake Island"
+   ]
+  },
+  "cap": {
+   "qid": "Q695774",
+   "en": "Georgetown",
+   "es": "Georgetown",
+   "pt": "Georgetown"
+  }
+ },
+ "sh-ta": {
+  "qid": "Q220982",
+  "name": {
+   "en": "Tristan da Cunha",
+   "es": "Tristán de Acuña",
+   "pt": "Arquipélago de Tristão da Cunha"
+  },
+  "aliases": {
+   "en": [
+    "Tristan",
+    "TA",
+    "Tristan d'Acunha",
+    "Tristan da Cunha Group",
+    "Tristan da Cunha Islands"
+   ],
+   "es": [
+    "🇹🇦",
+    "Tristan d'Acunha",
+    "Tristan da Cunha"
+   ]
+  }
+ },
+ "bq-se": {
+  "qid": "Q26180",
+  "name": {
+   "en": "Sint Eustatius",
+   "es": "San Eustaquio",
+   "pt": "Santo Eustáquio"
+  },
+  "aliases": {
+   "en": [
+    "St. Eustatius",
+    "Statius",
+    "Statia",
+    "Saint Eustatius"
+   ],
+   "es": [
+    "Sint Eustatius",
+    "Isla de San Eustaquio"
+   ]
+  },
+  "cap": {
+   "qid": "Q217610",
+   "en": "Oranjestad",
+   "es": "Oranjestad",
+   "pt": "Oranjestad"
+  }
+ },
+ "cl-ip": {
+  "qid": "Q14452",
+  "name": {
+   "en": "Easter Island",
+   "es": "Isla de Pascua",
+   "pt": "Ilha de Páscoa"
+  },
+  "aliases": {
+   "en": [
+    "Te pito o te kainga a Hau Maka"
+   ],
+   "es": [
+    "Isla de David",
+    "Isla de San Carlos",
+    "Rapa Nui"
+   ]
+  }
+ },
+ "eu": {
+  "qid": "Q458",
+  "name": {
+   "en": "European Union",
+   "es": "Unión Europea",
+   "pt": "União Europeia"
+  },
+  "aliases": {
+   "es": [
+    "Europa",
+    "Unión",
+    "Union Europea"
+   ]
+  }
+ },
+ "xa": {
+  "qid": "Q23334",
+  "name": {
+   "en": "Abkhazia",
+   "es": "Abjasia",
+   "pt": "Abecásia"
+  },
+  "aliases": {
+   "en": [
+    "Abkhasia",
+    "Abchasia",
+    "Abkazia",
+    "Abkhaziya"
+   ]
+  },
+  "cap": {
+   "qid": "Q40811",
+   "en": "Sokhumi",
+   "es": "Sujumi",
+   "pt": "Sokhumi"
+  }
+ },
+ "xo": {
+  "qid": "Q23427",
+  "name": {
+   "en": "South Ossetia",
+   "es": "Osetia del Sur",
+   "pt": "Ossétia do Sul"
+  },
+  "aliases": {
+   "en": [
+    "Alania",
+    "Republic of South Ossetia",
+    "Republic of South Ossetia – the State of Alania",
+    "S Ossetia",
+    "S. Ossetia",
+    "South Osetia",
+    "South Ossetian",
+    "South Ossetian Republic",
+    "South Ossettia",
+    "State of Alania",
+    "the State of Alania",
+    "Tskhinvali Region"
+   ],
+   "es": [
+    "Estado de Alania",
+    "República de Osetia del Sur"
+   ]
+  },
+  "cap": {
+   "qid": "Q79863",
+   "en": "Tskhinval",
+   "es": "Tsjinval",
+   "pt": "Tskhinvali"
+  }
+ },
+ "bat": {
+  "qid": "Q165783",
+  "name": {
+   "en": "British Antarctic Territory",
+   "es": "Territorio Antártico Británico",
+   "pt": "Território Antártico Britânico"
+  },
+  "aliases": {
+   "en": [
+    "BAT"
+   ],
+   "es": [
+    "Antartica Britanica",
+    "Antártica Británica",
+    "Antartida Britanica",
+    "Antártida Británica",
+    "Territorio Antartico Britanico"
+   ]
+  },
+  "cap": {
+   "qid": "Q1635867",
+   "en": "Rothera Research Station",
+   "es": "Base Rothera"
+  }
+ }
+}

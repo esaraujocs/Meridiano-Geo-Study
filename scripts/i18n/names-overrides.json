@@ -1,0 +1,351 @@
+{
+ "_leia": "Correções à mão sobre o Wikidata (nome comum em vez do oficial, capital que o jogo usa, desambiguação). name/cap substituem; al soma respostas aceitas no modo escrito.",
+ "en": {
+  "535": {
+   "name": "Bonaire",
+   "al": [
+    "Caribbean Netherlands",
+    "Bonaire, Sint Eustatius and Saba"
+   ],
+   "cap": "Kralendijk"
+  },
+  "654": {
+   "name": "Saint Helena"
+  },
+  "534": {
+   "name": "Sint Maarten"
+  },
+  "663": {
+   "name": "Saint Martin"
+  },
+  "239": {
+   "name": "South Georgia and the South Sandwich Islands",
+   "al": [
+    "South Georgia"
+   ],
+   "cap": "King Edward Point"
+  },
+  "28": {
+   "cap": "Saint John's"
+  },
+  "344": {
+   "cap": "Victoria"
+  },
+  "528": {
+   "name": "Netherlands",
+   "cap": "Amsterdam",
+   "al": [
+    "Holland",
+    "The Netherlands"
+   ]
+  },
+  "578": {
+   "cap": "Oslo"
+  },
+  "732": {
+   "cap": "Laayoune",
+   "al": [
+    "El Aaiún"
+   ]
+  },
+  "744": {
+   "cap": "Longyearbyen"
+  },
+  "772": {
+   "cap": "Fakaofo"
+  },
+  "sh-ta": {
+   "cap": "Edinburgh of the Seven Seas"
+  },
+  "cl-ip": {
+   "cap": "Hanga Roa"
+  },
+  "226": {
+   "cap": "Malabo"
+  },
+  "520": {
+   "cap": "Yaren"
+  },
+  "bat": {
+   "cap": "Rothera"
+  },
+  "156": {
+   "name": "China",
+   "al": [
+    "People's Republic of China"
+   ]
+  },
+  "158": {
+   "name": "Taiwan",
+   "al": [
+    "Republic of China",
+    "Formosa"
+   ]
+  },
+  "203": {
+   "name": "Czechia",
+   "al": [
+    "Czech Republic"
+   ]
+  },
+  "792": {
+   "name": "Turkey",
+   "al": [
+    "Türkiye"
+   ]
+  },
+  "104": {
+   "name": "Myanmar",
+   "al": [
+    "Burma"
+   ]
+  },
+  "384": {
+   "al": [
+    "Côte d'Ivoire"
+   ]
+  },
+  "748": {
+   "al": [
+    "Swaziland"
+   ]
+  },
+  "583": {
+   "name": "Micronesia",
+   "al": [
+    "Federated States of Micronesia"
+   ]
+  },
+  "166": {
+   "name": "Cocos (Keeling) Islands",
+   "al": [
+    "Cocos Islands"
+   ]
+  },
+  "336": {
+   "name": "Vatican City",
+   "al": [
+    "Holy See",
+    "Vatican"
+   ]
+  },
+  "248": {
+   "name": "Åland Islands",
+   "al": [
+    "Åland"
+   ]
+  },
+  "238": {
+   "al": [
+    "Malvinas",
+    "Falklands"
+   ]
+  },
+  "180": {
+   "name": "DR Congo",
+   "al": [
+    "Democratic Republic of the Congo",
+    "Congo-Kinshasa"
+   ]
+  },
+  "178": {
+   "name": "Republic of the Congo",
+   "al": [
+    "Congo",
+    "Congo-Brazzaville"
+   ]
+  },
+  "804": {
+   "cap": "Kyiv",
+   "capAl": [
+    "Kiev"
+   ]
+  },
+  "840": {
+   "capAl": [
+    "Washington",
+    "Washington DC"
+   ]
+  }
+ },
+ "es": {
+  "535": {
+   "name": "Bonaire",
+   "cap": "Kralendijk",
+   "al": [
+    "Caribe Neerlandés",
+    "Bonaire, San Eustaquio y Saba"
+   ]
+  },
+  "654": {
+   "name": "Santa Elena"
+  },
+  "534": {
+   "name": "San Martín (Países Bajos)",
+   "al": [
+    "Sint Maarten",
+    "San Martín"
+   ]
+  },
+  "663": {
+   "name": "San Martín (Francia)",
+   "al": [
+    "Saint-Martin",
+    "San Martín"
+   ]
+  },
+  "239": {
+   "cap": "King Edward Point",
+   "al": [
+    "Georgias del Sur"
+   ]
+  },
+  "28": {
+   "cap": "Saint John's"
+  },
+  "344": {
+   "cap": "Victoria"
+  },
+  "528": {
+   "name": "Países Bajos",
+   "cap": "Ámsterdam",
+   "al": [
+    "Holanda"
+   ]
+  },
+  "578": {
+   "cap": "Oslo"
+  },
+  "732": {
+   "cap": "El Aaiún"
+  },
+  "744": {
+   "cap": "Longyearbyen"
+  },
+  "772": {
+   "cap": "Fakaofo"
+  },
+  "sh-ta": {
+   "cap": "Edimburgo de los Siete Mares"
+  },
+  "cl-ip": {
+   "cap": "Hanga Roa"
+  },
+  "226": {
+   "cap": "Malabo"
+  },
+  "238": {
+   "cap": "Stanley",
+   "al": [
+    "Islas Falkland",
+    "Malvinas"
+   ]
+  },
+  "520": {
+   "cap": "Yaren"
+  },
+  "580": {
+   "cap": "Saipán"
+  },
+  "gb-wls": {
+   "cap": "Cardiff"
+  },
+  "bat": {
+   "cap": "Rothera"
+  },
+  "832": {
+   "name": "Jersey"
+  },
+  "748": {
+   "name": "Esuatini",
+   "al": [
+    "Suazilandia",
+    "Eswatini"
+   ]
+  },
+  "104": {
+   "name": "Birmania",
+   "al": [
+    "Myanmar"
+   ]
+  },
+  "156": {
+   "name": "China",
+   "al": [
+    "República Popular China"
+   ]
+  },
+  "158": {
+   "name": "Taiwán",
+   "al": [
+    "República de China",
+    "Formosa"
+   ]
+  },
+  "203": {
+   "name": "Chequia",
+   "al": [
+    "República Checa"
+   ]
+  },
+  "166": {
+   "name": "Islas Cocos",
+   "al": [
+    "Islas Cocos (Keeling)"
+   ]
+  },
+  "581": {
+   "name": "Islas Ultramarinas Menores de los Estados Unidos"
+  },
+  "336": {
+   "name": "Vaticano",
+   "al": [
+    "Ciudad del Vaticano",
+    "Santa Sede"
+   ]
+  },
+  "583": {
+   "name": "Micronesia",
+   "al": [
+    "Estados Federados de Micronesia"
+   ]
+  },
+  "248": {
+   "name": "Islas Åland",
+   "al": [
+    "Åland"
+   ]
+  },
+  "180": {
+   "name": "República Democrática del Congo",
+   "al": [
+    "RD Congo",
+    "Congo-Kinsasa"
+   ]
+  },
+  "178": {
+   "name": "República del Congo",
+   "al": [
+    "Congo",
+    "Congo-Brazzaville"
+   ]
+  },
+  "682": {
+   "name": "Arabia Saudita",
+   "al": [
+    "Arabia Saudí"
+   ]
+  },
+  "804": {
+   "capAl": [
+    "Kyiv"
+   ]
+  },
+  "840": {
+   "capAl": [
+    "Washington",
+    "Washington DC"
+   ]
+  }
+ }
+}

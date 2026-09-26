@@ -20,6 +20,7 @@ import { useLeaveGuard } from "./leave-guard";
 import { ContinueBar, GameTopBar, bigClass, useGameKeys, useRoundLog } from "./game-shell";
 import { variantLabel } from "../domain/result-view";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
+import { t } from "../domain/i18n";
 
 type Question = { target: string; options: string[] };
 
@@ -231,16 +232,16 @@ export function QuizGame({
       ? valueFor(question?.target ?? target)
       : titleFor(question?.target ?? target);
   // A linha visível é curta e calma; a alternativa certa fica destacada nas opções e a frase completa vai para leitores de tela.
-  const feedbackText = feedback === "correct" ? "Certo!" : feedback === "wrong" ? (timedOut ? "Tempo esgotado." : "Não foi dessa vez.") : "Selecione uma resposta.";
+  const feedbackText = feedback === "correct" ? t.common.correct : feedback === "wrong" ? (timedOut ? t.common.timeUp : t.common.wrong) : t.quiz.pickAnswer;
 
   if (error) {
     return (
       <div className="app-shell">
         <main className="content">
-          <button className="back" onClick={() => void leaveSession()}>← Sair da partida</button>
+          <button className="back" onClick={() => void leaveSession()}>{t.common.exitGame}</button>
           <div className="diagnostic" style={{ marginTop: 32 }}>
-            <div className="eyebrow">Quiz indisponível</div>
-            <p><strong>Não foi possível carregar este material.</strong></p>
+            <div className="eyebrow">{t.quiz.unavailable}</div>
+            <p><strong>{t.quiz.loadFailed}</strong></p>
             <p className="mono">{error}</p>
           </div>
         </main>
@@ -252,10 +253,10 @@ export function QuizGame({
     return (
       <div className="app-shell">
         <main className="content">
-          <button className="back" onClick={() => void leaveSession()}>← Sair da partida</button>
-          <div className="eyebrow" style={{ marginTop: 32 }}>Preparando sessão</div>
-          <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? "Carregando bandeiras." : "Carregando capitais."}</h1>
-          <p className="lede">Montando um baralho de quatro alternativas.</p>
+          <button className="back" onClick={() => void leaveSession()}>{t.common.exitGame}</button>
+          <div className="eyebrow" style={{ marginTop: 32 }}>{t.quiz.preparing}</div>
+          <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? t.quiz.loadingFlags : t.quiz.loadingCapitals}</h1>
+          <p className="lede">{t.quiz.buildingDeck}</p>
         </main>
       </div>
     );
@@ -264,7 +265,7 @@ export function QuizGame({
   const flagOptions = variant === "nome-bandeira";
   const promptText = variant === "capital-pais" ? targetMeta?.cap : titleFor(target);
   const promptFlag = isFlagPrompt && targetMeta?.fl ? flags?.[targetMeta.fl.toLowerCase()] : undefined;
-  const kicker = isFlagPrompt ? "Qual país usa esta bandeira?" : variant === "nome-bandeira" ? "Escolha a bandeira correta" : variant === "capital-pais" ? "A qual país pertence esta capital?" : "Qual é a capital deste país?";
+  const kicker = isFlagPrompt ? t.quiz.whichCountryFlag : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital : t.quiz.whichCapital;
   return (
     <div className="app-shell gs-app">
       {leaveGuard.dialog}
@@ -276,15 +277,15 @@ export function QuizGame({
           <main className="gs-stage">
             <div className="gs-kicker">{kicker}</div>
             {promptFlag
-              ? <div className="gs-flag"><img src={flagSource(promptFlag)} alt="Bandeira apresentada como estímulo visual" /></div>
+              ? <div className="gs-flag"><img src={flagSource(promptFlag)} alt={t.common.flagStimulus} /></div>
               : <div className={bigClass(promptText)}>{promptText}</div>}
             <div className={`gs-ribbon${feedback ? ` on ${feedback === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
               {feedback === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
               {feedback ? feedbackText : ""}
-              {feedback === "wrong" && <span className="sr-only"> A resposta certa é {correctAnswer}.</span>}
+              {feedback === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(correctAnswer)}</span>}
             </div>
           </main>
-          <section className="gs-tray" aria-label="Respostas">
+          <section className="gs-tray" aria-label={t.common.answersRegion}>
             <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>
               {question.options.map((id, index) => (
                 <button
@@ -299,7 +300,7 @@ export function QuizGame({
                     data.meta[id]?.fl && flags?.[data.meta[id].fl.toLowerCase()] ? (
                       <OptionFlag
                         src={flagSource(flags[data.meta[id].fl.toLowerCase()])}
-                        alt="Alternativa visual de bandeira"
+                        alt={t.common.flagOption}
                       />
                     ) : (
                       <span className="gs-opt-label">{titleFor(id)}</span>
@@ -310,7 +311,7 @@ export function QuizGame({
               ))}
             </div>
             {feedback === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, false)} onSkip={advance.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> escolhe</span><span><kbd>Enter</kbd> continua</span><span><kbd>Esc</kbd> sair</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> {t.common.keyChoose}</span><span><kbd>Enter</kbd> {t.common.keyContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </section>
         </div>
       </div>

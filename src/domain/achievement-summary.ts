@@ -1,4 +1,6 @@
-export const RARITY_LABELS = ["", "Comum", "Incomum", "Rara", "Épica", "Lendária"] as const;
+import { t } from "./i18n/index.js";
+
+export const RARITY_LABELS: readonly string[] = t.rarity;
 export type RarityLevel = 1 | 2 | 3 | 4 | 5;
 
 export type AchievementLike = {
@@ -55,12 +57,12 @@ export function freshUnlocks<T extends { id: string; unlocked: boolean }>(known:
   };
 }
 
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const MONTHS = t.dates.monthsShort;
 
 // "12 set"; com o ano quando não é o ano corrente ("12 set 2025").
 export function formatUnlockDate(timestamp: number | undefined, now: Date = new Date()) {
   if (!timestamp || !Number.isFinite(timestamp)) return "";
   const date = new Date(timestamp);
-  const base = `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  const base = t.dates.shortDate(date.getDate(), MONTHS[date.getMonth()]);
   return date.getFullYear() === now.getFullYear() ? base : `${base} ${date.getFullYear()}`;
 }
