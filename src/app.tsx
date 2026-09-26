@@ -45,7 +45,7 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
-import { duelRecordId, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
+import { duelRecordId, mmrByLadder, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
 import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
@@ -180,9 +180,10 @@ export function App() {
     const status = leagueOf(trophiesBefore);
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
     const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
+    const mmr = mmrByLadder(duels)[ladder];
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(status.league, id, lastBotRef.current[ladder]), trophiesBefore, division: status.division, legs, streak }));
+    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(status.league, id, lastBotRef.current[ladder]), trophiesBefore, division: status.division, legs, streak, mmr }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */
@@ -220,7 +221,7 @@ export function App() {
     const record: DuelRecord = {
       id: duelRecordId(run.id), sessionId: run.id, at: Date.now(), botId: run.bot.id, ladder: run.ladder,
       family: run.legs[0].family, variant: run.legs[0].variant, playerCorrect: outcome.playerCorrect, total: outcome.total, botCorrect: outcome.botCorrect,
-      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta,
+      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta,
       legs: outcome.legs.map((leg) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds })),
     };
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];
@@ -245,7 +246,7 @@ export function App() {
       botName: run.bot.name, botLeague: run.bot.league, botStyle: run.bot.style, botSpecialty: run.bot.specialty,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
-      streakBefore: run.streak, streakAfter: winStreak(nextDuels.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, abandoned: run.done.length < LEGS,
+      streakBefore: run.streak, streakAfter: winStreak(nextDuels.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: run.done.length < LEGS,
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
       legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),

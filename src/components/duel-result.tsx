@@ -53,7 +53,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
   const legs = duel.legs ?? [];
   const plan = useMemo(() => resultPlan({
     outcome: duel.outcome, playerCorrect: duel.playerCorrect, botCorrect: duel.botCorrect, total: duel.total,
-    before: duel.trophiesBefore, after: duel.trophiesAfter, streakAfter: duel.streakAfter, streakBefore: duel.streakBefore, milestones: duel.milestones.length, streakBonus: duel.streakBonus,
+    before: duel.trophiesBefore, after: duel.trophiesAfter, streakAfter: duel.streakAfter, streakBefore: duel.streakBefore, milestones: duel.milestones.length, streakBonus: duel.streakBonus, perfBonus: duel.perfBonus,
   }), [duel]);
   const still = useMemo(() => reducedMotion(), []);
   const [progress, setProgress] = useState(still ? 1 : 0);
@@ -135,6 +135,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
     const value = pill.value ?? 0;
     switch (pill.key) {
       case "delta": return value === 0 ? r.pillNoLoss : r.pillTrophies(signed(value));
+      case "perf": return r.pillPerf(value);
       case "boost": return r.pillBoost(value);
       case "streak": return r.pillStreak(value);
       case "perfect": return r.pillPerfect(duel.playerCorrect, duel.total);

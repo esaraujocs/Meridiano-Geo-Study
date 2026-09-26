@@ -54,7 +54,7 @@ export function winStreak(duels: readonly Pick<DuelRecord, "at" | "id" | "outcom
 }
 
 export type ResultTier = "win" | "perfect" | "division-up" | "league-up" | "loss" | "close" | "division-down" | "league-down" | "draw";
-export type PillKey = "delta" | "boost" | "streak" | "perfect" | "division" | "league" | "broken" | "stay" | "close" | "kept" | "marks";
+export type PillKey = "delta" | "boost" | "perf" | "streak" | "perfect" | "division" | "league" | "broken" | "stay" | "close" | "kept" | "marks";
 export type Pill = { key: PillKey; tone: "up" | "fire" | "gold" | "down" | "calm"; value?: number };
 
 export type ResultPlan = {
@@ -94,6 +94,8 @@ export function resultPlan(input: {
   milestones: number;
   /** Troféus da sequência de vitórias dentro do ganho (0 se não houve). */
   streakBonus?: number;
+  /** Troféus do desempenho (acertos à frente do bot) dentro do ganho. */
+  perfBonus?: number;
 }): ResultPlan {
   const { outcome, playerCorrect, botCorrect, total, before, after } = input;
   const from = leagueOf(before);
@@ -113,6 +115,7 @@ export function resultPlan(input: {
     : null;
   const pills: Pill[] = [];
   if (kind !== "draw") pills.push({ key: "delta", tone: kind === "win" ? "up" : "down", value: delta });
+  if (kind === "win" && (input.perfBonus ?? 0) > 0) pills.push({ key: "perf", tone: "gold", value: input.perfBonus });
   if (kind === "win" && (input.streakBonus ?? 0) > 0) pills.push({ key: "boost", tone: "fire", value: input.streakBonus });
   if (kind === "win") {
     if (tier === "perfect") pills.push({ key: "perfect", tone: "gold" });

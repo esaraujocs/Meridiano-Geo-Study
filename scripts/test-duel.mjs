@@ -106,10 +106,10 @@ const bot = B.botsOfLeague("ouro")[0];
 const input = { trophies: 1240, bot, playerTotal: 20, playerMs: 90000, seed: "s1", context: dctx };
 const sim = B.simulateBot(bot, 20, "s1", dctx);
 let r = D.resolveDuel({ ...input, playerCorrect: sim.correct + 1 });
-assert.equal(r.outcome, "win"); assert.ok(r.delta >= D.MIN_SWING); assert.equal(r.trophiesAfter, 1240 + r.delta);
+assert.equal(r.outcome, "win"); assert.ok(r.delta >= D.MIN_WIN); assert.equal(r.trophiesAfter, 1240 + r.delta);
 assert.equal(r.botCorrect, sim.correct, "o duelo usa o mesmo bot simulado");
 r = D.resolveDuel({ ...input, playerCorrect: Math.max(0, sim.correct - 1) });
-if (sim.correct > 0) { assert.equal(r.outcome, "loss"); assert.ok(r.delta <= -D.MIN_SWING); }
+if (sim.correct > 0) { assert.equal(r.outcome, "loss"); assert.ok(r.delta <= -D.MIN_LOSS); }
 r = D.resolveDuel({ ...input, playerCorrect: sim.correct, playerMs: sim.totalMs - 1 });
 assert.deepEqual([r.outcome, r.tiebreak], ["win", true]);
 r = D.resolveDuel({ ...input, playerCorrect: sim.correct, playerMs: sim.totalMs + 1 });
@@ -117,10 +117,10 @@ assert.deepEqual([r.outcome, r.tiebreak], ["loss", true]);
 r = D.resolveDuel({ ...input, playerCorrect: sim.correct, playerMs: null });
 assert.deepEqual([r.outcome, r.tiebreak], ["draw", false]);
 const draw = (trophies) => D.resolveDuel({ ...input, trophies, playerCorrect: sim.correct, playerMs: null }).delta;
-assert.ok(draw(200) > 0, "empate contra bot mais forte rende");
-assert.ok(draw(2400) < 0, "empate contra bot mais fraco custa");
+assert.ok(draw(200) > 0, "empate nas ligas de baixo rende");
+assert.ok(draw(2400) < 0, "empate nas ligas de cima custa");
 const win = (trophies, league) => { const b = B.botsOfLeague(league)[0]; return D.resolveDuel({ trophies, bot: b, playerTotal: 20, playerMs: 1, seed: "w", playerCorrect: 20 }).delta; };
-assert.ok(win(700, "diamante") > win(700, "bronze"), "vencer um bot mais forte rende mais");
+assert.ok(win(100, "bronze") > win(2100, "diamante"), "as ligas de baixo pagam mais pela vitória");
 r = D.resolveDuel({ trophies: 3, bot: B.botsOfLeague("bronze")[0], playerCorrect: 0, playerTotal: 20, playerMs: 1, seed: "z" });
 assert.equal(r.outcome, "loss"); assert.equal(r.trophiesAfter, 0); assert.equal(r.delta, -3);
 r = D.resolveDuel({ trophies: 0, bot: B.botsOfLeague("bronze")[0], playerCorrect: 0, playerTotal: 20, playerMs: 1, seed: "z" });
@@ -267,9 +267,9 @@ assert.ok(["win", "loss", "draw"].includes(d.outcome));
 const runLegs = (ply) => D.resolveDuelLegs({ ...twoLegs, legs: ply });
 const baseRes = runLegs([legIn("mapa", 5), legIn("capitais-escrita", 5)]);
 const winAll = runLegs([legIn("mapa", 10), legIn("capitais-escrita", 10)]);
-assert.equal(winAll.outcome, "win"); assert.ok(winAll.delta >= D.MIN_SWING);
+assert.equal(winAll.outcome, "win"); assert.ok(winAll.delta >= D.MIN_WIN);
 const loseAll = runLegs([legIn("mapa", 0), legIn("capitais-escrita", 0)]);
-assert.equal(loseAll.outcome, "loss"); assert.ok(loseAll.delta <= -D.MIN_SWING);
+assert.equal(loseAll.outcome, "loss"); assert.ok(loseAll.delta <= -D.MIN_LOSS);
 const halfBot = baseRes.botCorrect; // empate: joga exatamente o que o bot fez, dividido nos tempos
 const bl = baseRes.legs;
 const tieRes = (ms) => runLegs([{ group: "mapa", rounds: 10, playerCorrect: bl[0].botCorrect, playerMs: ms[0] }, { group: "capitais-escrita", rounds: 10, playerCorrect: bl[1].botCorrect, playerMs: ms[1] }]);
@@ -350,17 +350,18 @@ const none = U.resolveRun(runX);
 assert.equal(none.playerCorrect, 0); assert.equal(none.outcome, "loss");
 
 // ---- Riscos antes do duelo ----
-const st = D.previewStakes(1240, ouro);
-assert.ok(st.win >= D.MIN_SWING && st.loss <= -D.MIN_SWING);
-assert.ok(D.previewStakes(1240, B.botsOfLeague("diamante")[0]).win > st.win, "vencer um bot mais forte vale mais");
-assert.ok(D.previewStakes(1240, B.botsOfLeague("bronze")[0]).loss < st.loss, "perder para um bot mais fraco custa mais");
-assert.equal(D.previewStakes(3, B.botsOfLeague("bronze")[0]).loss, -3, "o chão em zero vale na prévia");
-assert.equal(D.previewStakes(0, B.botsOfLeague("bronze")[0]).loss, 0);
-// a prévia bate com o que a resolução entrega quando vence ou perde
+const st = D.stakesRange(1240, 1240);
+assert.deepEqual(st.win, [30, 38], "Ouro: 30 de base, até +8 pelo desempenho");
+assert.deepEqual(st.loss, [-22, -31], "Ouro: 28 de base, de −20% (apertada) a +10% (goleada)");
+assert.ok(D.stakesRange(100, 100).win[0] > D.stakesRange(2100, 2100).win[0], "as ligas de baixo pagam mais pela vitória");
+assert.ok(D.stakesRange(100, 100).loss[0] > D.stakesRange(2100, 2100).loss[0], "as ligas de cima cobram mais pela derrota");
+assert.deepEqual(D.stakesRange(3, 3).loss, [-3, -3], "o chão em zero vale na prévia");
+assert.deepEqual(D.stakesRange(0, 0).loss, [0, 0]);
+// a prévia contém o que a resolução entrega quando vence ou perde
 const chk = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "k", division: 2, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
-assert.equal(chk.outcome, "win"); assert.equal(chk.delta, st.win);
+assert.equal(chk.outcome, "win"); assert.ok(chk.delta >= st.win[0] && chk.delta <= st.win[1]);
 const chk2 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "k", division: 2, legs: [legIn("mapa", 0), legIn("capitais-escrita", 0)] });
-assert.equal(chk2.delta, st.loss);
+assert.ok(chk2.delta <= st.loss[0] && chk2.delta >= st.loss[1]);
 
 // ---- Soma dos espólios dos dois tempos ----
 const spoilsOf = (variant, correct) => S.computeSpoils({ variant, pace: "timed", rounds: correct.map((c) => ({ correct: c })), complete: true, newCards: 1, levelUps: 0 });
@@ -479,14 +480,16 @@ assert.equal(V.worstLeg([{ playerCorrect: 8, botCorrect: 7 }, { playerCorrect: 6
 // sequência de vitórias: +3 por vitória anterior, até +12, só na vitória
 assert.deepEqual([0, 1, 2, 3, 4, 5, 20, -2, NaN].map((n) => D.streakBonus(n)), [0, 3, 6, 9, 12, 12, 12, 0, 0]);
 assert.deepEqual([D.STREAK_STEP, D.STREAK_CAP], [3, 4]);
-const stakes0 = D.previewStakes(1240, ouro);
-assert.equal(D.previewStakes(1240, ouro, 2).win, stakes0.win + 6, "a prévia da vitória inclui a sequência");
-assert.equal(D.previewStakes(1240, ouro, 9).win, stakes0.win + 12);
-assert.equal(D.previewStakes(1240, ouro, 3).loss, stakes0.loss, "a derrota não muda com a sequência");
+const stakes0 = D.stakesRange(1240, 1240);
+assert.deepEqual(D.stakesRange(1240, 1240, 2).win, [36, 44], "a prévia da vitória inclui a sequência");
+assert.deepEqual(D.stakesRange(1240, 1240, 9).win, [42, 46], "o teto da vitória é a base + 16");
+assert.deepEqual(D.stakesRange(1240, 1240, 3).loss, stakes0.loss, "a derrota não muda com a sequência");
 const winLegs = [{ group: legsX[0].group, rounds: 10, playerCorrect: 10, playerMs: 40000 }, { group: legsX[1].group, rounds: 10, playerCorrect: 10, playerMs: 50000 }];
 const lossLegs = [{ group: legsX[0].group, rounds: 10, playerCorrect: 0, playerMs: 40000 }, { group: legsX[1].group, rounds: 10, playerCorrect: 0, playerMs: 50000 }];
-const sw0 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: winLegs });
-const sw3 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: winLegs, streak: 3 });
+// vitória apertada (1 acerto à frente do bot) para o bônus não esbarrar no teto
+const narrowLegs = [{ group: "mapa", rounds: 10, playerCorrect: Math.min(10, bl[0].botCorrect + 1), playerMs: 1 }, { group: "capitais-escrita", rounds: 10, playerCorrect: bl[1].botCorrect, playerMs: 1 }];
+const nw = (streak) => D.resolveDuelLegs({ ...twoLegs, legs: narrowLegs, streak });
+const sw0 = nw(0), sw3 = nw(3);
 assert.equal(sw0.outcome, "win"); assert.equal(sw0.streakBonus, 0);
 assert.deepEqual([sw3.outcome, sw3.streakBonus, sw3.delta - sw0.delta, sw3.trophiesAfter - sw0.trophiesAfter], ["win", 9, 9, 9], "mesma partida, +9 pela sequência");
 const sl3 = D.resolveDuelLegs({ trophies: 1240, bot: ouro, seed: "run-1", division: 2, legs: lossLegs, streak: 4 });
@@ -507,5 +510,74 @@ assert.deepEqual(boost.pills.map((p) => p.key), ["delta", "boost", "streak"]);
 assert.equal(boost.pills[1].value, 9);
 assert.deepEqual(plan({ streakBonus: 0 }).pills.map((p) => p.key), ["delta"]);
 assert.deepEqual(lp({ streakBonus: 9 }).pills.map((p) => p.key), ["delta", "stay"], "na derrota não há pílula de bônus");
+
+// ---- Troféus e MMR escondido (mmr.ts) ----
+const X = await import(pathToFileURL(join(out, "mmr.js")).href);
+// tabela por liga: embaixo ganha mais do que perde, em cima é o contrário
+const tableOrder = L.LEAGUES.map((league) => X.LEAGUE_STAKES[league]);
+assert.deepEqual(tableOrder[0], { win: 34, loss: 22 });
+for (let i = 1; i < tableOrder.length; i += 1) { assert.ok(tableOrder[i].win < tableOrder[i - 1].win, "a vitória paga menos a cada liga"); assert.ok(tableOrder[i].loss > tableOrder[i - 1].loss, "a derrota custa mais a cada liga"); }
+assert.ok(tableOrder[0].win > tableOrder[0].loss && tableOrder[4].win < tableOrder[4].loss);
+assert.deepEqual(X.baseStakes(100), { win: 34, loss: 22, scale: 1, minWin: 5 });
+assert.deepEqual(X.baseStakes(1240), { win: 30, loss: 28, scale: 1, minWin: 5 });
+assert.deepEqual([X.baseStakes(2500).win, X.baseStakes(2500).loss, X.baseStakes(2500).scale], [22, 38, 1], "o Mestre começa na tabela");
+// Mestre sem teto de troféus, mas com curva cada vez mais apertada
+let lastWin = Infinity, lastLoss = 0;
+for (let t = 2500; t <= 9000; t += 250) { const b = X.baseStakes(t); assert.ok(b.win <= lastWin && b.loss >= lastLoss && b.win >= X.MASTER_MIN_WIN); lastWin = b.win; lastLoss = b.loss; }
+assert.deepEqual([X.baseStakes(3500).win, X.baseStakes(3500).loss], [10, 53]);
+const drift = (t, p) => { const b = X.baseStakes(t); return p * b.win - (1 - p) * b.loss; };
+assert.ok(drift(2500, 0.85) > 0 && drift(4000, 0.85) < 0, "quem vence 85% dos duelos para de subir no limite teórico do Mestre");
+assert.ok(drift(4000, 0.98) > drift(4000, 0.85));
+// o MMR muda o ganho e a perda
+assert.deepEqual(X.gapFactors(0), { win: 1, loss: 1 });
+const gf = X.gapFactors(200); assert.ok(Math.abs(gf.win - 1.35) < 1e-9 && Math.abs(gf.loss - 0.7) < 1e-9);
+const gb = X.gapFactors(-200); assert.ok(Math.abs(gb.win - 0.65) < 1e-9 && Math.abs(gb.loss - 1.3) < 1e-9);
+assert.deepEqual(X.gapFactors(9999), gf, "o efeito tem limite");
+const tc = (o) => X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "win", margin: 1, ...o });
+assert.equal(tc({ margin: 0 }).delta, 34, "vitória normal no Bronze: 34");
+assert.equal(tc({ margin: 8 }).delta, 42, "goleada: +8 de desempenho");
+assert.equal(tc({ margin: 8 }).perfBonus, 8);
+assert.equal(tc({ margin: 20 }).perfBonus, 8, "o desempenho tem teto");
+assert.deepEqual([tc({ streak: 4, margin: 8 }).delta, tc({ streak: 4, margin: 8 }).streakBonus, tc({ streak: 4, margin: 8 }).perfBonus], [50, 12, 4], "sequência e desempenho param no teto de 50");
+assert.equal(tc({ mmr: 300, streak: 4, margin: 8 }).delta, 50, "MMR acima da liga: ganha mais, mas o teto é o mesmo");
+assert.equal(tc({ mmr: 300, margin: 0 }).delta, 46, "MMR 200 acima: vitória ×1,35");
+assert.equal(tc({ mmr: -100, margin: 0 }).delta, 22, "MMR 200 abaixo: vitória ×0,65");
+const lc = (o) => X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "loss", margin: -4, ...o });
+assert.equal(lc({ margin: -1 }).delta, -18, "derrota apertada custa menos");
+assert.equal(lc({ margin: -10 }).delta, -24, "goleada custa mais");
+assert.ok(lc({ mmr: 300 }).delta > lc({}).delta && lc({ mmr: -100 }).delta < lc({}).delta, "MMR alto perde menos, MMR baixo perde mais");
+assert.equal(lc({ streak: 9 }).delta, lc({}).delta, "a sequência não muda a derrota");
+assert.equal(X.trophyChange({ trophies: 1800, mmr: 1800, streak: 0, outcome: "loss", margin: -4 }).delta < lc({}).delta, true, "em liga alta a derrota dói mais");
+assert.equal(X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "draw", margin: 0 }).delta, 6);
+assert.ok(X.trophyChange({ trophies: 1800, mmr: 1800, streak: 0, outcome: "draw", margin: 0 }).delta < 0);
+// no Mestre os bônus encolhem junto com a vitória (senão furavam o limite)
+const mw = X.trophyChange({ trophies: 4000, mmr: 4000, streak: 4, outcome: "win", margin: 8 });
+assert.ok(mw.delta <= X.baseStakes(4000).win + Math.round(X.WIN_CAP_EXTRA * X.baseStakes(4000).scale) && mw.streakBonus < 12, "bônus reduzidos no Mestre");
+// MMR: sobe mais quando vence um bot acima dele, cai menos quando perde por pouco
+assert.equal(X.mmrChange(1000, 1000, "win", 8), 20);
+assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
+assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");
+assert.equal(X.mmrChange(1000, 1000, "draw", 0), 0);
+assert.ok(X.mmrChange(1000, 1000, "win", 1) < X.mmrChange(1000, 1000, "win", 8), "vitória apertada rende menos MMR que goleada");
+// o duelo devolve o MMR novo, e o MMR do histórico deriva dos registros
+const withMmr = D.resolveDuel({ ...input, trophies: 1240, mmr: 1400, playerCorrect: 20 });
+assert.equal(withMmr.outcome, "win"); assert.equal(withMmr.mmrAfter, 1400 + withMmr.mmrDelta); assert.ok(withMmr.mmrDelta > 0);
+assert.ok(withMmr.delta > D.resolveDuel({ ...input, trophies: 1240, mmr: 1240, playerCorrect: 20 }).delta, "MMR acima da liga rende mais troféus na mesma vitória");
+assert.equal(D.resolveDuel({ ...input, trophies: 1240, playerCorrect: 20 }).delta, D.resolveDuel({ ...input, trophies: 1240, mmr: 1240, playerCorrect: 20 }).delta, "sem MMR informado, vale a própria liga");
+const recM = (n, at, delta, mmrDelta, ladder = "mapas") => ({ id: "duel:m" + n, at, delta, ladder, ...(mmrDelta === undefined ? {} : { mmrDelta }) });
+assert.equal(D.mmrFromDuels([recM(1, 1, 30), recM(2, 2, -10)]), D.trophiesFromDuels([recM(1, 1, 30), recM(2, 2, -10)]), "duelos antigos: o MMR começa igual aos troféus");
+assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50), recM(2, 2, -10, -20)]), 30);
+assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50), recM(2, 2, -10, -80)]), 0, "o MMR não passa de zero");
+assert.deepEqual(D.mmrByLadder([recM(1, 1, 30, 50), recM(2, 2, 20, 10, "bandeiras")]), { mapas: 50, bandeiras: 10 });
+const parsedM = D.parseDuel({ ...rec(9, 9, 20), mmrDelta: 33 }); assert.equal(parsedM.mmrDelta, 33);
+assert.equal("mmrDelta" in D.parseDuel({ ...rec(9, 9, 20), mmrDelta: "x" }), false, "MMR inválido é ignorado");
+assert.equal("mmrDelta" in D.parseDuel(rec(8, 8, 20)), false, "registro antigo continua sem MMR");
+// a corrida leva o MMR para a resolução (sem MMR informado, vale os troféus)
+assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 800, division: 1, legs: legsX }).mmr, 800);
+assert.equal(U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 800, division: 1, legs: legsX, mmr: 950 }).mmr, 950);
+// pílula do desempenho
+assert.deepEqual(plan({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "perf"]);
+assert.deepEqual(plan({ streakBonus: 3, perfBonus: 5, streakAfter: 4 }).pills.map((p) => p.key), ["delta", "perf", "boost", "streak"]);
+assert.deepEqual(lp({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "stay"], "derrota não tem pílula de desempenho");
 
 console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");

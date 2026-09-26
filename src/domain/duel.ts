@@ -4,6 +4,7 @@
 import { LEAGUES, LEAGUE_SPAN, leagueFloor, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
+import { MIN_LOSS, MIN_WIN, expectedScore, mmrChange, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
 
 /** Duelo v1 (uma partida só, 20 rodadas). O v2 usa LEGS x LEG_ROUNDS de duel-modes.ts. */
@@ -13,17 +14,8 @@ export const DUEL_ROUNDS = 20;
 export const botRating = (bot: Pick<Bot, "league">) => leagueFloor(LEAGUES.indexOf(bot.league)) + LEAGUE_SPAN / 2;
 
 export type DuelOutcome = "win" | "loss" | "draw";
-export const TROPHY_K = 32;
-/** Vitória sempre rende ao menos isto, e derrota tira ao menos isto (sem chegar a zero de tanto contar). */
-export const MIN_SWING = 4;
-
-/** Sequência: cada vitória seguida que a pessoa já tinha na escada soma STREAK_STEP troféus à próxima vitória, até STREAK_CAP vitórias
- *  (+12). Perder zera a sequência; o bônus só existe na vitória, a derrota não muda. */
-export const STREAK_STEP = 3;
-export const STREAK_CAP = 4;
-export const streakBonus = (streak: number) => STREAK_STEP * Math.min(STREAK_CAP, Math.max(0, Math.floor(Number.isFinite(streak) ? streak : 0)));
-
-export const expectedScore = (rating: number, opponent: number) => 1 / (1 + Math.pow(10, (opponent - rating) / 400));
+// Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.
+export { MIN_LOSS, MIN_WIN, expectedScore, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
 
 export type DuelInput = {
   trophies: number;
@@ -37,6 +29,8 @@ export type DuelInput = {
   context?: BotContext;
   /** Vitórias seguidas que a pessoa já tinha nesta escada antes do duelo. */
   streak?: number;
+  /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
+  mmr?: number;
 };
 export type DuelResult = {
   botId: string;
@@ -47,39 +41,34 @@ export type DuelResult = {
   tiebreak: boolean;
   delta: number;
   trophiesAfter: number;
-  /** Quanto do ganho veio da sequência de vitórias (já dentro de `delta`). */
+  /** Quanto do ganho veio da sequência de vitórias e do desempenho (já dentro de `delta`). */
   streakBonus: number;
+  perfBonus: number;
+  /** Mudança do MMR escondido e o valor novo. */
+  mmrDelta: number;
+  mmrAfter: number;
 };
 
 /** Vencedor e troféus a partir dos números finais (a mesma conta para 1 tempo ou 2). */
-function settle(input: { trophies: number; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
+function settle(input: { trophies: number; mmr?: number; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
   const { trophies, bot, playerCorrect, botCorrect, playerMs, botMs } = input;
+  const mmr = input.mmr ?? trophies;
   let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
   let tiebreak = false;
   if (outcome === "draw" && playerMs !== null && playerMs !== botMs) {
     outcome = playerMs < botMs ? "win" : "loss";
     tiebreak = true;
   }
-  const score = outcome === "win" ? 1 : outcome === "loss" ? 0 : 0.5;
-  let delta = Math.round(TROPHY_K * (score - expectedScore(trophies, botRating(bot))));
-  const bonus = outcome === "win" ? streakBonus(input.streak ?? 0) : 0;
-  if (outcome === "win") delta = Math.max(MIN_SWING, delta) + bonus;
-  if (outcome === "loss") delta = Math.min(-MIN_SWING, delta);
-  const trophiesAfter = Math.max(0, trophies + delta);
-  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: bonus };
+  const margin = playerCorrect - botCorrect;
+  const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin });
+  const trophiesAfter = Math.max(0, trophies + change.delta);
+  const mmrAfter = Math.max(0, mmr + mmrChange(mmr, botRating(bot), outcome, margin));
+  return { outcome, tiebreak, delta: trophiesAfter - Math.max(0, trophies), trophiesAfter, streakBonus: change.streakBonus, perfBonus: change.perfBonus, mmrDelta: mmrAfter - mmr, mmrAfter };
 }
 
-/** O que está em jogo antes do duelo: troféus se vencer e se perder (com os pisos de MIN_SWING e o chão em zero). */
-export function previewStakes(trophies: number, bot: Pick<Bot, "league">, streak = 0) {
-  const expected = expectedScore(trophies, botRating(bot));
-  const win = Math.max(MIN_SWING, Math.round(TROPHY_K * (1 - expected))) + streakBonus(streak);
-  const loss = Math.min(-MIN_SWING, Math.round(TROPHY_K * (0 - expected)));
-  return { win: Math.max(0, trophies + win) - Math.max(0, trophies), loss: Math.max(0, trophies + loss) - Math.max(0, trophies) };
-}
-
-export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak }: DuelInput): DuelResult {
+export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context, streak, mmr }: DuelInput): DuelResult {
   const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
-  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, ...settle({ trophies, mmr, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Duelo em dois tempos ----
@@ -94,11 +83,13 @@ export type DuelLegsInput = {
   division: 1 | 2 | 3 | null;
   /** Vitórias seguidas que a pessoa já tinha nesta escada (bônus de sequência). */
   streak?: number;
+  /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
+  mmr?: number;
 };
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak, mmr }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time } });
@@ -108,7 +99,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, streak }:
   const botCorrect = results.reduce((sum, leg) => sum + leg.botCorrect, 0);
   const botMs = results.reduce((sum, leg) => sum + leg.botMs, 0);
   const playerMs = legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null;
-  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
 }
 
 // ---- Registro dos duelos (um por duelo, guardado na loja `preferences`) ----
@@ -131,6 +122,8 @@ export type DuelRecord = {
   outcome: DuelOutcome;
   tiebreak: boolean;
   delta: number;
+  /** Mudança do MMR escondido neste duelo (registros antigos não têm: valem o próprio delta). */
+  mmrDelta?: number;
   /** Só no duelo em dois tempos. */
   legs?: DuelLegRecord[];
 };
@@ -168,6 +161,7 @@ export function parseDuel(row: unknown): DuelRecord | null {
     outcome: item.outcome,
     tiebreak: Boolean(item.tiebreak),
     delta: item.delta as number,
+    ...(typeof item.mmrDelta === "number" && Number.isFinite(item.mmrDelta) ? { mmrDelta: item.mmrDelta } : {}),
     ...(legs ? { legs } : {}),
   };
 }
@@ -180,6 +174,15 @@ export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
     .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
     .reduce((total, duel) => Math.max(0, total + duel.delta), 0);
 }
+/** O MMR escondido também é derivado do histórico: soma o `mmrDelta` (ou o `delta`, nos duelos antigos) na ordem dos duelos, sem passar de zero. */
+export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta">[], ladder?: Ladder) {
+  return [...duels]
+    .filter((duel) => !ladder || duel.ladder === ladder)
+    .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
+    .reduce((total, duel) => Math.max(0, total + (duel.mmrDelta ?? duel.delta)), 0);
+}
+export const mmrByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta">[]): Record<Ladder, number> =>
+  Object.fromEntries(LADDERS.map((ladder) => [ladder, mmrFromDuels(duels, ladder)])) as Record<Ladder, number>;
 export const trophiesByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder">[]): Record<Ladder, number> =>
   Object.fromEntries(LADDERS.map((ladder) => [ladder, trophiesFromDuels(duels, ladder)])) as Record<Ladder, number>;
 
@@ -206,6 +209,8 @@ export type DuelView = {
   streakAfter: number;
   /** Troféus que a sequência de vitórias acrescentou a este ganho. */
   streakBonus: number;
+  /** Troféus que o desempenho (acertos à frente do bot) acrescentou a este ganho. */
+  perfBonus: number;
   /** A pessoa saiu antes de terminar os dois tempos. */
   abandoned: boolean;
   /** Moedas de cada tempo (sem o bônus de partida completa) e se o tempo foi de prévia (paga como o modo base). Só na tela, não é gravado. */

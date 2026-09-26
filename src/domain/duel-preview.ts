@@ -17,6 +17,8 @@ type Scenario = {
   milestones?: string[];
   /** Troféus da sequência dentro do ganho. */
   bonus?: number;
+  /** Troféus do desempenho dentro do ganho. */
+  perf?: number;
   abandoned?: boolean;
   tiebreak?: boolean;
   coins: [number, number];
@@ -24,16 +26,16 @@ type Scenario = {
 };
 
 const SCENARIOS: Record<string, Scenario> = {
-  t1: { from: 1240, to: 1261, legs: [[8, 10], [6, 10]], bot: [6, 5], streakBefore: 3, streakAfter: 4, bonus: 9, coins: [431, 288], completion: 100 },
-  t2: { from: 1240, to: 1272, legs: [[10, 10], [10, 10]], bot: [5, 4], streakBefore: 4, streakAfter: 5, bonus: 12, coins: [480, 320], completion: 280 },
+  t1: { from: 1240, to: 1282, legs: [[8, 10], [6, 10]], bot: [6, 5], streakBefore: 3, streakAfter: 4, bonus: 9, perf: 3, coins: [431, 288], completion: 100 },
+  t2: { from: 1240, to: 1286, legs: [[10, 10], [10, 10]], bot: [5, 4], streakBefore: 4, streakAfter: 5, bonus: 12, perf: 4, coins: [480, 320], completion: 280 },
   t3: { from: 1320, to: 1352, legs: [[8, 10], [7, 10]], bot: [6, 6], streakBefore: 0, streakAfter: 1, coins: [420, 300], completion: 100 },
   t4: { from: 1480, to: 1512, legs: [[8, 10], [8, 10]], bot: [6, 6], streakBefore: 1, streakAfter: 2, bonus: 3, milestones: ["league:platina"], coins: [430, 310], completion: 100 },
-  loss: { from: 1240, to: 1223, legs: [[6, 10], [3, 10]], bot: [7, 6], streakBefore: 4, streakAfter: 0, coins: [302, 144], completion: 0 },
-  close: { from: 1240, to: 1229, legs: [[7, 10], [6, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [340, 280], completion: 0 },
-  ddiv: { from: 1170, to: 1148, legs: [[4, 10], [4, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [180, 170], completion: 0 },
-  dleague: { from: 1010, to: 988, legs: [[3, 10], [4, 10]], bot: [8, 7], streakBefore: 0, streakAfter: 0, coins: [150, 160], completion: 0 },
-  left: { from: 1240, to: 1226, legs: [[5, 10], [0, 10]], bot: [6, 6], streakBefore: 0, streakAfter: 0, abandoned: true, coins: [280, 0], completion: 0 },
-  tiebreak: { from: 1240, to: 1256, legs: [[7, 10], [6, 10]], bot: [7, 6], streakBefore: 0, streakAfter: 1, tiebreak: true, coins: [400, 290], completion: 100 },
+  loss: { from: 1240, to: 1215, legs: [[6, 10], [3, 10]], bot: [7, 6], streakBefore: 4, streakAfter: 0, coins: [302, 144], completion: 0 },
+  close: { from: 1240, to: 1218, legs: [[7, 10], [6, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [340, 280], completion: 0 },
+  ddiv: { from: 1170, to: 1142, legs: [[4, 10], [4, 10]], bot: [7, 7], streakBefore: 0, streakAfter: 0, coins: [180, 170], completion: 0 },
+  dleague: { from: 1010, to: 982, legs: [[3, 10], [4, 10]], bot: [8, 7], streakBefore: 0, streakAfter: 0, coins: [150, 160], completion: 0 },
+  left: { from: 1240, to: 1216, legs: [[5, 10], [0, 10]], bot: [6, 6], streakBefore: 0, streakAfter: 0, abandoned: true, coins: [280, 0], completion: 0 },
+  tiebreak: { from: 1240, to: 1270, legs: [[7, 10], [6, 10]], bot: [7, 6], streakBefore: 0, streakAfter: 1, tiebreak: true, coins: [400, 290], completion: 100 },
   draw: { from: 1240, to: 1241, legs: [[7, 10], [6, 10]], bot: [7, 6], streakBefore: 2, streakAfter: 0, coins: [400, 290], completion: 100 },
 };
 
@@ -64,7 +66,7 @@ export function duelPreview(name: string): { duel: DuelView; view: ResultView } 
     outcome, tiebreak: Boolean(scenario.tiebreak), playerCorrect, botCorrect, total: 20, delta: scenario.to - scenario.from,
     trophiesBefore: scenario.from, trophiesAfter: scenario.to,
     milestones: (scenario.milestones ?? []).flatMap((id) => MILESTONES.filter((milestone) => milestone.id === id)),
-    ladder: "mapas", legs, streakBefore: scenario.streakBefore, streakAfter: scenario.streakAfter, streakBonus: scenario.bonus ?? 0, abandoned: Boolean(scenario.abandoned),
+    ladder: "mapas", legs, streakBefore: scenario.streakBefore, streakAfter: scenario.streakAfter, streakBonus: scenario.bonus ?? 0, perfBonus: scenario.perf ?? 0, abandoned: Boolean(scenario.abandoned),
     legCoins: scenario.coins, legPreview: [false, true],
   };
   return { duel, view: { ...view, eyebrow: t.duel.reveal.eyebrow(t.duel.ladders.mapas) } };

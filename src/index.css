@@ -1723,3 +1723,17 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .arena{gap:10px!important;padding-top:14px!important;padding-bottom:14px!important}
 .ar-league{padding:10px}
 }
+/* ---- Liga: como os troféus funcionam ---- */
+.lg-how summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none}
+.lg-how summary::-webkit-details-marker{display:none}
+.lg-how summary h2{margin:0}
+.lg-how summary svg{transition:transform .2s;color:var(--muted)}
+.lg-how details[open] summary svg{transform:rotate(180deg)}
+.lg-how p{margin:10px 0;font-size:13px;color:var(--muted)}
+.lg-how table{width:100%;border-collapse:collapse;font-size:13.5px}
+.lg-how th,.lg-how td{padding:7px 8px;text-align:left;border-top:1px solid rgba(199,182,143,.55)}
+.lg-how thead th{border-top:0;font:400 11px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lg-how tbody th{font:500 15px 'Fraunces',Georgia,serif}
+.lg-how tr.is-now{background:rgba(196,147,69,.14)}
+.lg-how td:nth-child(2){color:#245e58;font-weight:600}.lg-how td:nth-child(3){color:#8a3f2a;font-weight:600}
+.lg-how ul{margin:12px 0 0;padding-left:18px;display:grid;gap:6px;font-size:13px;color:var(--ink)}
