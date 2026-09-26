@@ -12,7 +12,9 @@ import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
 import { formatNumber as money, t } from "../domain/i18n";
 import { LEAGUES, type LeagueKey } from "../domain/league";
-import { botForLeague } from "../domain/duel";
+import type { Bot } from "../domain/bots";
+import { DUEL_ROUNDS } from "../domain/duel";
+import { botLabel, leagueLabel, styleLabel } from "../domain/duel-labels";
 
 // Tela "Configure a partida": Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -61,8 +63,8 @@ export function Recorte({
   setRoundTier: (value: RoundTier) => void;
   onBuyRounds: (key: RoundUnlockKey) => Promise<unknown>;
   presetApi: PresetApi;
-  /** Duelo contra bot: o adversário escolhido (por liga) e a liga da própria pessoa; sem isto a tela é a de sempre. */
-  duel?: { opponent: LeagueKey; own: LeagueKey; onOpponent: (league: LeagueKey) => void };
+  /** Duelo contra bot: adversário sorteado pela liga (formato único de 20 rodadas, Mundo sem filtro). Sem isto a tela é a de sempre. */
+  duel?: { bot: Bot; /** Só com ?debug=1: deixa trocar a liga do adversário para testar. */ debugLeague?: { current: LeagueKey; onPick: (league: LeagueKey) => void } };
 }) {
   const familyLabel = t.families[topFamily];
   const selectedRegions = normalizeRegionSelection(region);
@@ -133,10 +135,21 @@ export function Recorte({
   const summary = configSummary({ mode: active, direction: flagDirection, variant, pace, rounds: deckCount, regionText, count: selectedCount });
   const showFilter = family !== "historicas" && family !== "idiomas";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
+  // O duelo tem formato único e exige o corte de 20 rodadas da Loja (o mesmo do solo).
+  const duelTier = roundUnlockFor("long");
+  const duelTierOwned = !duel || isRoundTierUnlocked("long", economy?.unlocked ?? []);
+  const canBuyDuelTier = Boolean(duelTier) && balance >= (duelTier?.cost ?? 0);
 
   const start = async () => {
     if (busy) return;
-    if (activeOwned) { onPlay(); return; }
+    if (activeOwned && duelTierOwned) { onPlay(); return; }
+    if (activeOwned && duel && duelTier) {
+      if (!canBuyDuelTier) return;
+      setBusy(true);
+      try { await onBuyRounds(duelTier.key); } catch { await onRefresh(); }
+      setBusy(false);
+      return;
+    }
     if (!canBuyActive) return;
     setBusy(true);
     try { await unlockContent(family, variant, policyRegion); } catch { /* saldo mudou: a atualização abaixo mostra o estado real */ }
@@ -196,10 +209,13 @@ export function Recorte({
             </div>
           </div>
           <div className="cv-row">
-            <span className="cv-k">{t.config.rounds}</span>
+            <span className="cv-k">{duel ? t.duel.format : t.config.rounds}</span>
             <div className="cv-ctl">
-              <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>
-                {roundChips(family, selectedCount).map(({ tier, label }) => {
+              <div className="cv-chips cv-rounds" role="group" aria-label={duel ? t.duel.format : t.config.rounds}>
+                {duel ? <button type="button" className={`cv-chip${duelTierOwned ? "" : " is-locked"}`} aria-pressed={duelTierOwned} onClick={() => { if (!duelTierOwned) setPendingTier("long"); }}>
+                  <span className="cv-l"><span>{t.duel.rounds(DUEL_ROUNDS)}</span></span>
+                  {!duelTierOwned && duelTier && <b><Icon type="lock" size={12} /> {money(duelTier.cost)}</b>}
+                </button> : roundChips(family, selectedCount).map(({ tier, label }) => {
                   const unlock = roundUnlockFor(tier);
                   const tierOwned = isRoundTierUnlocked(tier, economy?.unlocked ?? []);
                   return <button type="button" key={tier} className={`cv-chip${tierOwned ? "" : " is-locked"}`} aria-pressed={displayTier(roundTier, family, selectedCount) === tier && tierOwned} onClick={() => { if (tierOwned) { setPendingTier(null); setRoundTier(tier); } else setPendingTier(tier); }}>
@@ -208,6 +224,7 @@ export function Recorte({
                   </button>;
                 })}
               </div>
+              {duel && <p className="cv-hint">{t.duel.formatHint}</p>}
               {pending && <p className="cv-hint cv-confirm" role="status">
                 {balance >= pending.cost
                   ? <>{t.config.unlockRounds(pending.label.toLowerCase(), money(pending.cost))} <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>{t.config.unlock}</button></>
@@ -215,25 +232,29 @@ export function Recorte({
               </p>}
             </div>
           </div>
-          {duel && <div className="cv-row">
-            <span className="cv-k">{t.duel.opponent}</span>
-            <div className="cv-ctl">
-              <div className="cv-chips cv-bots" role="group" aria-label={t.duel.opponent}>
-                {LEAGUES.map((league) => <button type="button" key={league} className="cv-chip" data-league={league} aria-pressed={duel.opponent === league} onClick={() => duel.onOpponent(league)}><span className="cv-l"><span>{t.duel.botName(t.duel.leagues[league])}</span>{duel.own === league && <em>{t.duel.opponentOwn}</em>}</span></button>)}
-              </div>
-              <p className="cv-hint">{t.duel.botHint(Math.round(botForLeague(duel.opponent).accuracy * 100))}</p>
-            </div>
-          </div>}
-          <div className={`cv-row${showFilter ? "" : " cv-last"}`}>
+          <div className={`cv-row${showFilter || duel ? "" : " cv-last"}`}>
             <span className="cv-k">{t.config.region}</span>
             <div className="cv-ctl">
-              <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
+              {duel ? <p className="cv-static">{t.duel.regionFixed}</p> : <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
                 {REGION_ITEMS.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={counts[key] === 0} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key]}</em></span></button>)}
-              </div>
+              </div>}
               {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
             </div>
           </div>
-          {showFilter && <div className="cv-row cv-last">
+          {duel && <div className="cv-row cv-last">
+            <span className="cv-k">{t.duel.opponent}</span>
+            <div className="cv-ctl">
+              <div className="cv-opp" data-league={duel.bot.league}>
+                <span className="rk-av lg-badge" aria-hidden="true">{duel.bot.name.charAt(0)}</span>
+                <span className="cv-opp-text"><b>{botLabel(duel.bot)}</b><small>{t.duel.opponentMeta(leagueLabel(duel.bot.league), styleLabel(duel.bot.style, duel.bot.specialty))}</small></span>
+              </div>
+              <p className="cv-hint">{t.duel.drawn}</p>
+              {duel.debugLeague && <div className="cv-chips cv-bots" role="group" aria-label={t.duel.debugLeague}>
+                {LEAGUES.map((league) => <button type="button" key={league} className="cv-chip" data-league={league} aria-pressed={duel.debugLeague?.current === league} onClick={() => duel.debugLeague?.onPick(league)}><span className="cv-l"><span>{t.duel.leagues[league]}</span></span></button>)}
+              </div>}
+            </div>
+          </div>}
+          {showFilter && !duel && <div className="cv-row cv-last">
             <span className="cv-k">{t.config.filter}</span>
             <div className="cv-ctl">
               <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>{t.config.onlyUn}</span></button>
@@ -248,10 +269,10 @@ export function Recorte({
           onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
         />}
         <div className="cv-bar">
-          <div className="cv-sum"><b>{duel ? t.duel.summaryTitle(t.duel.botName(t.duel.leagues[duel.opponent])) : summary.title}</b><small>{summary.sub}</small></div>
+          <div className="cv-sum"><b>{duel ? t.duel.summaryTitle(botLabel(duel.bot)) : summary.title}</b><small>{summary.sub}</small></div>
           <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
-          <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
-            {activeOwned ? <>{duel ? t.duel.start : t.config.start}<span className="cv-go-l">{duel ? t.duel.startTail : t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
+          <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive) || (activeOwned && !duelTierOwned && !canBuyDuelTier)} onClick={() => void start()}>
+            {activeOwned && duelTierOwned ? <>{duel ? t.duel.start : t.config.start}<span className="cv-go-l">{duel ? t.duel.startTail : t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeOwned ? duelTier?.cost ?? 0 : activeCost)}</>} <Icon type="arrow" />
           </button>
         </div>
       </div>

@@ -1,62 +1,14 @@
-// Duelo contra bots: cada bot acerta uma fração fixa das perguntas (por liga), sorteada com semente para ser reproduzível.
-// A pessoa joga a partida de sempre; o bot "joga" o mesmo número de rodadas e o placar decide vitória, empate ou derrota.
+// Duelo contra bots: a pessoa joga a partida de sempre; o bot "joga" o mesmo número de rodadas (ver bots.ts) e o placar decide.
 // Quem acertar mais vence; empatou nos acertos, o menor tempo total desempata. Os troféus seguem uma conta tipo Elo.
 import { LEAGUES, LEAGUE_SPAN, leagueFloor, type LeagueKey } from "./league.js";
+import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
+import type { Milestone } from "./duel-rewards.js";
 
-export type Bot = {
-  id: string;
-  league: LeagueKey;
-  /** Chance de acerto em cada pergunta (0 a 1). */
-  accuracy: number;
-  /** Tempo médio por pergunta, em ms. */
-  avgMs: number;
-};
-
-const BOT_STATS: Record<LeagueKey, { accuracy: number; avgMs: number }> = {
-  bronze: { accuracy: 0.6, avgMs: 9000 },
-  prata: { accuracy: 0.68, avgMs: 7800 },
-  ouro: { accuracy: 0.76, avgMs: 6600 },
-  platina: { accuracy: 0.84, avgMs: 5600 },
-  diamante: { accuracy: 0.91, avgMs: 4600 },
-  mestre: { accuracy: 0.96, avgMs: 3800 },
-};
-
-export const BOTS: readonly Bot[] = LEAGUES.map((league) => ({ id: `bot-${league}`, league, ...BOT_STATS[league] }));
-export const botForLeague = (league: LeagueKey): Bot => BOTS[LEAGUES.indexOf(league)];
+/** Duelo tem formato único: 20 rodadas (o corte de 20 já existe na Loja e é exigido para duelar). */
+export const DUEL_ROUNDS = 20;
 
 /** Nota do bot na conta de troféus: o meio da faixa da liga dele. */
-export const botRating = (bot: Bot) => leagueFloor(LEAGUES.indexOf(bot.league)) + LEAGUE_SPAN / 2;
-
-export function hashSeed(text: string) {
-  let hash = 2166136261;
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-export function mulberry32(seed: number) {
-  let state = seed >>> 0;
-  return () => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let value = state;
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-export function simulateBot(bot: Bot, rounds: number, seed: string) {
-  const random = mulberry32(hashSeed(`${bot.id}:${seed}`));
-  let correct = 0;
-  let totalMs = 0;
-  for (let round = 0; round < rounds; round += 1) {
-    if (random() < bot.accuracy) correct += 1;
-    totalMs += Math.round(bot.avgMs * (0.7 + random() * 0.6));
-  }
-  return { correct, totalMs };
-}
+export const botRating = (bot: Pick<Bot, "league">) => leagueFloor(LEAGUES.indexOf(bot.league)) + LEAGUE_SPAN / 2;
 
 export type DuelOutcome = "win" | "loss" | "draw";
 export const TROPHY_K = 32;
@@ -73,6 +25,8 @@ export type DuelInput = {
   /** Tempo total das respostas da pessoa; null se não der para saber (aí o empate fica empate). */
   playerMs: number | null;
   seed: string;
+  /** Divisão e família jogada: mudam a força do bot (ver `botProfile`). */
+  context?: BotContext;
 };
 export type DuelResult = {
   botId: string;
@@ -85,8 +39,8 @@ export type DuelResult = {
   trophiesAfter: number;
 };
 
-export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed }: DuelInput): DuelResult {
-  const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed);
+export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerMs, seed, context }: DuelInput): DuelResult {
+  const { correct: botCorrect, totalMs: botMs } = simulateBot(bot, playerTotal, seed, context);
   let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
   let tiebreak = false;
   if (outcome === "draw" && playerMs !== null && playerMs !== botMs) {
@@ -154,7 +108,10 @@ export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
 
 /** O que a tela de resultado mostra de um duelo recém-jogado. */
 export type DuelView = {
+  botName: string;
   botLeague: LeagueKey;
+  botStyle: BotStyle;
+  botSpecialty: BotFamily | null;
   outcome: DuelOutcome;
   tiebreak: boolean;
   playerCorrect: number;
@@ -163,6 +120,8 @@ export type DuelView = {
   delta: number;
   trophiesBefore: number;
   trophiesAfter: number;
+  /** Marcos que este duelo abriu (moedas já creditadas). */
+  milestones: readonly Milestone[];
 };
 
 /** Soma o tempo das respostas; resposta que estourou o tempo sem registro vale o cronômetro inteiro. Sem dado suficiente, null. */

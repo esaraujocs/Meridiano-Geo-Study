@@ -4,7 +4,8 @@ import { xpSegments, type ResultChip, type ResultView } from "../domain/result-v
 import { formatKm } from "../domain/map-error";
 import { formatNumber, t } from "../domain/i18n";
 import type { DuelView } from "../domain/duel";
-import { divisionRoman, leagueOf } from "../domain/league";
+import { leagueLabel, milestoneLabel, styleLabel } from "../domain/duel-labels";
+import { leagueOf } from "../domain/league";
 
 type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void };
 type LevelState = { level: number; span: number; progress: number };
@@ -176,22 +177,22 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }
 }
 
 const signedTrophies = (value: number) => (value > 0 ? `+${format(value)}` : value < 0 ? `−${format(Math.abs(value))}` : "0");
-const leagueTitle = (trophies: number) => { const status = leagueOf(trophies); return t.duel.leagueName(t.duel.leagues[status.league], divisionRoman(status.division)); };
+const leagueTitle = (trophies: number) => { const status = leagueOf(trophies); return leagueLabel(status.league, status.division); };
 
-// Placar do duelo, troféus ganhos ou perdidos e mudança de liga.
+// Placar do duelo, troféus ganhos ou perdidos, mudança de liga e marcos que renderam moedas.
 function DuelPanel({ duel, onLeague }: { duel: DuelView; onLeague?: () => void }) {
   const before = leagueOf(duel.trophiesBefore);
   const after = leagueOf(duel.trophiesAfter);
   const moved = after.index !== before.index ? (after.index > before.index ? "up" : "down") : null;
-  const botName = t.duel.botName(t.duel.leagues[duel.botLeague]);
-  return <section className={`rs-duel is-${duel.outcome}`} aria-label={t.duel.result.eyebrow(botName)}>
-    <div className="rs-duel-head"><Icon type="swords" /><span><b>{t.duel.result[duel.outcome]}</b><small>{t.duel.result.eyebrow(botName)}</small></span></div>
-    <div className="rs-duel-vs" role="img" aria-label={`${t.duel.result.you} ${duel.playerCorrect}, ${botName} ${duel.botCorrect}`}>
-      <span><small>{t.duel.result.you}</small><b>{duel.playerCorrect}</b></span><em>x</em><span><small>{botName}</small><b>{duel.botCorrect}</b></span>
+  return <section className={`rs-duel is-${duel.outcome}`} aria-label={t.duel.result.eyebrow(duel.botName)}>
+    <div className="rs-duel-head"><Icon type="swords" /><span><b>{t.duel.result[duel.outcome]}</b><small>{t.duel.result.eyebrow(duel.botName)} · {styleLabel(duel.botStyle, duel.botSpecialty)}</small></span></div>
+    <div className="rs-duel-vs" role="img" aria-label={`${t.duel.result.you} ${duel.playerCorrect}, ${duel.botName} ${duel.botCorrect}`}>
+      <span><small>{t.duel.result.you}</small><b>{duel.playerCorrect}</b></span><em>x</em><span><small>{duel.botName}</small><b>{duel.botCorrect}</b></span>
     </div>
     <div className="rs-duel-trophies"><Icon type="achievements" /><b>{signedTrophies(duel.delta)}</b><small>{t.duel.result.trophies} · {t.duel.result.total(format(duel.trophiesAfter))} · {leagueTitle(duel.trophiesAfter)}</small></div>
     {duel.tiebreak && <p className="rs-duel-note">{t.duel.result.tiebreak}</p>}
     {moved && <p className={`rs-duel-note is-${moved}`}>{moved === "up" ? t.duel.result.promoted(leagueTitle(duel.trophiesAfter)) : t.duel.result.demoted(leagueTitle(duel.trophiesAfter))}</p>}
+    {duel.milestones.map((milestone) => <p key={milestone.id} className="rs-duel-note is-up rs-duel-milestone"><Icon type="star" size={15} />{t.duel.result.milestone(milestoneLabel(milestone), format(milestone.coins))}</p>)}
     {onLeague && <button type="button" className="rs-duel-link" onClick={onLeague}>{t.duel.result.openLeague}</button>}
   </section>;
 }

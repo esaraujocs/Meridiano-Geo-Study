@@ -204,6 +204,7 @@ export function Hub({
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
   duelMode = false,
+  duelReady = true,
   onDuelMode,
   trophies = 0,
   duelsPlayed = 0,
@@ -221,6 +222,8 @@ export function Hub({
   achievementSummary?: AchievementSummary;
   /** Duelo contra bots: liga o modo, mostra os troféus e abre a tela da Liga. */
   duelMode?: boolean;
+  /** O corte de 20 rodadas (Loja) já foi comprado; senão o Duelo mostra um cadeado. */
+  duelReady?: boolean;
   onDuelMode?: (value: boolean) => void;
   trophies?: number;
   duelsPlayed?: number;
@@ -333,7 +336,7 @@ export function Hub({
         </div>
       </div>
       <div className="hub-rule" aria-hidden="true" />
-      <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}</button></div>}</div>
+      <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} title={duelReady ? undefined : t.duel.lockedSwitch} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}{!duelReady && <Icon type="lock" size={12} />}</button></div>}</div>
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div

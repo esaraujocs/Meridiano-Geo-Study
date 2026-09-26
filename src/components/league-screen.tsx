@@ -1,5 +1,7 @@
 import { Icon } from "./icons";
-import { BOTS, type DuelRecord } from "../domain/duel";
+import type { DuelRecord } from "../domain/duel";
+import { botById, botProfile, botsOfLeague } from "../domain/bots";
+import { botLabel, styleLabel } from "../domain/duel-labels";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
 
@@ -63,11 +65,14 @@ export function LeagueScreen({ trophies, duels, onBack }: { trophies: number; du
           <section className="pr-card">
             <header><div><h2>{t.duel.league.botsTitle}</h2><p>{t.duel.league.botsSub}</p></div></header>
             <ul className="rk">
-              {BOTS.map((bot) => <li key={bot.id} className={`rk-li lg-bot${bot.league === status.league ? " is-me" : ""}`} data-league={bot.league}>
-                <span className="rk-av lg-badge" aria-hidden="true"><Icon type="swords" size={18} /></span>
-                <span className="pr-rname"><b>{t.duel.botName(t.duel.leagues[bot.league])}{bot.league === status.league && <span className="pr-tag good">{t.duel.league.yourLeague}</span>}</b><small>{t.duel.league.botLine(Math.round(bot.accuracy * 100), t.time.seconds(Math.round(bot.avgMs / 1000)))}</small></span>
-                <strong className="rk-val">{Math.round(bot.accuracy * 100)}%</strong>
-              </li>)}
+              {botsOfLeague(status.league).map((bot) => {
+                const profile = botProfile(bot, { division: status.division, family: null });
+                return <li key={bot.id} className="rk-li lg-bot" data-league={bot.league}>
+                  <span className="rk-av lg-badge" aria-hidden="true">{bot.name.charAt(0)}</span>
+                  <span className="pr-rname"><b>{bot.name}</b><small>{t.duel.league.botLine(styleLabel(bot.style, bot.specialty), Math.round(profile.accuracy * 100), t.time.seconds(Math.round(profile.avgMs / 1000)))}</small></span>
+                  <strong className="rk-val">{Math.round(profile.accuracy * 100)}%</strong>
+                </li>;
+              })}
             </ul>
           </section>
           <section className="pr-card pr-recent">
@@ -75,10 +80,10 @@ export function LeagueScreen({ trophies, duels, onBack }: { trophies: number; du
             {recent.length === 0
               ? <p className="lg-empty">{t.duel.league.recentEmpty}</p>
               : <ul>{recent.map((duel) => {
-                const bot = BOTS.find((item) => item.id === duel.botId);
+                const bot = botById(duel.botId);
                 return <li key={duel.id}>
                   <span className="rk-av lg-badge" data-league={bot?.league} aria-hidden="true"><Icon type="swords" size={16} /></span>
-                  <span className="pr-rname"><b>{t.duel.league[duel.outcome]} · {t.duel.botName(t.duel.leagues[bot?.league ?? "bronze"])}</b><small>{duel.playerCorrect} x {duel.botCorrect} · {when(duel.at)}</small></span>
+                  <span className="pr-rname"><b>{t.duel.league[duel.outcome]} · {bot ? botLabel(bot) : "—"}</b><small>{duel.playerCorrect} x {duel.botCorrect} · {when(duel.at)}</small></span>
                   <span className="pr-s-res"><b className={duel.delta >= 0 ? "rk-win" : "rk-loss"}>{signed(duel.delta)}</b></span>
                 </li>;
               })}</ul>}

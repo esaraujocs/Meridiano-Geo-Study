@@ -1411,3 +1411,12 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
   .rk-li{padding:10px 8px}
   .rk-val{font-size:22px}
 }
+.cv-static{margin:0;padding:8px 0;font-size:14px;color:var(--ink)}
+.cv-opp{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--paper);max-width:420px}
+.cv-opp .rk-av{flex:none}
+.cv-opp-text{display:flex;flex-direction:column;gap:1px;min-width:0}
+.cv-opp-text b{font:500 19px/1.15 'Fraunces',Georgia,serif}
+.cv-opp-text small{font-size:12px;color:var(--muted)}
+.rs-duel-milestone{display:flex;align-items:center;gap:6px}
+.rs-duel-milestone svg{color:var(--brass);flex:none}
+.mode-switch button svg:last-child:not(:first-child){opacity:.7}

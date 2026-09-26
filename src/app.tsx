@@ -45,8 +45,11 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf, type LeagueKey } from "./domain/league";
-import { botForLeague, duelRecordId, playerTotalMs, resolveDuel, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
-import { listDuels, saveDuel } from "./domain/duel-store";
+import { duelRecordId, playerTotalMs, resolveDuel, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
+import { pickBot, type Bot, type BotContext } from "./domain/bots";
+import type { Milestone } from "./domain/duel-rewards";
+import { claimDuelMilestones, listDuels, saveDuel } from "./domain/duel-store";
+import { isDebugEnabled } from "./domain/debug-flag";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
@@ -56,11 +59,15 @@ export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
   const [data, setData] = useState<Legacy | null>(null);
   const [error, setError] = useState("");
-  const [region, setRegion] = useState<RegionSelection>("mundo");
+  // Duelo contra bots (liga no Hub): sempre Mundo inteiro, sem o filtro ONU; a escolha do solo fica guardada.
+  const [duelMode, setDuelMode] = useState(false);
+  const [regionPref, setRegion] = useState<RegionSelection>("mundo");
+  const region: RegionSelection = duelMode ? "mundo" : regionPref;
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
-  const [onlyUn, setOnlyUn] = useState(true);
+  const [onlyUnPref, setOnlyUn] = useState(true);
+  const onlyUn = duelMode ? false : onlyUnPref;
   // Ritmo (Partida com tempo ou Treino) e quantas rodadas: lembrados entre as partidas.
   const [pace, setPaceState] = useState<Pace>(() => {
     try { const saved = localStorage.getItem("carta-pace"); return isPace(saved) ? saved : DEFAULT_PACE; } catch { return DEFAULT_PACE; }
@@ -75,15 +82,17 @@ export function App() {
     try { const saved = localStorage.getItem(THEME_STORAGE_KEY); return isThemeId(saved) ? saved : DEFAULT_THEME; } catch { return DEFAULT_THEME; }
   });
   const setTheme = (id: string) => { setThemeState(id); try { localStorage.setItem(THEME_STORAGE_KEY, id); } catch { /* sem armazenamento */ } };
-  // Duelo contra bots: liga o modo no Hub; os troféus vêm do histórico de duelos (como XP e maestria).
-  const [duelMode, setDuelMode] = useState(false);
-  const [opponent, setOpponent] = useState<LeagueKey | null>(null);
+  // Os troféus vêm do histórico de duelos (como XP e maestria). O adversário é sorteado entre os 5 bots da liga da pessoa
+  // (sem repetir o do duelo anterior) e só troca depois de cada duelo; `?debug=1` deixa forçar a liga do bot para testar.
   const [duels, setDuels] = useState<DuelRecord[]>([]);
   const [lastDuel, setLastDuel] = useState<DuelView | null>(null);
-  const duelRunRef = useRef<{ botLeague: LeagueKey; trophiesBefore: number } | null>(null);
+  const [duelSeed, setDuelSeed] = useState(() => Date.now());
+  const [debugLeague, setDebugLeague] = useState<LeagueKey | null>(null);
+  const lastBotRef = useRef<string | null>(null);
+  const duelRunRef = useRef<{ bot: Bot; trophiesBefore: number; context: BotContext } | null>(null);
   const trophies = useMemo(() => trophiesFromDuels(duels), [duels]);
-  const ownLeague = leagueOf(trophies).league;
-  const opponentLeague = opponent ?? ownLeague;
+  const leagueStatus = leagueOf(trophies);
+  const duelBot = useMemo(() => pickBot(debugLeague ?? leagueStatus.league, duelSeed, lastBotRef.current), [debugLeague, leagueStatus.league, duelSeed]);
   useEffect(() => { void listDuels().then(setDuels).catch(() => undefined); }, []);
   const [economyReady, setEconomyReady] = useState(false);
   const [lastResult, setLastResult] = useState<ResultView | null>(null);
@@ -125,13 +134,16 @@ export function App() {
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
   const effectiveTier: RoundTier = isRoundTierUnlocked(roundTier, economy.unlocked) ? roundTier : "short";
-  // Duelo é sempre com tempo, qualquer que seja o ritmo guardado.
-  const sessionOptions = useMemo(() => ({ pace: duelMode ? "timed" as Pace : pace, roundLimit: roundLimitFor(effectiveTier, family) }), [pace, effectiveTier, family, duelMode]);
+  // Duelo: sempre com tempo e no formato único de 20 rodadas (o corte de 20 da Loja), qualquer que seja o ritmo e o corte guardados.
+  const sessionOptions = useMemo(() => duelMode
+    ? { pace: "timed" as Pace, roundLimit: roundLimitFor("long", family) }
+    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [pace, effectiveTier, family, duelMode]);
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
   const startGame = () => {
+    if (duelMode && !isRoundTierUnlocked("long", economy.unlocked)) return;
     economyBeforeRef.current = economy;
-    duelRunRef.current = duelMode ? { botLeague: opponentLeague, trophiesBefore: trophies } : null;
+    duelRunRef.current = duelMode ? { bot: duelBot, trophiesBefore: trophies, context: { division: leagueStatus.division, family: topFamily } } : null;
     setLastDuel(null);
     setScreen("game");
   };
@@ -145,13 +157,17 @@ export function App() {
     const run = duelRunRef.current;
     duelRunRef.current = null;
     if (run && session.complete && session.rounds.length > 0) {
-      const bot = botForLeague(run.botLeague);
+      const { bot } = run;
       const playerCorrect = session.rounds.filter((round) => round.correct).length;
-      const outcome = resolveDuel({ trophies: run.trophiesBefore, bot, playerCorrect, playerTotal: session.rounds.length, playerMs: playerTotalMs(session.rounds, session.timerSeconds), seed: session.id });
+      const outcome = resolveDuel({ trophies: run.trophiesBefore, bot, playerCorrect, playerTotal: session.rounds.length, playerMs: playerTotalMs(session.rounds, session.timerSeconds), seed: session.id, context: run.context });
       const record: DuelRecord = { id: duelRecordId(session.id), sessionId: session.id, at: session.endedAt ?? Date.now(), botId: bot.id, family: session.family, variant: session.variant, playerCorrect, total: session.rounds.length, botCorrect: outcome.botCorrect, outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta };
       setDuels((current) => [...current.filter((item) => item.id !== record.id), record]);
-      void saveDuel(record).catch(() => undefined);
-      setLastDuel({ botLeague: run.botLeague, outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect, botCorrect: outcome.botCorrect, total: session.rounds.length, delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter });
+      // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
+      const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(outcome.trophiesAfter)).catch(() => []);
+      if (milestones.length) void refreshEconomy();
+      lastBotRef.current = bot.id;
+      setDuelSeed(Date.now());
+      setLastDuel({ botName: bot.name, botLeague: bot.league, botStyle: bot.style, botSpecialty: bot.specialty, outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect, botCorrect: outcome.botCorrect, total: session.rounds.length, delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones });
     } else setLastDuel(null);
     setLastResult(buildResultView({
       session, spoils: result.spoils, before, after: after ?? before,
@@ -502,6 +518,7 @@ export function App() {
           onSelect={selectFamily}
            onNavigate={navigate}
           duelMode={duelMode}
+          duelReady={isRoundTierUnlocked("long", economy.unlocked)}
           onDuelMode={setDuelMode}
           trophies={trophies}
           duelsPlayed={duels.length}
@@ -523,13 +540,13 @@ export function App() {
            onPlay={startGame}
            pace={duelMode ? "timed" : pace}
            setPace={setPace}
-           roundTier={effectiveTier}
+           roundTier={duelMode ? "long" : effectiveTier}
            setRoundTier={setRoundTier}
            onBuyRounds={buyRounds}
            onlyUn={onlyUn}
            setOnlyUn={setOnlyUn}
            presetApi={presetApi}
-           duel={duelMode ? { opponent: opponentLeague, own: ownLeague, onOpponent: setOpponent } : undefined}
+           duel={duelMode ? { bot: duelBot, debugLeague: isDebugEnabled() ? { current: duelBot.league, onPick: setDebugLeague } : undefined } : undefined}
             setVariant={setVariant}
             topFamily={topFamily}
             onFamilyChange={(nextFamily, nextVariant) => {
