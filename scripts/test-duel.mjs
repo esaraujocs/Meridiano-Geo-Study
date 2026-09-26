@@ -9,13 +9,14 @@ const out = join(tmpdir(), "carta-cega-duel-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 execFileSync("node_modules/.bin/tsc", [
-  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
+  "src/domain/league.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
   "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig",
 ], { stdio: "inherit" });
 const L = await import(pathToFileURL(join(out, "league.js")).href);
 const B = await import(pathToFileURL(join(out, "bots.js")).href);
 const D = await import(pathToFileURL(join(out, "duel.js")).href);
 const R = await import(pathToFileURL(join(out, "duel-rewards.js")).href);
+const M = await import(pathToFileURL(join(out, "duel-modes.js")).href);
 
 // ---- Ligas e divisões ----
 let s = L.leagueOf(0);
@@ -125,7 +126,7 @@ for (const b of B.BOTS) assert.notEqual(D.resolveDuel({ trophies: 500, bot: b, p
 assert.equal(D.DUEL_ROUNDS, 20);
 
 // ---- Registro e troféus derivados ----
-const rec = (n, at, delta, extra = {}) => ({ id: D.duelRecordId(`s${n}`), sessionId: `s${n}`, at, botId: "bot-ouro-0", family: "mapa", variant: "mapa", playerCorrect: 14, total: 20, botCorrect: 12, outcome: "win", tiebreak: false, delta, ...extra });
+const rec = (n, at, delta, extra = {}) => ({ id: D.duelRecordId(`s${n}`), sessionId: `s${n}`, at, botId: "bot-ouro-0", ladder: "mapas", family: "mapa", variant: "mapa", playerCorrect: 14, total: 20, botCorrect: 12, outcome: "win", tiebreak: false, delta, ...extra });
 assert.equal(D.trophiesFromDuels([]), 0);
 assert.equal(D.trophiesFromDuels([rec(1, 1, 20), rec(2, 2, -8)]), 12);
 assert.equal(D.trophiesFromDuels([rec(2, 2, -8), rec(1, 1, 20)]), 12, "a ordem de chegada não importa");
@@ -141,9 +142,9 @@ assert.equal(D.playerTotalMs([{ responseTimeMs: 1000 }, { responseTimeMs: null, 
 assert.equal(D.playerTotalMs([{ responseTimeMs: 1000 }, { responseTimeMs: null }], 15), null);
 
 // ---- Marcos de recompensa ----
-assert.equal(R.MILESTONES.length, 5 + 10, "5 ligas novas + 2 divisões em cada uma das 5 ligas com divisão");
+assert.equal(R.MILESTONES.length, 5 + 2 * 10, "5 ligas novas + 2 divisões em cada uma das 5 ligas com divisão, nas 2 escadas");
 assert.deepEqual(R.MILESTONES.map((m) => m.at), [...R.MILESTONES.map((m) => m.at)].sort((a, b) => a - b), "em ordem de troféus");
-assert.equal(new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m))).size, 15, "ids únicos");
+assert.equal(new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m))).size, 25, "ids únicos");
 const coinsAt = (trophies) => R.reachedMilestones(trophies).reduce((n, m) => n + m.coins, 0);
 assert.equal(R.reachedMilestones(0).length, 0);
 assert.equal(R.reachedMilestones(166).length, 0);
@@ -163,8 +164,147 @@ for (const m of R.MILESTONES) {
 }
 // pagar uma vez só: com o crédito já no livro, o marco não volta
 const ledger = new Set(["grant:duel:division:bronze:2"]);
-assert.deepEqual(R.pendingMilestones(340, ledger).map((m) => m.id), ["division:bronze:3"]);
+assert.deepEqual(R.pendingMilestones(340, ledger).map((m) => m.id), ["division:mapas:bronze:3"], "o crédito antigo (sem escada) vale para Mapas; a escada Mapas só deve o Bronze III");
 assert.equal(R.pendingMilestones(340, new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m)))).length, 0);
 assert.equal(R.pendingMilestones(100, new Set()).length, 0, "descer não tira nem repete: só o que já foi alcançado e não pago");
 
-console.log("duelo: ligas, bots, resolução, troféus e marcos ok");
+
+// ---- Escadas, grupos de modos e sorteio dos 2 tempos ----
+assert.deepEqual(M.LADDERS, ["mapas", "bandeiras"]);
+assert.equal(M.MODE_GROUPS.length, 8);
+assert.equal(new Set(M.MODE_GROUPS.map((g) => g.group)).size, 8);
+assert.equal(M.groupsOfLadder("mapas").length, 5); assert.equal(M.groupsOfLadder("bandeiras").length, 3);
+assert.deepEqual(M.MODE_GROUPS.filter((g) => g.kind === "escrita").map((g) => g.group).sort(), ["capitais-escrita", "escrita-pais", "silhueta-escrita"]);
+for (const g of M.MODE_GROUPS) assert.ok(g.variants.length >= 1 && g.accuracy <= 0 && g.time >= 1, g.group);
+assert.equal(M.groupDef("atuais").variants.length, 2);
+assert.equal(M.isLadder("mapas"), true); assert.equal(M.isLadder("idiomas"), false);
+assert.equal(M.LEGS, 2); assert.equal(M.LEG_ROUNDS, 10);
+
+// sorteio: determinístico pela semente, 2 grupos diferentes da escada, 10 rodadas cada
+const legsA = M.drawLegs("mapas", "duelo-1");
+assert.deepEqual(legsA, M.drawLegs("mapas", "duelo-1"));
+assert.notDeepEqual(legsA, M.drawLegs("mapas", "duelo-2"));
+const seenGroups = { mapas: new Set(), bandeiras: new Set() }, variants = new Set();
+for (const ladder of M.LADDERS) for (let i = 0; i < 400; i += 1) {
+  const [one, two] = M.drawLegs(ladder, "s" + i);
+  assert.notEqual(one.group, two.group, "os dois tempos são de modos diferentes");
+  for (const leg of [one, two]) {
+    const def = M.groupDef(leg.group);
+    assert.equal(def.ladder, ladder); assert.equal(leg.rounds, 10);
+    assert.ok(def.variants.some((v) => v.family === leg.family && v.variant === leg.variant), "sentido do grupo");
+    assert.ok(Number.isInteger(leg.deckSeed));
+    seenGroups[ladder].add(leg.group); variants.add(leg.variant);
+  }
+  assert.notEqual(one.deckSeed, two.deckSeed);
+}
+assert.equal(seenGroups.mapas.size, 5, "todos os grupos de Mapas aparecem"); assert.equal(seenGroups.bandeiras.size, 3, "e os de Bandeiras");
+assert.ok(variants.has("nome-bandeira") && variants.has("bandeira-nome") && variants.has("nome-historica") && variants.has("historica-nome"), "os dois sentidos aparecem");
+assert.ok(!variants.has("travel") && !variants.has("idioma-nome") && !variants.has("pais-capital"), "Travel, Idiomas e 4 opções de capital ficam de fora");
+
+// modos que a pessoa tem: grátis ou comprados
+assert.deepEqual([...M.ownedGroups([])].sort(), ["atuais", "capitais-clique", "mapa"]);
+assert.equal(M.isVariantOwned({ family: "escrita", variant: "escrita-pais" }, []), false);
+assert.equal(M.isVariantOwned({ family: "escrita", variant: "escrita-pais" }, ["escrita:escrita-pais"]), true);
+assert.equal(M.isVariantOwned({ family: "historicas", variant: "nome-historica" }, ["historicas:historica-nome"]), true, "os dois sentidos das históricas valem a mesma compra");
+assert.equal(M.isGroupOwned(M.groupDef("historicas"), []), false);
+assert.ok(M.ownedGroups(["escrita:escrita-pais", "silhueta:silhueta-opcoes"]).has("escrita-pais"));
+// contra bot: ao menos um tempo num modo que a pessoa tem, quando ela tem algum
+const freeMapas = M.ownedGroups([]);
+let allPreview = 0, guardedBad = 0, sameWhenOneOwned = true;
+for (let i = 0; i < 600; i += 1) {
+  const free = M.drawLegs("mapas", "g" + i), guarded = M.drawLegs("mapas", "g" + i, freeMapas);
+  if (free.every((leg) => !freeMapas.has(leg.group))) allPreview += 1;
+  if (guarded.every((leg) => !freeMapas.has(leg.group))) guardedBad += 1;
+  if (free.some((leg) => freeMapas.has(leg.group)) && JSON.stringify(free) !== JSON.stringify(guarded)) sameWhenOneOwned = false;
+}
+assert.ok(allPreview > 0, "sem a garantia, alguns sorteios seriam só de prévia");
+assert.equal(guardedBad, 0, "com a garantia, nunca");
+assert.ok(sameWhenOneOwned, "quando já havia um modo da pessoa, o sorteio é o mesmo (a garantia não mexe à toa)");
+assert.deepEqual(M.drawLegs("bandeiras", "z", new Set()).map((l) => l.group), M.drawLegs("bandeiras", "z").map((l) => l.group), "sem modo nenhum liberado, nada a garantir");
+
+// regra de moedas: o modo que você tem paga o normal; prévia paga como o modo base da escada
+assert.deepEqual(M.coinModeFor("mapas", { family: "escrita", variant: "escrita-capital" }, true), { family: "escrita", variant: "escrita-capital" });
+assert.deepEqual(M.coinModeFor("mapas", { family: "escrita", variant: "escrita-capital" }, false), { family: "mapa", variant: "mapa" });
+assert.deepEqual(M.coinModeFor("bandeiras", { family: "historicas", variant: "nome-historica" }, false), { family: "bandeiras", variant: "nome-bandeira" });
+// escada de registros antigos
+assert.equal(M.ladderForFamily("mapa", "mapa"), "mapas"); assert.equal(M.ladderForFamily("capitais", "capital-pais"), "mapas");
+assert.equal(M.ladderForFamily("silhueta", "silhueta"), "mapas"); assert.equal(M.ladderForFamily("bandeiras", "nome-bandeira"), "bandeiras");
+assert.equal(M.ladderForFamily("historicas", "nome-historica"), "bandeiras");
+assert.equal(M.ladderForFamily("escrita", "escrita-pais"), "bandeiras"); assert.equal(M.ladderForFamily("escrita", "escrita-capital"), "mapas");
+assert.equal(M.ladderForFamily("idiomas", "idioma-nome"), "mapas");
+
+// ---- Bot calibrado por modo ----
+const mestre = B.botsOfLeague("mestre")[0], bronze = B.botsOfLeague("bronze")[0], ouro = B.botsOfLeague("ouro")[0];
+const hard = { accuracy: M.groupDef("capitais-escrita").accuracy, time: M.groupDef("capitais-escrita").time };
+const plain = (bot, division) => B.botProfile(bot, { division, family: null });
+const tuned = (bot, division) => B.botProfile(bot, { division, family: null, tuning: hard });
+assert.ok(Math.abs((tuned(bronze, 1).accuracy - plain(bronze, 1).accuracy) - hard.accuracy) < 1e-9, "no Bronze o ajuste vale por inteiro");
+assert.ok(tuned(ouro, 1).accuracy < plain(ouro, 1).accuracy && tuned(ouro, 1).accuracy > plain(ouro, 1).accuracy + hard.accuracy, "no Ouro vale menos");
+assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.03, "no Mestre quase não pesa");
+assert.equal(tuned(bronze, 1).avgMs, Math.round(plain(bronze, 1).avgMs * hard.time), "o tempo do bot cresce com a dificuldade do modo");
+for (const g of M.MODE_GROUPS) for (const league of L.LEAGUES) { const p = B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: null, tuning: g }); assert.ok(p.accuracy >= 0.05 && p.accuracy <= 0.99, g.group + league); }
+// modo mais difícil = bot erra mais, e a média simulada acompanha
+const mean = (bot, tuning, division = 1) => { let hits = 0, rounds = 0; for (let g = 0; g < 400; g += 1) { hits += B.simulateBot(bot, 25, "t" + g, { division, family: null, tuning }).correct; rounds += 25; } return hits / rounds; };
+assert.ok(mean(bronze, hard) < mean(bronze, { accuracy: 0, time: 1 }) - 0.1, "Bronze erra bem mais em Capitais · escrita que em Bandeiras");
+assert.ok(Math.abs(mean(bronze, hard) - tuned(bronze, 1).accuracy) < 0.03);
+
+// ---- Duelo em dois tempos ----
+const legIn = (group, playerCorrect, playerMs = 30000) => ({ group, rounds: 10, playerCorrect, playerMs });
+const twoLegs = { trophies: 1240, bot: ouro, seed: "d1", division: 2, legs: [legIn("mapa", 7), legIn("capitais-escrita", 5)] };
+let d = D.resolveDuelLegs(twoLegs);
+assert.equal(d.total, 20); assert.equal(d.playerCorrect, 12); assert.equal(d.legs.length, 2);
+assert.equal(d.botCorrect, d.legs[0].botCorrect + d.legs[1].botCorrect);
+assert.deepEqual(d, D.resolveDuelLegs(twoLegs), "mesma semente, mesmo duelo");
+assert.notEqual(D.resolveDuelLegs({ ...twoLegs, seed: "d2" }).botCorrect + "x" + D.resolveDuelLegs({ ...twoLegs, seed: "d3" }).botCorrect, "x", "sementes diferentes rodam");
+// cada tempo tem o próprio sorteio: usa a semente + índice
+const s0 = B.simulateBot(ouro, 10, "d1:0", { division: 2, family: M.groupDef("mapa").botFamily, tuning: { accuracy: M.groupDef("mapa").accuracy, time: M.groupDef("mapa").time } });
+assert.equal(d.legs[0].botCorrect, s0.correct); assert.equal(d.legs[0].botMs, s0.totalMs);
+assert.ok(["win", "loss", "draw"].includes(d.outcome));
+// vitória, derrota e desempate pelo tempo somado
+const runLegs = (ply) => D.resolveDuelLegs({ ...twoLegs, legs: ply });
+const baseRes = runLegs([legIn("mapa", 5), legIn("capitais-escrita", 5)]);
+const winAll = runLegs([legIn("mapa", 10), legIn("capitais-escrita", 10)]);
+assert.equal(winAll.outcome, "win"); assert.ok(winAll.delta >= D.MIN_SWING);
+const loseAll = runLegs([legIn("mapa", 0), legIn("capitais-escrita", 0)]);
+assert.equal(loseAll.outcome, "loss"); assert.ok(loseAll.delta <= -D.MIN_SWING);
+const halfBot = baseRes.botCorrect; // empate: joga exatamente o que o bot fez, dividido nos tempos
+const bl = baseRes.legs;
+const tieRes = (ms) => runLegs([{ group: "mapa", rounds: 10, playerCorrect: bl[0].botCorrect, playerMs: ms[0] }, { group: "capitais-escrita", rounds: 10, playerCorrect: bl[1].botCorrect, playerMs: ms[1] }]);
+assert.equal(tieRes([1, 1]).tiebreak, true); assert.equal(tieRes([1, 1]).outcome, "win", "mesmo placar, muito mais rápido, ganha");
+assert.equal(tieRes([900000, 900000]).outcome, "loss", "mesmo placar, muito mais devagar, perde");
+assert.deepEqual([runLegs([{ group: "mapa", rounds: 10, playerCorrect: bl[0].botCorrect, playerMs: null }, { group: "capitais-escrita", rounds: 10, playerCorrect: bl[1].botCorrect, playerMs: 5 }]).outcome], ["draw"], "sem tempo de um dos tempos, empate no placar é empate");
+assert.ok(halfBot >= 0);
+// os troféus seguem a mesma conta do duelo de um tempo só
+const single = D.resolveDuel({ trophies: 1240, bot: ouro, playerCorrect: 12, playerTotal: 20, playerMs: null, seed: "x" });
+assert.equal(typeof single.delta, "number");
+
+// ---- Registros com escada e troféus por escada ----
+assert.equal(D.parseDuel({ ...rec(1, 1, 5) }).ladder, "mapas");
+assert.equal(D.parseDuel({ ...rec(1, 1, 5), ladder: "bandeiras" }).ladder, "bandeiras");
+const { ladder: _drop, ...noLadder } = rec(2, 2, 5, { family: "bandeiras", variant: "nome-bandeira" });
+assert.equal(D.parseDuel(noLadder).ladder, "bandeiras", "registro antigo: a escada vem da família jogada");
+assert.equal(D.parseDuel({ ...noLadder, family: "escrita", variant: "escrita-capital" }).ladder, "mapas");
+assert.equal(D.parseDuel({ ...rec(3, 3, 5), ladder: "??" }).ladder, "mapas", "escada inválida cai na da família");
+const withLegs = D.parseDuel({ ...rec(4, 4, 5), legs: [{ group: "mapa", playerCorrect: 7, botCorrect: 6, total: 10 }, { group: "capitais-escrita", playerCorrect: 5, botCorrect: 4, total: 10 }] });
+assert.equal(withLegs.legs.length, 2);
+assert.equal(D.parseDuel({ ...rec(5, 5, 5), legs: [{ group: "mapa", playerCorrect: "x" }] }).legs, undefined, "tempos inválidos são descartados");
+assert.equal(D.parseDuel({ ...rec(6, 6, 5), legs: [] }).legs, undefined);
+const mixed = [rec(10, 1, 20, { ladder: "mapas" }), rec(11, 2, 30, { ladder: "bandeiras" }), rec(12, 3, -10, { ladder: "mapas" }), rec(13, 4, 8, { ladder: "bandeiras" })];
+assert.equal(D.trophiesFromDuels(mixed, "mapas"), 10); assert.equal(D.trophiesFromDuels(mixed, "bandeiras"), 38);
+assert.equal(D.trophiesFromDuels(mixed), 48, "sem escada, soma tudo (v1)");
+assert.deepEqual(D.trophiesByLadder(mixed), { mapas: 10, bandeiras: 38 });
+assert.deepEqual(D.trophiesByLadder([]), { mapas: 0, bandeiras: 0 });
+
+// ---- Marcos por escada ----
+const idsOf = (list) => list.map((m) => m.id);
+assert.deepEqual(idsOf(R.reachedMilestones({ bandeiras: 200 })), ["division:bandeiras:bronze:2"], "divisão é da escada que chegou lá");
+assert.deepEqual(idsOf(R.reachedMilestones({ mapas: 200, bandeiras: 200 })).sort(), ["division:bandeiras:bronze:2", "division:mapas:bronze:2"], "as duas escadas pagam a própria divisão");
+assert.equal(R.reachedMilestones({ mapas: 100, bandeiras: 510 }).filter((m) => m.kind === "league").length, 1, "liga nova de qualquer escada abre o marco de liga");
+assert.equal(R.reachedMilestones({ mapas: 510, bandeiras: 520 }).filter((m) => m.id === "league:prata").length, 1, "e ele é um só, mesmo com as duas escadas na liga");
+assert.equal(R.MILESTONES.filter((m) => m.id === "league:prata")[0].ladder, null);
+const claimed = new Set([R.milestoneLedgerId({ id: "league:prata" })]);
+assert.equal(R.pendingMilestones({ mapas: 510, bandeiras: 520 }, claimed).some((m) => m.id === "league:prata"), false, "já pago: nenhuma escada repete");
+assert.deepEqual(idsOf(R.pendingMilestones({ mapas: 200, bandeiras: 200 }, new Set(["grant:duel:division:bronze:2"]))), ["division:bandeiras:bronze:2"], "o crédito antigo sem escada cobre só Mapas");
+assert.equal(R.pendingMilestones(200, new Set()).length, 1, "número solto vale para Mapas");
+
+console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");

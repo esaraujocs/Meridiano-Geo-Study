@@ -47,6 +47,7 @@ import { LeagueScreen } from "./components/league-screen";
 import { leagueOf, type LeagueKey } from "./domain/league";
 import { duelRecordId, playerTotalMs, resolveDuel, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot, type Bot, type BotContext } from "./domain/bots";
+import { ladderForFamily } from "./domain/duel-modes";
 import type { Milestone } from "./domain/duel-rewards";
 import { claimDuelMilestones, listDuels, saveDuel } from "./domain/duel-store";
 import { isDebugEnabled } from "./domain/debug-flag";
@@ -160,7 +161,7 @@ export function App() {
       const { bot } = run;
       const playerCorrect = session.rounds.filter((round) => round.correct).length;
       const outcome = resolveDuel({ trophies: run.trophiesBefore, bot, playerCorrect, playerTotal: session.rounds.length, playerMs: playerTotalMs(session.rounds, session.timerSeconds), seed: session.id, context: run.context });
-      const record: DuelRecord = { id: duelRecordId(session.id), sessionId: session.id, at: session.endedAt ?? Date.now(), botId: bot.id, family: session.family, variant: session.variant, playerCorrect, total: session.rounds.length, botCorrect: outcome.botCorrect, outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta };
+      const record: DuelRecord = { id: duelRecordId(session.id), sessionId: session.id, at: session.endedAt ?? Date.now(), botId: bot.id, ladder: ladderForFamily(session.family, session.variant), family: session.family, variant: session.variant, playerCorrect, total: session.rounds.length, botCorrect: outcome.botCorrect, outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta };
       setDuels((current) => [...current.filter((item) => item.id !== record.id), record]);
       // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
       const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(outcome.trophiesAfter)).catch(() => []);

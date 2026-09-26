@@ -96,7 +96,11 @@ export type BotContext = {
   division: 1 | 2 | 3 | null;
   /** Família do Hub que está sendo jogada (só o especialista liga para isso). */
   family: BotFamily | null;
+  /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
+  tuning?: { accuracy: number; time: number };
 };
+/** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa. */
+export const TUNING_REF = 0.4;
 export type BotProfile = { accuracy: number; avgMs: number; streaky: boolean };
 
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
@@ -109,6 +113,10 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
   if (bot.style === "preciso") { accuracy += PRECISE.accuracy; avgMs *= PRECISE.time; }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
   if (bot.style === "especialista" && bot.specialty) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
+  if (context.tuning) {
+    accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, 0, 1);
+    avgMs *= context.tuning.time;
+  }
   return { accuracy: clamp(accuracy, 0.05, 0.99), avgMs: Math.round(avgMs), streaky: bot.style === "irregular" };
 }
 

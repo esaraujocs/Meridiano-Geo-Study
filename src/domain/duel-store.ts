@@ -1,7 +1,7 @@
 // Duelos no IndexedDB (loja `preferences`, id `duel:<sessão>`): entram no Exportar/Importar progresso, como as Favoritas.
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { DUEL_ID_PREFIX, DUEL_SOURCE, parseDuel, type DuelRecord } from "./duel.js";
-import { milestoneLedgerId, pendingMilestones, type Milestone } from "./duel-rewards.js";
+import { milestoneLedgerId, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
 
 const STORE = "preferences";
 
@@ -44,7 +44,7 @@ export async function saveDuel(record: DuelRecord) {
 }
 
 /** Credita no livro-caixa os marcos já alcançados que ainda não foram pagos (um crédito por marco, id único: nunca repete). */
-export async function claimDuelMilestones(trophies: number): Promise<Milestone[]> {
+export async function claimDuelMilestones(trophies: number | TrophiesByLadder): Promise<Milestone[]> {
   const database = await openDatabase();
   try {
     return await new Promise<Milestone[]>((resolve, reject) => {
