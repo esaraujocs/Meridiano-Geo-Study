@@ -18,11 +18,15 @@ export const BASE_WIN = 33;
 export const BASE_LOSS = 27;
 /** O teto da vitória é o ganho-base + isto (50 no começo): sequência e desempenho boostam até aí. */
 export const WIN_CAP_EXTRA = 17;
-/** Bônus por enfrentar um bot acima do nível da pessoa, crescente e sem degraus: LEAD_PER_LEAGUE troféus por liga de diferença (500 troféus de rating
- *  acima dos troféus da pessoa), até LEAD_MAX ligas. Soma ao ganho e ao teto, então com o bot meia liga acima o teto já passa dos 50 e só com um bot duas
- *  ligas acima chega a 50 + 20 = 70. */
-export const LEAD_PER_LEAGUE = 10;
+/** Bônus por enfrentar um bot acima do nível da pessoa, crescente e sem degraus: LEAD_TOP troféus com o rating do bot LEAD_MAX ligas (500 troféus cada)
+ *  acima dos troféus da pessoa, e no caminho uma curva que sobe logo (expoente LEAD_CURVE < 1), para até uma diferença pequena já valer alguns troféus e cada
+ *  passo de rating render um nível novo. Soma ao ganho e ao teto: 50 é o teto de uma vitória contra bot do mesmo nível (bom MMR e sequência), não o piso,
+ *  e só com um bot duas ligas acima chega a 50 + 20 = 70. */
+export const LEAD_TOP = 20;
 export const LEAD_MAX = 2;
+export const LEAD_CURVE = 0.75;
+/** O bônus para uma diferença de `lead` ligas (0 a LEAD_MAX), com `top` no fim da curva. */
+export const leadBonusAt = (lead: number, top = LEAD_TOP) => top * Math.pow(Math.min(1, Math.max(0, Number.isFinite(lead) ? lead : 0) / LEAD_MAX), LEAD_CURVE);
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
 export const PERF_SPAN = 8;
@@ -48,7 +52,8 @@ export const WIN_GAP = 0.35;
 export const LOSS_GAP = 0.3;
 export const WIN_FLOOR = 0.25;
 
-/** Incerteza do MMR (sigma, na escala dos troféus): começa em SIGMA_START, cai a cada duelo (x SIGMA_DECAY) até SIGMA_MIN e o passo do MMR (K) vai
+/** Incerteza do MMR (sigma, na escala dos troféus): começa em SIGMA_START, cai a cada duelo (x SIGMA_DECAY) até SIGMA_MIN, sobe no máximo SIGMA_RISE por duelo
+ *  (a surpresa vai levando o adversário e o passo para cima aos poucos, sem salto) e o passo do MMR (K) vai
  *  de K_MIN (incerteza mínima) a K_MAX (máxima). K_MIN é o passo de um MMR já assentado, do tamanho dos troféus, para os dois andarem juntos. */
 export const K_MIN = 64;
 export const K_MAX = 160;
@@ -56,6 +61,7 @@ export const SIGMA_MIN = 60;
 export const SIGMA_MAX = 250;
 export const SIGMA_START = 250;
 export const SIGMA_DECAY = 0.93;
+export const SIGMA_RISE = 45;
 /** Surpresa: nos últimos SURPRISE_WINDOW duelos (com ao menos SURPRISE_MIN), vitórias reais menos esperadas dividido pelo desvio esperado (z). A
  *  incerteza sobe a partir de |z| = SURPRISE_FROM e chega ao máximo em SURPRISE_FULL. */
 export const SURPRISE_WINDOW = 10;
@@ -125,7 +131,7 @@ export function surprise(samples: readonly SurpriseSample[]) {
 export function sigmaNext(sigma: number, samples: readonly SurpriseSample[]) {
   const settled = Math.max(SIGMA_MIN, (Number.isFinite(sigma) ? sigma : SIGMA_MIN) * SIGMA_DECAY);
   const pushed = SIGMA_MIN + (SIGMA_MAX - SIGMA_MIN) * clamp01((Math.abs(surprise(samples)) - SURPRISE_FROM) / (SURPRISE_FULL - SURPRISE_FROM));
-  return Math.min(SIGMA_MAX, Math.max(settled, pushed));
+  return Math.min(SIGMA_MAX, Math.max(settled, Math.min(pushed, (Number.isFinite(sigma) ? sigma : SIGMA_MIN) + SIGMA_RISE)));
 }
 
 // ---- matchmaking ----
@@ -155,13 +161,13 @@ export type TrophyInput = {
   margin: number;
   /** Quantas ligas o bot está acima da pessoa (ver leadOf; pode ser fracionário); só a vitória usa. */
   lead?: number;
-  /** Bônus por liga de diferença (sem valor, LEAD_PER_LEAGUE). */
-  leadBonus?: number;
+  /** Bônus no fim da curva (sem valor, LEAD_TOP). */
+  leadTop?: number;
 };
 export type TrophyChange = { delta: number; streakBonus: number; perfBonus: number };
 
 /** Quanto o duelo mexe nos troféus (antes do chão em zero): o valor-base, o MMR, a sequência e o desempenho. */
-export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadBonus = LEAD_PER_LEAGUE }: TrophyInput): TrophyChange {
+export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadTop = LEAD_TOP }: TrophyInput): TrophyChange {
   const { win, loss, scale, minWin } = baseStakes(trophies);
   const factors = gapFactors(mmr - trophies);
   if (outcome === "win") {
@@ -171,7 +177,7 @@ export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0,
     const room = Math.max(0, win + Math.round(WIN_CAP_EXTRA * scale) - base);
     const streakApplied = Math.min(room, Math.round(streakBonus(streak) * hold));
     const perfApplied = Math.min(room - streakApplied, Math.round(PERF_MAX * hold * clamp01(margin / PERF_SPAN)));
-    const leadExtra = Math.round(clamp(Number.isFinite(lead) ? lead : 0, 0, LEAD_MAX) * leadBonus * scale);
+    const leadExtra = Math.round(leadBonusAt(lead, leadTop) * scale);
     return { delta: Math.max(minWin, base + streakApplied + perfApplied + leadExtra), streakBonus: streakApplied, perfBonus: perfApplied };
   }
   if (outcome === "loss") {

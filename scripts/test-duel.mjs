@@ -588,9 +588,12 @@ assert.equal(X.surprise(reps(5, 1, 0.5)) > 2 && X.surprise(reps(3, 1, 0.9)) < 1,
 assert.ok(Math.abs(X.sigmaNext(250, reps(5, 0.5, 0.5)) - 250 * 0.93) < 1e-9);
 assert.equal(X.sigmaNext(61, reps(5, 0.5, 0.5)), 60, "não passa do piso");
 const bouncedSigma = X.sigmaNext(60, reps(10, 1, 0.5));
-assert.ok(bouncedSigma > 200 && bouncedSigma <= 250, "uma sequência de vitórias inesperadas devolve a incerteza (e o passo do MMR) lá para cima");
+assert.equal(bouncedSigma, 60 + X.SIGMA_RISE, "uma sequência de vitórias inesperadas devolve a incerteza aos poucos (no máximo SIGMA_RISE por duelo), sem salto");
+assert.ok(X.sigmaNext(200, reps(10, 1, 0.5)) > 217 && X.sigmaNext(200, reps(10, 1, 0.5)) <= 245, "de uma incerteza já alta chega perto do alvo da surpresa");
+assert.equal(X.SIGMA_RISE, 45);
 assert.equal(X.sigmaNext(60, reps(10, 1, 0.5).concat(reps(0, 1, 0.5))), bouncedSigma);
 assert.equal(X.sigmaNext(60, reps(10, 0, 0.5)), X.sigmaNext(60, reps(10, 1, 0.5)), "surpresa para os dois lados");
+let climb = 60; for (let i = 0; i < 6; i += 1) climb = X.sigmaNext(climb, reps(10, 1, 0.3)); assert.equal(climb, 250, "em uns 5 duelos de surpresa a incerteza chega ao máximo");
 assert.equal(X.sigmaNext(250, reps(10, 1, 0.3)), 250, "uma surpresa grande leva a incerteza ao máximo");
 // matchmaking: o rating do bot é o MMR mais o otimismo pela incerteza, preso entre a própria liga e 2 ligas acima
 assert.deepEqual([X.OPTIMISM, X.MATCH_UP, X.MASTER_MATCH_SPAN], [1, 2, 1000]);
@@ -672,19 +675,24 @@ assert.deepEqual(plan({ streakBonus: 3, perfBonus: 5, streakAfter: 4 }).pills.ma
 assert.deepEqual(lp({ perfBonus: 5 }).pills.map((p) => p.key), ["delta", "stay"], "derrota não tem pílula de desempenho");
 
 // bônus por enfrentar bot de liga acima: desligado por padrão e, ligado, soma ao ganho e ao teto (50 + 20 = 70 duas ligas acima)
-assert.deepEqual([X.LEAD_PER_LEAGUE, X.LEAD_MAX], [10, 2], "10 troféus por liga acima, até 2 ligas: teto de 70");
+assert.deepEqual([X.LEAD_TOP, X.LEAD_MAX, X.LEAD_CURVE], [20, 2, 0.75], "até +20 com o bot 2 ligas acima, numa curva que sobe logo");
+assert.equal(X.leadBonusAt(0), 0); assert.equal(X.leadBonusAt(2), 20); assert.equal(X.leadBonusAt(9), 20); assert.equal(X.leadBonusAt(-1), 0); assert.equal(X.leadBonusAt(NaN), 0);
+let lastLead = -1; for (let l = 0; l <= 2.0001; l += 0.05) { const bonus = X.leadBonusAt(l); assert.ok(bonus >= lastLead, "crescente"); lastLead = bonus; }
+assert.ok(X.leadBonusAt(0.1) >= 2 && X.leadBonusAt(0.1) < 3, "uma diferença pequena já vale uns 2 troféus");
+assert.ok(X.leadBonusAt(1) > 10, "a curva sobe logo: 1 liga acima vale mais que a metade do bônus");
+assert.equal(new Set(Array.from({ length: 81 }, (_, i) => Math.round(X.leadBonusAt(i * 0.025)))).size, 21, "cada valor de 0 a 20 aparece: nenhum degrau grande");
 // leadOf: quantas ligas o rating do bot passa dos troféus da pessoa (crescente, sem degraus)
 assert.equal(X.leadOf(1281, 1091), 0.38); assert.equal(X.leadOf(1000, 1091), 0, "bot abaixo: nada"); assert.equal(X.leadOf(3000, 1000), 2, "no máximo 2 ligas"); assert.equal(X.leadOf(NaN, 100), 0);
 const leadArgs = { trophies: 100, mmr: 300, streak: 4, outcome: "win", margin: 8 };
-assert.deepEqual([0, 0.25, 0.5, 1, 1.5, 2, 5].map((lead) => X.trophyChange({ ...leadArgs, lead }).delta), [50, 53, 55, 60, 65, 70, 70], "o teto sobe de 50 a 70 aos poucos, não de uma vez");
-assert.equal(X.trophyChange({ ...leadArgs, lead: 2, leadBonus: 5 }).delta, 60, "outros valores continuam possíveis (simulador)");
+assert.deepEqual([0, 0.1, 0.25, 0.5, 1, 1.5, 2, 5].map((lead) => X.trophyChange({ ...leadArgs, lead }).delta), [50, 52, 54, 57, 62, 66, 70, 70], "o teto sobe de 50 a 70 aos poucos, com vários níveis no caminho");
+assert.equal(X.trophyChange({ ...leadArgs, lead: 2, leadTop: 10 }).delta, 60, "outros valores continuam possíveis (simulador)");
 assert.equal(X.trophyChange({ ...leadArgs, lead: -3 }).delta, 50, "bot abaixo não tira nada");
-assert.equal(X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "win", margin: 0, lead: 1 }).delta, 33 + 10, "sem sequência nem desempenho o bônus soma direto ao ganho");
+assert.equal(X.trophyChange({ trophies: 100, mmr: 100, streak: 0, outcome: "win", margin: 0, lead: 1 }).delta, 33 + 12, "sem sequência nem desempenho o bônus soma direto ao ganho");
 assert.equal(X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4, lead: 2 }).delta, X.trophyChange({ ...leadArgs, outcome: "loss", margin: -4 }).delta, "a derrota não usa o bônus");
 assert.equal(X.trophyChange({ trophies: 4000, mmr: 4000, streak: 0, outcome: "win", margin: 0, lead: 2 }).delta, X.baseStakes(4000).win + Math.round(20 * X.baseStakes(4000).scale), "no alto o bônus encolhe junto com a vitória");
 assert.deepEqual(D.stakesRange(100, 100, 0, 0).win, [33, 41]);
 assert.deepEqual(D.stakesRange(100, 100, 0, 2).win, [53, 61], "a prévia inclui a liga do bot");
-assert.deepEqual(D.stakesRange(100, 100, 0, 0.5).win, [38, 46], "e cresce aos poucos com a força do bot");
+assert.deepEqual(D.stakesRange(100, 100, 0, 0.5).win, [40, 48], "e cresce aos poucos com a força do bot");
 // o duelo usa a liga do bot sorteado contra a liga da pessoa
 const dlead = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead", division: 3, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
 assert.equal(dlead.outcome, "win"); assert.equal(dlead.delta, 33 + dlead.streakBonus + dlead.perfBonus + 20, "bot de Ouro contra quem está no Bronze: +20");
@@ -699,13 +707,14 @@ assert.equal(rsig.mmrExp, X.expectedScore(100, D.botRating(ouro, 1)), "sem ratin
 assert.equal(sigDuel(60, { rating: 1300 }).mmrExp, X.expectedScore(100, 1300), "com rating, contra o rating");
 assert.ok(sigDuel(60, { rating: 1300 }).mmrDelta > sigDuel(60, { rating: 300 }).mmrDelta, "vencer um bot de rating maior rende mais MMR");
 const hotSamples = Array.from({ length: 9 }, () => ({ score: 1, expected: 0.5 }));
-assert.ok(sigDuel(60, { recent: hotSamples }).mmrSigma > 200, "uma sequência de vitórias inesperadas devolve a incerteza depois deste duelo");
+assert.equal(sigDuel(60, { recent: hotSamples }).mmrSigma, 60 + X.SIGMA_RISE, "uma sequência de vitórias inesperadas eleva a incerteza aos poucos");
+assert.ok(sigDuel(200, { recent: hotSamples }).mmrSigma > 200, "e ela continua subindo enquanto a surpresa dura");
 assert.ok(sigDuel(60, { recent: [] }).mmrSigma <= 60 + 1e-9, "sem surpresa a incerteza segue no piso");
 // lead pelo rating: o bot é da liga do rating
 const dByRating = D.resolveDuelLegs({ trophies: 100, bot: ouro, seed: "lead2", division: 3, rating: 1300, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
 assert.equal(dByRating.delta, 33 + dByRating.streakBonus + dByRating.perfBonus + 20, "rating de Ouro contra quem está no Bronze: +20");
 const dNear = D.resolveDuelLegs({ trophies: 1091, bot: ouro, seed: "lead3", division: 2, rating: 1281, legs: [legIn("mapa", 10), legIn("capitais-escrita", 10)] });
-assert.equal(dNear.delta, 33 + dNear.streakBonus + dNear.perfBonus + 4, "rating 190 acima dos troféus: +4 (0,38 liga x 10), sem degrau");
+assert.equal(dNear.delta, 33 + dNear.streakBonus + dNear.perfBonus + 6, "rating 190 acima dos troféus: +6 (0,38 liga na curva), sem degrau");
 // a corrida leva rating, incerteza e surpresa
 const runWithSigma = U.newDuelRun({ id: "r", ladder: "mapas", bot: ouro, trophiesBefore: 800, division: 2, rating: 1100, legs: legsX, sigma: 200, samples: hotSamples });
 assert.deepEqual([runWithSigma.rating, runWithSigma.sigma, runWithSigma.samples.length], [1100, 200, 9]);
