@@ -4,6 +4,9 @@ import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens
 import { StoreView } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
+import { variantContextFor } from "./domain/match-config";
+import { createPreset, diffPresets, removePreset, renamePreset, setFavorite, updatePreset, type Preset, type PresetDraft, type PresetResult } from "./domain/presets";
+import { listPresets, savePresets } from "./domain/presets-store";
 import {
   buildFeatures,
   eligible,
@@ -43,16 +46,6 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
 
-export function variantContextFor(topFamily: TopFamily, saved: string): { family: Family; variant: AnyQuizVariant } | null {
-  const table: Record<TopFamily, Array<[string, Family]>> = {
-    mapa: [["mapa", "mapa"], ["silhueta", "silhueta"], ["silhueta-opcoes", "silhueta"], ["travel", "travel"]],
-    bandeiras: [["bandeira-nome", "bandeiras"], ["nome-bandeira", "bandeiras"], ["escrita-pais", "escrita"], ["nome-historica", "historicas"], ["historica-nome", "historicas"]],
-    capitais: [["capital-pais", "capitais"], ["pais-capital", "capitais"], ["escrita-capital", "escrita"]],
-    idiomas: [["idioma-nome", "idiomas"], ["idioma-pais", "idiomas"]],
-  };
-  const match = table[topFamily].find(([variant]) => variant === saved);
-  return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;
-}
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
@@ -304,6 +297,53 @@ export function App() {
     return ids.length;
   }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant]);
 
+  // Contagens e entradas de Históricas e Idiomas (a configuração e a partida dependem delas).
+  const loadSpecial = () => loadSpecialData().then((special) => {
+    const count = (items: { reg?: string; sub?: string }[]) =>
+      Object.fromEntries(REGION_ITEMS.map(([key]) => [
+        key,
+        items.filter((item) => specialInRegion(item, key)).length,
+      ])) as RegionCounts;
+    setSpecialCounts({
+      historicas: count(special.historical),
+      idiomas: count(special.languages),
+    });
+    setSpecialEntries({ historicas: special.historical, idiomas: special.languages });
+  });
+
+  // ---- Favoritas (configurações guardadas) ----
+  const [presets, setPresets] = useState<Preset[]>([]);
+  const presetsRef = useRef<Preset[]>([]);
+  useEffect(() => { void listPresets().then((list) => { presetsRef.current = list; setPresets(list); }).catch(() => undefined); }, []);
+  const commitPresets = (next: Preset[]) => {
+    const { changed, removedIds } = diffPresets(presetsRef.current, next);
+    presetsRef.current = next;
+    setPresets(next);
+    void savePresets(changed, removedIds).catch(() => undefined);
+  };
+  const newPresetId = () => (typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`);
+  const presetApi = {
+    list: presets,
+    save: (draft: PresetDraft, name?: string): PresetResult => { const result = createPreset(presetsRef.current, draft, { id: newPresetId(), now: Date.now(), name }); if (result.ok) commitPresets(result.list); return result; },
+    update: (id: string, draft: PresetDraft): PresetResult => { const result = updatePreset(presetsRef.current, id, draft, Date.now()); if (result.ok) commitPresets(result.list); return result; },
+    rename: (id: string, name: string) => commitPresets(renamePreset(presetsRef.current, id, name, Date.now())),
+    favorite: (id: string) => commitPresets(setFavorite(presetsRef.current, id, Date.now())),
+    remove: (id: string) => commitPresets(removePreset(presetsRef.current, id, Date.now())),
+    apply: (preset: Preset) => applyPreset(preset),
+  };
+  // Coloca no estado tudo o que a favorita guarda (modo, ritmo, rodadas, recorte e filtro).
+  const applyPreset = (preset: Preset) => {
+    const context = variantContextFor(preset.topFamily, preset.variant);
+    if (!context) return;
+    try { localStorage.setItem(`carta-last-variant:${preset.topFamily}`, context.variant); } catch { /* sem armazenamento */ }
+    setTopFamily(preset.topFamily);
+    setFamily(context.family);
+    setVariant(context.variant);
+    setRegion(preset.region);
+    setOnlyUn(preset.onlyUn);
+    setPace(preset.pace);
+    setRoundTier(preset.roundTier);
+  };
   // Escolhe a família de jogo e abre a configuração da partida (Hub e cards de pilar da tela de Progresso).
   const selectFamily = async (selected: Family) => {
             setFamily(selected);
@@ -311,18 +351,7 @@ export function App() {
              const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
              setTopFamily(selectedTopFamily);
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
-              await loadSpecialData().then((special) => {
-                const count = (items: { reg?: string; sub?: string }[]) =>
-                  Object.fromEntries(REGION_ITEMS.map(([key]) => [
-                    key,
-                    items.filter((item) => specialInRegion(item, key)).length,
-                  ])) as RegionCounts;
-                setSpecialCounts({
-                  historicas: count(special.historical),
-                  idiomas: count(special.languages),
-                });
-                setSpecialEntries({ historicas: special.historical, idiomas: special.languages });
-              });
+              await loadSpecial();
             }
               const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "silhueta" ? "silhueta" : "travel";
               const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
@@ -459,6 +488,7 @@ export function App() {
            onBuyRounds={buyRounds}
            onlyUn={onlyUn}
            setOnlyUn={setOnlyUn}
+           presetApi={presetApi}
             setVariant={setVariant}
             topFamily={topFamily}
             onFamilyChange={(nextFamily, nextVariant) => {

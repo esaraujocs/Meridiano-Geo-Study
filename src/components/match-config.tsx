@@ -8,6 +8,7 @@ import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
 import { displayTier, isRoundTierUnlocked, roundChips, roundLimitFor, roundUnlockFor, timerSecondsFor, type RoundTier, type RoundUnlockKey } from "../domain/pace";
 import type { Pace } from "../domain/spoils";
 import { flagDirectionFromVariant, flagSelection, type FlagCategory, type FlagDirection } from "../domain/flag-configuration";
+import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
 
 const money = (value: number) => value.toLocaleString("pt-BR");
@@ -34,6 +35,7 @@ export function Recorte({
   roundTier,
   setRoundTier,
   onBuyRounds,
+  presetApi,
 }: {
   data: Legacy;
   family: Family;
@@ -56,6 +58,7 @@ export function Recorte({
   roundTier: RoundTier;
   setRoundTier: (value: RoundTier) => void;
   onBuyRounds: (key: RoundUnlockKey) => Promise<unknown>;
+  presetApi: PresetApi;
 }) {
   const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
   const selectedRegions = normalizeRegionSelection(region);
@@ -223,6 +226,13 @@ export function Recorte({
             </div>
           </div>}
         </section>
+        <PresetBar
+          api={presetApi}
+          topFamily={topFamily}
+          draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
+          canSave={activeOwned && selectedCount > 0}
+          onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
+        />
         <div className="cv-bar">
           <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
           <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>

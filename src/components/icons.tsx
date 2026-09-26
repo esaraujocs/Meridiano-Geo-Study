@@ -24,7 +24,8 @@ export type IconType =
   | "layers"
   | "stopwatch"
   | "book"
-  | "store";
+  | "store"
+  | "star";
 
 export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
   return (
@@ -79,6 +80,7 @@ export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
       {type === "layers" && <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 13 9 5 9-5" /><path d="m3 17.5 9 5 9-5" /></>}
       {type === "stopwatch" && <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2M9 2h6M12 2v3" /></>}
       {type === "store" && <><path d="M6 8h12l1.2 12.5H4.8L6 8Z" /><path d="M9 8V6.5a3 3 0 0 1 6 0V8" /><path d="M9.5 12.5a2.5 2.5 0 0 0 5 0" /></>}
+      {type === "star" && <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z" />}
       {type === "book" && <><path d="M2 5.5C4.5 4 8 4 12 6c4-2 7.5-2 10-.5v13c-2.5-1.5-6-1.5-10 .5-4-2-7.5-2-10-.5v-13Z" /><path d="M12 6v13" /></>}
     </svg>
   );

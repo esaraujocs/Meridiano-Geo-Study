@@ -1325,3 +1325,14 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .gs .map-wrap{flex:1;min-height:0;height:auto}
 .gs .map-target-overlay{top:14px}
 .gs .map-hud{top:auto;bottom:14px;left:14px;right:14px}
+
+/* Favoritas: faixa na tela "Configure a partida" */
+.cv-favs{margin:14px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(243,233,210,.42)}
+.cv-favs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cv-favs-add{white-space:nowrap}
+.cv-favs-list{margin-top:4px}
+.cv-star{color:var(--gold,#AB7A1A);margin-right:5px}
+.cv-favs-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cv-favs-rename{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cv-favs-rename input{flex:1 1 160px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,250,238,.8);color:var(--ink);font:600 14px 'Plus Jakarta Sans',sans-serif}
+.cv-favs .cv-hint{margin:8px 0 0}

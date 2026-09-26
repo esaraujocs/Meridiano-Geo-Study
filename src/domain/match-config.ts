@@ -43,6 +43,18 @@ const MODES: Record<TopFamily, ModeOption[]> = {
   ],
 };
 
+/** Família do motor e variante correspondentes a um modo guardado (null se não existir). */
+export function variantContextFor(topFamily: TopFamily, saved: string): { family: Family; variant: AnyQuizVariant } | null {
+  const table: Record<TopFamily, Array<[string, Family]>> = {
+    mapa: [["mapa", "mapa"], ["silhueta", "silhueta"], ["silhueta-opcoes", "silhueta"], ["travel", "travel"]],
+    bandeiras: [["bandeira-nome", "bandeiras"], ["nome-bandeira", "bandeiras"], ["escrita-pais", "escrita"], ["nome-historica", "historicas"], ["historica-nome", "historicas"]],
+    capitais: [["capital-pais", "capitais"], ["pais-capital", "capitais"], ["escrita-capital", "escrita"]],
+    idiomas: [["idioma-nome", "idiomas"], ["idioma-pais", "idiomas"]],
+  };
+  const match = table[topFamily].find(([variant]) => variant === saved);
+  return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;
+}
+
 export const modesFor = (top: TopFamily) => MODES[top];
 
 /** Modo que corresponde ao estado atual (família + variante do motor). */
