@@ -1,5 +1,6 @@
 import { Icon } from "./icons";
 import { stakesRange, streakBonus } from "../domain/duel";
+import { BASE_WIN, LEAD_BONUS, WIN_CAP_EXTRA } from "../domain/mmr";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP, groupsOfLadder, type ModeGroup } from "../domain/duel-modes";
 import { botLabel, leagueLabel, styleLabel } from "../domain/duel-labels";
@@ -26,7 +27,8 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
 }) {
   const player = leagueOf(run.trophiesBefore);
   const playerLabel = leagueLabel(player.league, player.division);
-  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, Math.max(0, LEAGUES.indexOf(run.bot.league) - player.index));
+  const lead = Math.max(0, LEAGUES.indexOf(run.bot.league) - player.index);
+  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, lead);
   const legs = previewLegs(run, unlocked);
   const baseGroupLabel = t.duel.groups[LADDER_BASE_GROUP[run.ladder]];
   const canBuy = balance >= formatCost;
@@ -72,7 +74,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
         <div className="rv-stakes">
           <span className="up">{t.duel.reveal.winRange(money(stakes.win[0]), money(stakes.win[1]))}</span>
           <span className="down">{stakes.loss[1] === 0 ? t.duel.reveal.noLoss : t.duel.reveal.loseRange(money(Math.abs(stakes.loss[0])), money(Math.abs(stakes.loss[1])))}</span>
-          {LEAGUES.indexOf(run.bot.league) > player.index && <span className="fire">{t.duel.reveal.higherBot}</span>}
+          {lead > 0 && <span className="fire">{lead >= 2 ? t.duel.reveal.higherBot2(BASE_WIN + WIN_CAP_EXTRA + (LEAD_BONUS[2] ?? 0)) : t.duel.reveal.higherBot}</span>}
           {run.streak > 0 && <span className="fire">{t.duel.reveal.streakStake(run.streak, streakBonus(run.streak))}</span>}
         </div>
         {!formatOwned && <p className="rv-note" role="status">{t.duel.reveal.needFormat}</p>}

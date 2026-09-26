@@ -26,7 +26,7 @@ const mulberry32 = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; 
 const gauss = (random) => { let u = 0; while (u === 0) u = random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * random()); };
 const median = (values) => { const sorted = [...values].sort((a, b) => a - b); return sorted[Math.floor(sorted.length / 2)]; };
 // o bot sai da liga do MMR (matchmaking), presa perto da liga em troféus
-const botRating = (trophies, mmr) => { const match = M.matchmaking(trophies, mmr); return L.leagueFloor(match.index) + (match.division ? (match.division - 1) * L.DIVISION_SPAN + L.DIVISION_SPAN / 2 : L.LEAGUE_SPAN / 2); };
+const botRating = (trophies, mmr, streak) => { const match = M.matchmaking(trophies, mmr, streak); return L.leagueFloor(match.index) + (match.division ? (match.division - 1) * L.DIVISION_SPAN + L.DIVISION_SPAN / 2 : L.LEAGUE_SPAN / 2); };
 
 function play(skill, games, seed) {
   const random = mulberry32(seed);
@@ -36,14 +36,14 @@ function play(skill, games, seed) {
   reached[0] = 0;
   let wins = 0, gapSum = 0, above = 0, big = 0, best = 0, bigEarly = 0;
   for (let game = 1; game <= games; game += 1) {
-    const bot = botRating(trophies, mmr);
+    const bot = botRating(trophies, mmr, streak);
     // ninguém vence mais de 85% dos duelos: o bot do Mestre acerta 96% e a pessoa só o vence por acertos ou pelo tempo
     const win = random() < Math.min(MAX_WIN_RATE, M.expectedScore(skill, bot));
     const advantage = (skill - bot) / 100;
     const size = (mean) => Math.max(1, Math.min(15, Math.round(mean + gauss(random) * 2)));
     const margin = win ? size(3 + advantage) : -size(3 - advantage);
     const outcome = win ? "win" : "loss";
-    const lead = M.matchmaking(trophies, mmr).index - L.leagueOf(trophies).index;
+    const lead = M.matchmaking(trophies, mmr, streak).index - L.leagueOf(trophies).index;
     const change = M.trophyChange({ trophies, mmr, streak, outcome, margin, lead, leadBonus: LEAD_SCHEDULE });
     if (change.delta >= 60) { big += 1; if (game <= 60) bigEarly += 1; }
     best = Math.max(best, change.delta);

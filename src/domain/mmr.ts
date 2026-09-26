@@ -66,6 +66,9 @@ export const STREAK_MMR_CAP = 30;
  *  atrás dos troféus enfrenta os bots mais fracos da própria liga, não os de uma liga inferior). */
 export const MATCH_UP = 2;
 export const MATCH_DOWN = 0;
+/** Sequência quente: com HOT_STREAKS[0] vitórias seguidas o sorteio sobe uma liga e com HOT_STREAKS[1], duas (até MATCH_UP), mesmo que o MMR ainda
+ *  não tenha alcançado a sequência. Perdeu, a sequência zera e o sorteio volta ao MMR. */
+export const HOT_STREAKS: readonly number[] = [5, 10];
 
 /** Versão da conta do MMR. O MMR de um registro só vale se ele foi gravado nesta versão; os anteriores contam o MMR como o próprio delta
  *  (assim mudar a conta não deixa o MMR de quem já jogou preso ao valor de uma fórmula antiga). */
@@ -94,10 +97,11 @@ export function gapFactors(gap: number) {
   return { win: Math.max(WIN_FLOOR, 1 + WIN_GAP * g), loss: 1 - LOSS_GAP * g };
 }
 
-/** Com quem a pessoa enfrenta: a liga e a divisão do MMR, presas entre a liga em troféus (menos MATCH_DOWN) e MATCH_UP ligas acima dela. */
-export function matchmaking(trophies: number, mmr: number) {
+/** Com quem a pessoa enfrenta: a liga e a divisão do MMR (ou a liga da sequência quente, se maior), presas entre a liga em troféus (menos MATCH_DOWN) e MATCH_UP ligas acima dela. */
+export function matchmaking(trophies: number, mmr: number, streak = 0) {
   const home = leagueOf(trophies).index;
-  const wanted = leagueOf(mmr).index;
+  const hot = HOT_STREAKS.filter((need) => streak >= need).length;
+  const wanted = Math.max(leagueOf(mmr).index, home + hot);
   const index = Math.min(LEAGUES.length - 1, Math.max(0, Math.min(home + MATCH_UP, Math.max(home - MATCH_DOWN, wanted))));
   const low = leagueFloor(index);
   return leagueOf(Math.min(low + LEAGUE_SPAN - 1, Math.max(low, Math.floor(Number.isFinite(mmr) ? mmr : 0))));

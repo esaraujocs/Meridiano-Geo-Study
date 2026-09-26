@@ -191,7 +191,7 @@ export function App() {
     const mmr = mmrByLadder(duels)[ladder];
     const games = duels.filter((duel) => duel.ladder === ladder).length;
     // matchmaking: o bot sai da liga do MMR (até 2 ligas acima e 1 abaixo da liga em troféus), então quem joga acima da liga enfrenta bots mais fortes
-    const match = matchmaking(trophiesBefore, mmr);
+    const match = matchmaking(trophiesBefore, mmr, streak);
     setLastDuel(null);
     legResults.current = [null, null];
     setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, legs, streak, mmr, games }));

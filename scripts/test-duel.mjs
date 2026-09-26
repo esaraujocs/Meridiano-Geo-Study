@@ -578,6 +578,15 @@ assert.deepEqual(mm(1200, 900), ["ouro", 1], "MMR na liga de baixo: enfrenta os 
 assert.deepEqual(mm(3000, 3000), ["mestre", null]);
 assert.deepEqual(mm(0, NaN), ["bronze", 1], "MMR inválido não quebra");
 assert.deepEqual(mm(1200, 1200), [L.leagueOf(1200).league, L.leagueOf(1200).division], "MMR igual aos troféus: a própria liga");
+// sequência quente: 5 vitórias seguidas sobem uma liga no sorteio e 10, duas (mesmo com o MMR parado nos troféus)
+const hotM = (t2, m, streak) => { const st2 = X.matchmaking(t2, m, streak); return [st2.league, st2.division]; };
+assert.deepEqual(X.HOT_STREAKS, [5, 10]);
+assert.deepEqual([0, 4, 5, 9, 10, 25].map((n) => hotM(1091, 1091, n)[0]), ["ouro", "ouro", "platina", "platina", "diamante", "diamante"]);
+assert.deepEqual(hotM(1091, 1091, 5), ["platina", 1], "a liga da sequência entra pela divisão I");
+assert.deepEqual(hotM(100, 100, 25), ["ouro", 1], "no máximo 2 ligas acima");
+assert.equal(hotM(3000, 3000, 25)[0], "mestre", "no Mestre não há liga acima");
+assert.deepEqual(hotM(1091, 1900, 5), hotM(1091, 1900, 0), "o MMR maior já vale mais que a sequência: vence o que tiver a liga mais alta");
+assert.deepEqual(hotM(1091, 1091, 0), mm(1091, 1091), "sem sequência, só o MMR");
 // MMR: sobe mais quando vence um bot acima dele, cai menos quando perde por pouco
 assert.equal(X.MMR_K, 64);
 assert.equal(X.mmrChange(1000, 1000, "win", 8), 52, "32 do Elo (K 64) + 20 de dominância (vitória por 8 acertos)");
