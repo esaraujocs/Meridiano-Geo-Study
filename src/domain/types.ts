@@ -73,6 +73,7 @@ export type Screen =
   | "history"
    | "options"
   | "store"
+  | "league"
   | "result";
 
 export type RegionCounts = Record<Region, number>;

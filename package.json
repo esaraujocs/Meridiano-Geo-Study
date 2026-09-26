@@ -19,6 +19,7 @@
     "test:spoils": "node scripts/test-spoils.mjs",
     "test:backup": "node scripts/test-progress-backup.mjs",
     "test:presets": "node scripts/test-presets.mjs",
+    "test:duel": "node scripts/test-duel.mjs",
     "test:match-config": "node scripts/test-match-config.mjs",
     "test:map-nearest": "node scripts/test-map-nearest.mjs",
     "test:feedback": "rm -rf .tmp-feedback-timing && tsc --ignoreConfig src/domain/feedback-timing.ts --outDir .tmp-feedback-timing --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-feedback-timing.mjs",

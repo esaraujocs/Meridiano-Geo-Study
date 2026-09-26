@@ -11,6 +11,7 @@ import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
 import { THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
+import { leagueOf, divisionRoman } from "../domain/league";
 import { LOCALES, LOCALE_NAMES, LOCALE_RELEASED, changeLocale, formatNumber, locale, t } from "../domain/i18n";
 
 export type { TopFamily };
@@ -202,6 +203,11 @@ export function Hub({
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
+  duelMode = false,
+  onDuelMode,
+  trophies = 0,
+  duelsPlayed = 0,
+  onOpenLeague,
 }: {
   onSelect: (family: Family) => void;
   legacy?: LegacyProfile | null;
@@ -213,6 +219,12 @@ export function Hub({
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
   achievementSummary?: AchievementSummary;
+  /** Duelo contra bots: liga o modo, mostra os troféus e abre a tela da Liga. */
+  duelMode?: boolean;
+  onDuelMode?: (value: boolean) => void;
+  trophies?: number;
+  duelsPlayed?: number;
+  onOpenLeague?: () => void;
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -270,6 +282,9 @@ export function Hub({
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
   const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
   const xpToNext = Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0));
+  const league = leagueOf(trophies);
+  const leagueLabel = t.duel.leagueName(t.duel.leagues[league.league], divisionRoman(league.division));
+  const framed = duelsPlayed > 0;
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
   const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");
@@ -292,10 +307,11 @@ export function Hub({
         </svg>
         <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
         <div className="hub-player">
-          <div className="hub-level" role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
+          <div className={`hub-level${framed ? " lg-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
             <strong>{level}</strong>
             <span className="hub-level-cap">{t.hub.levelCap}</span>
+            {framed && <span className="lg-pip" title={t.duel.frameAria(leagueLabel)}>{divisionRoman(league.division) || "M"}</span>}
           </div>
           <div className="hub-head">
             <span className="hub-eyebrow">{t.hub.levelLine(level, xpInLevel, xpSpan)}</span>
@@ -311,12 +327,13 @@ export function Hub({
         </div>
         <div className="hub-stats">
           <div className="hub-totals" aria-label={t.hub.statsAria}><span><small>{t.hub.matches}</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>{t.hub.rounds}</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
+          {onOpenLeague && <button type="button" className={`hub-rank${duelMode ? " is-hot" : ""}`} data-league={league.league} aria-label={t.duel.chipAria(formatNumber(trophies), leagueLabel)} title={leagueLabel} onClick={onOpenLeague}><i aria-hidden="true"><Icon type="achievements" size={15} /></i><strong>{formatNumber(trophies)}</strong><small>{leagueLabel}</small></button>}
           <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><Icon type="store" size={17} /></button>
           <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
         </div>
       </div>
       <div className="hub-rule" aria-hidden="true" />
-      <div className="section-label"><h2>{t.hub.modesTitle}</h2></div>
+      <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}</button></div>}</div>
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
@@ -353,7 +370,7 @@ export function Hub({
           >
              <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
             <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{t.hub.play} <Icon type="arrow" /></span></div>
+            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{duelMode ? t.duel.challenge : t.hub.play} <Icon type={duelMode ? "swords" : "arrow"} /></span></div>
           </button>;
         })}
         </div>

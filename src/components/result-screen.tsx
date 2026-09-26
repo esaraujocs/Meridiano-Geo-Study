@@ -3,8 +3,10 @@ import { Icon, type IconType } from "./icons";
 import { xpSegments, type ResultChip, type ResultView } from "../domain/result-view";
 import { formatKm } from "../domain/map-error";
 import { formatNumber, t } from "../domain/i18n";
+import type { DuelView } from "../domain/duel";
+import { divisionRoman, leagueOf } from "../domain/league";
 
-type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void };
+type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void };
 type LevelState = { level: number; span: number; progress: number };
 
 const ARC = 2 * Math.PI * 15;
@@ -23,7 +25,7 @@ const pulse = (element: HTMLElement | null, scale = 1.08) =>
 
 // Resultado da partida: o essencial cabe numa tela (nota, moedas, XP e os botões); o resto fica em "Ver detalhes".
 // As moedas voam do cartão para a carteira do topo e o XP enche a barra de nível, como uma prestação de contas.
-export function ResultScreen({ view, onAgain, onAdjust, onHome }: Props) {
+export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague }: Props) {
   const start = xpSegments(view.xpBefore, view.xpBefore)[0];
   const [balance, setBalance] = useState(view.balanceBefore);
   const [level, setLevel] = useState<LevelState>({ level: start.level, span: start.span, progress: start.from });
@@ -155,6 +157,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome }: Props) {
           {view.xpGain > 0 && <span className="rs-xp" ref={xpChipRef}>+{view.xpGain} XP</span>}
         </div>
       </div>
+      {duel && <DuelPanel duel={duel} onLeague={onLeague} />}
       {view.training && <p className="rs-note">{t.result.trainingNote}</p>}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
@@ -170,4 +173,25 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome }: Props) {
       </div>
     </section>
   </main>;
+}
+
+const signedTrophies = (value: number) => (value > 0 ? `+${format(value)}` : value < 0 ? `−${format(Math.abs(value))}` : "0");
+const leagueTitle = (trophies: number) => { const status = leagueOf(trophies); return t.duel.leagueName(t.duel.leagues[status.league], divisionRoman(status.division)); };
+
+// Placar do duelo, troféus ganhos ou perdidos e mudança de liga.
+function DuelPanel({ duel, onLeague }: { duel: DuelView; onLeague?: () => void }) {
+  const before = leagueOf(duel.trophiesBefore);
+  const after = leagueOf(duel.trophiesAfter);
+  const moved = after.index !== before.index ? (after.index > before.index ? "up" : "down") : null;
+  const botName = t.duel.botName(t.duel.leagues[duel.botLeague]);
+  return <section className={`rs-duel is-${duel.outcome}`} aria-label={t.duel.result.eyebrow(botName)}>
+    <div className="rs-duel-head"><Icon type="swords" /><span><b>{t.duel.result[duel.outcome]}</b><small>{t.duel.result.eyebrow(botName)}</small></span></div>
+    <div className="rs-duel-vs" role="img" aria-label={`${t.duel.result.you} ${duel.playerCorrect}, ${botName} ${duel.botCorrect}`}>
+      <span><small>{t.duel.result.you}</small><b>{duel.playerCorrect}</b></span><em>x</em><span><small>{botName}</small><b>{duel.botCorrect}</b></span>
+    </div>
+    <div className="rs-duel-trophies"><Icon type="achievements" /><b>{signedTrophies(duel.delta)}</b><small>{t.duel.result.trophies} · {t.duel.result.total(format(duel.trophiesAfter))} · {leagueTitle(duel.trophiesAfter)}</small></div>
+    {duel.tiebreak && <p className="rs-duel-note">{t.duel.result.tiebreak}</p>}
+    {moved && <p className={`rs-duel-note is-${moved}`}>{moved === "up" ? t.duel.result.promoted(leagueTitle(duel.trophiesAfter)) : t.duel.result.demoted(leagueTitle(duel.trophiesAfter))}</p>}
+    {onLeague && <button type="button" className="rs-duel-link" onClick={onLeague}>{t.duel.result.openLeague}</button>}
+  </section>;
 }

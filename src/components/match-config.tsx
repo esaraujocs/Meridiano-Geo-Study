@@ -11,6 +11,8 @@ import { flagDirectionFromVariant, flagSelection, type FlagCategory, type FlagDi
 import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
 import { formatNumber as money, t } from "../domain/i18n";
+import { LEAGUES, type LeagueKey } from "../domain/league";
+import { botForLeague } from "../domain/duel";
 
 // Tela "Configure a partida": Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -35,6 +37,7 @@ export function Recorte({
   setRoundTier,
   onBuyRounds,
   presetApi,
+  duel,
 }: {
   data: Legacy;
   family: Family;
@@ -58,6 +61,8 @@ export function Recorte({
   setRoundTier: (value: RoundTier) => void;
   onBuyRounds: (key: RoundUnlockKey) => Promise<unknown>;
   presetApi: PresetApi;
+  /** Duelo contra bot: o adversário escolhido (por liga) e a liga da própria pessoa; sem isto a tela é a de sempre. */
+  duel?: { opponent: LeagueKey; own: LeagueKey; onOpponent: (league: LeagueKey) => void };
 }) {
   const familyLabel = t.families[topFamily];
   const selectedRegions = normalizeRegionSelection(region);
@@ -72,6 +77,7 @@ export function Recorte({
   );
   const [pendingTier, setPendingTier] = useState<RoundTier | null>(null);
   const [busy, setBusy] = useState(false);
+  const [duelInfo, setDuelInfo] = useState(false);
   useEffect(() => {
     if (selectedCount > 0) return;
     setRegion("mundo");
@@ -158,7 +164,7 @@ export function Recorte({
         <div className="hub-coin" aria-label={`${money(balance)} ${t.common.coins}`}><i aria-hidden="true">$</i><strong>{money(balance)}</strong></div>
       </div>
       <div className="cv">
-        <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
+        <header className="cv-head"><span className="eyebrow">{duel ? t.duel.newDuel(familyLabel) : t.config.newMatch(familyLabel)}</span><h1>{t.config.title}{duel && <button type="button" className="info-btn" aria-label={t.duel.infoAria} aria-expanded={duelInfo} onClick={() => setDuelInfo((open) => !open)}><Icon type="info" size={18} /></button>}</h1>{duel && duelInfo && <p className="duel-note" role="status">{t.duel.info}</p>}</header>
         <section className="cv-card" aria-label={t.config.cardAria}>
           <div className="cv-row">
             <span className="cv-k">{t.config.mode}</span>
@@ -183,10 +189,10 @@ export function Recorte({
             <span className="cv-k">{t.config.pace}</span>
             <div className="cv-ctl">
               <div className="cv-chips" role="group" aria-label={t.config.pace}>
-                <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
-                <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
+                <button type="button" className="cv-chip" aria-pressed={duel ? true : pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
+                {!duel && <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>}
               </div>
-              <p className="cv-hint">{paceHint(pace, variant)}</p>
+              <p className="cv-hint">{duel ? t.duel.alwaysTimed : paceHint(pace, variant)}</p>
             </div>
           </div>
           <div className="cv-row">
@@ -209,6 +215,15 @@ export function Recorte({
               </p>}
             </div>
           </div>
+          {duel && <div className="cv-row">
+            <span className="cv-k">{t.duel.opponent}</span>
+            <div className="cv-ctl">
+              <div className="cv-chips cv-bots" role="group" aria-label={t.duel.opponent}>
+                {LEAGUES.map((league) => <button type="button" key={league} className="cv-chip" data-league={league} aria-pressed={duel.opponent === league} onClick={() => duel.onOpponent(league)}><span className="cv-l"><span>{t.duel.botName(t.duel.leagues[league])}</span>{duel.own === league && <em>{t.duel.opponentOwn}</em>}</span></button>)}
+              </div>
+              <p className="cv-hint">{t.duel.botHint(Math.round(botForLeague(duel.opponent).accuracy * 100))}</p>
+            </div>
+          </div>}
           <div className={`cv-row${showFilter ? "" : " cv-last"}`}>
             <span className="cv-k">{t.config.region}</span>
             <div className="cv-ctl">
@@ -225,18 +240,18 @@ export function Recorte({
             </div>
           </div>}
         </section>
-        <PresetBar
+        {!duel && <PresetBar
           api={presetApi}
           topFamily={topFamily}
           draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
           canSave={activeOwned && selectedCount > 0}
           onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
-        />
+        />}
         <div className="cv-bar">
-          <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
+          <div className="cv-sum"><b>{duel ? t.duel.summaryTitle(t.duel.botName(t.duel.leagues[duel.opponent])) : summary.title}</b><small>{summary.sub}</small></div>
           <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
           <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
-            {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
+            {activeOwned ? <>{duel ? t.duel.start : t.config.start}<span className="cv-go-l">{duel ? t.duel.startTail : t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
           </button>
         </div>
       </div>
