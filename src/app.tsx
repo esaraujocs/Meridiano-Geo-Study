@@ -49,7 +49,7 @@ import { duelRecordId, playerTotalMs, trophiesByLadder, type DuelRecord, type Du
 import { pickBot } from "./domain/bots";
 import { drawLegs, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
-import { mergeSpoils } from "./domain/spoils";
+import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { DuelReveal } from "./components/duel-reveal";
 import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
@@ -211,7 +211,12 @@ export function App() {
       const merged = { ...sessions[sessions.length - 1], rounds: sessions.flatMap((item) => item.rounds), startedAt: sessions[0].startedAt, complete: true };
       const view = buildResultView({ session: merged, spoils: mergeSpoils(played.map((leg) => leg.spoils!)), before, after: economyAfter ?? before, regionLabel: t.duel.ladders[run.ladder] });
       setLastResult({ ...view, eyebrow: t.duel.reveal.eyebrow(t.duel.ladders[run.ladder]) });
-    } else setLastResult(null);
+    } else {
+      // Saiu antes de terminar qualquer tempo: resultado vazio, só com o duelo perdido.
+      const now = Date.now();
+      const empty = buildResultView({ session: { variant: run.legs[0].variant, startedAt: now, endedAt: now, complete: false, rounds: [], pace: "timed", timerSeconds: null }, spoils: emptySpoils("timed"), before, after: economyAfter ?? before, regionLabel: t.duel.ladders[run.ladder] });
+      setLastResult({ ...empty, eyebrow: t.duel.reveal.eyebrow(t.duel.ladders[run.ladder]) });
+    }
     setLastDuel({
       botName: run.bot.name, botLeague: run.bot.league, botStyle: run.bot.style, botSpecialty: run.bot.specialty,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
@@ -221,13 +226,12 @@ export function App() {
     legResults.current = [null, null];
     setScreen("result");
   };
-  /** Um tempo terminou (ou a pessoa saiu dele). Sair do 1º tempo cancela o duelo; sair do 2º é derrota, com o que faltou valendo zero. */
+  /** Um tempo terminou (ou a pessoa saiu dele). Depois de "Começar duelo", sair de qualquer tempo é derrota: o que faltou vale zero. */
   const finishLeg = async (result: SessionResult | null) => {
     const run = duelRunRef.current;
     if (!run) return;
     if (!result?.spoils) {
       void refreshEconomy();
-      if (run.index === 0) { setDuelRun(null); legResults.current = [null, null]; setScreen("hub"); return; }
       await concludeDuel(run);
       return;
     }

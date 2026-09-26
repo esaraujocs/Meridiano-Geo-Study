@@ -56,7 +56,7 @@ export function QuizGame({
   const [timedOut, setTimedOut] = useState(false);
   const settledRef = useRef("");
   const advance = useAdvance();
-  const leaveGuard = useLeaveGuard();
+  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const timer = useRef<number | null>(null);
   const targetStartedAtRef = useRef(0);

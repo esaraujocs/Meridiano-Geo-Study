@@ -45,7 +45,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   const [timedOutRound, setTimedOutRound] = useState(false);
   const [runKey, setRunKey] = useState(0);
   const advance = useAdvance();
-  const leaveGuard = useLeaveGuard();
+  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const inputRef = useRef<HTMLInputElement>(null);
   const committedTarget = useRef<string | null>(null);

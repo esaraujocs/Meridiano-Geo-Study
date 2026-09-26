@@ -377,6 +377,9 @@ export const en: Messages = {
     restart: "Restart",
     restartNoGain: "Restart without earning",
     leaveNoGain: "Leave without earning",
+    duelTitle: "Leave the duel?",
+    duelBody: "Leaving now counts as a loss: the halves already played count and whatever is left counts as zero.",
+    duelQuit: "Leave and lose",
   },
   feedback: {
     rightAnswer: "Right answer",

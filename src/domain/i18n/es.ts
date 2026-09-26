@@ -377,6 +377,9 @@ export const es: Messages = {
     restart: "Reiniciar",
     restartNoGain: "Reiniciar sin ganar",
     leaveNoGain: "Salir sin ganar",
+    duelTitle: "¿Salir del duelo?",
+    duelBody: "Salir ahora cuenta como derrota: los tiempos ya jugados valen y lo que falte cuenta cero.",
+    duelQuit: "Salir y perder",
   },
   feedback: {
     rightAnswer: "Respuesta correcta",

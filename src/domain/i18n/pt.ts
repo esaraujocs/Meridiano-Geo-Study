@@ -377,6 +377,9 @@ export const pt = {
     restart: "Recomeçar",
     restartNoGain: "Recomeçar sem ganhar",
     leaveNoGain: "Sair sem ganhar",
+    duelTitle: "Sair do duelo?",
+    duelBody: "Sair agora conta como derrota: os tempos já jogados valem e o que faltar conta zero.",
+    duelQuit: "Sair e perder",
   },
   feedback: {
     rightAnswer: "Resposta certa",
