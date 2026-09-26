@@ -1436,7 +1436,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 
 /* ---- Hub em Duelo: arenas e próximos prêmios ---- */
 .arena-grid{display:grid;grid-template-columns:1fr 1fr .8fr;gap:16px;margin:0 0 26px;align-items:stretch}
-.arena{display:flex!important;flex-direction:column;justify-content:flex-start!important;align-items:stretch;gap:14px;min-height:0!important;padding:20px 22px!important;text-align:left;cursor:default;--lg:#C49345}
+.arena{display:flex!important;flex-direction:column;justify-content:flex-start!important;align-items:stretch;gap:14px;min-height:0!important;padding:20px 22px!important;text-align:left;cursor:default}
 .arena:hover{transform:none!important}
 .hub-content .arena{height:auto!important;overflow:visible!important}
 .ar-head{display:flex;align-items:center;gap:12px}
@@ -1737,3 +1737,9 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .lg-how tr.is-now{background:rgba(196,147,69,.14)}
 .lg-how td:nth-child(2){color:#245e58;font-weight:600}.lg-how td:nth-child(3){color:#8a3f2a;font-weight:600}
 .lg-how ul{margin:12px 0 0;padding-left:18px;display:grid;gap:6px;font-size:13px;color:var(--ink)}
+/* texto legível sobre a cor da liga: escuro nas claras (prata, ouro, platina, diamante), claro no bronze e no mestre */
+[data-league=prata],[data-league=ouro],[data-league=platina],[data-league=diamante]{--lg-ink:#14231f}
+.lg-pip,.ar-tag{color:var(--lg-ink,#fff8ea)}
+.ar-emblem b{color:var(--ink)}
+[data-league=bronze] .ar-tag,[data-league=bronze] .lg-pip{background:#8A5A2B}
+[data-league=mestre] .ar-tag,[data-league=mestre] .lg-pip{background:#7A4FAE}

@@ -8,7 +8,7 @@ import { leagueLabel, milestoneLabel, nextStep } from "../domain/duel-labels";
 import { baseCoins } from "../domain/spoils";
 import { formatNumber as money, t } from "../domain/i18n";
 
-const COLOR: Record<Ladder, string> = { mapas: "#2B8378", bandeiras: "#C25A42" };
+const COLOR: Record<Ladder, string> = { mapas: "#2B8378", bandeiras: "#B04A33" };
 const FAM: Record<Ladder, string> = { mapas: "mapa", bandeiras: "bandeiras" };
 
 /** Progresso dentro da divisão atual (0 a 100). */

@@ -266,7 +266,7 @@ export const en: Messages = {
       howPoints: (base: number, perf: number, cap: number) => [
         `Win: ${base} base, plus up to +${perf} for performance (answers ahead of your opponent) and +3 per win in a row (up to +12), capped at ${cap} above the base.`,
         "If you play at your league's level (winning and losing close to 50%), a hidden skill level holds you: to climb you have to prove more, which is why the trophy gain drops.",
-        "If you play above your league you win more, lose less and the draw starts bringing bots from higher leagues. If you play below it, you win less, lose more and face weaker bots.",
+        "If you play above your league you win more, lose less and the draw starts bringing bots from higher leagues. If you play below it, you win less and lose more.",
         "A close loss costs less; a blowout costs more. Trophies never go below zero.",
         "From Diamond up a win pays less and less and a loss costs more and more. Master has no ceiling, but the curve closes: it is the limit for the best performers.",
       ],

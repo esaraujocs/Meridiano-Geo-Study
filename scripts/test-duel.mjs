@@ -556,12 +556,13 @@ assert.ok(X.trophyChange({ trophies: 3000, mmr: 3000, streak: 0, outcome: "draw"
 // no alto os bônus encolhem junto com a vitória (senão furavam o limite)
 const mw = X.trophyChange({ trophies: 4000, mmr: 4000, streak: 4, outcome: "win", margin: 8 });
 assert.ok(mw.delta <= X.baseStakes(4000).win + Math.round(X.WIN_CAP_EXTRA * X.baseStakes(4000).scale) && mw.streakBonus < 12, "bônus reduzidos no alto");
-// matchmaking: o bot sai da liga do MMR, presa a 2 ligas acima e 1 abaixo da liga em troféus
+// matchmaking: o bot sai da liga do MMR, presa a 2 ligas acima e nunca abaixo da liga em troféus
 const mm = (t, m) => { const st2 = X.matchmaking(t, m); return [st2.league, st2.division]; };
 assert.deepEqual(mm(100, 100), ["bronze", 1]);
 assert.deepEqual(mm(100, 900), ["prata", 3], "MMR na Prata: o bot vem da Prata");
 assert.deepEqual(mm(100, 2000), ["ouro", 3], "no máximo 2 ligas acima");
-assert.deepEqual(mm(1200, 100), ["prata", 1], "no máximo 1 liga abaixo");
+assert.deepEqual(mm(1200, 100), ["ouro", 1], "nunca abaixo da própria liga, mesmo com o MMR lá embaixo");
+assert.deepEqual(mm(1200, 900), ["ouro", 1], "MMR na liga de baixo: enfrenta os mais fracos da própria liga");
 assert.deepEqual(mm(3000, 3000), ["mestre", null]);
 assert.deepEqual(mm(0, NaN), ["bronze", 1], "MMR inválido não quebra");
 assert.deepEqual(mm(1200, 1200), [L.leagueOf(1200).league, L.leagueOf(1200).division], "MMR igual aos troféus: a própria liga");
@@ -580,12 +581,14 @@ const withMmr = D.resolveDuel({ ...input, trophies: 1240, mmr: 1400, playerCorre
 assert.equal(withMmr.outcome, "win"); assert.equal(withMmr.mmrAfter, 1400 + withMmr.mmrDelta); assert.ok(withMmr.mmrDelta > 0);
 assert.ok(withMmr.delta > D.resolveDuel({ ...input, trophies: 1240, mmr: 1240, playerCorrect: 20 }).delta, "MMR acima da liga rende mais troféus na mesma vitória");
 assert.equal(D.resolveDuel({ ...input, trophies: 1240, playerCorrect: 20 }).delta, D.resolveDuel({ ...input, trophies: 1240, mmr: 1240, playerCorrect: 20 }).delta, "sem MMR informado, vale a própria liga");
-const recM = (n, at, delta, mmrDelta, ladder = "mapas") => ({ id: "duel:m" + n, at, delta, ladder, ...(mmrDelta === undefined ? {} : { mmrDelta }) });
+const recM = (n, at, delta, mmrDelta, ladder = "mapas", mmrVersion = X.MMR_MODEL) => ({ id: "duel:m" + n, at, delta, ladder, ...(mmrDelta === undefined ? {} : { mmrDelta, mmrVersion }) });
 assert.equal(D.mmrFromDuels([recM(1, 1, 30), recM(2, 2, -10)]), D.trophiesFromDuels([recM(1, 1, 30), recM(2, 2, -10)]), "duelos antigos: o MMR começa igual aos troféus");
 assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50), recM(2, 2, -10, -20)]), 30);
+assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50, "mapas", 1), recM(2, 2, -10, -20, "mapas", 1)]), 20, "MMR gravado por uma versão antiga da conta não vale: conta o próprio delta");
+assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50, "mapas", 1), recM(2, 2, -10, -20)]), 10, "versões misturadas: cada registro vale pela sua");
 assert.equal(D.mmrFromDuels([recM(1, 1, 30, 50), recM(2, 2, -10, -80)]), 0, "o MMR não passa de zero");
 assert.deepEqual(D.mmrByLadder([recM(1, 1, 30, 50), recM(2, 2, 20, 10, "bandeiras")]), { mapas: 50, bandeiras: 10 });
-const parsedM = D.parseDuel({ ...rec(9, 9, 20), mmrDelta: 33 }); assert.equal(parsedM.mmrDelta, 33);
+const parsedM = D.parseDuel({ ...rec(9, 9, 20), mmrDelta: 33, mmrVersion: 2 }); assert.deepEqual([parsedM.mmrDelta, parsedM.mmrVersion], [33, 2]);
 assert.equal("mmrDelta" in D.parseDuel({ ...rec(9, 9, 20), mmrDelta: "x" }), false, "MMR inválido é ignorado");
 assert.equal("mmrDelta" in D.parseDuel(rec(8, 8, 20)), false, "registro antigo continua sem MMR");
 // a corrida leva o MMR para a resolução (sem MMR informado, vale os troféus)

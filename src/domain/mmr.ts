@@ -44,9 +44,14 @@ export const WIN_FLOOR = 0.25;
 /** Velocidade do MMR (Elo): o mesmo tamanho dos troféus, para os dois andarem juntos. */
 export const MMR_K = 64;
 
-/** Matchmaking pelo MMR: o bot sai da liga do MMR, no máximo MATCH_UP ligas acima e MATCH_DOWN abaixo da liga em troféus. */
+/** Matchmaking pelo MMR: o bot sai da liga do MMR, no máximo MATCH_UP ligas acima da liga em troféus e nunca abaixo dela (quem está com o MMR
+ *  atrás dos troféus enfrenta os bots mais fracos da própria liga, não os de uma liga inferior). */
 export const MATCH_UP = 2;
-export const MATCH_DOWN = 1;
+export const MATCH_DOWN = 0;
+
+/** Versão da conta do MMR. O MMR de um registro só vale se ele foi gravado nesta versão; os anteriores contam o MMR como o próprio delta
+ *  (assim mudar a conta não deixa o MMR de quem já jogou preso ao valor de uma fórmula antiga). */
+export const MMR_MODEL = 2;
 
 /** Sequência: cada vitória seguida que a pessoa já tinha na escada soma STREAK_STEP troféus à próxima vitória, até STREAK_CAP vitórias
  *  (+12). Perder zera a sequência; o bônus só existe na vitória, a derrota não muda. */
@@ -71,7 +76,7 @@ export function gapFactors(gap: number) {
   return { win: Math.max(WIN_FLOOR, 1 + WIN_GAP * g), loss: 1 - LOSS_GAP * g };
 }
 
-/** Com quem a pessoa enfrenta: a liga e a divisão do MMR, presas entre MATCH_DOWN ligas abaixo e MATCH_UP acima da liga em troféus. */
+/** Com quem a pessoa enfrenta: a liga e a divisão do MMR, presas entre a liga em troféus (menos MATCH_DOWN) e MATCH_UP ligas acima dela. */
 export function matchmaking(trophies: number, mmr: number) {
   const home = leagueOf(trophies).index;
   const wanted = leagueOf(mmr).index;

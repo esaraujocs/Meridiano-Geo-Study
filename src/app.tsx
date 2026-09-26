@@ -45,7 +45,7 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
-import { matchmaking } from "./domain/mmr";
+import { MMR_MODEL, matchmaking } from "./domain/mmr";
 import { duelRecordId, mmrByLadder, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
 import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
@@ -224,7 +224,7 @@ export function App() {
     const record: DuelRecord = {
       id: duelRecordId(run.id), sessionId: run.id, at: Date.now(), botId: run.bot.id, ladder: run.ladder,
       family: run.legs[0].family, variant: run.legs[0].variant, playerCorrect: outcome.playerCorrect, total: outcome.total, botCorrect: outcome.botCorrect,
-      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta,
+      outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL,
       legs: outcome.legs.map((leg) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds })),
     };
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];

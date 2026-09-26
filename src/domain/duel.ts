@@ -4,7 +4,7 @@
 import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
-import { MIN_LOSS, MIN_WIN, expectedScore, mmrChange, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange } from "./mmr.js";
+import { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, mmrChange, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
 
 /** Duelo v1 (uma partida só, 20 rodadas). O v2 usa LEGS x LEG_ROUNDS de duel-modes.ts. */
@@ -16,7 +16,7 @@ export const botRating = (bot: Pick<Bot, "league">, division: 1 | 2 | 3 | null =
 
 export type DuelOutcome = "win" | "loss" | "draw";
 // Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.
-export { MIN_LOSS, MIN_WIN, expectedScore, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
+export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
 
 export type DuelInput = {
   trophies: number;
@@ -123,8 +123,9 @@ export type DuelRecord = {
   outcome: DuelOutcome;
   tiebreak: boolean;
   delta: number;
-  /** Mudança do MMR escondido neste duelo (registros antigos não têm: valem o próprio delta). */
+  /** Mudança do MMR escondido neste duelo e a versão da conta que a calculou (sem os dois, ou de outra versão, o MMR conta o próprio delta). */
   mmrDelta?: number;
+  mmrVersion?: number;
   /** Só no duelo em dois tempos. */
   legs?: DuelLegRecord[];
 };
@@ -163,6 +164,7 @@ export function parseDuel(row: unknown): DuelRecord | null {
     tiebreak: Boolean(item.tiebreak),
     delta: item.delta as number,
     ...(typeof item.mmrDelta === "number" && Number.isFinite(item.mmrDelta) ? { mmrDelta: item.mmrDelta } : {}),
+    ...(typeof item.mmrVersion === "number" && Number.isFinite(item.mmrVersion) ? { mmrVersion: item.mmrVersion } : {}),
     ...(legs ? { legs } : {}),
   };
 }
@@ -176,13 +178,13 @@ export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
     .reduce((total, duel) => Math.max(0, total + duel.delta), 0);
 }
 /** O MMR escondido também é derivado do histórico: soma o `mmrDelta` (ou o `delta`, nos duelos antigos) na ordem dos duelos, sem passar de zero. */
-export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta">[], ladder?: Ladder) {
+export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[], ladder?: Ladder) {
   return [...duels]
     .filter((duel) => !ladder || duel.ladder === ladder)
     .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
-    .reduce((total, duel) => Math.max(0, total + (duel.mmrDelta ?? duel.delta)), 0);
+    .reduce((total, duel) => Math.max(0, total + (duel.mmrVersion === MMR_MODEL && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
 }
-export const mmrByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta">[]): Record<Ladder, number> =>
+export const mmrByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[]): Record<Ladder, number> =>
   Object.fromEntries(LADDERS.map((ladder) => [ladder, mmrFromDuels(duels, ladder)])) as Record<Ladder, number>;
 export const trophiesByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder">[]): Record<Ladder, number> =>
   Object.fromEntries(LADDERS.map((ladder) => [ladder, trophiesFromDuels(duels, ladder)])) as Record<Ladder, number>;
