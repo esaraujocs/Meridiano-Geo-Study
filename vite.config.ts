@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { pvpPlugin } from "./server/pvp-plugin.mjs";
 
 // O MapLibre resolve o worker como ./maplibre-gl-worker.mjs relativo ao bundle, e esse worker
 // importa ./maplibre-gl-shared.mjs. O Vite não emite nenhum dos dois, então no build de
@@ -51,7 +52,7 @@ const injectPrecacheManifest = () => ({
 });
 
 export default defineConfig({
-  plugins: [react(), injectPrecacheManifest()],
+  plugins: [react(), injectPrecacheManifest(), pvpPlugin()],
   optimizeDeps: {
     exclude: ["maplibre-gl"],
   },

@@ -11,3 +11,4 @@ vite.config.d.ts
 # cache do Replit e temporarios de teste
 .config/
 .tmp-*/
+.pvp-data/
