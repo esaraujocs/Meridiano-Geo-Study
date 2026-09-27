@@ -1,0 +1,157 @@
+/* Temas elaborados da Loja (mudam também o mapa e o resultado, com ornamentos e movimento). Mesma divisão dos outros temas: data-theme = paleta e materiais,
+   data-treat = como o Hub é pintado. O movimento respeita a preferência de movimento reduzido. */
+
+/* ═══ NOTURNO · CARTA NÁUTICA — o primeiro Hub escuro: carta náutica à noite, vidro escuro com borda acesa, uma luz por modo ═══ */
+
+:root[data-theme="noturno"]{
+  color:#DCE9F0; background:#06101B; color-scheme:dark;
+  --paper:#0A1724; --surface:#10233A; --ink:#DCE9F0; --muted:#8CA5B8; --line:#25405C;
+  --green:#3FC6D0; --terracotta:#F07C8C; --brass:#E0B04A;
+  --dark:#040B13; --dark-surface:#0D1D2F; --text-dark:#E6F0F5; --panel-2:#0E1E31;
+  --h-mapa:#3FC6D0; --hb-mapa:#2AA8B4; --h2-mapa:#7DE3EA; --w-mapa:#2A8A96; --hg-mapa:#7DE3EA;
+  --h-band:#F0788A; --hb-band:#D8566C; --h2-band:#FFA3B1; --w-band:#B0405A; --hg-band:#FFA3B1;
+  --h-cap:#F0BE55; --hb-cap:#E0A62E; --h2-cap:#FFD98A; --w-cap:#B58A22; --hg-cap:#FFD98A;
+  --h-idi:#A99BFF; --hb-idi:#8A7BF0; --h2-idi:#CBC2FF; --w-idi:#6A5CC8; --hg-idi:#CBC2FF;
+  --on-mapa:#04222A; --on-band:#2A0A12; --on-cap:#2A1C04; --on-idi:#150C3A;
+  /* tinta para texto sobre o escuro (o esquema escuro usa estes quatro) */
+  --accent-ink:#9FEAF0; --ok-ink:#7FE8C2; --bad-ink:#FFA3B1; --warn-ink:#FFD98A;
+  --bar:linear-gradient(90deg,#3FC6D0,#A99BFF 50%,#F0788A);
+  --rule:linear-gradient(90deg,transparent,#3FC6D0 15%,#A99BFF 50%,#F0788A 85%,transparent);
+  /* vidro escuro com borda acesa */
+  --glass:linear-gradient(180deg,rgba(24,50,78,.88),rgba(11,27,45,.9));
+  --glass-edge:rgba(96,170,208,.38);
+  --glow:0 0 0 1px rgba(0,0,0,.45) inset,0 20px 44px -24px rgba(0,0,0,.9);
+}
+
+/* ── fundo: noite azul, estrelas, meridianos e uma rosa dos ventos de luz ── */
+:root[data-treat="noturno"] .app-shell:has(.hub-content,[data-surface]){
+  background:
+    url("./assets/themes/noturno-compass.svg") no-repeat right -250px top -230px/720px,
+    url("./assets/themes/noturno-stars.svg") 0 0/420px 420px,
+    linear-gradient(rgba(120,190,225,.045) 1px,transparent 1px) 0 0/72px 72px,
+    linear-gradient(90deg,rgba(120,190,225,.045) 1px,transparent 1px) 0 0/72px 72px,
+    radial-gradient(900px 520px at 78% -8%,rgba(63,198,208,.17),transparent 62%),
+    radial-gradient(700px 520px at 4% 108%,rgba(112,96,208,.16),transparent 62%),
+    linear-gradient(180deg,#06101B,#0A1826);
+}
+:root[data-treat="noturno"] .app-shell:before{opacity:0}
+
+/* ── painéis: vidro escuro com borda acesa ── */
+:root[data-treat="noturno"] .hub-bar,
+:root[data-treat="noturno"] .hub-progress-grid button,
+:root[data-treat="noturno"] .hub-content .family{background:var(--glass);border:1px solid var(--glass-edge);border-radius:6px;box-shadow:var(--glow),0 0 26px -14px rgba(63,198,208,.4)}
+:root[data-treat="noturno"] .hub-level{box-shadow:0 0 0 4px rgba(63,198,208,.14)}
+:root[data-treat="noturno"] .hub-track{background:#15304A}
+:root[data-treat="noturno"] .hub-track i{background:linear-gradient(90deg,#3FC6D0,#7DE3EA);box-shadow:0 0 10px rgba(63,198,208,.6)}
+@media (min-width:1024px){:root[data-treat="noturno"] .hub-rule{height:2px!important;opacity:1!important;box-shadow:0 0 12px rgba(63,198,208,.5)}}
+
+/* cartões de modo: uma carta por modo (I a IV), brilho na tinta do modo, medalhão de vidro com anel aceso */
+:root[data-treat="noturno"] .hub-content .family{position:relative;overflow:hidden}
+:root[data-treat="noturno"] .hub-content .family:hover{border-color:var(--h);box-shadow:var(--glow),0 0 34px -8px color-mix(in srgb,var(--h) 60%,transparent)}
+:root[data-treat="noturno"] .hub-content .family::before{content:"";position:absolute;inset:0 0 auto 0;height:62%;pointer-events:none;background:radial-gradient(90% 80% at 50% 0%,color-mix(in srgb,var(--h) 36%,transparent),transparent 72%),repeating-linear-gradient(0deg,rgba(150,210,240,.06) 0 1px,transparent 1px 22px)}
+:root[data-treat="noturno"] .hub-content .family::after{content:"";position:absolute;inset:7px;border-radius:3px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(150,210,240,.14);z-index:2}
+:root[data-treat="noturno"] .hub-content .family .family-visual{z-index:3}
+:root[data-treat="noturno"] .hub-content .family .family-geo{opacity:.42;background:repeating-linear-gradient(22deg,transparent 0 15px,color-mix(in srgb,var(--h2) 55%,transparent) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,color-mix(in srgb,var(--h2) 55%,transparent) 23px 24px)}
+:root[data-treat="noturno"] .hub-content .family-visual .family-icon{background:radial-gradient(circle at 34% 28%,#1D4468,#0B1E33 70%);color:var(--h2);border:0;box-shadow:0 0 0 2px #0B1E33,0 0 0 3px var(--h),0 0 0 9px rgba(255,255,255,.04),0 0 30px color-mix(in srgb,var(--h) 55%,transparent),0 16px 26px -10px rgba(0,0,0,.8)}
+:root[data-treat="noturno"] .hub-content .family-copy,:root[data-treat="noturno"] .hub-content .family-footer{position:relative;z-index:3}
+:root[data-treat="noturno"] .hub-content .family h3{color:var(--h2);text-shadow:0 0 22px color-mix(in srgb,var(--h) 55%,transparent)}
+:root[data-treat="noturno"] .hub-content .family p,:root[data-treat="noturno"] .hub-content .family-footer{color:#A9C0CF}
+:root[data-treat="noturno"] .hub-content .family-play{background:linear-gradient(180deg,color-mix(in srgb,var(--h) 32%,#0B1B2B),#0B1B2B);color:var(--h2);border:1px solid var(--h);border-radius:4px;box-shadow:0 0 16px -6px var(--h)}
+:root[data-treat="noturno"] .hub-content .family-play:hover{background:var(--h);color:var(--on);box-shadow:0 0 24px -4px var(--h)}
+:root[data-treat="noturno"] .hub-content .family-visual::before{position:absolute;left:-2px;top:-8px;z-index:4;font:500 9.5px 'DM Mono',monospace;letter-spacing:.16em;color:var(--h2);opacity:.85;text-transform:uppercase;content:"Carta"}
+:root[data-treat="noturno"] .family[data-fam="mapa"] .family-visual::before{content:"Carta I"}
+:root[data-treat="noturno"] .family[data-fam="bandeiras"] .family-visual::before{content:"Carta II"}
+:root[data-treat="noturno"] .family[data-fam="capitais"] .family-visual::before{content:"Carta III"}
+:root[data-treat="noturno"] .family[data-fam="idiomas"] .family-visual::before{content:"Carta IV"}
+:root[data-treat="noturno"] .hub-content .family.locked{filter:saturate(.5) brightness(.85)}
+:root[data-treat="noturno"] .hub-progress-grid button{border-left:5px solid var(--h)}
+:root[data-treat="noturno"] .hub-progress-icon{background:radial-gradient(circle at 34% 28%,#1D4468,#0B1E33 70%);color:var(--h2);box-shadow:0 0 0 2px #0B1E33,0 0 0 3px var(--h),0 0 18px color-mix(in srgb,var(--h) 45%,transparent)}
+:root[data-treat="noturno"] .hub-progress-bar{background:#15304A}
+:root[data-treat="noturno"] .hub-progress-bar i{background:linear-gradient(90deg,var(--h),var(--h2));box-shadow:0 0 8px color-mix(in srgb,var(--h) 60%,transparent)}
+:root[data-treat="noturno"] .hub-progress-grid strong{color:var(--h2)}
+:root[data-treat="noturno"] .mode-switch{background:rgba(9,22,37,.85);border-color:var(--glass-edge)}
+:root[data-treat="noturno"] .mode-switch button[aria-pressed=true]{background:rgba(63,198,208,.18);color:#9FEAF0;box-shadow:inset 0 0 0 1px rgba(63,198,208,.5)}
+:root[data-treat="noturno"] .mode-switch button[aria-pressed=true]:last-child{background:rgba(240,120,140,.18);color:#FFB3BE;box-shadow:inset 0 0 0 1px rgba(240,120,140,.5)}
+
+/* arenas do Duelo */
+:root[data-treat="noturno"] .arena .ar-league{background:rgba(6,18,31,.6);border:1px solid rgba(96,170,208,.25);border-radius:4px}
+:root[data-treat="noturno"] .ar-ico{background:radial-gradient(circle at 34% 28%,#1D4468,#0B1E33 70%);box-shadow:0 0 0 2px #0B1E33,0 0 0 3px currentColor,0 0 16px currentColor}
+:root[data-treat="noturno"] .ar-tag{background:linear-gradient(135deg,#DCE6EC,#93A3AF);color:#0A1622}
+:root[data-treat="noturno"] .ar-chip{background:rgba(6,18,31,.6);border-color:rgba(96,170,208,.3);color:#C9DBE6;border-radius:4px}
+:root[data-treat="noturno"] .ar-go{background:linear-gradient(180deg,color-mix(in srgb,var(--h) 32%,#0B1B2B),#0B1B2B)!important;border:1px solid var(--h)!important;color:var(--h2)!important;border-radius:4px!important;box-shadow:0 0 18px -6px var(--h)}
+:root[data-treat="noturno"] .ar-friend{border-radius:4px;color:#8CA5B8;border-color:rgba(96,170,208,.3)}
+:root[data-treat="noturno"] .ar-form .win{background:#1F9F86}.arena .ar-form .loss{background:#C24A63}
+:root[data-treat="noturno"] .ar-foot small,:root[data-treat="noturno"] .ar-k{color:#8CA5B8}
+
+/* ── partida: barra de vidro, alvo acendendo, o mapa vem da paleta ── */
+:root[data-theme="noturno"] .gs-head{background:linear-gradient(180deg,rgba(18,40,64,.96),rgba(9,22,37,.96));border-bottom:1px solid var(--glass-edge);box-shadow:0 8px 24px -14px rgba(0,0,0,.9)}
+:root[data-theme="noturno"] .gs-progress>i,:root[data-theme="noturno"] .gs-progress .gs-track{background:#1B3550}
+:root[data-theme="noturno"] .gs-progress>i.ok{background:#3FC6D0}
+:root[data-theme="noturno"] .gs-progress>i.miss{background:#F07C8C}
+:root[data-theme="noturno"] .gs-progress>i.now{background:#DCE9F0;box-shadow:0 0 0 3px rgba(220,233,240,.18)}
+:root[data-theme="noturno"] .gs-chip{background:rgba(9,22,37,.85)!important;border:1px solid var(--glass-edge)!important;color:#DCE9F0!important}
+:root[data-theme="noturno"] .gs-x,:root[data-theme="noturno"] .gs-x svg{color:#DCE9F0}
+:root[data-theme="noturno"] .map-target-overlay{background:linear-gradient(180deg,rgba(14,34,56,.94),rgba(5,14,24,.96));border:1px solid rgba(96,200,220,.55);border-radius:4px;padding:12px 44px 13px;color:#C9DBE6;box-shadow:inset 0 0 0 3px #071320,inset 0 0 0 4px rgba(96,200,220,.3),0 0 34px -8px rgba(63,198,208,.5),0 14px 30px rgba(0,0,0,.5)}
+:root[data-theme="noturno"] .map-target-overlay::before,:root[data-theme="noturno"] .map-target-overlay::after{content:"";position:absolute;top:50%;width:26px;height:26px;margin-top:-13px;background:url("./assets/themes/noturno-compass-light.svg") center/contain no-repeat;opacity:.95}
+:root[data-theme="noturno"] .map-target-overlay::before{left:12px}
+:root[data-theme="noturno"] .map-target-overlay::after{right:12px}
+:root[data-theme="noturno"] .map-target-overlay span{color:#7DE3EA!important;letter-spacing:.24em}
+:root[data-theme="noturno"] .map-target-overlay strong{color:#F1F8FB;text-shadow:0 0 22px rgba(63,198,208,.55)}
+:root[data-theme="noturno"] .map-target-overlay .round-timer i{background:#7DE3EA}
+:root[data-theme="noturno"] .map-note{background:rgba(6,16,27,.92);border:1px solid rgba(96,170,208,.4);color:#C9DBE6}
+:root[data-theme="noturno"] .map-target-overlay.is-correct{background:linear-gradient(180deg,rgba(20,110,90,.97),rgba(10,70,58,.97));border-color:#7FE3BF}
+:root[data-theme="noturno"] .map-target-overlay.is-wrong{background:linear-gradient(180deg,rgba(120,50,62,.97),rgba(82,30,42,.97));border-color:#F19183}
+
+/* ── resultado: vidro escuro e brilho na tinta de aço ── */
+:root[data-theme="noturno"] .rs-card:not(.tier-4){background:var(--glass);border-color:var(--glass-edge);box-shadow:var(--glow),0 0 40px -16px rgba(63,198,208,.4)}
+:root[data-theme="noturno"] .rs-card:not(.tier-4) .eyebrow{color:#7DE3EA}
+:root[data-theme="noturno"] .rs-btn.primary{background:linear-gradient(180deg,#2AA8B4,#17707A);border:1px solid #7DE3EA;color:#03181C;box-shadow:0 0 18px -6px #3FC6D0}
+:root[data-theme="noturno"] .vh-card:not(.tier-4):not(.is-loss)::before{background:radial-gradient(120% 55% at 50% 0%,rgba(63,198,208,.32),transparent 62%)}
+:root[data-theme="noturno"] .vh-card:not(.tier-4):not(.is-loss) .vh-title{color:#9FEAF0;text-shadow:0 0 28px rgba(63,198,208,.6)}
+:root[data-theme="noturno"] .vh-card:not(.tier-4):not(.is-loss) .vh-title::after{background:linear-gradient(90deg,transparent,#7DE3EA,transparent);box-shadow:0 0 12px rgba(63,198,208,.7)}
+:root[data-theme="noturno"] .vh-card:not(.tier-4):not(.is-loss) .vh-score .w b{color:#7FE8C2}
+:root[data-theme="noturno"] .vh-card:not(.tier-4) .vh-score .l b,:root[data-theme="noturno"] .vh-card:not(.tier-4) .vh-score small,:root[data-theme="noturno"] .vh-card:not(.tier-4) .vh-score p{color:#9FB6C6}
+:root[data-theme="noturno"] .vh-card.is-loss .vh-title{color:#FFA3B1}
+:root[data-theme="noturno"] .vh-card.tier-4{border-color:rgba(125,227,234,.7);box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 4px rgba(63,198,208,.22),0 0 60px -10px rgba(63,198,208,.4)}
+:root[data-theme="noturno"] .vh-card.tier-4 .vh-title{color:#D6F6F8;text-shadow:0 0 30px rgba(63,198,208,.7)}
+:root[data-theme="noturno"] .vh-card.tier-4 .vh-title::after{background:linear-gradient(90deg,transparent,#7DE3EA,transparent)}
+
+/* ── celular ── */
+@media (max-width:760px){
+  :root[data-theme="noturno"] .mobile-nav{background:linear-gradient(180deg,rgba(18,40,64,.98),rgba(7,17,28,.98));border-top:1px solid var(--glass-edge)}
+  :root[data-theme="noturno"] .rs-actions{background:linear-gradient(180deg,rgba(18,40,64,.98),rgba(7,17,28,.98))}
+}
+
+/* ── ajustes do que ficava claro ou apagado sobre o escuro ── */
+:root[data-theme="noturno"] .rs-actions{background:rgba(9,22,37,.92);border:1px solid var(--glass-edge);box-shadow:0 0 30px -14px rgba(63,198,208,.4)}
+:root[data-theme="noturno"] .rs-btn:not(.primary){background:rgba(6,18,31,.6);color:#DCE9F0;border-color:var(--glass-edge)}
+:root[data-theme="noturno"] .rs-btn:not(.primary):hover{border-color:#7DE3EA;color:#fff}
+:root[data-theme="noturno"] :is(.pz-rank strong,.pr-card.prize strong,.rk-li strong,.rk-win){color:#7FE8C2!important}
+:root[data-theme="noturno"] .rk-loss{color:#FFA3B1!important}
+:root[data-theme="noturno"] :is(.pz-rank .rk-nm em,.rk-bot){background:rgba(125,227,234,.14);color:#9FEAF0}
+:root[data-theme="noturno"] .pz-rank li.is-you,:root[data-theme="noturno"] .rk-li.is-me{background:rgba(240,190,85,.16);border-color:#F0BE55}
+:root[data-theme="noturno"] :is(.vh-pill.gold,.vh-pill.fire){background:rgba(240,190,85,.16);border-color:rgba(240,190,85,.6);color:#FFD98A}
+:root[data-theme="noturno"] .vh-pill.up{background:#137A62;color:#EAFFF6}
+:root[data-theme="noturno"] .rv-tag{background:rgba(240,124,140,.16);color:#FFB3BE}
+:root[data-theme="noturno"] .dr-legs td:last-child,:root[data-theme="noturno"] .dr-bonus td:last-child,:root[data-theme="noturno"] .dr-consol{color:#7FE8C2}
+:root[data-theme="noturno"] .rs-xp{background:rgba(63,198,208,.16);color:#9FEAF0}
+:root[data-theme="noturno"] .dr-emb b{color:#7FE8C2}
+:root[data-theme="noturno"] .dr-meter.is-loss .dr-emb b{color:#FFA3B1}
+:root[data-theme="noturno"] .store-btn.primary{background:linear-gradient(180deg,#2AA8B4,#17707A);border:1px solid #7DE3EA;color:#03181C}
+:root[data-theme="noturno"] .store-btn:not(.primary){background:transparent;color:#DCE9F0;border-color:var(--glass-edge)}
+:root[data-theme="noturno"] .store-card{background:var(--glass);border-color:var(--glass-edge)}
+:root[data-theme="noturno"] .store-price{color:#F0F6F9}
+:root[data-theme="noturno"] .maplibregl-ctrl-attrib{background:rgba(6,16,27,.85)!important;color:#A9C0CF!important}
+:root[data-theme="noturno"] .maplibregl-ctrl-attrib a{color:#7DE3EA!important}
+:root[data-theme="noturno"] .hub-mastery{color:#8CA5B8}
+:root[data-theme="noturno"] .hub-mastery b,:root[data-theme="noturno"] .hub-eyebrow{color:#7DE3EA}
+
+/* movimento: estrelas que cintilam e um pulso de luz que percorre a régua do Hub */
+:root[data-treat="noturno"] .app-shell:before{content:"";opacity:.5;background:url("./assets/themes/noturno-twinkle.svg") 0 0/520px 520px;mix-blend-mode:screen;animation:nt-twinkle 6s ease-in-out infinite alternate}
+@keyframes nt-twinkle{from{opacity:.22}to{opacity:.7}}
+@media (min-width:1024px){:root[data-treat="noturno"] .hub-rule{background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.95) 50%,transparent 70%) -40% 0/40% 100% no-repeat,var(--rule);animation:nt-pulse 7s ease-in-out infinite}}
+@keyframes nt-pulse{to{background-position:140% 0,0 0}}
+@media (prefers-reduced-motion:reduce){:root[data-treat="noturno"] .app-shell:before,:root[data-treat="noturno"] .hub-rule{animation:none}}
+html[data-reduced-motion="true"][data-treat="noturno"] .app-shell:before,html[data-reduced-motion="true"][data-treat="noturno"] .hub-rule{animation:none!important}
+/* nas telas de partida o mapa é o que importa: sem estrelas por cima (podiam passar por ilhas pequenas) */
+:root[data-treat="noturno"] .app-shell.gs-app:before{display:none}

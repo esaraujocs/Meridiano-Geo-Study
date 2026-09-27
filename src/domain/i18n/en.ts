@@ -973,6 +973,7 @@ export const en: Messages = {
     hubThemes: "Hub themes",
     tabsAria: "Store sections",
     leagueTab: "Leagues",
+    tierBadge: { elaborate: "Elaborate · Hub, map and results", prestige: "Prestige · every screen" } as Record<string, string>,
     tiers: {
       simple: ["Palettes", "Simple colors and treatments for the Hub."],
       painted: ["Painted", "Brushstrokes and watercolor, hand-painted."],
@@ -999,6 +1000,7 @@ export const en: Messages = {
     "pinceladas-terra": ["Brushstrokes · Earth", "The vertical brushstrokes in the game's original palette."],
     listras: ["Stripes", "Wide bands, like hand-painted flag stripes."],
     atelie: ["Studio", "Brushstrokes over watercolor: the most painted of all."],
+    noturno: ["Night · Nautical Chart", "The first dark Hub: a nautical chart at night, dark glass with glowing edges, luminous coastlines and stars."],
     prata: ["Silver · Engraving", "Engraved silver plate: pearl paper, fine hatching and a slate-blue map."],
   },
   timer: {

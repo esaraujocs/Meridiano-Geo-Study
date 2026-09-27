@@ -24,6 +24,7 @@ function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAs
   const leagueName = theme.league ? t.duel.leagues[theme.league] : "";
   return <article className={`store-card${active ? " is-active" : ""}${owned ? "" : " is-locked"}${theme.league ? " is-league" : ""}`} aria-labelledby={`theme-${theme.id}`}>
     {theme.league && <span className="store-badge">{t.store.leagueBadge(leagueName)}</span>}
+    {(theme.tier === "elaborate" || theme.tier === "prestige") && <span className="store-badge">{t.store.tierBadge[theme.tier]}</span>}
     {preview
       ? <img className="store-thumb" src={preview} alt={t.store.previewAlt(theme.name)} loading="lazy" width={640} height={323} />
       : <div className="store-thumb store-thumb-fallback" role="img" aria-label={t.store.colorsAria(theme.name)} style={{ background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }} />}

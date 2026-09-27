@@ -5,7 +5,7 @@ import { LEAGUES, type LeagueKey } from "./league.js";
 import { DEFAULT_MAP_PALETTE, type MapPalette } from "./map-palette.js";
 
 /** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). */
-export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata";
+export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata" | "noturno";
 
 export type Theme = {
   id: string;
@@ -20,6 +20,8 @@ export type Theme = {
   swatches: readonly [string, string, string, string];
   /** Faixa de preço (só nos temas da Loja). */
   tier?: ThemeTier;
+  /** Tema escuro: liga o esquema escuro (themes-dark.css), que corrige as cores fixas de tema claro em todas as telas. */
+  scheme?: "dark";
   /** Tema de liga: não está à venda (`cost` 0) e é dado uma vez ao entrar nessa liga, em qualquer das duas escadas. */
   league?: LeagueKey;
   /** Cores do mapa em jogo; o que faltar vem do padrão. */
@@ -46,6 +48,12 @@ const THEME_SEEDS: readonly Theme[] = [
   { id: "pinceladas-terra", name: "Pinceladas · Terra", tagline: "As pinceladas verticais na paleta original do jogo.", treat: "brush-v", cost: 24000, tier: "painted", wash: false, swatches: ["#2F6F6A", "#B65F47", "#C49345", "#7A8145"] },
   { id: "listras", name: "Listras", tagline: "Faixas largas, como listras de bandeira pintadas à mão.", treat: "brush-h", cost: 24000, tier: "painted", wash: false, swatches: ["#2B8378", "#C25A42", "#BE8A2C", "#6F5DA6"] },
   { id: "atelie", name: "Ateliê", tagline: "Pinceladas por cima de aquarela: o mais pintado de todos.", treat: "brush-wash", cost: 40000, tier: "painted", wash: true, swatches: ["#1F8A87", "#B94A76", "#D2782B", "#5561B5"] },
+  // Elaborados: mudam também o mapa em jogo e o resultado, com ornamentos e movimento.
+  {
+    id: "noturno", name: "Noturno · Carta Náutica", tagline: "O primeiro Hub escuro: carta náutica à noite, vidro escuro com borda acesa, costas luminosas e estrelas.", treat: "noturno", cost: 100000, tier: "elaborate", scheme: "dark", wash: false,
+    swatches: ["#3FC6D0", "#F0788A", "#F0BE55", "#A99BFF"],
+    map: { ocean: "#050F1A", land: "#0F2B46", outline: "#62D8E4", marker: "#A9EBF1", markerStroke: "#0B2B3B", graticule: "#4FA3C4", graticuleOpacity: 0.28 },
+  },
   // Temas de liga: quanto mais alta a liga, mais prestigioso o tema (mais camadas: Hub, mapa, resultado, ornamentos e movimento).
   {
     id: "prata", name: "Prata · Gravura", tagline: "Chapa de prata gravada: papel pérola, hachura fina e o mapa em ardósia.", treat: "prata", cost: 0, wash: false, league: "prata",
@@ -93,10 +101,10 @@ export const resolveTheme = (saved: unknown, unlocked: readonly string[]): strin
 /** Quanto falta de moedas para comprar (0 = já dá). */
 export const missingCoins = (cost: number, balance: number) => Math.max(0, cost - balance);
 
-/** Atributos que o CSS lê no elemento raiz (`data-theme` = paleta, `data-treat` = tratamento, `data-wash` = manchas). */
-export function themeAttributes(id: string): { theme: string; treat: ThemeTreatment; wash: "0" | "1" } {
+/** Atributos que o CSS lê no elemento raiz (`data-theme` = paleta, `data-treat` = tratamento, `data-wash` = manchas, `data-scheme` = claro ou escuro). */
+export function themeAttributes(id: string): { theme: string; treat: ThemeTreatment; wash: "0" | "1"; scheme: "light" | "dark" } {
   const theme = themeById(id) ?? themeById(DEFAULT_THEME)!;
-  return { theme: theme.id, treat: theme.treat, wash: theme.wash ? "1" : "0" };
+  return { theme: theme.id, treat: theme.treat, wash: theme.wash ? "1" : "0", scheme: theme.scheme ?? "light" };
 }
 
 export const THEME_STORAGE_KEY = "carta-theme";

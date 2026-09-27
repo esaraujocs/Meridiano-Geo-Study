@@ -8,6 +8,8 @@ import { intlLocale, t } from "./domain/i18n";
 import "./index.css";
 import "./themes.css";
 import "./themes-league.css";
+import "./themes-dark.css";
+import "./themes-elaborate.css";
 
 applyDebugFlagFromUrl();
 // Idioma da página (leitores de tela, hifenização) e título da aba no idioma escolhido.
@@ -19,8 +21,8 @@ try { document.documentElement.dataset.timerReveal = localStorage.getItem("carta
 // O tema guardado vale desde o primeiro quadro (o app confirma depois se ele é do jogador).
 try {
   const saved = localStorage.getItem(THEME_STORAGE_KEY);
-  const { theme, treat, wash } = themeAttributes(isThemeId(saved) ? saved : DEFAULT_THEME);
-  Object.assign(document.documentElement.dataset, { theme, treat, wash });
+  const { theme, treat, wash, scheme } = themeAttributes(isThemeId(saved) ? saved : DEFAULT_THEME);
+  Object.assign(document.documentElement.dataset, { theme, treat, wash, scheme });
 } catch { /* sem armazenamento */ }
 createRoot(document.getElementById("root")!).render(<><App /><AchievementToaster /><ThemeFilters /></>);
 

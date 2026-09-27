@@ -345,9 +345,9 @@ export function App() {
   }, []);
   // O CSS lê o tema nos atributos do elemento raiz.
   useEffect(() => {
-    const { theme: id, treat, wash } = themeAttributes(theme);
+    const { theme: id, treat, wash, scheme } = themeAttributes(theme);
     const root = document.documentElement;
-    root.dataset.theme = id; root.dataset.treat = treat; root.dataset.wash = wash;
+    root.dataset.theme = id; root.dataset.treat = treat; root.dataset.wash = wash; root.dataset.scheme = scheme;
   }, [theme]);
   // Tema guardado que não é do jogador (dados limpos, valor antigo) volta ao padrão, mas só depois de a economia carregar de verdade.
   useEffect(() => {

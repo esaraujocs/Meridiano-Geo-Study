@@ -334,7 +334,7 @@ export function Game({
               type: "background",
               paint: { "background-color": palette.ocean },
             },
-            ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": 0.2, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
+            ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": palette.graticuleOpacity, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
             {
               id: "land",
               type: "fill",

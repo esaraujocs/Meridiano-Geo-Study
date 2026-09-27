@@ -11,9 +11,10 @@ export type MapPalette = {
   markerStroke: string;
   /** Cor da quadrícula de meridianos e paralelos; sem ela (null) o mapa não tem quadrícula. */
   graticule: string | null;
+  graticuleOpacity: number;
 };
 
-export const DEFAULT_MAP_PALETTE: MapPalette = { ocean: "#081825", land: "#164455", outline: "#4c8890", marker: "#9db7b2", markerStroke: "#24423d", graticule: null };
+export const DEFAULT_MAP_PALETTE: MapPalette = { ocean: "#081825", land: "#164455", outline: "#4c8890", marker: "#9db7b2", markerStroke: "#24423d", graticule: null, graticuleOpacity: 0.2 };
 
 /** Meridianos e paralelos de `step` em `step` graus, como linhas GeoJSON (o mapa é Mercator: os paralelos param em ±60° e os meridianos em ±80°). */
 export function graticuleLines(step = 30) {

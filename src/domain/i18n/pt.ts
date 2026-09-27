@@ -1032,6 +1032,7 @@ export const pt = {
     hubThemes: "Temas do Hub",
     tabsAria: "Seções da Loja",
     leagueTab: "Ligas",
+    tierBadge: { elaborate: "Elaborado · Hub, mapa e resultado", prestige: "Prestígio · todas as telas" } as Record<string, string>,
     tiers: {
       simple: ["Paletas", "Cores e tratamentos simples para o Hub."],
       painted: ["Pintados", "Pincelada e aquarela, pintadas à mão."],
@@ -1058,6 +1059,7 @@ export const pt = {
     "pinceladas-terra": ["Pinceladas · Terra", "As pinceladas verticais na paleta original do jogo."],
     listras: ["Listras", "Faixas largas, como listras de bandeira pintadas à mão."],
     atelie: ["Ateliê", "Pinceladas por cima de aquarela: o mais pintado de todos."],
+    noturno: ["Noturno · Carta Náutica", "O primeiro Hub escuro: carta náutica à noite, vidro escuro com borda acesa, costas luminosas e estrelas."],
     prata: ["Prata · Gravura", "Chapa de prata gravada: papel pérola, hachura fina e o mapa em ardósia."],
   } as Record<string, [string, string]>,
   timer: {

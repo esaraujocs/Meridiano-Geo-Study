@@ -1,0 +1,62 @@
+/* Esquema escuro: vale para todo tema com `scheme: "dark"` (data-scheme="dark" no elemento raiz). O CSS do app tem muita cor fixa de tema claro (texto verde-escuro,
+   cartões beges); aqui elas viram as tintas do tema escuro. Cada tema escuro define --accent-ink, --ok-ink, --bad-ink e --warn-ink (texto sobre o escuro) e o resto
+   (paleta, Hub, mapa, resultado) fica no CSS do próprio tema. Regra: nada de cor de texto nova aqui sem esses tokens. */
+
+:root[data-scheme="dark"]{color-scheme:dark}
+
+/* ── textos de apoio, rótulos e etiquetas que tinham cor fixa de tema claro ── */
+:root[data-scheme="dark"] .eyebrow,:root[data-scheme="dark"] .surface .eyebrow{color:var(--accent-ink)!important}
+:root[data-scheme="dark"] :is(.cv-k,.cv-hint,.cv-sum small,.cv-chip em,.cv-chip.is-locked){color:var(--muted)}
+:root[data-scheme="dark"] .cv-chip{background:var(--panel-2);color:var(--ink)}
+:root[data-scheme="dark"] .cv-chip[aria-pressed=true]{background:color-mix(in srgb,var(--green) 22%,transparent);border-color:var(--green);color:var(--accent-ink)}
+:root[data-scheme="dark"] .cv-chip[aria-pressed=true] em{color:var(--accent-ink)}
+:root[data-scheme="dark"] .cv-chip.is-locked{background:transparent}
+:root[data-scheme="dark"] .cv-chip.is-locked b{color:var(--warn-ink)}
+:root[data-scheme="dark"] .cv-chip.is-locked[aria-pressed=true]{background:color-mix(in srgb,var(--brass) 18%,transparent);border-color:var(--brass)}
+:root[data-scheme="dark"] .cv-bar{background:color-mix(in srgb,var(--dark) 94%,transparent);border-color:var(--line);box-shadow:0 12px 34px rgba(0,0,0,.5)}
+:root[data-scheme="dark"] .cv-favs{background:var(--panel-2)}
+:root[data-scheme="dark"] .cv-favs-rename input{background:var(--paper);color:var(--ink)}
+:root[data-scheme="dark"] .cv-sum b{color:var(--ink)}
+/* revelação do duelo: quanto vale vencer e perder */
+:root[data-scheme="dark"] .up{color:var(--ok-ink)}
+:root[data-scheme="dark"] .down{color:var(--bad-ink)}
+:root[data-scheme="dark"] .fire{color:var(--warn-ink)}
+:root[data-scheme="dark"] .cv-bar small{color:var(--muted)}
+:root[data-scheme="dark"] .tu-text small,:root[data-scheme="dark"] .tu-done{color:var(--accent-ink)}
+:root[data-scheme="dark"] .tu-actions .tu-go{background:var(--green);color:var(--dark)}
+
+/* ── Progresso, Histórico, Conquistas e Opções ── */
+:root[data-scheme="dark"] :is(.pr-inline,.pr-link,.pr-link-center,.cv-buy){color:var(--accent-ink)}
+:root[data-scheme="dark"] article[data-fam] .pr-link{color:var(--h2,var(--accent-ink))}
+:root[data-scheme="dark"] .pr-status.is-good,:root[data-scheme="dark"] .pr-tag.good,:root[data-scheme="dark"] .pr-delta{background:color-mix(in srgb,var(--ok-ink) 16%,transparent);color:var(--ok-ink)}
+:root[data-scheme="dark"] .pr-status.is-mid{background:color-mix(in srgb,var(--warn-ink) 16%,transparent);color:var(--warn-ink)}
+:root[data-scheme="dark"] .pr-status.is-warn,:root[data-scheme="dark"] .pr-tag.warn,:root[data-scheme="dark"] .pr-delta.down{background:color-mix(in srgb,var(--bad-ink) 16%,transparent);color:var(--bad-ink)}
+:root[data-scheme="dark"] .pr-write.ok{color:var(--ok-ink)}
+:root[data-scheme="dark"] .pr-write.no{color:var(--bad-ink)}
+:root[data-scheme="dark"] div[aria-label="Medida"] button[aria-pressed="true"],:root[data-scheme="dark"] div[aria-label="Período"] button[aria-pressed="true"]{color:var(--accent-ink)}
+/* histórico: a linha do duelo */
+:root[data-scheme="dark"] .pr-oc.is-win{background:color-mix(in srgb,var(--ok-ink) 16%,transparent);color:var(--ok-ink)}
+:root[data-scheme="dark"] .pr-oc.is-loss{background:color-mix(in srgb,var(--bad-ink) 16%,transparent);color:var(--bad-ink)}
+:root[data-scheme="dark"] .pr-oc.is-draw{background:color-mix(in srgb,var(--muted) 18%,transparent);color:var(--ink)}
+:root[data-scheme="dark"] .pr-duel-res.is-win b{color:var(--ok-ink)}
+:root[data-scheme="dark"] .pr-duel-res.is-loss b{color:var(--bad-ink)}
+:root[data-scheme="dark"] .pr-sicon-duel.is-loss{color:var(--bad-ink);border-color:var(--bad-ink)}
+:root[data-scheme="dark"] .pr-inc{color:var(--bad-ink)}
+/* conquistas: a raridade e o "conquistada" */
+:root[data-scheme="dark"] .ach-r1 .ach-rarity{color:var(--muted)}
+:root[data-scheme="dark"] .ach-r2 .ach-rarity{color:var(--accent-ink)}
+:root[data-scheme="dark"] .ach-r3 .ach-rarity,:root[data-scheme="dark"] .ach-r5 .ach-rarity{color:var(--warn-ink)}
+:root[data-scheme="dark"] .ach-r4 .ach-rarity{color:var(--bad-ink)}
+:root[data-scheme="dark"] .ach-done{color:var(--ok-ink)}
+/* Opções: o painel de debug (só com ?debug=1) */
+:root[data-scheme="dark"] .dbg{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+:root[data-scheme="dark"] .dbg :is(h2,h3,label){color:var(--ink)}
+:root[data-scheme="dark"] .dbg .dbg-badge{background:color-mix(in srgb,var(--warn-ink) 16%,transparent);color:var(--warn-ink)}
+:root[data-scheme="dark"] .dbg .button.ghost{color:var(--ink);border-color:var(--line);background:transparent}
+:root[data-scheme="dark"] .dbg .is-danger{color:var(--bad-ink)}
+
+/* a tinta de título (--hd) do Progresso, da Coleção e das Conquistas é calculada para tema claro (a cor do modo escurecida): no escuro vira a luz do modo */
+:root[data-scheme="dark"] :is([data-surface],.pr-pillar[data-fam],.pr-kpi[data-fam]){--hd:var(--h2,var(--accent-ink));--ht:color-mix(in srgb,var(--h,var(--green)) 22%,transparent)}
+
+/* Liga: a régua de molduras (a exigida de nível e as ainda bloqueadas) */
+:root[data-scheme="dark"] :is(.lg-frame-item small,.lg-frame-item.is-locked b,.lg-frame-item.is-locked small,.lg-frame[data-league]>strong,div[data-league]>strong){color:var(--muted)}

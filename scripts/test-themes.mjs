@@ -77,10 +77,11 @@ assert.equal(missingCoins(12000, 9000), 3000);
 assert.equal(missingCoins(6000, 6000), 0);
 
 // Atributos que o CSS lê.
-assert.deepEqual(themeAttributes("atelie"), { theme: "atelie", treat: "brush-wash", wash: "1" });
-assert.deepEqual(themeAttributes("listras"), { theme: "listras", treat: "brush-h", wash: "0" });
-assert.deepEqual(themeAttributes("nao-existe"), { theme: DEFAULT_THEME, treat: "tint", wash: "0" }, "id inválido usa o padrão");
-assert.deepEqual(themeAttributes("prata"), { theme: "prata", treat: "prata", wash: "0" });
+assert.deepEqual(themeAttributes("atelie"), { theme: "atelie", treat: "brush-wash", wash: "1", scheme: "light" });
+assert.deepEqual(themeAttributes("listras"), { theme: "listras", treat: "brush-h", wash: "0", scheme: "light" });
+assert.deepEqual(themeAttributes("nao-existe"), { theme: DEFAULT_THEME, treat: "tint", wash: "0", scheme: "light" }, "id inválido usa o padrão");
+assert.deepEqual(themeAttributes("prata"), { theme: "prata", treat: "prata", wash: "0", scheme: "light" });
+assert.deepEqual(themeAttributes("noturno"), { theme: "noturno", treat: "noturno", wash: "0", scheme: "dark" }, "tema escuro liga o esquema escuro");
 
 // Mapa em jogo: o padrão é o de sempre; o tema muda oceano, terra, costas e marcadores e pode ligar a quadrícula
 assert.deepEqual(mapPaletteFor(DEFAULT_THEME), DEFAULT_MAP_PALETTE);
@@ -89,15 +90,21 @@ assert.deepEqual(mapPaletteFor("nao-existe"), DEFAULT_MAP_PALETTE);
 assert.equal(DEFAULT_MAP_PALETTE.graticule, null);
 const prata = mapPaletteFor("prata");
 assert.ok(prata.ocean !== DEFAULT_MAP_PALETTE.ocean && prata.land !== DEFAULT_MAP_PALETTE.land && prata.outline !== DEFAULT_MAP_PALETTE.outline && prata.graticule);
-assert.ok(Object.values(prata).every((color) => /^#[0-9A-Fa-f]{6}$/.test(color)), "todas as cores do mapa da Prata são hex");
+assert.ok(Object.values(prata).filter((value) => typeof value === "string").every((color) => /^#[0-9A-Fa-f]{6}$/.test(color)), "todas as cores do mapa da Prata são hex");
+assert.equal(DEFAULT_MAP_PALETTE.graticuleOpacity, 0.2);
+const noturno = mapPaletteFor("noturno");
+assert.ok(noturno.graticule && noturno.graticuleOpacity > 0 && noturno.graticuleOpacity <= 1 && noturno.ocean !== DEFAULT_MAP_PALETTE.ocean, "o Noturno tem mapa próprio, com quadrícula");
+assert.ok(Object.values(noturno).filter((value) => typeof value === "string").every((color) => /^#[0-9A-Fa-f]{6}$/.test(color)), "e as cores são hex");
 const lines = graticuleLines(30);
 assert.equal(lines.features.length, 13 + 5, "13 meridianos (−180 a 180) e 5 paralelos (−60 a 60)");
 assert.ok(lines.features.every((line) => line.geometry.type === "LineString" && line.geometry.coordinates.length > 30));
 
 // O CSS tem uma paleta por tema e um bloco por tratamento (nada de tema sem estilo).
-const css = readFileSync(new URL("../src/themes.css", import.meta.url), "utf8") + readFileSync(new URL("../src/themes-league.css", import.meta.url), "utf8");
+const css = ["themes", "themes-league", "themes-dark", "themes-elaborate"].map((name) => readFileSync(new URL(`../src/${name}.css`, import.meta.url), "utf8")).join("\n");
 for (const theme of THEMES) assert.ok(css.includes(`:root[data-theme="${theme.id}"]`), `paleta de ${theme.id} nos CSS dos temas`);
 for (const treat of new Set(THEMES.map((theme) => theme.treat))) assert.ok(css.includes(`[data-treat="${treat}"]`), `tratamento ${treat} nos CSS dos temas`);
-for (const theme of LEAGUE_THEMES) for (const file of [`../src/assets/themes/${theme.id}-compass.svg`]) if (theme.id === "prata") assert.ok(readFileSync(new URL(file, import.meta.url), "utf8").includes("<svg"), file + " existe");
+for (const id of ["prata", "noturno"]) assert.ok(readFileSync(new URL(`../src/assets/themes/${id}-compass.svg`, import.meta.url), "utf8").includes("<svg"), id + ": rosa dos ventos existe");
+// elaborados: preço na faixa e mapa próprio
+for (const theme of SHOP_THEMES.filter((item) => item.tier === "elaborate" || item.tier === "prestige")) assert.ok(theme.map && theme.map.graticule !== undefined, theme.id + " (elaborado) muda o mapa em jogo");
 
 console.log(`themes: ${THEMES.length} temas, ${new Set(THEMES.map((theme) => theme.treat)).size} tratamentos, preços ${THEMES.filter((t) => t.cost).map((t) => t.cost / 1000 + "k").join(" ")} — ok`);
