@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProgressHero } from "./progress-hero";
-import { LEAGUE_THEMES, SHOP_THEMES, THEMES, THEME_TIERS, isThemeOwned, missingCoins, themeById, type Theme } from "../domain/themes";
+import { LEAGUE_THEMES, SHOP_THEMES, THEMES, THEME_TIERS, isThemeOwned, missingCoins, themeById, type Theme, type ThemeTier } from "../domain/themes";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { formatNumber as money, t } from "../domain/i18n";
 
@@ -51,7 +51,11 @@ function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAs
   </article>;
 }
 
+/** Os submenus da Loja: uma faixa de preço por vez e os temas de liga. */
+type Tab = ThemeTier | "league";
+
 export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
+  const [picked, setPicked] = useState<Tab | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -67,6 +71,16 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
     setBusy(false);
   };
   const equip = (theme: Theme) => { onEquip(theme.id); setNotice(t.store.equipped(theme.name)); };
+  // Submenus: só as faixas que têm tema, mais os de liga. Abre na primeira faixa que ainda tem o que comprar.
+  const leftIn = (tier: ThemeTier) => SHOP_THEMES.filter((theme) => theme.tier === tier && !isThemeOwned(theme.id, economy.unlocked)).length;
+  const tabs: Tab[] = [...THEME_TIERS.filter((tier) => SHOP_THEMES.some((theme) => theme.tier === tier)), ...(LEAGUE_THEMES.length ? (["league"] as const) : [])];
+  const current: Tab = picked && tabs.includes(picked) ? picked : tabs.find((tab) => tab !== "league" && leftIn(tab) > 0) ?? tabs[0];
+  const pick = (tab: Tab) => { setPicked(tab); setPending(null); setNotice(""); };
+  const cardOf = (theme: Theme, league: boolean) => <ThemeCard
+    key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
+    balance={economy.balance} pending={!league && pending === theme.id} busy={busy}
+    onEquip={() => equip(theme)} onAskBuy={() => { setNotice(""); setPending(theme.id); }} onCancel={() => setPending(null)} onConfirm={() => void buy(theme)}
+  />;
 
   return <section className="store" aria-label={t.store.aria}>
     <ProgressHero
@@ -78,34 +92,24 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
       legend={<><li>{t.store.inUseLegend} <b>{active.name}</b></li><li>{t.store.themes} <b>{ownedCount}/{THEMES.length}</b></li></>}
     />
     <div className="store-sec"><h2>{t.store.hubThemes}</h2><span>{toBuy > 0 ? t.store.toBuy(toBuy) : t.store.allBought}</span></div>
+    <div className="pg-chips store-tabs" role="group" aria-label={t.store.tabsAria}>
+      {tabs.map((tab) => {
+        const label = tab === "league" ? t.store.leagueTab : t.store.tiers[tab][0];
+        const count = tab === "league" ? `${leagueOwned}/${LEAGUE_THEMES.length}` : leftIn(tab) > 0 ? String(leftIn(tab)) : "";
+        return <button key={tab} type="button" className="pg-chip" aria-pressed={current === tab} onClick={() => pick(tab)}>{label}{count && <> <em>{count}</em></>}</button>;
+      })}
+    </div>
     <p className="store-notice" role="status" aria-live="polite">{notice}</p>
-    {THEME_TIERS.map((tier) => {
-      const list = SHOP_THEMES.filter((theme) => theme.tier === tier);
-      if (!list.length) return null;
-      const left = list.filter((theme) => !isThemeOwned(theme.id, economy.unlocked)).length;
-      const [title, note] = t.store.tiers[tier];
-      return <section key={tier} className="store-tier" aria-labelledby={`tier-${tier}`}>
-        <div className="store-sec store-sec-tier"><h3 id={`tier-${tier}`}>{title}</h3><span>{left > 0 ? t.store.toBuy(left) : t.store.allBought}</span></div>
-        <p className="store-note">{note}</p>
-        <div className="store-grid">
-          {list.map((theme) => <ThemeCard
-            key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
-            balance={economy.balance} pending={pending === theme.id} busy={busy}
-            onEquip={() => equip(theme)} onAskBuy={() => { setNotice(""); setPending(theme.id); }} onCancel={() => setPending(null)} onConfirm={() => void buy(theme)}
-          />)}
-        </div>
-      </section>;
-    })}
-    {LEAGUE_THEMES.length > 0 && <>
-      <div className="store-sec"><h2>{t.store.leagueThemes}</h2><span>{t.store.leagueOwned(leagueOwned, LEAGUE_THEMES.length)}</span></div>
-      <p className="store-note">{t.store.leagueThemesNote}</p>
-      <div className="store-grid">
-        {LEAGUE_THEMES.map((theme) => <ThemeCard
-          key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
-          balance={economy.balance} pending={false} busy={busy}
-          onEquip={() => equip(theme)} onAskBuy={() => undefined} onCancel={() => undefined} onConfirm={() => undefined}
-        />)}
-      </div>
-    </>}
+    {current === "league"
+      ? <section className="store-tier" aria-labelledby="tier-league">
+        <div className="store-sec store-sec-tier"><h3 id="tier-league">{t.store.leagueThemes}</h3><span>{t.store.leagueOwned(leagueOwned, LEAGUE_THEMES.length)}</span></div>
+        <p className="store-note">{t.store.leagueThemesNote}</p>
+        <div className="store-grid">{LEAGUE_THEMES.map((theme) => cardOf(theme, true))}</div>
+      </section>
+      : <section className="store-tier" aria-labelledby={`tier-${current}`}>
+        <div className="store-sec store-sec-tier"><h3 id={`tier-${current}`}>{t.store.tiers[current][0]}</h3><span>{leftIn(current) > 0 ? t.store.toBuy(leftIn(current)) : t.store.allBought}</span></div>
+        <p className="store-note">{t.store.tiers[current][1]}</p>
+        <div className="store-grid">{SHOP_THEMES.filter((theme) => theme.tier === current).map((theme) => cardOf(theme, false))}</div>
+      </section>}
   </section>;
 }

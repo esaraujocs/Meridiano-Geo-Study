@@ -1030,6 +1030,8 @@ export const pt = {
     inUseLegend: "Em uso",
     themes: "Temas",
     hubThemes: "Temas do Hub",
+    tabsAria: "Seções da Loja",
+    leagueTab: "Ligas",
     tiers: {
       simple: ["Paletas", "Cores e tratamentos simples para o Hub."],
       painted: ["Pintados", "Pincelada e aquarela, pintadas à mão."],

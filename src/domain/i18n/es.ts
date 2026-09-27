@@ -971,6 +971,8 @@ export const es: Messages = {
     inUseLegend: "En uso",
     themes: "Temas",
     hubThemes: "Temas del Hub",
+    tabsAria: "Secciones de la Tienda",
+    leagueTab: "Ligas",
     tiers: {
       simple: ["Paletas", "Colores y acabados sencillos para el Hub."],
       painted: ["Pintados", "Pinceladas y acuarela, pintadas a mano."],
