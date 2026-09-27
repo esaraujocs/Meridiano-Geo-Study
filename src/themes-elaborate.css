@@ -146,12 +146,24 @@
 :root[data-theme="noturno"] .hub-mastery{color:#8CA5B8}
 :root[data-theme="noturno"] .hub-mastery b,:root[data-theme="noturno"] .hub-eyebrow{color:#7DE3EA}
 
-/* movimento: estrelas que cintilam e um pulso de luz que percorre a régua do Hub */
-:root[data-treat="noturno"] .app-shell:before{content:"";opacity:.5;background:url("./assets/themes/noturno-twinkle.svg") 0 0/520px 520px;mix-blend-mode:screen;animation:nt-twinkle 6s ease-in-out infinite alternate}
-@keyframes nt-twinkle{from{opacity:.22}to{opacity:.7}}
+/* movimento (Noturno): estrelas que cintilam em três camadas, estrelas cadentes de vez em quando e um pulso de luz na régua do Hub.
+   Tudo é fixo, sem clique (pointer-events:none) e só anima opacidade e posição. Some com movimento reduzido e nas telas de partida (o mapa manda; as estrelas
+   passariam por ilhas pequenas). */
+:root[data-treat="noturno"] .app-shell:before{content:"";background:url("./assets/themes/noturno-twinkle.svg") 0 0/560px 560px;mix-blend-mode:screen;opacity:.35;animation:nt-twinkle 5.3s ease-in-out infinite alternate}
+:root[data-treat="noturno"] .app-shell.grain:after{background:url("./assets/themes/noturno-twinkle-b.svg") 90px 40px/640px 640px;mix-blend-mode:screen;opacity:.85;animation:nt-twinkle 7.1s ease-in-out -2.4s infinite alternate-reverse}
+:root[data-treat="noturno"] #root:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:29;background:url("./assets/themes/noturno-twinkle-c.svg") 200px 120px/720px 720px;mix-blend-mode:screen;opacity:.4;animation:nt-twinkle 3.9s ease-in-out -1.1s infinite alternate}
+@keyframes nt-twinkle{0%{opacity:.06}45%{opacity:.42}100%{opacity:.82}}
+/* estrelas cadentes: cada uma cruza a tela em ~1,2 s e some; os ciclos (41, 59 e 83 s) não se alinham, então aparece uma de vez em quando, em pontos diferentes */
+:root[data-treat="noturno"] body:before,:root[data-treat="noturno"] body:after{content:"";position:fixed;z-index:29;pointer-events:none;width:210px;height:2.5px;border-radius:3px;background:linear-gradient(270deg,rgba(255,255,255,0),rgba(190,236,255,.5) 40%,#fff);filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px rgba(120,210,255,.95));opacity:0;transform:translate(0,0) rotate(-28deg)}
+:root[data-treat="noturno"] body:before{top:9vh;left:78vw;animation:nt-shoot-a 41s linear 6s infinite}
+:root[data-treat="noturno"] body:after{top:34vh;left:96vw;animation:nt-shoot-b 59s linear 21s infinite}
+@keyframes nt-shoot-a{0%,96%{opacity:0;transform:translate(0,0) rotate(-28deg)}96.5%{opacity:1}98.2%{opacity:.9}98.9%{opacity:0;transform:translate(-560px,298px) rotate(-28deg)}100%{opacity:0;transform:translate(-560px,298px) rotate(-28deg)}}
+@keyframes nt-shoot-b{0%,97.1%{opacity:0;transform:translate(0,0) rotate(-24deg)}97.5%{opacity:1}98.8%{opacity:.85}99.4%{opacity:0;transform:translate(-470px,209px) rotate(-24deg)}100%{opacity:0;transform:translate(-470px,209px) rotate(-24deg)}}
 @media (min-width:1024px){:root[data-treat="noturno"] .hub-rule{background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.95) 50%,transparent 70%) -40% 0/40% 100% no-repeat,var(--rule);animation:nt-pulse 7s ease-in-out infinite}}
 @keyframes nt-pulse{to{background-position:140% 0,0 0}}
-@media (prefers-reduced-motion:reduce){:root[data-treat="noturno"] .app-shell:before,:root[data-treat="noturno"] .hub-rule{animation:none}}
-html[data-reduced-motion="true"][data-treat="noturno"] .app-shell:before,html[data-reduced-motion="true"][data-treat="noturno"] .hub-rule{animation:none!important}
-/* nas telas de partida o mapa é o que importa: sem estrelas por cima (podiam passar por ilhas pequenas) */
-:root[data-treat="noturno"] .app-shell.gs-app:before{display:none}
+/* partida: sem estrelas nem cadentes por cima do mapa */
+:root[data-treat="noturno"] .app-shell.gs-app:before,:root[data-treat="noturno"] body:has(.gs-app):before,:root[data-treat="noturno"] body:has(.gs-app):after,:root[data-treat="noturno"] body:has(.gs-app) #root:before{display:none}
+/* movimento reduzido: tudo parado (as estrelas fixas do fundo continuam) */
+@media (prefers-reduced-motion:reduce){:root[data-treat="noturno"] .app-shell:before,:root[data-treat="noturno"] .app-shell.grain:after,:root[data-treat="noturno"] #root:before,:root[data-treat="noturno"] .hub-rule{animation:none}:root[data-treat="noturno"] body:before,:root[data-treat="noturno"] body:after{display:none}}
+html[data-reduced-motion="true"][data-treat="noturno"] .app-shell:before,html[data-reduced-motion="true"][data-treat="noturno"] .app-shell.grain:after,html[data-reduced-motion="true"][data-treat="noturno"] #root:before,html[data-reduced-motion="true"][data-treat="noturno"] .hub-rule{animation:none!important}
+html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-reduced-motion="true"][data-treat="noturno"] body:after{display:none}
