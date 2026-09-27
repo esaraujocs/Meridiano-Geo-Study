@@ -167,3 +167,154 @@
 @media (prefers-reduced-motion:reduce){:root[data-treat="noturno"] .app-shell:before,:root[data-treat="noturno"] .app-shell.grain:after,:root[data-treat="noturno"] #root:before,:root[data-treat="noturno"] .hub-rule{animation:none}:root[data-treat="noturno"] body:before,:root[data-treat="noturno"] body:after{display:none}}
 html[data-reduced-motion="true"][data-treat="noturno"] .app-shell:before,html[data-reduced-motion="true"][data-treat="noturno"] .app-shell.grain:after,html[data-reduced-motion="true"][data-treat="noturno"] #root:before,html[data-reduced-motion="true"][data-treat="noturno"] .hub-rule{animation:none!important}
 html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-reduced-motion="true"][data-treat="noturno"] body:after{display:none}
+
+/* ═══ CARTÓGRAFO · PERGAMINHO — carta antiga: pergaminho envelhecido, tinta sépia, folhas de cantos ornamentados, rosa dos ventos e selo de cera no resultado; o primeiro
+   mapa em jogo CLARO (mar de papel, sombra nas costas, linhas de rumo) com navios e criaturas nórdicas por cima (componente map-fauna). Os SVG saem de scripts/build-cartografo-assets.mjs. ═══ */
+:root[data-theme="cartografo"]{
+  color:#3B2A1A; background:#E6D3A6;
+  --paper:#EAD9AE; --surface:#DEC998; --ink:#3B2A1A; --muted:#614A2F; --line:#B39A66;
+  --green:#245A4A; --terracotta:#8E2F1F; --brass:#A97C1F;
+  --dark:#2A1C10; --dark-surface:#3A2818; --text-dark:#F3E6C6; --panel-2:#E3CF9F;
+  --h-mapa:#3F7F72; --hb-mapa:#33695E; --h2-mapa:#2C6A5E; --w-mapa:#7FAF9F; --hg-mapa:#2C6A5E;
+  --h-band:#A83A28; --hb-band:#93301F; --h2-band:#9A3322; --w-band:#D08A78; --hg-band:#9A3322;
+  --h-cap:#B98A22; --hb-cap:#A47A1B; --h2-cap:#8A6412; --w-cap:#E0BE6A; --hg-cap:#7C5A10;
+  --h-idi:#4A5690; --hb-idi:#3E4A80; --h2-idi:#3E4A80; --w-idi:#9CA5D0; --hg-idi:#3E4A80;
+  --on-mapa:#F6ECD0; --on-band:#F6ECD0; --on-cap:#2B1C08; --on-idi:#F6ECD0;
+  --bar:linear-gradient(90deg,#3F7F72,#4A5690 35%,#A83A28 68%,#B98A22);
+  --rule:linear-gradient(90deg,transparent,#6B5230 12%,#B39A66 50%,#6B5230 88%,transparent);
+  /* folha de pergaminho: manchas de envelhecimento, bordas queimadas e o filete duplo de tinta */
+  --sheet:radial-gradient(120% 80% at 12% 8%,rgba(255,244,214,.55),transparent 60%),radial-gradient(90% 70% at 92% 96%,rgba(120,80,30,.16),transparent 62%),linear-gradient(180deg,#EFE0B8,#E2CD9C);
+  --sheet-edge:inset 0 0 26px rgba(120,80,30,.32),inset 0 0 0 1px rgba(90,60,25,.5);
+  --leather:linear-gradient(180deg,#5A3D24,#3A2614);
+}
+
+/* ── fundo: pergaminho com mancha, meridianos a tinta e uma rosa dos ventos ── */
+:root[data-treat="cartografo"] .app-shell:has(.hub-content,[data-surface]){
+  background:
+    url("./assets/themes/cartografo-compass.svg") no-repeat right -230px top -210px/720px,
+    url("./assets/themes/cartografo-paper.svg") 0 0/300px 300px,
+    linear-gradient(rgba(90,60,25,.07) 1px,transparent 1px) 0 0/80px 80px,
+    linear-gradient(90deg,rgba(90,60,25,.07) 1px,transparent 1px) 0 0/80px 80px,
+    radial-gradient(1200px 700px at 30% 10%,rgba(255,240,205,.7),transparent 65%),
+    radial-gradient(900px 600px at 100% 100%,rgba(110,70,25,.22),transparent 65%),
+    linear-gradient(180deg,#E9D6A8,#DDC594);
+}
+:root[data-treat="cartografo"] .app-shell:before{opacity:.05}
+
+/* ── painéis e cartas: folhas de pergaminho com filete duplo e cantos ornamentados ── */
+:root[data-treat="cartografo"] .hub-bar,
+:root[data-treat="cartografo"] .hub-progress-grid button,
+:root[data-treat="cartografo"] .hub-content .family{position:relative;background:var(--sheet);border:1px solid #7A5C34;border-radius:3px;box-shadow:var(--sheet-edge),0 14px 26px -18px rgba(60,35,10,.7)}
+:root[data-treat="cartografo"] .hub-content .family{overflow:hidden}
+:root[data-treat="cartografo"] .hub-content .family::before{content:"";position:absolute;inset:0 0 auto 0;height:60%;pointer-events:none;background:radial-gradient(90% 90% at 50% 0%,color-mix(in srgb,var(--h) 30%,transparent),transparent 72%),repeating-linear-gradient(0deg,rgba(90,60,25,.09) 0 1px,transparent 1px 7px);-webkit-mask:linear-gradient(#000 30%,transparent);mask:linear-gradient(#000 30%,transparent)}
+:root[data-treat="cartografo"] .hub-content .family::after{content:"";position:absolute;inset:8px;pointer-events:none;z-index:2;border:1px solid rgba(90,60,25,.45);border-radius:2px;background:url("./assets/themes/cartografo-corner-tl.svg") 0 0/34px 34px no-repeat,url("./assets/themes/cartografo-corner-tr.svg") 100% 0/34px 34px no-repeat,url("./assets/themes/cartografo-corner-bl.svg") 0 100%/34px 34px no-repeat,url("./assets/themes/cartografo-corner-br.svg") 100% 100%/34px 34px no-repeat}
+:root[data-treat="cartografo"] .hub-content .family:hover{border-color:var(--h)}
+:root[data-treat="cartografo"] .hub-content .family .family-visual{z-index:3}
+:root[data-treat="cartografo"] .hub-content .family .family-geo{opacity:.4;background:repeating-linear-gradient(22deg,transparent 0 15px,rgba(90,60,25,.42) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,rgba(90,60,25,.42) 23px 24px)}
+/* medalhão: anel de rosa dos ventos com o ícone no centro, como um selo de bússola */
+:root[data-treat="cartografo"] .hub-content .family-visual .family-icon{background:radial-gradient(circle at 34% 28%,#F6EACB,#E6D3A2 65%,#CFB77E);color:color-mix(in srgb,var(--h) 78%,#2B1C0C);border:0;box-shadow:0 0 0 3px #EAD9AE,0 0 0 4px #7A5C34,0 0 0 9px rgba(255,244,214,.5),0 0 0 10px rgba(90,60,25,.35),0 14px 22px -10px rgba(60,35,10,.65)}
+:root[data-treat="cartografo"] .hub-content .family-visual .family-icon::before{content:"";position:absolute;inset:-26px;background:url("./assets/themes/cartografo-compass.svg") center/contain no-repeat;opacity:.9;pointer-events:none}
+:root[data-treat="cartografo"] .hub-content .family-visual .family-icon{position:relative}
+:root[data-treat="cartografo"] .hub-content .family-copy,:root[data-treat="cartografo"] .hub-content .family-footer{position:relative;z-index:3}
+:root[data-treat="cartografo"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 42%,#2B1C0C);font-variant:small-caps;letter-spacing:.03em}
+:root[data-treat="cartografo"] .hub-content .family p,:root[data-treat="cartografo"] .hub-content .family-footer{color:#5A4530}
+:root[data-treat="cartografo"] .hub-content .family-play{background:var(--leather);color:#F3E6C6;border:1px solid #C9A24A;border-radius:3px;box-shadow:inset 0 1px 0 rgba(255,235,180,.3)}
+:root[data-treat="cartografo"] .hub-content .family-play:hover{background:linear-gradient(180deg,var(--hb),color-mix(in srgb,var(--hb) 60%,#1a0f06));color:#FFF3D0}
+:root[data-treat="cartografo"] .hub-content .family-visual::before{position:absolute;left:-2px;top:-8px;z-index:4;font:500 9.5px 'DM Mono',monospace;letter-spacing:.16em;color:color-mix(in srgb,var(--h) 70%,#3B2A1A);text-transform:uppercase;content:"Folio"}
+:root[data-treat="cartografo"] .family[data-fam="mapa"] .family-visual::before{content:"Folio I"}
+:root[data-treat="cartografo"] .family[data-fam="bandeiras"] .family-visual::before{content:"Folio II"}
+:root[data-treat="cartografo"] .family[data-fam="capitais"] .family-visual::before{content:"Folio III"}
+:root[data-treat="cartografo"] .family[data-fam="idiomas"] .family-visual::before{content:"Folio IV"}
+:root[data-treat="cartografo"] .hub-content .family.locked{filter:saturate(.45) sepia(.2)}
+:root[data-treat="cartografo"] .hub-level{box-shadow:0 0 0 4px rgba(63,127,114,.18)}
+:root[data-treat="cartografo"] .hub-track{background:#CDB688}
+:root[data-treat="cartografo"] .hub-track i{background:linear-gradient(90deg,#3F7F72,#7FAF9F)}
+@media (min-width:1024px){:root[data-treat="cartografo"] .hub-rule{height:2px!important;opacity:1!important}}
+:root[data-treat="cartografo"] .hub-progress-grid button{border-left:6px solid var(--h)}
+:root[data-treat="cartografo"] .hub-progress-icon{background:radial-gradient(circle at 34% 28%,#F6EACB,#E6D3A2 65%,#CFB77E);color:color-mix(in srgb,var(--h) 78%,#2B1C0C);box-shadow:0 0 0 2px #EAD9AE,0 0 0 3px #7A5C34}
+:root[data-treat="cartografo"] .hub-progress-bar{background:#CDB688}
+:root[data-treat="cartografo"] .hub-progress-bar i{background:var(--h)}
+:root[data-treat="cartografo"] .hub-progress-grid strong{color:color-mix(in srgb,var(--h) 50%,#2B1C0C)}
+:root[data-treat="cartografo"] .mode-switch{background:rgba(255,244,214,.55);border-color:#7A5C34;border-radius:3px}
+:root[data-treat="cartografo"] .mode-switch button{border-radius:2px}
+:root[data-treat="cartografo"] .mode-switch button[aria-pressed=true]{background:var(--leather);color:#F3E6C6;box-shadow:inset 0 0 0 1px #C9A24A}
+:root[data-treat="cartografo"] .mode-switch button[aria-pressed=true]:last-child{background:linear-gradient(180deg,#B8452F,#8E2E1E);color:#FFF1D8}
+
+/* arenas do Duelo */
+:root[data-treat="cartografo"] .arena::before{height:34%}
+:root[data-treat="cartografo"] .arena .ar-league{background:rgba(255,244,214,.55);border:1px solid rgba(90,60,25,.35);border-radius:3px}
+:root[data-treat="cartografo"] .ar-ico{background:radial-gradient(circle at 34% 28%,#F6EACB,#E6D3A2 65%,#CFB77E);box-shadow:0 0 0 2px #EAD9AE,0 0 0 3px currentColor}
+:root[data-treat="cartografo"] .ar-tag{background:linear-gradient(135deg,#F1F3F2,#B6BEC2);color:#1B2731;box-shadow:inset 0 0 0 1px rgba(27,39,49,.3)}
+:root[data-treat="cartografo"] .ar-chip{background:rgba(255,244,214,.6);border-color:rgba(90,60,25,.4);border-radius:3px}
+:root[data-treat="cartografo"] .ar-go{background:var(--leather)!important;border:1px solid #C9A24A!important;color:#F3E6C6!important;border-radius:3px!important}
+:root[data-treat="cartografo"] .ar-friend{border-radius:3px}
+
+/* ── partida: faixa de pergaminho e o alvo como uma fita de carta antiga; o mapa vem da paleta ── */
+:root[data-theme="cartografo"] .gs-head{background:var(--sheet);border-bottom:1px solid #7A5C34;box-shadow:inset 0 -6px 12px -8px rgba(90,60,25,.4)}
+:root[data-theme="cartografo"] .gs-progress>i,:root[data-theme="cartografo"] .gs-progress .gs-track{background:#CDB688}
+:root[data-theme="cartografo"] .gs-progress>i.ok{background:#3F7F72}
+:root[data-theme="cartografo"] .gs-progress>i.miss{background:#A83A28}
+:root[data-theme="cartografo"] .gs-chip{background:rgba(255,244,214,.7)!important;border:1px solid #7A5C34!important;color:#3B2A1A!important}
+:root[data-theme="cartografo"] .map-target-overlay{background:linear-gradient(180deg,#F3E5C0,#E2CE9C);border:1px solid #6B4A2A;border-radius:3px;padding:12px 46px 13px;color:#5A4530;box-shadow:inset 0 0 0 3px #EBDAB0,inset 0 0 0 4px rgba(90,60,25,.55),0 12px 26px rgba(60,35,10,.4)}
+:root[data-theme="cartografo"] .map-target-overlay::before,:root[data-theme="cartografo"] .map-target-overlay::after{content:"";position:absolute;top:50%;width:28px;height:28px;margin-top:-14px;background:url("./assets/themes/cartografo-compass-dark.svg") center/contain no-repeat}
+:root[data-theme="cartografo"] .map-target-overlay::before{left:12px}
+:root[data-theme="cartografo"] .map-target-overlay::after{right:12px}
+:root[data-theme="cartografo"] .map-target-overlay span{color:#6A5335!important;letter-spacing:.24em}
+:root[data-theme="cartografo"] .map-target-overlay strong{color:#2B1C0C}
+:root[data-theme="cartografo"] .map-target-overlay .round-timer{background:rgba(90,60,25,.25);box-shadow:0 0 0 1px rgba(90,60,25,.45)}
+:root[data-theme="cartografo"] .map-target-overlay .round-timer i{background:#3F7F72}
+:root[data-theme="cartografo"] .map-note{background:rgba(243,229,192,.94);border:1px solid #7A5C34;color:#5A4530}
+:root[data-theme="cartografo"] .map-target-overlay.is-correct{background:linear-gradient(180deg,#DCE8C4,#C4D6A6);border-color:#3F7F4E}
+:root[data-theme="cartografo"] .map-target-overlay.is-correct span,:root[data-theme="cartografo"] .map-target-overlay.is-correct strong{color:#1F4A2A!important}
+:root[data-theme="cartografo"] .map-target-overlay.is-wrong{background:linear-gradient(180deg,#EFCFC0,#E2B4A2);border-color:#A83A28}
+:root[data-theme="cartografo"] .map-target-overlay.is-wrong span,:root[data-theme="cartografo"] .map-target-overlay.is-wrong strong{color:#6E1E12!important}
+:root[data-theme="cartografo"] .maplibregl-ctrl-attrib{background:rgba(243,229,192,.9)!important;color:#5A4530!important}
+
+/* ── resultado: folha de pergaminho e selo de cera ── */
+:root[data-theme="cartografo"] .rs-card:not(.tier-4){background:var(--sheet);border-color:#7A5C34;box-shadow:var(--sheet-edge),0 18px 40px -22px rgba(60,35,10,.7)}
+:root[data-theme="cartografo"] .rs-card:not(.tier-4) .eyebrow{color:#7A5A22}
+:root[data-theme="cartografo"] .rs-btn.primary{background:var(--leather);border:1px solid #C9A24A;color:#F3E6C6}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4):not(.is-loss)::before{background:radial-gradient(120% 55% at 50% 0%,rgba(190,150,60,.28),transparent 62%)}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4):not(.is-loss) .vh-title{color:#4A2E14;text-shadow:0 1px 0 rgba(255,244,214,.7)}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4):not(.is-loss) .vh-title::after{background:linear-gradient(90deg,transparent,#8A6A2C,transparent)}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4):not(.is-loss) .vh-score .w b{color:#2F6F58}
+:root[data-theme="cartografo"] .vh-card.is-loss .vh-title{color:#8A2E1E}
+:root[data-theme="cartografo"] .vh-medal{background:radial-gradient(circle at 34% 28%,#D9604A,#A8382A 55%,#7A2418 100%)!important;color:#F6D9C9!important;border-radius:47% 53% 50% 50%/52% 48% 54% 46%!important;box-shadow:inset 0 0 0 5px rgba(255,255,255,.08),inset 0 -8px 14px rgba(60,10,5,.45),0 10px 20px -6px rgba(60,20,10,.6)!important}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4) .vh-medal svg{filter:drop-shadow(0 1px 0 rgba(255,220,200,.5)) drop-shadow(0 -1px 0 rgba(60,10,5,.5))}
+:root[data-theme="cartografo"] .vh-card.tier-4{background:linear-gradient(180deg,#3A2818,#22160C);border-color:#C9A24A;box-shadow:0 18px 50px rgba(30,15,5,.55),0 0 0 4px rgba(201,162,74,.3)}
+:root[data-theme="cartografo"] .vh-card.tier-4 .vh-title{color:#EBC66A}
+:root[data-theme="cartografo"] .vh-card.tier-4 .vh-title::after{background:linear-gradient(90deg,transparent,#EBC66A,transparent)}
+
+
+@media (max-width:760px){
+  :root[data-theme="cartografo"] .mobile-nav{background:var(--sheet);border-top:1px solid #7A5C34}
+  :root[data-theme="cartografo"] .rs-actions{background:var(--sheet)}
+}
+
+/* ajustes do primeiro passe */
+:root[data-treat="cartografo"] .hub-content .family-visual::before{left:16px;top:2px}
+:root[data-treat="cartografo"] .hub-content .family .family-geo{opacity:.2}
+:root[data-theme="cartografo"] .vh-card:not(.tier-4) .vh-medal svg{color:#F3CDB8!important}
+:root[data-theme="cartografo"] .vh-card.tier-4 .vh-medal svg{color:#F3CDB8!important}
+/* arenas: só os cantos de cima (os de baixo cobriam o texto do rodapé) */
+:root[data-treat="cartografo"] .arena::after{background:url("./assets/themes/cartografo-corner-tl.svg") 0 0/34px 34px no-repeat,url("./assets/themes/cartografo-corner-tr.svg") 100% 0/34px 34px no-repeat}
+
+/* "Folio" em português leva acento (o texto é conteúdo de CSS, por isso a troca é pelo idioma da página) */
+:root:lang(pt)[data-treat="cartografo"] .family[data-fam="mapa"] .family-visual::before{content:"Fólio I"}
+:root:lang(pt)[data-treat="cartografo"] .family[data-fam="bandeiras"] .family-visual::before{content:"Fólio II"}
+:root:lang(pt)[data-treat="cartografo"] .family[data-fam="capitais"] .family-visual::before{content:"Fólio III"}
+:root:lang(pt)[data-treat="cartografo"] .family[data-fam="idiomas"] .family-visual::before{content:"Fólio IV"}
+
+/* navios e criaturas do mar sobre o mapa (só decoração, presas à tela; somem com o zoom pela variável --art-fade) */
+.map-fauna{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;opacity:calc(.92 * var(--art-fade, 1))}
+.map-fauna img{position:absolute;height:auto;max-width:none;user-select:none}
+@media (max-width:760px){.map-fauna{display:none}}
+
+/* contraste AA (varredura do axe): textos de tons fixos do app que ficavam abaixo de 4,5 sobre o pergaminho mais escuro */
+:root[data-theme="cartografo"] .cv-k,:root[data-theme="cartografo"] .cv-hint,:root[data-theme="cartografo"] .cv-chip.is-locked .cv-l>span{color:var(--muted)}
+:root[data-theme="cartografo"] .rk-loss{color:#7A2E1C!important}
+:root[data-theme="cartografo"] .pr-duel-res.is-loss b,:root[data-theme="cartografo"] .pr-write.no{color:#7A2E1C}
+:root[data-theme="cartografo"] .pr-status.is-mid,:root[data-theme="cartografo"] .cv-chip.is-locked>b{color:#54390A}
+:root[data-theme="cartografo"] .rv-x{color:#8E2F1F}
+:root[data-theme="cartografo"] .down{color:#6E2A18}
+:root[data-theme="cartografo"] .fire{color:#5A3D0E}

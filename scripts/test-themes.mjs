@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { LEAGUES } from "../.tmp-themes/league.js";
-import { DEFAULT_MAP_PALETTE, graticuleLines } from "../.tmp-themes/map-palette.js";
+import { COAST_BANDS, DEFAULT_MAP_PALETTE, coastBands, graticuleLines, mixHex, rhumbLines } from "../.tmp-themes/map-palette.js";
 import {
   DEFAULT_THEME,
   LEAGUE_THEMES,
@@ -82,6 +82,7 @@ assert.deepEqual(themeAttributes("listras"), { theme: "listras", treat: "brush-h
 assert.deepEqual(themeAttributes("nao-existe"), { theme: DEFAULT_THEME, treat: "tint", wash: "0", scheme: "light" }, "id inválido usa o padrão");
 assert.deepEqual(themeAttributes("prata"), { theme: "prata", treat: "prata", wash: "0", scheme: "light" });
 assert.deepEqual(themeAttributes("noturno"), { theme: "noturno", treat: "noturno", wash: "0", scheme: "dark" }, "tema escuro liga o esquema escuro");
+assert.deepEqual(themeAttributes("cartografo"), { theme: "cartografo", treat: "cartografo", wash: "0", scheme: "light" }, "o Cartógrafo é claro");
 
 // Mapa em jogo: o padrão é o de sempre; o tema muda oceano, terra, costas e marcadores e pode ligar a quadrícula
 assert.deepEqual(mapPaletteFor(DEFAULT_THEME), DEFAULT_MAP_PALETTE);
@@ -95,6 +96,31 @@ assert.equal(DEFAULT_MAP_PALETTE.graticuleOpacity, 0.2);
 const noturno = mapPaletteFor("noturno");
 assert.ok(noturno.graticule && noturno.graticuleOpacity > 0 && noturno.graticuleOpacity <= 1 && noturno.ocean !== DEFAULT_MAP_PALETTE.ocean, "o Noturno tem mapa próprio, com quadrícula");
 assert.ok(Object.values(noturno).filter((value) => typeof value === "string").every((color) => /^#[0-9A-Fa-f]{6}$/.test(color)), "e as cores são hex");
+// Cartógrafo: o primeiro mapa claro (terra opaca, acerto e erro em tons mais fundos, sombra nas costas e linhas de rumo)
+const cartografo = mapPaletteFor("cartografo");
+const isHex = (color) => /^#[0-9A-Fa-f]{6}$/.test(color);
+assert.ok(cartografo.landOpacity === 1 && DEFAULT_MAP_PALETTE.landOpacity < 1, "terra opaca só no tema claro");
+assert.ok(cartografo.answer !== DEFAULT_MAP_PALETTE.answer && cartografo.wrong !== DEFAULT_MAP_PALETTE.wrong && cartografo.coast && cartografo.rhumb, "acerto, erro, costa e rumos próprios");
+assert.ok(Object.values(cartografo).filter((value) => typeof value === "string").every(isHex) && isHex(cartografo.rhumb.color), "cores hex");
+assert.ok([DEFAULT_MAP_PALETTE, prata, noturno].every((palette) => isHex(palette.answer) && isHex(palette.wrong)), "toda paleta tem acerto e erro");
+assert.equal(DEFAULT_MAP_PALETTE.coast, null);
+assert.equal(DEFAULT_MAP_PALETTE.rhumb, null);
+assert.deepEqual(coastBands(DEFAULT_MAP_PALETTE), [], "sem sombra de costa, sem faixas");
+const bands = coastBands(cartografo);
+assert.equal(bands.length, COAST_BANDS.length);
+assert.equal(bands[0].color, mixHex(cartografo.ocean, cartografo.coast, 0.3));
+assert.equal(bands[2].color, cartografo.coast.toLowerCase(), "a faixa junto à terra é a cor cheia");
+assert.ok(bands[0].w5 > bands[1].w5 && bands[1].w5 > bands[2].w5, "da mais larga à mais fina");
+assert.equal(mixHex("#000000", "#ffffff", 0), "#000000");
+assert.equal(mixHex("#000000", "#ffffff", 1), "#ffffff");
+assert.equal(mixHex("#102030", "#304050", 0.5), "#203040");
+const rhumbs = rhumbLines(cartografo.rhumb.hubs);
+assert.equal(rhumbs.features.length, cartografo.rhumb.hubs.length * 16, "16 rumos por rosa dos ventos");
+assert.ok(rhumbs.features.every((line) => line.geometry.coordinates.length === 2 && line.geometry.coordinates.every(([lon, lat]) => Math.abs(lon) <= 180 && Math.abs(lat) <= 85)), "cada rumo cabe no mundo");
+const [hubLon, hubLat] = cartografo.rhumb.hubs[0];
+assert.ok(rhumbs.features.slice(0, 16).every((line) => line.geometry.coordinates[0][0] === hubLon && line.geometry.coordinates[0][1] === hubLat), "todos partem da rosa dos ventos");
+const east = rhumbs.features[0].geometry.coordinates[1];
+assert.ok(Math.abs(east[1] - hubLat) < 1e-6 && east[0] > hubLon, "o rumo 0 vai para leste na mesma latitude");
 const lines = graticuleLines(30);
 assert.equal(lines.features.length, 13 + 5, "13 meridianos (−180 a 180) e 5 paralelos (−60 a 60)");
 assert.ok(lines.features.every((line) => line.geometry.type === "LineString" && line.geometry.coordinates.length > 30));
@@ -103,7 +129,15 @@ assert.ok(lines.features.every((line) => line.geometry.type === "LineString" && 
 const css = ["themes", "themes-league", "themes-dark", "themes-elaborate"].map((name) => readFileSync(new URL(`../src/${name}.css`, import.meta.url), "utf8")).join("\n");
 for (const theme of THEMES) assert.ok(css.includes(`:root[data-theme="${theme.id}"]`), `paleta de ${theme.id} nos CSS dos temas`);
 for (const treat of new Set(THEMES.map((theme) => theme.treat))) assert.ok(css.includes(`[data-treat="${treat}"]`), `tratamento ${treat} nos CSS dos temas`);
-for (const id of ["prata", "noturno"]) assert.ok(readFileSync(new URL(`../src/assets/themes/${id}-compass.svg`, import.meta.url), "utf8").includes("<svg"), id + ": rosa dos ventos existe");
+for (const id of ["prata", "noturno", "cartografo"]) assert.ok(readFileSync(new URL(`../src/assets/themes/${id}-compass.svg`, import.meta.url), "utf8").includes("<svg"), id + ": rosa dos ventos existe");
+// Cartógrafo: ornamentos e figuras do mar existem (um arquivo por figura, gerados por scripts/build-cartografo-assets.mjs)
+for (const name of ["compass-dark", "paper", "corner-tl", "corner-tr", "corner-bl", "corner-br"]) assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-${name}.svg`, import.meta.url), "utf8").includes("<svg"), name + ": ornamento existe");
+const faunaIds = ["drakkar", "snekkja", "knarr", "galeao", "sjoorm", "jormungandr", "kraken", "hafgufa", "narval", "nykur", "peixe"];
+const faunaSource = readFileSync(new URL("../src/components/map-fauna.tsx", import.meta.url), "utf8");
+for (const id of faunaIds) {
+  assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-fauna-${id}.svg`, import.meta.url), "utf8").startsWith("<svg"), id + ": figura existe");
+  assert.ok(faunaSource.includes(`id: "${id}"`), id + " tem posição no mapa");
+}
 // elaborados: preço na faixa e mapa próprio
 for (const theme of SHOP_THEMES.filter((item) => item.tier === "elaborate" || item.tier === "prestige")) assert.ok(theme.map && theme.map.graticule !== undefined, theme.id + " (elaborado) muda o mapa em jogo");
 

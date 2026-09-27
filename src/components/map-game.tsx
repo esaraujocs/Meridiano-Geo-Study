@@ -4,7 +4,7 @@ import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
 import { inRegion, normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
-import { graticuleLines } from "../domain/map-palette";
+import { coastBands, graticuleLines, rhumbLines } from "../domain/map-palette";
 import { mapPaletteFor } from "../domain/themes";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
@@ -13,6 +13,7 @@ import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-d
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
+import { hasMapFauna, MapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
 import { variantLabel } from "../domain/result-view";
@@ -36,8 +37,7 @@ import { t } from "../domain/i18n";
 const ABSORBED_URL = "/data/absorbed-territories.geojson";
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
-const ANSWER_COLOR = "#4fe0a8";
-/** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores e a quadrícula opcional); o acerto e o erro têm cor fixa. */
+/** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
 const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -70,6 +70,7 @@ export function Game({
   // escrito, acertando ou errando — é o que diferencia Treino de Partida além do cronômetro/moedas.
   const revealNames = pace === "training";
   const mapEl = useRef<HTMLDivElement>(null);
+  const wrapEl = useRef<HTMLElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
   const feedbackRef = useRef("");
@@ -326,6 +327,7 @@ export function Game({
             },
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
             ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines() as unknown as GeoJSON.FeatureCollection } } : {}),
+            ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs) as unknown as GeoJSON.FeatureCollection } } : {}),
             absorbed: { type: "geojson", data: ABSORBED_URL },
           },
           layers: [
@@ -335,6 +337,17 @@ export function Game({
               paint: { "background-color": palette.ocean },
             },
             ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": palette.graticuleOpacity, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
+            ...(palette.rhumb ? [{ id: "rhumb", type: "line" as const, source: "rhumb", paint: { "line-color": palette.rhumb.color, "line-opacity": palette.rhumb.opacity, "line-width": 0.7 } }] : []),
+            // sombra junto às costas (três faixas opacas, da mais clara à mais escura), por baixo da terra: só aparece do lado do mar
+            ...coastBands(palette).map((band) => ({
+              id: band.id,
+              type: "line",
+              source: "atlas",
+              "source-layer": "countries",
+              filter: ["==", "$type", "Polygon"],
+              layout: { "line-join": "round" },
+              paint: { "line-color": band.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, band.w1, 5, band.w5], "line-blur": band.blur },
+            }) as maplibregl.LayerSpecification),
             {
               id: "land",
               type: "fill",
@@ -344,7 +357,7 @@ export function Game({
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
-                "fill-opacity": 0.82,
+                "fill-opacity": palette.landOpacity,
               },
             },
             {
@@ -355,7 +368,7 @@ export function Game({
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
-                "fill-opacity": 0.82,
+                "fill-opacity": palette.landOpacity,
               },
             },
             {
@@ -447,6 +460,17 @@ export function Game({
     };
     map.on("load", exposeActiveMarkerIds);
     map.on("error", handleError);
+    // As figuras do mar (tema Cartógrafo) somem quando o mapa sai da vista inicial, por zoom ou arrasto, para nunca cobrirem um país.
+    const wrap = wrapEl.current;
+    if (wrap && hasMapFauna(document.documentElement.dataset.theme, (normalizeRegionSelection(region)[0] ?? "mundo") === "mundo")) {
+      const fadeFigures = () => {
+        const center = map.getCenter();
+        const away = Math.max((map.getZoom() - camera.zoom) / 0.7, Math.hypot(center.lng - camera.center[0], center.lat - camera.center[1]) / 25);
+        wrap.style.setProperty("--art-fade", String(Math.max(0, Math.min(1, 1 - away))));
+      };
+      map.on("move", fadeFigures);
+      fadeFigures();
+    }
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
@@ -573,8 +597,8 @@ export function Game({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !target || !mapReady || !map.isStyleLoaded()) return;
-    const answerColor = ANSWER_COLOR;
     const palette = currentPalette();
+    const answerColor = palette.answer;
     const settled = Boolean(feedback);
     // Fora do alvo desta rodada: só fica marcado no Treino (revealNames), com todo país já perguntado até aqui.
     const marked = revealNames && revealed.length ? revealed : null;
@@ -584,7 +608,7 @@ export function Game({
         ["all", settled, ["==", ["get", "carta_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
-        "#ee7968",
+        palette.wrong,
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -593,7 +617,7 @@ export function Game({
         ["all", settled, ["==", ["get", "answer_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
-        "#ee7968",
+        palette.wrong,
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -602,7 +626,7 @@ export function Game({
         ["all", settled, ["==", ["get", "carta_id"], target]],
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
-        "#ee7968",
+        palette.wrong,
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
          palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -612,7 +636,7 @@ export function Game({
         ["all", settled, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], target]],
         answerColor,
         ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
-        "#ee7968",
+        palette.wrong,
         ...(marked ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", marked]], answerColor] : []),
         palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -685,7 +709,8 @@ export function Game({
       {leaveGuard.dialog}
       <div className="gs gs-map-screen">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
-        <main className="map-wrap" aria-label={t.map.wrapAria}>
+        <main className="map-wrap" aria-label={t.map.wrapAria} ref={wrapEl}>
+          <MapFauna themeId={document.documentElement.dataset.theme} world={(normalizeRegionSelection(region)[0] ?? "mundo") === "mundo"} />
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>

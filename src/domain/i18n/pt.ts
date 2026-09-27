@@ -1060,6 +1060,7 @@ export const pt = {
     listras: ["Listras", "Faixas largas, como listras de bandeira pintadas à mão."],
     atelie: ["Ateliê", "Pinceladas por cima de aquarela: o mais pintado de todos."],
     noturno: ["Noturno · Carta Náutica", "O primeiro Hub escuro: carta náutica à noite, vidro escuro com borda acesa, costas luminosas e estrelas."],
+    cartografo: ["Cartógrafo · Pergaminho", "Carta antiga: pergaminho e tinta sépia, folhas de cantos ornamentados, mar de papel com linhas de rumo e criaturas nórdicas."],
     prata: ["Prata · Gravura", "Chapa de prata gravada: papel pérola, hachura fina e o mapa em ardósia."],
   } as Record<string, [string, string]>,
   timer: {

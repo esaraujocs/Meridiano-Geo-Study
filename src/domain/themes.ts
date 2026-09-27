@@ -5,7 +5,7 @@ import { LEAGUES, type LeagueKey } from "./league.js";
 import { DEFAULT_MAP_PALETTE, type MapPalette } from "./map-palette.js";
 
 /** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). */
-export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata" | "noturno";
+export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata" | "noturno" | "cartografo";
 
 export type Theme = {
   id: string;
@@ -53,6 +53,16 @@ const THEME_SEEDS: readonly Theme[] = [
     id: "noturno", name: "Noturno · Carta Náutica", tagline: "O primeiro Hub escuro: carta náutica à noite, vidro escuro com borda acesa, costas luminosas e estrelas.", treat: "noturno", cost: 100000, tier: "elaborate", scheme: "dark", wash: false,
     swatches: ["#3FC6D0", "#F0788A", "#F0BE55", "#A99BFF"],
     map: { ocean: "#050F1A", land: "#0F2B46", outline: "#62D8E4", marker: "#A9EBF1", markerStroke: "#0B2B3B", graticule: "#4FA3C4", graticuleOpacity: 0.28 },
+  },
+  // O primeiro tema de mapa claro: mar de papel sépia, terra marfim, sombra nas costas, linhas de rumo de carta portulana e, sobre o mar, criaturas e navios
+  // nórdicos (a camada de figuras é do componente map-fauna, só no mapa-múndi).
+  {
+    id: "cartografo", name: "Cartógrafo · Pergaminho", tagline: "Carta antiga: pergaminho e tinta sépia, folhas de cantos ornamentados, mar de papel com linhas de rumo e criaturas nórdicas.", treat: "cartografo", cost: 80000, tier: "elaborate", wash: false,
+    swatches: ["#3F7F72", "#A83A28", "#B98A22", "#4A5690"],
+    map: {
+      ocean: "#DACA9E", land: "#F5ECD0", outline: "#5A3F24", marker: "#8B3A2A", markerStroke: "#F5ECD0", graticule: "#6B5230", graticuleOpacity: 0.32,
+      landOpacity: 1, answer: "#2F9C73", wrong: "#C2453A", coast: "#B49E66", rhumb: { color: "#6A4A22", opacity: 0.3, hubs: [[-34, 8], [74, -12], [-142, 2]] },
+    },
   },
   // Temas de liga: quanto mais alta a liga, mais prestigioso o tema (mais camadas: Hub, mapa, resultado, ornamentos e movimento).
   {

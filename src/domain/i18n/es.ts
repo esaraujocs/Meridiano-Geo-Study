@@ -1001,6 +1001,7 @@ export const es: Messages = {
     listras: ["Franjas", "Bandas anchas, como franjas de bandera pintadas a mano."],
     atelie: ["Taller", "Pinceladas sobre acuarela: el más pintado de todos."],
     noturno: ["Nocturno · Carta Náutica", "El primer Hub oscuro: una carta náutica de noche, vidrio oscuro con bordes encendidos, costas luminosas y estrellas."],
+    cartografo: ["Cartógrafo · Pergamino", "Una carta antigua: pergamino y tinta sepia, folios de esquinas ornamentadas, mar de papel con rumbos y criaturas nórdicas."],
     prata: ["Plata · Grabado", "Plancha de plata grabada: papel perla, rayado fino y el mapa en pizarra."],
   },
   timer: {

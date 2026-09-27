@@ -1001,6 +1001,7 @@ export const en: Messages = {
     listras: ["Stripes", "Wide bands, like hand-painted flag stripes."],
     atelie: ["Studio", "Brushstrokes over watercolor: the most painted of all."],
     noturno: ["Night · Nautical Chart", "The first dark Hub: a nautical chart at night, dark glass with glowing edges, luminous coastlines and stars."],
+    cartografo: ["Cartographer · Parchment", "An old sea chart: parchment and sepia ink, folios with ornate corners, a paper sea with rhumb lines and Norse sea creatures."],
     prata: ["Silver · Engraving", "Engraved silver plate: pearl paper, fine hatching and a slate-blue map."],
   },
   timer: {
