@@ -305,16 +305,6 @@ html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-red
 :root:lang(pt)[data-treat="cartografo"] .family[data-fam="capitais"] .family-visual::before{content:"Fólio III"}
 :root:lang(pt)[data-treat="cartografo"] .family[data-fam="idiomas"] .family-visual::before{content:"Fólio IV"}
 
-/* navios e criaturas do mar sobre o mapa (só decoração, presas à tela; somem com o zoom pela variável --art-fade) */
-.map-fauna{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;opacity:calc(.92 * var(--art-fade, 1))}
-.map-fauna img{position:absolute;height:auto;max-width:none;user-select:none}
-@media (max-width:760px){.map-fauna{display:none}}
-
-/* contraste AA (varredura do axe): textos de tons fixos do app que ficavam abaixo de 4,5 sobre o pergaminho mais escuro */
-:root[data-theme="cartografo"] .cv-k,:root[data-theme="cartografo"] .cv-hint,:root[data-theme="cartografo"] .cv-chip.is-locked .cv-l>span{color:var(--muted)}
-:root[data-theme="cartografo"] .rk-loss{color:#7A2E1C!important}
-:root[data-theme="cartografo"] .pr-duel-res.is-loss b,:root[data-theme="cartografo"] .pr-write.no{color:#7A2E1C}
-:root[data-theme="cartografo"] .pr-status.is-mid,:root[data-theme="cartografo"] .cv-chip.is-locked>b{color:#54390A}
-:root[data-theme="cartografo"] .rv-x{color:#8E2F1F}
-:root[data-theme="cartografo"] .down{color:#6E2A18}
-:root[data-theme="cartografo"] .fire{color:#5A3D0E}
+/* navios e criaturas do mar ancorados no oceano do mapa (marcadores do MapLibre; só decoração, sem clique; tamanho e opacidade pelas variáveis do map-fauna.ts) */
+.map-fauna-marker{pointer-events:none;opacity:calc(.92 * var(--fauna-fade, 1))}
+.map-fauna-marker img{display:block;max-width:none;user-select:none;pointer-events:none}

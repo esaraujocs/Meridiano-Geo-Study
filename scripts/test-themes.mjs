@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { LEAGUES } from "../.tmp-themes/league.js";
 import { COAST_BANDS, DEFAULT_MAP_PALETTE, coastBands, graticuleLines, mixHex, rhumbLines } from "../.tmp-themes/map-palette.js";
+import { FAUNA_FADE_SPAN, FAUNA_FADE_START, FAUNA_REFERENCE_ZOOM, faunaOpacity, faunaScale } from "../.tmp-themes/map-fauna-scale.js";
 import {
   DEFAULT_THEME,
   LEAGUE_THEMES,
@@ -133,11 +134,23 @@ for (const id of ["prata", "noturno", "cartografo"]) assert.ok(readFileSync(new 
 // Cartógrafo: ornamentos e figuras do mar existem (um arquivo por figura, gerados por scripts/build-cartografo-assets.mjs)
 for (const name of ["compass-dark", "paper", "corner-tl", "corner-tr", "corner-bl", "corner-br"]) assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-${name}.svg`, import.meta.url), "utf8").includes("<svg"), name + ": ornamento existe");
 const faunaIds = ["drakkar", "snekkja", "knarr", "galeao", "sjoorm", "jormungandr", "kraken", "hafgufa", "narval", "nykur", "peixe"];
-const faunaSource = readFileSync(new URL("../src/components/map-fauna.tsx", import.meta.url), "utf8");
-for (const id of faunaIds) {
-  assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-fauna-${id}.svg`, import.meta.url), "utf8").startsWith("<svg"), id + ": figura existe");
-  assert.ok(faunaSource.includes(`id: "${id}"`), id + " tem posição no mapa");
+const fauna = JSON.parse(readFileSync(new URL("../src/assets/themes/cartografo-fauna.json", import.meta.url), "utf8"));
+assert.deepEqual(fauna.map((item) => item.id).sort(), [...faunaIds].sort(), "o catálogo tem as 11 figuras, sem repetir");
+for (const item of fauna) {
+  assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-fauna-${item.id}.svg`, import.meta.url), "utf8").startsWith("<svg"), item.id + ": figura existe");
+  assert.ok(Math.abs(item.lng) <= 180 && Math.abs(item.lat) <= 60, item.id + ": ancorada num ponto do mundo");
+  assert.ok(item.px >= 40 && item.px <= 110, `${item.id}: pequena no mapa-múndi (${item.px} px)`);
+  assert.ok(item.aspect > 0.3 && item.aspect < 1.2 && typeof item.flip === "boolean", item.id + ": proporção e espelhamento");
 }
+// as figuras crescem só metade do que o mapa cresce e só somem em zoom muito alto
+assert.equal(faunaScale(FAUNA_REFERENCE_ZOOM), 1, "no zoom do mundo têm o tamanho do catálogo");
+assert.ok(faunaScale(FAUNA_REFERENCE_ZOOM + 2) > 1.55 && faunaScale(FAUNA_REFERENCE_ZOOM + 2) < 1.7, "a cada 2 de zoom (o mapa ×4) a figura cresce só ×1,6");
+assert.ok(faunaScale(FAUNA_REFERENCE_ZOOM - 1) < 1, "e encolhe se o mapa se afasta");
+assert.equal(faunaOpacity(1.35), 1);
+assert.equal(faunaOpacity(3.95), 1, "no zoom de jogo normal ficam visíveis (não somem)");
+assert.equal(faunaOpacity(FAUNA_FADE_START), 1);
+assert.ok(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) > 0 && faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) < 1, "somem devagar");
+assert.equal(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN + 0.1), 0);
 // elaborados: preço na faixa e mapa próprio
 for (const theme of SHOP_THEMES.filter((item) => item.tier === "elaborate" || item.tier === "prestige")) assert.ok(theme.map && theme.map.graticule !== undefined, theme.id + " (elaborado) muda o mapa em jogo");
 

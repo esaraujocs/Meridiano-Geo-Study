@@ -13,7 +13,7 @@ import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-d
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
-import { hasMapFauna, MapFauna } from "./map-fauna";
+import { addMapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
 import { variantLabel } from "../domain/result-view";
@@ -70,7 +70,6 @@ export function Game({
   // escrito, acertando ou errando — é o que diferencia Treino de Partida além do cronômetro/moedas.
   const revealNames = pace === "training";
   const mapEl = useRef<HTMLDivElement>(null);
-  const wrapEl = useRef<HTMLElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
   const feedbackRef = useRef("");
@@ -460,17 +459,8 @@ export function Game({
     };
     map.on("load", exposeActiveMarkerIds);
     map.on("error", handleError);
-    // As figuras do mar (tema Cartógrafo) somem quando o mapa sai da vista inicial, por zoom ou arrasto, para nunca cobrirem um país.
-    const wrap = wrapEl.current;
-    if (wrap && hasMapFauna(document.documentElement.dataset.theme, (normalizeRegionSelection(region)[0] ?? "mundo") === "mundo")) {
-      const fadeFigures = () => {
-        const center = map.getCenter();
-        const away = Math.max((map.getZoom() - camera.zoom) / 0.7, Math.hypot(center.lng - camera.center[0], center.lat - camera.center[1]) / 25);
-        wrap.style.setProperty("--art-fade", String(Math.max(0, Math.min(1, 1 - away))));
-      };
-      map.on("move", fadeFigures);
-      fadeFigures();
-    }
+    // Navios e criaturas do mar do tema (Cartógrafo): ancorados no oceano, acompanham o arrasto e o zoom do mapa.
+    const removeFauna = addMapFauna(map, document.documentElement.dataset.theme);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
@@ -566,6 +556,7 @@ export function Game({
       map.getContainer().removeEventListener("pointerdown", handlePointer);
       labelMarkersRef.current.forEach((marker) => marker.remove());
       labelMarkersRef.current.clear();
+      removeFauna();
       map.remove();
       mapRef.current = null;
       setMapReady(false);
@@ -709,8 +700,7 @@ export function Game({
       {leaveGuard.dialog}
       <div className="gs gs-map-screen">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
-        <main className="map-wrap" aria-label={t.map.wrapAria} ref={wrapEl}>
-          <MapFauna themeId={document.documentElement.dataset.theme} world={(normalizeRegionSelection(region)[0] ?? "mundo") === "mundo"} />
+        <main className="map-wrap" aria-label={t.map.wrapAria}>
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>

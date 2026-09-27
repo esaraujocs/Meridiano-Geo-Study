@@ -1,0 +1,90 @@
+[
+ {
+  "id": "kraken",
+  "lng": -33.7,
+  "lat": 50.4,
+  "px": 56,
+  "aspect": 0.682,
+  "flip": false
+ },
+ {
+  "id": "snekkja",
+  "lng": -13.8,
+  "lat": -18.6,
+  "px": 62,
+  "aspect": 0.565,
+  "flip": true
+ },
+ {
+  "id": "hafgufa",
+  "lng": -8,
+  "lat": -49.1,
+  "px": 66,
+  "aspect": 0.6,
+  "flip": false
+ },
+ {
+  "id": "drakkar",
+  "lng": -158.9,
+  "lat": 37.6,
+  "px": 74,
+  "aspect": 0.538,
+  "flip": false
+ },
+ {
+  "id": "galeao",
+  "lng": -158.9,
+  "lat": -42.3,
+  "px": 68,
+  "aspect": 0.773,
+  "flip": false
+ },
+ {
+  "id": "sjoorm",
+  "lng": -101.2,
+  "lat": -46.5,
+  "px": 94,
+  "aspect": 0.492,
+  "flip": true
+ },
+ {
+  "id": "knarr",
+  "lng": 79.4,
+  "lat": -26,
+  "px": 62,
+  "aspect": 0.583,
+  "flip": true
+ },
+ {
+  "id": "jormungandr",
+  "lng": 59.6,
+  "lat": -50.5,
+  "px": 66,
+  "aspect": 0.682,
+  "flip": false
+ },
+ {
+  "id": "nykur",
+  "lng": 155,
+  "lat": -53.5,
+  "px": 54,
+  "aspect": 0.7,
+  "flip": true
+ },
+ {
+  "id": "narval",
+  "lng": 170.7,
+  "lat": 37.6,
+  "px": 76,
+  "aspect": 0.447,
+  "flip": false
+ },
+ {
+  "id": "peixe",
+  "lng": -119.2,
+  "lat": 0.9,
+  "px": 64,
+  "aspect": 0.536,
+  "flip": false
+ }
+]

@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { INK } from "./theme-art/svg-kit.mjs";
 import { compassSvg, cornerSvg, CORNERS, paperSvg } from "./theme-art/cartografo-ornaments.mjs";
-import { FIGURES } from "./theme-art/cartografo-fauna.mjs";
+import { FIGURES, faunaManifest, figureSvg } from "./theme-art/cartografo-fauna.mjs";
 
 const OUT = new URL("../src/assets/themes/", import.meta.url);
 mkdirSync(OUT, { recursive: true });
@@ -16,5 +16,6 @@ put("cartografo-compass.svg", compassSvg(INK, ".2"));
 put("cartografo-compass-dark.svg", compassSvg(INK, ".9"));
 put("cartografo-paper.svg", paperSvg());
 for (const [key, matrix] of Object.entries(CORNERS)) put(`cartografo-corner-${key}.svg`, cornerSvg(matrix));
-for (const [id, figure] of Object.entries(FIGURES)) put(`cartografo-fauna-${id}.svg`, figure.svg(INK));
+for (const id of Object.keys(FIGURES)) put(`cartografo-fauna-${id}.svg`, figureSvg(id, INK));
+put("cartografo-fauna.json", JSON.stringify(faunaManifest(), null, 1) + String.fromCharCode(10));
 console.log(`cartografo: ${files} arquivos, ${(bytes / 1024).toFixed(1)} KB em src/assets/themes/`);
