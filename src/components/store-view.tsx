@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProgressHero } from "./progress-hero";
-import { LEAGUE_THEMES, SHOP_THEMES, THEMES, isThemeOwned, missingCoins, themeById, type Theme } from "../domain/themes";
+import { LEAGUE_THEMES, SHOP_THEMES, THEMES, THEME_TIERS, isThemeOwned, missingCoins, themeById, type Theme } from "../domain/themes";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { formatNumber as money, t } from "../domain/i18n";
 
@@ -79,13 +79,23 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
     />
     <div className="store-sec"><h2>{t.store.hubThemes}</h2><span>{toBuy > 0 ? t.store.toBuy(toBuy) : t.store.allBought}</span></div>
     <p className="store-notice" role="status" aria-live="polite">{notice}</p>
-    <div className="store-grid">
-      {SHOP_THEMES.map((theme) => <ThemeCard
-        key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
-        balance={economy.balance} pending={pending === theme.id} busy={busy}
-        onEquip={() => equip(theme)} onAskBuy={() => { setNotice(""); setPending(theme.id); }} onCancel={() => setPending(null)} onConfirm={() => void buy(theme)}
-      />)}
-    </div>
+    {THEME_TIERS.map((tier) => {
+      const list = SHOP_THEMES.filter((theme) => theme.tier === tier);
+      if (!list.length) return null;
+      const left = list.filter((theme) => !isThemeOwned(theme.id, economy.unlocked)).length;
+      const [title, note] = t.store.tiers[tier];
+      return <section key={tier} className="store-tier" aria-labelledby={`tier-${tier}`}>
+        <div className="store-sec store-sec-tier"><h3 id={`tier-${tier}`}>{title}</h3><span>{left > 0 ? t.store.toBuy(left) : t.store.allBought}</span></div>
+        <p className="store-note">{note}</p>
+        <div className="store-grid">
+          {list.map((theme) => <ThemeCard
+            key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
+            balance={economy.balance} pending={pending === theme.id} busy={busy}
+            onEquip={() => equip(theme)} onAskBuy={() => { setNotice(""); setPending(theme.id); }} onCancel={() => setPending(null)} onConfirm={() => void buy(theme)}
+          />)}
+        </div>
+      </section>;
+    })}
     {LEAGUE_THEMES.length > 0 && <>
       <div className="store-sec"><h2>{t.store.leagueThemes}</h2><span>{t.store.leagueOwned(leagueOwned, LEAGUE_THEMES.length)}</span></div>
       <p className="store-note">{t.store.leagueThemesNote}</p>

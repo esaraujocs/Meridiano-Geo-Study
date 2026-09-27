@@ -7,6 +7,8 @@ import {
   LEAGUE_THEMES,
   SHOP_THEMES,
   THEMES,
+  THEME_TIERS,
+  TIER_PRICES,
   isLeagueTheme,
   leagueThemesFor,
   mapPaletteFor,
@@ -25,6 +27,15 @@ assert.equal(THEMES[0].id, DEFAULT_THEME, "o padrão vem primeiro");
 assert.deepEqual(SHOP_THEMES.filter((theme) => theme.cost === 0).map((theme) => theme.id), [DEFAULT_THEME], "só o padrão é grátis entre os da Loja");
 assert.ok(SHOP_THEMES.filter((theme) => theme.id !== DEFAULT_THEME).every((theme) => Number.isInteger(theme.cost) && theme.cost >= 1000), "os outros da Loja têm preço inteiro");
 assert.equal(SHOP_THEMES.length + LEAGUE_THEMES.length, THEMES.length, "cada tema é da Loja ou de liga");
+// faixas: todo tema da Loja tem uma, e o preço cabe nela (simples 0–16 mil, pintados 24–40 mil, elaborados 80–160 mil, prestígio 250–400 mil)
+assert.deepEqual([...THEME_TIERS], ["simple", "painted", "elaborate", "prestige"]);
+for (const theme of SHOP_THEMES) {
+  assert.ok(THEME_TIERS.includes(theme.tier), theme.id + " tem faixa");
+  const [low, high] = TIER_PRICES[theme.tier];
+  assert.ok(theme.cost >= low && theme.cost <= high, `${theme.id}: ${theme.cost} fora da faixa ${theme.tier} (${low}–${high})`);
+}
+assert.ok(LEAGUE_THEMES.every((theme) => theme.tier === undefined), "tema de liga não tem faixa de preço");
+assert.ok(TIER_PRICES.simple[1] < TIER_PRICES.painted[0] && TIER_PRICES.painted[1] < TIER_PRICES.elaborate[0] && TIER_PRICES.elaborate[1] < TIER_PRICES.prestige[0], "as faixas não se misturam");
 assert.ok(LEAGUE_THEMES.length >= 1 && LEAGUE_THEMES.every((theme) => isLeagueTheme(theme) && theme.cost === 0 && LEAGUES.includes(theme.league) && theme.league !== "bronze"), "tema de liga não tem preço e é de uma liga depois do Bronze");
 assert.equal(new Set(LEAGUE_THEMES.map((theme) => theme.league)).size, LEAGUE_THEMES.length, "no máximo um tema por liga");
 assert.ok(THEMES.every((theme) => theme.swatches.length === 4 && theme.swatches.every((color) => /^#[0-9A-Fa-f]{6}$/.test(color))), "4 cores hex por tema");

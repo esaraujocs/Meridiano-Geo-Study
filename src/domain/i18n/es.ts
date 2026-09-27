@@ -971,6 +971,12 @@ export const es: Messages = {
     inUseLegend: "En uso",
     themes: "Temas",
     hubThemes: "Temas del Hub",
+    tiers: {
+      simple: ["Paletas", "Colores y acabados sencillos para el Hub."],
+      painted: ["Pintados", "Pinceladas y acuarela, pintadas a mano."],
+      elaborate: ["Elaborados", "Cambian también el mapa y el resultado, con adornos propios."],
+      prestige: ["Prestigio", "Lo máximo: efectos animados y materiales propios en todas las pantallas."],
+    } as Record<string, [string, string]>,
     toBuy: (n: number) => `${n} para comprar`,
     allBought: "todos comprados",
     leagueThemes: "Temas de liga",

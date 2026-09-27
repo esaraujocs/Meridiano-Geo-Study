@@ -1030,6 +1030,12 @@ export const pt = {
     inUseLegend: "Em uso",
     themes: "Temas",
     hubThemes: "Temas do Hub",
+    tiers: {
+      simple: ["Paletas", "Cores e tratamentos simples para o Hub."],
+      painted: ["Pintados", "Pincelada e aquarela, pintadas à mão."],
+      elaborate: ["Elaborados", "Mudam também o mapa e o resultado, com ornamentos próprios."],
+      prestige: ["Prestígio", "O máximo: efeitos em movimento e materiais próprios em todas as telas."],
+    } as Record<string, [string, string]>,
     toBuy: (n: number) => `${n} para comprar`,
     allBought: "todos comprados",
     leagueThemes: "Temas de liga",
