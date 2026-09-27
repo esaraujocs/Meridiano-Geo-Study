@@ -16,6 +16,7 @@ import { botById } from "./bots.js";
 import type { DuelOutcome, DuelRecord } from "./duel.js";
 import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { botLabel, styleLabel } from "./duel-labels.js";
+import type { PvpMatchRecord } from "./pvp-store.js";
 
 export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
@@ -32,6 +33,8 @@ export type DashboardInput = {
   sessions: readonly SurfaceSession[];
   /** Os duelos gravados: cada um vira uma linha só no histórico, no lugar das duas partidas (tempos) que o compõem. */
   duels?: readonly DuelRecord[];
+  /** Os duelos com amigo (PvP) já terminados: mesma ideia, uma linha só, ao lado dos duelos contra bot. */
+  pvpMatches?: readonly PvpMatchRecord[];
   records: readonly ProgressRecordLike[];
   meta: Record<string, Meta>;
   /** ids jogáveis do atlas (denominador do domínio, o mesmo do Hub). */
@@ -70,8 +73,12 @@ type Miss = { id: string; name: string; flag?: string };
 /** Um tempo do duelo: o modo, o placar contra o bot e, se a partida ainda existe, o que a pessoa acertou e errou. */
 export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: number; total: number; playerMs: number | null; botMs: number | null; pattern: string; misses: Miss[] };
 export type DuelRow = {
+  /** Contra bot (liga/MMR) ou com amigo (PvP, força própria). O layout é o mesmo; só o rótulo do adversário e do delta muda. */
+  kind: "bot" | "pvp";
   ladder: Ladder; ladderLabel: string; botName: string; botLeague: string; botStyle: string;
   outcome: DuelOutcome; tiebreak: boolean; playerCorrect: number; botCorrect: number; total: number; delta: number;
+  /** Rótulo e texto do delta (Troféus/Força); null quando não há o que mostrar (duelo amistoso). */
+  deltaLabel: string | null; deltaText: string | null;
   abandoned: boolean; playerMs: number | null; botMs: number | null; legs: DuelLegRow[];
 };
 export type SessionRow = {
@@ -127,6 +134,7 @@ const PILLAR_WORD: Record<PillarKey, string> = t.progress.pillarWords;
 const startedAtOf = (session: SurfaceSession) => session.startedAt ?? session.endedAt ?? 0;
 const mean = (values: number[]) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null);
 const roundPct = (fraction: number) => Math.round(fraction * 100);
+const signed = (value: number) => (value > 0 ? `+${value}` : value < 0 ? `−${Math.abs(value)}` : "0");
 
 function longestStreak(rounds: SurfaceSession["rounds"]) {
   let best = 0;
@@ -231,15 +239,77 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
       bestStreak: longestStreak(rounds),
       misses,
       duel: {
+        kind: "bot",
         ladder: record.ladder, ladderLabel,
         botName: bot ? botLabel(bot) : t.duel.opponent,
         botLeague: bot ? t.duel.leagues[bot.league] : "",
         botStyle: bot ? styleLabel(bot.style, bot.specialty) : "",
         outcome: record.outcome, tiebreak: record.tiebreak,
         playerCorrect: record.playerCorrect, botCorrect: record.botCorrect, total: record.total, delta: record.delta,
+        deltaLabel: t.progress.duelTrophies, deltaText: `${signed(record.delta)} ${t.duel.result.trophies}`,
         abandoned,
         playerMs: legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null,
         botMs: legs.every((leg) => leg.botMs !== null) ? legs.reduce((sum, leg) => sum + (leg.botMs as number), 0) : null,
+        legs,
+      },
+    };
+  });
+  return { rows, used };
+}
+
+/** Uma linha por duelo com amigo (PvP), no lugar das duas partidas (tempos) que o compõem — o mesmo princípio de `buildDuelRows`, mas o adversário é uma
+ *  pessoa (sem liga/estilo) e o delta é a força própria do PvP (`pvp-rating.ts`), não os troféus do duelo contra bot. O amistoso não tem delta para mostrar. */
+function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly SurfaceSession[], meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number) {
+  const used = new Set<string>();
+  const rows = matches.map((record): SessionRow => {
+    const mine = sessions.filter((session) => session.duelId === record.code).sort((a, b) => (a.duelLeg ?? 0) - (b.duelLeg ?? 0) || startedAtOf(a) - startedAtOf(b));
+    mine.forEach((session) => used.add(session.id));
+    const ladderLabel = t.duel.ladders[record.ladder];
+    // sem os grupos salvos (registro de antes desta versão), sorteia de novo pela semente não é possível sem ela: usa só o placar total, sem os dois tempos
+    const sources = record.legs ?? [];
+    const legs: DuelLegRow[] = sources.map((leg, index) => {
+      const session = mine.find((item) => item.duelLeg === index);
+      return {
+        mode: t.duel.groups[leg.group], playerCorrect: leg.youCorrect, botCorrect: leg.opponentCorrect, total: leg.total,
+        playerMs: leg.youMs, botMs: leg.opponentMs,
+        pattern: session ? session.rounds.slice(0, 30).map((round) => (round.correct ? "1" : "0")).join("") : "",
+        misses: session ? missesOf(session.rounds, meta, flagOf) : [],
+      };
+    });
+    const startedAt = mine.length ? Math.min(...mine.map(startedAtOf)) || record.at : record.at;
+    const spent = mine.reduce((sum, session) => sum + (session.startedAt && session.endedAt ? Math.max(0, session.endedAt - session.startedAt) : 0), 0);
+    const rounds = mine.flatMap((session) => session.rounds);
+    const abandoned = record.youForfeited;
+    const seen = new Set<string>();
+    const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
+    return {
+      id: `pvp:${record.code}`,
+      title: t.progress.pvpDuelTitle(ladderLabel),
+      family: ladderLabel,
+      variant: "",
+      group: record.ladder === "mapas" ? "mapa" : "bandeiras",
+      region: mine[0] ? sessionRegionLabel(mine[0]) : t.regions.mundo[0],
+      rounds: record.totalRounds,
+      duration: formatDuration(spent),
+      pct: record.totalRounds ? roundPct(record.youCorrect / record.totalRounds) : null,
+      complete: !abandoned,
+      startedAt,
+      when: relativeWhen(startedAt, now),
+      pattern: rounds.slice(0, 60).map((round) => (round.correct ? "1" : "0")).join(""),
+      avgTimeMs: mean(mine.flatMap(timedRounds)),
+      bestStreak: longestStreak(rounds),
+      misses,
+      duel: {
+        kind: "pvp",
+        ladder: record.ladder, ladderLabel,
+        botName: record.opponentName, botLeague: "", botStyle: "",
+        outcome: record.outcome, tiebreak: record.tiebreak,
+        playerCorrect: record.youCorrect, botCorrect: record.opponentCorrect, total: record.totalRounds,
+        delta: record.ratingDelta ?? 0,
+        deltaLabel: record.ratingDelta !== null && record.ratingDelta !== undefined ? t.progress.pvpForceLabel : null,
+        deltaText: record.ratingDelta !== null && record.ratingDelta !== undefined ? t.pvp.result.ratingChange(record.ratingDelta) : t.pvp.modeFriendly,
+        abandoned,
+        playerMs: record.youMs, botMs: record.opponentMs,
         legs,
       },
     };
@@ -480,7 +550,9 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
 
   // ---- partidas (mais recentes primeiro)
   const duelRows = buildDuelRows(input.duels ?? [], sessions, meta, flagOf, now);
-  const history = [...sessions.filter((session) => !duelRows.used.has(session.id)).reverse().map((session) => buildRow(session, meta, flagOf, now)), ...duelRows.rows]
+  const pvpRows = buildPvpRows(input.pvpMatches ?? [], sessions, meta, flagOf, now);
+  const used = new Set([...duelRows.used, ...pvpRows.used]);
+  const history = [...sessions.filter((session) => !used.has(session.id)).reverse().map((session) => buildRow(session, meta, flagOf, now)), ...duelRows.rows, ...pvpRows.rows]
     .sort((a, b) => b.startedAt - a.startedAt);
 
   return {

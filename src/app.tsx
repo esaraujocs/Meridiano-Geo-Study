@@ -203,6 +203,8 @@ export function App() {
   const [pvpRatingDelta, setPvpRatingDelta] = useState<number | null>(null);
   const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
   const pvpRating = useMemo(() => pvpRatingOf(pvpMatches), [pvpMatches]);
+  // Os dois tempos, para a tabela do resultado: vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar).
+  const pvpResultLegs = useMemo(() => (pvpRoom?.seed ? drawLegs(pvpRoom.ladder, pvpRoom.seed) : null), [pvpRoom?.seed, pvpRoom?.ladder]);
   useEffect(() => { void listPvpMatches().then(setPvpMatches).catch(() => undefined); }, []);
   const pvpErrorMessage = (error: unknown) => {
     if (error instanceof PvpClientError) {
@@ -224,7 +226,18 @@ export function App() {
     const room = pvpRoom;
     if (!room || !room.result || !room.opponent || pvpSettledCodeRef.current === room.code) return;
     pvpSettledCodeRef.current = room.code;
-    setPvpRatingDelta(room.mode === "ranked" ? pvpRatingChange(pvpRating, room.opponent.rating, room.result.outcome) : null);
+    const ratingDelta = room.mode === "ranked" ? pvpRatingChange(pvpRating, room.opponent.rating, room.result.outcome) : null;
+    setPvpRatingDelta(ratingDelta);
+    // os grupos dos dois tempos vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar); sem semente (nunca deveria acontecer
+    // com a sala já fechada), fica sem o detalhe dos tempos, só o placar total.
+    const groups = room.seed ? drawLegs(room.ladder, room.seed) : null;
+    const legs: PvpMatchRecord["legs"] = groups
+      ? groups.map((leg, index) => ({
+        group: leg.group,
+        youCorrect: room.result!.you.legs[index]?.correct ?? 0, opponentCorrect: room.result!.opponent.legs[index]?.correct ?? 0,
+        total: leg.rounds, youMs: room.result!.you.legs[index]?.ms ?? null, opponentMs: room.result!.opponent.legs[index]?.ms ?? null,
+      }))
+      : undefined;
     const record: PvpMatchRecord = {
       id: `pvp:${room.code}`, code: room.code, at: Date.now(), ladder: room.ladder, mode: room.mode,
       opponentName: room.opponent.name, opponentRating: room.opponent.rating,
@@ -232,6 +245,7 @@ export function App() {
       outcome: room.result.outcome, tiebreak: room.result.tiebreak,
       youForfeited: room.result.you.forfeited, opponentForfeited: room.result.opponent.forfeited,
       youMs: room.result.you.ms, opponentMs: room.result.opponent.ms,
+      legs, ratingDelta,
     };
     void savePvpMatch(record).then(listPvpMatches).then(setPvpMatches).catch(() => undefined);
   }, [pvpRoom, pvpRating]);
@@ -790,7 +804,9 @@ export function App() {
     return <div className="app-shell grain"><PvpInterlude run={pvpRun} onContinue={pvpContinueLeg} /></div>;
   }
   if (screen === "pvp-result" && pvpRoom) {
-    return <div className="app-shell grain"><PvpResult room={pvpRoom} ratingDelta={pvpRatingDelta} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
+    const coinsGained = Math.max(0, economy.balance - economyBeforeRef.current.balance);
+    const xpGained = Math.max(0, economy.xp - economyBeforeRef.current.xp);
+    return <div className="app-shell grain"><PvpResult room={pvpRoom} legs={pvpResultLegs} ratingDelta={pvpRatingDelta} coinsGained={coinsGained} xpGained={xpGained} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
   }
   if (screen === "league") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen duels={duels} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;

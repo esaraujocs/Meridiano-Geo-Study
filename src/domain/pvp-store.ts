@@ -1,13 +1,16 @@
 // Duelos entre pessoas já terminados (IndexedDB, loja `preferences`, id `pvp:<código>`): histórico local, como os duelos contra bot (duel-store.ts).
 // A força (rating) do valendo é sempre derivada desta lista, nunca guardada à parte (mesmo princípio dos troféus do duelo contra bot).
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
-import type { Ladder } from "./duel-modes.js";
+import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { pvpRatingFromHistory, type RankedPvpMatch } from "./pvp-rating.js";
 import type { PvpMode, PvpOutcome } from "./pvp.js";
 
 const STORE = "preferences";
 export const PVP_ID_PREFIX = "pvp:";
 export const PVP_SOURCE = "pvp-v1";
+
+/** Um tempo do duelo: o grupo sorteado e o placar dos dois lados (o seu vem da sua sessão salva; o do amigo só tem o que o servidor relatou). */
+export type PvpLegRecord = { group: ModeGroup; youCorrect: number; opponentCorrect: number; total: number; youMs: number | null; opponentMs: number | null };
 
 export type PvpMatchRecord = {
   id: string;
@@ -27,6 +30,10 @@ export type PvpMatchRecord = {
   opponentForfeited: boolean;
   youMs: number | null;
   opponentMs: number | null;
+  /** Os dois tempos, quando dá para saber a semente (sempre, exceto num registro salvo antes desta versão). */
+  legs?: readonly PvpLegRecord[];
+  /** Mudança da força (só no valendo; null no amistoso). Calculada uma vez, na hora, e guardada — nunca recalculada depois. */
+  ratingDelta: number | null;
 };
 
 function openDatabase() {
@@ -38,7 +45,7 @@ function openDatabase() {
   });
 }
 
-function parsePvpMatch(row: unknown): PvpMatchRecord | null {
+export function parsePvpMatch(row: unknown): PvpMatchRecord | null {
   const item = row as Partial<PvpMatchRecord> & { id?: unknown };
   if (typeof item?.id !== "string" || !item.id.startsWith(PVP_ID_PREFIX)) return null;
   if (typeof item.code !== "string" || typeof item.at !== "number" || typeof item.outcome !== "string") return null;

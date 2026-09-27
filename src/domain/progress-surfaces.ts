@@ -11,6 +11,7 @@ import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals } from "./pillar
 import { dominatedIdsFromSessions } from "./dominated.js";
 import { t } from "./i18n/index.js";
 import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
+import { PVP_ID_PREFIX, parsePvpMatch, type PvpMatchRecord } from "./pvp-store.js";
 
 export type SurfaceSession = {
   id: string;
@@ -234,6 +235,7 @@ export async function querySurfaces(data?: Legacy) {
   ]);
   db.close();
   const duels = preferences.filter((row) => String(row?.id ?? "").startsWith(DUEL_ID_PREFIX)).map(parseDuel).filter((item): item is DuelRecord => item !== null);
+  const pvpMatches = preferences.filter((row) => String(row?.id ?? "").startsWith(PVP_ID_PREFIX)).map(parsePvpMatch).filter((item): item is PvpMatchRecord => item !== null);
   const sessions = rawSessions.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
   const universe = canonicalCurrentIds(data?.meta);
   const snapshot = deriveProgress(progress, universe, sessions);
@@ -251,7 +253,7 @@ export async function querySurfaces(data?: Legacy) {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl, record?.columns);
   }) : [];
-   return { sessions, duels, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
+   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
 }
 
 export async function queryCollectionSummary(data: Legacy) {

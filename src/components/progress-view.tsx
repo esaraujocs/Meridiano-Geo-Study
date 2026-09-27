@@ -49,7 +49,6 @@ function RowMeta({ row, when, flagIncomplete }: { row: SessionRow; when?: string
     {row.duel?.abandoned ? <> · <span className="pr-inc">{t.progress.duelLeft}</span></> : flagIncomplete && !row.complete ? <> · <span className="pr-inc">{t.progress.incomplete}</span></> : null}
   </>;
 }
-const duelTrophiesText = (delta: number) => `${signed(delta)} ${t.duel.result.trophies}`;
 
 // ---------- topo ----------
 function StageTrack({ hero }: { hero: Dashboard["hero"] }) {
@@ -282,7 +281,7 @@ function Recent({ rows, onHistory, onGoHub }: { rows: SessionRow[]; onHistory: (
         <RowIcon row={row} />
         <div className="pr-s-main"><RowTitle row={row} /><small><RowMeta row={row} when={row.duel ? row.when : undefined} /></small></div>
         {row.duel
-          ? <div className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, duelTrophiesText(row.duel.delta))}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b><small>{duelTrophiesText(row.duel.delta)}</small></div>
+          ? <div className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, row.duel.deltaText ?? "")}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b>{row.duel.deltaText && <small>{row.duel.deltaText}</small>}</div>
           : <div className={`pr-s-res${row.pct !== null && row.pct < 60 ? " low" : ""}`}><b>{row.pct ?? 0}%</b><div className="pr-mini"><i style={{ width: `${row.pct ?? 0}%` }} /></div><small>{row.when}</small></div>}
       </li>)}</ul>}
     {rows.length > 0 && <button type="button" className="pr-link pr-link-center" onClick={onHistory}>{t.progress.allHistory} <Glyph name="arrow" size={16} /></button>}
@@ -299,7 +298,7 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
       <RowIcon row={row} />
       <span className="pr-s-main"><RowTitle row={row} /><small><RowMeta row={row} when={when} flagIncomplete /></small></span>
       {row.duel
-        ? <span className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, duelTrophiesText(row.duel.delta))}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b><small>{duelTrophiesText(row.duel.delta)}</small></span>
+        ? <span className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, row.duel.deltaText ?? "")}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b>{row.duel.deltaText && <small>{row.duel.deltaText}</small>}</span>
         : <span className={`pr-s-res${pct < 60 ? " low" : ""}`}><b>{pct}%</b><span className="pr-mini"><i style={{ width: `${pct}%` }} /></span></span>}
       <span className={`pr-chev${open ? " down" : ""}`}><Glyph name="chevron" size={18} stroke={2} /></span>
     </button>
@@ -332,7 +331,7 @@ function DuelDetail({ row, duel, flagOf }: { row: SessionRow; duel: NonNullable<
         : <><span>{t.progress.youMissed}</span>{leg.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{leg.misses.length > 8 && <span>+{leg.misses.length - 8}</span>}</>}</div>}
     </div>)}</div>
     <div className="pr-sd-top"><dl>
-      <div><dt>{t.progress.duelTrophies}</dt><dd>{signed(duel.delta)}</dd></div>
+      {duel.deltaLabel !== null && <div><dt>{duel.deltaLabel}</dt><dd>{signed(duel.delta)}</dd></div>}
       {duel.playerMs !== null && <div><dt>{t.progress.duelYourTime}</dt><dd>{clockOf(duel.playerMs)}</dd></div>}
       {duel.botMs !== null && <div><dt>{t.progress.duelBotTime(duel.botName)}</dt><dd>{clockOf(duel.botMs)}</dd></div>}
       {row.avgTimeMs !== null && <div><dt>{t.progress.avgTime}</dt><dd>{formatSeconds(row.avgTimeMs)}</dd></div>}
@@ -426,6 +425,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     now,
     sessions: state.sessions,
     duels: state.duels,
+    pvpMatches: state.pvpMatches,
     records: state.progress.records ?? [],
     meta: data.meta,
     universe: data.mapEntityIds,
