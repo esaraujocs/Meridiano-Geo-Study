@@ -308,6 +308,12 @@ export const en: Messages = {
     shareHint: "Send this link to your friend to join.",
     waitingFriend: "Waiting for your friend to join…",
     cancelInvite: "Cancel invite",
+    how: {
+      title: "How it works",
+      step1: ["Create the invite", "Pick the mode and tell us your name."],
+      step2: ["Send the link", "Over WhatsApp or by copying it; your friend joins right away."],
+      step3: ["Play at the same time", "Each of you at your own pace, watching the other's score live."],
+    },
     invite: {
       loading: "Opening the invite…",
       title: (name: string) => `${name} challenged you!`,

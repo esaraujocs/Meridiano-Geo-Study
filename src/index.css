@@ -1468,6 +1468,19 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
   .pvp-modes{grid-template-columns:1fr}
   .pvp-actions .rs-btn{min-width:0}
 }
+/* setup e lobby vazios (só o cartão): um painel "como funciona" ao lado no desktop, pra não sobrar tanta tela em branco */
+.pvp-page{max-width:900px}
+.pvp-layout{display:grid;gap:20px}
+.pvp-side{align-self:start;padding:24px 26px;text-align:left}
+.pvp-side h2{font:500 20px 'Fraunces',Georgia,serif;margin:0 0 16px;text-align:left}
+.pvp-steps{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.pvp-steps li{display:flex;gap:12px;align-items:flex-start}
+.pvp-steps b{flex:none;width:26px;height:26px;border-radius:50%;background:rgba(47,111,106,.14);color:var(--green);display:grid;place-items:center;font:700 12.5px 'Plus Jakarta Sans',sans-serif}
+.pvp-steps strong{display:block;font-size:14px;color:var(--ink)}
+.pvp-steps span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+@media (min-width:820px){
+  .pvp-layout{grid-template-columns:460px 1fr;align-items:start}
+}
 
 /* ---- Hub em Duelo: arenas e próximos prêmios ---- */
 .arena-grid{display:grid;grid-template-columns:1fr 1fr .8fr;gap:16px;margin:0 0 26px;align-items:stretch}

@@ -321,8 +321,9 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
 
 function DuelDetail({ row, duel, flagOf }: { row: SessionRow; duel: NonNullable<SessionRow["duel"]>; flagOf: FlagOf }) {
   return <div className="pr-sess-detail pr-duel-detail">
-    <p className="pr-duel-vs"><b>{duel.botName}</b>{(duel.botLeague || duel.botStyle) && <span>{[duel.botLeague, duel.botStyle].filter(Boolean).join(" · ")}</span>}</p>
+    <p className="pr-duel-vs"><b>{duel.botName}</b>{(duel.botLeague || duel.botStyle) && <span>{[duel.botLeague, duel.botStyle].filter(Boolean).join(" · ")}</span>}{duel.kind === "pvp" && <span className="rv-tag">{duel.pvpMode === "ranked" ? t.pvp.modeRanked : t.pvp.modeFriendly}</span>}</p>
     {duel.tiebreak && <p className="pr-duel-note">{t.duel.result.tiebreak}</p>}
+    {duel.kind === "pvp" && duel.deltaLabel === null && <p className="pr-duel-note">{t.pvp.result.friendlyNote}</p>}
     <div className="pr-duel-legs">{duel.legs.map((leg, index) => <div className="pr-duel-leg" key={index}>
       <div className="pr-duel-leg-h"><b>{duel.legs.length > 1 ? t.duel.result.legTitle(index + 1, leg.mode) : leg.mode}</b><div className="pr-duel-leg-r"><span>{leg.playerCorrect} × {leg.botCorrect}</span>{leg.playerMs !== null ? <small>{clockOf(leg.playerMs)}</small> : null}</div></div>
       {leg.pattern && <div className="pr-strip" role="img" aria-label={t.progress.stripAria(leg.pattern.split("").filter((c) => c === "1").length, leg.pattern.length)}>{leg.pattern.split("").map((c, i) => <i key={i} className={c === "1" ? "ok" : "no"} />)}</div>}

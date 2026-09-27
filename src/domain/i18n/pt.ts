@@ -308,6 +308,12 @@ export const pt = {
     shareHint: "Mande esse link para o seu amigo entrar.",
     waitingFriend: "Esperando seu amigo entrar…",
     cancelInvite: "Cancelar convite",
+    how: {
+      title: "Como funciona",
+      step1: ["Crie o convite", "Escolha o modo e diga como te chamamos."],
+      step2: ["Mande o link", "Pelo WhatsApp ou copiando; o seu amigo entra direto."],
+      step3: ["Joguem ao mesmo tempo", "Cada um no seu ritmo, vendo o placar do outro em tempo real."],
+    },
     invite: {
       loading: "Abrindo o convite…",
       title: (name: string) => `${name} te desafiou!`,

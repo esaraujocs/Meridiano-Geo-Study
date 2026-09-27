@@ -75,6 +75,8 @@ export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: numb
 export type DuelRow = {
   /** Contra bot (liga/MMR) ou com amigo (PvP, força própria). O layout é o mesmo; só o rótulo do adversário e do delta muda. */
   kind: "bot" | "pvp";
+  /** Só no PvP: se valeu (mudou a força) ou foi amistoso — mostrado mesmo sem delta, pra nunca ficar sem dizer se contou. */
+  pvpMode?: "friendly" | "ranked";
   ladder: Ladder; ladderLabel: string; botName: string; botLeague: string; botStyle: string;
   outcome: DuelOutcome; tiebreak: boolean; playerCorrect: number; botCorrect: number; total: number; delta: number;
   /** Rótulo e texto do delta (Troféus/Força); null quando não há o que mostrar (duelo amistoso). */
@@ -300,7 +302,7 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
       bestStreak: longestStreak(rounds),
       misses,
       duel: {
-        kind: "pvp",
+        kind: "pvp", pvpMode: record.mode,
         ladder: record.ladder, ladderLabel,
         botName: record.opponentName, botLeague: "", botStyle: "",
         outcome: record.outcome, tiebreak: record.tiebreak,

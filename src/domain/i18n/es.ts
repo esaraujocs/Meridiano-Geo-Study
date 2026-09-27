@@ -308,6 +308,12 @@ export const es: Messages = {
     shareHint: "Envía este enlace a tu amigo para que entre.",
     waitingFriend: "Esperando a que tu amigo entre…",
     cancelInvite: "Cancelar invitación",
+    how: {
+      title: "Cómo funciona",
+      step1: ["Crea la invitación", "Elige el modo y dinos cómo te llamamos."],
+      step2: ["Envía el enlace", "Por WhatsApp o copiándolo; tu amigo entra directo."],
+      step3: ["Jueguen al mismo tiempo", "Cada uno a su ritmo, viendo el marcador del otro en vivo."],
+    },
     invite: {
       loading: "Abriendo la invitación…",
       title: (name: string) => `¡${name} te desafió!`,

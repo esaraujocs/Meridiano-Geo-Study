@@ -29,10 +29,21 @@ export function PvpLobby({ view, name, onNameChange, onModeChange, onCreate, onJ
   return <PvpRoom room={view.room} onReady={onReady} onLeave={onLeave} />;
 }
 
+// Painel "como funciona": preenche o vão ao lado do cartão no desktop (o cartão sozinho fica curto e sobra tela) e ajuda quem nunca desafiou um amigo.
+function PvpHowItWorks() {
+  const steps = [t.pvp.how.step1, t.pvp.how.step2, t.pvp.how.step3];
+  return (
+    <aside className="rv-card pvp-side">
+      <h2>{t.pvp.how.title}</h2>
+      <ol className="pvp-steps">{steps.map(([title, note], index) => <li key={index}><b>{index + 1}</b><div><strong>{title}</strong><span>{note}</span></div></li>)}</ol>
+    </aside>
+  );
+}
+
 const NameField = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
   <label className="pvp-name">
     <span>{t.pvp.nameLabel}</span>
-    <input type="text" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => onNameChange(event.target.value)} autoFocus />
+    <input type="text" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => onNameChange(event.target.value)} autoFocus name="pvp-nickname" autoComplete="off" data-1p-ignore data-lpignore="true" />
   </label>
 );
 
@@ -40,8 +51,9 @@ function PvpSetup({ view, name, onNameChange, onModeChange, onCreate, onBack }: 
   const canCreate = name.trim().length > 0 && !view.busy;
   useEnterKey(() => { if (canCreate) onCreate(); });
   return (
-    <main className="content rv-page">
+    <main className="content rv-page pvp-page">
       <button type="button" className="back" onClick={onBack}>← {t.pvp.back}</button>
+      <div className="pvp-layout">
       <section className="rv-card pvp-card">
         <span className="eyebrow">{t.pvp.subtitle(t.duel.ladders[view.ladder])}</span>
         <h1>{t.pvp.title}</h1>
@@ -57,6 +69,8 @@ function PvpSetup({ view, name, onNameChange, onModeChange, onCreate, onBack }: 
         {view.error && <p className="pvp-error">{view.error}</p>}
         <button type="button" className="rs-btn primary rv-go" disabled={!canCreate} onClick={onCreate}><Icon type="swords" />{view.busy ? t.pvp.creating : t.pvp.create}</button>
       </section>
+      <PvpHowItWorks />
+      </div>
     </main>
   );
 }
@@ -117,8 +131,9 @@ function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (read
   }
   const bothReady = room.you.ready && room.opponent?.ready;
   return (
-    <main className="content rv-page">
+    <main className={`content rv-page${room.opponent ? "" : " pvp-page"}`}>
       <button type="button" className="back" onClick={onLeave}>← {t.pvp.lobby.leave}</button>
+      <div className={room.opponent ? "" : "pvp-layout"}>
       <section className="rv-card pvp-card">
         <span className="eyebrow">{t.pvp.subtitle(t.duel.ladders[room.ladder])} · {room.mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked}</span>
         <h1>{t.pvp.title}</h1>
@@ -157,6 +172,8 @@ function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (read
           </>
         )}
       </section>
+      {!room.opponent && <PvpHowItWorks />}
+      </div>
     </main>
   );
 }
