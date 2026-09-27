@@ -216,17 +216,17 @@ ${water(4, 246, wl + 2, ink)}`);
 /** Catálogo. `w`×`h` é a caixa do desenho; `stroke` o traço do contorno; `px` a largura em tela no mundo inteiro (zoom de referência do mapa); `lng`/`lat` o ponto do oceano onde a
  *  figura fica ancorada (parada no mapa, acompanhando o arrasto e o zoom) e `flip` espelha o desenho. As posições foram escolhidas em vãos de mar do mapa-múndi, longe de marcadores de ilha. */
 export const FIGURES = {
-  kraken: { label: "Kraken", svg: krakenSvg, w: 220, h: 150, stroke: 2.5, px: 56, lng: -33.7, lat: 50.4 },
-  snekkja: { label: "Snekkja", svg: snekkjaSvg, w: 230, h: 130, stroke: 2.6, px: 62, lng: -13.8, lat: -18.6, flip: true },
-  hafgufa: { label: "Hafgufa", svg: (ink) => baleiaSvg(ink, "island"), w: 250, h: 150, stroke: 2.5, px: 66, lng: -8, lat: -49.1 },
-  drakkar: { label: "Drakkar", svg: drakkarSvg, w: 260, h: 140, stroke: 2.6, px: 74, lng: -158.9, lat: 37.6 },
-  galeao: { label: "Galeão", svg: galleonSvg, w: 300, h: 232, stroke: 1.5, px: 68, lng: -158.9, lat: -42.3 },
-  sjoorm: { label: "Sjøorm", svg: sjoormSvg, w: 480, h: 236, stroke: 2.6, px: 94, lng: -101.2, lat: -46.5, flip: true },
-  knarr: { label: "Knarr", svg: knarrSvg, w: 240, h: 140, stroke: 2.6, px: 62, lng: 79.4, lat: -26, flip: true },
-  jormungandr: { label: "Jörmungandr", svg: jormungandrSvg, w: 220, h: 150, stroke: 2.6, px: 66, lng: 59.6, lat: -50.5 },
-  nykur: { label: "Nykur", svg: nykurSvg, w: 200, h: 140, stroke: 2.5, px: 54, lng: 155, lat: -53.5, flip: true },
-  narval: { label: "Narval", svg: (ink) => baleiaSvg(ink, "narwhal"), w: 300, h: 134, stroke: 2.5, px: 76, lng: 170.7, lat: 37.6 },
-  peixe: { label: "Peixe-monstro", svg: peixeSvg, w: 250, h: 134, stroke: 2.5, px: 64, lng: -119.2, lat: 0.9 },
+  kraken: { label: "Kraken", svg: krakenSvg, w: 220, h: 150, stroke: 2.5, px: 46, lng: -33.7, lat: 50.4 },
+  snekkja: { label: "Snekkja", svg: snekkjaSvg, w: 230, h: 130, stroke: 2.6, px: 51, lng: -13.8, lat: -18.6, flip: true },
+  hafgufa: { label: "Hafgufa", svg: (ink) => baleiaSvg(ink, "island"), w: 250, h: 150, stroke: 2.5, px: 54, lng: -8, lat: -49.1 },
+  drakkar: { label: "Drakkar", svg: drakkarSvg, w: 260, h: 140, stroke: 2.6, px: 61, lng: -158.9, lat: 37.6 },
+  galeao: { label: "Galeão", svg: galleonSvg, w: 300, h: 232, stroke: 1.5, px: 56, lng: -158.9, lat: -42.3 },
+  sjoorm: { label: "Sjøorm", svg: sjoormSvg, w: 480, h: 236, stroke: 2.6, px: 77, lng: -101.2, lat: -46.5, flip: true },
+  knarr: { label: "Knarr", svg: knarrSvg, w: 240, h: 140, stroke: 2.6, px: 51, lng: 79.4, lat: -26, flip: true },
+  jormungandr: { label: "Jörmungandr", svg: jormungandrSvg, w: 220, h: 150, stroke: 2.6, px: 54, lng: 59.6, lat: -50.5 },
+  nykur: { label: "Nykur", svg: nykurSvg, w: 200, h: 140, stroke: 2.5, px: 44, lng: 155, lat: -53.5, flip: true },
+  narval: { label: "Narval", svg: (ink) => baleiaSvg(ink, "narwhal"), w: 300, h: 134, stroke: 2.5, px: 62, lng: 170.7, lat: 37.6 },
+  peixe: { label: "Peixe-monstro", svg: peixeSvg, w: 250, h: 134, stroke: 2.5, px: 52, lng: -119.2, lat: 0.9 },
 };
 /** Traço do contorno em tela, em px (fixo, em qualquer tamanho da figura), e o mínimo dos traços finos. */
 export const SCREEN_STROKE_PX = 1.2;
