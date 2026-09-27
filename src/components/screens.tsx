@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, type CSSProperties, type TransitionEvent } from "react";
 import { Icon } from "./icons";
 import { BrandLogo } from "./brand-logo";
+import { LevelTicks } from "./level-badge";
 import type { AnyQuizVariant, Family, Legacy } from "../domain/types";
 import type { LegacyProfile } from "../domain/legacy-migration";
 import { isDebugEnabled } from "../domain/debug-flag";
@@ -318,6 +319,7 @@ export function Hub({
         <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
         <div className="hub-player">
           <div className={`hub-level${framed ? " lg-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
+            <LevelTicks />
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
             <strong>{level}</strong>
             <span className="hub-level-cap">{t.hub.levelCap}</span>

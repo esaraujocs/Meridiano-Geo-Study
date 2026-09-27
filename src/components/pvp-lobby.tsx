@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "./icons";
+import { LevelBadge } from "./level-badge";
 import { useEnterKey } from "./use-enter-key";
 import { drawLegs, type Ladder } from "../domain/duel-modes";
 import { inviteLink, PLAYER_NAME_MAX, type PvpInvite, type PvpMode, type PvpRoomView } from "../domain/pvp";
@@ -12,9 +13,11 @@ export type PvpLobbyView =
   | { kind: "invite"; invite: PvpInvite | null; loading: boolean; busy: boolean; error: string | null }
   | { kind: "room"; room: PvpRoomView };
 
-export function PvpLobby({ view, name, onNameChange, onModeChange, onCreate, onJoin, onDecline, onReady, onLeave, onBack }: {
+export function PvpLobby({ view, name, level, onNameChange, onModeChange, onCreate, onJoin, onDecline, onReady, onLeave, onBack }: {
   view: PvpLobbyView;
   name: string;
+  /** Nível do próprio jogador (economia local): mostrado na moldura do "Você" no lobby, a mesma do Hub. */
+  level: number;
   onNameChange: (name: string) => void;
   onModeChange: (mode: PvpMode) => void;
   onCreate: () => void;
@@ -26,7 +29,7 @@ export function PvpLobby({ view, name, onNameChange, onModeChange, onCreate, onJ
 }) {
   if (view.kind === "setup") return <PvpSetup view={view} name={name} onNameChange={onNameChange} onModeChange={onModeChange} onCreate={onCreate} onBack={onBack} />;
   if (view.kind === "invite") return <PvpInviteScreen view={view} name={name} onNameChange={onNameChange} onJoin={onJoin} onDecline={onDecline} />;
-  return <PvpRoom room={view.room} onReady={onReady} onLeave={onLeave} />;
+  return <PvpRoom room={view.room} level={level} onReady={onReady} onLeave={onLeave} />;
 }
 
 // Painel "como funciona": preenche o vão ao lado do cartão no desktop (o cartão sozinho fica curto e sobra tela) e ajuda quem nunca desafiou um amigo.
@@ -107,7 +110,7 @@ function PvpInviteScreen({ view, name, onNameChange, onJoin, onDecline }: { view
   );
 }
 
-function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (ready: boolean) => void; onLeave: () => void }) {
+function PvpRoom({ room, level, onReady, onLeave }: { room: PvpRoomView; level: number; onReady: (ready: boolean) => void; onLeave: () => void }) {
   const [copied, setCopied] = useState(false);
   const link = inviteLink(location.origin, room.code);
   const copyLink = () => {
@@ -154,7 +157,7 @@ function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (read
           <>
             <div className="rv-vs">
               <div className="rv-side">
-                <div className="ar-emblem lg-frame"><Icon type="achievements" size={30} /></div>
+                <LevelBadge level={level} />
                 <strong>{t.pvp.lobby.you}</strong>
                 <small>{room.you.ready ? t.pvp.lobby.ready : t.pvp.lobby.opponentWaiting}</small>
               </div>

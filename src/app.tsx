@@ -800,7 +800,7 @@ export function App() {
       : pvpEntry === "invite"
         ? { kind: "invite", invite: pvpInvitePreview, loading: pvpInviteLoading, busy: pvpBusy, error: pvpError }
         : { kind: "setup", ladder: pvpSetupLadder, mode: pvpMode, busy: pvpBusy, error: pvpError };
-    return <div className="app-shell grain"><PvpLobby view={view} name={pvpNameState} onNameChange={setPvpDisplayName} onModeChange={setPvpModeState} onCreate={() => void pvpCreate()} onJoin={() => void pvpJoin()} onDecline={pvpDecline} onReady={pvpToggleReady} onLeave={pvpLeaveLobby} onBack={pvpLeaveLobby} /></div>;
+    return <div className="app-shell grain"><PvpLobby view={view} name={pvpNameState} level={economy.level} onNameChange={setPvpDisplayName} onModeChange={setPvpModeState} onCreate={() => void pvpCreate()} onJoin={() => void pvpJoin()} onDecline={pvpDecline} onReady={pvpToggleReady} onLeave={pvpLeaveLobby} onBack={pvpLeaveLobby} /></div>;
   }
   if (screen === "pvp-interlude" && pvpRun) {
     return <div className="app-shell grain"><PvpInterlude run={pvpRun} onContinue={pvpContinueLeg} /></div>;

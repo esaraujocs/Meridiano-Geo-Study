@@ -59,6 +59,8 @@ export const pt = {
   hub: {
     profileAria: "Perfil de atividade",
     levelAria: (level: number, xp: number, span: number) => `Nível ${level}, ${xp} de ${span} XP`,
+    /** Moldura do perfil fora do Hub (ex.: o "Você" no lobby do PvP), sem o XP à mão para o texto completo de `levelAria`. */
+    levelBadge: (level: number) => `Nível ${level}`,
     levelCap: "nível",
     levelLine: (level: number, xp: number, span: number) => `Nível ${level} · ${xp}/${span} XP`,
     levelLineSpaced: (level: number, xp: number, span: number) => `Nível ${level} · ${xp} / ${span} XP`,

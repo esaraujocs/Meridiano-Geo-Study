@@ -578,8 +578,12 @@ html[data-reduced-motion=true] .ach-toast-medal .ach-med{animation:none}
 .hub-badge svg{width:15px;height:15px}
 .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hub-mastery{grid-column:1/-1;margin:6px 0 0;font:500 10.5px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#245e58}
-.hub-level{grid-area:ring;display:grid;place-items:center;align-self:center;width:52px;height:52px;margin:12px 14px 12px 16px;border:2px solid var(--green);border-radius:50%;background:var(--paper)}
-.hub-level strong{font:500 24px 'Fraunces',Georgia,serif;color:var(--ink)}
+.hub-level{grid-area:ring;position:relative;display:grid;place-items:center;align-self:center;width:52px;height:52px;margin:12px 14px 12px 16px;border:2px solid var(--green);border-radius:50%;background:var(--paper)}
+.hub-level strong{position:relative;font:500 24px 'Fraunces',Georgia,serif;color:var(--ink)}
+/* moldura do perfil (nível, no Hub; reaproveitada onde mais representa o jogador, ex. lobby do PvP): 4 tiques de brass nos pontos cardeais,
+   por cima da borda/anel — a moldura de antes era só a borda lisa, o Enzo achou simples demais (28/09). */
+.hub-level-ticks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hub-level-ticks line{stroke:var(--brass);stroke-width:3;stroke-linecap:round}
 .hub-xp{grid-area:xp;align-self:center;min-width:0;margin:12px 14px 12px 0;font-size:12px;color:var(--ink)}
 .hub-xp-label{display:block}
 .hub-track{height:8px;margin:6px 0 4px;border-radius:5px;background:rgba(199,182,143,.65);overflow:hidden}
@@ -1429,9 +1433,13 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .rv-k{display:block;font:400 11px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .rv-debug{display:grid;gap:8px;margin:0 0 16px;padding:12px;border:1px dashed var(--line);border-radius:12px}
 .rv-debug small{font:400 11px 'DM Mono',monospace;color:var(--muted)}
+/* a moldura do nível (.hub-level), reaproveitada para o "Você" da revelação/lobby no tamanho do emblema (.ar-emblem) que já estava ali */
+.rv-side .hub-level{width:84px;height:84px;margin:6px 8px 6px 6px;border-width:3px}
+.rv-side .hub-level strong{font-size:30px}
 @media (max-width:760px){
   .rv-card{padding:20px 16px}.rv-card h1{font-size:30px}
-  .rv-vs .ar-emblem,.rv-bot{width:68px;height:68px}
+  .rv-vs .ar-emblem,.rv-bot,.rv-side .hub-level{width:68px;height:68px}
+  .rv-side .hub-level strong{font-size:26px}
 }
 
 /* ---- Duelo com amigo (PvP): criar/aceitar convite, lobby e resultado ---- */

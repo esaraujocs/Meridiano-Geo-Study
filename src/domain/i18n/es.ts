@@ -59,6 +59,7 @@ export const es: Messages = {
   hub: {
     profileAria: "Perfil de actividad",
     levelAria: (level: number, xp: number, span: number) => `Nivel ${level}, ${xp} de ${span} XP`,
+    levelBadge: (level: number) => `Nivel ${level}`,
     levelCap: "nivel",
     levelLine: (level: number, xp: number, span: number) => `Nivel ${level} · ${xp}/${span} XP`,
     levelLineSpaced: (level: number, xp: number, span: number) => `Nivel ${level} · ${xp} / ${span} XP`,
