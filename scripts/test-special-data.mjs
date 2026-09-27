@@ -15,6 +15,12 @@ execFileSync("node_modules/.bin/tsc", [
 const rules = await import(`file://${out}/special-data.js`);
 assert.equal(rules.normalizeAnswer("São Tomé e Príncipe"), "sao tome e principe");
 assert.deepEqual(rules.acceptedWritingAnswers({ pt: "Brasil", en: "Brazil", al: "Brasil" }), ["brasil", "brazil", "brasil"]);
+// Escrita menos rígida (28/09, o Enzo achou algumas entidades duras demais pra digitar): as grafias comuns entram como alias no catálogo (`al`/`capAl`),
+// então `acceptedWritingAnswers`/`acceptedCapitalAnswers` já as aceitam sem mexer na regra de comparação (`normalizeAnswer` continua igual).
+assert.ok(rules.acceptedWritingAnswers({ pt: "Ilhas Cocos (Keeling)", al: ["Ilhas Cocos", "Keeling"] }).includes("keeling"), "Keeling sozinho, sem o resto do nome");
+assert.ok(rules.acceptedWritingAnswers({ pt: "São Martinho (Holanda)", al: ["São Martinho", "Sint Maarten"] }).includes("sao martinho"), "São Martinho sem o '(Holanda)'");
+assert.ok(rules.acceptedCapitalAnswers({ cap: "N'Djamena", capAl: ["Ndjamena"] }).includes("ndjamena"), "N'Djamena sem apóstrofo nem espaço");
+assert.ok(rules.acceptedCapitalAnswers({ cap: "Washington, D.C.", capAl: ["Washington", "Washington DC"] }).includes("washington"), "Washington sem o D.C.");
 assert.equal(rules.specialInRegion({ reg: "Oceania" }, "pacifico"), true);
 assert.equal(rules.specialInRegion({ sub: "Caribbean" }, "caribe"), true);
 for (const [region, reg, sub] of [

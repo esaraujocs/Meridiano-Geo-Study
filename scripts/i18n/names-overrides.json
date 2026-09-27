@@ -119,7 +119,13 @@
   "166": {
    "name": "Cocos (Keeling) Islands",
    "al": [
-    "Cocos Islands"
+    "Cocos Islands",
+    "Keeling"
+   ]
+  },
+  "148": {
+   "capAl": [
+    "Ndjamena"
    ]
   },
   "336": {
@@ -291,7 +297,13 @@
   "166": {
    "name": "Islas Cocos",
    "al": [
-    "Islas Cocos (Keeling)"
+    "Islas Cocos (Keeling)",
+    "Keeling"
+   ]
+  },
+  "148": {
+   "capAl": [
+    "Ndjamena"
    ]
   },
   "581": {
