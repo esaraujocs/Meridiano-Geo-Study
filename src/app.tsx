@@ -49,7 +49,7 @@ import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
 import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
 import { pickBot } from "./domain/bots";
-import { LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
+import { LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
@@ -59,6 +59,14 @@ import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
 import { claimDuelMilestones, claimLeagueThemes, listDuels, saveDuel } from "./domain/duel-store";
 import { isDebugEnabled } from "./domain/debug-flag";
+import { PvpLobby, type PvpLobbyView } from "./components/pvp-lobby";
+import { PvpInterlude } from "./components/pvp-interlude";
+import { PvpResult } from "./components/pvp-result";
+import { newPvpRun, pvpLegOptions, recordPvpLeg, type PvpRun } from "./domain/pvp-run";
+import { parseInvite, type PvpInvite, type PvpMode, type PvpRoomView } from "./domain/pvp";
+import { PvpClientError, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpJoinRoom, pvpName as pvpStoredName, pvpSubscribe, setPvpName as setPvpStoredName } from "./domain/pvp-client";
+import { listPvpMatches, pvpRatingOf, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
+import { pvpRatingChange } from "./domain/pvp-rating";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
@@ -171,11 +179,160 @@ export function App() {
   const arenaCards = useMemo(() => ladderCards(duels, economy.unlocked), [duels, economy.unlocked]);
   const arenaNext = useMemo(() => nextMilestones(duels), [duels]);
   const effectiveTier: RoundTier = isRoundTierUnlocked(roundTier, economy.unlocked) ? roundTier : "short";
+
+  // ---- Duelo com amigo (PvP ao vivo, por link) ----
+  const [pvpEntry, setPvpEntry] = useState<"setup" | "invite" | null>(null);
+  const [pvpSetupLadder, setPvpSetupLadder] = useState<Ladder>("mapas");
+  const [pvpMode, setPvpModeState] = useState<PvpMode>("friendly");
+  const [pvpInviteCode, setPvpInviteCode] = useState<string | null>(null);
+  const [pvpInvitePreview, setPvpInvitePreview] = useState<PvpInvite | null>(null);
+  const [pvpInviteLoading, setPvpInviteLoading] = useState(false);
+  const [pvpBusy, setPvpBusy] = useState(false);
+  const [pvpError, setPvpError] = useState<string | null>(null);
+  const [pvpNameState, setPvpNameState] = useState<string>(() => pvpStoredName());
+  const setPvpDisplayName = (value: string) => { setPvpNameState(value); setPvpStoredName(value); };
+  const [pvpRoom, setPvpRoomState] = useState<PvpRoomView | null>(null);
+  const pvpRoomRef = useRef<PvpRoomView | null>(null);
+  const setPvpRoom = (view: PvpRoomView | null) => { pvpRoomRef.current = view; setPvpRoomState(view); };
+  const [pvpRun, setPvpRunState] = useState<PvpRun | null>(null);
+  const pvpRunRef = useRef<PvpRun | null>(null);
+  const setPvpRun = (run: PvpRun | null) => { pvpRunRef.current = run; setPvpRunState(run); };
+  const pvpUnsubRef = useRef<(() => void) | null>(null);
+  const pvpRoundIndexRef = useRef(0);
+  const pvpSettledCodeRef = useRef<string | null>(null);
+  const [pvpRatingDelta, setPvpRatingDelta] = useState<number | null>(null);
+  const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
+  const pvpRating = useMemo(() => pvpRatingOf(pvpMatches), [pvpMatches]);
+  useEffect(() => { void listPvpMatches().then(setPvpMatches).catch(() => undefined); }, []);
+  const pvpErrorMessage = (error: unknown) => {
+    if (error instanceof PvpClientError) {
+      if (error.code === "not_found") return t.pvp.invite.notFound;
+      if (error.code === "room_full" || error.code === "wrong_phase") return t.pvp.invite.full;
+      if (error.code === "network") return t.pvp.errors.network;
+    }
+    return t.pvp.errors.generic;
+  };
+  const reportPvpRound = (round: { correct: boolean; responseTimeMs: number | null }) => {
+    const run = pvpRunRef.current;
+    if (!run) return;
+    const roundIndex = pvpRoundIndexRef.current;
+    pvpRoundIndexRef.current += 1;
+    void pvpCommand(run.code, { type: "round", leg: run.index, round: roundIndex, correct: round.correct, ms: round.responseTimeMs ?? 0 }).catch(() => undefined);
+  };
+  // Assim que os dois duelos (Ana e Beto) terminam do lado do servidor, guarda o histórico local e calcula a mudança de força (só no valendo).
+  useEffect(() => {
+    const room = pvpRoom;
+    if (!room || !room.result || !room.opponent || pvpSettledCodeRef.current === room.code) return;
+    pvpSettledCodeRef.current = room.code;
+    setPvpRatingDelta(room.mode === "ranked" ? pvpRatingChange(pvpRating, room.opponent.rating, room.result.outcome) : null);
+    const record: PvpMatchRecord = {
+      id: `pvp:${room.code}`, code: room.code, at: Date.now(), ladder: room.ladder, mode: room.mode,
+      opponentName: room.opponent.name, opponentRating: room.opponent.rating,
+      youCorrect: room.result.you.correct, opponentCorrect: room.result.opponent.correct, totalRounds: LEG_ROUNDS * LEGS,
+      outcome: room.result.outcome, tiebreak: room.result.tiebreak,
+      youForfeited: room.result.you.forfeited, opponentForfeited: room.result.opponent.forfeited,
+      youMs: room.result.you.ms, opponentMs: room.result.opponent.ms,
+    };
+    void savePvpMatch(record).then(listPvpMatches).then(setPvpMatches).catch(() => undefined);
+  }, [pvpRoom, pvpRating]);
+  // Link de convite (?duelo=CÓDIGO): abre direto na tela do convite, sem precisar do Hub.
+  useEffect(() => {
+    const code = parseInvite(location.search);
+    if (!code) return;
+    history.replaceState(null, "", location.pathname);
+    setPvpInviteCode(code);
+    setPvpEntry("invite");
+    setPvpInviteLoading(true);
+    setScreen("pvp-lobby");
+    pvpGetInvite(code).then(setPvpInvitePreview).catch((error) => setPvpError(pvpErrorMessage(error))).finally(() => setPvpInviteLoading(false));
+  }, []);
+  const pvpReset = () => {
+    pvpUnsubRef.current?.();
+    pvpUnsubRef.current = null;
+    setPvpRoom(null); setPvpRun(null); setPvpEntry(null); setPvpInvitePreview(null); setPvpInviteCode(null);
+    setPvpError(null); setPvpBusy(false); setPvpRatingDelta(null);
+    pvpSettledCodeRef.current = null;
+  };
+  const pvpOpenSetup = (ladder: Ladder) => { pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState("friendly"); setScreen("pvp-lobby"); };
+  const startPvpLeg = (run: PvpRun, index: number) => {
+    const leg = run.legs[index];
+    pvpRoundIndexRef.current = 0;
+    setFamily(leg.family);
+    setVariant(leg.variant);
+    setPvpRun({ ...run, index });
+    setScreen("game");
+  };
+  const startPvpRun = (room: PvpRoomView) => {
+    if (!room.seed) return;
+    economyBeforeRef.current = economy;
+    const run = newPvpRun({ code: room.code, ladder: room.ladder, mode: room.mode, isHost: room.host, seed: room.seed });
+    setPvpRun(run);
+    startPvpLeg(run, 0);
+  };
+  const handlePvpView = (view: PvpRoomView) => {
+    const previous = pvpRoomRef.current;
+    setPvpRoom(view);
+    if (view.phase === "playing" && (!previous || previous.phase !== "playing") && !pvpRunRef.current) startPvpRun(view);
+  };
+  const pvpSubscribeTo = (code: string) => { pvpUnsubRef.current?.(); pvpUnsubRef.current = pvpSubscribe(code, handlePvpView, (error) => setPvpError(pvpErrorMessage(error))); };
+  const pvpCreate = async () => {
+    const name = pvpNameState.trim();
+    if (!name) return;
+    setPvpBusy(true); setPvpError(null);
+    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, pvpRating, byLadder[pvpSetupLadder]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    catch (error) { setPvpError(pvpErrorMessage(error)); }
+    setPvpBusy(false);
+  };
+  const pvpJoin = async () => {
+    const name = pvpNameState.trim();
+    if (!name || !pvpInviteCode) return;
+    setPvpBusy(true); setPvpError(null);
+    try { const room = await pvpJoinRoom(pvpInviteCode, name, pvpRating, byLadder[pvpInvitePreview?.ladder ?? "mapas"]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    catch (error) { setPvpError(pvpErrorMessage(error)); }
+    setPvpBusy(false);
+  };
+  const pvpToggleReady = (ready: boolean) => {
+    const room = pvpRoomRef.current;
+    if (!room) return;
+    void pvpCommand(room.code, { type: "ready", ready }).then((view) => { if (view) setPvpRoom(view); }).catch((error) => setPvpError(pvpErrorMessage(error)));
+  };
+  const pvpLeaveLobby = () => {
+    const room = pvpRoomRef.current;
+    if (room && room.phase !== "closed" && room.phase !== "done") void pvpCommand(room.code, { type: "leave" }).catch(() => undefined);
+    pvpReset();
+    setScreen("hub");
+  };
+  const pvpDecline = () => { pvpReset(); setScreen("hub"); };
+  const pvpGoHome = () => { pvpReset(); setScreen("hub"); };
+  const pvpRematch = () => { const ladder = pvpRoomRef.current?.ladder ?? "mapas"; pvpReset(); pvpOpenSetup(ladder); };
+  const pvpContinueLeg = () => { const run = pvpRunRef.current; if (run) startPvpLeg(run, 1); };
+  /** Um tempo terminou (ou a pessoa saiu dele): reporta o que faltar ao servidor e mostra o resultado quando os dois tempos acabaram para mim. */
+  const finishPvpLeg = async (result: SessionResult | null) => {
+    const run = pvpRunRef.current;
+    if (!run) return;
+    if (!result?.spoils) {
+      void pvpCommand(run.code, { type: "leave" }).catch(() => undefined);
+      void refreshEconomy();
+      setPvpRun(null);
+      setScreen("pvp-result");
+      return;
+    }
+    const rounds = result.session.rounds;
+    const leg = run.legs[run.index];
+    const next = recordPvpLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds) });
+    setPvpRun(next);
+    void refreshEconomy();
+    setScreen(run.index === 0 ? "pvp-interlude" : "pvp-result");
+  };
+  useEffect(() => () => pvpUnsubRef.current?.(), []);
+
   // Duelo: cada tempo é uma sessão de 10 rodadas com tempo, baralho da semente do duelo e, em modo de prévia, moedas do modo base.
   const sessionOptions = useMemo(() => duelRun && screen === "game"
     ? legOptions(duelRun, economy.unlocked)
+    : pvpRun && screen === "game"
+    ? pvpLegOptions(pvpRun, pvpRun.index, economy.unlocked, reportPvpRound)
     : trainOnce ? { pace: "training" as Pace, roundLimit: 10 }
-    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, screen, economy.unlocked, trainOnce, pace, effectiveTier, family]);
+    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, pvpRun, screen, economy.unlocked, trainOnce, pace, effectiveTier, family]);
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
   const startGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
@@ -294,11 +451,13 @@ export function App() {
   };
   const leaveGame = () => {
     if (duelRunRef.current) { void finishLeg(null); return; }
+    if (pvpRunRef.current) { void finishPvpLeg(null); return; }
     void refreshEconomy();
     setScreen("recorte");
   };
   const finishGame = async (result: SessionResult | null) => {
     if (duelRunRef.current) { await finishLeg(result); return; }
+    if (pvpRunRef.current) { await finishPvpLeg(result); return; }
     if (!result?.spoils) { void refreshEconomy(); setScreen("recorte"); return; }
     const before = economyBeforeRef.current;
     const after = await queryEconomy().catch(() => null);
@@ -619,6 +778,20 @@ export function App() {
   if (screen === "duel-interlude" && duelRun) {
     return <div className="app-shell grain"><DuelInterlude run={duelRun} unlocked={economy.unlocked} onContinue={() => startLeg(1)} /></div>;
   }
+  if (screen === "pvp-lobby") {
+    const view: PvpLobbyView = pvpRoom
+      ? { kind: "room", room: pvpRoom }
+      : pvpEntry === "invite"
+        ? { kind: "invite", invite: pvpInvitePreview, loading: pvpInviteLoading, busy: pvpBusy, error: pvpError }
+        : { kind: "setup", ladder: pvpSetupLadder, mode: pvpMode, busy: pvpBusy, error: pvpError };
+    return <div className="app-shell grain"><PvpLobby view={view} name={pvpNameState} onNameChange={setPvpDisplayName} onModeChange={setPvpModeState} onCreate={() => void pvpCreate()} onJoin={() => void pvpJoin()} onDecline={pvpDecline} onReady={pvpToggleReady} onLeave={pvpLeaveLobby} onBack={pvpLeaveLobby} /></div>;
+  }
+  if (screen === "pvp-interlude" && pvpRun) {
+    return <div className="app-shell grain"><PvpInterlude run={pvpRun} onContinue={pvpContinueLeg} /></div>;
+  }
+  if (screen === "pvp-result" && pvpRoom) {
+    return <div className="app-shell grain"><PvpResult room={pvpRoom} ratingDelta={pvpRatingDelta} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
+  }
   if (screen === "league") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen duels={duels} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;
   }
@@ -688,7 +861,7 @@ export function App() {
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}
-          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel }}
+          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel, onFriend: pvpOpenSetup }}
          />
       )}
       {screen === "recorte" && (

@@ -57,6 +57,15 @@ assert.equal(training.completion.coins, 70);
 assert.equal(training.total, 160 + 26 + 70);
 assert.ok(training.total < timed.total * 0.55 && training.total > timed.total * 0.45, "treino paga perto da metade da partida");
 
+// scaleSpoils: o duelo amistoso entre pessoas paga menos (metade), escalando cada linha, não só o total
+const half = spoils.scaleSpoils(timed, 0.5);
+assert.equal(half.hits.coins, 160);
+assert.equal(half.streak.coins, 27, "arredonda cada linha, não o total (53 × 0,5 = 26,5 → 27)");
+assert.equal(half.completion.coins, 70);
+assert.equal(half.total, 257, "o total também escala direto (513 × 0,5 = 256,5 → 257), não é a soma das linhas já arredondadas");
+assert.equal(half.factor, timed.factor * 0.5);
+assert.deepEqual(spoils.scaleSpoils(timed, 1), timed, "fator 1 não muda nada (mesma referência)");
+
 // erro quebra a sequência; partida abandonada não ganha o bônus de partida
 const mixed = spoils.computeSpoils({ variant: "mapa", pace: "timed", complete: true, newCards: 0, levelUps: 0, rounds: [
   { correct: true }, { correct: true }, { correct: false }, { correct: true },

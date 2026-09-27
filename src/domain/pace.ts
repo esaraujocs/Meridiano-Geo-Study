@@ -1,6 +1,7 @@
 // Ritmo da partida (Treino ou Partida com tempo) e quantidade de rodadas. Lógica pura.
 import type { AnyQuizVariant, Family } from "./types";
 import type { Pace } from "./spoils.js";
+import type { LearningRound } from "./learning-store.js";
 import { t } from "./i18n/index.js";
 
 /** Tamanho da partida: 10 grátis; 20, 50, 100 e todas (baralho completo) são compradas. */
@@ -15,6 +16,12 @@ export type SessionOptions = {
   coinVariant?: AnyQuizVariant;
   /** Duelo: a que duelo e a que tempo esta sessão pertence. */
   duel?: { id: string; leg: number };
+  /** Duelo entre pessoas (não contra bot): a saída do meio conta o que já foi jogado, não é derrota automática (o aviso de sair usa outro texto). */
+  pvp?: boolean;
+  /** Chamado a cada rodada respondida, na hora (antes de gravar): o duelo entre pessoas usa para avisar o servidor a cada rodada. */
+  onRound?: (round: LearningRound) => void;
+  /** Multiplica as moedas da sessão (1 = normal); o duelo amistoso entre pessoas paga menos (ver FRIENDLY_COIN_FACTOR em pvp.ts). */
+  coinFactor?: number;
 };
 
 /** Desbloqueios de rodadas: valem para todos os modos, para sempre. Comprar um corte maior inclui os menores. */
@@ -87,10 +94,13 @@ export const isRoundTier = (value: unknown): value is RoundTier => ROUND_TIERS.i
 export function sessionSettings(options: SessionOptions | undefined, variant: AnyQuizVariant) {
   const pace: Pace = options?.pace ?? "training";
   // Só leva as chaves do duelo quando existem (o solo continua com {pace, roundLimit, timerSeconds}).
-  const duel: Pick<SessionOptions, "deckSeed" | "coinVariant" | "duel"> = {
+  const duel: Pick<SessionOptions, "deckSeed" | "coinVariant" | "duel" | "pvp" | "onRound" | "coinFactor"> = {
     ...(options?.deckSeed !== undefined ? { deckSeed: options.deckSeed } : {}),
     ...(options?.coinVariant ? { coinVariant: options.coinVariant } : {}),
     ...(options?.duel ? { duel: options.duel } : {}),
+    ...(options?.pvp ? { pvp: options.pvp } : {}),
+    ...(options?.onRound ? { onRound: options.onRound } : {}),
+    ...(options?.coinFactor !== undefined ? { coinFactor: options.coinFactor } : {}),
   };
   return { pace, roundLimit: options?.roundLimit ?? null, timerSeconds: paceSecondsFor(pace, variant), ...duel };
 }

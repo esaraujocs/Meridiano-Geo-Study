@@ -10,7 +10,7 @@ import {
   type LearningColumn,
   type ProgressRecord,
 } from "./learning-rules";
-import { computeSpoils, emptySpoils, type Pace, type Spoils, type Tier } from "./spoils.js";
+import { computeSpoils, emptySpoils, scaleSpoils, type Pace, type Spoils, type Tier } from "./spoils.js";
 import { notifyAchievementLifecycle } from "./achievements.js";
 export { mergeProgressRecord, masteryForProgress };
 export type { LearningColumn, ProgressRecord };
@@ -135,6 +135,10 @@ export async function startLearningSession(input: {
   timerSeconds?: number | null;
   coinVariant?: AnyQuizVariant;
   duel?: { id: string; leg: number };
+  /** Chamado a cada rodada respondida, antes de gravar (o duelo entre pessoas avisa o servidor a cada rodada). */
+  onRound?: (round: LearningRound) => void;
+  /** Multiplica as moedas da sessão (1 = normal; o duelo amistoso entre pessoas paga menos). */
+  coinFactor?: number;
 }): Promise<LearningSessionHandle> {
   const database = await openDatabase();
   const idle = (): LearningSessionHandle => {
@@ -196,7 +200,7 @@ export async function startLearningSession(input: {
         .then(async () => {
           const promotions = current.promotions ?? [];
           // Só a partida terminada paga moedas (e conta XP); sair no meio guarda o aprendizado, sem recompensa.
-          const spoils = complete
+          const raw = complete
             ? computeSpoils({
               variant: current.coinVariant ?? current.variant,
               pace: current.pace ?? "timed",
@@ -206,6 +210,8 @@ export async function startLearningSession(input: {
               levelUps: promotions.filter((item) => item.from > 0).length,
             })
             : emptySpoils(current.pace ?? "timed");
+          // O duelo amistoso entre pessoas paga menos (coinFactor < 1); os outros modos não mexem em nada.
+          const spoils = input.coinFactor !== undefined && input.coinFactor !== 1 ? scaleSpoils(raw, input.coinFactor) : raw;
           const endedAt = current.endedAt ?? Date.now();
           current = { ...current, endedAt, spoils };
           const credit: LedgerCredit | null = spoils.total > 0
@@ -233,6 +239,7 @@ export async function startLearningSession(input: {
     id: session.id,
     recordRound(round) {
       if (ended) return;
+      input.onRound?.(round);
       const sessionAfterRound = {
         ...current,
         rounds: [...current.rounds, round],

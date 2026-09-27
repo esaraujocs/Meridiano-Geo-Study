@@ -22,12 +22,14 @@ const divisionProgress = (card: LadderCard) => {
 };
 
 // Hub em Duelo: uma arena por escada (liga, forma recente e modos do sorteio) e o painel dos próximos prêmios.
-export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onLeague }: {
+export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onFriend, onLeague }: {
   cards: readonly LadderCard[];
   next: readonly Milestone[];
   formatReady: boolean;
   formatCost: number;
   onDuel: (ladder: Ladder) => void;
+  /** "Desafiar amigo": ainda sem servidor, o botão fica desativado se não vier. */
+  onFriend?: (ladder: Ladder) => void;
   onLeague?: () => void;
 }) {
   // o ranking do painel é o da escada em que a pessoa está mais alta
@@ -35,7 +37,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onLea
   const rank = useMemo(() => rankWindow(leaderboard(best.ladder, best.trophies), 3), [best.ladder, best.trophies]);
   return (
     <div className="arena-grid" role="region" aria-label={t.duel.modeDuel}>
-      {cards.map((card) => <Arena key={card.ladder} card={card} formatReady={formatReady} formatCost={formatCost} onDuel={onDuel} />)}
+      {cards.map((card) => <Arena key={card.ladder} card={card} formatReady={formatReady} formatCost={formatCost} onDuel={onDuel} onFriend={onFriend} />)}
       <aside className="pr-card prize" aria-label={t.duel.arenas.prizesTitle}>
         <header><div><h2>{t.duel.arenas.prizesTitle}</h2><p>{t.duel.arenas.prizesSub}</p></div></header>
         {next.length === 0
@@ -61,7 +63,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onLea
   );
 }
 
-function Arena({ card, formatReady, formatCost, onDuel }: { card: LadderCard; formatReady: boolean; formatCost: number; onDuel: (ladder: Ladder) => void }) {
+function Arena({ card, formatReady, formatCost, onDuel, onFriend }: { card: LadderCard; formatReady: boolean; formatCost: number; onDuel: (ladder: Ladder) => void; onFriend?: (ladder: Ladder) => void }) {
   const { ladder, status } = card;
   const step = nextStep(status);
   const baseGroup = t.duel.groups[LADDER_BASE_GROUP[ladder]];
@@ -95,7 +97,9 @@ function Arena({ card, formatReady, formatCost, onDuel }: { card: LadderCard; fo
       </div>
       <div className="ar-foot">
         <button type="button" className="ar-go" style={{ background: COLOR[ladder] }} onClick={() => onDuel(ladder)}><Icon type="swords" size={18} /> {t.duel.arenas.duel}{!formatReady && <Icon type="lock" size={13} />}</button>
-        <button type="button" className="ar-friend" disabled title={t.duel.arenas.friendTitle} aria-label={`${t.duel.arenas.friend} · ${t.duel.arenas.friendSoon}`}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span><em>{t.duel.arenas.friendSoon}</em></button>
+        {onFriend
+          ? <button type="button" className="ar-friend" onClick={() => onFriend(ladder)}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span></button>
+          : <button type="button" className="ar-friend" disabled title={t.duel.arenas.friendTitle} aria-label={`${t.duel.arenas.friend} · ${t.duel.arenas.friendSoon}`}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span><em>{t.duel.arenas.friendSoon}</em></button>}
         <small className={formatReady ? "ar-format" : "ar-need"}>{formatReady ? t.duel.arenas.format : t.duel.arenas.needFormat(money(formatCost))}</small>
       </div>
     </article>

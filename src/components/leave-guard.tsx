@@ -14,7 +14,7 @@ type Pending = Single | Sheet;
  * `guard` é a confirmação simples (modos com o menu ⋯); `ask` abre a folha completa do novo topo do jogo,
  * que mostra o que ficaria pendente e oferece recomeçar.
  */
-export function useLeaveGuard(duel = false): {
+export function useLeaveGuard(duel: boolean | "pvp" = false): {
   noteAnswer: () => void;
   reset: () => void;
   guard: (action: () => void, verb?: Verb) => void;
@@ -55,7 +55,7 @@ export function useLeaveGuard(duel = false): {
 }
 
 function LeaveDialog({ rounds, verb, duel, coins, xp, onStay, onLeave, onRestart }: {
-  rounds: number; verb: Verb; duel?: boolean; coins?: number; xp?: number; onStay: () => void; onLeave: () => void; onRestart?: () => void;
+  rounds: number; verb: Verb; duel?: boolean | "pvp"; coins?: number; xp?: number; onStay: () => void; onLeave: () => void; onRestart?: () => void;
 }) {
   const stayRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -66,11 +66,12 @@ function LeaveDialog({ rounds, verb, duel, coins, xp, onStay, onLeave, onRestart
   }, [onStay]);
   const restart = verb === "restart";
   const sheet = coins !== undefined && !duel;
+  const pvp = duel === "pvp";
   return <div className="leave-backdrop" onPointerDown={(event) => event.stopPropagation()}>
     <div className="leave-card" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-text">
-      <h2 id="leave-title">{duel ? t.leave.duelTitle : restart ? t.leave.restartTitle : t.leave.leaveTitle}</h2>
+      <h2 id="leave-title">{pvp ? t.leave.pvpTitle : duel ? t.leave.duelTitle : restart ? t.leave.restartTitle : t.leave.leaveTitle}</h2>
       <p id="leave-text">
-        {duel ? t.leave.duelBody : <>{t.leave.body(rounds, restart)}{" "}{t.leave.kept}</>}
+        {pvp ? t.leave.pvpBody : duel ? t.leave.duelBody : <>{t.leave.body(rounds, restart)}{" "}{t.leave.kept}</>}
       </p>
       {sheet && <div className="leave-pending">
         <div><small>{t.leave.pendingCoins}</small><b>$ {formatNumber(coins!)}</b></div>
@@ -79,7 +80,7 @@ function LeaveDialog({ rounds, verb, duel, coins, xp, onStay, onLeave, onRestart
       <div className="leave-actions">
         <button ref={stayRef} type="button" className="button" onClick={onStay}>{t.leave.stay}</button>
         {onRestart && <button type="button" className="button leave-secondary" onClick={onRestart}>{t.leave.restart}</button>}
-        <button type="button" className="button leave-quit" onClick={onLeave}>{duel ? t.leave.duelQuit : restart ? t.leave.restartNoGain : t.leave.leaveNoGain}</button>
+        <button type="button" className="button leave-quit" onClick={onLeave}>{pvp ? t.leave.pvpQuit : duel ? t.leave.duelQuit : restart ? t.leave.restartNoGain : t.leave.leaveNoGain}</button>
       </div>
     </div>
   </div>;

@@ -76,6 +76,9 @@ export type Screen =
   | "league"
   | "duel-reveal"
   | "duel-interlude"
-  | "result";
+  | "result"
+  | "pvp-lobby"
+  | "pvp-interlude"
+  | "pvp-result";
 
 export type RegionCounts = Record<Region, number>;

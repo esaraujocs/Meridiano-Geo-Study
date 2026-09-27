@@ -56,7 +56,7 @@ export function QuizGame({
   const [timedOut, setTimedOut] = useState(false);
   const settledRef = useRef("");
   const advance = useAdvance();
-  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
+  const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const timer = useRef<number | null>(null);
   const targetStartedAtRef = useRef(0);
@@ -67,7 +67,7 @@ export function QuizGame({
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
 
   const openSession = () => {
-    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel });
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {

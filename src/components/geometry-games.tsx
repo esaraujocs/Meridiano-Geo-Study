@@ -39,7 +39,7 @@ function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "t
   const queued = useRef<SessionRound[]>([]);
   useEffect(() => {
     let alive = true;
-    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel });
+    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor });
     pending.current.then((handle) => {
       if (alive) {
         ref.current = handle;
@@ -88,7 +88,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const engineVariant = variant === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta";
   const settings = sessionSettings(options, engineVariant);
   const session = useSession("silhueta", engineVariant, region, settings);
-  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
+  const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? engineVariant, settings.pace);
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
@@ -235,7 +235,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
 function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Props, "family"> & { onRestart: () => void }) {
   const settings = sessionSettings(options, "travel");
   const session = useSession("travel", "travel", region, settings);
-  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
+  const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog("travel", settings.pace);
   const flow = useAdvance();
   const leave = async (destination: Destination = "recorte") => {

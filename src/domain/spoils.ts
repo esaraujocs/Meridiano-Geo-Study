@@ -94,6 +94,21 @@ export function emptySpoils(pace: Pace): Spoils {
   };
 }
 
+/** Escala todas as moedas do espólio por um fator (o duelo amistoso entre pessoas paga menos, ver FRIENDLY_COIN_FACTOR em pvp.ts). */
+export function scaleSpoils(spoils: Spoils, coinFactor: number): Spoils {
+  if (coinFactor === 1) return spoils;
+  const scale = (value: number) => Math.round(value * coinFactor);
+  return {
+    ...spoils, factor: spoils.factor * coinFactor,
+    hits: { ...spoils.hits, coins: scale(spoils.hits.coins) },
+    streak: { ...spoils.streak, coins: scale(spoils.streak.coins) },
+    newCards: { ...spoils.newCards, coins: scale(spoils.newCards.coins) },
+    levelUps: { ...spoils.levelUps, coins: scale(spoils.levelUps.coins) },
+    completion: { ...spoils.completion, coins: scale(spoils.completion.coins) },
+    total: scale(spoils.total),
+  };
+}
+
 /** Soma dos espólios de várias sessões (os dois tempos de um duelo): a mesma decomposição, com a melhor sequência e a precisão ponderadas. */
 export function mergeSpoils(parts: readonly Spoils[]): Spoils {
   const sum = (pick: (spoils: Spoils) => number) => parts.reduce((total, spoils) => total + pick(spoils), 0);

@@ -45,7 +45,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   const [timedOutRound, setTimedOutRound] = useState(false);
   const [runKey, setRunKey] = useState(0);
   const advance = useAdvance();
-  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
+  const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? variant, pace);
   const inputRef = useRef<HTMLInputElement>(null);
   const committedTarget = useRef<string | null>(null);
@@ -83,7 +83,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
       mode: writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
       subject: writing ? (variant === "escrita-capital" ? "capital" : "pais") : "",
       pace, roundLimit, timerSeconds,
-      coinVariant: settings.coinVariant, duel: settings.duel,
+      coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor,
     });
     pendingSession.current = handle;
     handle.then((value) => {

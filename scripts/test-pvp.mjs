@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { LEGS, LEG_ROUNDS, drawLegs } from "../.tmp-pvp/src/domain/duel-modes.js";
 import { COUNTDOWN_MS, DONE_TTL_MS, GRACE_MS, OPEN_TTL_MS, ROOM_CODE_ALPHABET, cleanPlayerName, inviteLink, isValidRoomCode, normalizeRoomCode, parseCommand, parseInvite, settlePvp, sideFinished, sideTotals } from "../.tmp-pvp/src/domain/pvp.js";
+import { PVP_RATING_BASE, pvpExpectedScore, pvpRatingChange, pvpRatingFromHistory } from "../.tmp-pvp/src/domain/pvp-rating.js";
 import { PvpError, PvpRooms } from "../.tmp-pvp/server/pvp-rooms.js";
 import { PlayerRegistry } from "../.tmp-pvp/server/pvp-players.js";
 import { createPvpHttp } from "../.tmp-pvp/server/pvp-http.js";
@@ -46,6 +47,19 @@ assert.equal(parseCommand(null), null);
 
 // os dois jogadores sorteiam o mesmo duelo pela semente da sala (sem ownedGroups, quem comprou o quê não pesa)
 assert.deepEqual(drawLegs("mapas", "abc123"), drawLegs("mapas", "abc123"));
+
+// ───────────── força do valendo (Elo simples, próprio, derivado do histórico) ─────────────
+assert.equal(pvpExpectedScore(1000, 1000), 0.5, "força igual: 50-50");
+assert.ok(pvpExpectedScore(1200, 1000) > 0.7, "quem está na frente é o favorito");
+assert.equal(pvpRatingChange(1000, 1000, "win") > 0 && pvpRatingChange(1000, 1000, "loss") < 0, true);
+assert.equal(pvpRatingChange(1000, 1000, "win"), -pvpRatingChange(1000, 1000, "loss"), "ganho e perda simétricos na mesma força");
+assert.ok(pvpRatingChange(1000, 1400, "win") > pvpRatingChange(1000, 600, "win"), "vencer quem é mais forte vale mais");
+assert.equal(pvpRatingChange(1000, 1000, "draw"), 0, "empate entre iguais não move nada");
+assert.equal(pvpRatingFromHistory([]), PVP_RATING_BASE, "sem partida valendo, força de base");
+const afterWins = pvpRatingFromHistory([{ opponentRating: 1000, outcome: "win" }, { opponentRating: 1000, outcome: "win" }]);
+assert.ok(afterWins > PVP_RATING_BASE, "ganhando, a força sobe");
+assert.ok(pvpRatingFromHistory([{ opponentRating: 1000, outcome: "loss" }]) < PVP_RATING_BASE, "perdendo, desce");
+assert.ok(pvpRatingFromHistory([{ opponentRating: 1000, outcome: "loss" }]) >= 0, "nunca fica negativa");
 
 // ───────────── máquina de estados, com relógio falso ─────────────
 let now = 1_700_000_000_000;

@@ -95,7 +95,7 @@ export function Game({
   const targetStartedAtRef = useRef(0);
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<GeoFeature>> | null>(null);
   const queuedRoundsRef = useRef<Parameters<LearningSessionHandle["recordRound"]>[0][]>([]);
-  const leaveGuard = useLeaveGuard(Boolean(settings.duel));
+  const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? engineVariant, pace);
   const featureSignature = mapDeckSignature(features.map((item) => item.id));
   // Territórios absorvidos (Guadalupe, Martinica...) nunca são alvo, mas aparecem com o recorte;
@@ -117,6 +117,8 @@ export function Game({
       timerSeconds,
       coinVariant: settings.coinVariant,
       duel: settings.duel,
+      onRound: settings.onRound,
+      coinFactor: settings.coinFactor,
     });
     pendingSessionRef.current = pending;
     pending

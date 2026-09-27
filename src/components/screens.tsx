@@ -234,7 +234,7 @@ export function Hub({
   duelsPlayed?: number;
   onOpenLeague?: () => void;
   /** Hub em Duelo: as arenas (uma por escada) e os próximos prêmios, no lugar dos cartões de modo. */
-  arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; onDuel: (ladder: Ladder) => void };
+  arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; onDuel: (ladder: Ladder) => void; onFriend?: (ladder: Ladder) => void };
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -344,7 +344,7 @@ export function Hub({
       </div>
       <div className="hub-rule" aria-hidden="true" />
       <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} title={duelReady ? undefined : t.duel.lockedSwitch} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}{!duelReady && <Icon type="lock" size={12} />}</button></div>}</div>
-      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} onDuel={arenas.onDuel} onLeague={onOpenLeague} /> : (
+      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} onDuel={arenas.onDuel} onFriend={arenas.onFriend} onLeague={onOpenLeague} /> : (
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
