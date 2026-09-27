@@ -213,7 +213,6 @@ html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-red
 :root[data-treat="cartografo"] .hub-content .family .family-geo{opacity:.4;background:repeating-linear-gradient(22deg,transparent 0 15px,rgba(90,60,25,.42) 16px 17px),repeating-linear-gradient(100deg,transparent 0 22px,rgba(90,60,25,.42) 23px 24px)}
 /* medalhão: anel de rosa dos ventos com o ícone no centro, como um selo de bússola */
 :root[data-treat="cartografo"] .hub-content .family-visual .family-icon{background:radial-gradient(circle at 34% 28%,#F6EACB,#E6D3A2 65%,#CFB77E);color:color-mix(in srgb,var(--h) 78%,#2B1C0C);border:0;box-shadow:0 0 0 3px #EAD9AE,0 0 0 4px #7A5C34,0 0 0 9px rgba(255,244,214,.5),0 0 0 10px rgba(90,60,25,.35),0 14px 22px -10px rgba(60,35,10,.65)}
-:root[data-treat="cartografo"] .hub-content .family-visual .family-icon::before{content:"";position:absolute;inset:-26px;background:url("./assets/themes/cartografo-compass.svg") center/contain no-repeat;opacity:.9;pointer-events:none}
 :root[data-treat="cartografo"] .hub-content .family-visual .family-icon{position:relative}
 :root[data-treat="cartografo"] .hub-content .family-copy,:root[data-treat="cartografo"] .hub-content .family-footer{position:relative;z-index:3}
 :root[data-treat="cartografo"] .hub-content .family h3{color:color-mix(in srgb,var(--h) 42%,#2B1C0C);font-variant:small-caps;letter-spacing:.03em}
@@ -295,5 +294,5 @@ html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-red
 
 
 /* navios e criaturas do mar ancorados no oceano do mapa (marcadores do MapLibre; só decoração, sem clique; tamanho fixo em px, sempre visíveis) */
-.map-fauna-marker{pointer-events:none;opacity:.92}
-.map-fauna-marker img{display:block;max-width:none;user-select:none;pointer-events:none}
+.map-fauna-marker{pointer-events:none}
+.map-fauna-marker img{display:block;max-width:none;user-select:none;pointer-events:none;opacity:.92}
