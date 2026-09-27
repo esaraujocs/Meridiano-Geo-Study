@@ -228,10 +228,16 @@ export const FIGURES = {
   narval: { label: "Narval", svg: (ink) => baleiaSvg(ink, "narwhal"), w: 300, h: 134, stroke: 2.5, px: 76, lng: 170.7, lat: 37.6 },
   peixe: { label: "Peixe-monstro", svg: peixeSvg, w: 250, h: 134, stroke: 2.5, px: 64, lng: -119.2, lat: 0.9 },
 };
-/** Traço do contorno em tela, em px, no tamanho de referência: figura pequena precisa de traço mais grosso no desenho para não virar fio de cabelo. */
-export const SCREEN_STROKE_PX = 1.15;
-/** O SVG final de uma figura, com o traço engrossado para o tamanho em que ela aparece. */
-export const figureSvg = (id, ink = INK) => { const fig = FIGURES[id]; return bold(fig.svg(ink), (SCREEN_STROKE_PX * fig.w) / (fig.px * fig.stroke)); };
+/** Traço do contorno em tela, em px (fixo, em qualquer tamanho da figura), e o mínimo dos traços finos. */
+export const SCREEN_STROKE_PX = 1.2;
+export const MIN_STROKE_PX = 0.55;
+/** O SVG final de uma figura: as larguras de traço viram px de tela e o `vector-effect: non-scaling-stroke` as mantém assim quando a figura cresce com o zoom do mapa. */
+export const figureSvg = (id, ink = INK) => {
+  const fig = FIGURES[id];
+  const ratio = SCREEN_STROKE_PX / fig.stroke;
+  const svg = fig.svg(ink).replace(/stroke-width='([0-9.]+)'/g, (m, w) => `stroke-width='${Math.max(MIN_STROKE_PX, +w * ratio).toFixed(2)}'`);
+  return svg.replace(/^<svg([^>]*)>/, "<svg$1><style>*{vector-effect:non-scaling-stroke}</style>");
+};
 /** Lista que o jogo lê (src/assets/themes/cartografo-fauna.json): posição no oceano, largura no zoom de referência, proporção e espelhamento. */
 export const faunaManifest = () => Object.entries(FIGURES).map(([id, fig]) => ({ id, lng: fig.lng, lat: fig.lat, px: fig.px, aspect: Math.round((fig.h / fig.w) * 1000) / 1000, flip: Boolean(fig.flip) }));
 /** SVG espelhado na horizontal (para a prancha de revisão). */

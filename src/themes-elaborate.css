@@ -293,6 +293,6 @@ html[data-reduced-motion="true"][data-treat="noturno"] body:before,html[data-red
 :root[data-treat="cartografo"] .arena::after{background:url("./assets/themes/cartografo-corner-tl.svg") 0 0/34px 34px no-repeat,url("./assets/themes/cartografo-corner-tr.svg") 100% 0/34px 34px no-repeat}
 
 
-/* navios e criaturas do mar ancorados no oceano do mapa (marcadores do MapLibre; só decoração, sem clique; tamanho fixo em px, sempre visíveis) */
+/* navios e criaturas do mar desenhados no oceano do mapa (marcadores do MapLibre; só decoração, sem clique; crescem com o mapa pelas variáveis do map-fauna.ts) */
 .map-fauna-marker{pointer-events:none}
-.map-fauna-marker img{display:block;max-width:none;user-select:none;pointer-events:none;opacity:.92}
+.map-fauna-marker img{display:block;max-width:none;user-select:none;pointer-events:none;opacity:calc(.92 * var(--fauna-fade, 1))}

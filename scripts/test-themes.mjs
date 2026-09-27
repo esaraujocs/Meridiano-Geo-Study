@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { LEAGUES } from "../.tmp-themes/league.js";
 import { COAST_BANDS, DEFAULT_MAP_PALETTE, coastBands, graticuleLines, mixHex, rhumbLines } from "../.tmp-themes/map-palette.js";
+import { FAUNA_FADE_SPAN, FAUNA_FADE_START, FAUNA_REFERENCE_ZOOM, faunaOpacity, faunaScale } from "../.tmp-themes/map-fauna-scale.js";
 import {
   DEFAULT_THEME,
   LEAGUE_THEMES,
@@ -141,8 +142,21 @@ for (const item of fauna) {
   assert.ok(item.px >= 40 && item.px <= 110, `${item.id}: pequena no mapa-múndi (${item.px} px)`);
   assert.ok(item.aspect > 0.3 && item.aspect < 1.2 && typeof item.flip === "boolean", item.id + ": proporção e espelhamento");
 }
-// tamanho fixo em px: o catálogo só guarda a largura, sem regra de zoom (as figuras não crescem nem somem com o zoom)
-assert.ok(fauna.every((item) => !("scale" in item) && !("fade" in item)), "o catálogo não tem regra de escala");
+// as figuras são desenhadas no oceano: acompanham EXATAMENTE a escala do mapa (cada zoom inteiro dobra), então a proporção em relação à geografia nunca muda
+const near = (value, expected) => Math.abs(value - expected) < 1e-9;
+assert.ok(near(faunaScale(FAUNA_REFERENCE_ZOOM), 1), "no zoom do mundo têm o tamanho do catálogo");
+assert.ok(near(faunaScale(FAUNA_REFERENCE_ZOOM + 1), 2) && near(faunaScale(FAUNA_REFERENCE_ZOOM + 3), 8));
+assert.ok(near(faunaScale(FAUNA_REFERENCE_ZOOM - 1), 0.5), "e encolhem se o mapa se afasta");
+// só somem em zoom muito alto, onde já são maiores que a tela (a figura mais larga tem 94 px no mundo)
+const widest = Math.max(...fauna.map((item) => item.px));
+assert.ok(widest * faunaScale(FAUNA_FADE_START) > 1000, "quando começam a sumir já passam de 1.000 px");
+assert.equal(faunaOpacity(1.35), 1);
+assert.equal(faunaOpacity(4), 1, "no zoom de jogo normal ficam visíveis");
+assert.equal(faunaOpacity(FAUNA_FADE_START), 1);
+assert.ok(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) > 0 && faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) < 1, "somem devagar");
+assert.equal(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN + 0.1), 0);
+// traço fixo em px de tela: cada SVG liga o non-scaling-stroke (senão o traço engrossaria com o zoom)
+for (const item of fauna) assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-fauna-${item.id}.svg`, import.meta.url), "utf8").includes("vector-effect:non-scaling-stroke"), item.id + ": traço fixo em tela");
 // elaborados: preço na faixa e mapa próprio
 for (const theme of SHOP_THEMES.filter((item) => item.tier === "elaborate" || item.tier === "prestige")) assert.ok(theme.map && theme.map.graticule !== undefined, theme.id + " (elaborado) muda o mapa em jogo");
 
