@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { LEAGUES } from "../.tmp-themes/league.js";
 import { COAST_BANDS, DEFAULT_MAP_PALETTE, coastBands, graticuleLines, mixHex, rhumbLines } from "../.tmp-themes/map-palette.js";
-import { FAUNA_FADE_SPAN, FAUNA_FADE_START, FAUNA_REFERENCE_ZOOM, faunaOpacity, faunaScale } from "../.tmp-themes/map-fauna-scale.js";
 import {
   DEFAULT_THEME,
   LEAGUE_THEMES,
@@ -142,15 +141,8 @@ for (const item of fauna) {
   assert.ok(item.px >= 40 && item.px <= 110, `${item.id}: pequena no mapa-múndi (${item.px} px)`);
   assert.ok(item.aspect > 0.3 && item.aspect < 1.2 && typeof item.flip === "boolean", item.id + ": proporção e espelhamento");
 }
-// as figuras crescem só metade do que o mapa cresce e só somem em zoom muito alto
-assert.equal(faunaScale(FAUNA_REFERENCE_ZOOM), 1, "no zoom do mundo têm o tamanho do catálogo");
-assert.ok(faunaScale(FAUNA_REFERENCE_ZOOM + 2) > 1.55 && faunaScale(FAUNA_REFERENCE_ZOOM + 2) < 1.7, "a cada 2 de zoom (o mapa ×4) a figura cresce só ×1,6");
-assert.ok(faunaScale(FAUNA_REFERENCE_ZOOM - 1) < 1, "e encolhe se o mapa se afasta");
-assert.equal(faunaOpacity(1.35), 1);
-assert.equal(faunaOpacity(3.95), 1, "no zoom de jogo normal ficam visíveis (não somem)");
-assert.equal(faunaOpacity(FAUNA_FADE_START), 1);
-assert.ok(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) > 0 && faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN / 2) < 1, "somem devagar");
-assert.equal(faunaOpacity(FAUNA_FADE_START + FAUNA_FADE_SPAN + 0.1), 0);
+// tamanho fixo em px: o catálogo só guarda a largura, sem regra de zoom (as figuras não crescem nem somem com o zoom)
+assert.ok(fauna.every((item) => !("scale" in item) && !("fade" in item)), "o catálogo não tem regra de escala");
 // elaborados: preço na faixa e mapa próprio
 for (const theme of SHOP_THEMES.filter((item) => item.tier === "elaborate" || item.tier === "prestige")) assert.ok(theme.map && theme.map.graticule !== undefined, theme.id + " (elaborado) muda o mapa em jogo");
 

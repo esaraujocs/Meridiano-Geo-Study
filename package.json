@@ -50,7 +50,7 @@
     "test:config-family-isolation": "node scripts/test-config-family-isolation.mjs",
     "test:collection-summary": "rm -rf .tmp-collection-summary && tsc --ignoreConfig src/domain/collection-summary.ts --outDir .tmp-collection-summary --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-collection-summary.mjs",
     "smoke": "node scripts/smoke-app.mjs",
-    "test:themes": "rm -rf .tmp-themes && tsc --ignoreConfig src/domain/themes.ts src/domain/map-fauna-scale.ts --outDir .tmp-themes --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-themes.mjs",
+    "test:themes": "rm -rf .tmp-themes && tsc --ignoreConfig src/domain/themes.ts --outDir .tmp-themes --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-themes.mjs",
     "test:i18n": "node scripts/test-i18n.mjs",
     "build:i18n": "node scripts/i18n/build-i18n.mjs"
   },
