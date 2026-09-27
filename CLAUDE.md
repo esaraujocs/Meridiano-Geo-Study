@@ -4,7 +4,7 @@ Jogo de geografia em **pt-BR**, PWA feito em React 19 + Vite + TypeScript + MapL
 
 Este arquivo descreve o **rebuild** (estado em 25/09/2026). O jogo antigo, um único HTML (`carta-cega-0.13.5.html`), está **congelado**; o `CLAUDE.md` dele foi arquivado em `docs/legado-html-classico.md` (não é contexto de trabalho, mas guarda as regras de conteúdo e os bugs já mapeados). Histórico mais antigo: `historico-carta-cega.txt`.
 
-**Onde fica:** `Desktop\Geo Study - Meridian\carta-cega-rebuild` (git, branch `main`, só local, sem remoto). Ao lado ficam `carta-cega-servidor\` (túnel para testar no celular fora de casa) e `mockups-carta-cega\` (imagens de design).
+**Onde fica:** `Desktop\Geo Study - Meridian\carta-cega-rebuild` (git, branch `main`). Desde 27/09/2026 tem remoto no GitHub, privado, `origin` → `github.com/esaraujocs/Meridiano-Geo-Study` (adicionado pra testar Claude Code na nuvem — a nuvem clona de lá). Ao lado ficam `carta-cega-servidor\` (túnel para testar no celular fora de casa) e `mockups-carta-cega\` (imagens de design).
 
 ---
 
