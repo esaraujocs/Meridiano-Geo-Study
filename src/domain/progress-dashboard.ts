@@ -37,6 +37,9 @@ export type DashboardInput = {
   pvpMatches?: readonly PvpMatchRecord[];
   records: readonly ProgressRecordLike[];
   meta: Record<string, Meta>;
+  /** Nome e bandeira das entidades históricas (mesma forma de `meta`, por id), para o "Você errou" do Históricas no histórico
+   *  (duelo ou não) não cair no id cru — sem isto, `meta[id]` não bate e o nome mostrado era o próprio id (ex.: "anhalt-ducado"). */
+  historicalMeta?: Record<string, Meta>;
   /** ids jogáveis do atlas (denominador do domínio, o mesmo do Hub). */
   universe: readonly string[];
   dominatedIds: readonly string[];
@@ -320,7 +323,10 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
 }
 
 export function buildProgressDashboard(input: DashboardInput): Dashboard {
-  const { now, meta } = input;
+  const { now } = input;
+  // Junta as entidades históricas ao mesmo dicionário: elas nunca entram no universo/maestria (decisão 1), só servem aqui para nomear/ilustrar
+  // o que a pessoa errou num tempo de Históricas, sem depender de a entidade também estar em `meta`.
+  const meta = input.historicalMeta ? { ...input.meta, ...input.historicalMeta } : input.meta;
   const sessions = input.sessions.filter((session) => session.roundCount > 0).slice().sort((a, b) => startedAtOf(a) - startedAtOf(b));
   const universe = new Set(input.universe);
   const total = input.universe.length;

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Icon } from "./icons";
 import { useEnterKey } from "./use-enter-key";
-import type { Ladder } from "../domain/duel-modes";
+import { drawLegs, type Ladder } from "../domain/duel-modes";
 import { inviteLink, PLAYER_NAME_MAX, type PvpInvite, type PvpMode, type PvpRoomView } from "../domain/pvp";
 import { t } from "../domain/i18n";
 
@@ -130,6 +130,8 @@ function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (read
     return <main className="content rv-page"><section className="rv-card pvp-card"><h1>{reason}</h1><button type="button" className="rs-btn primary" onClick={onLeave}>{t.common.backHub}</button></section></main>;
   }
   const bothReady = room.you.ready && room.opponent?.ready;
+  // Os 2 tempos, assim que a semente chega (a partir do lobby, com o amigo já dentro): os dois veem os mesmos modos antes de ficar pronto.
+  const legs = useMemo(() => (room.seed ? drawLegs(room.ladder, room.seed) : null), [room.seed, room.ladder]);
   return (
     <main className={`content rv-page${room.opponent ? "" : " pvp-page"}`}>
       <button type="button" className="back" onClick={onLeave}>← {t.pvp.lobby.leave}</button>
@@ -163,6 +165,15 @@ function PvpRoom({ room, onReady, onLeave }: { room: PvpRoomView; onReady: (read
                 <small>{!room.opponent.connected ? t.pvp.lobby.disconnected : room.opponent.ready ? t.pvp.lobby.ready : t.pvp.lobby.opponentWaiting}</small>
               </div>
             </div>
+            {legs && <div className="pvp-legs-preview">
+              <span className="rv-k">{t.pvp.lobby.legsTitle}</span>
+              <ul className="rv-legs">
+                {legs.map((leg, index) => <li className="rv-leg" key={index}>
+                  <span className="rv-n">{index + 1}º</span>
+                  <span className="rv-mode"><b>{t.duel.groups[leg.group]}</b></span>
+                </li>)}
+              </ul>
+            </div>}
             {countdown !== null
               ? <p className="pvp-countdown">{t.pvp.lobby.startingIn(countdown)}</p>
               : <button type="button" className={`rs-btn primary rv-go${room.you.ready ? " is-ready" : ""}`} onClick={() => onReady(!room.you.ready)}>

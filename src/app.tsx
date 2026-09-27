@@ -81,12 +81,10 @@ export function App() {
   // "Treinar" no resultado de uma derrota: a próxima partida é um Treino curto do modo, no Mundo inteiro e sem o filtro ONU.
   const [trainOnce, setTrainOnce] = useState(false);
   const [regionPref, setRegion] = useState<RegionSelection>("mundo");
-  const region: RegionSelection = duelMode || trainOnce ? "mundo" : regionPref;
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
   const [variant, setVariant] = useState<AnyQuizVariant>("mapa");
   const [onlyUnPref, setOnlyUn] = useState(true);
-  const onlyUn = duelMode || trainOnce ? false : onlyUnPref;
   // Ritmo (Partida com tempo ou Treino) e quantas rodadas: lembrados entre as partidas.
   const [pace, setPaceState] = useState<Pace>(() => {
     try { const saved = localStorage.getItem("carta-pace"); return isPace(saved) ? saved : DEFAULT_PACE; } catch { return DEFAULT_PACE; }
@@ -205,6 +203,10 @@ export function App() {
   const pvpRating = useMemo(() => pvpRatingOf(pvpMatches), [pvpMatches]);
   // Os dois tempos, para a tabela do resultado: vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar).
   const pvpResultLegs = useMemo(() => (pvpRoom?.seed ? drawLegs(pvpRoom.ladder, pvpRoom.seed) : null), [pvpRoom?.seed, pvpRoom?.ladder]);
+  // Duelo (contra bot ou com amigo): sempre Mundo inteiro, sem o filtro ONU — os dois lados do PvP precisam do MESMO baralho disponível
+  // (a semente sozinha não basta se o recorte/filtro pessoal de cada aparelho for diferente; region/onlyUn não podem vir da preferência solo).
+  const region: RegionSelection = duelMode || trainOnce || pvpRoom ? "mundo" : regionPref;
+  const onlyUn = duelMode || trainOnce || pvpRoom ? false : onlyUnPref;
   useEffect(() => { void listPvpMatches().then(setPvpMatches).catch(() => undefined); }, []);
   const pvpErrorMessage = (error: unknown) => {
     if (error instanceof PvpClientError) {

@@ -288,6 +288,15 @@ assert.deepEqual([friendly.duel.deltaLabel, friendly.duel.deltaText], [null, "Am
 const pvpLeft = build({ sessions: [...sessions, legSession("pl0", 0, at(20, 8, 50), "111", true, "pz1")], pvpMatches: [{ ...pvpRecord, youForfeited: true }] }).history.find((row) => row.id === "pvp:pz1");
 assert.deepEqual([pvpLeft.complete, pvpLeft.duel.abandoned], [false, true], "quem saiu no meio do duelo com amigo também aparece como incompleto");
 
+// entidade histórica errada num tempo de Históricas: fora de `meta` de propósito (decisão 1 do CLAUDE.md), então sem `historicalMeta` o "Você
+// errou" caía no id cru (bug real, achado em 28/09 testando um duelo com amigo de Bandeiras/Históricas: apareceu "anhalt-ducado" em vez do nome)
+const historicalMeta = { "reino-teste": { pt: "Reino de Teste", fl: "reino-teste" } };
+const histTargets = ["reino-teste", "br", "ar", "fr", "de", "reino-teste", "br", "ar", "fr", "de"];
+const histSession = normalizeSession({ id: "plh1", family: "historicas", variant: "nome-historica", region: "mundo", regions: ["mundo"], startedAt: at(20, 8, 52), endedAt: at(20, 8, 52) + 90_000, complete: true, duelId: "pzh1", duelLeg: 1, rounds: rounds(histTargets, "0111111111", 2000, null) });
+const pvpHistRecord = { ...pvpRecord, id: "pvp:pzh1", code: "pzh1", legs: [{ group: "atuais", youCorrect: 9, opponentCorrect: 5, total: 10, youMs: 30_000, opponentMs: 35_000 }, { group: "historicas", youCorrect: 9, opponentCorrect: 5, total: 10, youMs: 30_000, opponentMs: 35_000 }] };
+const histRow = build({ sessions: [...sessions, legSession("plh0", 0, at(20, 8, 50), "1111111110", true, "pzh1"), histSession], pvpMatches: [pvpHistRecord], historicalMeta }).history.find((row) => row.id === "pvp:pzh1");
+assert.deepEqual(histRow.duel.legs[1].misses.map((miss) => miss.name), ["Reino de Teste"], "com historicalMeta, o nome da entidade histórica aparece (não o id cru)");
+
 // perfil novo
 const empty = buildProgressDashboard({ now: NOW, sessions: [], records: [], meta, universe, dominatedIds: [], titleIds: [], pillars: {}, album: { discovered: 0, total: 7, distribution: [7, 0, 0, 0, 0, 0] }, economy: { level: 1, xp: 0, xpBase: 0, xpNext: 50, completedSessions: 0, rounds: 0 } });
 assert.equal(empty.empty, true);

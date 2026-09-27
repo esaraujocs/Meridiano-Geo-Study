@@ -240,7 +240,9 @@ export class PvpRooms {
     const me = this.seatOf(room, playerId) as Seat;
     const other = this.opponentOf(room, me);
     const isHost = me === room.host;
-    const revealSeed = room.phase === "countdown" || room.phase === "playing" || room.phase === "done";
+    // A partir do lobby (o amigo já entrou): os dois veem os mesmos 2 modos que vão jogar, para decidir "ficar pronto" sabendo o que vem.
+    // Só o anfitrião sozinho (fase "open", antes do amigo entrar) não vê, senão dava para recriar o convite até sair um sorteio favorito.
+    const revealSeed = room.phase === "lobby" || room.phase === "countdown" || room.phase === "playing" || room.phase === "done";
     const settled = room.settled;
     return {
       code: room.code, ladder: room.ladder, mode: room.mode, phase: room.phase, closedReason: room.closedReason,

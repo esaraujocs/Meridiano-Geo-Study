@@ -104,13 +104,15 @@ const play = (rooms, c, player, legs) => legs.forEach((leg, index) => leg.forEac
   assert.equal(joined.host, false);
   assert.equal(joined.opponent.name, "Ana");
   assert.equal(joined.opponent.rating, 1200);
+  assert.ok(joined.seed, "a partir do lobby (o amigo já entrou) os dois já veem a semente/os modos, antes mesmo de ficar pronto");
+  assert.equal(joined.seed, rooms.view(c, ana.id).seed, "a mesma semente para os dois, já no lobby");
   assert.equal(rooms.view(c, ana.id).opponent.name, "Beto", "o anfitrião vê quem entrou");
   assert.equal(rooms.invite(c).full, true);
   throwsCode(() => rooms.joinRoom(c, caio), "room_full");
   throwsCode(() => rooms.view(c, caio.id), "forbidden");
   assert.deepEqual(rooms.joinRoom(c, beto).phase, "lobby", "a mesma pessoa entrar de novo (recarregou a página) não muda nada");
 
-  // pronto: os dois → contagem regressiva; a semente só aparece agora
+  // pronto: os dois → contagem regressiva (a semente já apareceu no lobby, ver acima; aqui só confere que ela não muda)
   rooms.command(c, ana.id, { type: "ready", ready: true });
   assert.equal(rooms.view(c, ana.id).phase, "lobby");
   assert.equal(rooms.view(c, beto.id).opponent.ready, true, "o amigo vê que o outro está pronto");
@@ -410,6 +412,8 @@ assert.equal(joined.body.room.phase, "lobby");
 const guestStream = await stream(`/rooms/${roomCode}/events`, B);
 const lobbyForHost = await hostStream.waitFor((view) => view.phase === "lobby" && view.opponent?.name === "Beto", "o anfitrião vê o amigo chegar");
 assert.equal(lobbyForHost.opponent.rating, 1300);
+assert.ok(lobbyForHost.seed, "no lobby (amigo já dentro) a semente/os modos já aparecem, antes de ficar pronto");
+assert.equal(joined.body.room.seed, lobbyForHost.seed, "a mesma semente para os dois já no lobby");
 assert.equal((await call("POST", `/rooms/${roomCode}/join`, { id: "caio-http-000000000003", secret: "segredo-do-caio-00000000000003" }, { name: "Caio" })).status, 409, "sala cheia");
 assert.equal((await call("POST", `/rooms/${roomCode}/command`, A, { type: "explodir" })).status, 400, "comando inválido");
 

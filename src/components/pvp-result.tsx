@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Icon } from "./icons";
-import type { DuelLeg } from "../domain/duel-modes";
+import { LEGS, LEG_ROUNDS, type DuelLeg } from "../domain/duel-modes";
 import { sideTotals, type PvpRoomView } from "../domain/pvp";
 import { formatNumber as format, t } from "../domain/i18n";
 
@@ -44,6 +44,9 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
   const opponentName = room.opponent?.name ?? t.pvp.result.opponent;
   const won = outcome === "win";
   const lost = outcome === "loss";
+  // Enquanto o amigo não termina: quantas das 20 rodadas ele já respondeu (não o placar, só o andamento), para o "esperando" não ficar tão vago.
+  const opponentAnswered = opponent.legs.reduce((sum, leg) => sum + leg.answered, 0);
+  const opponentTotalRounds = LEGS * LEG_ROUNDS;
 
   const still = useMemo(() => reducedMotion(), []);
   const [score, setScore] = useState<[number, number]>(still || !done ? [you.correct, opponent.correct] : [0, 0]);
@@ -87,7 +90,6 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
               <span className="vh-pill calm">{room.mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked}</span>
               {room.result?.tiebreak && <span className="vh-pill calm">{t.duel.result.tiebreak}</span>}
               {done && room.mode === "ranked" && ratingDelta !== null && <span className={`vh-pill ${ratingDelta >= 0 ? "up" : "down"}`}>{t.pvp.result.ratingChange(ratingDelta)}</span>}
-              {!done && <span className="vh-pill">{t.pvp.result.waitingOpponent}</span>}
             </div>
           </div>
           <div className="vh-score">
@@ -96,6 +98,11 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
             <span aria-hidden="true" className={!outcome ? "" : won ? "l" : "w"}><small>{firstName(opponentName)}</small><b>{score[1]}</b></span>
             <p>{you.forfeited ? t.pvp.result.youLeft : room.opponent?.forfeited ? t.pvp.result.opponentLeft : ""}</p>
           </div>
+          {/* Enquanto o resultado não sai (o amigo ainda jogando): banner ao vivo, não só uma pílula discreta entre as outras. */}
+          {!done && <div className="pvp-waiting" role="status" aria-live="polite">
+            <span className="pvp-waiting-dot" aria-hidden="true" />
+            <div><b>{t.pvp.result.waitingOpponent}</b><small>{t.pvp.result.waitingProgress(firstName(opponentName), opponentAnswered, opponentTotalRounds)}</small></div>
+          </div>}
         </div>
         <div className="dr-col dr-col-b">
           {legs && legs.length > 0 && <table className="dr-legs">

@@ -79,7 +79,7 @@ export type PvpRoomView = {
   mode: PvpMode;
   phase: PvpPhase;
   closedReason: PvpClosedReason | null;
-  /** Só aparece na contagem regressiva em diante, para o anfitrião não ver as perguntas antes. */
+  /** Só aparece a partir do lobby (o amigo já entrou), para o anfitrião sozinho não ver os modos antes de alguém aceitar o convite. */
   seed: string | null;
   /** Instante (relógio do servidor) em que o 1º tempo começa. */
   startAt: number | null;

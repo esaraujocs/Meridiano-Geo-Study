@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
-import type { Legacy, Region } from "../domain/types";
+import type { Legacy, Meta, Region } from "../domain/types";
 import type { querySurfaces } from "../domain/progress-surfaces";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { TITLE_IDS } from "../domain/hub-profile";
@@ -10,6 +10,7 @@ import {
 import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup } from "../domain/session-view";
 import { clockOf } from "../domain/duel-view";
 import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
+import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
 import { Glyph } from "./achievement-art";
 import { Icon } from "./icons";
 import { ProgressHero } from "./progress-hero";
@@ -419,9 +420,17 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
 export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub }: Props) {
   const [tab, setTab] = useState<"resumo" | "historico">("resumo");
   const [flags, setFlags] = useState<FlagCatalog>({});
+  const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
+  const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
   const howRef = useRef<HTMLDialogElement | null>(null);
-  useEffect(() => { loadFlags().then(setFlags).catch(() => undefined); }, []);
+  useEffect(() => {
+    loadFlags().then(setFlags).catch(() => undefined);
+    loadSpecialData().then((value) => { setHistoricalFlags(value.historicalFlags); setHistorical(value.historical); }).catch(() => undefined);
+  }, []);
   const now = useMemo(() => Date.now(), [state]);
+  // Nome e bandeira das entidades históricas, para o "Você errou" de um tempo de Históricas no histórico (mesma ideia da Coleção): sem isto,
+  // o id cru (ex.: "anhalt-ducado") aparecia no lugar do nome, porque o Históricas fica fora de `meta` de propósito (decisão 1 do CLAUDE.md).
+  const historicalMeta = useMemo(() => Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), [historical]);
   const dashboard = useMemo(() => buildProgressDashboard({
     now,
     sessions: state.sessions,
@@ -429,14 +438,15 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     pvpMatches: state.pvpMatches,
     records: state.progress.records ?? [],
     meta: data.meta,
+    historicalMeta,
     universe: data.mapEntityIds,
     dominatedIds: state.dominatedIds,
     titleIds: state.achievements.filter((item) => item.unlocked && TITLE_IDS.includes(item.id)).map((item) => item.id),
     pillars: state.progress.pillars,
     album: { discovered: state.progress.discovered, total: state.progress.total, distribution: state.progress.distribution },
     economy,
-  }), [now, state, data, economy]);
-  const flagOf: FlagOf = (code) => { const value = code ? flags[code.toLowerCase()] : undefined; return value ? flagSource(value) : undefined; };
+  }), [now, state, data, historicalMeta, economy]);
+  const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
   const { hero } = dashboard;
   const openCollection = () => onOpenCollection("mundo");
 
