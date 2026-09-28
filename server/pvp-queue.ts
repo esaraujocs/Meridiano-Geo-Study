@@ -4,7 +4,7 @@
 //
 // Regras (decididas com o Enzo em 27/09; ver CLAUDE.md, "Fila"):
 // - Ordem de chegada. Primeiro o par EXATO (mesma escada e mesmo modo), sempre com o mais antigo esperando.
-// - Sem par exato, uma PROPOSTA DE TROCA (a fila é pequena): depois que o mais novo esperou CROSS_DELAY_MS, vale primeiro o que pediu quem espera há mais
+// - Sem par exato, uma PROPOSTA DE TROCA (a fila é pequena): depois que o mais novo esperou CROSS_DELAY_MS (hoje zero: na hora), vale primeiro o que pediu quem espera há mais
 //   tempo (o mais novo decide se troca); se o mais novo não quiser trocar, o inverso (agora o mais antigo decide). Recusar uma troca NÃO tira ninguém da
 //   fila; se os dois recusarem, o par não é oferecido de novo até um deles sair da fila (ou mudar o que busca).
 // - Recusar o que VOCÊ MESMO pediu tira você da fila (é preciso buscar de novo); o outro volta ao lugar que tinha, com aviso.

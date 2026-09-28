@@ -435,9 +435,9 @@ const matchOf = (code, mode, a, b, at) => ({ code, at, origin: "queue", ladder: 
 // ───────────── fila ("Buscar duelo"), com relógio falso ─────────────
 const MAPAS_RANKED = { ladder: "mapas", mode: "ranked" };
 const BANDEIRAS_FRIENDLY = { ladder: "bandeiras", mode: "friendly" };
-const makeQueue = () => {
+const makeQueue = (options = {}) => {
   const rooms = make();
-  const queue = new PvpQueue({ rooms, now: () => now, random });
+  const queue = new PvpQueue({ rooms, now: () => now, random, ...options });
   rooms.onQueueRoomLeft = (_code, remaining) => queue.requeue(remaining);
   return { rooms, queue };
 };
@@ -526,13 +526,24 @@ function matchAnaBeto(queue, prefs = MAPAS_RANKED) {
   now += OFFER_TTL_MS; queue.tick();
   assert.deepEqual([queue.view(ana.id).state, queue.view(caio.id).state], ["idle", "idle"]);
 }
-// proposta de troca: sem par exato, depois de CROSS_DELAY_MS; primeiro o que pediu o mais antigo, depois o inverso
+// padrão (CROSS_DELAY_MS = 0): sem par exato, a proposta de troca vem na hora
 {
+  assert.equal(CROSS_DELAY_MS, 0);
   const { queue } = makeQueue();
+  online(queue, ana, beto);
+  queue.join(ana, MAPAS_RANKED);
+  const toBeto = queue.join(beto, BANDEIRAS_FRIENDLY);
+  assert.equal(toBeto.state, "offer", "troca proposta na hora, sem esperar um par exato");
+  assert.deepEqual([toBeto.offer.ladder, toBeto.offer.mode, toBeto.offer.switchLadder, toBeto.offer.switchMode], ["mapas", "ranked", true, true]);
+}
+// com espera configurada (crossDelayMs, para quando a fila encher): a troca só vem depois dela; primeiro o que pediu o mais antigo, depois o inverso
+const WAIT = 15000;
+{
+  const { queue } = makeQueue({ crossDelayMs: WAIT });
   online(queue, ana, beto, caio);
   queue.join(ana, MAPAS_RANKED);
   assert.equal(queue.join(beto, BANDEIRAS_FRIENDLY).state, "waiting", "sem par exato: espera um pouco antes de propor troca");
-  now += CROSS_DELAY_MS - 1; queue.tick();
+  now += WAIT - 1; queue.tick();
   assert.equal(queue.view(beto.id).state, "waiting");
   now += 1; queue.tick();
   const toBeto = queue.view(beto.id).offer;
@@ -557,11 +568,11 @@ function matchAnaBeto(queue, prefs = MAPAS_RANKED) {
 }
 // troca aceita: a sala sai com o que o mais antigo pediu
 {
-  const { rooms, queue } = makeQueue();
+  const { rooms, queue } = makeQueue({ crossDelayMs: WAIT });
   online(queue, ana, beto);
   queue.join(ana, { ladder: "bandeiras", mode: "friendly" });
   queue.join(beto, { ladder: "mapas", mode: "friendly" });
-  now += CROSS_DELAY_MS; queue.tick();
+  now += WAIT; queue.tick();
   const offer = queue.view(beto.id).offer;
   assert.deepEqual([offer.switchLadder, offer.switchMode], [true, false], "só a escada muda");
   queue.respond(beto.id, offer.id, true);
@@ -569,13 +580,13 @@ function matchAnaBeto(queue, prefs = MAPAS_RANKED) {
   assert.equal(done.state, "matched");
   assert.deepEqual([rooms.view(done.room, beto.id).ladder, rooms.view(done.room, beto.id).mode], ["bandeiras", "friendly"]);
 }
-// par exato passa na frente da troca
+// com espera configurada, o par exato que chega dentro dela passa na frente da troca
 {
-  const { queue } = makeQueue();
+  const { queue } = makeQueue({ crossDelayMs: WAIT });
   online(queue, ana, beto, caio);
   queue.join(ana, MAPAS_RANKED);
   queue.join(beto, { ladder: "bandeiras", mode: "ranked" });
-  now += CROSS_DELAY_MS - 1000; queue.tick();
+  now += WAIT - 1000; queue.tick();
   assert.equal(queue.join(caio, MAPAS_RANKED).offer?.opponent.name, "Ana");
   assert.equal(queue.view(beto.id).state, "waiting");
 }
