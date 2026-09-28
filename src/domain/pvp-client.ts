@@ -1,7 +1,7 @@
 // Cliente do duelo entre pessoas: identidade do aparelho (sem login, ver server/pvp-players.ts) e a rede (HTTP + SSE) para /api/pvp.
 // Toca localStorage, fetch e EventSource: só funciona no navegador (não em scripts/test-pvp.mjs, que testa o servidor puro).
 import type { LadderStandings, LeaderboardRow, PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
-import type { Ladder } from "./duel-modes.js";
+import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { isSocialEvent, type FriendsView, type PlayerProfile, type PlayerSummary, type SocialEvent } from "./pvp-social.js";
 
 const BASE = "/api/pvp";
@@ -64,8 +64,8 @@ function requireIdentity() {
 
 /** Cria o convite. A força não vai junto: o servidor usa a do perfil dele. Troféus e MMR das duas escadas vão junto (a sala mostra os da escada dela
  *  e o aparelho do adversário usa o MMR na conta dos troféus). */
-export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings): Promise<PvpRoomView> {
-  const { room } = await request("POST", "/rooms", requireIdentity(), { ladder, mode, name, ladders });
+export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings, groups?: readonly [ModeGroup, ModeGroup]): Promise<PvpRoomView> {
+  const { room } = await request("POST", "/rooms", requireIdentity(), { ladder, mode, name, ladders, ...(groups ? { groups } : {}) });
   return room as PvpRoomView;
 }
 
@@ -136,8 +136,8 @@ export async function pvpFriendRemove(code: string): Promise<FriendsView> {
   return friends as FriendsView;
 }
 /** Desafia um amigo com o app aberto: cria o convite (você é o anfitrião) e o servidor avisa o amigo na hora. */
-export async function pvpChallenge(code: string, ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings): Promise<PvpRoomView> {
-  const { room } = await request("POST", "/friends/challenge", requireIdentity(), { code, ladder, mode, name, ladders });
+export async function pvpChallenge(code: string, ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings, groups?: readonly [ModeGroup, ModeGroup]): Promise<PvpRoomView> {
+  const { room } = await request("POST", "/friends/challenge", requireIdentity(), { code, ladder, mode, name, ladders, ...(groups ? { groups } : {}) });
   return room as PvpRoomView;
 }
 /** O perfil de um jogador pelo código de amigo (o próprio também). */

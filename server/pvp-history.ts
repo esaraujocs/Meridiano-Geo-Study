@@ -3,7 +3,7 @@
 // princípio dos troféus do duelo contra bot (tudo derivado do histórico). Uma linha cortada no meio (o servidor caiu gravando) é ignorada na leitura.
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { isLadder, type Ladder } from "../src/domain/duel-modes.js";
+import { isGroupPair, isLadder, type Ladder, type ModeGroup } from "../src/domain/duel-modes.js";
 import { isPvpMode, type PvpMatchSide, type PvpMode, type PvpOutcome, type PvpProfileView, type PvpRoomOrigin, type PvpServerMatch, type PvpTally, type RatingChange, type SideTotals } from "../src/domain/pvp.js";
 import { PVP_RATING_BASE, pvpRatingChange } from "../src/domain/pvp-rating.js";
 
@@ -12,7 +12,8 @@ export const HISTORY_VERSION = 1;
 
 export type SettledSide = { id: string; name: string; trophies: number; outcome: PvpOutcome; totals: SideTotals };
 /** Um duelo terminado, como a sala o entrega ao histórico. `a` é o anfitrião (na fila, quem esperava há mais tempo). */
-export type SettledMatch = { code: string; at: number; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; tiebreak: boolean; a: SettledSide; b: SettledSide };
+/** `groups`: os 2 modos jogados (desde 28/09; nas linhas antigas saem da semente). */
+export type SettledMatch = { code: string; at: number; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; groups?: [ModeGroup, ModeGroup]; tiebreak: boolean; a: SettledSide; b: SettledSide };
 type Entry = SettledMatch & { v: number; ratingA: RatingChange | null; ratingB: RatingChange | null };
 type Stats = { rating: number; ranked: PvpTally; friendly: PvpTally; entries: Entry[] };
 
@@ -52,7 +53,8 @@ export function parseHistoryLine(input: unknown): SettledMatch | null {
   const a = parseSide(raw.a), b = parseSide(raw.b);
   const at = finite(raw.at);
   if (typeof raw.code !== "string" || at === null || !isLadder(raw.ladder) || !isPvpMode(raw.mode) || !a || !b || a.id === b.id) return null;
-  return { code: raw.code, at, origin: raw.origin === "queue" ? "queue" : "invite", ladder: raw.ladder, mode: raw.mode, seed: typeof raw.seed === "string" ? raw.seed : "", tiebreak: raw.tiebreak === true, a, b };
+  const groups = isGroupPair(raw.ladder, raw.groups) ? { groups: [...raw.groups] as [ModeGroup, ModeGroup] } : {};
+  return { code: raw.code, at, origin: raw.origin === "queue" ? "queue" : "invite", ladder: raw.ladder, mode: raw.mode, seed: typeof raw.seed === "string" ? raw.seed : "", ...groups, tiebreak: raw.tiebreak === true, a, b };
 }
 
 export class PvpHistory {
@@ -150,5 +152,5 @@ function matchView(entry: Entry, id: string, codeOf: (id: string) => string = ()
     return { name: value.name, totals: value.totals, outcome: value.outcome, rating, ...(code ? { code } : {}) };
   };
   const a = side(entry.a, entry.ratingA), b = side(entry.b, entry.ratingB);
-  return { code: entry.code, at: entry.at, origin: entry.origin, ladder: entry.ladder, mode: entry.mode, seed: entry.seed, tiebreak: entry.tiebreak, you: mine ? a : b, opponent: mine ? b : a };
+  return { code: entry.code, at: entry.at, origin: entry.origin, ladder: entry.ladder, mode: entry.mode, seed: entry.seed, ...(entry.groups ? { groups: entry.groups } : {}), tiebreak: entry.tiebreak, you: mine ? a : b, opponent: mine ? b : a };
 }

@@ -1,7 +1,7 @@
 // Duelos entre pessoas já terminados (IndexedDB, loja `preferences`, id `pvp:<código>`): histórico local, como os duelos contra bot (duel-store.ts).
 // A força (rating) do valendo é sempre derivada desta lista, nunca guardada à parte (mesmo princípio dos troféus do duelo contra bot).
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
-import { LEGS, LEG_ROUNDS, drawLegs, type Ladder, type ModeGroup } from "./duel-modes.js";
+import { LEGS, LEG_ROUNDS, drawLegs, pvpLegs, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { pvpRatingFromHistory, type RankedPvpMatch } from "./pvp-rating.js";
 import type { PvpMode, PvpOutcome, PvpServerMatch } from "./pvp.js";
 
@@ -90,7 +90,7 @@ export async function savePvpMatch(record: PvpMatchRecord) {
 
 /** Um duelo guardado no servidor, no formato do histórico local (os dois tempos saem de novo da semente, a mesma conta dos dois jogadores). */
 export function pvpRecordFromServer(match: PvpServerMatch): PvpMatchRecord {
-  const groups = match.seed ? drawLegs(match.ladder, match.seed) : null;
+  const groups = !match.seed ? null : match.groups ? pvpLegs(match.seed, match.groups) : drawLegs(match.ladder, match.seed);
   const legs = groups?.map((leg, index) => ({
     group: leg.group, youCorrect: match.you.totals.legs[index]?.correct ?? 0, opponentCorrect: match.opponent.totals.legs[index]?.correct ?? 0,
     total: leg.rounds, youMs: match.you.totals.legs[index]?.ms ?? null, opponentMs: match.opponent.totals.legs[index]?.ms ?? null,

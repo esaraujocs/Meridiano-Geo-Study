@@ -410,6 +410,19 @@ export const pt = {
       step2: ["Mande o link", "Pelo WhatsApp ou copiando; o seu amigo entra direto."],
       step3: ["Joguem ao mesmo tempo", "Cada um no seu ritmo, vendo o placar do outro em tempo real."],
     },
+    // Os modos do duelo: sorteio (um de cada eixo) ou, no amistoso, os 2 escolhidos
+    legs: {
+      title: "Modos do duelo",
+      draw: "Sorteio",
+      drawNote: "Um modo de cada eixo, sorteado.",
+      pick: "Escolher",
+      pickNote: "Você escolhe os 2 modos.",
+      order: (n: number) => `${n}º`,
+      missing: (n: number): string => (n === 2 ? "Escolha 2 modos, na ordem dos tempos." : "Escolha mais 1 modo."),
+      ready: (a: string, b: string) => `1º tempo: ${a} · 2º tempo: ${b}`,
+      rankedNote: "No valendo os modos são sempre sorteados, um de cada eixo.",
+      chosenLine: (a: string, b: string) => `Modos escolhidos: ${a} e ${b}.`,
+    },
     invite: {
       loading: "Abrindo o convite…",
       title: (name: string) => `${name} te desafiou!`,

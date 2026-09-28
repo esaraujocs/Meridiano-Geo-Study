@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Icon } from "./icons";
 import { LevelBadge } from "./level-badge";
 import { useEnterKey } from "./use-enter-key";
-import { drawLegs, type Ladder } from "../domain/duel-modes";
+import { groupsOfLadder, type Ladder, type ModeGroup } from "../domain/duel-modes";
+import { roomLegs } from "../domain/pvp-run";
 import { inviteLink, PLAYER_NAME_MAX, type PvpInvite, type PvpMode, type PvpRoomView } from "../domain/pvp";
 import { t } from "../domain/i18n";
 
@@ -13,8 +14,11 @@ export type PvpLobbyView =
   | { kind: "invite"; invite: PvpInvite | null; loading: boolean; busy: boolean; error: string | null }
   | { kind: "room"; room: PvpRoomView };
 
-export function PvpLobby({ view, name, level, onNameChange, onModeChange, onCreate, onJoin, onDecline, onReady, onLeave, onBack }: {
+export function PvpLobby({ view, name, level, legChoice, onLegChoice, onNameChange, onModeChange, onCreate, onJoin, onDecline, onReady, onLeave, onBack }: {
   view: PvpLobbyView;
+  /** Os modos do amistoso (só na criação do convite). */
+  legChoice: LegChoice;
+  onLegChoice: (choice: LegChoice) => void;
   name: string;
   /** Nível do próprio jogador (economia local): mostrado na moldura do "Você" no lobby, a mesma do Hub. */
   level: number;
@@ -27,7 +31,7 @@ export function PvpLobby({ view, name, level, onNameChange, onModeChange, onCrea
   onLeave: () => void;
   onBack: () => void;
 }) {
-  if (view.kind === "setup") return <PvpSetup view={view} name={name} onNameChange={onNameChange} onModeChange={onModeChange} onCreate={onCreate} onBack={onBack} />;
+  if (view.kind === "setup") return <PvpSetup view={view} name={name} legChoice={legChoice} onLegChoice={onLegChoice} onNameChange={onNameChange} onModeChange={onModeChange} onCreate={onCreate} onBack={onBack} />;
   if (view.kind === "invite") return <PvpInviteScreen view={view} name={name} onNameChange={onNameChange} onJoin={onJoin} onDecline={onDecline} />;
   return <PvpRoom room={view.room} level={level} onReady={onReady} onLeave={onLeave} />;
 }
@@ -43,6 +47,43 @@ function PvpHowItWorks() {
   );
 }
 
+/** A escolha dos modos de um duelo amistoso: sorteio (um de cada eixo, como no valendo) ou os 2 modos escolhidos, na ordem dos tempos. */
+export type LegChoice = { custom: boolean; groups: ModeGroup[] };
+export const DRAW_LEGS: LegChoice = { custom: false, groups: [] };
+/** Os grupos a mandar ao servidor (só com os 2 escolhidos) e se dá para criar o duelo (escolher pede os 2). */
+export const legChoiceGroups = (choice: LegChoice) => (choice.custom && choice.groups.length === 2 ? [choice.groups[0], choice.groups[1]] as [ModeGroup, ModeGroup] : undefined);
+export const legChoiceReady = (choice: LegChoice) => !choice.custom || choice.groups.length === 2;
+
+export function LegPicker({ ladder, choice, onChange }: { ladder: Ladder; choice: LegChoice; onChange: (choice: LegChoice) => void }) {
+  const groups = groupsOfLadder(ladder);
+  const toggle = (group: ModeGroup) => {
+    const has = choice.groups.includes(group);
+    const next = has ? choice.groups.filter((item) => item !== group) : choice.groups.length < 2 ? [...choice.groups, group] : [choice.groups[1], group];
+    onChange({ custom: true, groups: next });
+  };
+  const missing = 2 - choice.groups.length;
+  return (
+    <div className="pvp-legpick">
+      <span className="rv-k">{t.pvp.legs.title}</span>
+      <div className="pvp-modes" role="radiogroup" aria-label={t.pvp.legs.title}>
+        <button type="button" role="radio" aria-checked={!choice.custom} className={`pg-chip${!choice.custom ? " is-active" : ""}`} onClick={() => onChange(DRAW_LEGS)}><b>{t.pvp.legs.draw}</b><small>{t.pvp.legs.drawNote}</small></button>
+        <button type="button" role="radio" aria-checked={choice.custom} className={`pg-chip${choice.custom ? " is-active" : ""}`} onClick={() => onChange({ custom: true, groups: choice.groups })}><b>{t.pvp.legs.pick}</b><small>{t.pvp.legs.pickNote}</small></button>
+      </div>
+      {choice.custom && <>
+        <div className="pvp-legchips" role="group" aria-label={t.pvp.legs.pick}>
+          {groups.map((def) => {
+            const order = choice.groups.indexOf(def.group);
+            return <button key={def.group} type="button" aria-pressed={order >= 0} className={`ar-chip${order >= 0 ? " is-on" : ""}`} onClick={() => toggle(def.group)}>
+              {order >= 0 && <i aria-hidden="true">{t.pvp.legs.order(order + 1)}</i>}{t.duel.groups[def.group]}
+            </button>;
+          })}
+        </div>
+        <p className="pvp-hint" role="status">{missing > 0 ? t.pvp.legs.missing(missing) : t.pvp.legs.ready(t.duel.groups[choice.groups[0]], t.duel.groups[choice.groups[1]])}</p>
+      </>}
+    </div>
+  );
+}
+
 export const NameField = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
   <label className="pvp-name">
     <span>{t.pvp.nameLabel}</span>
@@ -50,8 +91,8 @@ export const NameField = ({ name, onNameChange }: { name: string; onNameChange: 
   </label>
 );
 
-function PvpSetup({ view, name, onNameChange, onModeChange, onCreate, onBack }: { view: Extract<PvpLobbyView, { kind: "setup" }>; name: string; onNameChange: (name: string) => void; onModeChange: (mode: PvpMode) => void; onCreate: () => void; onBack: () => void }) {
-  const canCreate = name.trim().length > 0 && !view.busy;
+function PvpSetup({ view, name, legChoice, onLegChoice, onNameChange, onModeChange, onCreate, onBack }: { view: Extract<PvpLobbyView, { kind: "setup" }>; name: string; legChoice: LegChoice; onLegChoice: (choice: LegChoice) => void; onNameChange: (name: string) => void; onModeChange: (mode: PvpMode) => void; onCreate: () => void; onBack: () => void }) {
+  const canCreate = name.trim().length > 0 && !view.busy && (view.mode !== "friendly" || legChoiceReady(legChoice));
   useEnterKey(() => { if (canCreate) onCreate(); });
   return (
     <main className="content rv-page pvp-page">
@@ -69,6 +110,7 @@ function PvpSetup({ view, name, onNameChange, onModeChange, onCreate, onBack }: 
             <b>{t.pvp.modeRanked}</b><small>{t.pvp.modeRankedNote}</small>
           </button>
         </div>
+        {view.mode === "friendly" ? <LegPicker ladder={view.ladder} choice={legChoice} onChange={onLegChoice} /> : <p className="pvp-hint pvp-legs-note">{t.pvp.legs.rankedNote}</p>}
         {view.error && <p className="pvp-error">{view.error}</p>}
         <button type="button" className="rs-btn primary rv-go" disabled={!canCreate} onClick={onCreate}><Icon type="swords" />{view.busy ? t.pvp.creating : t.pvp.create}</button>
       </section>
@@ -94,6 +136,7 @@ function PvpInviteScreen({ view, name, onNameChange, onJoin, onDecline }: { view
             : <>
               <span className="eyebrow">{t.pvp.invite.detail(t.duel.ladders[view.invite.ladder], view.invite.mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked)}</span>
               <h1>{t.pvp.invite.title(view.invite.hostName)}</h1>
+              {view.invite.groups && <p className="pvp-hint pvp-legs-note">{t.pvp.legs.chosenLine(t.duel.groups[view.invite.groups[0]], t.duel.groups[view.invite.groups[1]])}</p>}
               {view.invite.full || view.invite.phase !== "open"
                 ? <p className="pvp-error">{t.pvp.invite.full}</p>
                 : <>
@@ -129,7 +172,7 @@ function PvpRoom({ room, level, onReady, onLeave }: { room: PvpRoomView; level: 
   }, [room.phase, room.startAt, room.serverNow]);
   // Os 2 tempos, assim que a semente chega (a partir do lobby, com o amigo já dentro): os dois veem os mesmos modos antes de ficar pronto.
   // (Antes do return da sala fechada: hook depois de um return condicional derruba a tela quando a sala fecha.)
-  const legs = useMemo(() => (room.seed ? drawLegs(room.ladder, room.seed) : null), [room.seed, room.ladder]);
+  const legs = useMemo(() => roomLegs(room), [room.seed, room.ladder, room.groups?.join()]);
 
   if (room.phase === "closed") {
     const reason = room.closedReason === "host-left" ? t.pvp.lobby.hostLeft : room.closedReason === "expired" ? t.pvp.lobby.expired : room.closedReason === "opponent-left" ? t.pvp.lobby.opponentLeft : t.pvp.lobby.cancelled;

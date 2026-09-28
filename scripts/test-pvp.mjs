@@ -4,7 +4,7 @@ import { appendFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmS
 import http from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { LEGS, LEG_ROUNDS, drawLegs } from "../.tmp-pvp/src/domain/duel-modes.js";
+import { LEGS, LEG_ROUNDS, drawLegs, drawPvpGroups, groupDef, isGroupPair, pvpLegs } from "../.tmp-pvp/src/domain/duel-modes.js";
 import {
   COUNTDOWN_MS, CROSS_DELAY_MS, DONE_TTL_MS, GRACE_MS, MATCH_COUNTDOWN_MS, OFFER_TTL_MS, OPEN_TTL_MS, QUEUE_TTL_MS, REOFFER_COOLDOWN_MS, ROOM_CODE_ALPHABET,
   cleanPlayerName, inviteLink, isValidRoomCode, normalizeRoomCode, parseCommand, parseInvite, parseOfferResponse, settlePvp, sideFinished, sideTotals,
@@ -109,7 +109,7 @@ const play = (rooms, c, player, legs) => legs.forEach((leg, index) => leg.forEac
   assert.equal(created.seed, null, "o anfitrião não vê a semente (as perguntas) antes da contagem");
   assert.equal(created.opponent, null);
   assert.equal(created.host, true);
-  assert.deepEqual(rooms.invite(c), { code: c, phase: "open", ladder: "mapas", mode: "ranked", hostName: "Ana", hostTrophies: 1100, full: false });
+  assert.deepEqual(rooms.invite(c), { code: c, phase: "open", ladder: "mapas", mode: "ranked", hostName: "Ana", hostTrophies: 1100, full: false, groups: null }, "sorteio: os modos não aparecem no convite");
   assert.equal(rooms.roomCodeOf(ana.id), c);
   throwsCode(() => rooms.joinRoom(c, ana), "forbidden");
   throwsCode(() => rooms.joinRoom("ZZZZZZ", beto), "not_found");
@@ -719,6 +719,40 @@ const WAIT = 15000;
   assert.ok(queue.view(ana.id).rev > 0);
 }
 
+// ───────────── os 2 modos do duelo entre pessoas ─────────────
+{
+  // sorteio: nunca dois do mesmo eixo (Capitais clicar + Capitais escrita, Silhueta opções + Silhueta escrita)
+  const pairs = new Map();
+  for (let i = 0; i < 4000; i += 1) {
+    for (const ladder of ["mapas", "bandeiras"]) {
+      const [a, b] = drawPvpGroups(ladder, `semente-${i}`);
+      assert.notEqual(groupDef(a).axis, groupDef(b).axis, `${ladder} ${a} + ${b}: um de cada eixo`);
+      assert.ok(groupDef(a).ladder === ladder && groupDef(b).ladder === ladder);
+      if (ladder === "mapas") pairs.set(`${a}+${b}`, (pairs.get(`${a}+${b}`) ?? 0) + 1);
+    }
+  }
+  assert.ok(![...pairs.keys()].some((key) => key === "capitais-clique+capitais-escrita" || key === "capitais-escrita+capitais-clique" || key === "silhueta-opcoes+silhueta-escrita" || key === "silhueta-escrita+silhueta-opcoes"));
+  assert.ok(pairs.size >= 10, "as outras combinações de eixos diferentes aparecem");
+  assert.deepEqual(drawPvpGroups("mapas", "x"), drawPvpGroups("mapas", "x"), "a mesma semente dá os mesmos modos");
+  assert.ok(isGroupPair("mapas", ["capitais-clique", "capitais-escrita"]), "à mão (amistoso) vale qualquer par da escada");
+  assert.ok(!isGroupPair("mapas", ["mapa", "mapa"]) && !isGroupPair("mapas", ["mapa", "atuais"]) && !isGroupPair("mapas", ["mapa"]) && !isGroupPair("mapas", null));
+  const legs = pvpLegs("semente", ["silhueta-escrita", "mapa"]);
+  assert.deepEqual(legs.map((leg) => leg.group), ["silhueta-escrita", "mapa"]);
+  assert.deepEqual(pvpLegs("semente", ["silhueta-escrita", "mapa"]), legs, "sentido e baralho da semente: iguais nos dois aparelhos");
+  // a sala: o amistoso aceita os modos do anfitrião (aparecem desde o convite); o valendo ignora e sorteia
+  const rooms = make();
+  const chosen = rooms.createRoom(ana, { ladder: "mapas", mode: "friendly", groups: ["capitais-escrita", "silhueta-opcoes"] });
+  assert.deepEqual([chosen.chosen, chosen.groups, chosen.seed], [true, ["capitais-escrita", "silhueta-opcoes"], null], "o anfitrião vê a própria escolha; a semente ainda não");
+  assert.deepEqual(rooms.invite(chosen.code).groups, ["capitais-escrita", "silhueta-opcoes"], "o convite mostra os modos escolhidos");
+  const ranked = rooms.createRoom(beto, { ladder: "mapas", mode: "ranked", groups: ["capitais-escrita", "capitais-clique"] });
+  assert.deepEqual([ranked.chosen, ranked.groups], [false, null], "no valendo a escolha é ignorada e o sorteio só aparece no lobby");
+  const lobby = rooms.joinRoom(ranked.code, caio);
+  assert.equal(lobby.groups.length, 2);
+  assert.notEqual(groupDef(lobby.groups[0]).axis, groupDef(lobby.groups[1]).axis);
+  const bad = rooms.createRoom(caio, { ladder: "bandeiras", mode: "friendly", groups: ["mapa", "atuais"] });
+  assert.equal(bad.chosen, false, "modos de outra escada: vira sorteio");
+}
+
 // ───────────── amizades (estado puro, com arquivo) ─────────────
 {
   let clock = 1000;
@@ -846,7 +880,7 @@ const roomCode = created.body.room.code;
 assert.equal(created.body.room.seed, null);
 const invite = await call("GET", `/rooms/${roomCode.toLowerCase()}/invite`);
 assert.equal(invite.status, 200, "o convite não precisa de identidade e aceita minúsculas");
-assert.deepEqual(invite.body.invite, { code: roomCode, phase: "open", ladder: "bandeiras", mode: "ranked", hostName: "Ana", hostTrophies: 1400, full: false });
+assert.deepEqual(invite.body.invite, { code: roomCode, phase: "open", ladder: "bandeiras", mode: "ranked", hostName: "Ana", hostTrophies: 1400, full: false, groups: null });
 assert.equal((await call("POST", `/rooms/${roomCode}/join`, A, { name: "Ana" })).status, 403, "o anfitrião não entra na própria sala");
 assert.equal((await call("GET", `/rooms/${roomCode}`, B)).status, 403, "quem não está na sala não vê");
 assert.equal((await fetch(`${base}/rooms/${roomCode}/events?player=${B.id}&secret=${B.secret}`)).status, 403, "nem ouve os eventos");
@@ -911,6 +945,7 @@ assert.equal(matchesB[0].you.totals.correct, 10);
 assert.equal(matchesB[0].opponent.name, "Ana");
 assert.deepEqual(matchesB[0].you.rating, { before: 1000, after: 988 });
 assert.equal(matchesB[0].seed, finalGuest.seed, "com a semente, o aparelho refaz os dois tempos");
+assert.deepEqual(matchesB[0].groups, finalGuest.groups, "os 2 modos jogados ficam no histórico do servidor");
 
 // ───────────── fila por HTTP, com o canal do jogador (SSE /me/events) ─────────────
 const anaChannel = await stream("/me/events", A, "queue");
