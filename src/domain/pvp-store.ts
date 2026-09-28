@@ -1,9 +1,9 @@
 // Duelos entre pessoas já terminados (IndexedDB, loja `preferences`, id `pvp:<código>`): histórico local, como os duelos contra bot (duel-store.ts).
 // A força (rating) do valendo é sempre derivada desta lista, nunca guardada à parte (mesmo princípio dos troféus do duelo contra bot).
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
-import type { Ladder, ModeGroup } from "./duel-modes.js";
+import { LEGS, LEG_ROUNDS, drawLegs, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { pvpRatingFromHistory, type RankedPvpMatch } from "./pvp-rating.js";
-import type { PvpMode, PvpOutcome } from "./pvp.js";
+import type { PvpMode, PvpOutcome, PvpServerMatch } from "./pvp.js";
 
 const STORE = "preferences";
 export const PVP_ID_PREFIX = "pvp:";
@@ -77,7 +77,31 @@ export async function savePvpMatch(record: PvpMatchRecord) {
   } finally { database.close(); }
 }
 
-/** A força atual do valendo (só as partidas `ranked`, na ordem em que aconteceram); 1000 sem nenhuma ainda. */
+/** Um duelo guardado no servidor, no formato do histórico local (os dois tempos saem de novo da semente, a mesma conta dos dois jogadores). */
+export function pvpRecordFromServer(match: PvpServerMatch): PvpMatchRecord {
+  const groups = match.seed ? drawLegs(match.ladder, match.seed) : null;
+  const legs = groups?.map((leg, index) => ({
+    group: leg.group, youCorrect: match.you.totals.legs[index]?.correct ?? 0, opponentCorrect: match.opponent.totals.legs[index]?.correct ?? 0,
+    total: leg.rounds, youMs: match.you.totals.legs[index]?.ms ?? null, opponentMs: match.opponent.totals.legs[index]?.ms ?? null,
+  }));
+  return {
+    id: `${PVP_ID_PREFIX}${match.code}`, code: match.code, at: match.at, ladder: match.ladder, mode: match.mode,
+    opponentName: match.opponent.name, opponentRating: match.opponent.rating?.before ?? 0,
+    youCorrect: match.you.totals.correct, opponentCorrect: match.opponent.totals.correct, totalRounds: LEG_ROUNDS * LEGS,
+    outcome: match.you.outcome, tiebreak: match.tiebreak, youForfeited: match.you.totals.forfeited, opponentForfeited: match.opponent.totals.forfeited,
+    youMs: match.you.totals.ms, opponentMs: match.opponent.totals.ms,
+    ...(legs ? { legs } : {}),
+    ratingDelta: match.you.rating ? match.you.rating.after - match.you.rating.before : null,
+  };
+}
+
+/** Os duelos que o servidor tem e este aparelho não (união por id: o que já está no aparelho não é tocado). Ex.: o app fechou antes do resultado sair. */
+export function missingPvpRecords(server: readonly PvpServerMatch[], local: readonly PvpMatchRecord[]): PvpMatchRecord[] {
+  const known = new Set(local.map((record) => record.id));
+  return server.map(pvpRecordFromServer).filter((record) => !known.has(record.id));
+}
+
+/** A força atual do valendo calculada só com o histórico do aparelho (reserva para quando o servidor não responde; a de verdade é a do servidor, GET /me). */
 export function pvpRatingOf(matches: readonly PvpMatchRecord[]): number {
   const ranked: RankedPvpMatch[] = matches.filter((match) => match.mode === "ranked").map((match) => ({ opponentRating: match.opponentRating, outcome: match.outcome }));
   return pvpRatingFromHistory(ranked);

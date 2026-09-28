@@ -3,22 +3,24 @@
 import { randomInt } from "node:crypto";
 import { LEGS, LEG_ROUNDS, type Ladder } from "../src/domain/duel-modes.js";
 import {
-  COUNTDOWN_MS, DONE_TTL_MS, GRACE_MS, MAX_ROUND_MS, MIN_ROUND_MS, OPEN_TTL_MS, PLAYING_TTL_MS, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH, cleanPlayerName, isValidRoomCode, settlePvp, sideFinished, sideTotals,
-  type PvpClosedReason, type PvpCommand, type PvpErrorCode, type PvpInvite, type PvpMode, type PvpOutcome, type PvpPhase, type PvpPlayerView, type PvpRoomView, type RoundReport, type SideTotals,
+  COUNTDOWN_MS, DONE_TTL_MS, GRACE_MS, MATCH_COUNTDOWN_MS, MAX_ROUND_MS, MIN_ROUND_MS, OPEN_TTL_MS, PLAYING_TTL_MS, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH, cleanPlayerName, isValidRoomCode, settlePvp, sideFinished, sideTotals,
+  type PvpClosedReason, type PvpCommand, type PvpErrorCode, type PvpInvite, type PvpMode, type PvpOutcome, type PvpPhase, type PvpPlayerView, type PvpRoomOrigin, type PvpRoomView, type RatingChange, type RoundReport, type SideTotals,
 } from "../src/domain/pvp.js";
+import type { SettledMatch } from "./pvp-history.js";
 
 export class PvpError extends Error {
   constructor(readonly code: PvpErrorCode, message: string = code) { super(message); this.name = "PvpError"; }
 }
 
+/** Quem entra numa sala. A força (`rating`) vem do perfil guardado no servidor; os troféus (contra bot) são os que o aparelho informou, só para mostrar. */
 export type PlayerInput = { id: string; name: string; rating: number; trophies: number };
 type Seat = PlayerInput & { ready: boolean; connections: number; disconnectedAt: number | null; forfeited: boolean; legs: RoundReport[][] };
-type Settled = { host: SideTotals; guest: SideTotals; hostOutcome: PvpOutcome; guestOutcome: PvpOutcome; tiebreak: boolean };
+type Settled = { host: SideTotals; guest: SideTotals; hostOutcome: PvpOutcome; guestOutcome: PvpOutcome; tiebreak: boolean; rating: { host: RatingChange; guest: RatingChange } | null };
 type Room = {
-  code: string; ladder: Ladder; mode: PvpMode; seed: string; phase: PvpPhase; closedReason: PvpClosedReason | null;
+  code: string; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; phase: PvpPhase; closedReason: PvpClosedReason | null;
   createdAt: number; phaseAt: number; startAt: number | null; rev: number; host: Seat; guest: Seat | null; settled: Settled | null;
 };
-export type PvpRoomsOptions = { now?: () => number; random?: () => number; countdownMs?: number; graceMs?: number };
+export type PvpRoomsOptions = { now?: () => number; random?: () => number; countdownMs?: number; graceMs?: number; matchCountdownMs?: number };
 
 const newSeat = (player: PlayerInput): Seat => ({ id: player.id, name: cleanPlayerName(player.name) || "Jogador", rating: clampNumber(player.rating, 0, 9999), trophies: clampNumber(player.trophies, 0, 99999), ready: false, connections: 0, disconnectedAt: null, forfeited: false, legs: Array.from({ length: LEGS }, () => []) });
 function clampNumber(value: unknown, min: number, max: number) { const n = Number(value); return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.round(n))) : min; }
@@ -26,38 +28,75 @@ function clampNumber(value: unknown, min: number, max: number) { const n = Numbe
 export class PvpRooms {
   /** Chamado depois de cada mudança de uma sala (o servidor HTTP empurra a nova visão a quem está conectado). */
   onChange: (code: string) => void = () => undefined;
+  /** Chamado uma vez, quando a sala fecha o placar: grava o duelo e devolve a força antes/depois de cada lado (o servidor liga no histórico, pvp-history.ts). */
+  onSettle: (match: SettledMatch) => { a: RatingChange | null; b: RatingChange | null } = () => ({ a: null, b: null });
+  /** Sala vinda da fila que fechou antes de começar porque alguém saiu: `remaining` é quem ficou (a fila o põe de volta no lugar que tinha). */
+  onQueueRoomLeft: (code: string, remaining: PlayerInput) => void = () => undefined;
   private rooms = new Map<string, Room>();
   private roomOf = new Map<string, string>();
   private now: () => number;
   private random: () => number;
   private countdownMs: number;
   private graceMs: number;
+  private matchCountdownMs: number;
 
   constructor(options: PvpRoomsOptions = {}) {
     this.now = options.now ?? Date.now;
     this.random = options.random ?? (() => randomInt(0, 2 ** 30) / 2 ** 30);
     this.countdownMs = options.countdownMs ?? COUNTDOWN_MS;
     this.graceMs = options.graceMs ?? GRACE_MS;
+    this.matchCountdownMs = options.matchCountdownMs ?? MATCH_COUNTDOWN_MS;
   }
 
   get size() { return this.rooms.size; }
   has(code: string) { return this.rooms.has(code); }
   /** A sala em que o jogador está (aberta ou em jogo), se houver. */
   roomCodeOf(playerId: string) { return this.roomOf.get(playerId) ?? null; }
+  /** A fase da sala em que o jogador está agora (null se não está em nenhuma; salas encerradas já soltaram os jogadores). */
+  phaseOf(playerId: string): PvpPhase | null {
+    const code = this.roomOf.get(playerId);
+    return (code && this.rooms.get(code)?.phase) || null;
+  }
+  /** Tira o jogador da sala em que estiver (a mesma regra do comando "leave"). */
+  leave(playerId: string) { this.leaveCurrent(playerId); }
 
   // ---- Criar, convidar e entrar ----
   createRoom(player: PlayerInput, setup: { ladder: Ladder; mode: PvpMode }): PvpRoomView {
     this.leaveCurrent(player.id);
     if (this.rooms.size >= 200) throw new PvpError("too_many", "Salas demais no servidor.");
     const now = this.now();
-    let code = "";
-    do { code = Array.from({ length: ROOM_CODE_LENGTH }, () => ROOM_CODE_ALPHABET[Math.floor(this.random() * ROOM_CODE_ALPHABET.length)]).join(""); } while (this.rooms.has(code));
-    const seed = Array.from({ length: 10 }, () => ROOM_CODE_ALPHABET[Math.floor(this.random() * ROOM_CODE_ALPHABET.length)]).join("").toLowerCase();
-    const room: Room = { code, ladder: setup.ladder, mode: setup.mode, seed, phase: "open", closedReason: null, createdAt: now, phaseAt: now, startAt: null, rev: 1, host: newSeat(player), guest: null, settled: null };
+    const code = this.newCode();
+    const seed = this.newSeed();
+    const room: Room = { code, origin: "invite", ladder: setup.ladder, mode: setup.mode, seed, phase: "open", closedReason: null, createdAt: now, phaseAt: now, startAt: null, rev: 1, host: newSeat(player), guest: null, settled: null };
     this.rooms.set(code, room);
     this.roomOf.set(player.id, code);
     this.changed(room, false);
     return this.viewOf(room, player.id);
+  }
+
+  /**
+   * Sala criada pela fila, com os dois já dentro: aceitar a proposta vale como "pronto", então ela nasce na contagem regressiva (mais longa que a do
+   * convite, para dar tempo de ver o adversário e os 2 modos; "Ainda não" ou "Sair" continuam valendo). Nenhum dos dois está conectado ao SSE da sala
+   * ainda: a tolerância de queda já começa a contar, e quem não aparecer sai (antes do jogo, a sala fecha e o outro volta para a fila).
+   */
+  createMatchedRoom(host: PlayerInput, guest: PlayerInput, setup: { ladder: Ladder; mode: PvpMode }): string {
+    if (host.id === guest.id) throw new PvpError("bad_request", "O mesmo jogador dos dois lados.");
+    this.leaveCurrent(host.id);
+    this.leaveCurrent(guest.id);
+    if (this.rooms.size >= 200) throw new PvpError("too_many", "Salas demais no servidor.");
+    const now = this.now();
+    const code = this.newCode();
+    const seed = this.newSeed();
+    const seat = (player: PlayerInput): Seat => ({ ...newSeat(player), ready: true, disconnectedAt: now });
+    const room: Room = {
+      code, origin: "queue", ladder: setup.ladder, mode: setup.mode, seed, phase: "countdown", closedReason: null,
+      createdAt: now, phaseAt: now, startAt: now + this.matchCountdownMs, rev: 1, host: seat(host), guest: seat(guest), settled: null,
+    };
+    this.rooms.set(code, room);
+    this.roomOf.set(host.id, code);
+    this.roomOf.set(guest.id, code);
+    this.changed(room, false);
+    return code;
   }
 
   /** O convite visto por quem ainda não entrou (a página "Fulano te desafiou"). */
@@ -153,6 +192,14 @@ export class PvpRooms {
   }
 
   // ---- Internos ----
+  private newCode(): string {
+    let code = "";
+    do { code = Array.from({ length: ROOM_CODE_LENGTH }, () => ROOM_CODE_ALPHABET[Math.floor(this.random() * ROOM_CODE_ALPHABET.length)]).join(""); } while (this.rooms.has(code));
+    return code;
+  }
+  private newSeed(): string {
+    return Array.from({ length: 10 }, () => ROOM_CODE_ALPHABET[Math.floor(this.random() * ROOM_CODE_ALPHABET.length)]).join("").toLowerCase();
+  }
   private find(code: string): Room {
     const room = isValidRoomCode(code) ? this.rooms.get(code) : undefined;
     if (!room) throw new PvpError("not_found", "Duelo não encontrado (ou já expirou).");
@@ -181,7 +228,17 @@ export class PvpRooms {
     const guest = room.guest as Seat;
     const host = sideTotals(room.host.legs, room.host.forfeited), guestTotals = sideTotals(guest.legs, guest.forfeited);
     const result = settlePvp(host, guestTotals);
-    room.settled = { host, guest: guestTotals, hostOutcome: result.a, guestOutcome: result.b, tiebreak: result.tiebreak };
+    // o histórico do servidor grava o duelo e diz a força antes/depois (só no valendo); um erro ali não pode travar o placar
+    let rating: Settled["rating"] = null;
+    try {
+      const changes = this.onSettle({
+        code: room.code, at: this.now(), origin: room.origin, ladder: room.ladder, mode: room.mode, seed: room.seed, tiebreak: result.tiebreak,
+        a: { id: room.host.id, name: room.host.name, trophies: room.host.trophies, outcome: result.a, totals: host },
+        b: { id: guest.id, name: guest.name, trophies: guest.trophies, outcome: result.b, totals: guestTotals },
+      });
+      if (changes.a && changes.b) rating = { host: changes.a, guest: changes.b };
+    } catch (error) { console.error("[pvp] não deu para gravar o duelo no histórico:", error); }
+    room.settled = { host, guest: guestTotals, hostOutcome: result.a, guestOutcome: result.b, tiebreak: result.tiebreak, rating };
     this.setPhase(room, "done");
     this.release(room);
   }
@@ -189,6 +246,14 @@ export class PvpRooms {
   /** Um jogador sai (comando "leave" ou queda de conexão longa). */
   private leaveSeat(room: Room, seat: Seat) {
     if (room.phase === "open") return this.close(room, "cancelled");
+    if ((room.phase === "lobby" || room.phase === "countdown") && room.origin === "queue") {
+      // Sala da fila antes de começar: não reabre esperando convite (ninguém tem o código). Fecha, e quem ficou volta para a fila no lugar que tinha —
+      // só se ainda estiver conectado: se os dois sumiram (fecharam o app), o segundo não pode voltar à fila como fantasma e ser proposto a alguém.
+      const remaining = this.opponentOf(room, seat);
+      this.close(room, "opponent-left");
+      if (remaining && remaining.connections > 0) { try { this.onQueueRoomLeft(room.code, { id: remaining.id, name: remaining.name, rating: remaining.rating, trophies: remaining.trophies }); } catch (error) { console.error("[pvp] não deu para voltar à fila:", error); } }
+      return;
+    }
     if (room.phase === "lobby" || room.phase === "countdown") {
       if (seat === room.host) return this.close(room, "host-left");
       this.roomOf.delete(seat.id);
@@ -215,7 +280,12 @@ export class PvpRooms {
 
   private advance(room: Room) {
     const now = this.now();
-    if (room.phase === "countdown" && room.startAt !== null && now >= room.startAt) { this.setPhase(room, "playing"); this.changed(room); }
+    if (room.phase === "countdown" && room.startAt !== null && now >= room.startAt) {
+      // Sala da fila só começa com os dois conectados: quem aceitou e não apareceu (fechou o app) cai pela tolerância ainda ANTES do jogo, e o outro
+      // volta para a fila em vez de jogar sozinho contra um desistente.
+      const absent = room.origin === "queue" && [room.host, room.guest].some((seat) => seat !== null && seat.connections === 0);
+      if (!absent) { this.setPhase(room, "playing"); this.changed(room); }
+    }
     if (room.phase === "done" || room.phase === "closed") {
       if (now - room.phaseAt > DONE_TTL_MS) this.rooms.delete(room.code);
       return;
@@ -245,10 +315,13 @@ export class PvpRooms {
     const revealSeed = room.phase === "lobby" || room.phase === "countdown" || room.phase === "playing" || room.phase === "done";
     const settled = room.settled;
     return {
-      code: room.code, ladder: room.ladder, mode: room.mode, phase: room.phase, closedReason: room.closedReason,
+      code: room.code, origin: room.origin, ladder: room.ladder, mode: room.mode, phase: room.phase, closedReason: room.closedReason,
       seed: revealSeed ? room.seed : null, startAt: room.startAt, serverNow: this.now(), rev: room.rev, host: isHost,
       you: this.playerView(me), opponent: other ? this.playerView(other) : null,
-      result: settled ? { you: isHost ? settled.host : settled.guest, opponent: isHost ? settled.guest : settled.host, outcome: isHost ? settled.hostOutcome : settled.guestOutcome, tiebreak: settled.tiebreak } : null,
+      result: settled ? {
+        you: isHost ? settled.host : settled.guest, opponent: isHost ? settled.guest : settled.host, outcome: isHost ? settled.hostOutcome : settled.guestOutcome, tiebreak: settled.tiebreak,
+        rating: settled.rating ? { you: isHost ? settled.rating.host : settled.rating.guest, opponent: isHost ? settled.rating.guest : settled.rating.host } : null,
+      } : null,
     };
   }
 }

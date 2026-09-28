@@ -50,7 +50,7 @@
     "test:config-family-isolation": "node scripts/test-config-family-isolation.mjs",
     "test:collection-summary": "rm -rf .tmp-collection-summary && tsc --ignoreConfig src/domain/collection-summary.ts --outDir .tmp-collection-summary --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-collection-summary.mjs",
     "smoke": "node scripts/smoke-app.mjs",
-    "test:pvp": "rm -rf .tmp-pvp && tsc --ignoreConfig src/domain/pvp.ts src/domain/pvp-rating.ts server/pvp-rooms.ts server/pvp-players.ts server/pvp-http.ts --outDir .tmp-pvp --module ESNext --moduleResolution Bundler --target ES2022 --types node --skipLibCheck --strict && node scripts/test-pvp.mjs",
+    "test:pvp": "rm -rf .tmp-pvp && tsc --ignoreConfig src/domain/pvp.ts src/domain/pvp-rating.ts server/pvp-rooms.ts server/pvp-players.ts server/pvp-history.ts server/pvp-queue.ts server/pvp-http.ts --outDir .tmp-pvp --module ESNext --moduleResolution Bundler --target ES2022 --types node --skipLibCheck --strict && node scripts/test-pvp.mjs",
     "test:themes": "rm -rf .tmp-themes && tsc --ignoreConfig src/domain/themes.ts src/domain/map-fauna-scale.ts --outDir .tmp-themes --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-themes.mjs",
     "test:i18n": "node scripts/test-i18n.mjs",
     "build:i18n": "node scripts/i18n/build-i18n.mjs"

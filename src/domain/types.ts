@@ -77,6 +77,7 @@ export type Screen =
   | "duel-reveal"
   | "duel-interlude"
   | "result"
+  | "pvp-home"
   | "pvp-lobby"
   | "pvp-interlude"
   | "pvp-result";

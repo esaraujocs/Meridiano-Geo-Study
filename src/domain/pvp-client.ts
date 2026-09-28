@@ -1,6 +1,6 @@
 // Cliente do duelo entre pessoas: identidade do aparelho (sem login, ver server/pvp-players.ts) e a rede (HTTP + SSE) para /api/pvp.
 // Toca localStorage, fetch e EventSource: só funciona no navegador (não em scripts/test-pvp.mjs, que testa o servidor puro).
-import type { PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpRoomView } from "./pvp.js";
+import type { PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
 import type { Ladder } from "./duel-modes.js";
 
 const BASE = "/api/pvp";
@@ -29,10 +29,17 @@ export function pvpIdentity(): { id: string; secret: string } | null {
   } catch { return null; }
 }
 
+/** Este aparelho já tem identidade do PvP (já usou o duelo com pessoas)? Não cria uma: quem nunca entrou no PvP não é registrado no servidor à toa. */
+export function hasPvpIdentity(): boolean {
+  try { return Boolean(localStorage.getItem(ID_KEY) && localStorage.getItem(SECRET_KEY)); } catch { return false; }
+}
+
 export function pvpName(): string { try { return localStorage.getItem(NAME_KEY) ?? ""; } catch { return ""; } }
 export function setPvpName(name: string) { try { localStorage.setItem(NAME_KEY, name.slice(0, 20)); } catch { /* sem armazenamento */ } }
 
-async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<{ room?: PvpRoomView; invite?: PvpInvite }> {
+type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView; matches?: PvpServerMatch[] };
+
+async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<Payload> {
   let response: Response;
   try {
     response = await fetch(`${BASE}${path}`, {
@@ -48,10 +55,15 @@ async function request(method: "GET" | "POST", path: string, identity: { id: str
   return payload ?? {};
 }
 
-export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, rating: number, trophies: number): Promise<PvpRoomView> {
+function requireIdentity() {
   const identity = pvpIdentity();
   if (!identity) throw new PvpClientError("network", "Sem armazenamento neste navegador.");
-  const { room } = await request("POST", "/rooms", identity, { ladder, mode, name, rating, trophies });
+  return identity;
+}
+
+/** Cria o convite. A força não vai junto: o servidor usa a do perfil dele. Os troféus (contra bot) vão só para mostrar. */
+export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, trophies: number): Promise<PvpRoomView> {
+  const { room } = await request("POST", "/rooms", requireIdentity(), { ladder, mode, name, trophies });
   return room as PvpRoomView;
 }
 
@@ -60,10 +72,8 @@ export async function pvpGetInvite(code: string): Promise<PvpInvite> {
   return invite as PvpInvite;
 }
 
-export async function pvpJoinRoom(code: string, name: string, rating: number, trophies: number): Promise<PvpRoomView> {
-  const identity = pvpIdentity();
-  if (!identity) throw new PvpClientError("network", "Sem armazenamento neste navegador.");
-  const { room } = await request("POST", `/rooms/${code}/join`, identity, { name, rating, trophies });
+export async function pvpJoinRoom(code: string, name: string, trophies: number): Promise<PvpRoomView> {
+  const { room } = await request("POST", `/rooms/${code}/join`, requireIdentity(), { name, trophies });
   return room as PvpRoomView;
 }
 
@@ -79,6 +89,46 @@ export async function pvpCommand(code: string, command: PvpCommand): Promise<Pvp
   if (!identity) throw new PvpClientError("network", "Sem armazenamento neste navegador.");
   const { room } = await request("POST", `/rooms/${code}/command`, identity, command);
   return room ?? null;
+}
+
+// ---- Fila ("Buscar duelo") e perfil guardado no servidor ----
+export async function pvpQueueGet(): Promise<PvpQueueView> {
+  const { queue } = await request("GET", "/queue", requireIdentity());
+  return queue as PvpQueueView;
+}
+export async function pvpQueueJoin(prefs: QueuePrefs, name: string, trophies: number): Promise<PvpQueueView> {
+  const { queue } = await request("POST", "/queue", requireIdentity(), { ladder: prefs.ladder, mode: prefs.mode, name, trophies });
+  return queue as PvpQueueView;
+}
+export async function pvpQueueLeave(): Promise<PvpQueueView> {
+  const { queue } = await request("POST", "/queue/leave", requireIdentity(), {});
+  return queue as PvpQueueView;
+}
+export async function pvpQueueRespond(offerId: string, accept: boolean): Promise<PvpQueueView> {
+  const { queue } = await request("POST", "/queue/offer", requireIdentity(), { id: offerId, accept });
+  return queue as PvpQueueView;
+}
+/** Força do valendo e vitórias/derrotas, como o servidor guarda. */
+export async function pvpProfile(): Promise<PvpProfileView> {
+  const { profile } = await request("GET", "/me", requireIdentity());
+  return profile as PvpProfileView;
+}
+/** Os duelos guardados no servidor (do mais novo para o mais velho). */
+export async function pvpServerMatches(limit = 100): Promise<PvpServerMatch[]> {
+  const { matches } = await request("GET", `/me/matches?limit=${limit}`, requireIdentity());
+  return matches ?? [];
+}
+
+/** O canal do jogador (SSE /me/events): a visão da fila a cada mudança. Enquanto ele está aberto, o servidor sabe que o app está aberto. */
+export function pvpSubscribeQueue(onView: (view: PvpQueueView) => void, onError?: (error: unknown) => void): () => void {
+  const identity = pvpIdentity();
+  if (!identity) { onError?.(new PvpClientError("network", "Sem armazenamento neste navegador.")); return () => undefined; }
+  const source = new EventSource(`${BASE}/me/events?player=${encodeURIComponent(identity.id)}&secret=${encodeURIComponent(identity.secret)}`);
+  source.addEventListener("queue", (event) => {
+    try { onView(JSON.parse((event as MessageEvent).data)); } catch (error) { onError?.(error); }
+  });
+  source.onerror = () => onError?.(new PvpClientError("network", "A conexão com a fila caiu; tentando de novo…"));
+  return () => source.close();
 }
 
 /** Ouve a sala em tempo real (SSE); chama `onView` a cada mudança. Devolve uma função para fechar a conexão. */
