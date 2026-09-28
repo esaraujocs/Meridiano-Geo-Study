@@ -1,7 +1,7 @@
 // Salas do duelo entre pessoas (PvP ao vivo): a máquina de estados, sem rede nem relógio próprio (o relógio entra por parâmetro, para testar). O servidor HTTP
 // (pvp-http.ts) só traduz pedidos em chamadas daqui e empurra a visão de cada jogador quando a sala muda. Regras e tipos compartilhados com o app: src/domain/pvp.ts.
 import { randomInt } from "node:crypto";
-import { LEGS, LEG_ROUNDS, type Ladder } from "../src/domain/duel-modes.js";
+import { LEGS, LEG_ROUNDS, drawPvpGroups, isGroupPair, type Ladder, type ModeGroup } from "../src/domain/duel-modes.js";
 import {
   COUNTDOWN_MS, DONE_TTL_MS, GRACE_MS, MATCH_COUNTDOWN_MS, MAX_ROUND_MS, MIN_ROUND_MS, OPEN_TTL_MS, PLAYING_TTL_MS, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH, cleanPlayerName, isValidRoomCode, settlePvp, sideFinished, sideTotals,
   type PvpClosedReason, type PvpCommand, type PvpErrorCode, type PvpInvite, type PvpMode, type PvpOutcome, type PvpPhase, type PvpPlayerView, type PvpRoomOrigin, type PvpRoomView, type RatingChange, type LadderStandings, type RoundReport, type SideTotals,
@@ -18,7 +18,7 @@ export type PlayerInput = { id: string; name: string; rating: number; ladders: L
 type Seat = PlayerInput & { trophies: number; mmr: number; ready: boolean; connections: number; disconnectedAt: number | null; forfeited: boolean; legs: RoundReport[][] };
 type Settled = { host: SideTotals; guest: SideTotals; hostOutcome: PvpOutcome; guestOutcome: PvpOutcome; tiebreak: boolean; rating: { host: RatingChange; guest: RatingChange } | null };
 type Room = {
-  code: string; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; phase: PvpPhase; closedReason: PvpClosedReason | null;
+  code: string; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; groups: [ModeGroup, ModeGroup]; chosen: boolean; phase: PvpPhase; closedReason: PvpClosedReason | null;
   createdAt: number; phaseAt: number; startAt: number | null; rev: number; host: Seat; guest: Seat | null; settled: Settled | null;
 };
 export type PvpRoomsOptions = { now?: () => number; random?: () => number; countdownMs?: number; graceMs?: number; matchCountdownMs?: number };
@@ -69,13 +69,16 @@ export class PvpRooms {
   leave(playerId: string) { this.leaveCurrent(playerId); }
 
   // ---- Criar, convidar e entrar ----
-  createRoom(player: PlayerInput, setup: { ladder: Ladder; mode: PvpMode }): PvpRoomView {
+  /** `groups`: os 2 modos escolhidos pelo anfitrião — só no amistoso (no valendo, e sem escolha, o servidor sorteia um de cada eixo). */
+  createRoom(player: PlayerInput, setup: { ladder: Ladder; mode: PvpMode; groups?: unknown }): PvpRoomView {
     this.leaveCurrent(player.id);
     if (this.rooms.size >= 200) throw new PvpError("too_many", "Salas demais no servidor.");
     const now = this.now();
     const code = this.newCode();
     const seed = this.newSeed();
-    const room: Room = { code, origin: "invite", ladder: setup.ladder, mode: setup.mode, seed, phase: "open", closedReason: null, createdAt: now, phaseAt: now, startAt: null, rev: 1, host: newSeat(player, setup.ladder), guest: null, settled: null };
+    const chosen = setup.mode === "friendly" && isGroupPair(setup.ladder, setup.groups);
+    const groups: [ModeGroup, ModeGroup] = chosen ? [...(setup.groups as [ModeGroup, ModeGroup])] : drawPvpGroups(setup.ladder, seed);
+    const room: Room = { code, origin: "invite", ladder: setup.ladder, mode: setup.mode, seed, groups, chosen, phase: "open", closedReason: null, createdAt: now, phaseAt: now, startAt: null, rev: 1, host: newSeat(player, setup.ladder), guest: null, settled: null };
     this.rooms.set(code, room);
     this.roomOf.set(player.id, code);
     this.changed(room, false);
@@ -97,7 +100,7 @@ export class PvpRooms {
     const seed = this.newSeed();
     const seat = (player: PlayerInput): Seat => ({ ...newSeat(player, setup.ladder), ready: true, disconnectedAt: now });
     const room: Room = {
-      code, origin: "queue", ladder: setup.ladder, mode: setup.mode, seed, phase: "countdown", closedReason: null,
+      code, origin: "queue", ladder: setup.ladder, mode: setup.mode, seed, groups: drawPvpGroups(setup.ladder, seed), chosen: false, phase: "countdown", closedReason: null,
       createdAt: now, phaseAt: now, startAt: now + this.matchCountdownMs, rev: 1, host: seat(host), guest: seat(guest), settled: null,
     };
     this.rooms.set(code, room);
@@ -110,7 +113,7 @@ export class PvpRooms {
   /** O convite visto por quem ainda não entrou (a página "Fulano te desafiou"). */
   invite(code: string): PvpInvite {
     const room = this.find(code);
-    return { code: room.code, phase: room.phase, ladder: room.ladder, mode: room.mode, hostName: room.host.name, hostTrophies: room.host.trophies, full: room.guest !== null };
+    return { code: room.code, phase: room.phase, ladder: room.ladder, mode: room.mode, hostName: room.host.name, hostTrophies: room.host.trophies, full: room.guest !== null, groups: room.chosen ? [...room.groups] : null };
   }
 
   joinRoom(code: string, player: PlayerInput): PvpRoomView {
@@ -240,7 +243,7 @@ export class PvpRooms {
     let rating: Settled["rating"] = null;
     try {
       const changes = this.onSettle({
-        code: room.code, at: this.now(), origin: room.origin, ladder: room.ladder, mode: room.mode, seed: room.seed, tiebreak: result.tiebreak,
+        code: room.code, at: this.now(), origin: room.origin, ladder: room.ladder, mode: room.mode, seed: room.seed, groups: room.groups, tiebreak: result.tiebreak,
         a: { id: room.host.id, name: room.host.name, trophies: room.host.trophies, outcome: result.a, totals: host },
         b: { id: guest.id, name: guest.name, trophies: guest.trophies, outcome: result.b, totals: guestTotals },
       });
@@ -324,7 +327,7 @@ export class PvpRooms {
     const settled = room.settled;
     return {
       code: room.code, origin: room.origin, ladder: room.ladder, mode: room.mode, phase: room.phase, closedReason: room.closedReason,
-      seed: revealSeed ? room.seed : null, startAt: room.startAt, serverNow: this.now(), rev: room.rev, host: isHost,
+      seed: revealSeed ? room.seed : null, groups: revealSeed || room.chosen ? [...room.groups] : null, chosen: room.chosen, startAt: room.startAt, serverNow: this.now(), rev: room.rev, host: isHost,
       you: this.playerView(me), opponent: other ? this.playerView(other) : null,
       result: settled ? {
         you: isHost ? settled.host : settled.guest, opponent: isHost ? settled.guest : settled.host, outcome: isHost ? settled.hostOutcome : settled.guestOutcome, tiebreak: settled.tiebreak,

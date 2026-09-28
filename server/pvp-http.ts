@@ -226,7 +226,7 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       const body = (await readJson(req)) as Record<string, unknown>;
       if (!isLadder(body.ladder) || !isPvpMode(body.mode)) throw new PvpError("bad_request", "Escolha a escada e o modo do duelo.");
       queue.leave(playerId); // criar um convite tira da fila
-      return json(res, 201, { room: rooms.createRoom(player(playerId, body), { ladder: body.ladder, mode: body.mode }) });
+      return json(res, 201, { room: rooms.createRoom(player(playerId, body), { ladder: body.ladder, mode: body.mode, groups: body.groups }) });
     }
 
     const code = normalizeRoomCode(parts[1] ?? "");
@@ -292,7 +292,7 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       if (!friends.areFriends(me, other)) throw new PvpError("forbidden", "Só dá para desafiar amigos.");
       if (!queue.isOnline(other)) throw new PvpError("wrong_phase", "Seu amigo não está com o app aberto.");
       queue.leave(me);
-      const room = rooms.createRoom(player(me, body), { ladder: body.ladder, mode: body.mode });
+      const room = rooms.createRoom(player(me, body), { ladder: body.ladder, mode: body.mode, groups: body.groups });
       sendSocial(other, { kind: "challenge", from: fromOf(me), at: Date.now(), room: room.code, ladder: body.ladder, mode: body.mode });
       return json(res, 201, { room });
     }

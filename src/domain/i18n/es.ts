@@ -409,6 +409,19 @@ export const es: Messages = {
       step2: ["Envía el enlace", "Por WhatsApp o copiándolo; tu amigo entra directo."],
       step3: ["Jueguen al mismo tiempo", "Cada uno a su ritmo, viendo el marcador del otro en vivo."],
     },
+    // Modos del duelo: sorteo (uno de cada eje) o, en el amistoso, los 2 elegidos
+    legs: {
+      title: "Modos del duelo",
+      draw: "Sorteo",
+      drawNote: "Un modo de cada eje, sorteado.",
+      pick: "Elegir",
+      pickNote: "Tú eliges los 2 modos.",
+      order: (n: number) => `${n}º`,
+      missing: (n: number) => (n === 2 ? "Elige 2 modos, en el orden de los tiempos." : "Elige 1 modo más."),
+      ready: (a: string, b: string) => `1.er tiempo: ${a} · 2.º tiempo: ${b}`,
+      rankedNote: "Con apuesta los modos siempre se sortean, uno de cada eje.",
+      chosenLine: (a: string, b: string) => `Modos elegidos: ${a} y ${b}.`,
+    },
     invite: {
       loading: "Abriendo la invitación…",
       title: (name: string) => `¡${name} te desafió!`,

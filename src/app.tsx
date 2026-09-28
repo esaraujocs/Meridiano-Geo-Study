@@ -60,7 +60,7 @@ import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
 import { claimDuelMilestones, claimLeagueThemes, listDuels, saveDuel } from "./domain/duel-store";
 import { isDebugEnabled } from "./domain/debug-flag";
-import { PvpLobby, type PvpLobbyView } from "./components/pvp-lobby";
+import { DRAW_LEGS, PvpLobby, legChoiceGroups, type LegChoice, type PvpLobbyView } from "./components/pvp-lobby";
 import { PvpInterlude } from "./components/pvp-interlude";
 import { PvpResult } from "./components/pvp-result";
 import { PvpHome } from "./components/pvp-home";
@@ -70,7 +70,7 @@ import { SocialLayer } from "./components/social-layer";
 import { ratioPercent } from "./domain/hub-profile";
 import type { FriendsView, PlayerProfile, PlayerSummary, SocialEvent } from "./domain/pvp-social";
 import { PvpQueueLayer, type OfferActivity } from "./components/pvp-offer";
-import { newPvpRun, pvpLegOptions, recordPvpLeg, type PvpRun } from "./domain/pvp-run";
+import { newPvpRun, pvpLegOptions, recordPvpLeg, roomLegs, type PvpRun } from "./domain/pvp-run";
 import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
   PvpClientError, hasPvpIdentity, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
@@ -267,7 +267,7 @@ export function App() {
   const lastNoticeAtRef = useRef(0);
   const enteredMatchRef = useRef<string | null>(null);
   // Os dois tempos, para a tabela do resultado: vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar).
-  const pvpResultLegs = useMemo(() => (pvpRoom?.seed ? drawLegs(pvpRoom.ladder, pvpRoom.seed) : null), [pvpRoom?.seed, pvpRoom?.ladder]);
+  const pvpResultLegs = useMemo(() => (pvpRoom ? roomLegs(pvpRoom) : null), [pvpRoom?.seed, pvpRoom?.ladder, pvpRoom?.groups?.join()]);
   // Duelo (contra bot ou com amigo): sempre Mundo inteiro, sem o filtro ONU — os dois lados do PvP precisam do MESMO baralho disponível
   // (a semente sozinha não basta se o recorte/filtro pessoal de cada aparelho for diferente; region/onlyUn não podem vir da preferência solo).
   const region: RegionSelection = duelMode || trainOnce || pvpRoom ? "mundo" : regionPref;
@@ -297,7 +297,7 @@ export function App() {
     const ratingDelta = rating ? rating.you.after - rating.you.before : null;
     // os grupos dos dois tempos vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar); sem semente (nunca deveria acontecer
     // com a sala já fechada), fica sem o detalhe dos tempos, só o placar total.
-    const groups = room.seed ? drawLegs(room.ladder, room.seed) : null;
+    const groups = roomLegs(room);
     const legs: PvpMatchRecord["legs"] = groups
       ? groups.map((leg, index) => ({
         group: leg.group,
@@ -370,7 +370,9 @@ export function App() {
     setPvpError(null); setPvpBusy(false); setPvpTrophy(null);
     pvpSettledCodeRef.current = null;
   };
-  const pvpOpenSetup = (ladder: Ladder) => { pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState("friendly"); setScreen("pvp-lobby"); };
+  // Os modos do amistoso na criação do convite (sorteio ou os 2 escolhidos); volta ao sorteio a cada convite novo.
+  const [pvpLegChoice, setPvpLegChoice] = useState<LegChoice>(DRAW_LEGS);
+  const pvpOpenSetup = (ladder: Ladder) => { pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState("friendly"); setPvpLegChoice(DRAW_LEGS); setScreen("pvp-lobby"); };
   const startPvpLeg = (run: PvpRun, index: number) => {
     const leg = run.legs[index];
     pvpRoundIndexRef.current = 0;
@@ -382,7 +384,7 @@ export function App() {
   const startPvpRun = (room: PvpRoomView) => {
     if (!room.seed) return;
     economyBeforeRef.current = economy;
-    const run = newPvpRun({ code: room.code, ladder: room.ladder, mode: room.mode, isHost: room.host, seed: room.seed });
+    const run = newPvpRun({ code: room.code, ladder: room.ladder, mode: room.mode, isHost: room.host, seed: room.seed, groups: room.groups });
     setPvpRun(run);
     startPvpLeg(run, 0);
   };
@@ -396,7 +398,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name) return;
     setPvpBusy(true); setPvpError(null);
-    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, standings); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, standings, pvpMode === "friendly" ? legChoiceGroups(pvpLegChoice) : undefined); setPvpRoom(room); pvpSubscribeTo(room.code); }
     catch (error) { setPvpError(pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -578,10 +580,10 @@ export function App() {
   const friendRespond = (code: string, accept: boolean) => socialAction(() => pvpFriendRespond(code, accept, pvpNameState), (view) => (accept ? t.social.msgAccepted(nameOf(code, view)) : null));
   const friendRemove = (code: string) => socialAction(() => pvpFriendRemove(code));
   /** Desafio direto: cria o convite (você é o anfitrião) e vai para o lobby; o amigo recebe o aviso na hora. */
-  const friendChallenge = async (code: string, ladder: Ladder, mode: PvpMode) => {
+  const friendChallenge = async (code: string, ladder: Ladder, mode: PvpMode, groups?: [ModeGroup, ModeGroup]) => {
     setSocialBusy(true); setSocialError(null); setSocialMessage(null);
     try {
-      const room = await pvpChallenge(code, ladder, mode, pvpNameState.trim(), standings);
+      const room = await pvpChallenge(code, ladder, mode, pvpNameState.trim(), standings, groups);
       pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState(mode);
       setPvpRoom(room); pvpSubscribeTo(room.code); setScreen("pvp-lobby");
     } catch (error) { setSocialError(socialErrorMessage(error)); }
@@ -1111,7 +1113,7 @@ export function App() {
   );
   const page = (() => {
   if (screen === "friends") {
-    return <div className="app-shell grain"><FriendsScreen view={friendsView} loading={friendsLoading} error={socialError} message={socialMessage} busy={socialBusy} onAdd={(code) => void friendAdd(code)} onRespond={(code, accept) => void friendRespond(code, accept)} onRemove={(code) => void friendRemove(code)} onOpenPlayer={openPlayer} onChallenge={(code, ladder, mode) => void friendChallenge(code, ladder, mode)} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain"><FriendsScreen view={friendsView} loading={friendsLoading} error={socialError} message={socialMessage} busy={socialBusy} onAdd={(code) => void friendAdd(code)} onRespond={(code, accept) => void friendRespond(code, accept)} onRemove={(code) => void friendRemove(code)} onOpenPlayer={openPlayer} onChallenge={(code, ladder, mode, groups) => void friendChallenge(code, ladder, mode, groups)} onBack={() => setScreen("hub")} /></div>;
   }
   if (screen === "player") {
     return <div className="app-shell grain"><PlayerProfileScreen profile={playerProfile} loading={playerLoading} error={socialError} busy={socialBusy}
@@ -1142,7 +1144,7 @@ export function App() {
       : pvpEntry === "invite"
         ? { kind: "invite", invite: pvpInvitePreview, loading: pvpInviteLoading, busy: pvpBusy, error: pvpError }
         : { kind: "setup", ladder: pvpSetupLadder, mode: pvpMode, busy: pvpBusy, error: pvpError };
-    return <div className="app-shell grain"><PvpLobby view={view} name={pvpNameState} level={economy.level} onNameChange={setPvpDisplayName} onModeChange={setPvpModeState} onCreate={() => void pvpCreate()} onJoin={() => void pvpJoin()} onDecline={pvpDecline} onReady={pvpToggleReady} onLeave={pvpLeaveLobby} onBack={pvpLeaveLobby} /></div>;
+    return <div className="app-shell grain"><PvpLobby view={view} name={pvpNameState} level={economy.level} legChoice={pvpLegChoice} onLegChoice={setPvpLegChoice} onNameChange={setPvpDisplayName} onModeChange={setPvpModeState} onCreate={() => void pvpCreate()} onJoin={() => void pvpJoin()} onDecline={pvpDecline} onReady={pvpToggleReady} onLeave={pvpLeaveLobby} onBack={pvpLeaveLobby} /></div>;
   }
   if (screen === "pvp-interlude" && pvpRun) {
     return <div className="app-shell grain"><PvpInterlude run={pvpRun} onContinue={pvpContinueLeg} /></div>;

@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Icon } from "./icons";
-import type { Ladder } from "../domain/duel-modes";
+import { DRAW_LEGS, LegPicker, legChoiceGroups, legChoiceReady, type LegChoice } from "./pvp-lobby";
+import type { Ladder, ModeGroup } from "../domain/duel-modes";
 import type { PvpMode } from "../domain/pvp";
 import { FRIEND_CODE_LENGTH, normalizeFriendCode, type FriendView, type FriendsView } from "../domain/pvp-social";
 import { formatNumber, t } from "../domain/i18n";
@@ -31,13 +32,16 @@ export function FriendsScreen({ view, loading, error, message, busy, onAdd, onRe
   onRespond: (code: string, accept: boolean) => void;
   onRemove: (code: string) => void;
   onOpenPlayer: (code: string) => void;
-  onChallenge: (code: string, ladder: Ladder, mode: PvpMode) => void;
+  onChallenge: (code: string, ladder: Ladder, mode: PvpMode, groups?: [ModeGroup, ModeGroup]) => void;
   onBack: () => void;
 }) {
   const [code, setCode] = useState("");
   const [copied, setCopied] = useState(false);
   const [ladder, setLadder] = useState<Ladder>("mapas");
   const [mode, setMode] = useState<PvpMode>("friendly");
+  const [legChoice, setLegChoice] = useState<LegChoice>(DRAW_LEGS);
+  const pickLadder = (item: Ladder) => { setLadder(item); if (item !== ladder) setLegChoice(DRAW_LEGS); };
+  const challengeReady = mode !== "friendly" || legChoiceReady(legChoice);
   const clean = normalizeFriendCode(code).slice(0, FRIEND_CODE_LENGTH);
   const copy = async () => {
     if (!view) return;
@@ -75,7 +79,7 @@ export function FriendsScreen({ view, loading, error, message, busy, onAdd, onRe
               <button type="button" className="rs-btn" disabled={busy} onClick={() => onRespond(friend.code, false)}>{t.social.decline}</button>
             </>} onOpenPlayer={onOpenPlayer} />}
             <FriendList title={t.social.friendsTitle(view.friends.length)} items={view.friends} empty={t.social.empty} showStatus render={(friend) => <>
-              <button type="button" className="rs-btn primary" disabled={busy || !friend.online} title={friend.online ? undefined : t.social.challengeOffline} onClick={() => onChallenge(friend.code, ladder, mode)}><Icon type="swords" />{t.social.challenge}</button>
+              <button type="button" className="rs-btn primary" disabled={busy || !friend.online || !challengeReady} title={friend.online ? undefined : t.social.challengeOffline} onClick={() => onChallenge(friend.code, ladder, mode, mode === "friendly" ? legChoiceGroups(legChoice) : undefined)}><Icon type="swords" />{t.social.challenge}</button>
             </>} onOpenPlayer={onOpenPlayer} />
             {view.outgoing.length > 0 && <FriendList title={t.social.outgoingTitle} items={view.outgoing} render={(friend) => <>
               <button type="button" className="rs-btn" disabled={busy} onClick={() => onRemove(friend.code)}>{t.social.cancel}</button>
@@ -86,11 +90,12 @@ export function FriendsScreen({ view, loading, error, message, busy, onAdd, onRe
           <h2>{t.social.challengeTitle}</h2>
           <p className="pvp-hint">{t.social.challengeNote}</p>
           <div className="pvp-modes pvp-ladders" role="radiogroup" aria-label={t.pvp.home.ladderLabel}>
-            {LADDERS.map((item) => <button key={item} type="button" role="radio" aria-checked={ladder === item} className={`pg-chip${ladder === item ? " is-active" : ""}`} onClick={() => setLadder(item)}><b>{t.duel.ladders[item]}</b></button>)}
+            {LADDERS.map((item) => <button key={item} type="button" role="radio" aria-checked={ladder === item} className={`pg-chip${ladder === item ? " is-active" : ""}`} onClick={() => pickLadder(item)}><b>{t.duel.ladders[item]}</b></button>)}
           </div>
           <div className="pvp-modes" role="radiogroup" aria-label={t.pvp.home.modeLabel}>
             {MODES.map((item) => <button key={item} type="button" role="radio" aria-checked={mode === item} className={`pg-chip${mode === item ? " is-active" : ""}`} onClick={() => setMode(item)}><b>{modeLabel(item)}</b><small>{item === "friendly" ? t.pvp.modeFriendlyNote : t.pvp.modeRankedNote}</small></button>)}
           </div>
+          {mode === "friendly" ? <LegPicker ladder={ladder} choice={legChoice} onChange={setLegChoice} /> : <p className="pvp-hint pvp-legs-note">{t.pvp.legs.rankedNote}</p>}
           <h2>{t.social.howTitle}</h2>
           <ol className="pvp-steps">{how.map(([title, note], index) => <li key={index}><b>{index + 1}</b><div><strong>{title}</strong><span>{note}</span></div></li>)}</ol>
         </aside>

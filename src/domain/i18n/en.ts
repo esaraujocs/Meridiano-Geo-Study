@@ -409,6 +409,19 @@ export const en: Messages = {
       step2: ["Send the link", "Over WhatsApp or by copying it; your friend joins right away."],
       step3: ["Play at the same time", "Each of you at your own pace, watching the other's score live."],
     },
+    // Duel modes: random draw (one per axis) or, in friendly, the 2 picked by hand
+    legs: {
+      title: "Duel modes",
+      draw: "Random",
+      drawNote: "One mode from each axis, drawn at random.",
+      pick: "Choose",
+      pickNote: "You pick the 2 modes.",
+      order: (n: number) => (n === 1 ? "1st" : "2nd"),
+      missing: (n: number) => (n === 2 ? "Pick 2 modes, in the order of the halves." : "Pick 1 more mode."),
+      ready: (a: string, b: string) => `1st half: ${a} · 2nd half: ${b}`,
+      rankedNote: "In ranked, modes are always drawn at random, one from each axis.",
+      chosenLine: (a: string, b: string) => `Chosen modes: ${a} and ${b}.`,
+    },
     invite: {
       loading: "Opening the invite…",
       title: (name: string) => `${name} challenged you!`,

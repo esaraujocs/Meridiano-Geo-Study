@@ -30,6 +30,9 @@ export type ModeGroupDef = {
   time: number;
   /** Peso no sorteio (padrão 1). Silhueta e Capitais têm 2 grupos cada em Mapas (2 de 5) e dominavam o sorteio; com peso menor o Clicar no mapa, o modo base, sai mais. */
   weight?: number;
+  /** O "eixo" do grupo (o assunto: país no mapa, capital, silhueta...). No duelo entre pessoas os 2 tempos caem sempre em eixos diferentes: nunca
+   *  Capitais clicar + Capitais escrita, nem Silhueta opções + Silhueta escrita (pedido do Enzo, 28/09). Em Bandeiras cada grupo é o próprio eixo. */
+  axis: string;
 };
 
 /** Peso de cada grupo da Silhueta e de cada grupo de Capitais no sorteio de Mapas (o Clicar no mapa pesa 1). */
@@ -37,14 +40,14 @@ export const SILHOUETTE_WEIGHT = 0.25;
 export const CAPITALS_WEIGHT = 0.5;
 
 export const MODE_GROUPS: readonly ModeGroupDef[] = [
-  { group: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
-  { group: "capitais-clique", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5, weight: CAPITALS_WEIGHT },
-  { group: "silhueta-opcoes", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2, weight: SILHOUETTE_WEIGHT },
-  { group: "silhueta-escrita", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.24, time: 1.9, weight: SILHOUETTE_WEIGHT },
-  { group: "capitais-escrita", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT },
-  { group: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
-  { group: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
-  { group: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },
+  { group: "mapa", axis: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
+  { group: "capitais-clique", axis: "capitais", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5, weight: CAPITALS_WEIGHT },
+  { group: "silhueta-opcoes", axis: "silhueta", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2, weight: SILHOUETTE_WEIGHT },
+  { group: "silhueta-escrita", axis: "silhueta", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.24, time: 1.9, weight: SILHOUETTE_WEIGHT },
+  { group: "capitais-escrita", axis: "capitais", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT },
+  { group: "atuais", axis: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
+  { group: "escrita-pais", axis: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
+  { group: "historicas", axis: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },
 ];
 export const groupDef = (group: ModeGroup): ModeGroupDef => MODE_GROUPS.find((item) => item.group === group) as ModeGroupDef;
 export const groupsOfLadder = (ladder: Ladder) => MODE_GROUPS.filter((item) => item.ladder === ladder);
@@ -73,14 +76,16 @@ function pickWeighted(groups: readonly ModeGroupDef[], random: () => number) {
   return groups[groups.length - 1];
 }
 
-/** Sorteia os 2 tempos: dois grupos diferentes da escada, com sentido e baralho decididos pela semente.
+/** Sorteia os 2 tempos do duelo contra bot: dois grupos de eixos diferentes da escada (desde 28/09, a mesma regra do duelo entre pessoas), com sentido e
+ *  baralho decididos pela semente.
  * Com `ownedGroups` (duelo contra bot), ao menos um tempo cai num modo que a pessoa tem, quando ela tem algum;
  * sem ele (duelo entre pessoas) o sorteio não depende de quem comprou o quê. */
 export function drawLegs(ladder: Ladder, seed: string, ownedGroups?: ReadonlySet<ModeGroup>): [DuelLeg, DuelLeg] {
   const random = mulberry32(hashSeed(`legs:${ladder}:${seed}`));
   const groups = groupsOfLadder(ladder);
   const first = pickWeighted(groups, random);
-  const rest = groups.filter((item) => item !== first);
+  // um de cada eixo, como no duelo entre pessoas (nunca Capitais clicar + Capitais escrita, nem as duas Silhuetas)
+  const rest = groups.filter((item) => item.axis !== first.axis);
   let second = pickWeighted(rest, random);
   if (ownedGroups && !ownedGroups.has(first.group) && !ownedGroups.has(second.group)) {
     const owned = rest.filter((item) => ownedGroups.has(item.group));
@@ -99,6 +104,21 @@ export function legOfGroup(group: ModeGroup, seed: string, index: number): DuelL
   const pick = def.variants[Math.floor(mulberry32(hashSeed(`variant:${seed}:${index}`))() * def.variants.length)];
   return { group, family: pick.family, variant: pick.variant, rounds: LEG_ROUNDS, deckSeed: hashSeed(`deck:${seed}:${index}:${group}`) };
 }
+
+// ---- Duelo entre pessoas ----
+/** Os 2 grupos do duelo entre pessoas (o servidor sorteia ao criar a sala): pelo mesmo peso do duelo contra bot, mas o 2º nunca é do mesmo eixo do 1º. */
+export function drawPvpGroups(ladder: Ladder, seed: string): [ModeGroup, ModeGroup] {
+  const random = mulberry32(hashSeed(`pvp-legs:${ladder}:${seed}`));
+  const groups = groupsOfLadder(ladder);
+  const first = pickWeighted(groups, random);
+  const second = pickWeighted(groups.filter((item) => item.axis !== first.axis), random);
+  return [first.group, second.group];
+}
+/** Os 2 grupos escolhidos à mão (amistoso): dois grupos diferentes da escada, na ordem dos tempos. */
+export const isGroupPair = (ladder: Ladder, value: unknown): value is [ModeGroup, ModeGroup] =>
+  Array.isArray(value) && value.length === 2 && value[0] !== value[1] && value.every((group) => groupsOfLadder(ladder).some((def) => def.group === group));
+/** Os 2 tempos de um duelo entre pessoas a partir dos grupos da sala (sentido e baralho da semente, a mesma conta nos dois aparelhos). */
+export const pvpLegs = (seed: string, groups: readonly [ModeGroup, ModeGroup]): [DuelLeg, DuelLeg] => [legOfGroup(groups[0], seed, 0), legOfGroup(groups[1], seed, 1)];
 
 /** Modo liberado: grátis ou já comprado (o desbloqueio vale para o modo, não para o recorte). */
 export function isVariantOwned(mode: ModeVariant, unlocked: readonly string[]) {

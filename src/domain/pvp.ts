@@ -1,7 +1,7 @@
 // Duelo entre pessoas (PvP), ao vivo: tipos e regras puras compartilhadas entre o servidor (server/pvp-*.ts) e o app. Cada jogador joga o MESMO duelo (semente da sala,
 // mesmos 2 tempos de 10 rodadas, ver duel-modes.ts) no seu ritmo, e os dois veem o progresso um do outro em tempo real. O servidor só guarda a sala e repassa o que cada um
 // relata (as respostas são avaliadas no aparelho, como no resto do jogo); a regra do vencedor é a mesma do duelo contra bot: mais acertos vence, empate no menor tempo total.
-import { LADDERS, LEGS, LEG_ROUNDS, isLadder, type Ladder } from "./duel-modes.js";
+import { LADDERS, LEGS, LEG_ROUNDS, isLadder, type Ladder, type ModeGroup } from "./duel-modes.js";
 
 /** Amistoso: sem troféus nem MMR, moedas cheias e sem exigir o corte de 20 rodadas. Valendo: troféus e MMR da mesma escada do duelo contra bot
  *  (pvp-trophies.ts), com o MMR do adversário no lugar do rating do bot. */
@@ -98,6 +98,10 @@ export type PvpRoomView = {
   closedReason: PvpClosedReason | null;
   /** Só aparece a partir do lobby (o amigo já entrou), para o anfitrião sozinho não ver os modos antes de alguém aceitar o convite. */
   seed: string | null;
+  /** Os 2 grupos (modos) dos tempos: aparecem junto com a semente; se o anfitrião escolheu (amistoso), desde o começo. */
+  groups: [ModeGroup, ModeGroup] | null;
+  /** Os modos foram escolhidos à mão pelo anfitrião (senão, sorteados um de cada eixo). */
+  chosen: boolean;
   /** Instante (relógio do servidor) em que o 1º tempo começa. */
   startAt: number | null;
   serverNow: number;
@@ -110,7 +114,8 @@ export type PvpRoomView = {
 };
 
 /** Convite visto antes de entrar na sala (sem identidade): o suficiente para a tela "Fulano te desafiou". */
-export type PvpInvite = { code: string; phase: PvpPhase; ladder: Ladder; mode: PvpMode; hostName: string; hostTrophies: number; full: boolean };
+/** `groups`: os modos escolhidos pelo anfitrião (null se é sorteio, que só aparece no lobby). */
+export type PvpInvite = { code: string; phase: PvpPhase; ladder: Ladder; mode: PvpMode; hostName: string; hostTrophies: number; full: boolean; groups: [ModeGroup, ModeGroup] | null };
 
 // ---- Fila ("Buscar duelo") ----
 // Uma camada fina sobre as salas (server/pvp-queue.ts): quando dois pedidos combinam, o servidor faz uma proposta aos dois e, com os dois aceitando,
@@ -207,7 +212,8 @@ export type PvpProfileView = { name: string; rating: number; ranked: PvpTally; f
 /** `code`: código de amigo de cada lado (quando o servidor o conhece). */
 export type PvpMatchSide = { name: string; totals: SideTotals; outcome: PvpOutcome; rating: RatingChange | null; code?: string };
 /** Um duelo terminado, do ponto de vista de quem pede (GET /me/matches). */
-export type PvpServerMatch = { code: string; at: number; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; tiebreak: boolean; you: PvpMatchSide; opponent: PvpMatchSide };
+/** `groups`: os 2 modos jogados (duelos gravados desde 28/09; nos antigos, saem da semente com drawLegs). */
+export type PvpServerMatch = { code: string; at: number; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; tiebreak: boolean; you: PvpMatchSide; opponent: PvpMatchSide; groups?: [ModeGroup, ModeGroup] };
 
 // ---- Mensagens ----
 /** Comandos do jogador (POST). `round` relata uma rodada respondida (inclui o tempo esgotado como erro); o servidor soma os tempos a partir delas. */
