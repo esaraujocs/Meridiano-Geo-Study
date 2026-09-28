@@ -11,9 +11,10 @@ const LADDERS: readonly Ladder[] = ["mapas", "bandeiras"];
 const MODES: readonly PvpMode[] = ["friendly", "ranked"];
 const modeLabel = (mode: PvpMode) => (mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked);
 
-export function PvpHome({ standings, prefs, onPrefsChange, name, onNameChange, queue, profile, busy, error, notice, onDismissNotice, onSearch, onCancel, onInvite, onPlayBots, onBack }: {
+export function PvpHome({ standings, onFriends, prefs, onPrefsChange, name, onNameChange, queue, profile, busy, error, notice, onDismissNotice, onSearch, onCancel, onInvite, onPlayBots, onBack }: {
   /** Troféus de cada escada (os mesmos do duelo contra bot; o valendo contra pessoas mexe neles). */
   standings: LadderStandings;
+  onFriends: () => void;
   prefs: QueuePrefs;
   onPrefsChange: (prefs: QueuePrefs) => void;
   name: string;
@@ -98,6 +99,7 @@ export function PvpHome({ standings, prefs, onPrefsChange, name, onNameChange, q
             <span className="rv-k">{t.pvp.home.ratingTitle}</span>
             <dl className="pvp-trophies">{LADDERS.map((ladder) => <div key={ladder}><dt>{t.duel.ladders[ladder]}</dt><dd>{formatNumber(standings[ladder].trophies)}</dd></div>)}</dl>
             {profile && <small>{t.pvp.home.record(profile.ranked.wins, profile.ranked.losses, profile.ranked.draws)}</small>}
+            <button type="button" className="pr-link" onClick={onFriends}>{t.social.friendsButton} <Icon type="arrow" size={16} /></button>
           </div>
           <h2>{t.pvp.home.howTitle}</h2>
           <ol className="pvp-steps">{steps.map(([title, note], index) => <li key={index}><b>{index + 1}</b><div><strong>{title}</strong><span>{note}</span></div></li>)}</ol>

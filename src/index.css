@@ -1831,6 +1831,72 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
   .arena{padding:16px!important}
   .ar-modes-wrap{order:3}
 }
+/* ---- Amigos e perfil de jogador ---- */
+.fr-av{position:relative;flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--green) 14%,var(--paper));border:1px solid var(--line);color:var(--ink);font:600 16px 'Fraunces',Georgia,serif}
+.fr-av.is-lg{width:72px;height:72px;font-size:30px}
+.fr-av i{position:absolute;right:-1px;bottom:-1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--paper);background:#9a9282}
+.fr-av i.is-on{background:#2f9e6e}
+.fr-av.is-lg i{width:16px;height:16px}
+.fr-code{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 18px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.fr-code strong{display:block;font:500 30px 'Fraunces',Georgia,serif;letter-spacing:.1em;color:var(--ink)}
+.fr-code small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.fr-code-actions{display:flex;gap:8px;flex-wrap:wrap}
+.fr-add{display:flex;flex-direction:column;gap:6px;margin:0 0 20px;font-size:13px;color:var(--muted)}
+.fr-add>div{display:flex;gap:8px}
+.fr-add input{flex:1;min-width:0;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:600 16px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+.fr-add input::placeholder{letter-spacing:normal;text-transform:none;font:400 14px 'Plus Jakarta Sans',sans-serif;color:var(--muted)}
+.fr-add input:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.fr-list{margin:0 0 18px}
+.fr-list ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fr-list li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.fr-who{flex:1 1 180px;display:flex;align-items:center;gap:10px;min-width:0;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer}
+.fr-who b{display:block;font-size:14.5px;color:var(--ink)}
+.fr-who small{display:block;font-size:12px;color:color-mix(in srgb,var(--muted) 80%,var(--ink));margin-top:1px}
+.fr-who:hover b{text-decoration:underline}
+.fr-actions{display:flex;gap:8px;flex-wrap:wrap}
+.fr-actions .rs-btn{padding:9px 14px;font-size:13px}
+.fr-msg{border-left-color:var(--green)}
+.pz-links{display:flex;gap:14px;flex-wrap:wrap}
+.rk-open{padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-open:hover{text-decoration:underline}
+.pvp-social-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:4px 0 0}
+.pp-state{font-size:13px;font-weight:600;color:color-mix(in srgb,var(--green) 70%,var(--ink))}
+.social-toast .social-open{flex:none;width:auto;height:auto;margin:0;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:600 12px 'Plus Jakarta Sans',sans-serif}
+.pr-duel-profile{margin:0 0 8px}
+.pp-page .pvp-card{max-width:none}
+.pp-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.pp-id{flex:1 1 220px;min-width:0}
+.pp-id h1{margin:4px 0 4px}
+.pp-id p{margin:0;font-size:13px;color:color-mix(in srgb,var(--muted) 80%,var(--ink))}
+.pp-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pp-pvp h2,.pp-summary h2{font:500 24px 'Fraunces',Georgia,serif;margin:0 0 14px}
+.pp-pvp h3{font:500 17px 'Fraunces',Georgia,serif;margin:20px 0 10px}
+.pp-ladders,.pp-tallies{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pp-ladder,.pp-tally{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.pp-ladder strong{display:block;font:500 34px 'Fraunces',Georgia,serif;color:var(--ink);line-height:1.1}
+.pp-ladder small,.pp-tally small{display:block;font-size:12.5px;color:color-mix(in srgb,var(--muted) 80%,var(--ink));margin-top:2px}
+.pp-tallies{margin-top:12px}
+.pp-tally strong{display:block;font:600 18px 'Plus Jakarta Sans',sans-serif;color:var(--ink)}
+.pp-h2h{margin-top:4px}
+.pp-matches{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px}
+.pp-matches li{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.pp-res{font:700 11px 'Plus Jakarta Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}
+.pp-matches .is-win .pp-res{background:color-mix(in srgb,var(--green) 16%,transparent);color:color-mix(in srgb,var(--green) 65%,var(--ink))}
+.pp-matches .is-loss .pp-res{background:color-mix(in srgb,var(--terracotta) 16%,transparent);color:color-mix(in srgb,var(--terracotta) 60%,var(--ink))}
+.pp-m b{display:block;font-size:13.5px;color:var(--ink)}
+.pp-m small{display:block;font-size:11.5px;color:color-mix(in srgb,var(--muted) 80%,var(--ink))}
+.pp-score{font:600 15px 'DM Mono',monospace;color:var(--ink)}
+.pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 10px}
+.pp-stat{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.pp-stat dt{font:400 11px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--muted) 80%,var(--ink))}
+.pp-stat dd{margin:4px 0 0}
+.pp-stat dd b{display:block;font:500 26px 'Fraunces',Georgia,serif;color:var(--ink)}
+.pp-stat dd small{display:block;font-size:12px;color:color-mix(in srgb,var(--muted) 80%,var(--ink))}
+@media (max-width:760px){
+  .pp-stats{grid-template-columns:1fr 1fr}
+  .pp-ladders,.pp-tallies{grid-template-columns:1fr}
+  .fr-add>div{flex-direction:column}
+}
 /* Duelar busca uma pessoa (valendo); enquanto espera, o cartão mostra a busca, o bot opcional e cancelar */
 .ar-search{flex-basis:100%;margin:0;padding:10px 14px}
 .ar-foot .ar-search small{display:block;flex-basis:auto;margin:2px 0 0;font-size:12px}

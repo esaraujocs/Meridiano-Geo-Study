@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { Legacy, Meta, Region } from "../domain/types";
 import type { querySurfaces } from "../domain/progress-surfaces";
 import type { EconomySnapshot } from "../domain/economy-store";
@@ -320,9 +320,14 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
   </article>;
 }
 
+/** Abre o perfil de um jogador (o adversário de um duelo contra pessoa); sem quem trate, o botão não aparece. */
+export const OpenPlayerContext = createContext<((code: string) => void) | null>(null);
+
 function DuelDetail({ row, duel, flagOf }: { row: SessionRow; duel: NonNullable<SessionRow["duel"]>; flagOf: FlagOf }) {
+  const openPlayer = useContext(OpenPlayerContext);
   return <div className="pr-sess-detail pr-duel-detail">
     <p className="pr-duel-vs"><b>{duel.botName}</b>{(duel.botLeague || duel.botStyle) && <span>{[duel.botLeague, duel.botStyle].filter(Boolean).join(" · ")}</span>}{duel.kind === "pvp" && <span className="rv-tag">{duel.pvpMode === "ranked" ? t.pvp.modeRanked : t.pvp.modeFriendly}</span>}</p>
+    {duel.kind === "pvp" && duel.opponentCode && openPlayer && <button type="button" className="pr-link pr-duel-profile" onClick={() => openPlayer(duel.opponentCode as string)}>{t.social.seeProfile} <Glyph name="arrow" size={16} /></button>}
     {duel.tiebreak && <p className="pr-duel-note">{t.duel.result.tiebreak}</p>}
     {duel.kind === "pvp" && duel.deltaLabel === null && <p className="pr-duel-note">{t.pvp.result.friendlyNote}</p>}
     <div className="pr-duel-legs">{duel.legs.map((leg, index) => <div className="pr-duel-leg" key={index}>

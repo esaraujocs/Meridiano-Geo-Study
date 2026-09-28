@@ -64,12 +64,17 @@ import { PvpLobby, type PvpLobbyView } from "./components/pvp-lobby";
 import { PvpInterlude } from "./components/pvp-interlude";
 import { PvpResult } from "./components/pvp-result";
 import { PvpHome } from "./components/pvp-home";
+import { FriendsScreen } from "./components/friends-screen";
+import { PlayerProfileScreen } from "./components/player-profile";
+import { SocialLayer } from "./components/social-layer";
+import { ratioPercent } from "./domain/hub-profile";
+import type { FriendsView, PlayerProfile, PlayerSummary, SocialEvent } from "./domain/pvp-social";
 import { PvpQueueLayer, type OfferActivity } from "./components/pvp-offer";
 import { newPvpRun, pvpLegOptions, recordPvpLeg, type PvpRun } from "./domain/pvp-run";
 import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
   PvpClientError, hasPvpIdentity, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
-  pvpLeaderboard, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
+  pvpChallenge, pvpFriendRemove, pvpFriendRequest, pvpFriendRespond, pvpFriends, pvpLeaderboard, pvpPlayer, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
 } from "./domain/pvp-client";
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 
@@ -236,12 +241,21 @@ export function App() {
   const refreshBoards = () => {
     for (const ladder of LADDERS) void pvpLeaderboard(ladder).then((rows) => setBoards((current) => ({ ...current, [ladder]: rows }))).catch(() => undefined);
   };
+  // O resumo do perfil (o que só o aparelho sabe) vai junto: é o que os amigos veem no perfil da pessoa.
+  const profileSummary = useMemo<PlayerSummary>(() => ({
+    level: economy.level, xp: economy.xp, mastery: ratioPercent(economy.dominated, data?.mapEntityIds.length ?? 0), dominated: economy.dominated,
+    rounds: economy.rounds, sessions: economy.completedSessions, collection: collectionSummary,
+    achievements: { unlocked: achievementSummary.unlocked, total: achievementSummary.total },
+    botDuels: { wins: duels.filter((duel) => duel.outcome === "win").length, losses: duels.filter((duel) => duel.outcome === "loss").length, draws: duels.filter((duel) => duel.outcome === "draw").length },
+  }), [economy, data, collectionSummary, achievementSummary, duels]);
   const standingsKey = JSON.stringify(standings);
+  const summaryKey = JSON.stringify(profileSummary);
+  const [identityOn, setIdentityOn] = useState(() => hasPvpIdentity());
   useEffect(() => {
-    if (!ladderLoaded || !hasPvpIdentity()) return;
-    const timer = window.setTimeout(() => { void pvpSendProfile(pvpNameState, standings).then(refreshBoards).catch(() => undefined); }, 400);
+    if (!ladderLoaded || !economyReady || !identityOn) return;
+    const timer = window.setTimeout(() => { void pvpSendProfile(pvpNameState, standings, profileSummary).then(refreshBoards).catch(() => undefined); }, 600);
     return () => window.clearTimeout(timer);
-  }, [ladderLoaded, standingsKey]);
+  }, [ladderLoaded, economyReady, identityOn, standingsKey, summaryKey]);
   useEffect(() => { if ((screen === "hub" && duelMode) || screen === "league") refreshBoards(); }, [screen, duelMode]);
   // ---- Fila ("Buscar duelo") ----
   const [pvpQueue, setPvpQueueState] = useState<PvpQueueView>(IDLE_QUEUE_VIEW);
@@ -315,7 +329,7 @@ export function App() {
     const record: PvpMatchRecord = {
       ...(known ?? {}),
       id, code: room.code, at: known?.at ?? Date.now(), ladder: room.ladder, mode: room.mode,
-      opponentName: room.opponent.name, opponentRating: rating?.opponent.before ?? room.opponent.rating,
+      opponentName: room.opponent.name, opponentRating: rating?.opponent.before ?? room.opponent.rating, ...(room.opponent.code ? { opponentCode: room.opponent.code } : {}),
       youCorrect: room.result.you.correct, opponentCorrect: room.result.opponent.correct, totalRounds: LEG_ROUNDS * LEGS,
       outcome: room.result.outcome, tiebreak: room.result.tiebreak,
       youForfeited: room.result.you.forfeited, opponentForfeited: room.result.opponent.forfeited,
@@ -334,16 +348,20 @@ export function App() {
     }).catch(() => undefined);
     refreshPvpProfile();
   }, [pvpRoom]);
-  // Link de convite (?duelo=CÓDIGO): abre direto na tela do convite, sem precisar do Hub.
-  useEffect(() => {
-    const code = parseInvite(location.search);
-    if (!code) return;
-    history.replaceState(null, "", location.pathname);
+  /** A tela "Fulano te desafiou" de um convite (link ?duelo= ou desafio de um amigo). */
+  const openInvite = (code: string) => {
     setPvpInviteCode(code);
     setPvpEntry("invite");
     setPvpInviteLoading(true);
     setScreen("pvp-lobby");
     pvpGetInvite(code).then(setPvpInvitePreview).catch((error) => setPvpError(pvpErrorMessage(error))).finally(() => setPvpInviteLoading(false));
+  };
+  // Link de convite (?duelo=CÓDIGO): abre direto na tela do convite, sem precisar do Hub.
+  useEffect(() => {
+    const code = parseInvite(location.search);
+    if (!code) return;
+    history.replaceState(null, "", location.pathname);
+    openInvite(code);
   }, []);
   const pvpReset = () => {
     pvpUnsubRef.current?.();
@@ -373,7 +391,7 @@ export function App() {
     setPvpRoom(view);
     if (view.phase === "playing" && (!previous || previous.phase !== "playing") && !pvpRunRef.current) startPvpRun(view);
   };
-  const pvpSubscribeTo = (code: string) => { pvpUnsubRef.current?.(); pvpUnsubRef.current = pvpSubscribe(code, handlePvpView, (error) => setPvpError(pvpErrorMessage(error))); };
+  const pvpSubscribeTo = (code: string) => { setIdentityOn(true); pvpUnsubRef.current?.(); pvpUnsubRef.current = pvpSubscribe(code, handlePvpView, (error) => setPvpError(pvpErrorMessage(error))); };
   const pvpCreate = async () => {
     const name = pvpNameState.trim();
     if (!name) return;
@@ -458,6 +476,7 @@ export function App() {
     if (!fromStream && pvpQueueRef.current.rev > view.rev) return;
     pvpQueueRef.current = view;
     setPvpQueueState(view);
+    if (!identityOn && hasPvpIdentity()) setIdentityOn(true);
     if (view.notice && view.notice.at > lastNoticeAtRef.current) {
       lastNoticeAtRef.current = view.notice.at;
       if (view.serverNow - view.notice.at < FRESH_NOTICE_MS) setQueueNotice(view.notice);
@@ -472,10 +491,12 @@ export function App() {
   // antes, é por ele que chega a volta para a fila).
   const inQueueRoomBeforePlay = pvpRoom?.origin === "queue" && (pvpRoom.phase === "lobby" || pvpRoom.phase === "countdown" || pvpRoom.phase === "closed");
   const queueChannelWanted = pvpQueue.state === "waiting" || pvpQueue.state === "offer" || (pvpQueue.state === "matched" && !pvpRoom) || inQueueRoomBeforePlay;
+  // Quem já usa o duelo com pessoas fica com o canal aberto enquanto o app está aberto: é assim que os amigos o veem online e recebem avisos e desafios.
+  const channelWanted = queueChannelWanted || identityOn;
   useEffect(() => {
-    if (queueChannelWanted && !queueUnsubRef.current) queueUnsubRef.current = pvpSubscribeQueue((view) => applyQueueViewRef.current(view, true));
-    if (!queueChannelWanted && queueUnsubRef.current) { queueUnsubRef.current(); queueUnsubRef.current = null; }
-  }, [queueChannelWanted]);
+    if (channelWanted && !queueUnsubRef.current) queueUnsubRef.current = pvpSubscribeQueue((view) => applyQueueViewRef.current(view, true), undefined, (event) => handleSocialRef.current(event));
+    if (!channelWanted && queueUnsubRef.current) { queueUnsubRef.current(); queueUnsubRef.current = null; }
+  }, [channelWanted]);
   useEffect(() => () => queueUnsubRef.current?.(), []);
   // Ao abrir o app: retoma a busca que estava ativa (recarregou a página) e traz para o aparelho os duelos que só o servidor tem (o app fechou antes
   // do resultado). Só para quem já usou o PvP: quem nunca entrou não é registrado no servidor à toa.
@@ -498,6 +519,96 @@ export function App() {
     setScreen("pvp-home");
     refreshPvpProfile();
   };
+  // ---- Amigos e perfil de jogador ----
+  const [friendsView, setFriendsView] = useState<FriendsView | null>(null);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+  const [socialBusy, setSocialBusy] = useState(false);
+  const [socialError, setSocialError] = useState<string | null>(null);
+  const [socialMessage, setSocialMessage] = useState<string | null>(null);
+  const [socialNotice, setSocialNotice] = useState<Exclude<SocialEvent, { kind: "challenge" }> | null>(null);
+  const [challenge, setChallenge] = useState<Extract<SocialEvent, { kind: "challenge" }> | null>(null);
+  const [playerCode, setPlayerCode] = useState<string | null>(null);
+  const [playerProfile, setPlayerProfile] = useState<PlayerProfile | null>(null);
+  const [playerLoading, setPlayerLoading] = useState(false);
+  const playerReturnRef = useRef<Screen>("hub");
+  const socialErrorMessage = (error: unknown) => {
+    if (error instanceof PvpClientError) {
+      if (error.code === "not_found") return t.social.msgNotFound;
+      if (error.code === "bad_request") return t.social.msgSelf;
+      if (error.code === "too_many") return t.social.msgFull;
+      if (error.code === "wrong_phase") return t.social.msgOffline;
+    }
+    return pvpErrorMessage(error);
+  };
+  const loadFriends = async () => {
+    setFriendsLoading(true);
+    try { setFriendsView(await pvpFriends()); setIdentityOn(true); } catch (error) { setSocialError(pvpErrorMessage(error)); }
+    setFriendsLoading(false);
+  };
+  const loadPlayer = async (code: string) => {
+    setPlayerLoading(true);
+    try { setPlayerProfile(await pvpPlayer(code)); setIdentityOn(true); } catch (error) { setSocialError(socialErrorMessage(error)); }
+    setPlayerLoading(false);
+  };
+  const openFriends = () => { setSocialError(null); setSocialMessage(null); setScreen("friends"); void loadFriends(); };
+  const openPlayer = (code: string) => {
+    if (screen !== "player") playerReturnRef.current = screen;
+    setSocialError(null); setPlayerCode(code); setPlayerProfile(null); setScreen("player");
+    void loadPlayer(code);
+  };
+  const nameOf = (code: string, view: FriendsView | null) =>
+    [...(view?.friends ?? []), ...(view?.incoming ?? []), ...(view?.outgoing ?? [])].find((item) => item.code === code)?.name ?? (playerProfile?.code === code ? playerProfile.name : code);
+  /** Roda uma ação de amizade: atualiza a lista, o perfil aberto e a mensagem. */
+  const socialAction = async (run: () => Promise<FriendsView>, message?: (view: FriendsView) => string | null) => {
+    setSocialBusy(true); setSocialError(null); setSocialMessage(null);
+    try {
+      const view = await run();
+      setFriendsView(view);
+      setIdentityOn(true);
+      if (message) setSocialMessage(message(view));
+      if (playerCode && screen === "player") void loadPlayer(playerCode);
+    } catch (error) { setSocialError(socialErrorMessage(error)); }
+    setSocialBusy(false);
+  };
+  const friendAdd = (code: string) => socialAction(async () => {
+    const { result, friends } = await pvpFriendRequest(code, pvpNameState);
+    setSocialMessage(result === "accepted" ? t.social.msgAccepted(nameOf(code, friends)) : result === "already" ? t.social.msgAlready : t.social.msgSent(nameOf(code, friends)));
+    return friends;
+  }).then(() => undefined);
+  const friendRespond = (code: string, accept: boolean) => socialAction(() => pvpFriendRespond(code, accept, pvpNameState), (view) => (accept ? t.social.msgAccepted(nameOf(code, view)) : null));
+  const friendRemove = (code: string) => socialAction(() => pvpFriendRemove(code));
+  /** Desafio direto: cria o convite (você é o anfitrião) e vai para o lobby; o amigo recebe o aviso na hora. */
+  const friendChallenge = async (code: string, ladder: Ladder, mode: PvpMode) => {
+    setSocialBusy(true); setSocialError(null); setSocialMessage(null);
+    try {
+      const room = await pvpChallenge(code, ladder, mode, pvpNameState.trim(), standings);
+      pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState(mode);
+      setPvpRoom(room); pvpSubscribeTo(room.code); setScreen("pvp-lobby");
+    } catch (error) { setSocialError(socialErrorMessage(error)); }
+    setSocialBusy(false);
+  };
+  /** Aceitar o desafio de um amigo: entra direto no convite (sem nome ainda, a tela do convite pede). */
+  const joinChallenge = async (event: Extract<SocialEvent, { kind: "challenge" }>) => {
+    setChallenge(null);
+    pvpReset();
+    const name = pvpNameState.trim();
+    if (!name) { openInvite(event.room); return; }
+    setPvpInviteCode(event.room); setPvpEntry("invite"); setPvpBusy(true); setScreen("pvp-lobby");
+    try { const room = await pvpJoinRoom(event.room, name, standings); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    catch (error) { setPvpError(pvpErrorMessage(error)); void pvpGetInvite(event.room).then(setPvpInvitePreview).catch(() => undefined); }
+    setPvpBusy(false);
+  };
+  const handleSocial = (event: SocialEvent) => {
+    if (event.kind === "challenge") { setChallenge(event); return; }
+    setSocialNotice(event);
+    if (screen === "friends") void loadFriends();
+    if (screen === "player" && playerCode === event.from.code) void loadPlayer(event.from.code);
+  };
+  const handleSocialRef = useRef(handleSocial);
+  handleSocialRef.current = handleSocial;
+  // No resultado de um duelo contra pessoa: a lista de amigos decide se aparece "Adicionar amigo".
+  useEffect(() => { if (screen === "pvp-result" && identityOn) void pvpFriends().then(setFriendsView).catch(() => undefined); }, [screen]);
+
   const queueSearch = async () => {
     const name = pvpNameState.trim();
     if (!name) return;
@@ -986,9 +1097,29 @@ export function App() {
       onDismissNotice={() => setQueueNotice(null)}
     />
   );
+  // Avisos de amizade e desafios de amigos: nunca por cima de uma partida (o desafio espera ela acabar; o convite fica aberto no servidor).
+  const inMatch = screen === "game" || screen === "pvp-interlude" || screen === "duel-interlude" || (screen === "pvp-lobby" && Boolean(pvpRoom));
+  const socialLayer = (
+    <SocialLayer
+      notice={inMatch ? null : socialNotice}
+      challenge={inMatch ? null : challenge}
+      onDismissNotice={() => setSocialNotice(null)}
+      onOpenFriends={() => { setSocialNotice(null); openFriends(); }}
+      onJoin={(event) => void joinChallenge(event)}
+      onDeclineChallenge={() => setChallenge(null)}
+    />
+  );
   const page = (() => {
+  if (screen === "friends") {
+    return <div className="app-shell grain"><FriendsScreen view={friendsView} loading={friendsLoading} error={socialError} message={socialMessage} busy={socialBusy} onAdd={(code) => void friendAdd(code)} onRespond={(code, accept) => void friendRespond(code, accept)} onRemove={(code) => void friendRemove(code)} onOpenPlayer={openPlayer} onChallenge={(code, ladder, mode) => void friendChallenge(code, ladder, mode)} onBack={() => setScreen("hub")} /></div>;
+  }
+  if (screen === "player") {
+    return <div className="app-shell grain"><PlayerProfileScreen profile={playerProfile} loading={playerLoading} error={socialError} busy={socialBusy}
+      onAdd={() => playerCode && void friendAdd(playerCode)} onRespond={(accept) => playerCode && void friendRespond(playerCode, accept)} onRemove={() => playerCode && void friendRemove(playerCode)}
+      onChallenge={openFriends} onBack={() => setScreen(playerReturnRef.current === "player" ? "hub" : playerReturnRef.current)} /></div>;
+  }
   if (screen === "pvp-home") {
-    return <div className="app-shell grain"><PvpHome standings={standings} prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain"><PvpHome standings={standings} onFriends={openFriends} prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "result") {
@@ -997,7 +1128,7 @@ export function App() {
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
-     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} /></div>;
+     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
     return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
@@ -1019,10 +1150,16 @@ export function App() {
   if (screen === "pvp-result" && pvpRoom) {
     const coinsGained = Math.max(0, economy.balance - economyBeforeRef.current.balance);
     const xpGained = Math.max(0, economy.xp - economyBeforeRef.current.xp);
-    return <div className="app-shell grain"><PvpResult room={pvpRoom} legs={pvpResultLegs} trophy={pvpTrophy} coinsGained={coinsGained} xpGained={xpGained} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
+    const opponentCode = pvpRoom.opponent?.code ?? "";
+    const friendship = !friendsView || !opponentCode ? "unknown"
+      : friendsView.friends.some((item) => item.code === opponentCode) ? "friends"
+        : friendsView.outgoing.some((item) => item.code === opponentCode) ? "outgoing"
+          : friendsView.incoming.some((item) => item.code === opponentCode) ? "incoming" : "none";
+    return <div className="app-shell grain"><PvpResult room={pvpRoom} legs={pvpResultLegs} trophy={pvpTrophy} coinsGained={coinsGained} xpGained={xpGained}
+      friendship={friendship} onAddFriend={(code) => void friendAdd(code)} onOpenProfile={openPlayer} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
   }
   if (screen === "league") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
@@ -1092,6 +1229,7 @@ export function App() {
           onOpenLeague={() => openLeague()}
           arenas={{
             cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, boards,
+            onFriends: openFriends, onOpenPlayer: openPlayer,
             search: { queue: pvpQueue, error: arenaError, busy: pvpBusy, onSearch: (ladder) => void arenaSearch(ladder), onCancel: () => void queueCancel(), onBot: openDuel, onFriendly: (ladder) => pvpOpenHome(ladder, "friendly") },
           }}
          />
@@ -1128,5 +1266,5 @@ export function App() {
     </div>
   );
   })();
-  return <>{page}{queueLayer}</>;
+  return <>{page}{queueLayer}{socialLayer}</>;
 }

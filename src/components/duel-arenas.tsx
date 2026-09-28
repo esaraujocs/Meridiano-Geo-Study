@@ -37,7 +37,7 @@ export type ArenaSearch = {
 };
 
 // Hub em Duelo: uma arena por escada (liga, forma recente e modos do sorteio) e o painel dos próximos prêmios com o ranking (só gente de verdade).
-export function DuelArenas({ cards, next, formatReady, formatCost, search, boards, onLeague }: {
+export function DuelArenas({ cards, next, formatReady, formatCost, search, boards, onLeague, onFriends, onOpenPlayer }: {
   cards: readonly LadderCard[];
   next: readonly Milestone[];
   formatReady: boolean;
@@ -46,6 +46,9 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
   /** O ranking de cada escada vindo do servidor (null enquanto não chegou ou sem conexão). */
   boards: Record<Ladder, readonly LeaderboardRow[] | null>;
   onLeague?: () => void;
+  onFriends?: () => void;
+  /** Abre o perfil de quem está no ranking. */
+  onOpenPlayer?: (code: string) => void;
 }) {
   // o ranking do painel é o da escada em que a pessoa está mais alta
   const best = cards.reduce((top, card) => (card.trophies > top.trophies ? card : top), cards[0]);
@@ -69,12 +72,17 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
             ? <li key={`gap${index}`} className="rk-gap" aria-hidden="true">⋯</li>
             : <li key={line.id} className={line.you ? "is-you" : ""} data-league={line.league}>
               <span className="rk-n">{line.pos}</span>
-              <span className="rk-nm">{line.you ? t.duel.rank.you : line.name}{line.bot && <em>{t.duel.rank.bot}</em>}</span>
+              {!line.you && line.code && onOpenPlayer
+                ? <button type="button" className="rk-nm rk-open" onClick={() => onOpenPlayer(line.code as string)} aria-label={t.social.openProfile(line.name)}>{line.name}</button>
+                : <span className="rk-nm">{line.you ? t.duel.rank.you : line.name}{line.bot && <em>{t.duel.rank.bot}</em>}</span>}
               <strong>{money(line.trophies)}</strong>
             </li>)}</ol>
           {rank.length <= 1 && <p className="pz-note">{bestBoard === null ? t.duel.rank.offline : t.duel.rank.alone}</p>}
         </section>
-        {onLeague && <button type="button" className="pr-link" onClick={onLeague}>{t.duel.arenas.seeLeague} <Icon type="arrow" size={16} /></button>}
+        <div className="pz-links">
+          {onLeague && <button type="button" className="pr-link" onClick={onLeague}>{t.duel.arenas.seeLeague} <Icon type="arrow" size={16} /></button>}
+          {onFriends && <button type="button" className="pr-link" onClick={onFriends}>{t.social.friendsButton} <Icon type="arrow" size={16} /></button>}
+        </div>
       </aside>
     </div>
   );

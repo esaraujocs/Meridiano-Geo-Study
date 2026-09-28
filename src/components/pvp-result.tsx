@@ -26,7 +26,7 @@ function makeParticles(count: number, loss: boolean): Particle[] {
 // Resultado do duelo com amigo: a mesma linguagem visual do duelo contra bot (medalha, confete/cinzas, placar que sobe animado, tabela dos dois tempos),
 // sem a barra de troféus e os prêmios (no valendo, a mudança de troféus aparece numa pílula e no "antes → depois"). Ao vivo enquanto o amigo ainda está jogando: mostra o que já dá pra saber e completa
 // sozinho quando o servidor fecha o resultado.
-export function PvpResult({ room, legs, trophy, coinsGained, xpGained, onRematch, onHome }: {
+export function PvpResult({ room, legs, trophy, coinsGained, xpGained, friendship, onAddFriend, onOpenProfile, onRematch, onHome }: {
   room: PvpRoomView;
   /** Os dois tempos sorteados pela semente da sala (para o nome do modo na tabela); null se a semente não chegou (nunca deveria, com o duelo já em andamento). */
   legs: readonly DuelLeg[] | null;
@@ -34,6 +34,10 @@ export function PvpResult({ room, legs, trophy, coinsGained, xpGained, onRematch
   trophy: { delta: number; before: number; after: number } | null;
   coinsGained: number;
   xpGained: number;
+  /** Como a pessoa está em relação ao adversário ("unknown" enquanto a lista de amigos não chegou). */
+  friendship: "friends" | "outgoing" | "incoming" | "none" | "unknown";
+  onAddFriend: (code: string) => void;
+  onOpenProfile: (code: string) => void;
   onRematch: () => void;
   onHome: () => void;
 }) {
@@ -122,6 +126,13 @@ export function PvpResult({ room, legs, trophy, coinsGained, xpGained, onRematch
             <div><b>+{format(coinsGained)}</b>{xpGained > 0 && <small>+{xpGained} XP</small>}</div>
           </div>}
         </div>
+        {room.opponent?.code && <div className="pvp-social-row">
+          <button type="button" className="pr-link" onClick={() => onOpenProfile(room.opponent!.code)}>{t.social.seeProfile} <Icon type="arrow" size={16} /></button>
+          {friendship === "none" || friendship === "incoming"
+            ? <button type="button" className="rs-btn" onClick={() => onAddFriend(room.opponent!.code)}>{t.social.addFriend}</button>
+            : friendship === "outgoing" ? <span className="pp-state">{t.social.requestSent}</span>
+              : friendship === "friends" ? <span className="pp-state">{t.social.friendsNow}</span> : null}
+        </div>}
         <div className="rs-actions">
           <button type="button" className="rs-btn primary" onClick={onRematch}><Icon type="swords" />{room.origin === "queue" ? t.pvp.result.searchAgain : t.pvp.result.rematch}</button>
           <button type="button" className="rs-btn" aria-label={t.pvp.result.home} onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.pvp.result.home}</span></button>

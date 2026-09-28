@@ -21,7 +21,7 @@ const RING = 2 * Math.PI * 58;
 
 // Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
 // adversários (bots), últimos duelos da escada (contra bot e contra pessoas) e o ranking (só gente de verdade); as molduras do nível valem a melhor das duas.
-export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder, onBack }: {
+export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder, onBack, onOpenPlayer }: {
   /** Tudo o que conta na escada: duelos contra bot e valendo contra pessoas. */
   entries: readonly LadderEntry[];
   duels: readonly DuelRecord[];
@@ -29,6 +29,8 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
   boards: Record<Ladder, readonly LeaderboardRow[] | null>;
   initialLadder?: Ladder;
   onBack: () => void;
+  /** Abre o perfil de quem está no ranking. */
+  onOpenPlayer?: (code: string) => void;
 }) {
   const byLadder = trophiesByLadder(entries);
   const best = LADDERS.reduce((top, item) => (byLadder[item] > byLadder[top] ? item : top), LADDERS[0]);
@@ -136,7 +138,9 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
             ? <li key={`gap${index}`} className="rk-gap" aria-hidden="true">⋯</li>
             : <li key={line.id} className={`rk-li${line.you ? " is-you" : ""}`} data-league={line.league}>
               <span className="rk-n">{line.pos}</span>
-              <span className="pr-rname"><b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b><small>{t.duel.leagues[line.league]}</small></span>
+              <span className="pr-rname">{!line.you && line.code && onOpenPlayer
+                ? <button type="button" className="rk-open" onClick={() => onOpenPlayer(line.code as string)} aria-label={t.social.openProfile(line.name)}><b>{line.name}</b></button>
+                : <b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b>}<small>{t.duel.leagues[line.league]}</small></span>
               <strong className="rk-val">{formatNumber(line.trophies)}</strong>
             </li>)}</ol>
           {rank.length <= 1 && <p className="lg-empty">{board === null ? t.duel.rank.offline : t.duel.rank.alone}</p>}

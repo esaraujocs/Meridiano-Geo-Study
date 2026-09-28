@@ -80,6 +80,8 @@ export type PvpPlayerView = {
   /** Troféus e MMR da escada da sala, informados pelo aparelho (só ele conhece): o servidor não confere; o aparelho do adversário usa o MMR na conta dos troféus. */
   trophies: number;
   mmr: number;
+  /** Código de amigo (abre o perfil e o "Adicionar amigo"); "" se o servidor não informou. */
+  code: string;
   ready: boolean;
   connected: boolean;
   forfeited: boolean;
@@ -197,11 +199,13 @@ export function parseStandings(body: unknown): LadderStandings {
 }
 export const EMPTY_STANDINGS: LadderStandings = { mapas: { trophies: 0, mmr: 0 }, bandeiras: { trophies: 0, mmr: 0 } };
 /** Uma linha do ranking (GET /leaderboard): só gente de verdade, com os troféus que o aparelho de cada um informou por último. */
-export type LeaderboardRow = { name: string; trophies: number; you: boolean };
+/** `code`: o código de amigo (abre o perfil). */
+export type LeaderboardRow = { name: string; trophies: number; you: boolean; code?: string };
 export const LEADERBOARD_LIMIT = 50;
 
 export type PvpProfileView = { name: string; rating: number; ranked: PvpTally; friendly: PvpTally; since: number };
-export type PvpMatchSide = { name: string; totals: SideTotals; outcome: PvpOutcome; rating: RatingChange | null };
+/** `code`: código de amigo de cada lado (quando o servidor o conhece). */
+export type PvpMatchSide = { name: string; totals: SideTotals; outcome: PvpOutcome; rating: RatingChange | null; code?: string };
 /** Um duelo terminado, do ponto de vista de quem pede (GET /me/matches). */
 export type PvpServerMatch = { code: string; at: number; origin: PvpRoomOrigin; ladder: Ladder; mode: PvpMode; seed: string; tiebreak: boolean; you: PvpMatchSide; opponent: PvpMatchSide };
 
