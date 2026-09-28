@@ -1831,6 +1831,20 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
   .arena{padding:16px!important}
   .ar-modes-wrap{order:3}
 }
+/* Duelar busca uma pessoa (valendo); enquanto espera, o cartão mostra a busca, o bot opcional e cancelar */
+.ar-search{flex-basis:100%;margin:0;padding:10px 14px}
+.ar-foot .ar-search small{display:block;flex-basis:auto;margin:2px 0 0;font-size:12px}
+.ar-search-err{flex-basis:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ar-search-err .pvp-error{margin:0;flex:1 1 180px;font-size:12.5px}
+.pz-note{margin:6px 0 0;font-size:11.5px;line-height:1.35;color:var(--muted)}
+.pvp-trophies{display:flex;gap:22px;margin:4px 0 6px}
+.pvp-trophies div{display:flex;flex-direction:column}
+.pvp-trophies dt{font-size:12px;color:var(--muted)}
+.pvp-trophies dd{margin:0;font:500 30px 'Fraunces',Georgia,serif;color:var(--ink)}
+@media (max-width:760px){
+  .ar-friend.is-text{width:auto;height:44px;padding:0 14px;border-radius:999px}
+  .ar-friend.is-text .ar-friend-t{display:inline}
+}
 /* janela baixa (notebook): tira o que é só explicação para o Hub caber sem rolar */
 @media (min-width:761px) and (max-height:800px){
 .ar-rule,.ar-format{display:none}

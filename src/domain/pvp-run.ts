@@ -30,7 +30,7 @@ export function pvpLegOptions(run: PvpRun, index: number, unlocked: readonly str
   return {
     pace: "timed" as const, roundLimit: leg.rounds, deckSeed: leg.deckSeed, duel: { id: run.code, leg: index }, pvp: true, onRound,
     ...(owned ? {} : { coinVariant: coin.variant }),
-    ...(run.mode === "friendly" ? { coinFactor: FRIENDLY_COIN_FACTOR } : {}),
+    ...(run.mode === "friendly" && FRIENDLY_COIN_FACTOR !== 1 ? { coinFactor: FRIENDLY_COIN_FACTOR } : {}),
   };
 }
 

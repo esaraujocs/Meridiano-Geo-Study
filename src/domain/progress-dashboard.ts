@@ -310,9 +310,12 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
         botName: record.opponentName, botLeague: "", botStyle: "",
         outcome: record.outcome, tiebreak: record.tiebreak,
         playerCorrect: record.youCorrect, botCorrect: record.opponentCorrect, total: record.totalRounds,
-        delta: record.ratingDelta ?? 0,
-        deltaLabel: record.ratingDelta !== null && record.ratingDelta !== undefined ? t.progress.pvpForceLabel : null,
-        deltaText: record.ratingDelta !== null && record.ratingDelta !== undefined ? t.pvp.result.ratingChange(record.ratingDelta) : t.pvp.modeFriendly,
+        // valendo desde 28/09: troféus da escada; os valendo de antes mexiam só na "força" do PvP; amistoso, nada
+        ...(typeof record.trophyDelta === "number"
+          ? { delta: record.trophyDelta, deltaLabel: t.progress.duelTrophies, deltaText: t.pvp.result.trophyChange(record.trophyDelta) }
+          : record.ratingDelta !== null && record.ratingDelta !== undefined
+            ? { delta: record.ratingDelta, deltaLabel: t.progress.pvpForceLabel, deltaText: t.pvp.result.ratingChange(record.ratingDelta) }
+            : { delta: 0, deltaLabel: null, deltaText: t.pvp.modeFriendly }),
         abandoned,
         playerMs: record.youMs, botMs: record.opponentMs,
         legs,

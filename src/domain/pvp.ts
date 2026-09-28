@@ -1,14 +1,15 @@
 // Duelo entre pessoas (PvP), ao vivo: tipos e regras puras compartilhadas entre o servidor (server/pvp-*.ts) e o app. Cada jogador joga o MESMO duelo (semente da sala,
 // mesmos 2 tempos de 10 rodadas, ver duel-modes.ts) no seu ritmo, e os dois veem o progresso um do outro em tempo real. O servidor só guarda a sala e repassa o que cada um
 // relata (as respostas são avaliadas no aparelho, como no resto do jogo); a regra do vencedor é a mesma do duelo contra bot: mais acertos vence, empate no menor tempo total.
-import { LEGS, LEG_ROUNDS, isLadder, type Ladder } from "./duel-modes.js";
+import { LADDERS, LEGS, LEG_ROUNDS, isLadder, type Ladder } from "./duel-modes.js";
 
-/** Amistoso: sem troféus nem MMR, moedas reduzidas e sem exigir o corte de 20 rodadas. Valendo: troféus e MMR como no duelo contra bot, contra o rating do amigo. */
+/** Amistoso: sem troféus nem MMR, moedas cheias e sem exigir o corte de 20 rodadas. Valendo: troféus e MMR da mesma escada do duelo contra bot
+ *  (pvp-trophies.ts), com o MMR do adversário no lugar do rating do bot. */
 export type PvpMode = "friendly" | "ranked";
 export const PVP_MODES: readonly PvpMode[] = ["friendly", "ranked"];
 export const isPvpMode = (value: unknown): value is PvpMode => value === "friendly" || value === "ranked";
-/** Fator das moedas dos tempos de um duelo amistoso (o Treino também paga 50%). */
-export const FRIENDLY_COIN_FACTOR = 0.5;
+/** Fator das moedas dos tempos de um duelo amistoso: era 0,5 até 28/09, quando o Enzo pediu moedas cheias (a diferença para o valendo é só o troféu). */
+export const FRIENDLY_COIN_FACTOR = 1;
 
 // ---- Sala e convite ----
 export const ROOM_CODE_LENGTH = 6;
@@ -76,8 +77,9 @@ export type PvpPlayerView = {
   name: string;
   /** Força do valendo, vinda do perfil guardado no servidor (não do que o aparelho informa). */
   rating: number;
-  /** Troféus do duelo contra bot, informados pelo aparelho (só ele conhece): só para mostrar, o servidor não confere nem usa em conta nenhuma. */
+  /** Troféus e MMR da escada da sala, informados pelo aparelho (só ele conhece): o servidor não confere; o aparelho do adversário usa o MMR na conta dos troféus. */
   trophies: number;
+  mmr: number;
   ready: boolean;
   connected: boolean;
   forfeited: boolean;
@@ -146,7 +148,8 @@ export type PvpOfferView = {
   /** Proposta de troca: o que muda em relação ao que VOCÊ buscou (falso nos dois = exatamente o que você pediu). */
   switchLadder: boolean;
   switchMode: boolean;
-  opponent: { name: string; rating: number };
+  /** `trophies`: os troféus do adversário na escada da proposta (informados pelo aparelho dele). */
+  opponent: { name: string; rating: number; trophies: number };
   /** Instante (relógio do servidor) em que a proposta expira. */
   expiresAt: number;
   youAccepted: boolean;
@@ -175,6 +178,28 @@ export const IDLE_QUEUE_VIEW: PvpQueueView = { state: "idle", prefs: null, since
 // O servidor é a fonte da força do valendo e do histórico de duelos entre pessoas (dados que dependem dos dois lados). O resto do progresso (coleção,
 // XP, moedas, troféus contra bot) continua só no aparelho.
 export type PvpTally = { wins: number; losses: number; draws: number };
+// ---- Onde cada um está nas escadas (declarado pelo aparelho) e o ranking ----
+/** Troféus e MMR escondido de uma escada. Na transição (28/09) quem calcula é o aparelho (bots e pessoas na mesma conta), então o servidor só
+ *  guarda o que ele informa: vale para o ranking, para a proposta e para a conta do adversário. Dá para mentir; aceitável entre amigos, por ora. */
+export type LadderStanding = { trophies: number; mmr: number };
+export type LadderStandings = Record<Ladder, LadderStanding>;
+const standingNumber = (value: unknown) => { const n = Number(value); return Number.isFinite(n) ? Math.max(0, Math.min(99_999, Math.round(n))) : 0; };
+/** Lê `{ladders: {mapas: {trophies, mmr}, bandeiras: {...}}}`; um aparelho antigo manda só `trophies` (número), que vale para as duas escadas. */
+export function parseStandings(body: unknown): LadderStandings {
+  const input = (body && typeof body === "object" ? body : {}) as { ladders?: unknown; trophies?: unknown };
+  const ladders = (input.ladders && typeof input.ladders === "object" ? input.ladders : {}) as Record<string, unknown>;
+  const fallback = standingNumber(input.trophies);
+  return Object.fromEntries(LADDERS.map((ladder) => {
+    const item = (ladders[ladder] && typeof ladders[ladder] === "object" ? ladders[ladder] : null) as { trophies?: unknown; mmr?: unknown } | null;
+    const trophies = item ? standingNumber(item.trophies) : fallback;
+    return [ladder, { trophies, mmr: item && item.mmr !== undefined ? standingNumber(item.mmr) : trophies }];
+  })) as LadderStandings;
+}
+export const EMPTY_STANDINGS: LadderStandings = { mapas: { trophies: 0, mmr: 0 }, bandeiras: { trophies: 0, mmr: 0 } };
+/** Uma linha do ranking (GET /leaderboard): só gente de verdade, com os troféus que o aparelho de cada um informou por último. */
+export type LeaderboardRow = { name: string; trophies: number; you: boolean };
+export const LEADERBOARD_LIMIT = 50;
+
 export type PvpProfileView = { name: string; rating: number; ranked: PvpTally; friendly: PvpTally; since: number };
 export type PvpMatchSide = { name: string; totals: SideTotals; outcome: PvpOutcome; rating: RatingChange | null };
 /** Um duelo terminado, do ponto de vista de quem pede (GET /me/matches). */

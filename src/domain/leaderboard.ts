@@ -1,5 +1,5 @@
-// Ranking do Duelo. Ainda não há servidor nem outros jogadores, então a lista é a pessoa e os 30 bots (a "população mínima"), com troféus
-// que se mexem um pouco a cada dia; quando existir um ranking de verdade, esta lista é o que ele substitui. Lógica pura.
+// Ranking do Duelo. Desde 28/09 as telas mostram só gente de verdade (`playersLeaderboard`, com a lista do servidor, GET /leaderboard). A lista dos
+// 30 bots (`leaderboard`, troféus que se mexem um pouco a cada dia) foi a "população mínima" enquanto não havia servidor e fica só nos testes. Lógica pura.
 import { BOTS, hashSeed, mulberry32, type Bot } from "./bots.js";
 import { LEAGUES, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import type { Ladder } from "./duel-modes.js";
@@ -29,6 +29,16 @@ export function leaderboard(ladder: Ladder, trophies: number, day = dayNumber())
   const rows = BOTS.map((bot) => { const value = botTrophies(bot, ladder, day); return { id: bot.id, name: bot.name, trophies: value, league: leagueOf(value).league, you: false, bot: true }; });
   const me = { id: "you", name: "", trophies: Math.max(0, Math.round(trophies)), league: leagueOf(trophies).league, you: true, bot: false };
   return [...rows, me]
+    .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || (a.id < b.id ? -1 : 1))
+    .map((row, index) => ({ ...row, pos: index + 1 }));
+}
+
+/** O ranking com gente de verdade: a lista do servidor com a linha da pessoa trocada pelos troféus de agora (os do servidor são os que o aparelho
+ *  informou por último). Sem a pessoa na lista (nunca jogou contra pessoas, ou sem conexão), ela entra assim mesmo. */
+export function playersLeaderboard(rows: readonly { name: string; trophies: number; you: boolean }[], trophies: number): RankRow[] {
+  const others = rows.filter((row) => !row.you).map((row, index) => ({ id: `p${index}`, name: row.name, trophies: Math.max(0, Math.round(row.trophies)), league: leagueOf(row.trophies).league, you: false, bot: false }));
+  const me = { id: "you", name: "", trophies: Math.max(0, Math.round(trophies)), league: leagueOf(trophies).league, you: true, bot: false };
+  return [...others, me]
     .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || (a.id < b.id ? -1 : 1))
     .map((row, index) => ({ ...row, pos: index + 1 }));
 }

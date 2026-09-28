@@ -20,7 +20,7 @@ export type SessionOptions = {
   pvp?: boolean;
   /** Chamado a cada rodada respondida, na hora (antes de gravar): o duelo entre pessoas usa para avisar o servidor a cada rodada. */
   onRound?: (round: LearningRound) => void;
-  /** Multiplica as moedas da sessão (1 = normal); o duelo amistoso entre pessoas paga menos (ver FRIENDLY_COIN_FACTOR em pvp.ts). */
+  /** Multiplica as moedas da sessão (1 = normal); hoje nenhum modo usa (o amistoso pagava metade até 28/09, FRIENDLY_COIN_FACTOR em pvp.ts). */
   coinFactor?: number;
 };
 

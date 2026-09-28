@@ -2,15 +2,16 @@
 // atualizada da sala (uma por sala) e da fila (uma por jogador). Funciona atrás de qualquer proxy (Tailscale Funnel incluso) e o EventSource reconecta
 // sozinho. Rotas em /api/pvp:
 //   GET  /health
-//   Convite:  GET /rooms/:code/invite (sem login)   POST /rooms {ladder, mode, name, trophies}   POST /rooms/:code/join {name, trophies}
+//   Convite:  GET /rooms/:code/invite (sem login)   POST /rooms {ladder, mode, name, ladders}   POST /rooms/:code/join {name, ladders}
 //             POST /rooms/:code/command {type...}   GET /rooms/:code   GET /rooms/:code/events (SSE da sala)
-//   Fila:     GET /queue   POST /queue {ladder, mode, name, trophies}   POST /queue/leave   POST /queue/offer {id, accept}
-//   Perfil:   GET /me   GET /me/matches?limit=   GET /me/events (SSE do jogador: a visão da fila)
+//   Fila:     GET /queue   POST /queue {ladder, mode, name, ladders}   POST /queue/leave   POST /queue/offer {id, accept}
+//   Perfil:   GET /me   GET /me/matches?limit=   GET /me/events (SSE do jogador: a visão da fila)   POST /me/profile {name, ladders}
+//   Ranking:  GET /leaderboard?ladder=&limit= (identidade opcional: só marca "você")
 // Identidade nos cabeçalhos x-pvp-player e x-pvp-secret (no SSE, na URL: ?player=&secret=, porque o EventSource não manda cabeçalhos).
 // A força (rating) de cada jogador vem do histórico do servidor (pvp-history.ts); o que o aparelho mandar em `rating` é ignorado.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { isLadder } from "../src/domain/duel-modes.js";
-import { cleanPlayerName, isPvpMode, isQueuePrefs, isValidRoomCode, normalizeRoomCode, parseCommand, parseOfferResponse, type PvpErrorCode } from "../src/domain/pvp.js";
+import { EMPTY_STANDINGS, LEADERBOARD_LIMIT, cleanPlayerName, isPvpMode, isQueuePrefs, isValidRoomCode, normalizeRoomCode, parseCommand, parseOfferResponse, parseStandings, type PvpErrorCode } from "../src/domain/pvp.js";
 import { PvpHistory } from "./pvp-history.js";
 import { PvpQueue } from "./pvp-queue.js";
 import { PvpError, type PlayerInput, type PvpRooms } from "./pvp-rooms.js";
@@ -70,11 +71,19 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
   const header = (req: IncomingMessage, name: string) => { const value = req.headers[name]; return Array.isArray(value) ? value[0] : value; };
   const authenticate = (id: unknown, secret: unknown) => { if (!players.authenticate(id, secret)) throw new PvpError("unauthorized", "Identidade inválida."); return id as string; };
   const authenticateHeaders = (req: IncomingMessage) => authenticate(header(req, "x-pvp-player"), header(req, "x-pvp-secret"));
-  /** Quem entra numa sala ou na fila: nome (o último usado, se não vier), força DO SERVIDOR e os troféus contra bot que o aparelho informou (só para mostrar). */
+  /** Quem entra numa sala ou na fila: nome (o último usado, se não vier), força DO SERVIDOR e troféus/MMR por escada que o aparelho informou (sem
+   *  eles no pedido, os últimos que ele informou). */
   const player = (playerId: string, body: Record<string, unknown>): PlayerInput => {
     const name = cleanPlayerName(body.name) || players.nameOf(playerId) || "Jogador";
     players.setName(playerId, name);
-    return { id: playerId, name, rating: history.ratingOf(playerId), trophies: Number(body.trophies) };
+    const declared = body.ladders !== undefined || body.trophies !== undefined;
+    if (declared) players.setStandings(playerId, parseStandings(body));
+    return { id: playerId, name, rating: history.ratingOf(playerId), ladders: players.standingsOf(playerId) ?? EMPTY_STANDINGS };
+  };
+  /** O visitante, se vier com identidade válida (o ranking pode ser visto sem ela, só não marca ninguém como "você"). */
+  const optionalViewer = (req: IncomingMessage) => {
+    const id = header(req, "x-pvp-player");
+    return id && players.has(id) && players.authenticate(id, header(req, "x-pvp-secret")) ? id : null;
   };
 
   // ---- SSE ----
@@ -159,6 +168,14 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (action === "events" && method === "GET") return openPlayerStream(req, res, url);
     const playerId = authenticateHeaders(req);
     if (!action && method === "GET") return json(res, 200, { profile: history.profileOf(playerId, players.nameOf(playerId), players.createdAtOf(playerId)) });
+    if (action === "profile" && method === "POST") {
+      // o aparelho informa nome e onde está nas escadas (ao abrir o app e depois de cada duelo): é de onde sai o ranking
+      const body = (await readJson(req)) as Record<string, unknown>;
+      const name = cleanPlayerName(body.name);
+      if (name) players.setName(playerId, name);
+      if (body.ladders !== undefined) players.setStandings(playerId, parseStandings(body));
+      return json(res, 200, { ok: true });
+    }
     if (action === "matches" && method === "GET") {
       const limit = Math.max(1, Math.min(200, Math.round(Number(url.searchParams.get("limit") ?? 50)) || 50));
       return json(res, 200, { matches: history.matchesOf(playerId, limit) });
@@ -211,6 +228,12 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (parts[0] === "rooms") return routeRooms(req, res, parts, method, url);
     if (parts[0] === "queue") return routeQueue(req, res, parts, method);
     if (parts[0] === "me") return routeMe(req, res, parts, method, url);
+    if (path === "/leaderboard" && method === "GET") {
+      const ladder = url.searchParams.get("ladder");
+      if (!isLadder(ladder)) throw new PvpError("bad_request", "Escada inválida.");
+      const limit = Math.max(1, Math.min(LEADERBOARD_LIMIT, Math.round(Number(url.searchParams.get("limit") ?? LEADERBOARD_LIMIT)) || LEADERBOARD_LIMIT));
+      return json(res, 200, { leaderboard: players.leaderboard(ladder, limit, optionalViewer(req)) });
+    }
     throw new PvpError("not_found", "Rota desconhecida.");
   };
 
