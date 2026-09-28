@@ -49,20 +49,17 @@ export function cueCorrect() {
 
 /**
  * Bandeira dentro de uma alternativa: preenche a caixa inteira (a maioria das bandeiras é 4:3 ou parecida, então quase nada é cortado).
- * Formatos muito diferentes (quadradas, faixas 2:1 ou mais) ficam inteiros sobre um fundo desfocado da própria bandeira, sem cortar o desenho.
+ * Formatos muito diferentes (quadradas, faixas 2:1 ou mais) ficam inteiros, sem cortar o desenho (sobre o fundo do próprio cartão).
  */
 export function OptionFlag({ src, alt }: { src: string; alt: string }) {
   const [wide, setWide] = useState(false);
-  return <>
-    {wide && <img className="opt-flag-bg" src={src} alt="" aria-hidden="true" />}
-    <img
-      className={wide ? "opt-flag fit-contain" : "opt-flag"}
-      src={src}
-      alt={alt}
-      onLoad={(event) => {
-        const { naturalWidth: w, naturalHeight: h } = event.currentTarget;
-        if (w > 0 && h > 0) setWide(w / h < 1.2 || w / h > 1.95);
-      }}
-    />
-  </>;
+  return <img
+    className={wide ? "opt-flag fit-contain" : "opt-flag"}
+    src={src}
+    alt={alt}
+    onLoad={(event) => {
+      const { naturalWidth: w, naturalHeight: h } = event.currentTarget;
+      if (w > 0 && h > 0) setWide(w / h < 1.2 || w / h > 1.95);
+    }}
+  />;
 }

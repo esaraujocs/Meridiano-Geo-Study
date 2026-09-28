@@ -1126,9 +1126,8 @@ html[data-reduced-motion=true] .rs-level.is-levelup{animation:none}
 /* alternativas com bandeira: a bandeira preenche a caixa inteira (4:3, sem vazar) e a moldura fica por cima dela */
 .quiz-options .quiz-option:has(.opt-flag){position:relative;display:block;overflow:hidden;padding:0;height:auto;min-height:0;aspect-ratio:4/3;max-height:min(300px,27dvh)}
 .quiz-options:has(.opt-flag){grid-template-columns:repeat(2,minmax(0,300px));justify-content:start}
-.quiz-option .opt-flag,.quiz-option .opt-flag-bg{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:0;max-height:none;margin:0;object-fit:cover;object-position:center}
-.quiz-option .opt-flag.fit-contain{z-index:1;object-fit:contain}
-.quiz-option .opt-flag-bg{filter:blur(14px) saturate(1.15);transform:scale(1.25);opacity:.9}
+.quiz-option .opt-flag{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:0;max-height:none;margin:0;object-fit:cover;object-position:center}
+.quiz-option .opt-flag.fit-contain{object-fit:contain}
 .quiz-option:has(img).correct{outline:3px solid var(--green);outline-offset:-3px;box-shadow:none}
 .quiz-option:has(img).wrong{outline:3px solid var(--terracotta);outline-offset:-3px;box-shadow:none}
 @keyframes opt-pop{40%{transform:scale(1.025)}}
