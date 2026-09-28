@@ -186,7 +186,7 @@ function PvpRoom({ room, level, onReady, onLeave }: { room: PvpRoomView; level: 
       <div className={room.opponent ? "" : "pvp-layout"}>
       <section className="rv-card pvp-card">
         <span className="eyebrow">{t.pvp.subtitle(t.duel.ladders[room.ladder])} · {room.mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked}</span>
-        <h1>{t.pvp.title}</h1>
+        <h1>{room.origin === "queue" ? t.pvp.lobby.queueTitle : t.pvp.title}</h1>
         {!room.opponent && (
           <div className="pvp-share">
             <span className="pvp-code">{room.code}</span>

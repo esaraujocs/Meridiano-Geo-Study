@@ -441,6 +441,7 @@ export const en: Messages = {
       notReady: "Get ready",
       unready: "Not yet",
       bothReady: "Both ready!",
+      queueTitle: "Opponent found",
       legsTitle: "The 2 legs of this duel",
       startingIn: (s: number) => `Starting in ${s}…`,
       leave: "Leave",

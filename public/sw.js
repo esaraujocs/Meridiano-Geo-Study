@@ -45,6 +45,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // A página (navegação) vem da rede primeiro: depois de publicar uma versão nova, já a primeira abertura roda o código novo (com cache primeiro, a 1ª
+  // abertura ainda rodava a versão velha e dois jogadores podiam duelar com versões diferentes). Sem internet, cai na cópia guardada.
+  if (event.request.mode === "navigate" && url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok && !url.search) { const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(event.request, copy)); }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached ?? caches.match("/"))),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(
       (cached) =>

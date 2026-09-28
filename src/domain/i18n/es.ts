@@ -441,6 +441,7 @@ export const es: Messages = {
       notReady: "Estar listo",
       unready: "Todavía no",
       bothReady: "¡Los dos están listos!",
+      queueTitle: "Rival encontrado",
       legsTitle: "Los 2 tiempos de este duelo",
       startingIn: (s: number) => `Empieza en ${s}…`,
       leave: "Salir",

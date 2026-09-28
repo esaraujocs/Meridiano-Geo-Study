@@ -442,6 +442,7 @@ export const pt = {
       notReady: "Ficar pronto",
       unready: "Ainda não",
       bothReady: "Os dois estão prontos!",
+      queueTitle: "Adversário encontrado",
       legsTitle: "Os 2 tempos deste duelo",
       startingIn: (s: number) => `Começando em ${s}…`,
       leave: "Saída",
