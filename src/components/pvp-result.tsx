@@ -123,7 +123,7 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
           </div>}
         </div>
         <div className="rs-actions">
-          <button type="button" className="rs-btn primary" onClick={onRematch}><Icon type="swords" />{t.pvp.result.rematch}</button>
+          <button type="button" className="rs-btn primary" onClick={onRematch}><Icon type="swords" />{room.origin === "queue" ? t.pvp.result.searchAgain : t.pvp.result.rematch}</button>
           <button type="button" className="rs-btn" onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.pvp.result.home}</span></button>
         </div>
       </section>

@@ -43,7 +43,7 @@ function PvpHowItWorks() {
   );
 }
 
-const NameField = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
+export const NameField = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
   <label className="pvp-name">
     <span>{t.pvp.nameLabel}</span>
     <input type="text" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => onNameChange(event.target.value)} autoFocus name="pvp-nickname" autoComplete="off" data-1p-ignore data-lpignore="true" />
@@ -127,14 +127,16 @@ function PvpRoom({ room, level, onReady, onLeave }: { room: PvpRoomView; level: 
     const timer = window.setInterval(tick, 200);
     return () => window.clearInterval(timer);
   }, [room.phase, room.startAt, room.serverNow]);
+  // Os 2 tempos, assim que a semente chega (a partir do lobby, com o amigo já dentro): os dois veem os mesmos modos antes de ficar pronto.
+  // (Antes do return da sala fechada: hook depois de um return condicional derruba a tela quando a sala fecha.)
+  const legs = useMemo(() => (room.seed ? drawLegs(room.ladder, room.seed) : null), [room.seed, room.ladder]);
 
   if (room.phase === "closed") {
-    const reason = room.closedReason === "host-left" ? t.pvp.lobby.hostLeft : room.closedReason === "expired" ? t.pvp.lobby.expired : t.pvp.lobby.cancelled;
-    return <main className="content rv-page"><section className="rv-card pvp-card"><h1>{reason}</h1><button type="button" className="rs-btn primary" onClick={onLeave}>{t.common.backHub}</button></section></main>;
+    const reason = room.closedReason === "host-left" ? t.pvp.lobby.hostLeft : room.closedReason === "expired" ? t.pvp.lobby.expired : room.closedReason === "opponent-left" ? t.pvp.lobby.opponentLeft : t.pvp.lobby.cancelled;
+    // sala da fila desfeita antes de começar: quem ficou já voltou para a fila, o botão leva à busca
+    return <main className="content rv-page"><section className="rv-card pvp-card"><h1>{reason}</h1><button type="button" className="rs-btn primary" onClick={onLeave}>{room.origin === "queue" ? t.pvp.lobby.backToQueue : t.common.backHub}</button></section></main>;
   }
   const bothReady = room.you.ready && room.opponent?.ready;
-  // Os 2 tempos, assim que a semente chega (a partir do lobby, com o amigo já dentro): os dois veem os mesmos modos antes de ficar pronto.
-  const legs = useMemo(() => (room.seed ? drawLegs(room.ladder, room.seed) : null), [room.seed, room.ladder]);
   return (
     <main className={`content rv-page${room.opponent ? "" : " pvp-page"}`}>
       <button type="button" className="back" onClick={onLeave}>← {t.pvp.lobby.leave}</button>

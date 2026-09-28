@@ -62,14 +62,31 @@ import { isDebugEnabled } from "./domain/debug-flag";
 import { PvpLobby, type PvpLobbyView } from "./components/pvp-lobby";
 import { PvpInterlude } from "./components/pvp-interlude";
 import { PvpResult } from "./components/pvp-result";
+import { PvpHome } from "./components/pvp-home";
+import { PvpQueueLayer, type OfferActivity } from "./components/pvp-offer";
 import { newPvpRun, pvpLegOptions, recordPvpLeg, type PvpRun } from "./domain/pvp-run";
-import { parseInvite, type PvpInvite, type PvpMode, type PvpRoomView } from "./domain/pvp";
-import { PvpClientError, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpJoinRoom, pvpName as pvpStoredName, pvpSubscribe, setPvpName as setPvpStoredName } from "./domain/pvp-client";
-import { listPvpMatches, pvpRatingOf, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
-import { pvpRatingChange } from "./domain/pvp-rating";
+import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
+import {
+  PvpClientError, hasPvpIdentity, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
+  pvpQueueRespond, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
+} from "./domain/pvp-client";
+import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
+
+// Fila ("Buscar duelo"): o que a pessoa buscou por último e se havia uma busca ativa (para retomar depois de recarregar a página).
+const QUEUE_PREFS_KEY = "carta-pvp-queue-prefs";
+const QUEUE_ACTIVE_KEY = "carta-pvp-queue";
+const readQueuePrefs = (): QueuePrefs => {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(QUEUE_PREFS_KEY) ?? "null");
+    if (isQueuePrefs(saved)) return { ladder: saved.ladder, mode: saved.mode };
+  } catch { /* sem armazenamento ou valor velho */ }
+  return { ladder: "mapas", mode: "friendly" };
+};
+/** Aviso da fila que ainda vale mostrar (o servidor guarda o último por um tempo; depois de recarregar a página, um aviso velho não reaparece). */
+const FRESH_NOTICE_MS = 60000;
 
 
 export function App() {
@@ -199,15 +216,24 @@ export function App() {
   const pvpRoundIndexRef = useRef(0);
   const pvpSettledCodeRef = useRef<string | null>(null);
   const [pvpRatingDelta, setPvpRatingDelta] = useState<number | null>(null);
-  const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
-  const pvpRating = useMemo(() => pvpRatingOf(pvpMatches), [pvpMatches]);
+  // Força do valendo e V/D/E: o servidor é a fonte (GET /me); o aparelho só mostra.
+  const [pvpProfileView, setPvpProfileView] = useState<PvpProfileView | null>(null);
+  const refreshPvpProfile = () => { void pvpProfile().then(setPvpProfileView).catch(() => undefined); };
+  // ---- Fila ("Buscar duelo") ----
+  const [pvpQueue, setPvpQueueState] = useState<PvpQueueView>(IDLE_QUEUE_VIEW);
+  const pvpQueueRef = useRef<PvpQueueView>(IDLE_QUEUE_VIEW);
+  const queueUnsubRef = useRef<(() => void) | null>(null);
+  const [queuePrefs, setQueuePrefsState] = useState<QueuePrefs>(readQueuePrefs);
+  const setQueuePrefs = (prefs: QueuePrefs) => { setQueuePrefsState(prefs); try { localStorage.setItem(QUEUE_PREFS_KEY, JSON.stringify(prefs)); } catch { /* sem armazenamento */ } };
+  const [queueNotice, setQueueNotice] = useState<PvpQueueNotice | null>(null);
+  const lastNoticeAtRef = useRef(0);
+  const enteredMatchRef = useRef<string | null>(null);
   // Os dois tempos, para a tabela do resultado: vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar).
   const pvpResultLegs = useMemo(() => (pvpRoom?.seed ? drawLegs(pvpRoom.ladder, pvpRoom.seed) : null), [pvpRoom?.seed, pvpRoom?.ladder]);
   // Duelo (contra bot ou com amigo): sempre Mundo inteiro, sem o filtro ONU — os dois lados do PvP precisam do MESMO baralho disponível
   // (a semente sozinha não basta se o recorte/filtro pessoal de cada aparelho for diferente; region/onlyUn não podem vir da preferência solo).
   const region: RegionSelection = duelMode || trainOnce || pvpRoom ? "mundo" : regionPref;
   const onlyUn = duelMode || trainOnce || pvpRoom ? false : onlyUnPref;
-  useEffect(() => { void listPvpMatches().then(setPvpMatches).catch(() => undefined); }, []);
   const pvpErrorMessage = (error: unknown) => {
     if (error instanceof PvpClientError) {
       if (error.code === "not_found") return t.pvp.invite.notFound;
@@ -223,12 +249,14 @@ export function App() {
     pvpRoundIndexRef.current += 1;
     void pvpCommand(run.code, { type: "round", leg: run.index, round: roundIndex, correct: round.correct, ms: round.responseTimeMs ?? 0 }).catch(() => undefined);
   };
-  // Assim que os dois duelos (Ana e Beto) terminam do lado do servidor, guarda o histórico local e calcula a mudança de força (só no valendo).
+  // Assim que os dois duelos (Ana e Beto) terminam do lado do servidor, guarda o histórico local com a mudança de força que O SERVIDOR calculou
+  // (só no valendo; o servidor guarda a dele em .pvp-data/matches.jsonl e é a fonte).
   useEffect(() => {
     const room = pvpRoom;
     if (!room || !room.result || !room.opponent || pvpSettledCodeRef.current === room.code) return;
     pvpSettledCodeRef.current = room.code;
-    const ratingDelta = room.mode === "ranked" ? pvpRatingChange(pvpRating, room.opponent.rating, room.result.outcome) : null;
+    const rating = room.result.rating;
+    const ratingDelta = rating ? rating.you.after - rating.you.before : null;
     setPvpRatingDelta(ratingDelta);
     // os grupos dos dois tempos vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar); sem semente (nunca deveria acontecer
     // com a sala já fechada), fica sem o detalhe dos tempos, só o placar total.
@@ -242,15 +270,16 @@ export function App() {
       : undefined;
     const record: PvpMatchRecord = {
       id: `pvp:${room.code}`, code: room.code, at: Date.now(), ladder: room.ladder, mode: room.mode,
-      opponentName: room.opponent.name, opponentRating: room.opponent.rating,
+      opponentName: room.opponent.name, opponentRating: rating?.opponent.before ?? room.opponent.rating,
       youCorrect: room.result.you.correct, opponentCorrect: room.result.opponent.correct, totalRounds: LEG_ROUNDS * LEGS,
       outcome: room.result.outcome, tiebreak: room.result.tiebreak,
       youForfeited: room.result.you.forfeited, opponentForfeited: room.result.opponent.forfeited,
       youMs: room.result.you.ms, opponentMs: room.result.opponent.ms,
       legs, ratingDelta,
     };
-    void savePvpMatch(record).then(listPvpMatches).then(setPvpMatches).catch(() => undefined);
-  }, [pvpRoom, pvpRating]);
+    void savePvpMatch(record).catch(() => undefined);
+    refreshPvpProfile();
+  }, [pvpRoom]);
   // Link de convite (?duelo=CÓDIGO): abre direto na tela do convite, sem precisar do Hub.
   useEffect(() => {
     const code = parseInvite(location.search);
@@ -295,7 +324,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name) return;
     setPvpBusy(true); setPvpError(null);
-    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, pvpRating, byLadder[pvpSetupLadder]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, byLadder[pvpSetupLadder]); setPvpRoom(room); pvpSubscribeTo(room.code); }
     catch (error) { setPvpError(pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -303,7 +332,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name || !pvpInviteCode) return;
     setPvpBusy(true); setPvpError(null);
-    try { const room = await pvpJoinRoom(pvpInviteCode, name, pvpRating, byLadder[pvpInvitePreview?.ladder ?? "mapas"]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    try { const room = await pvpJoinRoom(pvpInviteCode, name, byLadder[pvpInvitePreview?.ladder ?? "mapas"]); setPvpRoom(room); pvpSubscribeTo(room.code); }
     catch (error) { setPvpError(pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -315,12 +344,18 @@ export function App() {
   const pvpLeaveLobby = () => {
     const room = pvpRoomRef.current;
     if (room && room.phase !== "closed" && room.phase !== "done") void pvpCommand(room.code, { type: "leave" }).catch(() => undefined);
+    // sala da fila, ou o "Convidar amigo" aberto a partir da tela da fila: volta para ela; o resto volta ao Hub
+    const toPvpHome = room?.origin === "queue" || (!room && pvpEntry === "setup");
     pvpReset();
-    setScreen("hub");
+    if (toPvpHome) { setScreen("pvp-home"); refreshPvpProfile(); } else setScreen("hub");
   };
   const pvpDecline = () => { pvpReset(); setScreen("hub"); };
   const pvpGoHome = () => { pvpReset(); setScreen("hub"); };
-  const pvpRematch = () => { const ladder = pvpRoomRef.current?.ladder ?? "mapas"; pvpReset(); pvpOpenSetup(ladder); };
+  const pvpRematch = () => {
+    const room = pvpRoomRef.current;
+    if (room?.origin === "queue") { pvpOpenHome(); return; }
+    const ladder = room?.ladder ?? "mapas"; pvpReset(); pvpOpenSetup(ladder);
+  };
   const pvpContinueLeg = () => { const run = pvpRunRef.current; if (run) startPvpLeg(run, 1); };
   /** Um tempo terminou (ou a pessoa saiu dele): reporta o que faltar ao servidor e mostra o resultado quando os dois tempos acabaram para mim. */
   const finishPvpLeg = async (result: SessionResult | null) => {
@@ -341,6 +376,90 @@ export function App() {
     setScreen(run.index === 0 ? "pvp-interlude" : "pvp-result");
   };
   useEffect(() => () => pvpUnsubRef.current?.(), []);
+
+  // ---- Fila ("Buscar duelo"): a visão chega pelo canal do jogador (SSE /me/events) e pelas respostas dos pedidos ----
+  /** Entra na sala que a fila achou (os dois aceitaram). Encerra o que estiver em andamento: o duelo contra bot é ANULADO (sem registro: nenhum troféu
+   *  ganho nem perdido; os tempos já terminados continuam pagos e contando para a maestria) e a partida solo fecha incompleta ao sair da tela, sem moedas. */
+  const enterMatchedRoom = async (code: string) => {
+    if (enteredMatchRef.current === code) return;
+    enteredMatchRef.current = code;
+    let room: PvpRoomView;
+    try { room = await pvpGetRoom(code); }
+    catch (error) { enteredMatchRef.current = null; setPvpError(pvpErrorMessage(error)); return; }
+    // já começou ou acabou (a página recarregou no meio do duelo): retomar um duelo em andamento ainda não existe, então não entra por aqui
+    if (room.phase !== "lobby" && room.phase !== "countdown") return;
+    if (duelRunRef.current) { setDuelRun(null); legResults.current = [null, null]; }
+    setTrainOnce(false);
+    void refreshEconomy();
+    pvpUnsubRef.current?.();
+    pvpUnsubRef.current = null;
+    setPvpRun(null); setPvpEntry(null); setPvpInvitePreview(null); setPvpInviteCode(null); setPvpError(null); setPvpRatingDelta(null);
+    pvpSettledCodeRef.current = null;
+    setPvpRoom(room);
+    pvpSubscribeTo(code);
+    setScreen("pvp-lobby");
+  };
+  const applyQueueView = (view: PvpQueueView, fromStream: boolean) => {
+    // A resposta de um pedido pode chegar depois de uma visão mais nova do canal: fica a mais nova. O canal sempre vale (se o servidor reiniciou, a revisão recomeça).
+    if (!fromStream && pvpQueueRef.current.rev > view.rev) return;
+    pvpQueueRef.current = view;
+    setPvpQueueState(view);
+    if (view.notice && view.notice.at > lastNoticeAtRef.current) {
+      lastNoticeAtRef.current = view.notice.at;
+      if (view.serverNow - view.notice.at < FRESH_NOTICE_MS) setQueueNotice(view.notice);
+    }
+    try { if (view.state === "idle") localStorage.removeItem(QUEUE_ACTIVE_KEY); else localStorage.setItem(QUEUE_ACTIVE_KEY, "1"); } catch { /* sem armazenamento */ }
+    if (view.state === "matched" && view.room) void enterMatchedRoom(view.room);
+  };
+  // o canal chama sempre a versão mais nova (as funções acima leem estado desta renderização)
+  const applyQueueViewRef = useRef(applyQueueView);
+  applyQueueViewRef.current = applyQueueView;
+  // O canal fica aberto enquanto a busca vale (o servidor só mantém na fila quem está com o app aberto) e até a sala da fila começar (se o outro sair
+  // antes, é por ele que chega a volta para a fila).
+  const inQueueRoomBeforePlay = pvpRoom?.origin === "queue" && (pvpRoom.phase === "lobby" || pvpRoom.phase === "countdown" || pvpRoom.phase === "closed");
+  const queueChannelWanted = pvpQueue.state === "waiting" || pvpQueue.state === "offer" || (pvpQueue.state === "matched" && !pvpRoom) || inQueueRoomBeforePlay;
+  useEffect(() => {
+    if (queueChannelWanted && !queueUnsubRef.current) queueUnsubRef.current = pvpSubscribeQueue((view) => applyQueueViewRef.current(view, true));
+    if (!queueChannelWanted && queueUnsubRef.current) { queueUnsubRef.current(); queueUnsubRef.current = null; }
+  }, [queueChannelWanted]);
+  useEffect(() => () => queueUnsubRef.current?.(), []);
+  // Ao abrir o app: retoma a busca que estava ativa (recarregou a página) e traz para o aparelho os duelos que só o servidor tem (o app fechou antes
+  // do resultado). Só para quem já usou o PvP: quem nunca entrou não é registrado no servidor à toa.
+  useEffect(() => {
+    if (!hasPvpIdentity()) return;
+    let active = false;
+    try { active = localStorage.getItem(QUEUE_ACTIVE_KEY) === "1"; } catch { /* sem armazenamento */ }
+    if (active) void pvpQueueGet().then((view) => applyQueueViewRef.current(view, false)).catch(() => undefined);
+    void Promise.all([pvpServerMatches(100), listPvpMatches()])
+      .then(async ([server, local]) => { for (const record of missingPvpRecords(server, local)) await savePvpMatch(record); })
+      .catch(() => undefined);
+  }, []);
+  const pvpOpenHome = (ladder?: Ladder) => {
+    pvpReset();
+    if (ladder && pvpQueueRef.current.state === "idle") setQueuePrefs({ ...queuePrefs, ladder });
+    setScreen("pvp-home");
+    refreshPvpProfile();
+  };
+  const queueSearch = async () => {
+    const name = pvpNameState.trim();
+    if (!name) return;
+    setPvpBusy(true); setPvpError(null); setQueueNotice(null);
+    try { applyQueueView(await pvpQueueJoin(queuePrefs, name, byLadder[queuePrefs.ladder]), false); }
+    catch (error) { setPvpError(error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error)); }
+    setPvpBusy(false);
+  };
+  const queueCancel = async () => {
+    setPvpBusy(true); setPvpError(null);
+    try { applyQueueView(await pvpQueueLeave(), false); } catch (error) { setPvpError(pvpErrorMessage(error)); }
+    setPvpBusy(false);
+  };
+  const queueRespond = async (accept: boolean) => {
+    const offer = pvpQueueRef.current.offer;
+    if (!offer) return;
+    try { applyQueueView(await pvpQueueRespond(offer.id, accept), false); } catch (error) { setPvpError(pvpErrorMessage(error)); }
+  };
+  // O que aceitar a proposta encerra (a proposta avisa antes): duelo contra bot já começado (anulado) ou partida solo (sem moedas).
+  const offerActivity: OfferActivity = duelRun && (screen === "game" || screen === "duel-interlude") ? "bot-duel" : screen === "game" && !pvpRun ? "solo" : "none";
 
   // Duelo: cada tempo é uma sessão de 10 rodadas com tempo, baralho da semente do duelo e, em modo de prévia, moedas do modo base.
   const sessionOptions = useMemo(() => duelRun && screen === "game"
@@ -780,6 +899,25 @@ export function App() {
     );
   }
 
+  // A fila vale em qualquer tela: a proposta, o indicador de busca e os avisos ficam por cima da página.
+  const queueLayer = (
+    <PvpQueueLayer
+      queue={pvpQueue}
+      inGame={screen === "game"}
+      activity={offerActivity}
+      showPill={screen !== "game" && screen !== "pvp-home" && screen !== "pvp-lobby"}
+      notice={screen === "pvp-home" || screen === "game" ? null : queueNotice}
+      onAccept={() => void queueRespond(true)}
+      onDecline={() => void queueRespond(false)}
+      onOpenHome={() => pvpOpenHome()}
+      onDismissNotice={() => setQueueNotice(null)}
+    />
+  );
+  const page = (() => {
+  if (screen === "pvp-home") {
+    return <div className="app-shell grain"><PvpHome prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
+  }
+
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
       ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onEquipTheme={setTheme} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
@@ -879,7 +1017,7 @@ export function App() {
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}
-          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel, onFriend: pvpOpenSetup }}
+          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel, onFriend: pvpOpenHome }}
          />
       )}
       {screen === "recorte" && (
@@ -913,4 +1051,6 @@ export function App() {
       )}
     </div>
   );
+  })();
+  return <>{page}{queueLayer}</>;
 }

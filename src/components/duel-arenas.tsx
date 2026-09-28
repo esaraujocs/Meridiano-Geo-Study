@@ -28,7 +28,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, onDuel, onFri
   formatReady: boolean;
   formatCost: number;
   onDuel: (ladder: Ladder) => void;
-  /** "Desafiar amigo": ainda sem servidor, o botão fica desativado se não vier. */
+  /** "Contra pessoas" (fila ou convite a um amigo): sem servidor, o botão fica desativado se não vier. */
   onFriend?: (ladder: Ladder) => void;
   onLeague?: () => void;
 }) {
@@ -98,7 +98,7 @@ function Arena({ card, formatReady, formatCost, onDuel, onFriend }: { card: Ladd
       <div className="ar-foot">
         <button type="button" className="ar-go" style={{ background: COLOR[ladder] }} onClick={() => onDuel(ladder)}><Icon type="swords" size={18} /> {t.duel.arenas.duel}{!formatReady && <Icon type="lock" size={13} />}</button>
         {onFriend
-          ? <button type="button" className="ar-friend" onClick={() => onFriend(ladder)}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span></button>
+          ? <button type="button" className="ar-friend" onClick={() => onFriend(ladder)}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.people} </span></button>
           : <button type="button" className="ar-friend" disabled title={t.duel.arenas.friendTitle} aria-label={`${t.duel.arenas.friend} · ${t.duel.arenas.friendSoon}`}><Icon type="swords" size={16} /><span className="ar-friend-t"> {t.duel.arenas.friend} </span><em>{t.duel.arenas.friendSoon}</em></button>}
         <small className={formatReady ? "ar-format" : "ar-need"}>{formatReady ? t.duel.arenas.format : t.duel.arenas.needFormat(money(formatCost))}</small>
       </div>

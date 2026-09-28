@@ -1,31 +1,85 @@
 // Identidade dos jogadores do PvP, sem login: cada aparelho sorteia um id e um segredo; o servidor guarda só o hash do segredo (na primeira vez que vê o id, registra).
 // Depois, quem apresenta o segredo certo é a mesma pessoa. É o ponto de partida do login opcional: uma conta (Google, e-mail...) poderá ser ligada a este id, e
 // "recuperar a conta" num aparelho novo será receber de volta o segredo do id ligado. Por ora, perdeu o segredo (dados apagados), perdeu a identidade.
+//
+// Arquivo (.pvp-data/players.json), versão 2: { "version": 2, "players": { "<id>": { hash, createdAt, lastSeen, name } } }. A versão 1 (a primeira, sem
+// "version") era o objeto { "<id>": { hash, createdAt, lastSeen } } direto: é lida e convertida (id e hash intactos, nome vazio), e o arquivo original fica
+// copiado ao lado (players.v1.bak.json) antes da primeira gravação no formato novo. A força e o histórico NÃO moram aqui: vêm do registro de duelos
+// (pvp-history.ts), relido a cada abertura.
 import { createHash, timingSafeEqual } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { cleanPlayerName } from "../src/domain/pvp.js";
 
 export const isPlayerId = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(value);
 export const isPlayerSecret = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{24,128}$/.test(value);
 const hashSecret = (secret: string) => createHash("sha256").update(secret).digest("hex");
 
-type Row = { hash: string; createdAt: number; lastSeen: number };
+export const PLAYERS_FILE_VERSION = 2;
+export type PlayerRow = { hash: string; createdAt: number; lastSeen: number; name: string };
+
+const finiteOr = (value: unknown, fallback: number) => (typeof value === "number" && Number.isFinite(value) ? value : fallback);
+
+/** Lê o conteúdo do arquivo de jogadores (qualquer versão conhecida) e devolve as linhas válidas e a versão encontrada (0 se não reconheceu nada). */
+export function readPlayersFile(raw: unknown, now = Date.now()): { version: number; rows: [string, PlayerRow][] } {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { version: 0, rows: [] };
+  const top = raw as Record<string, unknown>;
+  const isV2 = top.version === PLAYERS_FILE_VERSION && Boolean(top.players) && typeof top.players === "object";
+  const source = (isV2 ? top.players : top) as Record<string, unknown>;
+  const rows: [string, PlayerRow][] = [];
+  for (const [id, value] of Object.entries(source)) {
+    if (!isPlayerId(id) || !value || typeof value !== "object") continue;
+    const row = value as Record<string, unknown>;
+    if (typeof row.hash !== "string" || !row.hash) continue;
+    const createdAt = finiteOr(row.createdAt, now);
+    rows.push([id, { hash: row.hash, createdAt, lastSeen: finiteOr(row.lastSeen, createdAt), name: typeof row.name === "string" ? cleanPlayerName(row.name) : "" }]);
+  }
+  return { version: isV2 ? PLAYERS_FILE_VERSION : 1, rows };
+}
 
 export class PlayerRegistry {
-  private players = new Map<string, Row>();
+  private players = new Map<string, PlayerRow>();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Versão do arquivo lido na abertura (1 = migrado agora; 2 = já estava no formato novo; 0 = sem arquivo). */
+  readonly loadedVersion: number = 0;
 
   /** `file` (JSON) guarda os jogadores entre reinícios; sem ele, tudo fica só na memória (testes). */
   constructor(private file: string | null = null, private now: () => number = Date.now) {
-    if (file && existsSync(file)) {
-      try {
-        const rows = JSON.parse(readFileSync(file, "utf8")) as Record<string, Row>;
-        for (const [id, row] of Object.entries(rows)) if (isPlayerId(id) && row && typeof row.hash === "string") this.players.set(id, row);
-      } catch { /* arquivo ilegível: começa vazio */ }
+    if (!file || !existsSync(file)) return;
+    let raw: unknown;
+    try { raw = JSON.parse(readFileSync(file, "utf8")); }
+    catch (error) {
+      // Arquivo ilegível: não pode ser sobrescrito na próxima gravação (perderia as identidades de verdade). Fica guardado ao lado e o servidor começa vazio.
+      const aside = `${file}.ilegivel-${this.now()}.json`;
+      try { renameSync(file, aside); console.error(`[pvp] players.json ilegível; guardado em ${aside}:`, error); } catch { /* sem permissão: segue sem arquivo */ }
+      return;
+    }
+    const { version, rows } = readPlayersFile(raw, this.now());
+    for (const [id, row] of rows) this.players.set(id, row);
+    this.loadedVersion = version;
+    if (version === 1) {
+      // migração v1 → v2: cópia do original antes de reescrever (uma vez só: se a cópia já existe, é de uma migração anterior e não é tocada)
+      const backup = file.replace(/\.json$/i, "") + ".v1.bak.json";
+      try { if (!existsSync(backup)) copyFileSync(file, backup); this.flush(); }
+      catch (error) { console.error("[pvp] não deu para migrar players.json para a versão 2 (segue na memória):", error); }
     }
   }
 
   get size() { return this.players.size; }
+  has(id: string) { return this.players.has(id); }
+  /** Quando o id apareceu pela primeira vez (0 se desconhecido). */
+  createdAtOf(id: string) { return this.players.get(id)?.createdAt ?? 0; }
+  /** O último nome que a pessoa usou ("" se nunca informou). */
+  nameOf(id: string) { return this.players.get(id)?.name ?? ""; }
+
+  /** Guarda o nome mais recente do jogador (vale para o perfil e para quem pede /me). */
+  setName(id: string, name: string) {
+    const row = this.players.get(id);
+    const clean = cleanPlayerName(name);
+    if (!row || !clean || row.name === clean) return;
+    row.name = clean;
+    this.scheduleSave();
+  }
 
   /** Confere a identidade. Id novo é registrado com o segredo apresentado; id conhecido exige o mesmo segredo. */
   authenticate(id: unknown, secret: unknown): boolean {
@@ -34,7 +88,7 @@ export class PlayerRegistry {
     const known = this.players.get(id);
     if (!known) {
       const now = this.now();
-      this.players.set(id, { hash, createdAt: now, lastSeen: now });
+      this.players.set(id, { hash, createdAt: now, lastSeen: now, name: "" });
       this.scheduleSave();
       return true;
     }
@@ -50,7 +104,7 @@ export class PlayerRegistry {
     if (!this.file) return;
     mkdirSync(dirname(this.file), { recursive: true });
     const temporary = `${this.file}.tmp`;
-    writeFileSync(temporary, JSON.stringify(Object.fromEntries(this.players)), "utf8");
+    writeFileSync(temporary, JSON.stringify({ version: PLAYERS_FILE_VERSION, players: Object.fromEntries(this.players) }), "utf8");
     renameSync(temporary, this.file);
   }
 

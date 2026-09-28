@@ -1,10 +1,19 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { appendFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import http from "node:http";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { LEGS, LEG_ROUNDS, drawLegs } from "../.tmp-pvp/src/domain/duel-modes.js";
-import { COUNTDOWN_MS, DONE_TTL_MS, GRACE_MS, OPEN_TTL_MS, ROOM_CODE_ALPHABET, cleanPlayerName, inviteLink, isValidRoomCode, normalizeRoomCode, parseCommand, parseInvite, settlePvp, sideFinished, sideTotals } from "../.tmp-pvp/src/domain/pvp.js";
+import {
+  COUNTDOWN_MS, CROSS_DELAY_MS, DONE_TTL_MS, GRACE_MS, MATCH_COUNTDOWN_MS, OFFER_TTL_MS, OPEN_TTL_MS, QUEUE_TTL_MS, REOFFER_COOLDOWN_MS, ROOM_CODE_ALPHABET,
+  cleanPlayerName, inviteLink, isValidRoomCode, normalizeRoomCode, parseCommand, parseInvite, parseOfferResponse, settlePvp, sideFinished, sideTotals,
+} from "../.tmp-pvp/src/domain/pvp.js";
 import { PVP_RATING_BASE, pvpExpectedScore, pvpRatingChange, pvpRatingFromHistory } from "../.tmp-pvp/src/domain/pvp-rating.js";
 import { PvpError, PvpRooms } from "../.tmp-pvp/server/pvp-rooms.js";
 import { PlayerRegistry } from "../.tmp-pvp/server/pvp-players.js";
+import { PvpHistory } from "../.tmp-pvp/server/pvp-history.js";
+import { PvpQueue } from "../.tmp-pvp/server/pvp-queue.js";
 import { createPvpHttp } from "../.tmp-pvp/server/pvp-http.js";
 
 // ───────────── regras puras ─────────────
@@ -44,6 +53,9 @@ assert.equal(parseCommand({ type: "round", leg: 0, round: "3", correct: true, ms
 assert.equal(parseCommand({ type: "round", leg: 0, round: 3, correct: true, ms: NaN }), null);
 assert.equal(parseCommand({ type: "voar" }), null);
 assert.equal(parseCommand(null), null);
+assert.deepEqual(parseOfferResponse({ id: "ABCDEFGH2345", accept: true }), { id: "ABCDEFGH2345", accept: true });
+assert.equal(parseOfferResponse({ id: "x", accept: true }), null, "id de proposta curto demais");
+assert.equal(parseOfferResponse({ id: "ABCDEFGH2345", accept: "sim" }), null);
 
 // os dois jogadores sorteiam o mesmo duelo pela semente da sala (sem ownedGroups, quem comprou o quê não pesa)
 assert.deepEqual(drawLegs("mapas", "abc123"), drawLegs("mapas", "abc123"));
@@ -326,6 +338,346 @@ const play = (rooms, c, player, legs) => legs.forEach((leg, index) => leg.forEac
   assert.equal(view.you.rating, 0);
   assert.equal(view.you.trophies, 0);
 }
+// o placar vai para o histórico uma vez, e a força que ele devolve aparece no resultado dos dois lados
+{
+  const rooms = make();
+  const settled = [];
+  rooms.onSettle = (match) => { settled.push(match); return { a: { before: 1000, after: 1012 }, b: { before: 1000, after: 988 } }; };
+  const c = startDuel(rooms);
+  play(rooms, c, ana, [rounds(10, 9), rounds(10, 9)]);
+  play(rooms, c, beto, [rounds(10, 1), rounds(10, 1)]);
+  assert.equal(settled.length, 1);
+  assert.equal(settled[0].origin, "invite");
+  assert.equal(settled[0].a.id, ana.id, "a é o anfitrião");
+  assert.equal(settled[0].a.outcome, "win");
+  assert.equal(settled[0].b.totals.correct, 2);
+  assert.ok(settled[0].seed);
+  assert.deepEqual(rooms.view(c, ana.id).result.rating, { you: { before: 1000, after: 1012 }, opponent: { before: 1000, after: 988 } });
+  assert.deepEqual(rooms.view(c, beto.id).result.rating.you, { before: 1000, after: 988 });
+  assert.equal(make().createRoom(ana, { ladder: "mapas", mode: "friendly" }).origin, "invite");
+}
+
+// ───────────── histórico no servidor (a força sai de reler o registro) ─────────────
+const sideOf = (player, outcome, correct) => ({ id: player.id, name: player.name, trophies: 0, outcome, totals: sideTotals([rounds(10, correct), rounds(10, correct)]) });
+const matchOf = (code, mode, a, b, at) => ({ code, at, origin: "queue", ladder: "mapas", mode, seed: "semente123", tiebreak: false, a, b });
+{
+  const history = new PvpHistory(null);
+  assert.equal(history.ratingOf(ana.id), PVP_RATING_BASE, "sem duelo, força de base");
+  assert.deepEqual(history.record(matchOf("AAAAAA", "ranked", sideOf(ana, "win", 8), sideOf(beto, "loss", 5), 1)), { a: { before: 1000, after: 1012 }, b: { before: 1000, after: 988 } });
+  assert.deepEqual(history.record(matchOf("AAAAAA", "ranked", sideOf(ana, "win", 8), sideOf(beto, "loss", 5), 1)), { a: null, b: null }, "o mesmo duelo não conta duas vezes");
+  assert.deepEqual(history.record(matchOf("BBBBBB", "friendly", sideOf(beto, "win", 9), sideOf(ana, "loss", 3), 2)), { a: null, b: null }, "amistoso não mexe na força");
+  assert.equal(history.size, 2);
+  assert.equal(history.ratingOf(ana.id), 1012);
+  assert.deepEqual(history.profileOf(beto.id, "Beto", 5), { name: "Beto", rating: 988, ranked: { wins: 0, losses: 1, draws: 0 }, friendly: { wins: 1, losses: 0, draws: 0 }, since: 5 });
+  const mine = history.matchesOf(ana.id);
+  assert.equal(mine.length, 2);
+  assert.equal(mine[0].code, "BBBBBB", "o mais novo primeiro");
+  assert.equal(mine[0].you.outcome, "loss");
+  assert.equal(mine[0].opponent.name, "Beto");
+  assert.equal(mine[0].you.rating, null);
+  assert.deepEqual(mine[1].you.rating, { before: 1000, after: 1012 });
+  assert.equal(history.matchesOf(ana.id, 1).length, 1);
+  assert.ok(!JSON.stringify(mine).includes(beto.id), "o id do adversário não sai do servidor");
+}
+{
+  const dir = mkdtempSync(join(tmpdir(), "pvp-hist-"));
+  const file = join(dir, "matches.jsonl");
+  const history = new PvpHistory(file);
+  history.record(matchOf("CCCCCC", "ranked", sideOf(ana, "win", 8), sideOf(beto, "loss", 5), 10));
+  history.record(matchOf("DDDDDD", "ranked", sideOf(ana, "draw", 5), sideOf(caio, "draw", 5), 11));
+  appendFileSync(file, '{"code":"EEEEEE","at":12,"ladder":"mapas"'); // o servidor caiu no meio da gravação
+  const reread = new PvpHistory(file);
+  assert.equal(reread.size, 2, "a linha cortada fica de fora");
+  for (const player of [ana, beto, caio]) assert.equal(reread.ratingOf(player.id), history.ratingOf(player.id), "a força sai de reler o registro, igual");
+  reread.record(matchOf("FFFFFF", "ranked", sideOf(caio, "win", 9), sideOf(beto, "loss", 2), 13));
+  const third = new PvpHistory(file);
+  assert.equal(third.size, 3, "a gravação depois da linha cortada começa numa linha nova (não se perde)");
+  assert.equal(third.ratingOf(caio.id), reread.ratingOf(caio.id));
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// ───────────── jogadores: migração do players.json v1 → v2 (os ids reais e seus hashes não podem se perder) ─────────────
+{
+  const dir = mkdtempSync(join(tmpdir(), "pvp-players-"));
+  const file = join(dir, "players.json");
+  const backup = join(dir, "players.v1.bak.json");
+  const enzo = "penzo000000000000000000001";
+  const secret = "segredo-real-do-enzo-0000000001";
+  const hash = createHash("sha256").update(secret).digest("hex");
+  // o formato de hoje (versão 1): o objeto { id: { hash, createdAt, lastSeen } } direto, sem "version"
+  const v1 = { [enzo]: { hash, createdAt: 1000, lastSeen: 2000 }, pamigo000000000000000000002: { hash: "ab".repeat(32), createdAt: 1100, lastSeen: 1200 }, pamiga000000000000000000003: { hash: "cd".repeat(32), createdAt: 1300, lastSeen: 1300 } };
+  writeFileSync(file, JSON.stringify(v1));
+  const migrated = new PlayerRegistry(file);
+  assert.equal(migrated.loadedVersion, 1);
+  assert.equal(migrated.size, 3, "os 3 ids continuam");
+  assert.ok(existsSync(backup), "o original fica copiado ao lado");
+  assert.deepEqual(JSON.parse(readFileSync(backup, "utf8")), v1);
+  const written = JSON.parse(readFileSync(file, "utf8"));
+  assert.equal(written.version, 2);
+  assert.deepEqual(Object.keys(written.players).sort(), Object.keys(v1).sort());
+  assert.equal(written.players[enzo].hash, hash, "o hash que autentica não muda");
+  assert.deepEqual([written.players[enzo].createdAt, written.players[enzo].name], [1000, ""], "data de criação mantida, sem nome ainda");
+  assert.equal(migrated.authenticate(enzo, secret), true, "o mesmo segredo continua entrando");
+  assert.equal(migrated.authenticate(enzo, "outro-segredo-qualquer-00000000000"), false);
+  migrated.setName(enzo, "  Enzo ");
+  migrated.flush();
+  const again = new PlayerRegistry(file);
+  assert.equal(again.loadedVersion, 2, "já no formato novo: não migra de novo");
+  assert.equal(again.nameOf(enzo), "Enzo");
+  assert.equal(again.createdAtOf(enzo), 1000);
+  assert.deepEqual(JSON.parse(readFileSync(backup, "utf8")), v1, "a cópia do original não é tocada de novo");
+  writeFileSync(file, "{isto não é json");
+  assert.equal(new PlayerRegistry(file).size, 0);
+  assert.ok(readdirSync(dir).some((name) => name.includes("ilegivel")), "arquivo ilegível fica guardado ao lado, nunca sobrescrito");
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// ───────────── fila ("Buscar duelo"), com relógio falso ─────────────
+const MAPAS_RANKED = { ladder: "mapas", mode: "ranked" };
+const BANDEIRAS_FRIENDLY = { ladder: "bandeiras", mode: "friendly" };
+const makeQueue = () => {
+  const rooms = make();
+  const queue = new PvpQueue({ rooms, now: () => now, random });
+  rooms.onQueueRoomLeft = (_code, remaining) => queue.requeue(remaining);
+  return { rooms, queue };
+};
+const online = (queue, ...players) => players.forEach((player) => queue.connect(player.id));
+/** Ana e Beto se acham e aceitam; devolve o código da sala. */
+function matchAnaBeto(queue, prefs = MAPAS_RANKED) {
+  queue.join(ana, prefs);
+  const offer = queue.join(beto, prefs).offer;
+  queue.respond(ana.id, offer.id, true);
+  return queue.respond(beto.id, offer.id, true).room;
+}
+
+// par exato: proposta na hora; os dois aceitam → sala da fila já na contagem
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  const first = queue.join(ana, MAPAS_RANKED);
+  assert.equal(first.state, "waiting");
+  assert.equal(first.waiting, 1);
+  const second = queue.join(beto, MAPAS_RANKED);
+  assert.equal(second.state, "offer", "par exato: proposta na hora");
+  assert.deepEqual([second.offer.switchLadder, second.offer.switchMode], [false, false]);
+  assert.equal(second.offer.opponent.name, "Ana");
+  assert.equal(second.offer.expiresAt, now + OFFER_TTL_MS);
+  const offerId = second.offer.id;
+  assert.equal(queue.view(ana.id).offer.id, offerId, "a mesma proposta para os dois");
+  assert.equal(queue.respond(ana.id, offerId, true).offer.youAccepted, true);
+  assert.equal(queue.view(beto.id).offer.opponentAccepted, true, "o outro vê que já aceitaram");
+  const matched = queue.respond(beto.id, offerId, true);
+  assert.equal(matched.state, "matched");
+  assert.ok(isValidRoomCode(matched.room));
+  assert.equal(queue.view(ana.id).room, matched.room);
+  assert.equal(queue.size, 0);
+  const room = rooms.view(matched.room, ana.id);
+  assert.equal(room.origin, "queue");
+  assert.equal(room.phase, "countdown", "aceitar vale como pronto: a sala nasce na contagem");
+  assert.equal(room.host, true, "quem esperava há mais tempo é o anfitrião");
+  assert.equal(room.startAt, now + MATCH_COUNTDOWN_MS);
+  assert.deepEqual([room.ladder, room.mode], ["mapas", "ranked"]);
+  assert.ok(room.seed, "os dois já veem os modos na contagem");
+  assert.equal(rooms.phaseOf(beto.id), "countdown");
+  rooms.connect(matched.room, ana.id); rooms.connect(matched.room, beto.id);
+  now += MATCH_COUNTDOWN_MS; rooms.tick();
+  assert.equal(rooms.view(matched.room, beto.id).phase, "playing", "com os dois conectados, começa na hora");
+  assert.equal(queue.respond(ana.id, offerId, false).state, "matched", "resposta a uma proposta que já acabou só devolve a visão");
+  queue.forgetMatch(ana.id);
+  assert.equal(queue.view(ana.id).state, "idle");
+}
+// recusar o que você mesmo pediu: sai da fila; o outro volta ao lugar que tinha; o mesmo par espera o intervalo
+{
+  const { queue } = makeQueue();
+  online(queue, ana, beto, caio);
+  const sinceAna = queue.join(ana, MAPAS_RANKED).since;
+  const offer = queue.join(beto, MAPAS_RANKED).offer;
+  queue.respond(ana.id, offer.id, true);
+  assert.equal(queue.respond(beto.id, offer.id, false).state, "idle", "recusar o que pediu tira da fila");
+  const back = queue.view(ana.id);
+  assert.equal(back.state, "waiting");
+  assert.equal(back.since, sinceAna, "no lugar que tinha");
+  assert.equal(back.notice.kind, "opponent-declined");
+  assert.equal(queue.join(beto, MAPAS_RANKED).state, "waiting", "quem recusou volta logo, mas não é oferecido de novo ao mesmo par durante o intervalo");
+  const caioView = queue.join(caio, MAPAS_RANKED);
+  assert.equal(caioView.state, "offer");
+  assert.equal(caioView.offer.opponent.name, "Ana", "o terceiro recebe a mais antiga");
+  assert.equal(queue.view(beto.id).state, "waiting");
+  queue.leave(caio.id);
+  now += REOFFER_COOLDOWN_MS; queue.tick();
+  assert.equal(queue.view(ana.id).state, "offer", "passado o intervalo, o par volta a valer");
+}
+// sem resposta no prazo: quem não respondeu sai, quem aceitou volta ao lugar
+{
+  const { queue } = makeQueue();
+  online(queue, ana, beto, caio, { id: "dora-000000000000005" });
+  queue.join(ana, MAPAS_RANKED);
+  const offer = queue.join(beto, MAPAS_RANKED).offer;
+  queue.respond(ana.id, offer.id, true);
+  now += OFFER_TTL_MS - 1; queue.tick();
+  assert.equal(queue.view(beto.id).state, "offer", "ainda no prazo");
+  now += 1; queue.tick();
+  assert.equal(queue.view(beto.id).state, "idle");
+  assert.equal(queue.view(beto.id).notice.kind, "you-timeout");
+  assert.equal(queue.view(ana.id).state, "waiting");
+  assert.equal(queue.view(ana.id).notice.kind, "opponent-timeout");
+  // os dois em silêncio: os dois saem
+  queue.join(caio, MAPAS_RANKED); // casa com a Ana
+  now += OFFER_TTL_MS; queue.tick();
+  assert.deepEqual([queue.view(ana.id).state, queue.view(caio.id).state], ["idle", "idle"]);
+}
+// proposta de troca: sem par exato, depois de CROSS_DELAY_MS; primeiro o que pediu o mais antigo, depois o inverso
+{
+  const { queue } = makeQueue();
+  online(queue, ana, beto, caio);
+  queue.join(ana, MAPAS_RANKED);
+  assert.equal(queue.join(beto, BANDEIRAS_FRIENDLY).state, "waiting", "sem par exato: espera um pouco antes de propor troca");
+  now += CROSS_DELAY_MS - 1; queue.tick();
+  assert.equal(queue.view(beto.id).state, "waiting");
+  now += 1; queue.tick();
+  const toBeto = queue.view(beto.id).offer;
+  assert.ok(toBeto, "passou o tempo: proposta de troca");
+  assert.deepEqual([toBeto.ladder, toBeto.mode], ["mapas", "ranked"], "primeiro vale o que pediu quem espera há mais tempo");
+  assert.deepEqual([toBeto.switchLadder, toBeto.switchMode], [true, true], "para o Beto é troca de escada e de modo");
+  const toAna = queue.view(ana.id).offer;
+  assert.deepEqual([toAna.switchLadder, toAna.switchMode], [false, false], "para a Ana é exatamente o que ela pediu");
+  assert.equal(queue.respond(beto.id, toBeto.id, false).state, "offer", "recusar a troca não tira da fila: vem a proposta inversa");
+  const inverse = queue.view(ana.id).offer;
+  assert.notEqual(inverse.id, toBeto.id);
+  assert.deepEqual([inverse.ladder, inverse.mode], ["bandeiras", "friendly"], "o inverso: vale o que o Beto pediu");
+  assert.deepEqual([inverse.switchLadder, inverse.switchMode], [true, true], "agora quem troca é a Ana");
+  assert.equal(queue.respond(ana.id, inverse.id, false).state, "waiting", "a Ana também não quer trocar: continua na fila");
+  assert.equal(queue.view(beto.id).state, "waiting");
+  assert.equal(queue.view(beto.id).notice.kind, "switch-declined");
+  now += REOFFER_COOLDOWN_MS * 3; queue.tick();
+  assert.equal(queue.view(ana.id).state, "waiting", "par que recusou as duas trocas não é proposto de novo");
+  const caioView = queue.join(caio, BANDEIRAS_FRIENDLY);
+  assert.equal(caioView.offer?.opponent.name, "Beto", "quem chega querendo exatamente o mesmo casa na hora");
+  assert.equal(caioView.offer.switchLadder, false);
+}
+// troca aceita: a sala sai com o que o mais antigo pediu
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  queue.join(ana, { ladder: "bandeiras", mode: "friendly" });
+  queue.join(beto, { ladder: "mapas", mode: "friendly" });
+  now += CROSS_DELAY_MS; queue.tick();
+  const offer = queue.view(beto.id).offer;
+  assert.deepEqual([offer.switchLadder, offer.switchMode], [true, false], "só a escada muda");
+  queue.respond(beto.id, offer.id, true);
+  const done = queue.respond(ana.id, offer.id, true);
+  assert.equal(done.state, "matched");
+  assert.deepEqual([rooms.view(done.room, beto.id).ladder, rooms.view(done.room, beto.id).mode], ["bandeiras", "friendly"]);
+}
+// par exato passa na frente da troca
+{
+  const { queue } = makeQueue();
+  online(queue, ana, beto, caio);
+  queue.join(ana, MAPAS_RANKED);
+  queue.join(beto, { ladder: "bandeiras", mode: "ranked" });
+  now += CROSS_DELAY_MS - 1000; queue.tick();
+  assert.equal(queue.join(caio, MAPAS_RANKED).offer?.opponent.name, "Ana");
+  assert.equal(queue.view(beto.id).state, "waiting");
+}
+// presença (o app aberto) e tempo máximo da busca
+{
+  const { queue } = makeQueue();
+  queue.join(ana, MAPAS_RANKED); // sem abrir o canal
+  now += GRACE_MS; queue.tick();
+  assert.equal(queue.view(ana.id).state, "waiting", "dentro da tolerância");
+  now += 1; queue.tick();
+  assert.equal(queue.view(ana.id).state, "idle", "sem o app aberto, o pedido cai");
+  assert.equal(queue.view(ana.id).notice.kind, "connection-lost");
+  queue.connect(beto.id);
+  queue.join(beto, MAPAS_RANKED);
+  queue.disconnect(beto.id);
+  now += GRACE_MS - 1; queue.tick();
+  queue.connect(beto.id); // voltou a tempo
+  now += GRACE_MS * 2; queue.tick();
+  assert.equal(queue.view(beto.id).state, "waiting");
+  now += QUEUE_TTL_MS; queue.tick();
+  assert.equal(queue.view(beto.id).state, "idle");
+  assert.equal(queue.view(beto.id).notice.kind, "search-expired");
+}
+// sair da fila com proposta aberta vale como recusa; mudar a escolha mantém o lugar
+{
+  const { queue } = makeQueue();
+  online(queue, ana, beto);
+  const first = queue.join(ana, MAPAS_RANKED);
+  now += 5000;
+  const changed = queue.join(ana, BANDEIRAS_FRIENDLY);
+  assert.equal(changed.since, first.since, "mudar o que busca não perde o lugar");
+  assert.deepEqual(changed.prefs, BANDEIRAS_FRIENDLY);
+  queue.join(beto, BANDEIRAS_FRIENDLY);
+  assert.equal(queue.leave(ana.id).state, "idle");
+  assert.equal(queue.view(beto.id).state, "waiting");
+  assert.equal(queue.view(beto.id).notice.kind, "opponent-declined");
+}
+// sala da fila desfeita antes de começar (o outro saiu): quem ficou volta ao lugar que tinha
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  const code = matchAnaBeto(queue);
+  const sinceAna = queue.view(ana.id).since; // null: fora da fila, com a sala achada
+  assert.equal(sinceAna, null);
+  rooms.connect(code, ana.id); rooms.connect(code, beto.id);
+  rooms.command(code, beto.id, { type: "leave" });
+  const closed = rooms.view(code, ana.id);
+  assert.equal(closed.phase, "closed");
+  assert.equal(closed.closedReason, "opponent-left", "sala da fila não reabre esperando convite");
+  const back = queue.view(ana.id);
+  assert.equal(back.state, "waiting", "quem ficou volta para a fila");
+  assert.equal(back.notice.kind, "opponent-left");
+  assert.equal(rooms.phaseOf(ana.id), null);
+}
+// quem aceitou e não apareceu na sala: ela não começa sem os dois; passada a tolerância, fecha e o outro volta para a fila
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  const code = matchAnaBeto(queue);
+  rooms.connect(code, ana.id); // o Beto nunca abre a sala
+  now += MATCH_COUNTDOWN_MS; rooms.tick();
+  assert.equal(rooms.view(code, ana.id).phase, "countdown", "sala da fila só começa com os dois conectados");
+  now += GRACE_MS; rooms.tick();
+  assert.equal(rooms.view(code, ana.id).closedReason, "opponent-left");
+  assert.equal(queue.view(ana.id).state, "waiting");
+}
+// os dois somem da sala da fila antes de começar (fecharam o app): a sala fecha e NINGUÉM volta para a fila como fantasma
+// (achado no teste de navegador: o segundo a cair pela tolerância era devolvido à fila e proposto a quem buscasse logo depois)
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  const code = matchAnaBeto(queue);
+  rooms.connect(code, ana.id); rooms.connect(code, beto.id);
+  rooms.disconnect(code, ana.id); rooms.disconnect(code, beto.id);
+  queue.disconnect(ana.id); queue.disconnect(beto.id);
+  now += GRACE_MS + 1; rooms.tick();
+  assert.equal(rooms.view(code, ana.id).closedReason, "opponent-left");
+  assert.equal(queue.size, 0, "ninguém volta para a fila sem estar conectado");
+  queue.connect(caio.id);
+  assert.equal(queue.join(caio, MAPAS_RANKED).state, "waiting", "quem busca depois não recebe proposta de um fantasma");
+}
+// quem ficou conectado na sala, mas já sem o canal da fila, também não volta
+{
+  const { rooms, queue } = makeQueue();
+  online(queue, ana, beto);
+  const code = matchAnaBeto(queue);
+  rooms.connect(code, ana.id); rooms.connect(code, beto.id);
+  queue.disconnect(ana.id);
+  rooms.command(code, beto.id, { type: "leave" });
+  assert.equal(queue.view(ana.id).state, "idle");
+}
+// cada mudança avisa quem ela afeta
+{
+  const { queue } = makeQueue();
+  const touched = [];
+  queue.onChange = (id) => touched.push(id);
+  online(queue, ana, beto);
+  queue.join(ana, MAPAS_RANKED);
+  queue.join(beto, MAPAS_RANKED);
+  assert.ok(touched.includes(ana.id) && touched.includes(beto.id));
+  assert.ok(queue.view(ana.id).rev > 0);
+}
 
 // ───────────── HTTP + SSE de verdade ─────────────
 const registry = new PlayerRegistry(null);
@@ -348,8 +700,8 @@ const call = async (method, path, who, body) => {
   return { status: response.status, body: await response.json() };
 };
 
-/** Abre a conexão SSE e devolve as visões que chegam, com uma espera por condição. */
-async function stream(path, who) {
+/** Abre a conexão SSE e devolve as visões que chegam (do evento `event`: "room" na sala, "queue" no canal do jogador), com uma espera por condição. */
+async function stream(path, who, event = "room") {
   const controller = new AbortController();
   const response = await fetch(`${base}${path}?player=${who.id}&secret=${who.secret}`, { signal: controller.signal });
   assert.equal(response.status, 200);
@@ -369,7 +721,7 @@ async function stream(path, who) {
         while ((cut = buffer.indexOf("\n\n")) >= 0) {
           const block = buffer.slice(0, cut); buffer = buffer.slice(cut + 2);
           const data = block.split("\n").find((line) => line.startsWith("data: "));
-          if (block.includes("event: room") && data) { views.push(JSON.parse(data.slice(6))); for (const waiter of [...waiters]) waiter(); }
+          if (block.includes(`event: ${event}`) && data) { views.push(JSON.parse(data.slice(6))); for (const waiter of [...waiters]) waiter(); }
         }
       }
     } catch { /* fechado */ }
@@ -411,7 +763,8 @@ assert.equal(joined.status, 200);
 assert.equal(joined.body.room.phase, "lobby");
 const guestStream = await stream(`/rooms/${roomCode}/events`, B);
 const lobbyForHost = await hostStream.waitFor((view) => view.phase === "lobby" && view.opponent?.name === "Beto", "o anfitrião vê o amigo chegar");
-assert.equal(lobbyForHost.opponent.rating, 1300);
+assert.equal(lobbyForHost.opponent.rating, PVP_RATING_BASE, "a força vem do servidor (1000 sem duelo valendo), não do que o aparelho mandou (1300)");
+assert.equal(lobbyForHost.opponent.trophies, 1250, "os troféus contra bot são os que o aparelho informou (só para mostrar)");
 assert.ok(lobbyForHost.seed, "no lobby (amigo já dentro) a semente/os modos já aparecem, antes de ficar pronto");
 assert.equal(joined.body.room.seed, lobbyForHost.seed, "a mesma semente para os dois já no lobby");
 assert.equal((await call("POST", `/rooms/${roomCode}/join`, { id: "caio-http-000000000003", secret: "segredo-do-caio-00000000000003" }, { name: "Caio" })).status, 409, "sala cheia");
@@ -443,10 +796,66 @@ assert.equal(finalHost.result.opponent.correct, finalGuest.result.you.correct);
 assert.ok(finalHost.rev > liveView.rev, "cada mudança sobe a revisão");
 const stale = (await call("GET", `/rooms/${roomCode}`, A)).body.room;
 assert.equal(stale.phase, "done", "a visão por GET bate com a do SSE");
+// valendo: o servidor calcula e guarda a força dos dois (Elo, 1000 × 1000, vitória da Ana)
+assert.deepEqual(finalHost.result.rating, { you: { before: 1000, after: 1012 }, opponent: { before: 1000, after: 988 } });
+assert.deepEqual(finalGuest.result.rating.you, { before: 1000, after: 988 });
 
 hostStream.close(); guestStream.close();
+
+// ───────────── perfil no servidor ─────────────
+const meA = (await call("GET", "/me", A)).body.profile;
+assert.equal(meA.name, "Ana", "o último nome usado");
+assert.equal(meA.rating, 1012);
+assert.deepEqual(meA.ranked, { wins: 1, losses: 0, draws: 0 });
+assert.equal((await call("GET", "/me", null)).status, 401);
+const matchesB = (await call("GET", "/me/matches?limit=5", B)).body.matches;
+assert.equal(matchesB.length, 1);
+assert.equal(matchesB[0].code, roomCode);
+assert.equal(matchesB[0].you.outcome, "loss");
+assert.equal(matchesB[0].you.totals.correct, 10);
+assert.equal(matchesB[0].opponent.name, "Ana");
+assert.deepEqual(matchesB[0].you.rating, { before: 1000, after: 988 });
+assert.equal(matchesB[0].seed, finalGuest.seed, "com a semente, o aparelho refaz os dois tempos");
+
+// ───────────── fila por HTTP, com o canal do jogador (SSE /me/events) ─────────────
+const anaChannel = await stream("/me/events", A, "queue");
+const betoChannel = await stream("/me/events", B, "queue");
+await anaChannel.waitFor((view) => view.state === "idle", "canal aberto, fora da fila");
+assert.equal((await call("POST", "/queue", A, { ladder: "xadrez", mode: "ranked" })).status, 400, "escolha inválida");
+const queuedA = await call("POST", "/queue", A, { ladder: "mapas", mode: "friendly", name: "Ana", trophies: 1400 });
+assert.equal(queuedA.status, 200);
+assert.equal(queuedA.body.queue.state, "waiting");
+await call("POST", "/queue", B, { ladder: "mapas", mode: "friendly", name: "Beto" });
+const offerForA = await anaChannel.waitFor((view) => view.state === "offer", "a proposta chega pelo canal");
+assert.equal(offerForA.offer.opponent.name, "Beto");
+assert.equal(offerForA.offer.opponent.rating, 988, "a força do adversário é a do servidor");
+assert.equal((await call("POST", "/queue/offer", A, { id: "x", accept: true })).status, 400, "resposta inválida");
+await call("POST", "/queue/offer", A, { id: offerForA.offer.id, accept: true });
+await call("POST", "/queue/offer", B, { id: offerForA.offer.id, accept: true });
+const matchedB = await betoChannel.waitFor((view) => view.state === "matched", "sala achada");
+const queueRoom = (await call("GET", `/rooms/${matchedB.room}`, A)).body.room;
+assert.equal(queueRoom.origin, "queue");
+assert.equal(queueRoom.phase, "countdown");
+assert.equal((await call("POST", "/queue", A, { ladder: "mapas", mode: "friendly" })).status, 409, "já num duelo: não dá para buscar outro");
+// o convidado sai antes de começar: a sala fecha e a Ana (conectada à sala, como o app faz) volta para a fila; o Beto, que saiu, não fica com a sala na visão dele
+const anaRoomStream = await stream(`/rooms/${matchedB.room}/events`, A);
+await anaRoomStream.waitFor((view) => view.phase === "countdown", "a Ana na sala da fila");
+await call("POST", `/rooms/${matchedB.room}/command`, B, { type: "leave" });
+await anaRoomStream.waitFor((view) => view.phase === "closed" && view.closedReason === "opponent-left", "a sala fecha para a Ana");
+await anaChannel.waitFor((view) => view.state === "waiting" && view.notice?.kind === "opponent-left", "de volta à fila");
+anaRoomStream.close();
+assert.equal((await call("GET", "/queue", B)).body.queue.state, "idle");
+// criar um convite tira da fila
+assert.equal((await call("POST", "/rooms", A, { ladder: "mapas", mode: "friendly", name: "Ana" })).status, 201);
+assert.equal((await call("GET", "/queue", A)).body.queue.state, "idle");
+// e entrar na fila cancela o convite aberto (ainda sem ninguém)
+assert.equal((await call("POST", "/queue", A, { ladder: "bandeiras", mode: "ranked" })).body.queue.state, "waiting");
+assert.equal((await call("POST", "/queue/leave", A)).body.queue.state, "idle");
+assert.equal((await call("GET", "/health")).body.queue, 0);
+
+anaChannel.close(); betoChannel.close();
 await new Promise((resolve) => setTimeout(resolve, 100));
 pvp.dispose();
 await new Promise((resolve) => server.close(resolve));
 
-console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração) e HTTP+SSE — ok");
+console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, HTTP+SSE — ok");
