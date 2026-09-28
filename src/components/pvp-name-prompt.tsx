@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { PLAYER_NAME_MAX } from "../domain/pvp";
+import { useState, type FormEvent } from "react";
+import { NameField } from "./pvp-lobby";
 import { t } from "../domain/i18n";
 
 // Diálogo que aparece na primeira vez que a pessoa clica em "Duelar" (arena do Hub), sem nome ainda salvo: pede o nome por cima do Hub, sem sair
-// dele, e ao confirmar já entra na fila valendo (a mesma ação de quem já tinha nome). Reaproveita o visual do pvp-offer (ChallengeDialog).
+// dele, e ao confirmar já entra na fila valendo (a mesma ação de quem já tinha nome). Reaproveita o visual do pvp-offer (ChallengeDialog) e o
+// campo de nome do convite/fila (NameField, com a mitigação contra o autopreenchimento do Chrome — ver o comentário em pvp-lobby.tsx).
 export function PvpNamePrompt({ busy, error, onConfirm, onCancel }: {
   busy: boolean;
   error: string | null;
@@ -11,8 +12,6 @@ export function PvpNamePrompt({ busy, error, onConfirm, onCancel }: {
   onCancel: () => void;
 }) {
   const [name, setName] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => { inputRef.current?.focus(); }, []);
   const trimmed = name.trim();
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -25,10 +24,7 @@ export function PvpNamePrompt({ busy, error, onConfirm, onCancel }: {
         <strong id="pvp-name-prompt-title" className="pvp-offer-title">{t.pvp.namePrompt.title}</strong>
         <span className="pvp-offer-detail">{t.pvp.namePrompt.detail}</span>
         <form onSubmit={submit}>
-          <label className="pvp-name">
-            <span>{t.pvp.nameLabel}</span>
-            <input ref={inputRef} type="text" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => setName(event.target.value)} autoComplete="off" data-1p-ignore data-lpignore="true" />
-          </label>
+          <NameField name={name} onNameChange={setName} />
           {error && <p className="pvp-error" role="alert">{error}</p>}
           <div className="pvp-offer-actions">
             <button type="submit" className="rs-btn primary" disabled={!trimmed || busy}>{t.pvp.namePrompt.confirm}</button>

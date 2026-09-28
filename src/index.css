@@ -1445,7 +1445,8 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 /* ---- Duelo com amigo (PvP): criar/aceitar convite, lobby e resultado ---- */
 .pvp-card{max-width:460px}
 .pvp-name{display:flex;flex-direction:column;gap:6px;margin:0 0 18px;font-size:13px;color:var(--muted)}
-.pvp-name input{min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:500 15px 'Plus Jakarta Sans',sans-serif}
+.pvp-name input{min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:500 15px 'Plus Jakarta Sans',sans-serif;-webkit-appearance:none;appearance:none}
+.pvp-name input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .pvp-name input:focus-visible{outline:2px solid var(--green);outline-offset:1px}
 .pvp-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px}
 .pvp-modes .pg-chip{flex-direction:column;align-items:flex-start;gap:2px;height:auto;padding:12px 14px;border-radius:14px;text-align:left}
