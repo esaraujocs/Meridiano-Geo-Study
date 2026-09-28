@@ -239,17 +239,23 @@ assert.equal(guardedBad, 0, "com a garantia, nunca");
 assert.ok(sameWhenOneOwned, "quando já havia um modo da pessoa, o sorteio é o mesmo (a garantia não mexe à toa)");
 assert.deepEqual(M.drawLegs("bandeiras", "z", new Set()).map((l) => l.group), M.drawLegs("bandeiras", "z").map((l) => l.group), "sem modo nenhum liberado, nada a garantir");
 
+// um de cada eixo também contra bot (desde 28/09): nunca Capitais clicar + Capitais escrita, nem as duas Silhuetas
+for (let i = 0; i < 3000; i += 1) for (const ladder of ["mapas", "bandeiras"]) for (const owned of [undefined, freeMapas]) {
+  const [a, b] = M.drawLegs(ladder, "eixo" + i, owned);
+  assert.notEqual(M.groupDef(a.group).axis, M.groupDef(b.group).axis, `${ladder}: ${a.group} + ${b.group}`);
+}
+
 // Silhueta e Capitais pesam menos no sorteio de Mapas (2 grupos cada, de 5: Silhueta em 40% dos tempos e 70% dos duelos, Capitais em 51% dos tempos); as Bandeiras seguem parelhas
 assert.equal(M.SILHOUETTE_WEIGHT, 0.25); assert.equal(M.CAPITALS_WEIGHT, 0.5);
 {
   const N = 20000, count = (ladder) => { let legs = 0, duels = 0; const byGroup = {}; for (let i = 0; i < N; i += 1) { const drawn = M.drawLegs(ladder, "w" + i); const sil = drawn.filter((leg) => leg.family === "silhueta").length; legs += sil; if (sil) duels += 1; for (const leg of drawn) byGroup[leg.group] = (byGroup[leg.group] ?? 0) + 1; } return { legs: legs / (2 * N), duels: duels / N, byGroup }; };
   const mapas = count("mapas"), bandeiras = count("bandeiras");
   assert.ok(mapas.legs > 0.20 && mapas.legs < 0.26, "Silhueta em ~23% dos tempos: " + mapas.legs);
-  assert.ok(mapas.duels > 0.40 && mapas.duels < 0.47, "e em ~43% dos duelos de Mapas: " + mapas.duels);
+  assert.ok(mapas.duels > 0.43 && mapas.duels < 0.49, "e em ~46% dos duelos de Mapas (um de cada eixo: nunca as duas Silhuetas): " + mapas.duels);
   const share = (group) => mapas.byGroup[group] / (2 * N);
-  assert.ok(share("mapa") > 0.31 && share("mapa") < 0.38, "o Clicar no mapa, o modo base, é o mais sorteado: " + share("mapa"));
-  for (const group of ["capitais-clique", "capitais-escrita"]) assert.ok(share(group) > 0.19 && share(group) < 0.24, group + " ~21%");
-  assert.ok(share("capitais-clique") + share("capitais-escrita") < 0.47, "Capitais somadas caíram de 51% para ~43% dos tempos");
+  assert.ok(share("mapa") > 0.36 && share("mapa") < 0.41, "o Clicar no mapa, o modo base, é o mais sorteado: " + share("mapa"));
+  for (const group of ["capitais-clique", "capitais-escrita"]) assert.ok(share(group) > 0.17 && share(group) < 0.21, group + " ~19%");
+  assert.ok(share("capitais-clique") + share("capitais-escrita") < 0.41, "Capitais somadas em ~38% dos tempos (eram 51%, depois 43%)");
   for (const group of ["silhueta-opcoes", "silhueta-escrita"]) assert.ok(share(group) > 0.09 && share(group) < 0.14, group + " ~11%");
   for (const group of ["atuais", "escrita-pais", "historicas"]) assert.ok(Math.abs(bandeiras.byGroup[group] / (2 * N) - 1 / 3) < 0.02, "Bandeiras: " + group + " segue com peso igual");
 }

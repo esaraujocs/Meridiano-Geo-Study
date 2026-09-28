@@ -76,14 +76,16 @@ function pickWeighted(groups: readonly ModeGroupDef[], random: () => number) {
   return groups[groups.length - 1];
 }
 
-/** Sorteia os 2 tempos: dois grupos diferentes da escada, com sentido e baralho decididos pela semente.
+/** Sorteia os 2 tempos do duelo contra bot: dois grupos de eixos diferentes da escada (desde 28/09, a mesma regra do duelo entre pessoas), com sentido e
+ *  baralho decididos pela semente.
  * Com `ownedGroups` (duelo contra bot), ao menos um tempo cai num modo que a pessoa tem, quando ela tem algum;
  * sem ele (duelo entre pessoas) o sorteio não depende de quem comprou o quê. */
 export function drawLegs(ladder: Ladder, seed: string, ownedGroups?: ReadonlySet<ModeGroup>): [DuelLeg, DuelLeg] {
   const random = mulberry32(hashSeed(`legs:${ladder}:${seed}`));
   const groups = groupsOfLadder(ladder);
   const first = pickWeighted(groups, random);
-  const rest = groups.filter((item) => item !== first);
+  // um de cada eixo, como no duelo entre pessoas (nunca Capitais clicar + Capitais escrita, nem as duas Silhuetas)
+  const rest = groups.filter((item) => item.axis !== first.axis);
   let second = pickWeighted(rest, random);
   if (ownedGroups && !ownedGroups.has(first.group) && !ownedGroups.has(second.group)) {
     const owned = rest.filter((item) => ownedGroups.has(item.group));
