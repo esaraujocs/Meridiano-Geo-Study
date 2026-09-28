@@ -22,7 +22,8 @@ export function botTrophies(bot: Bot, ladder: Ladder, day: number) {
   return Math.max(leagueFloor(index) + 5, Math.round(leagueFloor(index) + offset + swing));
 }
 
-export type RankRow = { pos: number; id: string; name: string; trophies: number; league: LeagueKey; you: boolean; bot: boolean };
+/** `code`: código de amigo (só no ranking com gente de verdade; abre o perfil). */
+export type RankRow = { pos: number; id: string; name: string; trophies: number; league: LeagueKey; you: boolean; bot: boolean; code?: string };
 
 /** A lista completa, do primeiro ao último: os bots e a pessoa (em empate a pessoa fica na frente). */
 export function leaderboard(ladder: Ladder, trophies: number, day = dayNumber()): RankRow[] {
@@ -35,8 +36,8 @@ export function leaderboard(ladder: Ladder, trophies: number, day = dayNumber())
 
 /** O ranking com gente de verdade: a lista do servidor com a linha da pessoa trocada pelos troféus de agora (os do servidor são os que o aparelho
  *  informou por último). Sem a pessoa na lista (nunca jogou contra pessoas, ou sem conexão), ela entra assim mesmo. */
-export function playersLeaderboard(rows: readonly { name: string; trophies: number; you: boolean }[], trophies: number): RankRow[] {
-  const others = rows.filter((row) => !row.you).map((row, index) => ({ id: `p${index}`, name: row.name, trophies: Math.max(0, Math.round(row.trophies)), league: leagueOf(row.trophies).league, you: false, bot: false }));
+export function playersLeaderboard(rows: readonly { name: string; trophies: number; you: boolean; code?: string }[], trophies: number): RankRow[] {
+  const others = rows.filter((row) => !row.you).map((row, index) => ({ id: `p${index}`, name: row.name, trophies: Math.max(0, Math.round(row.trophies)), league: leagueOf(row.trophies).league, you: false, bot: false, ...(row.code ? { code: row.code } : {}) }));
   const me = { id: "you", name: "", trophies: Math.max(0, Math.round(trophies)), league: leagueOf(trophies).league, you: true, bot: false };
   return [...others, me]
     .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || (a.id < b.id ? -1 : 1))

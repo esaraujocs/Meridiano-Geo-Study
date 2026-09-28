@@ -19,6 +19,8 @@ export type PvpMatchRecord = {
   ladder: Ladder;
   mode: PvpMode;
   opponentName: string;
+  /** Código de amigo do adversário (abre o perfil; só nos duelos gravados desde 28/09). */
+  opponentCode?: string;
   /** Força do adversário no momento do duelo (0 se ele não tinha nenhuma ainda). */
   opponentRating: number;
   youCorrect: number;
@@ -95,7 +97,7 @@ export function pvpRecordFromServer(match: PvpServerMatch): PvpMatchRecord {
   }));
   return {
     id: `${PVP_ID_PREFIX}${match.code}`, code: match.code, at: match.at, ladder: match.ladder, mode: match.mode,
-    opponentName: match.opponent.name, opponentRating: match.opponent.rating?.before ?? 0,
+    opponentName: match.opponent.name, opponentRating: match.opponent.rating?.before ?? 0, ...(match.opponent.code ? { opponentCode: match.opponent.code } : {}),
     youCorrect: match.you.totals.correct, opponentCorrect: match.opponent.totals.correct, totalRounds: LEG_ROUNDS * LEGS,
     outcome: match.you.outcome, tiebreak: match.tiebreak, youForfeited: match.you.totals.forfeited, opponentForfeited: match.opponent.totals.forfeited,
     youMs: match.you.totals.ms, opponentMs: match.opponent.totals.ms,

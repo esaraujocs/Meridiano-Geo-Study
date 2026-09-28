@@ -80,6 +80,8 @@ export type Screen =
   | "pvp-home"
   | "pvp-lobby"
   | "pvp-interlude"
-  | "pvp-result";
+  | "pvp-result"
+  | "friends"
+  | "player";
 
 export type RegionCounts = Record<Region, number>;

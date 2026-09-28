@@ -84,6 +84,9 @@ export class PvpQueue {
 
   // ---- Pedidos do jogador ----
   /** Entra na fila (ou atualiza o que busca, se já estava e não há proposta aberta). */
+  /** O jogador está com o app aberto (canal do jogador ligado)? Vale para mostrar "online" aos amigos. */
+  isOnline(playerId: string) { return (this.presence.get(playerId)?.connections ?? 0) > 0; }
+
   join(player: PlayerInput, prefs: QueuePrefs): PvpQueueView {
     const now = this.now();
     this.matched.delete(player.id);

@@ -11,7 +11,9 @@
 // A força (rating) de cada jogador vem do histórico do servidor (pvp-history.ts); o que o aparelho mandar em `rating` é ignorado.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { isLadder } from "../src/domain/duel-modes.js";
+import { PROFILE_RECENT, isFriendCode, normalizeFriendCode, parseSummary, tallyMatches, type FriendView, type PlayerProfile, type SocialEvent } from "../src/domain/pvp-social.js";
 import { EMPTY_STANDINGS, LEADERBOARD_LIMIT, cleanPlayerName, isPvpMode, isQueuePrefs, isValidRoomCode, normalizeRoomCode, parseCommand, parseOfferResponse, parseStandings, type PvpErrorCode } from "../src/domain/pvp.js";
+import { FriendGraph } from "./pvp-friends.js";
 import { PvpHistory } from "./pvp-history.js";
 import { PvpQueue } from "./pvp-queue.js";
 import { PvpError, type PlayerInput, type PvpRooms } from "./pvp-rooms.js";
@@ -30,6 +32,7 @@ export type PvpHttpOptions = {
   /** Sem fila/histórico explícitos, cada um nasce só na memória (testes). */
   queue?: PvpQueue;
   history?: PvpHistory;
+  friends?: FriendGraph;
   tickMs?: number;
   heartbeatMs?: number;
 };
@@ -39,10 +42,12 @@ export type PvpHttp = {
   dispose: () => void;
   queue: PvpQueue;
   history: PvpHistory;
+  friends: FriendGraph;
 };
 
-export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
+export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, friends: givenFriends, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
   const history = givenHistory ?? new PvpHistory(null);
+  const friends = givenFriends ?? new FriendGraph(null);
   const queue = givenQueue ?? new PvpQueue({ rooms });
   // o placar de cada sala vai para o histórico (que devolve a força antes/depois); sala da fila desfeita antes de começar põe quem ficou de volta na fila
   rooms.onSettle = (match) => history.record(match);
@@ -78,7 +83,37 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     players.setName(playerId, name);
     const declared = body.ladders !== undefined || body.trophies !== undefined;
     if (declared) players.setStandings(playerId, parseStandings(body));
-    return { id: playerId, name, rating: history.ratingOf(playerId), ladders: players.standingsOf(playerId) ?? EMPTY_STANDINGS };
+    return { id: playerId, name, rating: history.ratingOf(playerId), ladders: players.standingsOf(playerId) ?? EMPTY_STANDINGS, code: players.codeOf(playerId) };
+  };
+  const codeOf = (id: string) => players.codeOf(id);
+  /** Outro jogador pelo código de amigo (404 se ninguém tem esse código). */
+  const byCode = (input: unknown) => {
+    const code = normalizeFriendCode(String(input ?? ""));
+    const id = isFriendCode(code) ? players.idOfCode(code) : null;
+    if (!id) throw new PvpError("not_found", "Ninguém com esse código.");
+    return id;
+  };
+  const friendView = (id: string, since: number): FriendView => ({ code: codeOf(id), name: players.nameOf(id) || "Jogador", online: queue.isOnline(id), ladders: players.standingsOf(id), since });
+  const friendsView = (me: string) => {
+    const list = friends.list(me);
+    return { code: codeOf(me), friends: list.friends.map((item) => friendView(item.id, item.since)), incoming: list.incoming.map((item) => friendView(item.id, item.since)), outgoing: list.outgoing.map((item) => friendView(item.id, item.since)) };
+  };
+  /** Avisa um jogador pelo canal dele (se o app estiver aberto). */
+  const sendSocial = (playerId: string, event: SocialEvent) => {
+    for (const res of playerStreams.get(playerId) ?? []) { try { res.write(`event: social\ndata: ${JSON.stringify(event)}\n\n`); } catch { /* fecha sozinho */ } }
+  };
+  const fromOf = (id: string) => ({ code: codeOf(id), name: players.nameOf(id) || "Jogador" });
+  const profileOf = (viewer: string, target: string): PlayerProfile => {
+    const own = history.profileOf(target, "", 0);
+    const between = viewer === target ? [] : history.between(viewer, target, 1000, codeOf);
+    const summary = players.summaryOf(target);
+    return {
+      code: codeOf(target), name: players.nameOf(target) || "Jogador", since: players.createdAtOf(target), online: queue.isOnline(target), friendship: friends.state(viewer, target),
+      ladders: players.standingsOf(target), pvp: { ranked: own.ranked, friendly: own.friendly },
+      headToHead: { ...tallyMatches(between), recent: between.slice(0, PROFILE_RECENT) },
+      recent: history.matchesOf(target, PROFILE_RECENT, codeOf),
+      summary: summary?.summary ?? null, summaryAt: summary?.at ?? null,
+    };
   };
   /** O visitante, se vier com identidade válida (o ranking pode ser visto sem ela, só não marca ninguém como "você"). */
   const optionalViewer = (req: IncomingMessage) => {
@@ -174,11 +209,13 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       const name = cleanPlayerName(body.name);
       if (name) players.setName(playerId, name);
       if (body.ladders !== undefined) players.setStandings(playerId, parseStandings(body));
-      return json(res, 200, { ok: true });
+      const summary = parseSummary(body.summary);
+      if (summary) players.setSummary(playerId, summary);
+      return json(res, 200, { ok: true, code: codeOf(playerId) });
     }
     if (action === "matches" && method === "GET") {
       const limit = Math.max(1, Math.min(200, Math.round(Number(url.searchParams.get("limit") ?? 50)) || 50));
-      return json(res, 200, { matches: history.matchesOf(playerId, limit) });
+      return json(res, 200, { matches: history.matchesOf(playerId, limit, codeOf) });
     }
     throw new PvpError("not_found", "Rota desconhecida.");
   };
@@ -207,6 +244,9 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       const body = (await readJson(req)) as Record<string, unknown>;
       const view = rooms.joinRoom(code, player(playerId, body));
       queue.leave(playerId); // aceitar um convite tira da fila (só depois de entrar: um convite recusado não tira ninguém da fila)
+      // aceitar um convite por link já vira amizade (decisão do Enzo, 28/09); o anfitrião fica sabendo pelo canal dele
+      const seats = rooms.seatsOf(code);
+      if (seats?.origin === "invite" && friends.link(seats.host, playerId)) sendSocial(seats.host, { kind: "accepted", from: fromOf(playerId), at: Date.now() });
       return json(res, 200, { room: view });
     }
     if (action === "command" && method === "POST") {
@@ -220,6 +260,45 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     throw new PvpError("not_found", "Rota desconhecida.");
   };
 
+  const routeFriends = async (req: IncomingMessage, res: ServerResponse, parts: string[], method: string) => {
+    const me = authenticateHeaders(req);
+    const action = parts[1];
+    if (!action && method === "GET") return json(res, 200, { friends: friendsView(me) });
+    if (method !== "POST") throw new PvpError("not_found", "Rota desconhecida.");
+    const body = (await readJson(req)) as Record<string, unknown>;
+    // o nome vem junto (o aviso ao outro já sai com ele, mesmo de quem ainda não mandou o perfil)
+    const name = cleanPlayerName(body.name);
+    if (name) players.setName(me, name);
+    const other = byCode(body.code);
+    if (!action) {
+      // pedir amizade (por código, depois de um duelo, pelo perfil); se o outro já tinha pedido, vira amizade na hora
+      const result = friends.request(me, other);
+      if (result === "self") throw new PvpError("bad_request", "Esse é o seu próprio código.");
+      if (result === "full") throw new PvpError("too_many", "Limite de amigos ou de pedidos.");
+      if (result === "sent") sendSocial(other, { kind: "request", from: fromOf(me), at: Date.now() });
+      if (result === "accepted") sendSocial(other, { kind: "accepted", from: fromOf(me), at: Date.now() });
+      return json(res, 200, { result, friends: friendsView(me) });
+    }
+    if (action === "respond") {
+      const accept = body.accept === true;
+      if (!friends.respond(me, other, accept)) throw new PvpError("not_found", "Pedido não encontrado.");
+      if (accept) sendSocial(other, { kind: "accepted", from: fromOf(me), at: Date.now() });
+      return json(res, 200, { friends: friendsView(me) });
+    }
+    if (action === "remove") { friends.remove(me, other); return json(res, 200, { friends: friendsView(me) }); }
+    if (action === "challenge") {
+      // desafio direto a um amigo com o app aberto: cria o convite de sempre e avisa o amigo na hora
+      if (!isLadder(body.ladder) || !isPvpMode(body.mode)) throw new PvpError("bad_request", "Escolha a escada e o modo do duelo.");
+      if (!friends.areFriends(me, other)) throw new PvpError("forbidden", "Só dá para desafiar amigos.");
+      if (!queue.isOnline(other)) throw new PvpError("wrong_phase", "Seu amigo não está com o app aberto.");
+      queue.leave(me);
+      const room = rooms.createRoom(player(me, body), { ladder: body.ladder, mode: body.mode });
+      sendSocial(other, { kind: "challenge", from: fromOf(me), at: Date.now(), room: room.code, ladder: body.ladder, mode: body.mode });
+      return json(res, 201, { room });
+    }
+    throw new PvpError("not_found", "Rota desconhecida.");
+  };
+
   const route = async (req: IncomingMessage, res: ServerResponse, url: URL) => {
     const path = url.pathname.slice(BASE.length).replace(/\/+$/, "") || "/";
     const parts = path.split("/").filter(Boolean); // ["rooms", "ABC234", "join"]
@@ -228,6 +307,8 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (parts[0] === "rooms") return routeRooms(req, res, parts, method, url);
     if (parts[0] === "queue") return routeQueue(req, res, parts, method);
     if (parts[0] === "me") return routeMe(req, res, parts, method, url);
+    if (parts[0] === "friends") return routeFriends(req, res, parts, method);
+    if (parts[0] === "players" && parts.length === 2 && method === "GET") return json(res, 200, { profile: profileOf(authenticateHeaders(req), byCode(parts[1])) });
     if (path === "/leaderboard" && method === "GET") {
       const ladder = url.searchParams.get("ladder");
       if (!isLadder(ladder)) throw new PvpError("bad_request", "Escada inválida.");
@@ -266,5 +347,6 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     },
     queue,
     history,
+    friends,
   };
 }

@@ -2,6 +2,7 @@
 // Toca localStorage, fetch e EventSource: só funciona no navegador (não em scripts/test-pvp.mjs, que testa o servidor puro).
 import type { LadderStandings, LeaderboardRow, PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
 import type { Ladder } from "./duel-modes.js";
+import { isSocialEvent, type FriendsView, type PlayerProfile, type PlayerSummary, type SocialEvent } from "./pvp-social.js";
 
 const BASE = "/api/pvp";
 const ID_KEY = "carta-pvp-id";
@@ -37,7 +38,7 @@ export function hasPvpIdentity(): boolean {
 export function pvpName(): string { try { return localStorage.getItem(NAME_KEY) ?? ""; } catch { return ""; } }
 export function setPvpName(name: string) { try { localStorage.setItem(NAME_KEY, name.slice(0, 20)); } catch { /* sem armazenamento */ } }
 
-type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[] };
+type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView | PlayerProfile; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[]; friends?: FriendsView; result?: string };
 
 async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<Payload> {
   let response: Response;
@@ -114,10 +115,40 @@ export async function pvpProfile(): Promise<PvpProfileView> {
   const { profile } = await request("GET", "/me", requireIdentity());
   return profile as PvpProfileView;
 }
-/** Informa nome e onde a pessoa está nas escadas (o ranking do servidor sai disto). Só para quem já tem identidade: não registra ninguém à toa. */
-export async function pvpSendProfile(name: string, ladders: LadderStandings): Promise<void> {
+
+// ---- Amigos e perfil de jogador (identidade criada na hora, se ainda não existe: abrir Amigos é usar o duelo com pessoas) ----
+export async function pvpFriends(): Promise<FriendsView> {
+  const { friends } = await request("GET", "/friends", requireIdentity());
+  return friends as FriendsView;
+}
+/** Pede amizade pelo código; se o outro já tinha pedido, vira amizade na hora. */
+export async function pvpFriendRequest(code: string, name = ""): Promise<{ result: string; friends: FriendsView }> {
+  const { result, friends } = await request("POST", "/friends", requireIdentity(), { code, ...(name.trim() ? { name: name.trim() } : {}) });
+  return { result: result ?? "sent", friends: friends as FriendsView };
+}
+export async function pvpFriendRespond(code: string, accept: boolean, name = ""): Promise<FriendsView> {
+  const { friends } = await request("POST", "/friends/respond", requireIdentity(), { code, accept, ...(name.trim() ? { name: name.trim() } : {}) });
+  return friends as FriendsView;
+}
+/** Desfaz a amizade ou cancela um pedido. */
+export async function pvpFriendRemove(code: string): Promise<FriendsView> {
+  const { friends } = await request("POST", "/friends/remove", requireIdentity(), { code });
+  return friends as FriendsView;
+}
+/** Desafia um amigo com o app aberto: cria o convite (você é o anfitrião) e o servidor avisa o amigo na hora. */
+export async function pvpChallenge(code: string, ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings): Promise<PvpRoomView> {
+  const { room } = await request("POST", "/friends/challenge", requireIdentity(), { code, ladder, mode, name, ladders });
+  return room as PvpRoomView;
+}
+/** O perfil de um jogador pelo código de amigo (o próprio também). */
+export async function pvpPlayer(code: string): Promise<PlayerProfile> {
+  const { profile } = await request("GET", `/players/${encodeURIComponent(code)}`, requireIdentity());
+  return profile as PlayerProfile;
+}
+/** Informa nome, onde a pessoa está nas escadas (o ranking sai disto) e o resumo do perfil. Só para quem já tem identidade: não registra ninguém à toa. */
+export async function pvpSendProfile(name: string, ladders: LadderStandings, summary?: PlayerSummary): Promise<void> {
   if (!hasPvpIdentity()) return;
-  await request("POST", "/me/profile", requireIdentity(), { ...(name.trim() ? { name: name.trim() } : {}), ladders });
+  await request("POST", "/me/profile", requireIdentity(), { ...(name.trim() ? { name: name.trim() } : {}), ladders, ...(summary ? { summary } : {}) });
 }
 /** O ranking de uma escada, só com gente de verdade (sem identidade, ninguém sai marcado como "você"). */
 export async function pvpLeaderboard(ladder: Ladder): Promise<LeaderboardRow[]> {
@@ -130,13 +161,17 @@ export async function pvpServerMatches(limit = 100): Promise<PvpServerMatch[]> {
   return matches ?? [];
 }
 
-/** O canal do jogador (SSE /me/events): a visão da fila a cada mudança. Enquanto ele está aberto, o servidor sabe que o app está aberto. */
-export function pvpSubscribeQueue(onView: (view: PvpQueueView) => void, onError?: (error: unknown) => void): () => void {
+/** O canal do jogador (SSE /me/events): a visão da fila a cada mudança e os avisos de amizade/desafio. Enquanto ele está aberto, o servidor sabe
+ *  que o app está aberto (a fila vale e os amigos veem "online"). */
+export function pvpSubscribeQueue(onView: (view: PvpQueueView) => void, onError?: (error: unknown) => void, onSocial?: (event: SocialEvent) => void): () => void {
   const identity = pvpIdentity();
   if (!identity) { onError?.(new PvpClientError("network", "Sem armazenamento neste navegador.")); return () => undefined; }
   const source = new EventSource(`${BASE}/me/events?player=${encodeURIComponent(identity.id)}&secret=${encodeURIComponent(identity.secret)}`);
   source.addEventListener("queue", (event) => {
     try { onView(JSON.parse((event as MessageEvent).data)); } catch (error) { onError?.(error); }
+  });
+  source.addEventListener("social", (event) => {
+    try { const data: unknown = JSON.parse((event as MessageEvent).data); if (isSocialEvent(data)) onSocial?.(data); } catch (error) { onError?.(error); }
   });
   source.onerror = () => onError?.(new PvpClientError("network", "A conexão com a fila caiu; tentando de novo…"));
   return () => source.close();

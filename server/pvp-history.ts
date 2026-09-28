@@ -88,10 +88,16 @@ export class PvpHistory {
     return { name, rating: stats?.rating ?? PVP_RATING_BASE, ranked: { ...(stats?.ranked ?? emptyTally()) }, friendly: { ...(stats?.friendly ?? emptyTally()) }, since };
   }
 
-  /** Os duelos de um jogador, do mais novo para o mais velho, do ponto de vista dele (sem o id do adversário). */
-  matchesOf(id: string, limit = 50): PvpServerMatch[] {
+  /** Os duelos de um jogador, do mais novo para o mais velho, do ponto de vista dele (sem o id do adversário; `codeOf` dá o código de amigo de cada lado). */
+  matchesOf(id: string, limit = 50, codeOf: (id: string) => string = () => ""): PvpServerMatch[] {
     const entries = this.stats.get(id)?.entries ?? [];
-    return entries.slice(-Math.max(0, limit)).reverse().map((entry) => matchView(entry, id));
+    return entries.slice(-Math.max(0, limit)).reverse().map((entry) => matchView(entry, id, codeOf));
+  }
+
+  /** Os duelos entre dois jogadores, do mais novo para o mais velho, do ponto de vista de `me`. */
+  between(me: string, other: string, limit = 1000, codeOf: (id: string) => string = () => ""): PvpServerMatch[] {
+    const entries = (this.stats.get(me)?.entries ?? []).filter((entry) => entry.a.id === other || entry.b.id === other);
+    return entries.slice(-Math.max(0, limit)).reverse().map((entry) => matchView(entry, me, codeOf));
   }
 
   /** Grava um duelo terminado e devolve a força antes/depois dos dois lados (null no amistoso). A sala chama uma vez, ao fechar o placar. */
@@ -137,9 +143,12 @@ export class PvpHistory {
   }
 }
 
-function matchView(entry: Entry, id: string): PvpServerMatch {
+function matchView(entry: Entry, id: string, codeOf: (id: string) => string = () => ""): PvpServerMatch {
   const mine = entry.a.id === id;
-  const side = (value: SettledSide, rating: RatingChange | null): PvpMatchSide => ({ name: value.name, totals: value.totals, outcome: value.outcome, rating });
+  const side = (value: SettledSide, rating: RatingChange | null): PvpMatchSide => {
+    const code = codeOf(value.id);
+    return { name: value.name, totals: value.totals, outcome: value.outcome, rating, ...(code ? { code } : {}) };
+  };
   const a = side(entry.a, entry.ratingA), b = side(entry.b, entry.ratingB);
   return { code: entry.code, at: entry.at, origin: entry.origin, ladder: entry.ladder, mode: entry.mode, seed: entry.seed, tiebreak: entry.tiebreak, you: mine ? a : b, opponent: mine ? b : a };
 }

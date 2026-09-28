@@ -15,6 +15,8 @@ import { PlayerRegistry } from "../.tmp-pvp/server/pvp-players.js";
 import { PvpHistory } from "../.tmp-pvp/server/pvp-history.js";
 import { PvpQueue } from "../.tmp-pvp/server/pvp-queue.js";
 import { createPvpHttp } from "../.tmp-pvp/server/pvp-http.js";
+import { FriendGraph } from "../.tmp-pvp/server/pvp-friends.js";
+import { isFriendCode, isSocialEvent, parseSummary, tallyMatches, winRate } from "../.tmp-pvp/src/domain/pvp-social.js";
 
 // ───────────── regras puras ─────────────
 assert.ok(isValidRoomCode("K7Q2MP") && !isValidRoomCode("K7Q2M") && !isValidRoomCode("K7Q2M0") && !isValidRoomCode("k7q2mp") && !isValidRoomCode(null), "código: 6 letras do alfabeto sem I, O, 0 e 1");
@@ -444,7 +446,12 @@ const matchOf = (code, mode, a, b, at) => ({ code, at, origin: "queue", ladder: 
   assert.equal(again.loadedVersion, 2, "já no formato novo: não migra de novo");
   assert.equal(again.nameOf(enzo), "Enzo");
   assert.deepEqual(again.standingsOf(enzo), standings(640, 120, 700, 150), "troféus e MMR por escada sobrevivem ao reinício");
-  assert.deepEqual(again.leaderboard("bandeiras", 10, enzo), [{ name: "Enzo", trophies: 120, you: true }]);
+  const enzoCode = again.codeOf(enzo);
+  assert.ok(isFriendCode(enzoCode), "código de amigo sorteado na primeira vez");
+  assert.deepEqual(again.leaderboard("bandeiras", 10, enzo), [{ name: "Enzo", trophies: 120, you: true, code: enzoCode }]);
+  again.flush();
+  assert.equal(new PlayerRegistry(file).codeOf(enzo), enzoCode, "o código de amigo não muda depois de reiniciar");
+  assert.equal(new PlayerRegistry(file).idOfCode(enzoCode), enzo);
   assert.equal(again.createdAtOf(enzo), 1000);
   assert.deepEqual(JSON.parse(readFileSync(backup, "utf8")), v1, "a cópia do original não é tocada de novo");
   writeFileSync(file, "{isto não é json");
@@ -712,6 +719,61 @@ const WAIT = 15000;
   assert.ok(queue.view(ana.id).rev > 0);
 }
 
+// ───────────── amizades (estado puro, com arquivo) ─────────────
+{
+  let clock = 1000;
+  const graph = new FriendGraph(null, () => clock);
+  assert.equal(graph.request("a", "a"), "self");
+  assert.equal(graph.request("a", "b"), "sent");
+  assert.equal(graph.request("a", "b"), "sent", "pedir de novo não duplica");
+  assert.deepEqual([graph.state("a", "b"), graph.state("b", "a"), graph.state("a", "c"), graph.state("a", "a")], ["outgoing", "incoming", "none", "self"]);
+  assert.deepEqual(graph.list("b").incoming.map((item) => item.id), ["a"]);
+  assert.equal(graph.respond("b", "c", true), false, "sem pedido, nada a responder");
+  clock = 2000;
+  assert.equal(graph.respond("b", "a", true), true);
+  assert.deepEqual([graph.state("a", "b"), graph.state("b", "a")], ["friends", "friends"]);
+  assert.deepEqual(graph.list("a").friends, [{ id: "b", since: 2000 }]);
+  assert.equal(graph.request("a", "b"), "already");
+  // pedido cruzado vira amizade na hora
+  graph.request("c", "a");
+  assert.equal(graph.request("a", "c"), "accepted", "os dois pediram: amigos");
+  // recusar, cancelar e desfazer
+  graph.request("d", "a");
+  assert.equal(graph.respond("a", "d", false), true);
+  assert.equal(graph.state("a", "d"), "none", "recusado some");
+  graph.request("a", "e");
+  assert.equal(graph.remove("a", "e"), true, "cancelar o pedido enviado");
+  assert.equal(graph.state("e", "a"), "none");
+  assert.equal(graph.remove("a", "b"), true, "desfazer a amizade");
+  assert.equal(graph.state("a", "b"), "none");
+  assert.equal(graph.link("a", "b"), true, "convite por link: amizade direta");
+  assert.equal(graph.link("b", "a"), false, "já eram");
+  // sobrevive ao reinício
+  const dir = mkdtempSync(join(tmpdir(), "pvp-friends-"));
+  const file = join(dir, "friends.json");
+  const saved = new FriendGraph(file, () => clock);
+  saved.link("x", "y"); saved.request("z", "x");
+  saved.flush();
+  const again = new FriendGraph(file, () => clock);
+  assert.deepEqual([again.state("x", "y"), again.state("x", "z")], ["friends", "incoming"]);
+  writeFileSync(file, "{quebrado");
+  assert.equal(new FriendGraph(file, () => clock).state("x", "y"), "none", "arquivo ilegível: começa vazio");
+  assert.ok(readdirSync(dir).some((name) => name.includes("ilegivel")), "e o arquivo fica guardado ao lado");
+  rmSync(dir, { recursive: true, force: true });
+}
+// resumo do perfil e placar
+{
+  assert.equal(parseSummary(null), null);
+  const summary = parseSummary({ level: 0, xp: -5, mastery: 250, dominated: 12.4, rounds: "900", collection: { discovered: 40, total: 262 }, achievements: { unlocked: 9 }, botDuels: { wins: 3 } });
+  assert.deepEqual(summary, { level: 1, xp: 0, mastery: 100, dominated: 12, rounds: 900, sessions: 0, collection: { discovered: 40, total: 262 }, achievements: { unlocked: 9, total: 0 }, botDuels: { wins: 3, losses: 0, draws: 0 } });
+  const tally = tallyMatches([{ mode: "ranked", you: { outcome: "win" } }, { mode: "ranked", you: { outcome: "loss" } }, { mode: "friendly", you: { outcome: "draw" } }]);
+  assert.deepEqual(tally, { ranked: { wins: 1, losses: 1, draws: 0 }, friendly: { wins: 0, losses: 0, draws: 1 } });
+  assert.deepEqual([winRate(tally.ranked), winRate({ wins: 0, losses: 0, draws: 0 }), winRate({ wins: 2, losses: 1, draws: 1 })], [50, null, 63]);
+  assert.ok(isSocialEvent({ kind: "challenge", from: { code: "ABCDEF", name: "Ana" }, at: 1, room: "K7Q2MP", ladder: "mapas", mode: "ranked" }));
+  assert.ok(!isSocialEvent({ kind: "challenge", from: { code: "ABCDEF", name: "Ana" }, at: 1, ladder: "mapas", mode: "ranked" }), "desafio sem sala");
+  assert.ok(isFriendCode("K7Q2MP") && !isFriendCode("K7Q2M0"));
+}
+
 // ───────────── HTTP + SSE de verdade ─────────────
 const registry = new PlayerRegistry(null);
 assert.equal(registry.authenticate("id-curto", "segredo-curto"), false, "id e segredo fora do formato");
@@ -887,12 +949,65 @@ assert.equal((await call("POST", "/queue", A, { ladder: "bandeiras", mode: "rank
 assert.equal((await call("POST", "/queue/leave", A)).body.queue.state, "idle");
 assert.equal((await call("GET", "/health")).body.queue, 0);
 
+// ───────────── amigos e perfil ─────────────
+{
+  const C = { id: "caio-http-000000000003", secret: "segredo-do-caio-00000000000003" };
+  // a Ana e o Beto viraram amigos quando o Beto aceitou o convite por link, lá em cima
+  const anaFriends = (await call("GET", "/friends", A)).body.friends;
+  assert.ok(isFriendCode(anaFriends.code), "cada um tem um código de amigo");
+  assert.deepEqual(anaFriends.friends.map((friend) => friend.name), ["Beto"], "aceitar convite por link vira amizade");
+  const betoCode = anaFriends.friends[0].code;
+  assert.equal((await call("GET", "/friends", null)).status, 401);
+  // o Caio pede amizade à Ana pelo código; ela recebe o aviso na hora
+  const anaSocial = await stream("/me/events", A, "social");
+  const caioFriends = (await call("GET", "/friends", C)).body.friends;
+  assert.equal((await call("POST", "/friends", C, { code: "ZZZZZZ" })).status, 404, "código de ninguém");
+  assert.equal((await call("POST", "/friends", C, { code: caioFriends.code })).status, 400, "o próprio código");
+  const sent = await call("POST", "/friends", C, { code: anaFriends.code.toLowerCase() });
+  assert.deepEqual([sent.status, sent.body.result, sent.body.friends.outgoing.map((item) => item.name)], [200, "sent", ["Ana"]], "o código aceita minúsculas");
+  const request = await anaSocial.waitFor((event) => event.kind === "request", "pedido chega pelo canal");
+  assert.equal(request.from.code, caioFriends.code);
+  const incoming = (await call("GET", "/friends", A)).body.friends.incoming;
+  assert.deepEqual(incoming.map((item) => item.code), [caioFriends.code]);
+  const accepted = await call("POST", "/friends/respond", A, { code: caioFriends.code, accept: true });
+  assert.deepEqual(accepted.body.friends.friends.map((friend) => friend.code).sort(), [betoCode, caioFriends.code].sort());
+  assert.equal((await call("POST", "/friends/respond", A, { code: caioFriends.code, accept: true })).status, 404, "pedido já respondido");
+  // online: a Ana está com o canal aberto, o Caio não
+  const caioView = (await call("GET", "/friends", C)).body.friends;
+  assert.equal(caioView.friends.find((friend) => friend.name === "Ana").online, true);
+  // desafio direto: só amigo online; a Ana recebe o convite pelo canal
+  assert.equal((await call("POST", "/friends/challenge", A, { code: caioFriends.code, ladder: "mapas", mode: "ranked" })).status, 409, "amigo sem o app aberto");
+  const challenge = await call("POST", "/friends/challenge", C, { code: anaFriends.code, ladder: "bandeiras", mode: "friendly", name: "Caio" });
+  assert.equal(challenge.status, 201);
+  const challengeEvent = await anaSocial.waitFor((event) => event.kind === "challenge", "desafio chega pelo canal");
+  assert.deepEqual([challengeEvent.room, challengeEvent.ladder, challengeEvent.mode, challengeEvent.from.name], [challenge.body.room.code, "bandeiras", "friendly", "Caio"]);
+  assert.equal((await call("POST", "/friends/challenge", C, { code: betoCode, ladder: "mapas", mode: "ranked" })).status, 403, "só amigos");
+  await call("POST", `/rooms/${challenge.body.room.code}/command`, C, { type: "leave" });
+  // perfil: a Ana vê o Beto (o duelo valendo lá de cima está no confronto direto)
+  await call("POST", "/me/profile", B, { summary: { level: 7, xp: 2400, mastery: 31, dominated: 20, rounds: 800, sessions: 60, collection: { discovered: 120, total: 262 }, achievements: { unlocked: 12, total: 49 }, botDuels: { wins: 5, losses: 4, draws: 0 } } });
+  const profile = (await call("GET", `/players/${betoCode}`, A)).body.profile;
+  assert.deepEqual([profile.name, profile.friendship, profile.online, profile.summary.level, profile.summary.collection.discovered], ["Beto", "friends", true, 7, 120], "o Beto está com o canal da fila aberto: online");
+  assert.deepEqual(profile.headToHead.ranked, { wins: 1, losses: 0, draws: 0 }, "do ponto de vista de quem pergunta");
+  assert.equal(profile.headToHead.recent[0].opponent.code, betoCode, "os duelos trazem o código de amigo dos dois lados");
+  assert.deepEqual(profile.pvp.ranked, { wins: 0, losses: 1, draws: 0 }, "o placar do Beto contra todo mundo");
+  assert.equal(profile.recent[0].you.name, "Beto", "os duelos recentes do perfil são do ponto de vista dele");
+  const own = (await call("GET", `/players/${anaFriends.code}`, A)).body.profile;
+  assert.deepEqual([own.friendship, own.headToHead.recent.length], ["self", 0]);
+  assert.equal((await call("GET", `/players/${betoCode}`, null)).status, 401, "perfil só com identidade");
+  assert.equal((await call("GET", "/players/ZZZZZZ", A)).status, 404);
+  // desfazer a amizade
+  assert.deepEqual((await call("POST", "/friends/remove", A, { code: caioFriends.code })).body.friends.friends.map((friend) => friend.code), [betoCode]);
+  assert.equal((await call("GET", `/players/${caioFriends.code}`, A)).body.profile.friendship, "none");
+  anaSocial.close();
+}
+
 // ───────────── onde cada um está nas escadas e o ranking (só gente de verdade) ─────────────
 assert.equal((await call("POST", "/me/profile", null, {})).status, 401);
 assert.equal((await call("POST", "/me/profile", A, { name: "Ana", ladders: { mapas: { trophies: 700, mmr: 750 }, bandeiras: { trophies: 90, mmr: 100 } } })).status, 200);
 await call("POST", "/me/profile", B, { ladders: { mapas: { trophies: 900, mmr: 880 }, bandeiras: { trophies: 20, mmr: 20 } } });
 const boardA = (await call("GET", "/leaderboard?ladder=mapas", A)).body.leaderboard;
 assert.deepEqual(boardA.map((row) => [row.name, row.trophies, row.you]), [["Beto", 900, false], ["Ana", 700, true]], "do mais alto ao mais baixo, com você marcado");
+assert.ok(boardA.every((row) => isFriendCode(row.code)), "cada linha traz o código de amigo (abre o perfil)");
 const boardAnon = (await call("GET", "/leaderboard?ladder=bandeiras")).body.leaderboard;
 assert.deepEqual(boardAnon.map((row) => [row.name, row.trophies, row.you]), [["Ana", 90, false], ["Beto", 20, false]], "sem identidade dá para ver, sem ninguém marcado");
 assert.equal((await call("GET", "/leaderboard?ladder=mapas", { id: A.id, secret: "segredo-errado-do-ana-0000000001" })).body.leaderboard.some((row) => row.you), false, "segredo errado não marca ninguém");
@@ -907,4 +1022,4 @@ await new Promise((resolve) => setTimeout(resolve, 100));
 pvp.dispose();
 await new Promise((resolve) => server.close(resolve));
 
-console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, troféus por escada e ranking, HTTP+SSE — ok");
+console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, troféus por escada e ranking, amigos e perfil, HTTP+SSE — ok");

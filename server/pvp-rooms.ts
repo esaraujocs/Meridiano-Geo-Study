@@ -14,7 +14,7 @@ export class PvpError extends Error {
 
 /** Quem entra numa sala. A força (`rating`) vem do perfil guardado no servidor; troféus e MMR das duas escadas são os que o aparelho informou
  *  (a sala mostra os da escada dela; com a troca de escada da fila, a escada só se sabe na hora de criar a sala). */
-export type PlayerInput = { id: string; name: string; rating: number; ladders: LadderStandings };
+export type PlayerInput = { id: string; name: string; rating: number; ladders: LadderStandings; code?: string };
 type Seat = PlayerInput & { trophies: number; mmr: number; ready: boolean; connections: number; disconnectedAt: number | null; forfeited: boolean; legs: RoundReport[][] };
 type Settled = { host: SideTotals; guest: SideTotals; hostOutcome: PvpOutcome; guestOutcome: PvpOutcome; tiebreak: boolean; rating: { host: RatingChange; guest: RatingChange } | null };
 type Room = {
@@ -24,7 +24,7 @@ type Room = {
 export type PvpRoomsOptions = { now?: () => number; random?: () => number; countdownMs?: number; graceMs?: number; matchCountdownMs?: number };
 
 const newSeat = (player: PlayerInput, ladder: Ladder): Seat => ({
-  id: player.id, name: cleanPlayerName(player.name) || "Jogador", rating: clampNumber(player.rating, 0, 9999), ladders: player.ladders,
+  id: player.id, name: cleanPlayerName(player.name) || "Jogador", rating: clampNumber(player.rating, 0, 9999), ladders: player.ladders, code: player.code ?? "",
   trophies: clampNumber(player.ladders?.[ladder]?.trophies, 0, 99999), mmr: clampNumber(player.ladders?.[ladder]?.mmr, 0, 99999), ready: false, connections: 0, disconnectedAt: null, forfeited: false, legs: Array.from({ length: LEGS }, () => []) });
 function clampNumber(value: unknown, min: number, max: number) { const n = Number(value); return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.round(n))) : min; }
 
@@ -55,6 +55,11 @@ export class PvpRooms {
   has(code: string) { return this.rooms.has(code); }
   /** A sala em que o jogador está (aberta ou em jogo), se houver. */
   roomCodeOf(playerId: string) { return this.roomOf.get(playerId) ?? null; }
+  /** Quem está na sala (ids) e de onde ela veio; null se ela não existe. */
+  seatsOf(code: string): { origin: PvpRoomOrigin; host: string; guest: string | null } | null {
+    const room = this.rooms.get(code);
+    return room ? { origin: room.origin, host: room.host.id, guest: room.guest?.id ?? null } : null;
+  }
   /** A fase da sala em que o jogador está agora (null se não está em nenhuma; salas encerradas já soltaram os jogadores). */
   phaseOf(playerId: string): PvpPhase | null {
     const code = this.roomOf.get(playerId);
@@ -254,7 +259,7 @@ export class PvpRooms {
       // só se ainda estiver conectado: se os dois sumiram (fecharam o app), o segundo não pode voltar à fila como fantasma e ser proposto a alguém.
       const remaining = this.opponentOf(room, seat);
       this.close(room, "opponent-left");
-      if (remaining && remaining.connections > 0) { try { this.onQueueRoomLeft(room.code, { id: remaining.id, name: remaining.name, rating: remaining.rating, ladders: remaining.ladders }); } catch (error) { console.error("[pvp] não deu para voltar à fila:", error); } }
+      if (remaining && remaining.connections > 0) { try { this.onQueueRoomLeft(room.code, { id: remaining.id, name: remaining.name, rating: remaining.rating, ladders: remaining.ladders, code: remaining.code }); } catch (error) { console.error("[pvp] não deu para voltar à fila:", error); } }
       return;
     }
     if (room.phase === "lobby" || room.phase === "countdown") {
@@ -306,7 +311,7 @@ export class PvpRooms {
   }
 
   private playerView(seat: Seat): PvpPlayerView {
-    return { name: seat.name, rating: seat.rating, trophies: seat.trophies, mmr: seat.mmr, ready: seat.ready, connected: seat.connections > 0 || seat.disconnectedAt === null, forfeited: seat.forfeited, legs: seat.legs.map((rounds) => rounds.map((round) => ({ ...round }))) };
+    return { name: seat.name, code: seat.code ?? "", rating: seat.rating, trophies: seat.trophies, mmr: seat.mmr, ready: seat.ready, connected: seat.connections > 0 || seat.disconnectedAt === null, forfeited: seat.forfeited, legs: seat.legs.map((rounds) => rounds.map((round) => ({ ...round }))) };
   }
 
   private viewOf(room: Room, playerId: string): PvpRoomView {
