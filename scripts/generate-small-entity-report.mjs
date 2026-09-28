@@ -212,6 +212,21 @@ for (const id of playableIds) {
   });
 }
 
+// Ilhas divididas (São Martinho: 534 e 663): nos tiles as duas metades são a ilha inteira, então o ponto calculado acima cai no mesmo lugar para as duas.
+// O contorno de verdade de cada metade vem de public/data/split-islands.geojson (npm run build:split-islands); o marcador vai para dentro da própria metade.
+const splitData = JSON.parse(await readFile("public/data/split-islands.geojson", "utf8"));
+for (const feature of splitData.features) {
+  const marker = markers.find((item) => item.properties.carta_id === feature.properties.carta_id);
+  if (!marker) continue;
+  const part = polygonsOf(feature.geometry)
+    .filter((polygon) => polygon[0]?.length >= 3)
+    .map((polygon) => ({ outer: polygon[0], holes: polygon.slice(1), area: ringArea(polygon[0]) }))
+    .sort((a, b) => b.area - a.area)[0];
+  if (!part) throw new Error(`${feature.properties.carta_id}: ilha dividida sem polígono válido.`);
+  const [slon, slat] = interiorPoint(part.outer, part.holes);
+  marker.geometry.coordinates = [Number(slon.toFixed(5)), Number(slat.toFixed(5))];
+}
+
 // Territórios absorvidos (Guadalupe, Martinica, Reunião...): não são alvo nem estão nos tiles;
 // vêm de public/data/absorbed-territories.geojson (npm run build:absorbed). O clique vale pelo
 // soberano (answer_id) e o marcador segue o mesmo critério de tamanho das demais entidades.

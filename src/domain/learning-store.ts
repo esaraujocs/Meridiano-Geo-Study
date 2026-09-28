@@ -7,6 +7,7 @@ import {
 import {
   mergeProgressRecord,
   masteryForProgress,
+  parentCardCredit,
   type LearningColumn,
   type ProgressRecord,
 } from "./learning-rules";
@@ -139,6 +140,8 @@ export async function startLearningSession(input: {
   onRound?: (round: LearningRound) => void;
   /** Multiplica as moedas da sessão (1 = normal; o duelo amistoso entre pessoas paga menos). */
   coinFactor?: number;
+  /** Nação → carta mãe (`cardParentsOf`): o acerto de uma nação no mapa também credita a carta do Reino Unido, que o mapa não pergunta. */
+  cardParents?: Readonly<Record<string, string>>;
 }): Promise<LearningSessionHandle> {
   const database = await openDatabase();
   const idle = (): LearningSessionHandle => {
@@ -269,9 +272,17 @@ export async function startLearningSession(input: {
               const merged = mergeProgressRecord(existing, round.targetId, column, round.correct, round.answeredAt);
               progress.put(merged);
               const before = existing?.mastery ?? 0;
-              const promotions = merged.mastery > before && round.correct
+              let promotions = merged.mastery > before && round.correct
                 ? [...(current.promotions ?? []), { id: round.targetId, from: before, to: merged.mastery }]
                 : current.promotions ?? [];
+              const parentId = parentCardCredit(input.cardParents, round.targetId, column, round.correct);
+              if (parentId) {
+                const parentExisting = (request.result as ProgressRecord[]).find((item) => item.entityId === parentId || item.id === parentId);
+                const parentMerged = mergeProgressRecord(parentExisting, parentId, column, true, round.answeredAt);
+                progress.put(parentMerged);
+                const parentBefore = parentExisting?.mastery ?? 0;
+                if (parentMerged.mastery > parentBefore) promotions = [...promotions, { id: parentId, from: parentBefore, to: parentMerged.mastery }];
+              }
               current = { ...current, promotions };
               transaction.objectStore(SESSIONS_STORE).put({ ...sessionAfterRound, promotions });
             } catch {
