@@ -118,8 +118,9 @@ export const isQueuePrefs = (input: unknown): input is QueuePrefs => isRoomSetup
 export const samePrefs = (a: QueuePrefs, b: QueuePrefs) => a.ladder === b.ladder && a.mode === b.mode;
 /** Tempo para responder a uma proposta. Quem não responde sai da fila (provavelmente largou o aparelho); quem aceitou volta ao lugar que tinha. */
 export const OFFER_TTL_MS = 20000;
-/** Quanto o pedido mais novo espera por um par exato antes de receber uma proposta de troca. */
-export const CROSS_DELAY_MS = 15000;
+/** Quanto o pedido mais novo espera por um par exato antes de receber uma proposta de troca. Zero = na hora (decisão do Enzo, 28/09): com pouca gente
+ *  quase nunca chega um par exato em segundos, e recusar a troca não tira ninguém da fila. Se a fila encher, subir para alguns segundos. */
+export const CROSS_DELAY_MS = 0;
 /** A busca encerra sozinha depois disto (a pessoa é avisada e pode buscar de novo). */
 export const QUEUE_TTL_MS = 60 * 60 * 1000;
 /** Depois de uma recusa ou de uma proposta sem resposta, o mesmo par não é oferecido de novo por este tempo. */
