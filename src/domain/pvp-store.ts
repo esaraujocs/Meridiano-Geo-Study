@@ -34,6 +34,15 @@ export type PvpMatchRecord = {
   legs?: readonly PvpLegRecord[];
   /** Mudança da força (só no valendo; null no amistoso). Calculada uma vez, na hora, e guardada — nunca recalculada depois. */
   ratingDelta: number | null;
+  /** Troféus da escada (só no valendo, desde 28/09): a mudança calculada neste aparelho na hora do resultado (pvp-trophies.ts), com o MMR e a
+   *  incerteza no mesmo formato do duelo contra bot. Sem o campo (amistoso, duelo antigo ou vindo só do servidor), o duelo não mexe na escada. */
+  trophyDelta?: number | null;
+  trophiesBefore?: number;
+  opponentTrophies?: number;
+  mmrDelta?: number;
+  mmrVersion?: number;
+  mmrSigma?: number;
+  mmrExp?: number;
 };
 
 function openDatabase() {

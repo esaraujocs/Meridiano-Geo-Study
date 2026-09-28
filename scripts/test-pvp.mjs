@@ -78,9 +78,11 @@ let now = 1_700_000_000_000;
 let seedState = 7;
 const random = () => { seedState = (seedState * 1103515245 + 12345) & 0x7fffffff; return seedState / 0x7fffffff; };
 const make = () => new PvpRooms({ now: () => now, random, countdownMs: COUNTDOWN_MS, graceMs: GRACE_MS });
-const ana = { id: "ana-0000000000000001", name: "Ana", rating: 1200, trophies: 1100 };
-const beto = { id: "beto-000000000000002", name: "Beto", rating: 900, trophies: 800 };
-const caio = { id: "caio-000000000000003", name: "Caio", rating: 500, trophies: 400 };
+/** Troféus e MMR por escada, como o aparelho informa (mapas, bandeiras; o MMR, sem valor, igual aos troféus). */
+const standings = (mapas, bandeiras = mapas, mapasMmr = mapas, bandeirasMmr = bandeiras) => ({ mapas: { trophies: mapas, mmr: mapasMmr }, bandeiras: { trophies: bandeiras, mmr: bandeirasMmr } });
+const ana = { id: "ana-0000000000000001", name: "Ana", rating: 1200, ladders: standings(1100, 300, 1180, 320) };
+const beto = { id: "beto-000000000000002", name: "Beto", rating: 900, ladders: standings(800) };
+const caio = { id: "caio-000000000000003", name: "Caio", rating: 500, ladders: standings(400) };
 const code = (view) => view.code;
 const throwsCode = (fn, expected) => assert.throws(fn, (error) => error instanceof PvpError && error.code === expected, `esperava ${expected}`);
 
@@ -333,10 +335,25 @@ const play = (rooms, c, player, legs) => legs.forEach((leg, index) => leg.forEac
 // nome vazio vira "Jogador"; números ruins viram limites
 {
   const rooms = make();
-  const view = rooms.createRoom({ id: "x".repeat(20), name: "  ", rating: NaN, trophies: -5 }, { ladder: "mapas", mode: "friendly" });
+  const view = rooms.createRoom({ id: "x".repeat(20), name: "  ", rating: NaN, ladders: { mapas: { trophies: -5, mmr: NaN } } }, { ladder: "mapas", mode: "friendly" });
   assert.equal(view.you.name, "Jogador");
   assert.equal(view.you.rating, 0);
   assert.equal(view.you.trophies, 0);
+  assert.equal(view.you.mmr, 0);
+}
+// troféus e MMR da sala são os da escada dela (a pessoa informa as duas)
+{
+  const rooms = make();
+  const hostView = rooms.createRoom(ana, { ladder: "bandeiras", mode: "ranked" });
+  assert.equal(hostView.you.trophies, 300, "sala de Bandeiras mostra os troféus de Bandeiras");
+  assert.equal(hostView.you.mmr, 320);
+  const guestView = rooms.joinRoom(hostView.code, beto);
+  assert.equal(guestView.opponent.trophies, 300);
+  assert.equal(guestView.opponent.mmr, 320, "o aparelho do adversário recebe o MMR (para a conta dos troféus)");
+  const matched = make();
+  const c = matched.createMatchedRoom(ana, beto, { ladder: "mapas", mode: "ranked" });
+  assert.equal(matched.view(c, beto.id).opponent.trophies, 1100);
+  assert.equal(matched.view(c, beto.id).opponent.mmr, 1180);
 }
 // o placar vai para o histórico uma vez, e a força que ele devolve aparece no resultado dos dois lados
 {
@@ -421,9 +438,13 @@ const matchOf = (code, mode, a, b, at) => ({ code, at, origin: "queue", ladder: 
   assert.equal(migrated.authenticate(enzo, "outro-segredo-qualquer-00000000000"), false);
   migrated.setName(enzo, "  Enzo ");
   migrated.flush();
+  migrated.setStandings(enzo, standings(640, 120, 700, 150));
+  migrated.flush();
   const again = new PlayerRegistry(file);
   assert.equal(again.loadedVersion, 2, "já no formato novo: não migra de novo");
   assert.equal(again.nameOf(enzo), "Enzo");
+  assert.deepEqual(again.standingsOf(enzo), standings(640, 120, 700, 150), "troféus e MMR por escada sobrevivem ao reinício");
+  assert.deepEqual(again.leaderboard("bandeiras", 10, enzo), [{ name: "Enzo", trophies: 120, you: true }]);
   assert.equal(again.createdAtOf(enzo), 1000);
   assert.deepEqual(JSON.parse(readFileSync(backup, "utf8")), v1, "a cópia do original não é tocada de novo");
   writeFileSync(file, "{isto não é json");
@@ -461,6 +482,7 @@ function matchAnaBeto(queue, prefs = MAPAS_RANKED) {
   assert.equal(second.state, "offer", "par exato: proposta na hora");
   assert.deepEqual([second.offer.switchLadder, second.offer.switchMode], [false, false]);
   assert.equal(second.offer.opponent.name, "Ana");
+  assert.equal(second.offer.opponent.trophies, 1100, "a proposta mostra os troféus do adversário na escada dela");
   assert.equal(second.offer.expiresAt, now + OFFER_TTL_MS);
   const offerId = second.offer.id;
   assert.equal(queue.view(ana.id).offer.id, offerId, "a mesma proposta para os dois");
@@ -840,6 +862,7 @@ await call("POST", "/queue", B, { ladder: "mapas", mode: "friendly", name: "Beto
 const offerForA = await anaChannel.waitFor((view) => view.state === "offer", "a proposta chega pelo canal");
 assert.equal(offerForA.offer.opponent.name, "Beto");
 assert.equal(offerForA.offer.opponent.rating, 988, "a força do adversário é a do servidor");
+assert.equal(offerForA.offer.opponent.trophies, 1250, "sem troféus no pedido, valem os últimos que o aparelho informou (número antigo vale para as duas escadas)");
 assert.equal((await call("POST", "/queue/offer", A, { id: "x", accept: true })).status, 400, "resposta inválida");
 await call("POST", "/queue/offer", A, { id: offerForA.offer.id, accept: true });
 await call("POST", "/queue/offer", B, { id: offerForA.offer.id, accept: true });
@@ -864,9 +887,24 @@ assert.equal((await call("POST", "/queue", A, { ladder: "bandeiras", mode: "rank
 assert.equal((await call("POST", "/queue/leave", A)).body.queue.state, "idle");
 assert.equal((await call("GET", "/health")).body.queue, 0);
 
+// ───────────── onde cada um está nas escadas e o ranking (só gente de verdade) ─────────────
+assert.equal((await call("POST", "/me/profile", null, {})).status, 401);
+assert.equal((await call("POST", "/me/profile", A, { name: "Ana", ladders: { mapas: { trophies: 700, mmr: 750 }, bandeiras: { trophies: 90, mmr: 100 } } })).status, 200);
+await call("POST", "/me/profile", B, { ladders: { mapas: { trophies: 900, mmr: 880 }, bandeiras: { trophies: 20, mmr: 20 } } });
+const boardA = (await call("GET", "/leaderboard?ladder=mapas", A)).body.leaderboard;
+assert.deepEqual(boardA.map((row) => [row.name, row.trophies, row.you]), [["Beto", 900, false], ["Ana", 700, true]], "do mais alto ao mais baixo, com você marcado");
+const boardAnon = (await call("GET", "/leaderboard?ladder=bandeiras")).body.leaderboard;
+assert.deepEqual(boardAnon.map((row) => [row.name, row.trophies, row.you]), [["Ana", 90, false], ["Beto", 20, false]], "sem identidade dá para ver, sem ninguém marcado");
+assert.equal((await call("GET", "/leaderboard?ladder=mapas", { id: A.id, secret: "segredo-errado-do-ana-0000000001" })).body.leaderboard.some((row) => row.you), false, "segredo errado não marca ninguém");
+assert.equal((await call("GET", "/leaderboard?ladder=xadrez")).status, 400);
+// a sala usa o que o aparelho informou por último, na escada dela
+const lastRoom = (await call("POST", "/rooms", A, { ladder: "bandeiras", mode: "friendly" })).body.room;
+assert.deepEqual([lastRoom.you.trophies, lastRoom.you.mmr], [90, 100]);
+await call("POST", `/rooms/${lastRoom.code}/command`, A, { type: "leave" });
+
 anaChannel.close(); betoChannel.close();
 await new Promise((resolve) => setTimeout(resolve, 100));
 pvp.dispose();
 await new Promise((resolve) => server.close(resolve));
 
-console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, HTTP+SSE — ok");
+console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, troféus por escada e ranking, HTTP+SSE — ok");

@@ -367,7 +367,7 @@ export class PvpQueue {
     return {
       id: offer.id, ladder: offer.setup.ladder, mode: offer.setup.mode,
       switchLadder: mine.prefs.ladder !== offer.setup.ladder, switchMode: mine.prefs.mode !== offer.setup.mode,
-      opponent: { name: other?.player.name ?? "", rating: other?.player.rating ?? 0 },
+      opponent: { name: other?.player.name ?? "", rating: other?.player.rating ?? 0, trophies: other?.player.ladders?.[offer.setup.ladder]?.trophies ?? 0 },
       expiresAt: offer.expiresAt, youAccepted: offer.accepted.has(mine.player.id), opponentAccepted: offer.accepted.has(otherId),
     };
   }

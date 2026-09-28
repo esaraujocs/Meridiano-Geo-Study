@@ -1,6 +1,6 @@
 // Cliente do duelo entre pessoas: identidade do aparelho (sem login, ver server/pvp-players.ts) e a rede (HTTP + SSE) para /api/pvp.
 // Toca localStorage, fetch e EventSource: só funciona no navegador (não em scripts/test-pvp.mjs, que testa o servidor puro).
-import type { PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
+import type { LadderStandings, LeaderboardRow, PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
 import type { Ladder } from "./duel-modes.js";
 
 const BASE = "/api/pvp";
@@ -37,7 +37,7 @@ export function hasPvpIdentity(): boolean {
 export function pvpName(): string { try { return localStorage.getItem(NAME_KEY) ?? ""; } catch { return ""; } }
 export function setPvpName(name: string) { try { localStorage.setItem(NAME_KEY, name.slice(0, 20)); } catch { /* sem armazenamento */ } }
 
-type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView; matches?: PvpServerMatch[] };
+type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[] };
 
 async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<Payload> {
   let response: Response;
@@ -61,9 +61,10 @@ function requireIdentity() {
   return identity;
 }
 
-/** Cria o convite. A força não vai junto: o servidor usa a do perfil dele. Os troféus (contra bot) vão só para mostrar. */
-export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, trophies: number): Promise<PvpRoomView> {
-  const { room } = await request("POST", "/rooms", requireIdentity(), { ladder, mode, name, trophies });
+/** Cria o convite. A força não vai junto: o servidor usa a do perfil dele. Troféus e MMR das duas escadas vão junto (a sala mostra os da escada dela
+ *  e o aparelho do adversário usa o MMR na conta dos troféus). */
+export async function pvpCreateRoom(ladder: Ladder, mode: PvpMode, name: string, ladders: LadderStandings): Promise<PvpRoomView> {
+  const { room } = await request("POST", "/rooms", requireIdentity(), { ladder, mode, name, ladders });
   return room as PvpRoomView;
 }
 
@@ -72,8 +73,8 @@ export async function pvpGetInvite(code: string): Promise<PvpInvite> {
   return invite as PvpInvite;
 }
 
-export async function pvpJoinRoom(code: string, name: string, trophies: number): Promise<PvpRoomView> {
-  const { room } = await request("POST", `/rooms/${code}/join`, requireIdentity(), { name, trophies });
+export async function pvpJoinRoom(code: string, name: string, ladders: LadderStandings): Promise<PvpRoomView> {
+  const { room } = await request("POST", `/rooms/${code}/join`, requireIdentity(), { name, ladders });
   return room as PvpRoomView;
 }
 
@@ -96,8 +97,8 @@ export async function pvpQueueGet(): Promise<PvpQueueView> {
   const { queue } = await request("GET", "/queue", requireIdentity());
   return queue as PvpQueueView;
 }
-export async function pvpQueueJoin(prefs: QueuePrefs, name: string, trophies: number): Promise<PvpQueueView> {
-  const { queue } = await request("POST", "/queue", requireIdentity(), { ladder: prefs.ladder, mode: prefs.mode, name, trophies });
+export async function pvpQueueJoin(prefs: QueuePrefs, name: string, ladders: LadderStandings): Promise<PvpQueueView> {
+  const { queue } = await request("POST", "/queue", requireIdentity(), { ladder: prefs.ladder, mode: prefs.mode, name, ladders });
   return queue as PvpQueueView;
 }
 export async function pvpQueueLeave(): Promise<PvpQueueView> {
@@ -112,6 +113,16 @@ export async function pvpQueueRespond(offerId: string, accept: boolean): Promise
 export async function pvpProfile(): Promise<PvpProfileView> {
   const { profile } = await request("GET", "/me", requireIdentity());
   return profile as PvpProfileView;
+}
+/** Informa nome e onde a pessoa está nas escadas (o ranking do servidor sai disto). Só para quem já tem identidade: não registra ninguém à toa. */
+export async function pvpSendProfile(name: string, ladders: LadderStandings): Promise<void> {
+  if (!hasPvpIdentity()) return;
+  await request("POST", "/me/profile", requireIdentity(), { ...(name.trim() ? { name: name.trim() } : {}), ladders });
+}
+/** O ranking de uma escada, só com gente de verdade (sem identidade, ninguém sai marcado como "você"). */
+export async function pvpLeaderboard(ladder: Ladder): Promise<LeaderboardRow[]> {
+  const { leaderboard } = await request("GET", `/leaderboard?ladder=${ladder}`, hasPvpIdentity() ? pvpIdentity() : null);
+  return leaderboard ?? [];
 }
 /** Os duelos guardados no servidor (do mais novo para o mais velho). */
 export async function pvpServerMatches(limit = 100): Promise<PvpServerMatch[]> {

@@ -47,9 +47,10 @@ import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
-import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, type DuelRecord, type DuelView } from "./domain/duel";
+import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
+import { pvpLadderEntries, settlePvpTrophies, type LadderEntry } from "./domain/pvp-trophies";
 import { pickBot } from "./domain/bots";
-import { LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
+import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
@@ -65,10 +66,10 @@ import { PvpResult } from "./components/pvp-result";
 import { PvpHome } from "./components/pvp-home";
 import { PvpQueueLayer, type OfferActivity } from "./components/pvp-offer";
 import { newPvpRun, pvpLegOptions, recordPvpLeg, type PvpRun } from "./domain/pvp-run";
-import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
+import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
   PvpClientError, hasPvpIdentity, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
-  pvpQueueRespond, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
+  pvpLeaderboard, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
 } from "./domain/pvp-client";
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 
@@ -127,14 +128,23 @@ export function App() {
   const lastBotRef = useRef<Record<Ladder, string | null>>({ mapas: null, bandeiras: null });
   const [duelBusy, setDuelBusy] = useState(false);
   const [leagueLadder, setLeagueLadder] = useState<Ladder | undefined>(undefined);
-  const byLadder = useMemo(() => trophiesByLadder(duels), [duels]);
+  // Duelos entre pessoas já terminados (IndexedDB): os valendo calculados neste aparelho mexem na mesma escada dos duelos contra bot (transição, 28/09).
+  const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
+  const [ladderLoaded, setLadderLoaded] = useState(false);
+  const ladderEntries = useMemo<LadderEntry[]>(() => [...duels, ...pvpLadderEntries(pvpMatches)], [duels, pvpMatches]);
+  const byLadder = useMemo(() => trophiesByLadder(ladderEntries), [ladderEntries]);
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
+  // Onde a pessoa está em cada escada (troféus e MMR escondido): vai para o servidor (ranking, proposta da fila e a conta do adversário).
+  const standings = useMemo<LadderStandings>(() => Object.fromEntries(LADDERS.map((ladder) => [ladder, { trophies: byLadder[ladder], mmr: mmrStateFromDuels(ladderEntries, ladder).mmr }])) as LadderStandings, [ladderEntries, byLadder]);
   useEffect(() => {
-    void listDuels().then(async (list) => {
+    void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[])]).then(async ([list, matches]) => {
       setDuels(list);
+      setPvpMatches(matches);
+      setLadderLoaded(true);
       // ao abrir: paga o que faltar (marco novo ou a diferença de um prêmio que foi aumentado) e atualiza o saldo
-      await claimDuelMilestones(trophiesByLadder(list)).catch(() => []);
-      await claimLeagueThemes(trophiesByLadder(list)).catch(() => [] as string[]);
+      const entries = [...list, ...pvpLadderEntries(matches)];
+      await claimDuelMilestones(trophiesByLadder(entries)).catch(() => []);
+      await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
       void refreshEconomy();
     }).catch(() => undefined);
   }, []);
@@ -191,8 +201,8 @@ export function App() {
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
-  const arenaCards = useMemo(() => ladderCards(duels, economy.unlocked), [duels, economy.unlocked]);
-  const arenaNext = useMemo(() => nextMilestones(duels), [duels]);
+  const arenaCards = useMemo(() => ladderCards(ladderEntries, economy.unlocked), [ladderEntries, economy.unlocked]);
+  const arenaNext = useMemo(() => nextMilestones(ladderEntries), [ladderEntries]);
   const effectiveTier: RoundTier = isRoundTierUnlocked(roundTier, economy.unlocked) ? roundTier : "short";
 
   // ---- Duelo com amigo (PvP ao vivo, por link) ----
@@ -215,10 +225,24 @@ export function App() {
   const pvpUnsubRef = useRef<(() => void) | null>(null);
   const pvpRoundIndexRef = useRef(0);
   const pvpSettledCodeRef = useRef<string | null>(null);
-  const [pvpRatingDelta, setPvpRatingDelta] = useState<number | null>(null);
+  // Troféus do duelo valendo contra pessoa (calculados aqui, na hora do resultado; ver pvp-trophies.ts).
+  const [pvpTrophy, setPvpTrophy] = useState<{ delta: number; before: number; after: number } | null>(null);
   // Força do valendo e V/D/E: o servidor é a fonte (GET /me); o aparelho só mostra.
   const [pvpProfileView, setPvpProfileView] = useState<PvpProfileView | null>(null);
   const refreshPvpProfile = () => { void pvpProfile().then(setPvpProfileView).catch(() => undefined); };
+  // Ranking (só gente de verdade, do servidor) e o que este aparelho informa a ele: troféus e MMR de cada escada, ao abrir o app e sempre que mudam.
+  // Quem nunca usou o duelo com pessoas não é registrado à toa (pvpSendProfile não faz nada sem identidade); o ranking dá para ver assim mesmo.
+  const [boards, setBoards] = useState<Record<Ladder, readonly LeaderboardRow[] | null>>({ mapas: null, bandeiras: null });
+  const refreshBoards = () => {
+    for (const ladder of LADDERS) void pvpLeaderboard(ladder).then((rows) => setBoards((current) => ({ ...current, [ladder]: rows }))).catch(() => undefined);
+  };
+  const standingsKey = JSON.stringify(standings);
+  useEffect(() => {
+    if (!ladderLoaded || !hasPvpIdentity()) return;
+    const timer = window.setTimeout(() => { void pvpSendProfile(pvpNameState, standings).then(refreshBoards).catch(() => undefined); }, 400);
+    return () => window.clearTimeout(timer);
+  }, [ladderLoaded, standingsKey]);
+  useEffect(() => { if ((screen === "hub" && duelMode) || screen === "league") refreshBoards(); }, [screen, duelMode]);
   // ---- Fila ("Buscar duelo") ----
   const [pvpQueue, setPvpQueueState] = useState<PvpQueueView>(IDLE_QUEUE_VIEW);
   const pvpQueueRef = useRef<PvpQueueView>(IDLE_QUEUE_VIEW);
@@ -257,7 +281,6 @@ export function App() {
     pvpSettledCodeRef.current = room.code;
     const rating = room.result.rating;
     const ratingDelta = rating ? rating.you.after - rating.you.before : null;
-    setPvpRatingDelta(ratingDelta);
     // os grupos dos dois tempos vêm de novo da semente (a mesma conta que os dois jogadores fizeram para jogar); sem semente (nunca deveria acontecer
     // com a sala já fechada), fica sem o detalhe dos tempos, só o placar total.
     const groups = room.seed ? drawLegs(room.ladder, room.seed) : null;
@@ -268,16 +291,47 @@ export function App() {
         total: leg.rounds, youMs: room.result!.you.legs[index]?.ms ?? null, opponentMs: room.result!.opponent.legs[index]?.ms ?? null,
       }))
       : undefined;
+    const id = `pvp:${room.code}`;
+    // Valendo: troféus e MMR da escada, a mesma conta do duelo contra bot, com o MMR do adversário no lugar do rating do bot. Calculado uma vez só
+    // (se o registro já tem troféus, não refaz).
+    let ladderFields: Partial<PvpMatchRecord> = {};
+    const known = pvpMatches.find((match) => match.id === id);
+    if (room.mode === "ranked" && typeof known?.trophyDelta !== "number") {
+      const prior: LadderEntry[] = [...duels, ...pvpLadderEntries(pvpMatches.filter((match) => match.id !== id))];
+      const before = trophiesFromDuels(prior, room.ladder);
+      const state = mmrStateFromDuels(prior, room.ladder);
+      const settled = settlePvpTrophies({
+        trophies: before, mmr: state.mmr, sigma: state.sigma, samples: state.samples, streak: winStreak(prior.filter((entry) => entry.ladder === room.ladder)),
+        opponentMmr: room.opponent.mmr ?? room.opponent.trophies, outcome: room.result.outcome, margin: room.result.you.correct - room.result.opponent.correct,
+      });
+      ladderFields = {
+        trophyDelta: settled.trophyDelta, trophiesBefore: before, opponentTrophies: room.opponent.trophies,
+        mmrDelta: settled.mmrDelta, mmrVersion: settled.mmrVersion, mmrSigma: settled.mmrSigma, mmrExp: settled.mmrExp,
+      };
+      setPvpTrophy({ delta: settled.trophyDelta, before, after: settled.trophiesAfter });
+    } else if (known && typeof known.trophyDelta === "number") {
+      setPvpTrophy({ delta: known.trophyDelta, before: known.trophiesBefore ?? 0, after: (known.trophiesBefore ?? 0) + known.trophyDelta });
+    }
     const record: PvpMatchRecord = {
-      id: `pvp:${room.code}`, code: room.code, at: Date.now(), ladder: room.ladder, mode: room.mode,
+      ...(known ?? {}),
+      id, code: room.code, at: known?.at ?? Date.now(), ladder: room.ladder, mode: room.mode,
       opponentName: room.opponent.name, opponentRating: rating?.opponent.before ?? room.opponent.rating,
       youCorrect: room.result.you.correct, opponentCorrect: room.result.opponent.correct, totalRounds: LEG_ROUNDS * LEGS,
       outcome: room.result.outcome, tiebreak: room.result.tiebreak,
       youForfeited: room.result.you.forfeited, opponentForfeited: room.result.opponent.forfeited,
       youMs: room.result.you.ms, opponentMs: room.result.opponent.ms,
-      legs, ratingDelta,
+      legs, ratingDelta, ...ladderFields,
     };
-    void savePvpMatch(record).catch(() => undefined);
+    const nextMatches = [...pvpMatches.filter((match) => match.id !== id), record];
+    setPvpMatches(nextMatches);
+    void savePvpMatch(record).then(async () => {
+      if (room.mode !== "ranked") return;
+      // subiu de divisão ou de liga contra uma pessoa: os mesmos marcos e temas de liga do duelo contra bot
+      const entries = [...duels, ...pvpLadderEntries(nextMatches)];
+      await claimDuelMilestones(trophiesByLadder(entries)).catch(() => []);
+      await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
+      void refreshEconomy();
+    }).catch(() => undefined);
     refreshPvpProfile();
   }, [pvpRoom]);
   // Link de convite (?duelo=CÓDIGO): abre direto na tela do convite, sem precisar do Hub.
@@ -295,7 +349,7 @@ export function App() {
     pvpUnsubRef.current?.();
     pvpUnsubRef.current = null;
     setPvpRoom(null); setPvpRun(null); setPvpEntry(null); setPvpInvitePreview(null); setPvpInviteCode(null);
-    setPvpError(null); setPvpBusy(false); setPvpRatingDelta(null);
+    setPvpError(null); setPvpBusy(false); setPvpTrophy(null);
     pvpSettledCodeRef.current = null;
   };
   const pvpOpenSetup = (ladder: Ladder) => { pvpReset(); setPvpEntry("setup"); setPvpSetupLadder(ladder); setPvpModeState("friendly"); setScreen("pvp-lobby"); };
@@ -324,7 +378,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name) return;
     setPvpBusy(true); setPvpError(null);
-    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, byLadder[pvpSetupLadder]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    try { const room = await pvpCreateRoom(pvpSetupLadder, pvpMode, name, standings); setPvpRoom(room); pvpSubscribeTo(room.code); }
     catch (error) { setPvpError(pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -332,7 +386,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name || !pvpInviteCode) return;
     setPvpBusy(true); setPvpError(null);
-    try { const room = await pvpJoinRoom(pvpInviteCode, name, byLadder[pvpInvitePreview?.ladder ?? "mapas"]); setPvpRoom(room); pvpSubscribeTo(room.code); }
+    try { const room = await pvpJoinRoom(pvpInviteCode, name, standings); setPvpRoom(room); pvpSubscribeTo(room.code); }
     catch (error) { setPvpError(pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -393,7 +447,7 @@ export function App() {
     void refreshEconomy();
     pvpUnsubRef.current?.();
     pvpUnsubRef.current = null;
-    setPvpRun(null); setPvpEntry(null); setPvpInvitePreview(null); setPvpInviteCode(null); setPvpError(null); setPvpRatingDelta(null);
+    setPvpRun(null); setPvpEntry(null); setPvpInvitePreview(null); setPvpInviteCode(null); setPvpError(null); setPvpTrophy(null);
     pvpSettledCodeRef.current = null;
     setPvpRoom(room);
     pvpSubscribeTo(code);
@@ -431,12 +485,16 @@ export function App() {
     try { active = localStorage.getItem(QUEUE_ACTIVE_KEY) === "1"; } catch { /* sem armazenamento */ }
     if (active) void pvpQueueGet().then((view) => applyQueueViewRef.current(view, false)).catch(() => undefined);
     void Promise.all([pvpServerMatches(100), listPvpMatches()])
-      .then(async ([server, local]) => { for (const record of missingPvpRecords(server, local)) await savePvpMatch(record); })
+      .then(async ([server, local]) => {
+        const missing = missingPvpRecords(server, local);
+        for (const record of missing) await savePvpMatch(record);
+        if (missing.length) setPvpMatches(await listPvpMatches());
+      })
       .catch(() => undefined);
   }, []);
-  const pvpOpenHome = (ladder?: Ladder) => {
+  const pvpOpenHome = (ladder?: Ladder, mode?: PvpMode) => {
     pvpReset();
-    if (ladder && pvpQueueRef.current.state === "idle") setQueuePrefs({ ...queuePrefs, ladder });
+    if (ladder && pvpQueueRef.current.state === "idle") setQueuePrefs({ ladder, mode: mode ?? queuePrefs.mode });
     setScreen("pvp-home");
     refreshPvpProfile();
   };
@@ -444,8 +502,21 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name) return;
     setPvpBusy(true); setPvpError(null); setQueueNotice(null);
-    try { applyQueueView(await pvpQueueJoin(queuePrefs, name, byLadder[queuePrefs.ladder]), false); }
+    try { applyQueueView(await pvpQueueJoin(queuePrefs, name, standings), false); }
     catch (error) { setPvpError(error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error)); }
+    setPvpBusy(false);
+  };
+  // Arena do Hub: "Duelar" busca uma pessoa no valendo daquela escada, direto do Hub (sem nome ainda, abre a tela da fila para a pessoa dizer como a chamamos).
+  const [arenaError, setArenaError] = useState<{ ladder: Ladder; message: string } | null>(null);
+  const arenaSearch = async (ladder: Ladder) => {
+    const prefs: QueuePrefs = { ladder, mode: "ranked" };
+    const name = pvpNameState.trim();
+    setArenaError(null);
+    if (!name) { pvpOpenHome(ladder, "ranked"); return; }
+    setQueuePrefs(prefs);
+    setPvpBusy(true); setPvpError(null); setQueueNotice(null);
+    try { applyQueueView(await pvpQueueJoin(prefs, name, standings), false); }
+    catch (error) { setArenaError({ ladder, message: error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error) }); }
     setPvpBusy(false);
   };
   const queueCancel = async () => {
@@ -481,8 +552,8 @@ export function App() {
     const trophiesBefore = byLadder[ladder];
     const status = leagueOf(trophiesBefore);
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
-    const streak = winStreak(duels.filter((duel) => duel.ladder === ladder));
-    const state = mmrStateFromDuels(duels, ladder);
+    const streak = winStreak(ladderEntries.filter((duel) => duel.ladder === ladder));
+    const state = mmrStateFromDuels(ladderEntries, ladder);
     // matchmaking: o rating do bot é o MMR mais o otimismo pela incerteza (para cima quando a pessoa vem vencendo mais do que o esperado), preso entre a
     // própria liga e 2 ligas acima; o bot sai da liga desse rating e a força dele acompanha o rating
     const match = matchmaking(trophiesBefore, state.mmr, state.sigma, surprise(state.samples));
@@ -532,10 +603,12 @@ export function App() {
     };
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];
     setDuels(nextDuels);
+    // a escada soma os duelos contra bot e os valendo contra pessoas
+    const nextEntries = [...nextDuels, ...pvpLadderEntries(pvpMatches)];
     // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
-    const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(trophiesByLadder(nextDuels))).catch(() => []);
+    const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(trophiesByLadder(nextEntries))).catch(() => []);
     // Tema de liga: dado uma vez ao entrar na liga (melhor das duas escadas); o resultado avisa quando foi este duelo que abriu.
-    const themesGranted = await claimLeagueThemes(trophiesByLadder(nextDuels)).catch(() => [] as string[]);
+    const themesGranted = await claimLeagueThemes(trophiesByLadder(nextEntries)).catch(() => [] as string[]);
     void refreshEconomy();
     lastBotRef.current = { ...lastBotRef.current, [run.ladder]: run.bot.id };
     const played = legResults.current.filter((leg): leg is SessionResult => Boolean(leg?.spoils));
@@ -555,7 +628,7 @@ export function App() {
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
       ...(themesGranted.length ? { themeUnlocked: themesGranted[themesGranted.length - 1] } : {}),
-      streakBefore: run.streak, streakAfter: winStreak(nextDuels.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: run.done.length < LEGS,
+      streakBefore: run.streak, streakAfter: winStreak(nextEntries.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: run.done.length < LEGS,
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
       legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),
@@ -915,7 +988,7 @@ export function App() {
   );
   const page = (() => {
   if (screen === "pvp-home") {
-    return <div className="app-shell grain"><PvpHome prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain"><PvpHome standings={standings} prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "result") {
@@ -946,10 +1019,10 @@ export function App() {
   if (screen === "pvp-result" && pvpRoom) {
     const coinsGained = Math.max(0, economy.balance - economyBeforeRef.current.balance);
     const xpGained = Math.max(0, economy.xp - economyBeforeRef.current.xp);
-    return <div className="app-shell grain"><PvpResult room={pvpRoom} legs={pvpResultLegs} ratingDelta={pvpRatingDelta} coinsGained={coinsGained} xpGained={xpGained} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
+    return <div className="app-shell grain"><PvpResult room={pvpRoom} legs={pvpResultLegs} trophy={pvpTrophy} coinsGained={coinsGained} xpGained={xpGained} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
   }
   if (screen === "league") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen duels={duels} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} initialLadder={leagueLadder} onBack={() => setScreen("hub")} /></div>;
   }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
@@ -1017,7 +1090,10 @@ export function App() {
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}
-          arenas={{ cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, onDuel: openDuel, onFriend: pvpOpenHome }}
+          arenas={{
+            cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, boards,
+            search: { queue: pvpQueue, error: arenaError, busy: pvpBusy, onSearch: (ladder) => void arenaSearch(ladder), onCancel: () => void queueCancel(), onBot: openDuel, onFriendly: (ladder) => pvpOpenHome(ladder, "friendly") },
+          }}
          />
       )}
       {screen === "recorte" && (

@@ -4,7 +4,10 @@ import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
-import { leaderboard, rankWindow } from "../domain/leaderboard";
+import { playersLeaderboard, rankWindow } from "../domain/leaderboard";
+import type { LeaderboardRow } from "../domain/pvp";
+import type { LadderEntry } from "../domain/pvp-trophies";
+import type { PvpMatchRecord } from "../domain/pvp-store";
 import { BASE_WIN, LEAD_TOP, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
 import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
@@ -17,9 +20,17 @@ const along = (trophies: number) => Math.min(100, (trophies / MASTER_AT) * 100);
 const RING = 2 * Math.PI * 58;
 
 // Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
-// adversários (bots), últimos duelos da escada; as molduras do nível valem a melhor das duas.
-export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly DuelRecord[]; initialLadder?: Ladder; onBack: () => void }) {
-  const byLadder = trophiesByLadder(duels);
+// adversários (bots), últimos duelos da escada (contra bot e contra pessoas) e o ranking (só gente de verdade); as molduras do nível valem a melhor das duas.
+export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder, onBack }: {
+  /** Tudo o que conta na escada: duelos contra bot e valendo contra pessoas. */
+  entries: readonly LadderEntry[];
+  duels: readonly DuelRecord[];
+  pvpMatches: readonly PvpMatchRecord[];
+  boards: Record<Ladder, readonly LeaderboardRow[] | null>;
+  initialLadder?: Ladder;
+  onBack: () => void;
+}) {
+  const byLadder = trophiesByLadder(entries);
   const best = LADDERS.reduce((top, item) => (byLadder[item] > byLadder[top] ? item : top), LADDERS[0]);
   const [ladder, setLadder] = useState<Ladder>(initialLadder ?? best);
   const trophies = byLadder[ladder];
@@ -30,8 +41,19 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
     ? nameOf(LEAGUES[status.index + 1])
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
-  const rank = rankWindow(leaderboard(ladder, trophies), 10);
-  const recent = duels.filter((duel) => duel.ladder === ladder).sort((a, b) => b.at - a.at).slice(0, 6);
+  const board = boards[ladder];
+  const rank = rankWindow(playersLeaderboard(board ?? [], trophies), 10);
+  // os últimos duelos da escada, contra bot e contra pessoas, numa lista só
+  const recent = [
+    ...duels.filter((duel) => duel.ladder === ladder).map((duel) => {
+      const bot = botById(duel.botId);
+      return { id: duel.id, at: duel.at, league: bot?.league, title: `${t.duel.league[duel.outcome]} · ${bot ? botLabel(bot) : "—"}`, score: `${duel.playerCorrect} x ${duel.botCorrect}`, delta: duel.delta as number | null };
+    }),
+    ...pvpMatches.filter((match) => match.ladder === ladder).map((match) => ({
+      id: match.id, at: match.at, league: undefined, title: `${t.duel.league[match.outcome]} · ${match.opponentName}`,
+      score: `${match.youCorrect} x ${match.opponentCorrect}`, delta: typeof match.trophyDelta === "number" ? match.trophyDelta : null,
+    })),
+  ].sort((a, b) => b.at - a.at).slice(0, 6);
   return (
     <main className="content surface" data-surface="progress">
       <button className="back" onClick={onBack}>{t.common.backHub}</button>
@@ -98,14 +120,13 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
             <header><div><h2>{t.duel.league.recentTitle}</h2><p>{t.duel.league.recentSub}</p></div></header>
             {recent.length === 0
               ? <p className="lg-empty">{t.duel.league.recentEmpty}</p>
-              : <ul>{recent.map((duel) => {
-                const bot = botById(duel.botId);
-                return <li key={duel.id}>
-                  <span className="rk-av lg-badge" data-league={bot?.league} aria-hidden="true"><Icon type="swords" size={16} /></span>
-                  <span className="pr-rname"><b>{t.duel.league[duel.outcome]} · {bot ? botLabel(bot) : "—"}</b><small>{duel.playerCorrect} x {duel.botCorrect} · {when(duel.at)}</small></span>
-                  <span className="pr-s-res"><b className={duel.delta >= 0 ? "rk-win" : "rk-loss"}>{signed(duel.delta)}</b></span>
-                </li>;
-              })}</ul>}
+              : <ul>{recent.map((item) => <li key={item.id}>
+                <span className="rk-av lg-badge" data-league={item.league} aria-hidden="true"><Icon type="swords" size={16} /></span>
+                <span className="pr-rname"><b>{item.title}</b><small>{item.score} · {when(item.at)}</small></span>
+                <span className="pr-s-res">{item.delta === null
+                  ? <b>{t.pvp.modeFriendly}</b>
+                  : <b className={item.delta >= 0 ? "rk-win" : "rk-loss"}>{signed(item.delta)}</b>}</span>
+              </li>)}</ul>}
           </section>
         </div>
 
@@ -118,6 +139,7 @@ export function LeagueScreen({ duels, initialLadder, onBack }: { duels: readonly
               <span className="pr-rname"><b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b><small>{t.duel.leagues[line.league]}</small></span>
               <strong className="rk-val">{formatNumber(line.trophies)}</strong>
             </li>)}</ol>
+          {rank.length <= 1 && <p className="lg-empty">{board === null ? t.duel.rank.offline : t.duel.rank.alone}</p>}
         </section>
 
         <section className="pr-card lg-how" style={{ marginTop: 16 }}>

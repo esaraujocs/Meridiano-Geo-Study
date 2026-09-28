@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { Icon } from "./icons";
 import type { Ladder } from "../domain/duel-modes";
 import type { PvpMode, PvpOfferView, PvpQueueNotice, PvpQueueView } from "../domain/pvp";
-import { t } from "../domain/i18n";
+import { formatNumber, t } from "../domain/i18n";
 
 // A camada da fila por cima de qualquer tela: a proposta ("Adversário encontrado!"), o indicador de busca ativa e os avisos da fila.
 // Fora de uma partida, a proposta é um diálogo. Dentro de uma partida é uma faixa que não cobre o jogo nem rouba o foco ou o Enter: no duelo o
@@ -86,7 +86,7 @@ function OfferCard({ offer, serverNow, inGame, activity, onAccept, onDecline }: 
     <>
       <span className="eyebrow pvp-offer-kicker">{t.pvp.offer.kicker}</span>
       <strong id={titleId} className="pvp-offer-title">{t.pvp.offer.title(offer.opponent.name)}</strong>
-      <span className="pvp-offer-detail">{t.pvp.offer.detail(ladder, mode, offer.opponent.rating)}</span>
+      <span className="pvp-offer-detail">{t.pvp.offer.detail(ladder, mode, formatNumber(offer.opponent.trophies ?? 0))}</span>
       {switching && <p className="pvp-offer-switch"><b>{t.pvp.offer.switchTitle}:</b> {swaps.join(" · ")}</p>}
       {!offer.youAccepted && activity === "bot-duel" && <p className="pvp-offer-warn">{t.pvp.offer.endsBotDuel}</p>}
       {!offer.youAccepted && activity === "solo" && <p className="pvp-offer-warn">{t.pvp.offer.endsSolo}</p>}

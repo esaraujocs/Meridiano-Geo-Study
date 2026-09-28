@@ -5,18 +5,20 @@
 // Arquivo (.pvp-data/players.json), versão 2: { "version": 2, "players": { "<id>": { hash, createdAt, lastSeen, name } } }. A versão 1 (a primeira, sem
 // "version") era o objeto { "<id>": { hash, createdAt, lastSeen } } direto: é lida e convertida (id e hash intactos, nome vazio), e o arquivo original fica
 // copiado ao lado (players.v1.bak.json) antes da primeira gravação no formato novo. A força e o histórico NÃO moram aqui: vêm do registro de duelos
-// (pvp-history.ts), relido a cada abertura.
+// (pvp-history.ts), relido a cada abertura. Desde 28/09 cada linha pode ter `ladders` (troféus e MMR por escada, o último que o aparelho informou) e
+// `ladderAt` (quando): é de onde sai o ranking, só com gente de verdade.
 import { createHash, timingSafeEqual } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { cleanPlayerName } from "../src/domain/pvp.js";
+import { LADDERS, type Ladder } from "../src/domain/duel-modes.js";
+import { cleanPlayerName, parseStandings, type LadderStandings, type LeaderboardRow } from "../src/domain/pvp.js";
 
 export const isPlayerId = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(value);
 export const isPlayerSecret = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{24,128}$/.test(value);
 const hashSecret = (secret: string) => createHash("sha256").update(secret).digest("hex");
 
 export const PLAYERS_FILE_VERSION = 2;
-export type PlayerRow = { hash: string; createdAt: number; lastSeen: number; name: string };
+export type PlayerRow = { hash: string; createdAt: number; lastSeen: number; name: string; ladders?: LadderStandings; ladderAt?: number };
 
 const finiteOr = (value: unknown, fallback: number) => (typeof value === "number" && Number.isFinite(value) ? value : fallback);
 
@@ -32,7 +34,8 @@ export function readPlayersFile(raw: unknown, now = Date.now()): { version: numb
     const row = value as Record<string, unknown>;
     if (typeof row.hash !== "string" || !row.hash) continue;
     const createdAt = finiteOr(row.createdAt, now);
-    rows.push([id, { hash: row.hash, createdAt, lastSeen: finiteOr(row.lastSeen, createdAt), name: typeof row.name === "string" ? cleanPlayerName(row.name) : "" }]);
+    const ladders = row.ladders && typeof row.ladders === "object" ? { ladders: parseStandings({ ladders: row.ladders }), ladderAt: finiteOr(row.ladderAt, createdAt) } : {};
+    rows.push([id, { hash: row.hash, createdAt, lastSeen: finiteOr(row.lastSeen, createdAt), name: typeof row.name === "string" ? cleanPlayerName(row.name) : "", ...ladders }]);
   }
   return { version: isV2 ? PLAYERS_FILE_VERSION : 1, rows };
 }
@@ -79,6 +82,27 @@ export class PlayerRegistry {
     if (!row || !clean || row.name === clean) return;
     row.name = clean;
     this.scheduleSave();
+  }
+
+  /** Troféus e MMR por escada que o aparelho informou por último (null se nunca informou). */
+  standingsOf(id: string): LadderStandings | null { return this.players.get(id)?.ladders ?? null; }
+  /** Guarda o que o aparelho informou (grava só se mudou). */
+  setStandings(id: string, ladders: LadderStandings) {
+    const row = this.players.get(id);
+    if (!row) return;
+    const same = row.ladders && LADDERS.every((ladder) => row.ladders?.[ladder].trophies === ladders[ladder].trophies && row.ladders?.[ladder].mmr === ladders[ladder].mmr);
+    if (same) return;
+    row.ladders = ladders;
+    row.ladderAt = this.now();
+    this.scheduleSave();
+  }
+  /** O ranking de uma escada: quem já informou os troféus, do mais alto para o mais baixo (empate: quem chegou antes). `viewer` sai marcado como "você". */
+  leaderboard(ladder: Ladder, limit: number, viewer: string | null = null): LeaderboardRow[] {
+    return [...this.players.entries()]
+      .filter(([, row]) => row.ladders)
+      .sort(([, a], [, b]) => (b.ladders as LadderStandings)[ladder].trophies - (a.ladders as LadderStandings)[ladder].trophies || a.createdAt - b.createdAt)
+      .slice(0, Math.max(1, limit))
+      .map(([id, row]) => ({ name: row.name || "Jogador", trophies: (row.ladders as LadderStandings)[ladder].trophies, you: id === viewer }));
   }
 
   /** Confere a identidade. Id novo é registrado com o segredo apresentado; id conhecido exige o mesmo segredo. */

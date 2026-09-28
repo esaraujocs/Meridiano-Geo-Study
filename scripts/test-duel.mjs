@@ -9,7 +9,7 @@ const out = join(tmpdir(), "carta-cega-duel-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 execFileSync("node_modules/.bin/tsc", [
-  "src/domain/league.ts", "src/domain/leaderboard.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "src/domain/duel-view.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
+  "src/domain/league.ts", "src/domain/leaderboard.ts", "src/domain/bots.ts", "src/domain/duel.ts", "src/domain/duel-rewards.ts", "src/domain/duel-modes.ts", "src/domain/economy-rules.ts", "src/domain/duel-run.ts", "src/domain/spoils.ts", "src/domain/duel-view.ts", "src/domain/pvp-trophies.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022",
   "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig",
 ], { stdio: "inherit" });
 const L = await import(pathToFileURL(join(out, "league.js")).href);
@@ -21,6 +21,8 @@ const U = await import(pathToFileURL(join(out, "duel-run.js")).href);
 const S = await import(pathToFileURL(join(out, "spoils.js")).href);
 const V = await import(pathToFileURL(join(out, "duel-view.js")).href);
 const LB = await import(pathToFileURL(join(out, "leaderboard.js")).href);
+const PT = await import(pathToFileURL(join(out, "pvp-trophies.js")).href);
+const MM = await import(pathToFileURL(join(out, "mmr.js")).href);
 
 // ---- Ligas e divisões ----
 let s = L.leagueOf(0);
@@ -802,4 +804,50 @@ assert.equal(LB.rankWindow(LB.leaderboard("mapas", 99999, 5), 3).length, 3, "no 
 const w4 = LB.rankWindow(lb.map((row, i) => ({ ...row, you: i === 3 })), 3);
 assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo depois do corte não precisa do sinal de corte");
 
-console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok");
+// ---- Troféus contra pessoas (transição, 28/09): a mesma escada e a mesma conta do duelo contra bot ----
+{
+  const base = { trophies: 600, mmr: 650, sigma: 60, samples: [], streak: 2 };
+  const win = PT.settlePvpTrophies({ ...base, opponentMmr: 900, outcome: "win", margin: 3 });
+  const expected = MM.trophyChange({ trophies: 600, mmr: 650, streak: 2, outcome: "win", margin: 3, lead: MM.leadOf(900, 600) });
+  assert.equal(win.trophyDelta, expected.delta, "vitória contra pessoa: a conta do bot, com o MMR do adversário no lugar do rating do bot");
+  assert.ok(win.trophyDelta > MM.trophyChange({ trophies: 600, mmr: 650, streak: 2, outcome: "win", margin: 3, lead: 0 }).delta, "adversário acima rende o bônus de quem está acima");
+  assert.equal(win.trophiesAfter, 600 + win.trophyDelta);
+  assert.equal(win.mmrVersion, MM.MMR_MODEL);
+  assert.equal(win.mmrExp, MM.expectedScore(650, 900));
+  assert.equal(win.mmrDelta, MM.mmrChange(650, 900, "win", 3, 60));
+  const loss = PT.settlePvpTrophies({ ...base, trophies: 10, opponentMmr: 300, outcome: "loss", margin: -6 });
+  assert.deepEqual([loss.trophyDelta, loss.trophiesAfter], [-10, 0], "nunca abaixo de zero");
+  const draw = PT.settlePvpTrophies({ ...base, opponentMmr: 650, outcome: "draw", margin: 0 });
+  assert.equal(draw.trophyDelta, MM.trophyChange({ trophies: 600, mmr: 650, streak: 2, outcome: "draw", margin: 0 }).delta);
+  // o que entra na escada: só o valendo com troféus calculados (amistoso e registros antigos/do servidor, não)
+  const pvp = [
+    { id: "pvp:AAA", at: 20, ladder: "mapas", mode: "ranked", outcome: "win", trophyDelta: 40, mmrDelta: 30, mmrVersion: MM.MMR_MODEL, mmrSigma: 90, mmrExp: 0.4 },
+    { id: "pvp:BBB", at: 30, ladder: "mapas", mode: "friendly", outcome: "win", trophyDelta: null },
+    { id: "pvp:CCC", at: 40, ladder: "mapas", mode: "ranked", outcome: "loss", ratingDelta: -12 },
+    { id: "pvp:DDD", at: 50, ladder: "bandeiras", mode: "ranked", outcome: "loss", trophyDelta: -25 },
+  ];
+  const entries = PT.pvpLadderEntries(pvp);
+  assert.deepEqual(entries.map((entry) => entry.id), ["pvp:AAA", "pvp:DDD"]);
+  assert.deepEqual(entries[0], { id: "pvp:AAA", at: 20, ladder: "mapas", delta: 40, outcome: "win", mmrDelta: 30, mmrVersion: MM.MMR_MODEL, mmrSigma: 90, mmrExp: 0.4 });
+  const bots = [
+    { id: "duel:1", at: 10, ladder: "mapas", delta: 33, outcome: "win" },
+    { id: "duel:2", at: 60, ladder: "bandeiras", delta: 30, outcome: "win" },
+  ];
+  const mixed = [...bots, ...entries];
+  assert.deepEqual(D.trophiesByLadder(mixed), { mapas: 73, bandeiras: 30 }, "bot e pessoa somam na mesma escada, na ordem do tempo, sem passar de zero");
+  assert.equal(V.winStreak(mixed.filter((entry) => entry.ladder === "mapas")), 2, "a sequência corre por cima dos dois");
+  const cards = V.ladderCards(mixed, []);
+  assert.deepEqual(cards.find((card) => card.ladder === "mapas").form, ["win", "win"]);
+  assert.equal(D.mmrStateFromDuels(mixed, "mapas").mmr, 33 + 30, "o MMR da pessoa usa o do duelo contra pessoa");
+}
+// ---- Ranking com gente de verdade ----
+{
+  const rows = [{ name: "Beto", trophies: 900, you: false }, { name: "Ana", trophies: 500, you: true }, { name: "Caio", trophies: 700, you: false }];
+  const board = LB.playersLeaderboard(rows, 800);
+  assert.deepEqual(board.map((row) => [row.pos, row.you ? "você" : row.name, row.trophies]), [[1, "Beto", 900], [2, "você", 800], [3, "Caio", 700]], "a linha da pessoa usa os troféus de agora");
+  assert.ok(board.every((row) => !row.bot));
+  assert.deepEqual(LB.playersLeaderboard([], 120).map((row) => [row.pos, row.you]), [[1, true]], "sem ninguém (ou sem conexão), só a pessoa");
+  assert.equal(LB.playersLeaderboard([{ name: "Beto", trophies: 300, you: false }], 300)[0].you, true, "empate: a pessoa na frente");
+}
+
+console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok; troféus contra pessoas e ranking real ok");

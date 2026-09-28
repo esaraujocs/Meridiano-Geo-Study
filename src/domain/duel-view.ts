@@ -17,8 +17,11 @@ export type LadderCard = {
   groups: { group: ModeGroup; owned: boolean }[];
 };
 
-/** Um cartão por escada, com a liga, a forma recente e os modos que entram no sorteio (com os de prévia marcados). */
-export function ladderCards(duels: readonly DuelRecord[], unlocked: readonly string[]): LadderCard[] {
+export type LadderResult = Pick<DuelRecord, "id" | "at" | "ladder" | "delta" | "outcome">;
+
+/** Um cartão por escada, com a liga, a forma recente e os modos que entram no sorteio (com os de prévia marcados). Conta os duelos contra bot e os
+ *  valendo contra pessoas (a mesma escada). */
+export function ladderCards(duels: readonly LadderResult[], unlocked: readonly string[]): LadderCard[] {
   const byLadder = trophiesByLadder(duels);
   return LADDERS.map((ladder) => {
     const mine = duels.filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
@@ -35,7 +38,7 @@ export function ladderCards(duels: readonly DuelRecord[], unlocked: readonly str
 }
 
 /** Os próximos marcos ainda não alcançados: o de divisão e o de liga mais perto, olhando a escada com mais troféus. */
-export function nextMilestones(duels: readonly DuelRecord[]): Milestone[] {
+export function nextMilestones(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder">[]): Milestone[] {
   const byLadder = trophiesByLadder(duels);
   const best = LADDERS.reduce((top, ladder) => (byLadder[ladder] > byLadder[top] ? ladder : top), LADDERS[0]);
   const reached = new Set(reachedMilestones(byLadder).map((milestone) => milestone.id));

@@ -2,8 +2,8 @@ import { Icon } from "./icons";
 import { NameField } from "./pvp-lobby";
 import { useElapsed } from "./pvp-offer";
 import type { Ladder } from "../domain/duel-modes";
-import type { PvpMode, PvpProfileView, PvpQueueNotice, PvpQueueView, QueuePrefs } from "../domain/pvp";
-import { t } from "../domain/i18n";
+import type { LadderStandings, PvpMode, PvpProfileView, PvpQueueNotice, PvpQueueView, QueuePrefs } from "../domain/pvp";
+import { formatNumber, t } from "../domain/i18n";
 
 // Entrada do duelo entre pessoas: o aviso de fase de testes e as duas portas — "Buscar duelo" (a fila) e "Convidar amigo" (o convite por código, sem
 // mudança). Buscando, mostra há quanto tempo e quantos estão na fila; dá para ir jogar contra os bots enquanto isso (a proposta aparece em qualquer tela).
@@ -11,13 +11,15 @@ const LADDERS: readonly Ladder[] = ["mapas", "bandeiras"];
 const MODES: readonly PvpMode[] = ["friendly", "ranked"];
 const modeLabel = (mode: PvpMode) => (mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked);
 
-export function PvpHome({ prefs, onPrefsChange, name, onNameChange, queue, profile, busy, error, notice, onDismissNotice, onSearch, onCancel, onInvite, onPlayBots, onBack }: {
+export function PvpHome({ standings, prefs, onPrefsChange, name, onNameChange, queue, profile, busy, error, notice, onDismissNotice, onSearch, onCancel, onInvite, onPlayBots, onBack }: {
+  /** Troféus de cada escada (os mesmos do duelo contra bot; o valendo contra pessoas mexe neles). */
+  standings: LadderStandings;
   prefs: QueuePrefs;
   onPrefsChange: (prefs: QueuePrefs) => void;
   name: string;
   onNameChange: (name: string) => void;
   queue: PvpQueueView;
-  /** Força e V/D/E guardados no servidor (null enquanto não chegou ou sem conexão). */
+  /** V/D/E guardados no servidor (null enquanto não chegou ou sem conexão). */
   profile: PvpProfileView | null;
   busy: boolean;
   error: string | null;
@@ -92,13 +94,11 @@ export function PvpHome({ prefs, onPrefsChange, name, onNameChange, queue, profi
           )}
         </section>
         <aside className="rv-card pvp-side">
-          {profile && (
-            <div className="pvp-rating">
-              <span className="rv-k">{t.pvp.home.ratingTitle}</span>
-              <strong>{profile.rating}</strong>
-              <small>{t.pvp.home.record(profile.ranked.wins, profile.ranked.losses, profile.ranked.draws)}</small>
-            </div>
-          )}
+          <div className="pvp-rating">
+            <span className="rv-k">{t.pvp.home.ratingTitle}</span>
+            <dl className="pvp-trophies">{LADDERS.map((ladder) => <div key={ladder}><dt>{t.duel.ladders[ladder]}</dt><dd>{formatNumber(standings[ladder].trophies)}</dd></div>)}</dl>
+            {profile && <small>{t.pvp.home.record(profile.ranked.wins, profile.ranked.losses, profile.ranked.draws)}</small>}
+          </div>
           <h2>{t.pvp.home.howTitle}</h2>
           <ol className="pvp-steps">{steps.map(([title, note], index) => <li key={index}><b>{index + 1}</b><div><strong>{title}</strong><span>{note}</span></div></li>)}</ol>
         </aside>

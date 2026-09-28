@@ -24,14 +24,14 @@ function makeParticles(count: number, loss: boolean): Particle[] {
 }
 
 // Resultado do duelo com amigo: a mesma linguagem visual do duelo contra bot (medalha, confete/cinzas, placar que sobe animado, tabela dos dois tempos),
-// sem o que só faz sentido pra liga (barra de troféus, prêmios). Ao vivo enquanto o amigo ainda está jogando: mostra o que já dá pra saber e completa
+// sem a barra de troféus e os prêmios (no valendo, a mudança de troféus aparece numa pílula e no "antes → depois"). Ao vivo enquanto o amigo ainda está jogando: mostra o que já dá pra saber e completa
 // sozinho quando o servidor fecha o resultado.
-export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRematch, onHome }: {
+export function PvpResult({ room, legs, trophy, coinsGained, xpGained, onRematch, onHome }: {
   room: PvpRoomView;
   /** Os dois tempos sorteados pela semente da sala (para o nome do modo na tabela); null se a semente não chegou (nunca deveria, com o duelo já em andamento). */
   legs: readonly DuelLeg[] | null;
-  /** Quanto a força do valendo mudou (null no amistoso, ou enquanto o resultado não sai). */
-  ratingDelta: number | null;
+  /** Troféus da escada no valendo (a mesma do duelo contra bot): null no amistoso, ou enquanto o resultado não sai. */
+  trophy: { delta: number; before: number; after: number } | null;
   coinsGained: number;
   xpGained: number;
   onRematch: () => void;
@@ -89,14 +89,14 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
             <div className="vh-pills">
               <span className="vh-pill calm">{room.mode === "friendly" ? t.pvp.modeFriendly : t.pvp.modeRanked}</span>
               {room.result?.tiebreak && <span className="vh-pill calm">{t.duel.result.tiebreak}</span>}
-              {done && room.mode === "ranked" && ratingDelta !== null && <span className={`vh-pill ${ratingDelta >= 0 ? "up" : "down"}`}>{t.pvp.result.ratingChange(ratingDelta)}</span>}
+              {done && room.mode === "ranked" && trophy && <span className={`vh-pill ${trophy.delta > 0 ? "up" : trophy.delta < 0 ? "down" : "calm"}`}>{t.pvp.result.trophyChange(trophy.delta)}</span>}
             </div>
           </div>
           <div className="vh-score">
             <span aria-hidden="true" className={!outcome ? "" : won ? "w" : "l"}><small>{t.pvp.result.you}</small><b>{score[0]}</b></span>
             <em aria-hidden="true">x</em>
             <span aria-hidden="true" className={!outcome ? "" : won ? "l" : "w"}><small>{firstName(opponentName)}</small><b>{score[1]}</b></span>
-            <p>{you.forfeited ? t.pvp.result.youLeft : room.opponent?.forfeited ? t.pvp.result.opponentLeft : ""}</p>
+            <p>{you.forfeited ? t.pvp.result.youLeft : room.opponent?.forfeited ? t.pvp.result.opponentLeft : done && room.mode === "ranked" && trophy ? t.pvp.result.trophyLine(format(trophy.before), format(trophy.after)) : ""}</p>
           </div>
           {/* Enquanto o resultado não sai (o amigo ainda jogando): banner ao vivo, não só uma pílula discreta entre as outras. */}
           {!done && <div className="pvp-waiting" role="status" aria-live="polite">
@@ -124,7 +124,7 @@ export function PvpResult({ room, legs, ratingDelta, coinsGained, xpGained, onRe
         </div>
         <div className="rs-actions">
           <button type="button" className="rs-btn primary" onClick={onRematch}><Icon type="swords" />{room.origin === "queue" ? t.pvp.result.searchAgain : t.pvp.result.rematch}</button>
-          <button type="button" className="rs-btn" onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.pvp.result.home}</span></button>
+          <button type="button" className="rs-btn" aria-label={t.pvp.result.home} onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.pvp.result.home}</span></button>
         </div>
       </section>
     </main>
