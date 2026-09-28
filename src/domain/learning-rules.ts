@@ -81,3 +81,21 @@ export function mergeProgressRecord(
   else if (current.source !== "combined") current.source = "current-v2";
   return current;
 }
+/** Cartas "mãe" que o mapa nunca pergunta: o Reino Unido (826, `mapa: false`) só aparece no mapa pelas 4 nações (`substitui: "GBR"`). Devolve
+ *  nação → carta mãe, para o acerto de uma nação nos modos de clicar no mapa (colunas mapa e capitais) contar também para a carta do Reino Unido. */
+export function cardParentsOf(meta: Record<string, { cca3?: string; substitui?: string }>): Record<string, string> {
+  const byCca3 = new Map<string, string>();
+  for (const [id, item] of Object.entries(meta)) if (item.cca3 && !item.substitui) byCca3.set(item.cca3, id);
+  const parents: Record<string, string> = {};
+  for (const [id, item] of Object.entries(meta)) {
+    const parent = item.substitui ? byCca3.get(item.substitui) : undefined;
+    if (parent && parent !== id) parents[id] = parent;
+  }
+  return parents;
+}
+
+/** A carta mãe que este acerto também credita (só acerto, só nas colunas que o mapa pergunta pelas nações). */
+export function parentCardCredit(parents: Readonly<Record<string, string>> | undefined, targetId: string, column: LearningColumn, correct: boolean) {
+  if (!correct || !parents || (column !== "mapa" && column !== "capitais")) return null;
+  return parents[targetId] ?? null;
+}

@@ -6,6 +6,7 @@
     "build": "node scripts/validate-flag-overrides.mjs && tsc -b && vite build && node scripts/test-manifest-resources.mjs",
     "generate:markers": "node scripts/generate-small-entity-report.mjs",
     "build:absorbed": "node scripts/build-absorbed-territories.mjs",
+    "build:split-islands": "node scripts/build-split-islands.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 5000",
     "extract:legacy": "node scripts/extract-legacy-map.mjs",
     "extract:legacy-game": "node scripts/extract-legacy-game-data.mjs",

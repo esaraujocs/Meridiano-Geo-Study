@@ -89,4 +89,17 @@ assert.equal(
   5,
 );
 
+// Reino Unido (mapa: false) ganha a carta pelas 4 nações nos modos de clicar no mapa (28/09).
+const catalogMeta = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8")).meta;
+const parents = learning.cardParentsOf(catalogMeta);
+assert.deepEqual(parents, { "gb-eng": "826", "gb-sct": "826", "gb-wls": "826", "gb-nir": "826" });
+assert.equal(learning.parentCardCredit(parents, "gb-sct", "mapa", true), "826");
+assert.equal(learning.parentCardCredit(parents, "gb-wls", "capitais", true), "826");
+assert.equal(learning.parentCardCredit(parents, "gb-eng", "mapa", false), null);
+assert.equal(learning.parentCardCredit(parents, "gb-eng", "bandeiras", true), null);
+assert.equal(learning.parentCardCredit(parents, "76", "mapa", true), null);
+const ukCard = learning.mergeProgressRecord(undefined, "826", "mapa", true, 900);
+assert.equal(ukCard.entityId, "826");
+assert.equal(ukCard.mastery, 1);
+
 console.log("learning store merge: ok");

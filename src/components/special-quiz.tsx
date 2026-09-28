@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flagSource, loadFlags, type FlagCatalog } from "../domain/quiz";
-import { acceptedCapitalAnswers, acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, normalizeAnswer, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
+import { acceptedCapitalAnswers, acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
@@ -18,6 +18,7 @@ import { addHistoricalCollection } from "../domain/progress-surfaces";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
+import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void };
@@ -179,9 +180,9 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   const submitWriting = (value = typed) => {
     if (!target || locked) return;
     const expected = variant === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
-    const normalized = normalizeAnswer(value);
+    const normalized = answerKey(value);
     if (!normalized) return;
-    const correct = expected.includes(normalized);
+    const correct = expected.some((item) => answerKey(item) === normalized);
     answer(target.id, value, correct);
   };
   // O tempo da pergunta acabou: conta como erro; na escrita, o que já estava digitado fica registrado.

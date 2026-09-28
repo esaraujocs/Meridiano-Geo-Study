@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
@@ -9,6 +9,8 @@ import { mapPaletteFor } from "../domain/themes";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
+import { cardParentsOf } from "../domain/learning-rules";
+import { sameCapitalName } from "../domain/typed-answer";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
@@ -35,6 +37,10 @@ import { distanceToGeometriesKm, haversineKm, nearestWithin, SEA_TAP_PX } from "
 import { t } from "../domain/i18n";
 
 const ABSORBED_URL = "/data/absorbed-territories.geojson";
+/** Ilhas divididas entre dois territórios jogáveis cujo contorno nos tiles é a ilha inteira para os dois (São Martinho: 534 Holanda, 663 França). O mapa
+ *  desenha o contorno certo de cada metade por cima (scripts/build-split-islands.mjs, Natural Earth) e esconde o polígono dos tiles delas. */
+const SPLIT_URL = "/data/split-islands.geojson";
+const SPLIT_ISLAND_IDS = ["534", "663"];
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
@@ -104,8 +110,9 @@ export function Game({
   const markerIds = [...features.map((feature) => feature.id), ...absorbedMarkerIds];
   const markerSignature = markerIds.join("|");
   // No modo Capitais mostra o nome da capital (foi o que foi perguntado); no modo Mapa, o nome do país.
-  const nameFor = (id: string) =>
-    engineFamily === "capitais" && engineVariant === "capital-pais" ? data.meta[id]?.cap : data.meta[id]?.pt;
+  const capitalMode = engineFamily === "capitais" && engineVariant === "capital-pais";
+  const nameFor = (id: string) => (capitalMode ? data.meta[id]?.cap : data.meta[id]?.pt);
+  const cardParents = useMemo(() => cardParentsOf(data.meta), [data.meta]);
 
   const openSession = () => {
     const pending = startLearningSession({
@@ -119,6 +126,7 @@ export function Game({
       duel: settings.duel,
       onRound: settings.onRound,
       coinFactor: settings.coinFactor,
+      cardParents,
     });
     pendingSessionRef.current = pending;
     pending
@@ -227,6 +235,9 @@ export function Game({
       (window as unknown as { __cartaLastAnswer?: string }).__cartaLastAnswer = id;
     }
     setSelectedAnswer(id);
+    // Capital com nome repetido (Victoria, Georgetown...): o país clicado também tem a capital perguntada, então vale e vira o alvo da rodada
+    // (a carta, o destaque e o texto do acerto ficam com o país que a pessoa achou).
+    if (capitalMode && id !== targetRef.current && sameCapitalName(data.meta[id]?.cap, data.meta[targetRef.current]?.cap)) { targetRef.current = id; setTarget(id); }
     const responseTimeMs = Math.max(0, Date.now() - targetStartedAtRef.current);
     const round = {
       targetId: targetRef.current,
@@ -330,6 +341,7 @@ export function Game({
             ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines() as unknown as GeoJSON.FeatureCollection } } : {}),
             ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs) as unknown as GeoJSON.FeatureCollection } } : {}),
             absorbed: { type: "geojson", data: ABSORBED_URL },
+            splits: { type: "geojson", data: SPLIT_URL },
           },
           layers: [
             {
@@ -354,7 +366,7 @@ export function Game({
               type: "fill",
               source: "atlas",
               "source-layer": "countries",
-              filter: ["==", "$type", "Polygon"],
+              filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!", ["in", ["get", "carta_id"], ["literal", SPLIT_ISLAND_IDS]]]] as unknown as maplibregl.FilterSpecification,
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
@@ -366,6 +378,16 @@ export function Game({
               type: "fill",
               source: "absorbed",
               filter: ["==", "$type", "Polygon"],
+              paint: {
+                "fill-color": palette.land,
+                "fill-outline-color": palette.outline,
+                "fill-opacity": palette.landOpacity,
+              },
+            },
+            {
+              id: "split-land",
+              type: "fill",
+              source: "splits",
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
@@ -472,7 +494,7 @@ export function Game({
     const nearestLand = (x: number, y: number) => {
       const zoom = map.getZoom();
       const found = map
-        .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "absorbed-land", "pts-hit", "small-entities-hit"] })
+        .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "absorbed-land", "split-land", "pts-hit", "small-entities-hit"] })
         .filter((feature) => feature.properties?.carta_id && (feature.layer.id !== "small-entities-hit" || isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom)))
         .map((feature) => ({ answerId: String(feature.properties?.answer_id ?? feature.properties?.carta_id), geometry: feature.geometry as unknown as { type: string; coordinates: unknown } }));
       return nearestWithin(found, (position) => map.project(position), x, y, SEA_TAP_PX);
@@ -482,8 +504,10 @@ export function Game({
       const id = targetRef.current;
       try {
         const filter = ["==", ["get", "carta_id"], id] as maplibregl.FilterSpecification;
+        // metade de ilha dividida: o polígono dos tiles é a ilha inteira (daria 0 km na outra metade); vale o contorno certo
+        const split = SPLIT_ISLAND_IDS.includes(id);
         const geometries = [
-          ...map.querySourceFeatures("atlas", { sourceLayer: "countries", filter }),
+          ...(split ? map.querySourceFeatures("splits", { filter }) : map.querySourceFeatures("atlas", { sourceLayer: "countries", filter })),
           ...map.querySourceFeatures("small-entities", { filter }),
         ].map((feature) => feature.geometry as unknown as { type: string; coordinates: unknown });
         const measured = geometries.length ? distanceToGeometriesKm(geometries, lng, lat) : null;
@@ -513,9 +537,9 @@ export function Game({
           }];
         });
       const landHits = map
-        .queryRenderedFeatures([x, y], { layers: ["land", "absorbed-land", "pts-hit", "pts"] })
+        .queryRenderedFeatures([x, y], { layers: ["split-land", "land", "absorbed-land", "pts-hit", "pts"] })
         .filter((feature) => feature.properties?.carta_id);
-      const landHit = landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land") ?? landHits[0];
+      const landHit = landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land" || feature.layer.id === "split-land") ?? landHits[0];
       const landId = landHit ? String(landHit.properties?.answer_id ?? landHit.properties?.carta_id) : "";
       const choice = chooseClickAnswer(candidates, landId);
       if (choice.answerId) return { id: choice.answerId, point: choice.marker?.coordinates, byWater: false };
@@ -603,6 +627,15 @@ export function Game({
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         palette.wrong,
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
+        palette.land,
+      ] as unknown as maplibregl.ExpressionSpecification);
+      map.setPaintProperty("split-land", "fill-color", [
+        "case",
+        ["all", settled, ["==", ["get", "answer_id"], target]],
+        answerColor,
+        ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
+        palette.wrong,
+        ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
       map.setPaintProperty("absorbed-land", "fill-color", [

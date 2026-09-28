@@ -30,6 +30,7 @@ const injectPrecacheManifest = () => ({
       "/data/legacy/catalog.json",
       "/data/legacy-map.json",
       "/data/absorbed-territories.geojson",
+      "/data/split-islands.geojson",
       "/data/legacy/flags.json",
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",
