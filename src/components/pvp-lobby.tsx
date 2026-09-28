@@ -84,10 +84,13 @@ export function LegPicker({ ladder, choice, onChange }: { ladder: Ladder; choice
   );
 }
 
+// `type="search"` (em vez de "text") é de propósito: o Chrome ignora `autoComplete="off"` para o preenchimento de Endereços/Pagamentos e já
+// autopreencheu um nome de cartão salvo aqui (ex. "Mr. Mussar-Ellah", visto num duelo de verdade em 28/09); campos de busca ficam fora desse
+// preenchimento. Ainda é mitigação, não garantia — por isso o nome errado pode continuar aparecendo até a pessoa perceber e corrigir.
 export const NameField = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
   <label className="pvp-name">
     <span>{t.pvp.nameLabel}</span>
-    <input type="text" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => onNameChange(event.target.value)} autoFocus name="pvp-nickname" autoComplete="off" data-1p-ignore data-lpignore="true" />
+    <input type="search" value={name} maxLength={PLAYER_NAME_MAX} placeholder={t.pvp.namePlaceholder} onChange={(event) => onNameChange(event.target.value)} autoFocus name="pvp-nickname" autoComplete="off" data-1p-ignore data-lpignore="true" />
   </label>
 );
 
