@@ -70,6 +70,7 @@ import { SocialLayer } from "./components/social-layer";
 import { ratioPercent } from "./domain/hub-profile";
 import type { FriendsView, PlayerProfile, PlayerSummary, SocialEvent } from "./domain/pvp-social";
 import { PvpQueueLayer, type OfferActivity } from "./components/pvp-offer";
+import { PvpNamePrompt } from "./components/pvp-name-prompt";
 import { newPvpRun, pvpLegOptions, recordPvpLeg, roomLegs, type PvpRun } from "./domain/pvp-run";
 import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
@@ -619,18 +620,30 @@ export function App() {
     catch (error) { setPvpError(error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
-  // Arena do Hub: "Duelar" busca uma pessoa no valendo daquela escada, direto do Hub (sem nome ainda, abre a tela da fila para a pessoa dizer como a chamamos).
+  // Arena do Hub: "Duelar" busca uma pessoa no valendo daquela escada, direto do Hub. Sem nome ainda salvo, um diálogo pede o nome por cima do
+  // Hub (pvpNamePrompt); confirmando, entra na fila na hora, sem precisar visitar a tela da fila.
   const [arenaError, setArenaError] = useState<{ ladder: Ladder; message: string } | null>(null);
-  const arenaSearch = async (ladder: Ladder) => {
+  const [pvpNamePrompt, setPvpNamePrompt] = useState<Ladder | null>(null);
+  const arenaSearchWithName = async (ladder: Ladder, name: string) => {
     const prefs: QueuePrefs = { ladder, mode: "ranked" };
-    const name = pvpNameState.trim();
     setArenaError(null);
-    if (!name) { pvpOpenHome(ladder, "ranked"); return; }
     setQueuePrefs(prefs);
     setPvpBusy(true); setPvpError(null); setQueueNotice(null);
     try { applyQueueView(await pvpQueueJoin(prefs, name, standings), false); }
     catch (error) { setArenaError({ ladder, message: error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error) }); }
     setPvpBusy(false);
+  };
+  const arenaSearch = async (ladder: Ladder) => {
+    setArenaError(null);
+    const name = pvpNameState.trim();
+    if (!name) { setPvpNamePrompt(ladder); return; }
+    await arenaSearchWithName(ladder, name);
+  };
+  const confirmPvpName = (name: string) => {
+    const ladder = pvpNamePrompt;
+    setPvpNamePrompt(null);
+    setPvpDisplayName(name);
+    if (ladder) void arenaSearchWithName(ladder, name);
   };
   const queueCancel = async () => {
     setPvpBusy(true); setPvpError(null);
@@ -1268,5 +1281,8 @@ export function App() {
     </div>
   );
   })();
-  return <>{page}{queueLayer}{socialLayer}</>;
+  const namePromptLayer = pvpNamePrompt && (
+    <PvpNamePrompt busy={pvpBusy} error={pvpError} onConfirm={confirmPvpName} onCancel={() => setPvpNamePrompt(null)} />
+  );
+  return <>{page}{queueLayer}{socialLayer}{namePromptLayer}</>;
 }

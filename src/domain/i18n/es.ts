@@ -390,6 +390,13 @@ export const es: Messages = {
     back: "Cancelar",
     nameLabel: "Tu nombre",
     namePlaceholder: "¿Cómo te llamamos?",
+    namePrompt: {
+      kicker: "Antes de duelar",
+      title: "¿Cómo te llamamos?",
+      detail: "Tu nombre aparece para tu rival y en la pantalla del duelo.",
+      confirm: "Duelar",
+      cancel: "Cancelar",
+    },
     modeFriendly: "Amistoso",
     modeFriendlyNote: "Sin trofeos; monedas completas.",
     modeRanked: "Con apuesta",
