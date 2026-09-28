@@ -390,6 +390,13 @@ export const en: Messages = {
     back: "Cancel",
     nameLabel: "Your name",
     namePlaceholder: "What should we call you?",
+    namePrompt: {
+      kicker: "Before you duel",
+      title: "What should we call you?",
+      detail: "Your name shows to your opponent and on the duel screen.",
+      confirm: "Duel",
+      cancel: "Cancel",
+    },
     modeFriendly: "Friendly",
     modeFriendlyNote: "No trophies; full coins.",
     modeRanked: "Ranked",

@@ -391,6 +391,13 @@ export const pt = {
     back: "Cancelar",
     nameLabel: "Seu nome",
     namePlaceholder: "Como te chamamos?",
+    namePrompt: {
+      kicker: "Antes de duelar",
+      title: "Como te chamamos?",
+      detail: "O nome aparece para o seu adversário e na tela do duelo.",
+      confirm: "Duelar",
+      cancel: "Cancelar",
+    },
     modeFriendly: "Amistoso",
     modeFriendlyNote: "Sem troféus; moedas cheias.",
     modeRanked: "Valendo",
