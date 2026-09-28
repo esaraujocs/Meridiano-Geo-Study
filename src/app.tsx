@@ -30,6 +30,8 @@ import {
   type OfflineMapStatus,
 } from "./domain/offline-map";
 import { initializeEconomy, queryEconomy, unlockRounds, unlockTheme, type EconomySnapshot } from "./domain/economy-store";
+import { emptySupplyCounts, type SupplyCounts, type SupplyId } from "./domain/supplies";
+import { buySupply, supplyCounts } from "./domain/supplies-store";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, resolveTheme, themeAttributes, themeById } from "./domain/themes";
 import { ResultScreen } from "./components/result-screen";
 import { buildResultView, type ResultView } from "./domain/result-view";
@@ -206,6 +208,8 @@ export function App() {
     ],
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
+  const [supplies, setSupplies] = useState<SupplyCounts>(emptySupplyCounts());
+  const refreshSupplies = () => supplyCounts().then(setSupplies).catch(() => undefined);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
   const arenaCards = useMemo(() => ladderCards(ladderEntries, economy.unlocked), [ladderEntries, economy.unlocked]);
   const arenaNext = useMemo(() => nextMilestones(ladderEntries), [ladderEntries]);
@@ -787,11 +791,13 @@ export function App() {
     if (duelRunRef.current) { void finishLeg(null); return; }
     if (pvpRunRef.current) { void finishPvpLeg(null); return; }
     void refreshEconomy();
+    void refreshSupplies();
     setScreen("recorte");
   };
   const finishGame = async (result: SessionResult | null) => {
     if (duelRunRef.current) { await finishLeg(result); return; }
     if (pvpRunRef.current) { await finishPvpLeg(result); return; }
+    void refreshSupplies();
     if (!result?.spoils) { void refreshEconomy(); setScreen("recorte"); return; }
     const before = economyBeforeRef.current;
     const after = await queryEconomy().catch(() => null);
@@ -807,6 +813,8 @@ export function App() {
   const buyRounds = async (key: RoundUnlockKey) => { setEconomy(await unlockRounds(key)); };
   // Compra na Loja: debita as moedas e já aplica o tema.
   const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
+  // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
+  const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") setCollectionRegion("mundo"); setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") setCollectionRegion("mundo"); setScreen(destination); };
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
@@ -832,6 +840,7 @@ export function App() {
       .then(setData)
       .catch((loadError) => setError(loadError.message));
     migrateLegacyProgress().then(setLegacy).then(() => initializeEconomy()).then((snapshot) => { setEconomy(snapshot); setEconomyReady(true); });
+    void refreshSupplies();
     hasOfflineMap()
       .then((installed) => setOfflineMap(installed ? "installed" : "available"))
       .catch(() => setOfflineMap("unavailable"));
@@ -1177,7 +1186,7 @@ export function App() {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} /></main></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} /></main></div>;
   }
   if (screen === "options") {
     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {
@@ -1188,14 +1197,14 @@ export function App() {
 
   if (screen === "game") {
     if (family === "capitais" && variant === "capital-pais") {
-       return <Game data={playableData ?? data} features={gameFeatures} region={region} family={family} variant={variant} onlyUn={onlyUn} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} />;
+       return <Game data={playableData ?? data} features={gameFeatures} region={region} family={family} variant={variant} onlyUn={onlyUn} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
     }
     if (family === "silhueta" || family === "travel") {
-        return <GeometryGame family={family} variant={variant} data={playableData ?? data} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} />;
+        return <GeometryGame family={family} variant={variant} data={playableData ?? data} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
     }
     if (family === "historicas" || family === "idiomas" || family === "escrita") {
         const specialData = family === "historicas" || family === "idiomas" ? data : (playableData ?? data);
-        return <SpecialQuiz data={specialData} family={family} variant={variant} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} />;
+        return <SpecialQuiz data={specialData} family={family} variant={variant} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
     }
     if (family !== "mapa") {
       return (
@@ -1205,7 +1214,7 @@ export function App() {
             variant={variant as Exclude<QuizVariant, "mapa">}
           region={region}
           onBack={leaveGame}
-          onEnd={finishGame} options={sessionOptions}
+          onEnd={finishGame} options={sessionOptions} supplies={supplies}
         />
       );
     }
@@ -1216,7 +1225,7 @@ export function App() {
         region={region}
         onlyUn={onlyUn}
         onBack={leaveGame}
-        onEnd={finishGame} options={sessionOptions}
+        onEnd={finishGame} options={sessionOptions} supplies={supplies}
       />
     );
   }

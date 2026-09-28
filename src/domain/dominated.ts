@@ -6,9 +6,12 @@
 export type EconomyRound = { targetId: string; correct: boolean; column: string; at: number };
 
 function sessionRounds(value: any, sessionIndex: number): EconomyRound[] {
-  const raw = Array.isArray(value?.rounds) ? value.rounds : Array.isArray(value?.r)
+  const source = Array.isArray(value?.rounds) ? value.rounds : Array.isArray(value?.r)
     ? value.r.filter(Array.isArray).map((item: any[]) => ({ targetId: item[0], correct: item[1], distanceKm: item[3], tuple: true }))
     : [];
+  // Rodada respondida com ajuda de um suprimento de expedição não conta pra maestria/domínio (fica de fora da evidência,
+  // como se não tivesse acontecido — não reseta nem avança o domínio do país).
+  const raw = source.filter((round: any) => !round?.assisted);
   const variant = String(value?.variant ?? value?.assunto ?? value?.modo ?? value?.mode ?? "");
   const family = String(value?.family ?? value?.mode ?? "");
   const column = String(value?.column ?? value?.learningColumn ?? "") ||

@@ -267,6 +267,10 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .store-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .store-confirm{margin:6px 0 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:13px;line-height:1.5;color:var(--ink)}
 .store-confirm span{display:flex;gap:8px;margin-top:10px}
+.supply-thumb{aspect-ratio:640/220;display:grid;place-items:center;background:var(--paper);color:var(--muted)}
+.store-qty{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:2px}
+.store-qty .store-btn{min-height:34px;width:34px;padding:0;border-radius:50%}
+.store-qty b{min-width:20px;text-align:center;font:700 16px 'Plus Jakarta Sans',sans-serif;color:var(--ink)}
 @media (max-width:1023px){.store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.store-grid{grid-template-columns:1fr}.store-sec h2{font-size:22px}}
 .option-toggle select{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}

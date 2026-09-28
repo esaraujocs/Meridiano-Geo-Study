@@ -17,7 +17,10 @@ import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { addMapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
-import { GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
+import { GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
+import { useSupplies } from "./use-supplies";
+import { emptySupplyCounts, type SupplyCounts } from "../domain/supplies";
+import { continentLabel } from "../domain/collection-view";
 import { variantLabel } from "../domain/result-view";
 import {
   ABSORBED_MARKER_IDS,
@@ -57,6 +60,7 @@ export function Game({
   family,
   variant,
   onlyUn = false,
+  supplies = emptySupplyCounts(),
 }: {
   data: Legacy;
   features: GeoFeature[];
@@ -67,6 +71,7 @@ export function Game({
   family?: Family;
   variant?: AnyQuizVariant;
   onlyUn?: boolean;
+  supplies?: SupplyCounts;
 }) {
   const engineFamily = family ?? "mapa";
   const engineVariant = variant ?? "mapa";
@@ -113,6 +118,10 @@ export function Game({
   const capitalMode = engineFamily === "capitais" && engineVariant === "capital-pais";
   const nameFor = (id: string) => (capitalMode ? data.meta[id]?.cap : data.meta[id]?.pt);
   const cardParents = useMemo(() => cardParentsOf(data.meta), [data.meta]);
+  // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
+  const suppliesEnabled = pace === "timed" && !settings.duel && !settings.pvp;
+  const supply = useSupplies(supplies, suppliesEnabled);
+  const bussolaUsed = supply.usedThisRound.has("bussola");
 
   const openSession = () => {
     const pending = startLearningSession({
@@ -204,6 +213,7 @@ export function Game({
     setWrong(false);
     setTimedOut(false);
     setSerial((value) => value + 1);
+    supply.resetRound();
   };
   const newDeck = () => createFiniteDeck(features, deckSeedFor(seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
 
@@ -248,6 +258,7 @@ export function Game({
       byWater: evidence?.byWater,
       distanceKm: evidence?.distanceKm ?? null,
       tier: entityTier(data.meta, targetRef.current),
+      ...(supply.assisted ? { assisted: true } : {}),
     };
     recordRound(round);
     // No Treino, o alvo da rodada fica marcado no mapa com o nome — acertando ou errando.
@@ -286,6 +297,7 @@ export function Game({
       answeredAt: Date.now(),
       timedOut: true,
       tier: entityTier(data.meta, targetRef.current),
+      ...(supply.assisted ? { assisted: true } : {}),
     });
     feedbackRef.current = t.map.timeUp;
     setSelectedAnswer("");
@@ -739,7 +751,17 @@ export function Game({
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
-            <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+            {bussolaUsed && !feedback && <em className="map-bussola-hint">{continentLabel(data.meta[target]?.reg)}</em>}
+            <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+            {suppliesEnabled && (
+              <SupplyTray
+                variant={engineVariant}
+                counts={supply.counts}
+                usedThisRound={supply.usedThisRound}
+                disabled={Boolean(feedback) || !mapReady}
+                onUse={(id) => supply.use(id)}
+              />
+            )}
           </div>
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
             {feedback || t.map.currentTarget(targetName)}

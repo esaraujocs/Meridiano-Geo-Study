@@ -18,6 +18,7 @@
     "test:learning:browser": "node scripts/test-learning-browser.mjs",
     "test:economy": "node scripts/test-economy.mjs",
     "test:spoils": "node scripts/test-spoils.mjs",
+    "test:supplies": "node scripts/test-supplies.mjs",
     "test:backup": "node scripts/test-progress-backup.mjs",
     "test:presets": "node scripts/test-presets.mjs",
     "test:duel": "node scripts/test-duel.mjs",

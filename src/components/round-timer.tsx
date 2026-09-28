@@ -11,6 +11,8 @@ type Props = {
   onExpire: () => void;
   /** Falso no duelo: o tempo corre sempre, mesmo com a janela sem foco (não dá para ganhar tempo saindo da tela). */
   pausable?: boolean;
+  /** Segundos extras somados pela Ampulheta nesta rodada (suprimento de expedição): soma ao tempo que falta, sem reiniciar a barra. */
+  bonusSeconds?: number;
 };
 
 const LOW_MS = 3000;
@@ -21,17 +23,30 @@ const MAX_STEP_MS = 500;
 // O tempo pausa sozinho quando o app sai de cena (aba escondida ou janela sem foco), para uma
 // notificação no celular não roubar tempo do jogador. No duelo (`pausable` falso) nada pausa o tempo: nem a janela sem foco
 // nem o aviso de sair; o relógio segue o tempo real, mesmo que o navegador congele os quadros.
-export function RoundTimer({ seconds, running, resetKey, onExpire, pausable = true }: Props) {
-  const total = (seconds ?? 0) * 1000;
-  const remaining = useRef(total);
-  const [left, setLeft] = useState(total);
+export function RoundTimer({ seconds, running, resetKey, onExpire, pausable = true, bonusSeconds = 0 }: Props) {
+  const base = (seconds ?? 0) * 1000;
+  const remaining = useRef(base);
+  const [left, setLeft] = useState(base);
   const expire = useRef(onExpire);
   expire.current = onExpire;
+  const appliedBonus = useRef(0);
 
   useEffect(() => {
-    remaining.current = total;
-    setLeft(total);
-  }, [resetKey, total]);
+    remaining.current = base;
+    setLeft(base);
+    appliedBonus.current = 0;
+  }, [resetKey, base]);
+
+  // A Ampulheta soma ao tempo que falta na hora (sem reiniciar a barra); `total` (usado na fração) cresce junto para o cálculo continuar certo.
+  useEffect(() => {
+    const addedMs = (bonusSeconds - appliedBonus.current) * 1000;
+    appliedBonus.current = bonusSeconds;
+    if (addedMs > 0) {
+      remaining.current += addedMs;
+      setLeft(remaining.current);
+    }
+  }, [bonusSeconds]);
+  const total = base + bonusSeconds * 1000;
 
   useEffect(() => {
     if (seconds === null || !running) return;

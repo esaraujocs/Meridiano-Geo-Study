@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeSpoils, type Pace, type Tier } from "../domain/spoils";
+import { supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import type { AnyQuizVariant } from "../domain/types";
+import { Icon, type IconType } from "./icons";
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** Uma rodada já respondida, como o topo do jogo precisa dela (certa/errada) e como o espólio pendente é calculado. */
@@ -66,6 +68,42 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
     <div className="gs-meta">{meta}</div>
     <div className="gs-timer">{children}</div>
   </header>;
+}
+
+const SUPPLY_ICON: Record<SupplyId, IconType> = { ampulheta: "hourglass", bussola: "compass", lupa: "search" };
+
+/**
+ * Suprimentos de expedição disponíveis nesta rodada: só aparece com estoque > 0 e num modo em que o item faz sentido
+ * (supplyApplies). Some da tela quando não sobra nenhum aplicável, sem cadeado nem "0" — a Loja é onde se aprende que existem.
+ */
+export function SupplyTray({ variant, counts, usedThisRound, disabled, onUse }: {
+  variant: AnyQuizVariant;
+  counts: SupplyCounts;
+  /** Suprimentos já usados nesta rodada (cada um só pode ser usado uma vez por rodada). */
+  usedThisRound: ReadonlySet<SupplyId>;
+  disabled?: boolean;
+  onUse: (id: SupplyId) => void;
+}) {
+  const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant));
+  if (!available.length) return null;
+  return (
+    <div className="gs-supplies" role="group" aria-label={t.supplies.trayAria}>
+      {available.map((id) => {
+        const used = usedThisRound.has(id);
+        return (
+          <button
+            key={id} type="button" className="gs-supply" disabled={disabled || used}
+            aria-label={t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
+            onClick={() => onUse(id)}
+          >
+            <Icon type={SUPPLY_ICON[id]} size={15} />
+            <span>{t.supplies[id].short}</span>
+            <b>{counts[id]}</b>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 /** Botão "Continuar" do retorno de um erro: enche durante o prazo e pula se tocado. */

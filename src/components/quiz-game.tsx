@@ -17,7 +17,9 @@ import { RoundTimer } from "./round-timer";
 import { cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
 import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
-import { ContinueBar, GameTopBar, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { useSupplies } from "./use-supplies";
+import { LUPA_REMOVE_COUNT, emptySupplyCounts, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { variantLabel } from "../domain/result-view";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { t } from "../domain/i18n";
@@ -30,6 +32,7 @@ export function QuizGame({
   variant,
   region,
   options,
+  supplies = emptySupplyCounts(),
   onBack,
   onEnd,
 }: {
@@ -38,11 +41,16 @@ export function QuizGame({
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
   options?: SessionOptions;
+  supplies?: SupplyCounts;
   onBack: () => void;
   onEnd?: (result: SessionResult | null) => void;
 }) {
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
+  // Suprimentos de expedição: só na Partida solo (nunca no Treino nem em duelo/PvP).
+  const suppliesEnabled = pace === "timed" && !settings.duel && !settings.pvp;
+  const supply = useSupplies(supplies, suppliesEnabled);
+  const [lupaHidden, setLupaHidden] = useState<ReadonlySet<string>>(new Set());
   const [flags, setFlags] = useState<FlagCatalog | null>(null);
   const [error, setError] = useState("");
   const [target, setTarget] = useState("");
@@ -167,6 +175,8 @@ export function QuizGame({
     setTimedOut(false);
     settledRef.current = "";
     setSerial((value) => value + 1);
+    supply.resetRound();
+    setLupaHidden(new Set());
   };
   const newDeck = () => createFiniteDeck(pool, deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed), roundLimit);
 
@@ -189,6 +199,7 @@ export function QuizGame({
       answeredAt: Date.now(),
       tier: entityTier(data.meta, question.target),
       ...(id === null ? { timedOut: true } : { selectedId: id }),
+      ...(supply.assisted ? { assisted: true } : {}),
     });
     setSelected(id ?? "");
     setTimedOut(id === null);
@@ -203,6 +214,14 @@ export function QuizGame({
     if (correct) cueCorrect();
   };
   const answer = (id: string) => resolveRound(id);
+  const useSupplyItem = (id: SupplyId) => {
+    if (feedback || !supply.use(id)) return;
+    if (id === "lupa" && question) {
+      const wrong = question.options.filter((option) => option !== question.target && !lupaHidden.has(option));
+      const toHide = shuffleAnswerOptions(wrong).slice(0, LUPA_REMOVE_COUNT);
+      setLupaHidden((current) => new Set([...current, ...toHide]));
+    }
+  };
   const restart = () => {
     advance.cancel();
     leaveGuard.reset();
@@ -221,7 +240,8 @@ export function QuizGame({
 
   const totalRounds = deckRef.current?.size ?? pool.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
-  useGameKeys({ exit, choose: (index) => { const id = question?.options[index]; if (id && !feedback) answer(id); } });
+  const visibleOptions = useMemo(() => question?.options.filter((id) => !lupaHidden.has(id)) ?? [], [question, lupaHidden]);
+  useGameKeys({ exit, choose: (index) => { const id = visibleOptions[index]; if (id && !feedback) answer(id); } });
 
   const targetMeta = data.meta[target];
   const isFlagPrompt = variant === "bandeira-nome";
@@ -272,8 +292,9 @@ export function QuizGame({
       {leaveGuard.dialog}
       <div className="gs">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
-          <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
+          <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
         </GameTopBar>
+        {suppliesEnabled && <SupplyTray variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
         <div className="gs-body">
           <main className="gs-stage">
             <div className="gs-kicker">{kicker}</div>
@@ -288,7 +309,7 @@ export function QuizGame({
           </main>
           <section className="gs-tray" aria-label={t.common.answersRegion}>
             <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>
-              {question.options.map((id, index) => (
+              {visibleOptions.map((id, index) => (
                 <button
                   key={id}
                   className={`${optionClass(id === question.target, id === selected, feedback)} gs-opt`}

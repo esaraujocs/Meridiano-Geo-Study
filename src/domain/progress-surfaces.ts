@@ -39,6 +39,8 @@ export type SurfaceSession = {
   correct: number;
   accuracy: number | null;
   averageTime: number | null;
+  /** Quantas rodadas foram respondidas com ajuda de um suprimento de expedição — a sessão nunca conta pra "sem falhas"/perfeita com isso > 0. */
+  assistedCount: number;
 };
 export type ProgressSnapshot = {
   total: number;
@@ -75,7 +77,7 @@ function familyFor(mode: string) {
   if (mode === "capital-pais" || mode === "pais-capital") return "capitais";
   return "bandeiras";
 }
-type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean };
+type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean };
 // A rodada vem como objeto (partida atual) ou como tupla [alvo, acertou, ms, km] (perfil clássico, inclusive
 // quando migrado para o campo `rounds`).
 function roundFrom(round: any): NormalizedRound {
@@ -92,6 +94,7 @@ function roundFrom(round: any): NormalizedRound {
     responseTimeMs: typeof round?.responseTimeMs === "number" ? round.responseTimeMs : null,
     distanceKm: typeof round?.distanceKm === "number" ? round.distanceKm : null,
     byWater: Boolean(round?.byWater),
+    assisted: Boolean(round?.assisted),
   };
 }
 function roundsOf(value: any): NormalizedRound[] {
@@ -125,6 +128,7 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     correct,
     accuracy: total ? correct / total : null,
     averageTime: times.length ? times.reduce((sum: number, time: number) => sum + time, 0) / times.length : null,
+    assistedCount: rounds.filter((round: NormalizedRound) => round.assisted).length,
   };
 }
 export function canonicalCurrentIds(meta: Record<string, Meta> = {}) {

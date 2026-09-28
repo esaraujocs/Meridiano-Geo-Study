@@ -8,7 +8,9 @@ import { RoundTimer } from "./round-timer";
 import { AnswerReveal, cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
 import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
-import { ContinueBar, GameTopBar, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { useSupplies } from "./use-supplies";
+import { emptySupplyCounts, LUPA_REMOVE_COUNT, type SupplyCounts } from "../domain/supplies";
 import { variantLabel } from "../domain/result-view";
 import { regionLabel } from "../domain/regions";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
@@ -21,13 +23,17 @@ import { TypedAnswerInput } from "./typed-answer-input";
 import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
 
-type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void };
+type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void; supplies?: SupplyCounts };
 type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
 
-export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: Props & { onEnd?: (result: SessionResult | null) => void }) {
+export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, supplies = emptySupplyCounts() }: Props & { onEnd?: (result: SessionResult | null) => void }) {
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
+  // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
+  const suppliesEnabled = pace === "timed" && !settings.duel && !settings.pvp;
+  const supply = useSupplies(supplies, suppliesEnabled);
+  const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
   const [languages, setLanguages] = useState<LanguageEntry[]>([]);
   const [flags, setFlags] = useState<FlagCatalog>({});
@@ -124,6 +130,8 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
     const item = deck.current?.draw();
     if (!item) return;
     setTarget(item); setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedChoice(""); setLocked(false); setTimedOutRound(false); setSerial((value) => value + 1); committedTarget.current = null; started.current = Date.now();
+    setLupaHidden(new Set());
+    supply.resetRound();
     if (!writing) {
       const distractors = shuffleAnswerOptions(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
       setChoices(shuffleAnswerOptions([item, ...distractors].map((candidate) => ({
@@ -168,6 +176,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
       targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(),
       tier: entityTier(data.meta, target.id),
       ...(timedOut ? { timedOut: true, ...(value ? { selectedId: value } : {}) } : { selectedId: value }),
+      ...(supply.assisted ? { assisted: true } : {}),
     });
     const exhausted = deck.current?.remaining === 0;
     advance.schedule(async () => {
@@ -187,6 +196,13 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   };
   // O tempo da pergunta acabou: conta como erro; na escrita, o que já estava digitado fica registrado.
   const timeUp = () => answer("", writing ? typed : "", false, true);
+  // Lupa: esconde 2 alternativas erradas ao acaso (nunca a certa) — não existe na escrita, que não tem opções.
+  const useLupa = () => {
+    if (!target || locked || !supply.use("lupa")) return;
+    const wrongIds = shuffleAnswerOptions(choices.filter((choice) => choice.id !== target.id).map((choice) => choice.id)).slice(0, LUPA_REMOVE_COUNT);
+    setLupaHidden(new Set(wrongIds));
+  };
+  const visibleChoices = useMemo(() => choices.filter((choice) => !lupaHidden.has(choice.id)), [choices, lupaHidden]);
   // Baralho fechado (complete) ou "Encerrar sessão": ambos levam ao resultado, que mostra as moedas ganhas.
   const finishSession = async (complete = false) => {
     const handle = session.current ?? await pendingSession.current?.catch(() => null);
@@ -239,7 +255,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   };
   useGameKeys({
     exit: () => leaveGuard.ask({ onLeave: () => void finish(), onRestart: () => void restart(), coins: log.pending, xp: deck.current?.size ?? pool.length }),
-    choose: (index) => { if (writing || locked) return; const choice = choices[index]; if (choice) answer(choice.id, choice.label); },
+    choose: (index) => { if (writing || locked) return; const choice = visibleChoices[index]; if (choice) answer(choice.id, choice.label); },
     enabled: Boolean(target),
   });
   if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>{t.common.exitGame}</button><div className="diagnostic">{error}</div></main></div>;
@@ -267,7 +283,16 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
-        <RoundTimer pausable={!settings.duel} seconds={timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+        <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
+        {suppliesEnabled && (
+          <SupplyTray
+            variant={variant}
+            counts={supply.counts}
+            usedThisRound={supply.usedThisRound}
+            disabled={locked}
+            onUse={(id) => (id === "lupa" ? useLupa() : supply.use(id))}
+          />
+        )}
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">
@@ -292,7 +317,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd }: P
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={advance.skip} />}
             <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
-            <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>{choices.map((choice, index) => {
+            <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>{visibleChoices.map((choice, index) => {
               const historicalFlag = choice.flag ? historicalFlags[choice.flag.toLowerCase()] : undefined;
               return <button key={choice.id} className={`${optionClass(choice.id === target.id, choice.id === selectedChoice, answerResult)} gs-opt`} aria-invalid={locked && choice.id === selectedChoice && answerResult === "wrong" ? true : undefined} disabled={locked} onClick={() => answer(choice.id, choice.label)}>
                 <span className="gs-key" aria-hidden="true">{index + 1}</span>

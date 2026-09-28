@@ -53,7 +53,7 @@ const perfectRegionsFor = (sessions: readonly SurfaceSession[], family: string) 
   const regions = new Set<string>();
   for (const s of sessions) {
     if (s.family !== family || s.roundLimit !== null || !s.complete) continue;
-    if (!s.rounds.length || s.correct !== s.rounds.length) continue;
+    if (!s.rounds.length || s.correct !== s.rounds.length || s.assistedCount) continue;
     for (const region of regionsCoveredBy(s)) regions.add(region);
   }
   return regions;
@@ -173,7 +173,7 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
       if (s.family==="travel" && r.correct) travelRoutes++;
       if (s.family==="escrita" && r.correct) writtenCorrect++;
     }
-    if (s.complete && s.rounds.length && s.correct===s.rounds.length) { if(s.rounds.length>=20) perfect20=true; if(s.rounds.length>=40) perfect40=true; }
+    if (s.complete && s.rounds.length && s.correct===s.rounds.length && !s.assistedCount) { if(s.rounds.length>=20) perfect20=true; if(s.rounds.length>=40) perfect40=true; }
     if (s.mode==="mapa" && s.complete) { const error = meanMapErrorKm(s.rounds); if (error && error.rounds >= MAP_ERROR_MIN_ROUNDS && error.km < MAP_ERROR_GOAL_KM) precise=true; }
     const selectedRegions = s.regions?.length ? s.regions : [s.region];
     if((selectedRegions.includes("mundo") || ["caribe","pacifico","europa","africa","asia","america-do-sul","america-do-norte-central"].every(region => selectedRegions.includes(region))) && s.complete && s.rounds.length>=150) worldComplete=true;

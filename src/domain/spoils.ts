@@ -6,6 +6,8 @@ export type Tier = 1 | 2 | 3;
 
 /** O Treino paga só uma fração das moedas, para incentivar a jogar com tempo. */
 export const TRAINING_COIN_FACTOR = 0.5;
+/** Rodada em que um suprimento de expedição foi usado paga só uma fração do acerto (e da sequência dele) — o resto da partida paga cheio. */
+export const ASSISTED_COIN_FACTOR = 0.5;
 export const NEW_CARD_COINS = 60;
 export const LEVEL_UP_COINS = 30;
 /**
@@ -62,6 +64,8 @@ export type SpoilsRound = {
   tier?: Tier;
   /** Quanto da rodada foi cumprido (Travel: países da rota acertados). Sem valor: 1 se acertou, 0 se errou. */
   weight?: number;
+  /** Rodada respondida com ajuda de um suprimento de expedição (Lupa/Bússola/Ampulheta): paga ASSISTED_COIN_FACTOR do normal. */
+  assisted?: boolean;
 };
 export type SpoilsInput = {
   variant: AnyQuizVariant;
@@ -135,15 +139,16 @@ export function computeSpoils(input: SpoilsInput): Spoils {
   let correctRounds = 0;
   for (const round of input.rounds) {
     const weight = round.weight ?? (round.correct ? 1 : 0);
+    const assistedFactor = round.assisted ? ASSISTED_COIN_FACTOR : 1;
     if (weight > 0) {
       hitCount += 1;
-      hitCoinsRaw += hitCoins(input.variant, round.tier ?? 1) * weight;
+      hitCoinsRaw += hitCoins(input.variant, round.tier ?? 1) * weight * assistedFactor;
     }
     if (round.correct) {
       correctRounds += 1;
       streak += 1;
       best = Math.max(best, streak);
-      streakRaw += hitCoins(input.variant, round.tier ?? 1) * weight * Math.min(streak * STREAK_STEP, STREAK_CAP);
+      streakRaw += hitCoins(input.variant, round.tier ?? 1) * weight * assistedFactor * Math.min(streak * STREAK_STEP, STREAK_CAP);
     } else streak = 0;
   }
   const accuracy = input.rounds.length ? correctRounds / input.rounds.length : 0;

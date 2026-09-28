@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ProgressHero } from "./progress-hero";
+import { Icon, type IconType } from "./icons";
 import { LEAGUE_THEMES, SHOP_THEMES, THEMES, THEME_TIERS, isThemeOwned, missingCoins, themeById, type Theme, type ThemeTier } from "../domain/themes";
+import { SUPPLY_COST, SUPPLY_IDS, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { formatNumber as money, t } from "../domain/i18n";
 
@@ -13,7 +15,32 @@ type Props = {
   activeTheme: string;
   onEquip: (id: string) => void;
   onBuy: (id: string) => Promise<void>;
+  supplies: SupplyCounts;
+  onBuySupply: (id: SupplyId, qty: number) => Promise<void>;
 };
+
+const SUPPLY_ICON: Record<SupplyId, IconType> = { ampulheta: "hourglass", bussola: "compass", lupa: "search" };
+
+function SupplyCard({ id, count, price, busy, onBuy }: { id: SupplyId; count: number; price: number; busy: boolean; onBuy: (qty: number) => Promise<void> }) {
+  const [qty, setQty] = useState(1);
+  return <article className="store-card store-card-supply" aria-labelledby={`supply-${id}`}>
+    <div className="store-thumb store-thumb-fallback supply-thumb" aria-hidden="true"><Icon type={SUPPLY_ICON[id]} size={32} /></div>
+    <div className="store-body">
+      <div className="store-head"><h3 id={`supply-${id}`}>{t.supplies[id].name}</h3></div>
+      <p>{t.supplies[id].detail}</p>
+      <div className="store-foot">
+        <span className="store-state">{t.store.supplies.owned(count)}</span>
+        <span className="store-price" aria-label={t.store.supplies.unitPrice(money(price))}><i aria-hidden="true">$</i>{money(price)}</span>
+      </div>
+      <div className="store-qty" role="group" aria-label={t.supplies[id].name}>
+        <button type="button" className="store-btn" onClick={() => setQty((value) => Math.max(1, value - 1))} disabled={qty <= 1} aria-label={t.store.supplies.less}>−</button>
+        <b>{qty}</b>
+        <button type="button" className="store-btn" onClick={() => setQty((value) => value + 1)} aria-label={t.store.supplies.more}>+</button>
+      </div>
+      <button type="button" className="store-btn primary" disabled={busy} onClick={() => void onBuy(qty)}>{t.store.supplies.buy(qty)} · {money(price * qty)}</button>
+    </div>
+  </article>;
+}
 
 function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAskBuy, onConfirm, onCancel }: {
   theme: Theme; active: boolean; owned: boolean; balance: number; pending: boolean; busy: boolean;
@@ -52,10 +79,10 @@ function ThemeCard({ theme, active, owned, balance, pending, busy, onEquip, onAs
   </article>;
 }
 
-/** Os submenus da Loja: uma faixa de preço por vez e os temas de liga. */
-type Tab = ThemeTier | "league";
+/** Os submenus da Loja: uma faixa de preço por vez, os temas de liga e os Suprimentos de expedição. */
+type Tab = ThemeTier | "league" | "supplies";
 
-export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
+export function StoreView({ economy, activeTheme, onEquip, onBuy, supplies, onBuySupply }: Props) {
   const [picked, setPicked] = useState<Tab | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -71,11 +98,17 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
     setPending(null);
     setBusy(false);
   };
+  const buySupply = async (id: SupplyId, qty: number) => {
+    setBusy(true);
+    try { await onBuySupply(id, qty); setNotice(t.store.supplies.boughtNotice(t.supplies[id].name, qty)); }
+    catch { setNotice(t.store.supplies.buyFailed); }
+    setBusy(false);
+  };
   const equip = (theme: Theme) => { onEquip(theme.id); setNotice(t.store.equipped(theme.name)); };
-  // Submenus: só as faixas que têm tema, mais os de liga. Abre na primeira faixa que ainda tem o que comprar.
+  // Submenus: só as faixas que têm tema, mais os de liga e os Suprimentos (sempre presente). Abre na primeira faixa que ainda tem o que comprar.
   const leftIn = (tier: ThemeTier) => SHOP_THEMES.filter((theme) => theme.tier === tier && !isThemeOwned(theme.id, economy.unlocked)).length;
-  const tabs: Tab[] = [...THEME_TIERS.filter((tier) => SHOP_THEMES.some((theme) => theme.tier === tier)), ...(LEAGUE_THEMES.length ? (["league"] as const) : [])];
-  const current: Tab = picked && tabs.includes(picked) ? picked : tabs.find((tab) => tab !== "league" && leftIn(tab) > 0) ?? tabs[0];
+  const tabs: Tab[] = [...THEME_TIERS.filter((tier) => SHOP_THEMES.some((theme) => theme.tier === tier)), ...(LEAGUE_THEMES.length ? (["league"] as const) : []), "supplies"];
+  const current: Tab = picked && tabs.includes(picked) ? picked : tabs.find((tab): tab is ThemeTier => tab !== "league" && tab !== "supplies" && leftIn(tab) > 0) ?? tabs[0];
   const pick = (tab: Tab) => { setPicked(tab); setPending(null); setNotice(""); };
   const cardOf = (theme: Theme, league: boolean) => <ThemeCard
     key={theme.id} theme={theme} active={theme.id === activeTheme} owned={isThemeOwned(theme.id, economy.unlocked)}
@@ -95,8 +128,8 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
     <div className="store-sec"><h2>{t.store.hubThemes}</h2><span>{toBuy > 0 ? t.store.toBuy(toBuy) : t.store.allBought}</span></div>
     <div className="pg-chips store-tabs" role="group" aria-label={t.store.tabsAria}>
       {tabs.map((tab) => {
-        const label = tab === "league" ? t.store.leagueTab : t.store.tiers[tab][0];
-        const count = tab === "league" ? `${leagueOwned}/${LEAGUE_THEMES.length}` : leftIn(tab) > 0 ? String(leftIn(tab)) : "";
+        const label = tab === "league" ? t.store.leagueTab : tab === "supplies" ? t.store.suppliesTab : t.store.tiers[tab][0];
+        const count = tab === "league" ? `${leagueOwned}/${LEAGUE_THEMES.length}` : tab === "supplies" ? "" : leftIn(tab) > 0 ? String(leftIn(tab)) : "";
         return <button key={tab} type="button" className="pg-chip" aria-pressed={current === tab} onClick={() => pick(tab)}>{label}{count && <> <em>{count}</em></>}</button>;
       })}
     </div>
@@ -106,6 +139,12 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy }: Props) {
         <div className="store-sec store-sec-tier"><h3 id="tier-league">{t.store.leagueThemes}</h3><span>{t.store.leagueOwned(leagueOwned, LEAGUE_THEMES.length)}</span></div>
         <p className="store-note">{t.store.leagueThemesNote}</p>
         <div className="store-grid">{LEAGUE_THEMES.map((theme) => cardOf(theme, true))}</div>
+      </section>
+      : current === "supplies"
+      ? <section className="store-tier" aria-labelledby="tier-supplies">
+        <div className="store-sec store-sec-tier"><h3 id="tier-supplies">{t.store.suppliesTab}</h3></div>
+        <p className="store-note">{t.store.supplies.note}</p>
+        <div className="store-grid">{SUPPLY_IDS.map((id) => <SupplyCard key={id} id={id} count={supplies[id]} price={SUPPLY_COST[id]} busy={busy} onBuy={(qty) => buySupply(id, qty)} />)}</div>
       </section>
       : <section className="store-tier" aria-labelledby={`tier-${current}`}>
         <div className="store-sec store-sec-tier"><h3 id={`tier-${current}`}>{t.store.tiers[current][0]}</h3><span>{leftIn(current) > 0 ? t.store.toBuy(leftIn(current)) : t.store.allBought}</span></div>

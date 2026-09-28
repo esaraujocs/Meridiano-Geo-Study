@@ -754,6 +754,14 @@ export const es: Messages = {
     coinsTitle: "Monedas de esta partida: llegan a tu cartera cuando termina",
     coinsAria: (coins: string) => `Monedas pendientes: ${coins}`,
   },
+  supplies: {
+    trayAria: "Suministros de expedición",
+    useAria: (name: string, count: number) => `Usar ${name} (${count} en existencia)`,
+    assistedHint: "Ronda con suministro: paga la mitad y no cuenta para la maestría ni el dominio.",
+    ampulheta: { name: "Reloj de arena", short: "+5 s", detail: "Suma 5 segundos al cronómetro de esta ronda." },
+    bussola: { name: "Brújula", short: "Continente", detail: "Muestra el continente del país buscado." },
+    lupa: { name: "Lupa", short: "Eliminar 2", detail: "Quita dos alternativas incorrectas, dejando la correcta y una más." },
+  },
   quiz: {
     unavailable: "Quiz no disponible",
     loadFailed: "No se pudo cargar este material.",
@@ -1249,6 +1257,17 @@ export const es: Messages = {
     earned: (league: string) => `Conseguido en ${league}`,
     lockedLeague: (league: string) => `Llega a la liga ${league}`,
     leagueOwned: (owned: number, total: number) => `${owned} de ${total} conseguidos`,
+    suppliesTab: "Suministros",
+    supplies: {
+      note: "Ayudan en una ronda difícil, solo en Partida en solitario (nunca en Entrenamiento ni en duelo). Una ronda con suministro paga la mitad y no cuenta para la maestría ni el dominio.",
+      owned: (n: number) => (n === 1 ? "1 en existencia" : `${n} en existencia`),
+      unitPrice: (price: string) => `${price} cada uno`,
+      less: "Disminuir cantidad",
+      more: "Aumentar cantidad",
+      buy: (qty: number) => (qty === 1 ? "Comprar 1" : `Comprar ${qty}`),
+      boughtNotice: (name: string, qty: number) => (qty === 1 ? `1 ${name} comprada.` : `${qty} ${name} compradas.`),
+      buyFailed: "No se pudo comprar: el saldo cambió. Revisa tus monedas e inténtalo de nuevo.",
+    },
   },
   themes: {
     pigmentos: ["Pigmentos", "Un color por modo: verde azulado, terracota, latón y violeta."],

@@ -757,6 +757,14 @@ export const pt = {
     coinsTitle: "Moedas desta partida: caem na carteira quando ela termina",
     coinsAria: (coins: string) => `Moedas pendentes: ${coins}`,
   },
+  supplies: {
+    trayAria: "Suprimentos de expedição",
+    useAria: (name: string, count: number) => `Usar ${name} (${count} no estoque)`,
+    assistedHint: "Rodada com suprimento: paga metade e não conta para maestria nem domínio.",
+    ampulheta: { name: "Ampulheta", short: "+5 s", detail: "Soma 5 segundos ao cronômetro desta rodada." },
+    bussola: { name: "Bússola", short: "Continente", detail: "Mostra o continente do país procurado." },
+    lupa: { name: "Lupa", short: "Eliminar 2", detail: "Tira duas alternativas erradas, sobrando a certa e mais uma." },
+  },
   quiz: {
     unavailable: "Quiz indisponível",
     loadFailed: "Não foi possível carregar este material.",
@@ -1311,6 +1319,17 @@ export const pt = {
     earned: (league: string) => `Conquistado na ${league}`,
     lockedLeague: (league: string) => `Chegue à liga ${league}`,
     leagueOwned: (owned: number, total: number) => `${owned} de ${total} conquistados`,
+    suppliesTab: "Suprimentos",
+    supplies: {
+      note: "Ajudam numa rodada difícil, só na Partida solo (nunca no Treino nem no duelo). Rodada com suprimento paga metade e não conta para maestria nem domínio.",
+      owned: (n: number) => (n === 1 ? "1 no estoque" : `${n} no estoque`),
+      unitPrice: (price: string) => `${price} a unidade`,
+      less: "Diminuir quantidade",
+      more: "Aumentar quantidade",
+      buy: (qty: number) => (qty === 1 ? "Comprar 1" : `Comprar ${qty}`),
+      boughtNotice: (name: string, qty: number) => (qty === 1 ? `1 ${name} comprada.` : `${qty} ${name} compradas.`),
+      buyFailed: "Não foi possível comprar: o saldo mudou. Confira as moedas e tente de novo.",
+    },
   },
   themes: {
     pigmentos: ["Pigmentos", "Uma cor para cada modo: teal, terracota, latão e violeta."],

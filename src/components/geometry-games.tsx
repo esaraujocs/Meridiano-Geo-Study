@@ -4,7 +4,9 @@ import type { Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion, regionLabel } from "../domain/regions";
 import { inSilhouetteDeck } from "../domain/silhouette";
 import { variantLabel } from "../domain/result-view";
-import { ContinueBar, GameTopBar, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
+import { useSupplies } from "./use-supplies";
+import { emptySupplyCounts, LUPA_REMOVE_COUNT, type SupplyCounts } from "../domain/supplies";
 import {
   aliases,
   evaluateTravelGuess,
@@ -29,7 +31,7 @@ import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { TypedAnswerInput } from "./typed-answer-input";
 import { t } from "../domain/i18n";
 
-type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; options?: SessionOptions; onBack: () => void; onEnd?: (result: SessionResult | null) => void };
+type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; options?: SessionOptions; onBack: () => void; onEnd?: (result: SessionResult | null) => void; supplies?: SupplyCounts };
 type Destination = "recorte" | "home" | "result";
 
 type SessionRound = Parameters<LearningSessionHandle["recordRound"]>[0];
@@ -76,20 +78,24 @@ function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "t
   };
 }
 
-export function GeometryGame({ family, variant, data, region, options, onBack, onEnd }: Props) {
+export function GeometryGame({ family, variant, data, region, options, onBack, onEnd, supplies }: Props) {
   const [runKey, setRunKey] = useState(0);
   const restart = () => setRunKey((value) => value + 1);
   return family === "silhueta"
-    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} />
-    : <TravelGame key={runKey} data={data} region={region} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} />;
+    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} />
+    : <TravelGame key={runKey} data={data} region={region} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} />;
 }
 
-function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart }: Omit<Props, "family"> & { onRestart: () => void }) {
+function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts() }: Omit<Props, "family"> & { onRestart: () => void }) {
   const engineVariant = variant === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta";
   const settings = sessionSettings(options, engineVariant);
   const session = useSession("silhueta", engineVariant, region, settings);
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? engineVariant, settings.pace);
+  // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts). Lupa só na Silhueta · alternativas.
+  const suppliesEnabled = settings.pace === "timed" && !settings.duel && !settings.pvp;
+  const supply = useSupplies(supplies, suppliesEnabled);
+  const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
     if (destination === "home") location.href = "/";
@@ -132,6 +138,8 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
        startedAt.current = Date.now();
        setTyped(""); setFeedback(""); setAnswerResult(""); setLocked(false); setSerial((value) => value + 1);
        if (variant === "silhueta-opcoes") setChoices(optionsFor(first));
+       setLupaHidden(new Set());
+       supply.resetRound();
     }
   }, [ids, variant, region]);
   // Depois do retorno da resposta: próxima silhueta ou, se o baralho acabou, o resultado da partida.
@@ -149,6 +157,8 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       startedAt.current = Date.now();
       setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedSilhouette(""); setLocked(false); setSerial((value) => value + 1);
       if (variant === "silhueta-opcoes") setChoices(optionsFor(next));
+      setLupaHidden(new Set());
+      supply.resetRound();
       requestAnimationFrame(() => inputRef.current?.focus());
     }, delay, skipAfter);
   };
@@ -167,6 +177,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       targetId: target, correct, responseTimeMs: Math.max(0, Date.now() - startedAt.current), answeredAt: Date.now(),
       tier: entityTier(data.meta, target),
       ...(timedOut ? { timedOut: true, ...(value ? { selectedId: value } : {}) } : { selectedId: value }),
+      ...(supply.assisted ? { assisted: true } : {}),
     });
     advance(feedbackHoldMs(correct, variant !== "silhueta-opcoes"), feedbackSkipAfterMs(correct));
     if (correct) cueCorrect();
@@ -175,11 +186,18 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     if (!target || locked) return;
     resolve(value, aliases(data.meta[target]).includes(normalizeName(value)));
   };
+  // Lupa: esconde 2 alternativas erradas ao acaso (só na Silhueta · alternativas).
+  const useLupa = () => {
+    if (!target || locked || !supply.use("lupa")) return;
+    const wrongIds = shuffleAnswerOptions(choices.filter((id) => id !== target)).slice(0, LUPA_REMOVE_COUNT);
+    setLupaHidden(new Set(wrongIds));
+  };
+  const visibleChoices = useMemo(() => choices.filter((id) => !lupaHidden.has(id)), [choices, lupaHidden]);
   const total = deck.current?.size ?? ids.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: total });
   useGameKeys({
     exit,
-    choose: (index) => { if (variant !== "silhueta-opcoes" || locked) return; const id = choices[index]; if (id) { setSelectedSilhouette(id); resolve(id, id === target); } },
+    choose: (index) => { if (variant !== "silhueta-opcoes" || locked) return; const id = visibleChoices[index]; if (id) { setSelectedSilhouette(id); resolve(id, id === target); } },
     enabled: Boolean(features && target),
   });
   const path = featurePath(features?.get(target));
@@ -190,7 +208,16 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`}>
-        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
+        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
+        {suppliesEnabled && (
+          <SupplyTray
+            variant={engineVariant}
+            counts={supply.counts}
+            usedThisRound={supply.usedThisRound}
+            disabled={locked}
+            onUse={(id) => (id === "lupa" ? useLupa() : supply.use(id))}
+          />
+        )}
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">
@@ -214,7 +241,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
             <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
-            <div className="quiz-options gs-opts">{choices.map((id, index) => <button className={`${optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked} key={id} onClick={() => {
+            <div className="quiz-options gs-opts">{visibleChoices.map((id, index) => <button className={`${optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked} key={id} onClick={() => {
               if (locked) return;
               setSelectedSilhouette(id);
               resolve(id, id === target);
@@ -232,12 +259,15 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   </div>;
 }
 
-function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Props, "family"> & { onRestart: () => void }) {
+function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts() }: Omit<Props, "family"> & { onRestart: () => void }) {
   const settings = sessionSettings(options, "travel");
   const session = useSession("travel", "travel", region, settings);
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog("travel", settings.pace);
   const flow = useAdvance();
+  // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP); no Travel só a Ampulheta faz sentido.
+  const suppliesEnabled = settings.pace === "timed" && !settings.duel && !settings.pvp;
+  const supply = useSupplies(supplies, suppliesEnabled);
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
     if (destination === "home") location.href = "/";
@@ -273,6 +303,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
     if (!destination) return;
     setRoute(solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination)));
     destinationStarted.current = Date.now();
+    supply.resetRound();
   }, [destinations, ids, data, region]);
   const intermediates = route?.slice(1, -1) ?? [];
   const next = intermediates[guesses.length];
@@ -289,6 +320,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
       const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
       if (!nextRoute) { setError(t.travel.noRoute); return; }
       setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setOver(false); overRef.current = false; setRound((current) => current + 1); destinationStarted.current = Date.now();
+      supply.resetRound();
       requestAnimationFrame(() => inputRef.current?.focus());
     }, delay, skipAfter);
   };
@@ -306,6 +338,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
       selectedId: value, attempts: nextAttempts, guesses: newGuesses,
       tier: entityTier(data.meta, destination), weight: newGuesses.length,
       ...(timedOut ? { timedOut: true } : {}),
+      ...(supply.assisted ? { assisted: true } : {}),
     });
     advance(feedbackHoldMs(complete, true), feedbackSkipAfterMs(complete));
     if (complete) cueCorrect();
@@ -362,7 +395,16 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart }: Omit<Pr
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel("travel")} · ${regionLabel(region)}`}>
-        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
+        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
+        {suppliesEnabled && (
+          <SupplyTray
+            variant="travel"
+            counts={supply.counts}
+            usedThisRound={supply.usedThisRound}
+            disabled={over}
+            onUse={(id) => supply.use(id)}
+          />
+        )}
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage">

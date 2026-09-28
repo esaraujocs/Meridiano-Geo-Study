@@ -27,7 +27,10 @@ export type IconType =
   | "store"
   | "star"
   | "swords"
-  | "info";
+  | "info"
+  | "search"
+  | "compass"
+  | "hourglass";
 
 export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
   return (
@@ -86,6 +89,9 @@ export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
       {type === "swords" && <path d="M4 4l7 7m-3 0 3 3M4 20l3-3m-1-1 3 3m11-15-7 7m3 0-3 3m7 4-3-3m1-1-3 3" />}
       {type === "info" && <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>}
       {type === "book" && <><path d="M2 5.5C4.5 4 8 4 12 6c4-2 7.5-2 10-.5v13c-2.5-1.5-6-1.5-10 .5-4-2-7.5-2-10-.5v-13Z" /><path d="M12 6v13" /></>}
+      {type === "search" && <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>}
+      {type === "compass" && <><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2.3 5.3-5.3 2.3 2.3-5.3 5.3-2.3Z" /></>}
+      {type === "hourglass" && <><path d="M6 2h12M6 22h12" /><path d="M7 2c0 5 4 6 5 8-1 2-5 3-5 8h10c0-5-4-6-5-8 1-2 5-3 5-8H7Z" /></>}
     </svg>
   );
 }

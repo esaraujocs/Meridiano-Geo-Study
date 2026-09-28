@@ -36,6 +36,9 @@ export type LearningRound = {
   weight?: number;
   /** O tempo da pergunta acabou (conta como erro). */
   timedOut?: boolean;
+  /** Respondida com ajuda de um suprimento de expedição (Lupa/Bússola/Ampulheta): não conta para maestria/domínio nem para "sem falhas",
+   *  e paga menos moedas (ASSISTED_COIN_FACTOR em spoils.ts). Ver dominated.ts e progress-surfaces.ts. */
+  assisted?: boolean;
 };
 
 /** Carta que subiu de nível nesta partida (de 0 = carta nova). */
@@ -207,7 +210,7 @@ export async function startLearningSession(input: {
             ? computeSpoils({
               variant: current.coinVariant ?? current.variant,
               pace: current.pace ?? "timed",
-              rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight })),
+              rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight, assisted: round.assisted })),
               complete,
               newCards: promotions.filter((item) => item.from === 0).length,
               levelUps: promotions.filter((item) => item.from > 0).length,
@@ -265,7 +268,8 @@ export async function startLearningSession(input: {
                   item.id === round.targetId,
               );
               const column = columnForVariant(session.variant);
-              if (input.persistProgress === false) {
+              // Rodada assistida por suprimento: entra na sessão (moedas reduzidas, história) mas não mexe na coleção/maestria.
+              if (input.persistProgress === false || round.assisted) {
                 transaction.objectStore(SESSIONS_STORE).put(sessionAfterRound);
                 return;
               }

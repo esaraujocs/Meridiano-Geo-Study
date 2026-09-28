@@ -754,6 +754,14 @@ export const en: Messages = {
     coinsTitle: "Coins from this match: they reach your wallet when it ends",
     coinsAria: (coins: string) => `Pending coins: ${coins}`,
   },
+  supplies: {
+    trayAria: "Expedition supplies",
+    useAria: (name: string, count: number) => `Use ${name} (${count} in stock)`,
+    assistedHint: "Round with a supply: pays half and doesn't count toward mastery or mastery streaks.",
+    ampulheta: { name: "Hourglass", short: "+5 s", detail: "Adds 5 seconds to this round's timer." },
+    bussola: { name: "Compass", short: "Continent", detail: "Shows the continent of the country you're looking for." },
+    lupa: { name: "Magnifier", short: "Remove 2", detail: "Removes two wrong options, leaving the right one and one more." },
+  },
   quiz: {
     unavailable: "Quiz unavailable",
     loadFailed: "Couldn't load this material.",
@@ -1249,6 +1257,17 @@ export const en: Messages = {
     earned: (league: string) => `Earned in ${league}`,
     lockedLeague: (league: string) => `Reach the ${league} league`,
     leagueOwned: (owned: number, total: number) => `${owned} of ${total} earned`,
+    suppliesTab: "Supplies",
+    supplies: {
+      note: "Help on a tough round, only in solo Match (never in Practice or duels). A round with a supply pays half and doesn't count toward mastery or dominance.",
+      owned: (n: number) => (n === 1 ? "1 in stock" : `${n} in stock`),
+      unitPrice: (price: string) => `${price} each`,
+      less: "Decrease quantity",
+      more: "Increase quantity",
+      buy: (qty: number) => (qty === 1 ? "Buy 1" : `Buy ${qty}`),
+      boughtNotice: (name: string, qty: number) => (qty === 1 ? `Bought 1 ${name}.` : `Bought ${qty} ${name}.`),
+      buyFailed: "Couldn't buy: your balance changed. Check your coins and try again.",
+    },
   },
   themes: {
     pigmentos: ["Pigments", "One color per mode: teal, terracotta, brass and violet."],
