@@ -9,6 +9,9 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
+// O servidor do duelo entre pessoas (/api/pvp/...) responde coisas que mudam a cada instante (fila, sala, ranking): nunca vem do cache.
+const isApi = (url) => url.origin === self.location.origin && url.pathname.startsWith("/api/");
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
@@ -19,7 +22,10 @@ self.addEventListener("activate", (event) => {
               .filter((key) => key !== CACHE)
               .map((key) => caches.delete(key)),
           ),
-      ),
+      )
+      // até 28/09 as respostas de /api/ também iam para o cache (e voltavam velhas): tira as que ficaram
+      .then(() => caches.open(CACHE))
+      .then((cache) => cache.keys().then((requests) => Promise.all(requests.filter((request) => isApi(new URL(request.url))).map((request) => cache.delete(request))))),
   );
   self.clients.claim();
 });
@@ -29,6 +35,7 @@ self.addEventListener("fetch", (event) => {
 
   const range = event.request.headers.get("range");
   const url = new URL(event.request.url);
+  if (isApi(url)) return;
   if (url.origin === self.location.origin && url.pathname === MAP_URL) {
     if (!range) {
       event.respondWith(fetch(event.request));
