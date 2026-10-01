@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
-import { playersLeaderboard, rankWindow } from "../domain/leaderboard";
+import { dayNumber, globalLeaderboard, rankWindow } from "../domain/leaderboard";
 import type { LeaderboardRow, PvpQueueView } from "../domain/pvp";
 import { LADDER_BASE, LADDER_BASE_GROUP, type Ladder } from "../domain/duel-modes";
 import type { Milestone } from "../domain/duel-rewards";
@@ -36,7 +36,7 @@ export type ArenaSearch = {
   onFriendly: (ladder: Ladder) => void;
 };
 
-// Hub em Duelo: uma arena por escada (liga, forma recente e modos do sorteio) e o painel dos próximos prêmios com o ranking (só gente de verdade).
+// Hub em Duelo: uma arena por escada e o painel dos próximos prêmios com o ranking de pessoas e bots.
 export function DuelArenas({ cards, next, formatReady, formatCost, search, boards, onLeague, onFriends, onOpenPlayer }: {
   cards: readonly LadderCard[];
   next: readonly Milestone[];
@@ -53,7 +53,8 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
   // o ranking do painel é o da escada em que a pessoa está mais alta
   const best = cards.reduce((top, card) => (card.trophies > top.trophies ? card : top), cards[0]);
   const bestBoard = boards[best.ladder];
-  const rank = useMemo(() => rankWindow(playersLeaderboard(bestBoard ?? [], best.trophies), 3), [bestBoard, best.trophies]);
+  const day = dayNumber();
+  const rank = useMemo(() => rankWindow(globalLeaderboard(best.ladder, bestBoard ?? [], best.trophies, day), 3), [bestBoard, best.ladder, best.trophies, day]);
   return (
     <div className="arena-grid" role="region" aria-label={t.duel.modeDuel}>
       {cards.map((card) => <Arena key={card.ladder} card={card} formatReady={formatReady} formatCost={formatCost} search={search} />)}
@@ -77,7 +78,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
                 : <span className="rk-nm">{line.you ? t.duel.rank.you : line.name}{line.bot && <em>{t.duel.rank.bot}</em>}</span>}
               <strong>{money(line.trophies)}</strong>
             </li>)}</ol>
-          {rank.length <= 1 && <p className="pz-note">{bestBoard === null ? t.duel.rank.offline : t.duel.rank.alone}</p>}
+          {bestBoard === null && <p className="pz-note">{t.duel.rank.offline}</p>}
         </section>
         <div className="pz-links">
           {onLeague && <button type="button" className="pr-link" onClick={onLeague}>{t.duel.arenas.seeLeague} <Icon type="arrow" size={16} /></button>}

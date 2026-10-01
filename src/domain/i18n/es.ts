@@ -256,10 +256,10 @@ export const es: Messages = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "Solo personas de verdad: aparece aquí quien ya se batió contra personas.",
+      sub: "Personas y bots en la misma clasificación. Los bots están identificados y sus trofeos varían cada día.",
       you: "Tú",
       bot: "bot",
-      offline: "Sin conexión con el servidor: el ranking vuelve cuando vuelva la conexión.",
+      offline: "La clasificación de personas no está disponible ahora. Los bots siguen apareciendo.",
       alone: "Nadie más en el ranking todavía. Quien se bate contra personas aparece aquí.",
     },
     league: {

@@ -856,4 +856,35 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.equal(LB.playersLeaderboard([{ name: "Beto", trophies: 300, you: false }], 300)[0].you, true, "empate: a pessoa na frente");
 }
 
-console.log("duelo: ligas, bots, escadas, sorteio dos 2 tempos, resolução, troféus e marcos ok; troféus contra pessoas e ranking real ok");
+// ---- Ranking global: bots e pessoas, sem duplicar a linha local ----
+{
+  const rows = [
+    { name: "Beto", code: "BETO01", trophies: 99999, you: false },
+    { name: "Ana", code: "ANA001", trophies: 10, you: true },
+    { name: "Caio", code: "CAIO01", trophies: 800, you: false },
+  ];
+  const board = LB.globalLeaderboard("mapas", rows, 800, 5);
+  assert.equal(board.length, B.BOTS.length + 3);
+  assert.equal(board.filter((row) => row.you).length, 1);
+  assert.equal(board.find((row) => row.you).trophies, 800);
+  assert.equal(board[0].code, "BETO01");
+  assert.equal(board.find((row) => row.code === "CAIO01").bot, false);
+  assert.equal(board.find((row) => row.code === "CAIO01").id, "player:CAIO01");
+  assert.ok(board.find((row) => row.you).pos < board.find((row) => row.code === "CAIO01").pos);
+  for (let index = 0; index < board.length; index++) {
+    assert.equal(board[index].pos, index + 1);
+    if (index) assert.ok(board[index - 1].trophies >= board[index].trophies);
+  }
+  for (const ladder of ["mapas", "bandeiras"]) {
+    const combined = LB.globalLeaderboard(ladder, [], 800, 7);
+    assert.deepEqual(combined.filter((row) => row.bot), LB.leaderboard(ladder, 800, 7).filter((row) => row.bot));
+    assert.equal(combined.filter((row) => row.you).length, 1, "offline mantém bots e jogador local");
+    assert.ok(LB.rankWindow(combined, 3).some((row) => row.you), "janela conserva posição local");
+    const tieBoard = LB.globalLeaderboard(ladder, [], LB.botTrophies(B.BOTS[0], ladder, 7), 7);
+    assert.ok(tieBoard.find((row) => row.you).pos < tieBoard.find((row) => row.id === B.BOTS[0].id).pos);
+  }
+  assert.deepEqual(LB.globalLeaderboard("mapas", rows, 800, 5), board, "mesmo dia mantém ranking");
+  assert.notDeepEqual(LB.globalLeaderboard("mapas", rows, 800, 6), board, "bots variam por dia");
+}
+
+console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok");

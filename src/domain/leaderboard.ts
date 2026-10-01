@@ -1,5 +1,4 @@
-// Ranking do Duelo. Desde 28/09 as telas mostram só gente de verdade (`playersLeaderboard`, com a lista do servidor, GET /leaderboard). A lista dos
-// 30 bots (`leaderboard`, troféus que se mexem um pouco a cada dia) foi a "população mínima" enquanto não havia servidor e fica só nos testes. Lógica pura.
+// Ranking do Duelo: pessoas do servidor e bots simulados, com troféus próprios de cada escada.
 import { BOTS, hashSeed, mulberry32, type Bot } from "./bots.js";
 import { LEAGUES, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import type { Ladder } from "./duel-modes.js";
@@ -41,6 +40,23 @@ export function playersLeaderboard(rows: readonly { name: string; trophies: numb
   const me = { id: "you", name: "", trophies: Math.max(0, Math.round(trophies)), league: leagueOf(trophies).league, you: true, bot: false };
   return [...others, me]
     .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || (a.id < b.id ? -1 : 1))
+    .map((row, index) => ({ ...row, pos: index + 1 }));
+}
+
+/** Ranking global misto. Preserva os perfis humanos, uma única linha local e os bots
+ * da escada; posições são calculadas depois de juntar e ordenar todos os participantes. */
+export function globalLeaderboard(
+  ladder: Ladder,
+  rows: Parameters<typeof playersLeaderboard>[0],
+  trophies: number,
+  day = dayNumber(),
+): RankRow[] {
+  const bots = leaderboard(ladder, trophies, day).filter((row) => row.bot);
+  const players = playersLeaderboard(rows, trophies).map((row) => ({
+    ...row, id: row.code && !row.you ? `player:${row.code}` : row.id,
+  }));
+  return [...bots, ...players]
+    .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || a.id.localeCompare(b.id))
     .map((row, index) => ({ ...row, pos: index + 1 }));
 }
 

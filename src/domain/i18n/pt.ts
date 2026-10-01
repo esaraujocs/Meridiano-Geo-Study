@@ -257,10 +257,10 @@ export const pt = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "Só gente de verdade: aparece aqui quem já duelou contra pessoas.",
+      sub: "Pessoas e bots na mesma escada. Os bots estão identificados e seus troféus variam a cada dia.",
       you: "Você",
       bot: "bot",
-      offline: "Sem conexão com o servidor: o ranking volta quando a conexão voltar.",
+      offline: "Ranking das pessoas indisponível no momento. Os bots continuam aparecendo.",
       alone: "Ninguém mais no ranking ainda. Quem duela contra pessoas aparece aqui.",
     },
     league: {

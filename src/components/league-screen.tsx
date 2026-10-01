@@ -4,7 +4,7 @@ import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
-import { playersLeaderboard, rankWindow } from "../domain/leaderboard";
+import { globalLeaderboard, rankWindow } from "../domain/leaderboard";
 import type { LeaderboardRow } from "../domain/pvp";
 import type { LadderEntry } from "../domain/pvp-trophies";
 import type { PvpMatchRecord } from "../domain/pvp-store";
@@ -20,7 +20,7 @@ const along = (trophies: number) => Math.min(100, (trophies / MASTER_AT) * 100);
 const RING = 2 * Math.PI * 58;
 
 // Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
-// adversários (bots), últimos duelos da escada (contra bot e contra pessoas) e o ranking (só gente de verdade); as molduras do nível valem a melhor das duas.
+// adversários (bots), últimos duelos da escada e ranking de pessoas e bots; as molduras do nível valem a melhor das duas.
 export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder, onBack, onOpenPlayer }: {
   /** Tudo o que conta na escada: duelos contra bot e valendo contra pessoas. */
   entries: readonly LadderEntry[];
@@ -44,7 +44,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
   const board = boards[ladder];
-  const rank = rankWindow(playersLeaderboard(board ?? [], trophies), 10);
+  const rank = rankWindow(globalLeaderboard(ladder, board ?? [], trophies), 10);
   // os últimos duelos da escada, contra bot e contra pessoas, numa lista só
   const recent = [
     ...duels.filter((duel) => duel.ladder === ladder).map((duel) => {
@@ -143,7 +143,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
                 : <b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b>}<small>{t.duel.leagues[line.league]}</small></span>
               <strong className="rk-val">{formatNumber(line.trophies)}</strong>
             </li>)}</ol>
-          {rank.length <= 1 && <p className="lg-empty">{board === null ? t.duel.rank.offline : t.duel.rank.alone}</p>}
+          {board === null && <p className="lg-empty">{t.duel.rank.offline}</p>}
         </section>
 
         <section className="pr-card lg-how" style={{ marginTop: 16 }}>

@@ -256,10 +256,10 @@ export const en: Messages = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "Real people only: anyone who has dueled people shows up here.",
+      sub: "People and bots on the same ladder. Bots are labeled and their trophies vary daily.",
       you: "You",
       bot: "bot",
-      offline: "No connection to the server: the ranking comes back when the connection does.",
+      offline: "Player rankings are currently unavailable. Bots still appear.",
       alone: "Nobody else in the ranking yet. Anyone who duels people shows up here.",
     },
     league: {
