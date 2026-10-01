@@ -21,13 +21,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -170.75809,
-          -14.30629
+          -170.75641,
+          -14.31353
         ]
       },
       "properties": {
         "carta_id": "16",
-        "switchZoom": 6.128,
+        "switchZoom": 6.221,
         "un": false
       }
     },
@@ -336,13 +336,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.66650390625,
-          -10.49996477839548
+          105.6441,
+          -10.50476
         ]
       },
       "properties": {
         "carta_id": "162",
-        "switchZoom": 24,
+        "switchZoom": 7.162,
         "un": false
       }
     },

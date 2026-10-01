@@ -20,3 +20,9 @@ A densidade costeira exclui segmentos exteriores compartilhados entre entidades 
 **Why:** O perímetro político inclui fronteiras terrestres e distorce a comparação de detalhe costeiro.
 
 **How to apply:** Qualquer regeneração do mapa deve manter a exclusão determinística de segmentos compartilhados, a auditoria por mediana e os testes de fronteira/ilha.
+
+A existência de um marcador ou de uma geometria própria não comprova que um território seja selecionável: os tiles podem também conter um polígono soberano cobrindo a mesma ilha.
+
+**Why:** Samoa Americana tinha marcador e polígono próprios, mas sobrepostos aos EUA; Christmas tinha um ponto próprio dentro do polígono australiano. Diagnosticar ambos como ausência de marcador teria corrigido a camada errada.
+
+**How to apply:** confira as feições efetivamente renderizadas na coordenada e no zoom relatados. Teste também acima do zoom em que o ponto desaparece, e clique no território tanto quando ele é o alvo quanto quando o alvo é seu soberano.

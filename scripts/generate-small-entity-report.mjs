@@ -212,19 +212,43 @@ for (const id of playableIds) {
   });
 }
 
-// Ilhas divididas (São Martinho: 534 e 663): nos tiles as duas metades são a ilha inteira, então o ponto calculado acima cai no mesmo lugar para as duas.
-// O contorno de verdade de cada metade vem de public/data/split-islands.geojson (npm run build:split-islands); o marcador vai para dentro da própria metade.
+// Contornos corrigidos: São Martinho (534/663) é uma feição inteira nos tiles; Samoa Americana
+// (16) e Ilha Christmas (162) usam as feições 10m para âncoras e switchZoom coerentes com os
+// contornos desenhados pelo mapa. A lista é lida do arquivo para não manter uma segunda cópia
+// dos identificadores; todos os quatro contornos esperados precisam estar presentes.
 const splitData = JSON.parse(await readFile("public/data/split-islands.geojson", "utf8"));
+const splitIds = new Set();
 for (const feature of splitData.features) {
   const marker = markers.find((item) => item.properties.carta_id === feature.properties.carta_id);
-  if (!marker) continue;
+  if (!marker) throw new Error(`${feature.properties.carta_id}: contorno corrigido sem marcador jogável.`);
+  if (splitIds.has(feature.properties.carta_id)) {
+    throw new Error(`${feature.properties.carta_id}: mais de um contorno corrigido.`);
+  }
+  splitIds.add(feature.properties.carta_id);
   const part = polygonsOf(feature.geometry)
     .filter((polygon) => polygon[0]?.length >= 3)
     .map((polygon) => ({ outer: polygon[0], holes: polygon.slice(1), area: ringArea(polygon[0]) }))
     .sort((a, b) => b.area - a.area)[0];
   if (!part) throw new Error(`${feature.properties.carta_id}: ilha dividida sem polígono válido.`);
   const [slon, slat] = interiorPoint(part.outer, part.holes);
-  marker.geometry.coordinates = [Number(slon.toFixed(5)), Number(slat.toFixed(5))];
+  const anchor = [Number(slon.toFixed(5)), Number(slat.toFixed(5))];
+  if (!pointInRings(anchor, [part.outer, ...part.holes])) {
+    throw new Error(`${feature.properties.carta_id}: âncora fora do contorno corrigido.`);
+  }
+  marker.geometry.coordinates = anchor;
+  if (["16", "162"].includes(feature.properties.carta_id)) {
+    const [minX, minY, maxX, maxY] = bboxOf(part.outer);
+    const [x0, y0] = project0([minX, maxY]);
+    const [x1, y1] = project0([maxX, minY]);
+    const size = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+    marker.properties.switchZoom = Number(Math.min(
+      NEVER_HIDE_ZOOM,
+      Math.log2(THRESHOLD_PX / Math.max(size, 1e-9)),
+    ).toFixed(3));
+  }
+}
+for (const id of ["16", "162", "534", "663"]) {
+  if (!splitIds.has(id)) throw new Error(`${id}: contorno corrigido ausente em split-islands.geojson.`);
 }
 
 // Territórios absorvidos (Guadalupe, Martinica, Reunião...): não são alvo nem estão nos tiles;

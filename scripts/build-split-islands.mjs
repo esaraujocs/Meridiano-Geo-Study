@@ -1,28 +1,155 @@
-// Gera public/data/split-islands.geojson: ilhas divididas entre dois territórios jogáveis cujo contorno nos tiles é a ilha INTEIRA para os dois
-// (fallback legado, sem tippecanoe aqui para refazer o .pmtiles). Hoje só São Martinho: 534 (Holanda, Sint Maarten, sul) e 663 (França, Saint-Martin,
-// norte) vinham com o mesmo polígono, os dois marcadores no mesmo ponto e o clique de um valendo pelo outro. O mapa desenha estes contornos por cima,
-// esconde o polígono dos tiles dessas entidades e mede a distância por aqui (map-game.tsx). O marcador de cada uma vai para dentro da própria metade
-// em generate-small-entity-report.mjs (npm run generate:markers), que lê este arquivo.
-// Fonte: Natural Earth 10m admin 0 (domínio público). Rode: npm run build:split-islands
+// Gera os contornos que substituem polígonos compartilhados ou marcadores de ponto
+// nos tiles. Todas as geometrias vêm do Natural Earth 10m (domínio público).
+// Rode: npm run build:split-islands
 import { readFile, writeFile } from "node:fs/promises";
 
-const SOURCE = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson";
-const SPLITS = { SXM: "534", MAF: "663" };
+const NATURAL_EARTH_REVISION = "ca96624a56bd078437bca8184e78163e5039ad19";
+const NATURAL_EARTH_BASE = `https://raw.githubusercontent.com/nvkelso/natural-earth-vector/${NATURAL_EARTH_REVISION}/geojson`;
+const SOURCES = {
+  countries: `${NATURAL_EARTH_BASE}/ne_10m_admin_0_countries.geojson`,
+  mapUnits: `${NATURAL_EARTH_BASE}/ne_10m_admin_0_map_units.geojson`,
+};
+const OVERLAYS = [
+  {
+    id: "16",
+    iso: "ASM",
+    expectedName: "American Samoa",
+    candidates: [{ source: "countries", selectors: [{ field: "ADM0_A3", value: "ASM" }] }],
+  },
+  {
+    id: "162",
+    iso: "CXR",
+    expectedName: "Christmas Island",
+    candidates: [
+      { source: "countries", selectors: [{ field: "ADM0_A3", value: "CXR" }] },
+      {
+        source: "mapUnits",
+        selectors: [
+          { field: "GU_A3", value: "CXR" },
+          { field: "NAME_LONG", value: "Christmas Island" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "534",
+    iso: "SXM",
+    expectedName: "Sint Maarten",
+    candidates: [{ source: "countries", selectors: [{ field: "ADM0_A3", value: "SXM" }] }],
+  },
+  {
+    id: "663",
+    iso: "MAF",
+    expectedName: "Saint-Martin",
+    candidates: [{ source: "countries", selectors: [{ field: "ADM0_A3", value: "MAF" }] }],
+  },
+];
+
 const catalog = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8"));
-const ne = await fetch(SOURCE).then((response) => { if (!response.ok) throw new Error(`Natural Earth: ${response.status}`); return response.json(); });
+const sourceData = {};
+for (const [source, url] of Object.entries(SOURCES)) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Natural Earth ${source}: HTTP ${response.status} (${url})`);
+  const collection = await response.json();
+  if (collection.type !== "FeatureCollection" || !Array.isArray(collection.features)) {
+    throw new Error(`Natural Earth ${source}: resposta não é uma FeatureCollection GeoJSON válida.`);
+  }
+  sourceData[source] = collection;
+}
+
 const round = (value) => Number(value.toFixed(5));
+const polygonCoordinates = (geometry) => {
+  if (geometry?.type === "Polygon") return [geometry.coordinates];
+  if (geometry?.type === "MultiPolygon") return geometry.coordinates;
+  return null;
+};
+
+function validateGeometry(feature, id, expectedName) {
+  const polygons = polygonCoordinates(feature.geometry);
+  if (!polygons?.length) {
+    throw new Error(`${id} (${expectedName}): geometria Natural Earth não é Polygon/MultiPolygon.`);
+  }
+  let positions = 0;
+  for (const polygon of polygons) {
+    if (!Array.isArray(polygon) || !polygon.length) {
+      throw new Error(`${id} (${expectedName}): polígono sem anel externo.`);
+    }
+    for (const ring of polygon) {
+      if (!Array.isArray(ring) || ring.length < 4) {
+        throw new Error(`${id} (${expectedName}): anel sem coordenadas suficientes.`);
+      }
+      positions += ring.length;
+      for (const position of ring) {
+        if (!Array.isArray(position) || position.length < 2
+          || !Number.isFinite(position[0]) || !Number.isFinite(position[1])
+          || position[0] < -180 || position[0] > 180 || position[1] < -90 || position[1] > 90) {
+          throw new Error(`${id} (${expectedName}): coordenada inválida na geometria Natural Earth.`);
+        }
+      }
+      const first = ring[0];
+      const last = ring[ring.length - 1];
+      if (first[0] !== last[0] || first[1] !== last[1]) {
+        throw new Error(`${id} (${expectedName}): anel GeoJSON não está fechado.`);
+      }
+    }
+  }
+  if (positions < 5) {
+    throw new Error(`${id} (${expectedName}): contorno Natural Earth inesperadamente incompleto (${positions} posições).`);
+  }
+  const foundName = feature.properties?.NAME_LONG;
+  if (foundName !== expectedName) {
+    throw new Error(`${id}: nome de feição Natural Earth inesperado: ${JSON.stringify(foundName)} (esperado ${expectedName}).`);
+  }
+  return polygons;
+}
+
+function locate(spec) {
+  for (const candidate of spec.candidates) {
+    const matches = sourceData[candidate.source].features.filter((feature) =>
+      candidate.selectors.every(({ field, value }) => feature.properties?.[field] === value));
+    if (matches.length > 1) {
+      throw new Error(`${spec.iso}: seleção Natural Earth ambígua em ${candidate.source} (${matches.length} feições).`);
+    }
+    if (matches.length === 1) {
+      return { feature: matches[0], source: candidate.source, selectors: candidate.selectors };
+    }
+  }
+  throw new Error(`${spec.iso} (${spec.expectedName}) não encontrado nas feições Natural Earth configuradas; sem fallback aproximado.`);
+}
+
 const features = [];
-for (const [iso, id] of Object.entries(SPLITS)) {
-  const found = ne.features.find((feature) => feature.properties.ADM0_A3 === iso);
-  if (!found) throw new Error(`${iso} não está no Natural Earth.`);
-  const polygons = found.geometry.type === "Polygon" ? [found.geometry.coordinates] : found.geometry.coordinates;
+const provenance = [];
+for (const spec of OVERLAYS) {
+  if (!catalog.meta?.[spec.id]) throw new Error(`${spec.iso}: carta_id ${spec.id} não existe no catálogo.`);
+  const { feature, source, selectors } = locate(spec);
+  const polygons = validateGeometry(feature, spec.id, spec.expectedName);
   features.push({
     type: "Feature",
-    properties: { carta_id: id, answer_id: id, name: catalog.meta[id].pt },
-    geometry: { type: "MultiPolygon", coordinates: polygons.map((polygon) => polygon.map((ring) => ring.map(([x, y]) => [round(x), round(y)]))) },
+    properties: { carta_id: spec.id, answer_id: spec.id, name: catalog.meta[spec.id].pt },
+    geometry: {
+      type: "MultiPolygon",
+      coordinates: polygons.map((polygon) => polygon.map((ring) => ring.map(([x, y]) => [round(x), round(y)]))),
+    },
+  });
+  provenance.push({
+    carta_id: spec.id,
+    iso: spec.iso,
+    name: spec.expectedName,
+    source: SOURCES[source],
+    dataset: source === "countries" ? "ne_10m_admin_0_countries.geojson" : "ne_10m_admin_0_map_units.geojson",
+    selectors,
+    naturalEarthName: feature.properties.NAME_LONG,
   });
 }
+
 await writeFile("public/data/split-islands.geojson", `${JSON.stringify({ type: "FeatureCollection", features })}\n`);
-await writeFile("public/data/split-islands.manifest.json", `${JSON.stringify({ generatedBy: "scripts/build-split-islands.mjs", source: SOURCE, license: "Natural Earth (domínio público)", ids: SPLITS }, null, 2)}\n`);
-// o marcador de cada metade é posto dentro dela pelo gerador de marcadores (lê este arquivo)
-console.log(`split islands: ${features.length} (${Object.values(SPLITS).join(", ")}). Rode depois: npm run generate:markers`);
+await writeFile("public/data/split-islands.manifest.json", `${JSON.stringify({
+  generatedBy: "scripts/build-split-islands.mjs",
+  license: "Natural Earth (domínio público)",
+  repository: `https://github.com/nvkelso/natural-earth-vector/tree/${NATURAL_EARTH_REVISION}`,
+  sourceRevision: NATURAL_EARTH_REVISION,
+  sources: SOURCES,
+  features: provenance,
+  ids: Object.fromEntries(OVERLAYS.map(({ iso, id }) => [iso, id])),
+}, null, 2)}\n`);
+console.log(`split-island overlays: ${features.length} (${OVERLAYS.map(({ iso, id }) => `${iso}:${id}`).join(", ")}). Rode depois: npm run generate:markers`);

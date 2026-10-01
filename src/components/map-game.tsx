@@ -40,10 +40,10 @@ import { distanceToGeometriesKm, haversineKm, nearestWithin, SEA_TAP_PX } from "
 import { t } from "../domain/i18n";
 
 const ABSORBED_URL = "/data/absorbed-territories.geojson";
-/** Ilhas divididas entre dois territórios jogáveis cujo contorno nos tiles é a ilha inteira para os dois (São Martinho: 534 Holanda, 663 França). O mapa
- *  desenha o contorno certo de cada metade por cima (scripts/build-split-islands.mjs, Natural Earth) e esconde o polígono dos tiles delas. */
+/** Contornos próprios de ilhas: metades de São Martinho e territórios que os tiles
+ * sobrepõem ao soberano (Samoa Americana e Christmas). Não dependem do alvo da rodada. */
 const SPLIT_URL = "/data/split-islands.geojson";
-const SPLIT_ISLAND_IDS = ["534", "663"];
+const SPLIT_ISLAND_IDS = ["534", "663", "16", "162"];
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
@@ -508,6 +508,7 @@ export function Game({
       const found = map
         .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "absorbed-land", "split-land", "pts-hit", "small-entities-hit"] })
         .filter((feature) => feature.properties?.carta_id && (feature.layer.id !== "small-entities-hit" || isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom)))
+        .sort((a, b) => Number(b.layer.id === "split-land") - Number(a.layer.id === "split-land"))
         .map((feature) => ({ answerId: String(feature.properties?.answer_id ?? feature.properties?.carta_id), geometry: feature.geometry as unknown as { type: string; coordinates: unknown } }));
       return nearestWithin(found, (position) => map.project(position), x, y, SEA_TAP_PX);
     };
@@ -530,7 +531,7 @@ export function Game({
     };
     // Quem responde por um ponto da tela: o marcador só vale perto do próprio ponto e, sobre o terreno
     // de outro país, apenas no núcleo dele (senão um país grande "cai" no pequeno vizinho).
-    const resolveAt = (x: number, y: number): { id: string; point: [number, number] | undefined; byWater: boolean } => {
+    const resolveAt = (x: number, y: number): { id: string; point: [number, number] | undefined; byWater: boolean; specific?: boolean } => {
       const zoom = map.getZoom();
       const candidates = map
         .queryRenderedFeatures(
@@ -551,21 +552,28 @@ export function Game({
       const landHits = map
         .queryRenderedFeatures([x, y], { layers: ["split-land", "land", "absorbed-land", "pts-hit", "pts"] })
         .filter((feature) => feature.properties?.carta_id);
-      const landHit = landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land" || feature.layer.id === "split-land") ?? landHits[0];
+      // A ordem de queryRenderedFeatures não define a soberania: o contorno corrigido
+      // deve ganhar do polígono do soberano que também cobre a mesma ilha.
+      const landHit = landHits.find((feature) => feature.layer.id === "split-land")
+        ?? landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land")
+        ?? landHits[0];
       const landId = landHit ? String(landHit.properties?.answer_id ?? landHit.properties?.carta_id) : "";
       const choice = chooseClickAnswer(candidates, landId);
-      if (choice.answerId) return { id: choice.answerId, point: choice.marker?.coordinates, byWater: false };
+      if (choice.answerId) return {
+        id: choice.answerId, point: choice.marker?.coordinates, byWater: false,
+        specific: Boolean(choice.marker) || landHit?.layer.id === "split-land",
+      };
       return { id: nearestLand(x, y)?.answerId ?? "", point: undefined, byWater: true };
     };
     const tapAt = (x: number, y: number, lngLat: { lng: number; lat: number }) => {
-      const { id, point, byWater } = resolveAt(x, y);
+      const { id, point, byWater, specific } = resolveAt(x, y);
       const distanceKm = distanceToTargetKm(lngLat.lng, lngLat.lat);
       // Geografia real tem prioridade sobre qual polígono renderizou por cima no pixel clicado: alguns pares
       // (ex. Saara Ocidental sob o Marrocos) têm o território menor com geometria própria e correta na fonte,
       // mas o vizinho desenha uma reivindicação que cobre a mesma área, "roubando" todo clique ali. distanceKm
       // já vem 0 quando o toque caiu de fato dentro do polígono do alvo (distanceToTargetKm/distanceToGeometriesKm),
       // então um id resolvido diferente nessa condição é a sobreposição, não um erro real do jogador.
-      const resolvedId = id && id !== targetRef.current && distanceKm === 0 ? targetRef.current : id;
+      const resolvedId = !specific && id && id !== targetRef.current && distanceKm === 0 ? targetRef.current : id;
       answerId(resolvedId || "__water_click__", { byWater, distanceKm, point: point ?? [lngLat.lng, lngLat.lat] });
     };
     map.on("click", (event: MapMouseEvent) => tapAt(event.point.x, event.point.y, event.lngLat));
