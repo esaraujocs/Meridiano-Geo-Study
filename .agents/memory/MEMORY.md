@@ -1,3 +1,4 @@
+- [Transporte de blobs para GitHub](github-blob-transport.md) — saída de shell pode truncar blobs silenciosamente; valide hashes e use leitura binária direta.
 - [Reconciliação de progresso local](progress-reconciliation.md) — reimportar legado substitui o baseline e preserva só o delta atual; sessão, progresso e ledger são atômicos.
 - [Baralhos React estáveis](stable-react-decks.md) — pools recriados por dados assíncronos precisam de chave semântica para não reiniciar a sessão.
 - [Carrosséis responsivos determinísticos](responsive-carousel-testing.md) — o estado ativo deve dirigir a tríade visual; valide peeks no breakpoint real sem usar scroll suave como estado.
