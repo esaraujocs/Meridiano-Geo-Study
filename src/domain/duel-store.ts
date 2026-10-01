@@ -4,6 +4,8 @@ import { DUEL_ID_PREFIX, DUEL_SOURCE, parseDuel, type DuelRecord } from "./duel.
 import { milestoneLedgerId, milestoneTopUps, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
 import { leagueOf } from "./league.js";
 import { leagueThemesFor, themeUnlockKey } from "./themes.js";
+import { BOT_RANKING_ID, settleBotMatch, type BotRankingState } from "./bot-ranking.js";
+import { advanceStoredBotRanking, botRankingDay } from "./bot-ranking-store.js";
 
 const STORE = "preferences";
 
@@ -32,15 +34,63 @@ export async function listDuels(): Promise<DuelRecord[]> {
   } finally { database.close(); }
 }
 
-export async function saveDuel(record: DuelRecord) {
+export async function saveDuel(record: DuelRecord, playerMmrBefore?: number): Promise<BotRankingState> {
+  const now = Date.now();
+  const day = botRankingDay(now);
   const database = await openDatabase();
   try {
-    await new Promise<void>((resolve, reject) => {
+    return await new Promise<BotRankingState>((resolve, reject) => {
       const transaction = database.transaction(STORE, "readwrite");
-      transaction.objectStore(STORE).put({ ...record, source: DUEL_SOURCE });
-      transaction.oncomplete = () => resolve();
-      transaction.onerror = () => reject(transaction.error);
-      transaction.onabort = () => reject(transaction.error);
+      const store = transaction.objectStore(STORE);
+      const duelRequest = store.get(record.id);
+      const rankingRequest = store.get(BOT_RANKING_ID);
+      let duelRow: unknown;
+      let rankingRow: unknown;
+      let ready = 0;
+      let state: BotRankingState | undefined;
+      let settled = false;
+      const fail = (error: unknown) => {
+        if (settled) return;
+        settled = true;
+        try { transaction.abort(); } catch { /* já abortada */ }
+        reject(error instanceof Error ? error : new Error(String(error)));
+      };
+      const apply = () => {
+        ready += 1;
+        if (ready !== 2 || settled) return;
+        try {
+          state = advanceStoredBotRanking(rankingRow, day * 86_400_000);
+          if (duelRow === undefined) {
+            if (typeof playerMmrBefore !== "number" || !Number.isFinite(playerMmrBefore) || playerMmrBefore < 0) {
+              throw new TypeError("A new duel requires the player's pre-match MMR to settle bot ranking.");
+            }
+            const botOutcome = record.outcome === "win" ? "loss" : record.outcome === "loss" ? "win" : "draw";
+            state = settleBotMatch(state, {
+              ladder: record.ladder,
+              botId: record.botId,
+              opponentMmr: playerMmrBefore,
+              outcome: botOutcome,
+              margin: record.botCorrect - record.playerCorrect,
+            });
+            store.put({ ...record, source: DUEL_SOURCE });
+          }
+          store.put(state);
+        } catch (error) { fail(error); }
+      };
+      duelRequest.onsuccess = () => { duelRow = duelRequest.result; apply(); };
+      rankingRequest.onsuccess = () => { rankingRow = rankingRequest.result; apply(); };
+      transaction.oncomplete = () => {
+        if (settled) return;
+        settled = true;
+        if (state) resolve(state);
+        else reject(new Error("Duel transaction completed without a bot ranking state."));
+      };
+      transaction.onerror = () => {
+        if (!settled) { settled = true; reject(transaction.error ?? new Error("Duel transaction failed.")); }
+      };
+      transaction.onabort = () => {
+        if (!settled) { settled = true; reject(transaction.error ?? new Error("Duel transaction was aborted.")); }
+      };
     });
   } finally { database.close(); }
 }

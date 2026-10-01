@@ -256,7 +256,10 @@ export const es: Messages = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "Personas y bots en la misma clasificación. Los bots están identificados y sus trofeos varían cada día.",
+      sub: "Personas y bots en la misma clasificación. Tus duelos y enfrentamientos diarios simulados cambian los trofeos de los bots de este perfil.",
+      botTrophies: (value: string) => `${value} trofeos`,
+      loadError: "No se pudo cargar la clasificación de los bots. Vuelve a abrir el juego para intentarlo de nuevo.",
+      saveError: "No se pudo guardar el resultado del duelo y los trofeos del bot. Vuelve a abrir el juego para intentarlo de nuevo.",
       you: "Tú",
       bot: "bot",
       offline: "La clasificación de personas no está disponible ahora. Los bots siguen apareciendo.",

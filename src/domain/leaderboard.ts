@@ -2,6 +2,7 @@
 import { BOTS, hashSeed, mulberry32, type Bot } from "./bots.js";
 import { LEAGUES, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
 import type { Ladder } from "./duel-modes.js";
+import type { BotRankingState } from "./bot-ranking.js";
 
 export const DAY_MS = 86_400_000;
 export const dayNumber = (now = Date.now()) => Math.floor(now / DAY_MS);
@@ -25,8 +26,8 @@ export function botTrophies(bot: Bot, ladder: Ladder, day: number) {
 export type RankRow = { pos: number; id: string; name: string; trophies: number; league: LeagueKey; you: boolean; bot: boolean; code?: string };
 
 /** A lista completa, do primeiro ao último: os bots e a pessoa (em empate a pessoa fica na frente). */
-export function leaderboard(ladder: Ladder, trophies: number, day = dayNumber()): RankRow[] {
-  const rows = BOTS.map((bot) => { const value = botTrophies(bot, ladder, day); return { id: bot.id, name: bot.name, trophies: value, league: leagueOf(value).league, you: false, bot: true }; });
+export function leaderboard(ladder: Ladder, trophies: number, day = dayNumber(), ranking?: BotRankingState | null): RankRow[] {
+  const rows = BOTS.map((bot) => { const value = ranking?.bots[ladder][bot.id]?.trophies ?? botTrophies(bot, ladder, day); return { id: bot.id, name: bot.name, trophies: value, league: leagueOf(value).league, you: false, bot: true }; });
   const me = { id: "you", name: "", trophies: Math.max(0, Math.round(trophies)), league: leagueOf(trophies).league, you: true, bot: false };
   return [...rows, me]
     .sort((a, b) => b.trophies - a.trophies || Number(b.you) - Number(a.you) || (a.id < b.id ? -1 : 1))
@@ -50,8 +51,9 @@ export function globalLeaderboard(
   rows: Parameters<typeof playersLeaderboard>[0],
   trophies: number,
   day = dayNumber(),
+  ranking?: BotRankingState | null,
 ): RankRow[] {
-  const bots = leaderboard(ladder, trophies, day).filter((row) => row.bot);
+  const bots = leaderboard(ladder, trophies, day, ranking).filter((row) => row.bot);
   const players = playersLeaderboard(rows, trophies).map((row) => ({
     ...row, id: row.code && !row.you ? `player:${row.code}` : row.id,
   }));

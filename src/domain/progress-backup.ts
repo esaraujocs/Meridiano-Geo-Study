@@ -2,6 +2,7 @@
 // link (ex.: túnel novo do Cloudflare) "perde" o progresso. O arquivo de backup leva o jogo junto.
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { masteryForProgress, type ProgressRecord } from "./learning-rules.js";
+import { BOT_RANKING_ID, parseBotRanking } from "./bot-ranking.js";
 
 export const BACKUP_FORMAT = "meridiano-backup";
 export const BACKUP_VERSION = 1;
@@ -54,7 +55,12 @@ export function parseBackup(text: string): BackupFile | null {
     const rows = (file.stores as Record<string, unknown>)[name];
     if (rows === undefined) continue;
     if (!Array.isArray(rows) || rows.some((row) => !row || typeof row !== "object" || typeof (row as Row).id !== "string")) return null;
-    stores[name] = rows as Row[];
+    if (name === "preferences") {
+      try {
+        stores[name] = (rows as Row[]).map((row) =>
+          row.id === BOT_RANKING_ID ? parseBotRanking(row) as unknown as Row : row);
+      } catch { return null; }
+    } else stores[name] = rows as Row[];
   }
   const local: Record<string, string> = {};
   for (const [key, value] of Object.entries(file.local ?? {})) if (typeof value === "string") local[key] = value;
@@ -79,6 +85,12 @@ export const importMarkerId = (file: Pick<BackupFile, "deviceId" | "exportedAt">
 /** União por id, sem nunca apagar nem reduzir o que já existe no aparelho. Idempotente por marcador no estado. */
 export function planMerge(local: StoreRows, incoming: StoreRows, options: { sameDevice?: boolean; marker?: string } = {}): MergePlan {
   const writes = emptyRows();
+  // Rank snapshots are mutable whole-state counters, not additive preferences. Validate both sides
+  // before planning so malformed persisted or imported state is surfaced rather than overwritten.
+  const localRanking = local.preferences.find((row) => row.id === BOT_RANKING_ID);
+  const incomingRanking = incoming.preferences.find((row) => row.id === BOT_RANKING_ID);
+  const localBotRanking = localRanking ? parseBotRanking(localRanking) : undefined;
+  const incomingBotRanking = incomingRanking ? parseBotRanking(incomingRanking) : undefined;
   if (options.marker && local.state.some((row) => row.id === options.marker)) {
     const balance = coinBalance(local.ledger);
     return { alreadyImported: true, writes, added: emptyCounts(), summed: 0, coinsBefore: balance, coinsAfter: balance };
@@ -90,7 +102,14 @@ export function planMerge(local: StoreRows, incoming: StoreRows, options: { same
     for (const row of incoming[name]) {
       const existing = here.get(row.id);
       if (!existing) { writes[name].push(row); added[name] += 1; continue; }
-      if (name === "progress") {
+      if (name === "preferences" && row.id === BOT_RANKING_ID) {
+        // Forks are resolved by revision only: the higher complete snapshot wins; ties stay local.
+        // This intentionally lets a populated backup replace a fresh revision-0 seed even if the
+        // seed happens to have a later lastDay. No counters are combined or history replayed.
+        if (incomingBotRanking && localBotRanking && incomingBotRanking.revision > localBotRanking.revision) {
+          writes[name].push(incomingBotRanking as unknown as Row);
+        }
+      } else if (name === "progress") {
         if (options.sameDevice) continue;
         writes[name].push(sumProgress(existing as unknown as ProgressRecord, row as unknown as ProgressRecord) as unknown as Row); summed += 1;
       } else if (name === "achievements" && Number(row.unlockedAt) < Number(existing.unlockedAt)) writes[name].push(row);
@@ -173,11 +192,32 @@ export async function importProgress(file: BackupFile): Promise<MergePlan> {
     if (plan.alreadyImported) return plan;
     await new Promise<void>((resolve, reject) => {
       const transaction = database.transaction([...BACKUP_STORES], "readwrite");
-      for (const name of BACKUP_STORES) for (const row of plan.writes[name]) transaction.objectStore(name).put(row);
+      let explicitError: Error | undefined;
+      for (const name of BACKUP_STORES) {
+        for (const row of plan.writes[name]) {
+          if (name === "preferences" && row.id === BOT_RANKING_ID) continue;
+          transaction.objectStore(name).put(row);
+        }
+      }
+      const rankingWrite = plan.writes.preferences.find((row) => row.id === BOT_RANKING_ID);
+      if (rankingWrite) {
+        const preferences = transaction.objectStore("preferences");
+        const request = preferences.get(BOT_RANKING_ID);
+        request.onsuccess = () => {
+          try {
+            const incoming = parseBotRanking(rankingWrite);
+            const current = request.result === undefined ? undefined : parseBotRanking(request.result);
+            if (!current || incoming.revision > current.revision) preferences.put(incoming);
+          } catch (error) {
+            explicitError = error instanceof Error ? error : new Error(String(error));
+            try { transaction.abort(); } catch { /* já abortada */ }
+          }
+        };
+      }
       transaction.objectStore("state").put({ id: importMarkerId(file), importedAt: Date.now() });
       transaction.oncomplete = () => resolve();
-      transaction.onerror = () => reject(transaction.error);
-      transaction.onabort = () => reject(transaction.error);
+      transaction.onerror = () => reject(explicitError ?? transaction.error ?? new Error("Progress import transaction failed."));
+      transaction.onabort = () => reject(explicitError ?? transaction.error ?? new Error("Progress import transaction was aborted."));
     });
     try {
       for (const [key, value] of Object.entries(file.local)) if (LOCAL_KEY.test(key) && localStorage.getItem(key) === null) localStorage.setItem(key, value);

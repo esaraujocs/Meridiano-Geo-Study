@@ -14,6 +14,7 @@ execFileSync("node_modules/.bin/tsc", [
 ], { stdio: "inherit" });
 
 const { emptyRows, planMerge, parseBackup, buildBackup, sumProgress, coinBalance, importMarkerId } = await import(pathToFileURL(join(out, "progress-backup.js")).href);
+const { BOT_RANKING_ID, createBotRanking, settleBotMatch } = await import(pathToFileURL(join(out, "bot-ranking.js")).href);
 const card = (id, seen, correct, columns) => ({ id, entityId: id.split(":")[1], seen, correct, columns: { bandeiras: 0, mapa: 0, capitais: 0, ...columns }, latest: 10, mastery: 1, source: "current-v2" });
 
 // soma de cartas e maestria recalculada
@@ -36,6 +37,29 @@ assert.equal(plan.coinsBefore, 70); assert.equal(plan.coinsAfter, 570);
 assert.equal(plan.writes.achievements.length, 2, "conquista mais antiga vence, nova entra");
 assert.equal(plan.writes.achievements.find((r) => r.id === "x").unlockedAt, 20);
 assert.equal(plan.writes.ledger.length, 1, "ledger repetido não é regravado");
+
+// Ranking imports keep one validated, coherent snapshot instead of adding mutable counters.
+const playedRanking = settleBotMatch(createBotRanking(100), {
+  ladder: "mapas", botId: "bot-bronze-0", opponentMmr: 500, outcome: "win", margin: 3,
+});
+const pristineLater = createBotRanking(500);
+const rankMerge = planMerge(
+  { ...emptyRows(), preferences: [pristineLater] },
+  { ...emptyRows(), preferences: [playedRanking] },
+);
+assert.deepEqual(rankMerge.writes.preferences, [playedRanking], "a populated backup replaces a later-day pristine seed by revision");
+const sameRevision = planMerge(
+  { ...emptyRows(), preferences: [pristineLater] },
+  { ...emptyRows(), preferences: [createBotRanking(900)] },
+);
+assert.equal(sameRevision.writes.preferences.length, 0, "revision ties preserve local snapshot");
+const rankRestore = planMerge(emptyRows(), { ...emptyRows(), preferences: [playedRanking] });
+assert.deepEqual(rankRestore.writes.preferences, [playedRanking], "an empty device receives the complete ranking state");
+assert.throws(
+  () => planMerge(emptyRows(), { ...emptyRows(), preferences: [{ ...playedRanking, revision: -1 }] }),
+  /revision/,
+  "malformed ranking snapshots are rejected explicitly",
+);
 
 // mesma compra com preços diferentes: vale o maior pago, nunca devolve moedas
 const priced = planMerge(
@@ -66,5 +90,13 @@ assert.equal(parseBackup("nao json"), null);
 assert.equal(parseBackup(JSON.stringify({ format: "outro", version: 1, stores: {} })), null);
 assert.equal(parseBackup(JSON.stringify({ ...backup, version: 99 })), null);
 assert.equal(parseBackup(JSON.stringify({ ...backup, stores: { ...backup.stores, progress: [{ semId: 1 }] } })), null);
+const rankingBackup = buildBackup({ ...emptyRows(), preferences: [playedRanking] }, {}, "d2", 6);
+assert.deepEqual(parseBackup(JSON.stringify(rankingBackup)).stores.preferences[0], playedRanking);
+assert.equal(
+  parseBackup(JSON.stringify({ ...rankingBackup, stores: { ...rankingBackup.stores, preferences: [{ ...playedRanking, revision: -1 }] } })),
+  null,
+  "a malformed ranking in an imported backup is rejected",
+);
+assert.equal(BOT_RANKING_ID, "bot-ranking:v1");
 
 console.log("progress backup ok");

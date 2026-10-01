@@ -47,6 +47,8 @@ import { achievementToasts } from "./domain/achievement-toast";
 import { queryCollectionSummary, querySurfaces } from "./domain/progress-surfaces";
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
+import type { BotRankingState } from "./domain/bot-ranking";
+import { loadBotRanking } from "./domain/bot-ranking-store";
 import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
 import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
@@ -128,9 +130,11 @@ export function App() {
   // Os troféus vêm do histórico de duelos (como XP e maestria), por escada (Mapas e Bandeiras). O adversário é sorteado entre os
   // 5 bots da liga da pessoa na escada (sem repetir o do duelo anterior). O Hub mostra a melhor das duas escadas.
   const [duels, setDuels] = useState<DuelRecord[]>([]);
+  const [botRanking, setBotRanking] = useState<BotRankingState | null>(null);
   const [lastDuel, setLastDuel] = useState<DuelView | null>(null);
   const [duelRun, setDuelRunState] = useState<DuelRun | null>(null);
   const duelRunRef = useRef<DuelRun | null>(null);
+  const finalizingDuelIds = useRef(new Set<string>());
   const setDuelRun = (run: DuelRun | null) => { duelRunRef.current = run; setDuelRunState(run); };
   const legResults = useRef<(SessionResult | null)[]>([null, null]);
   const lastBotRef = useRef<Record<Ladder, string | null>>({ mapas: null, bandeiras: null });
@@ -145,17 +149,34 @@ export function App() {
   // Onde a pessoa está em cada escada (troféus e MMR escondido): vai para o servidor (ranking, proposta da fila e a conta do adversário).
   const standings = useMemo<LadderStandings>(() => Object.fromEntries(LADDERS.map((ladder) => [ladder, { trophies: byLadder[ladder], mmr: mmrStateFromDuels(ladderEntries, ladder).mmr }])) as LadderStandings, [ladderEntries, byLadder]);
   useEffect(() => {
-    void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[])]).then(async ([list, matches]) => {
+    void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[]), loadBotRanking()]).then(async ([list, matches, ranking]) => {
       setDuels(list);
       setPvpMatches(matches);
+      setBotRanking(ranking);
       setLadderLoaded(true);
       // ao abrir: paga o que faltar (marco novo ou a diferença de um prêmio que foi aumentado) e atualiza o saldo
       const entries = [...list, ...pvpLadderEntries(matches)];
       await claimDuelMilestones(trophiesByLadder(entries)).catch(() => []);
       await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
       void refreshEconomy();
-    }).catch(() => undefined);
+    }).catch((error) => { console.error("[carta-cega] ranking load failed", error); setError(t.duel.rank.loadError); });
   }, []);
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState !== "visible") return;
+      void loadBotRanking().then(setBotRanking).catch((error) => {
+        console.error("[carta-cega] bot ranking refresh failed", error);
+        setError(t.duel.rank.loadError);
+      });
+    };
+    if (screen === "league" || (screen === "hub" && duelMode)) refresh();
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, [screen, duelMode]);
   // Só com ?debug=1: `__cartaDuelResult("t4")` no console abre o resultado de um cenário pronto (sem gravar nada).
   useEffect(() => {
     if (!isDebugEnabled()) return;
@@ -722,6 +743,10 @@ export function App() {
   };
   /** Fecha o duelo: o bot joga os dois tempos, o placar decide, os troféus entram no histórico e os marcos são pagos. */
   const concludeDuel = async (run: DuelRun) => {
+    // A trava vem antes de qualquer await: terminar e abandonar não podem
+    // liquidar o mesmo duelo com placares diferentes durante a gravação.
+    if (finalizingDuelIds.current.has(run.id)) return;
+    finalizingDuelIds.current.add(run.id);
     const outcome = resolveRun(run);
     const before = economyBeforeRef.current;
     const economyAfter = await queryEconomy().catch(() => null);
@@ -732,12 +757,25 @@ export function App() {
       legs: outcome.legs.map((leg, index) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds, playerMs: run.done[index]?.playerMs ?? null, botMs: leg.botMs })),
       abandoned: run.done.length < LEGS,
     };
+    try {
+      setBotRanking(await saveDuel(record, run.mmr));
+      const committed = (await listDuels()).find((item) => item.id === record.id);
+      if (!committed || committed.outcome !== record.outcome || committed.delta !== record.delta
+        || committed.playerCorrect !== record.playerCorrect || committed.botCorrect !== record.botCorrect) {
+        throw new Error("Persisted duel differs from this completion; refusing an inconsistent result.");
+      }
+    } catch (error) {
+      finalizingDuelIds.current.delete(run.id);
+      console.error("[carta-cega] atomic duel settlement failed", error);
+      setError(t.duel.rank.saveError);
+      return;
+    }
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];
     setDuels(nextDuels);
     // a escada soma os duelos contra bot e os valendo contra pessoas
     const nextEntries = [...nextDuels, ...pvpLadderEntries(pvpMatches)];
     // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
-    const milestones: readonly Milestone[] = await saveDuel(record).then(() => claimDuelMilestones(trophiesByLadder(nextEntries))).catch(() => []);
+    const milestones: readonly Milestone[] = await claimDuelMilestones(trophiesByLadder(nextEntries)).catch(() => []);
     // Tema de liga: dado uma vez ao entrar na liga (melhor das duas escadas); o resultado avisa quando foi este duelo que abriu.
     const themesGranted = await claimLeagueThemes(trophiesByLadder(nextEntries)).catch(() => [] as string[]);
     void refreshEconomy();
@@ -911,6 +949,10 @@ export function App() {
     return () => registerAchievementLifecycleListener(null);
   }, [syncAchievements]);
   const onDebugChange = async ({ announce }: { announce: boolean }) => {
+    const [list, matches, ranking] = await Promise.all([listDuels(), listPvpMatches(), loadBotRanking()]);
+    setDuels(list);
+    setPvpMatches(matches);
+    setBotRanking(ranking);
     await refreshEconomy();
     await syncAchievements(announce);
     setSurfaceRevision((current) => current + 1);
@@ -1184,7 +1226,7 @@ export function App() {
       friendship={friendship} onAddFriend={(code) => void friendAdd(code)} onOpenProfile={openPlayer} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
   }
   if (screen === "league") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} /></main></div>;
@@ -1253,7 +1295,7 @@ export function App() {
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}
           arenas={{
-            cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, boards,
+            cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, boards, botRanking,
             onFriends: openFriends, onOpenPlayer: openPlayer,
             search: { queue: pvpQueue, error: arenaError, busy: pvpBusy, onSearch: (ladder) => void arenaSearch(ladder), onCancel: () => void queueCancel(), onBot: openDuel, onFriendly: (ladder) => pvpOpenHome(ladder, "friendly") },
           }}

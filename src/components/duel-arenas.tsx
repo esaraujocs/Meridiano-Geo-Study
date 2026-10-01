@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
 import { dayNumber, globalLeaderboard, rankWindow } from "../domain/leaderboard";
+import type { BotRankingState } from "../domain/bot-ranking";
 import type { LeaderboardRow, PvpQueueView } from "../domain/pvp";
 import { LADDER_BASE, LADDER_BASE_GROUP, type Ladder } from "../domain/duel-modes";
 import type { Milestone } from "../domain/duel-rewards";
@@ -37,7 +38,7 @@ export type ArenaSearch = {
 };
 
 // Hub em Duelo: uma arena por escada e o painel dos próximos prêmios com o ranking de pessoas e bots.
-export function DuelArenas({ cards, next, formatReady, formatCost, search, boards, onLeague, onFriends, onOpenPlayer }: {
+export function DuelArenas({ cards, next, formatReady, formatCost, search, boards, botRanking, onLeague, onFriends, onOpenPlayer }: {
   cards: readonly LadderCard[];
   next: readonly Milestone[];
   formatReady: boolean;
@@ -45,6 +46,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
   search: ArenaSearch;
   /** O ranking de cada escada vindo do servidor (null enquanto não chegou ou sem conexão). */
   boards: Record<Ladder, readonly LeaderboardRow[] | null>;
+  botRanking?: BotRankingState | null;
   onLeague?: () => void;
   onFriends?: () => void;
   /** Abre o perfil de quem está no ranking. */
@@ -54,7 +56,7 @@ export function DuelArenas({ cards, next, formatReady, formatCost, search, board
   const best = cards.reduce((top, card) => (card.trophies > top.trophies ? card : top), cards[0]);
   const bestBoard = boards[best.ladder];
   const day = dayNumber();
-  const rank = useMemo(() => rankWindow(globalLeaderboard(best.ladder, bestBoard ?? [], best.trophies, day), 3), [bestBoard, best.ladder, best.trophies, day]);
+  const rank = useMemo(() => rankWindow(globalLeaderboard(best.ladder, bestBoard ?? [], best.trophies, day, botRanking), 3), [bestBoard, best.ladder, best.trophies, day, botRanking]);
   return (
     <div className="arena-grid" role="region" aria-label={t.duel.modeDuel}>
       {cards.map((card) => <Arena key={card.ladder} card={card} formatReady={formatReady} formatCost={formatCost} search={search} />)}

@@ -256,7 +256,10 @@ export const en: Messages = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "People and bots on the same ladder. Bots are labeled and their trophies vary daily.",
+      sub: "People and bots on the same ladder. Your duels and simulated daily matches change the bots’ trophies on this profile.",
+      botTrophies: (value: string) => `${value} trophies`,
+      loadError: "Could not load bot rankings. Reopen the game to try again.",
+      saveError: "Could not save the duel result and the bot’s trophies. Reopen the game to try again.",
       you: "You",
       bot: "bot",
       offline: "Player rankings are currently unavailable. Bots still appear.",

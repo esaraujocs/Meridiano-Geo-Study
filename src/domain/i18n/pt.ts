@@ -257,7 +257,10 @@ export const pt = {
     },
     rank: {
       title: (ladder: string) => `Ranking · ${ladder}`,
-      sub: "Pessoas e bots na mesma escada. Os bots estão identificados e seus troféus variam a cada dia.",
+      sub: "Pessoas e bots na mesma escada. Seus duelos e confrontos diários simulados alteram os troféus dos bots deste perfil.",
+      botTrophies: (value: string) => `${value} troféus`,
+      loadError: "Não foi possível carregar o ranking dos bots. Reabra o jogo para tentar novamente.",
+      saveError: "Não foi possível salvar o resultado do duelo e os troféus do bot. Reabra o jogo para tentar novamente.",
       you: "Você",
       bot: "bot",
       offline: "Ranking das pessoas indisponível no momento. Os bots continuam aparecendo.",

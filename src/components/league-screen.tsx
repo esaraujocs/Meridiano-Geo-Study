@@ -5,6 +5,7 @@ import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
 import { globalLeaderboard, rankWindow } from "../domain/leaderboard";
+import type { BotRankingState } from "../domain/bot-ranking";
 import type { LeaderboardRow } from "../domain/pvp";
 import type { LadderEntry } from "../domain/pvp-trophies";
 import type { PvpMatchRecord } from "../domain/pvp-store";
@@ -21,12 +22,13 @@ const RING = 2 * Math.PI * 58;
 
 // Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
 // adversários (bots), últimos duelos da escada e ranking de pessoas e bots; as molduras do nível valem a melhor das duas.
-export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder, onBack, onOpenPlayer }: {
+export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, initialLadder, onBack, onOpenPlayer }: {
   /** Tudo o que conta na escada: duelos contra bot e valendo contra pessoas. */
   entries: readonly LadderEntry[];
   duels: readonly DuelRecord[];
   pvpMatches: readonly PvpMatchRecord[];
   boards: Record<Ladder, readonly LeaderboardRow[] | null>;
+  botRanking?: BotRankingState | null;
   initialLadder?: Ladder;
   onBack: () => void;
   /** Abre o perfil de quem está no ranking. */
@@ -44,7 +46,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
   const board = boards[ladder];
-  const rank = rankWindow(globalLeaderboard(ladder, board ?? [], trophies), 10);
+  const rank = rankWindow(globalLeaderboard(ladder, board ?? [], trophies, undefined, botRanking), 10);
   // os últimos duelos da escada, contra bot e contra pessoas, numa lista só
   const recent = [
     ...duels.filter((duel) => duel.ladder === ladder).map((duel) => {
@@ -112,7 +114,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, initialLadder
                 const profile = botProfile(bot, { division: status.division, family: null });
                 return <li key={bot.id} className="rk-li lg-bot" data-league={bot.league}>
                   <span className="rk-av lg-badge" aria-hidden="true">{bot.name.charAt(0)}</span>
-                  <span className="pr-rname"><b>{bot.name}</b><small>{t.duel.league.botLine(styleLabel(bot.style, bot.specialty), Math.round(profile.accuracy * 100), t.time.seconds(Math.round(profile.avgMs / 1000)))}</small></span>
+                  <span className="pr-rname"><b>{bot.name}</b><small>{t.duel.league.botLine(styleLabel(bot.style, bot.specialty), Math.round(profile.accuracy * 100), t.time.seconds(Math.round(profile.avgMs / 1000)))}</small>{botRanking && <small>{t.duel.rank.botTrophies(formatNumber(botRanking.bots[ladder][bot.id].trophies))}</small>}</span>
                   <strong className="rk-val">{Math.round(profile.accuracy * 100)}%</strong>
                 </li>;
               })}

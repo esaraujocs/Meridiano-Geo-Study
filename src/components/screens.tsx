@@ -236,7 +236,7 @@ export function Hub({
   duelsPlayed?: number;
   onOpenLeague?: () => void;
   /** Hub em Duelo: as arenas (uma por escada) e os próximos prêmios, no lugar dos cartões de modo. */
-  arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; search: ArenaSearch; boards: Record<Ladder, readonly LeaderboardRow[] | null>; onFriends?: () => void; onOpenPlayer?: (code: string) => void };
+  arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; search: ArenaSearch; boards: Record<Ladder, readonly LeaderboardRow[] | null>; botRanking?: import("../domain/bot-ranking").BotRankingState | null; onFriends?: () => void; onOpenPlayer?: (code: string) => void };
 }) {
   const [activeFamily, setActiveFamily] = useState(0);
   const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
@@ -347,7 +347,7 @@ export function Hub({
       </div>
       <div className="hub-rule" aria-hidden="true" />
       <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}</button></div>}</div>
-      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} boards={arenas.boards} onLeague={onOpenLeague} onFriends={arenas.onFriends} onOpenPlayer={arenas.onOpenPlayer} /> : (
+      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} boards={arenas.boards} botRanking={arenas.botRanking} onLeague={onOpenLeague} onFriends={arenas.onFriends} onOpenPlayer={arenas.onOpenPlayer} /> : (
       <div className="family-carousel">
           {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
         <div
