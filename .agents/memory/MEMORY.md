@@ -2,3 +2,4 @@
 - [Baralhos React estáveis](stable-react-decks.md) — pools recriados por dados assíncronos precisam de chave semântica para não reiniciar a sessão.
 - [Carrosséis responsivos determinísticos](responsive-carousel-testing.md) — o estado ativo deve dirigir a tríade visual; valide peeks no breakpoint real sem usar scroll suave como estado.
 - [Semântica de partida e geografia](lote3-session-geography.md) — só esgotar o baralho conclui sessão; evidências do mapa e auditoria costeira seguem regras explícitas.
+- [Regeneração de dados legados](legacy-catalog-regeneration.md) — reextrair o HTML antigo pode apagar aliases e correções posteriores; preserve os dados atuais.

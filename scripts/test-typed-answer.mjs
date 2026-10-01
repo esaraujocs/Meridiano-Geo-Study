@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { answerKey, matchTypedAnswer, normalizeTyped, sameCapitalName } from "../.tmp-typed/typed-answer.js";
 
+const { meta, names3 } = JSON.parse(readFileSync(new URL("../public/data/legacy/catalog.json", import.meta.url), "utf8"));
+assert.equal(meta["156"].cap, "Beijing");
+assert.equal(meta["528"].pt, "Países Baixos");
+assert.equal(names3.NLD, "Países Baixos");
+for (const answer of ["Holanda", "Países Baixos", "paises baixos"]) {
+  assert.equal(matchTypedAnswer(answer, [meta["528"].pt, ...meta["528"].al]).exact, true, answer);
+}
+assert.equal(matchTypedAnswer("Beijing", [meta["156"].cap]).exact, true);
 assert.equal(normalizeTyped("São Tomé"), "sao tome");
 assert.equal(matchTypedAnswer("Niger", ["Niger"]).autoCommit, true);
 assert.equal(matchTypedAnswer("Niger", ["Niger", "Nigeria"], { requireUnambiguous: true }).autoCommit, false);

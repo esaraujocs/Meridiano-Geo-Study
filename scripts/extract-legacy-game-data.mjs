@@ -16,6 +16,12 @@ if (end < 0) throw new Error("Fim do payload legado não encontrado.");
 
 const sourceText = html.slice(contentStart, end);
 const legacy = JSON.parse(sourceText);
+// Nomes atuais de exibição; preservar o nome anterior do país na escrita.
+legacy.meta["156"].cap = "Beijing";
+legacy.meta["528"].pt = "Países Baixos";
+legacy.meta["528"].al = [...new Set(["Holanda", ...(legacy.meta["528"].al ?? [])])]
+  .filter((name) => name !== "Países Baixos");
+legacy.names3.NLD = "Países Baixos";
 const envelope = {
   sourceVersion: "0.13.5",
   sourceHash: createHash("sha256").update(sourceText).digest("hex"),
