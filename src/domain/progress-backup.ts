@@ -119,14 +119,17 @@ function openDatabase() {
 
 async function readAll(database: IDBDatabase): Promise<StoreRows> {
   const rows = emptyRows();
-  for (const name of BACKUP_STORES) {
-    rows[name] = await new Promise<Row[]>((resolve, reject) => {
-      const request = database.transaction(name, "readonly").objectStore(name).getAll();
-      request.onsuccess = () => resolve(request.result as Row[]);
-      request.onerror = () => reject(request.error);
-    });
-  }
-  return rows;
+  return new Promise<StoreRows>((resolve, reject) => {
+    const transaction = database.transaction([...BACKUP_STORES], "readonly");
+    transaction.oncomplete = () => resolve(rows);
+    transaction.onabort = () => reject(transaction.error ?? new Error("Progress backup read transaction was aborted."));
+    transaction.onerror = () => {};
+    for (const name of BACKUP_STORES) {
+      const request = transaction.objectStore(name).getAll();
+      request.onsuccess = () => { rows[name] = request.result as Row[]; };
+      request.onerror = () => {};
+    }
+  });
 }
 
 const LOCAL_KEY = /^carta-(theme|pace|round-tier|flag-direction|reduced-motion|timer-late|last-variant:.+)$/;

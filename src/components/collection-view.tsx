@@ -20,9 +20,13 @@ import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
 import { ProgressHero } from "./progress-hero";
 import { t } from "../domain/i18n";
+import { MuseumView } from "./museum-view";
+import { MUSEUM_PIECES } from "../domain/museum";
+import { museumCopy } from "./museum-copy";
+import { locale } from "../domain/i18n/locale";
 
 type SurfaceState = Awaited<ReturnType<typeof querySurfaces>>;
-type Props = { state: SurfaceState; meta: Record<string, Meta>; names?: Record<string, string>; initialRegion?: Region };
+type Props = { state: SurfaceState; meta: Record<string, Meta>; names?: Record<string, string>; initialRegion?: Region; onEconomyRefresh?: () => void | Promise<void> };
 type LevelFilter = "todas" | "descobertas" | "faltando" | "1" | "2" | "3" | "4" | "5";
 type StateFilter = "todas" | "descobertas" | "faltando";
 
@@ -156,11 +160,11 @@ function HistoricalDetail({ card, src, onClose, onPrev, onNext }: { card: Histor
   </CardDialog>;
 }
 
-export function CollectionView({ state, meta, names, initialRegion }: Props) {
+export function CollectionView({ state, meta, names, initialRegion, onEconomyRefresh }: Props) {
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
-  const [album, setAlbum] = useState<"countries" | "historical">("countries");
+  const [album, setAlbum] = useState<"countries" | "historical" | "museum">("countries");
   const [region, setRegion] = useState<Region>(initialRegion ?? "mundo");
   const [level, setLevel] = useState<LevelFilter>("todas");
   const [unOnly, setUnOnly] = useState(false);
@@ -186,7 +190,9 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
   const src = (catalog: FlagCatalog, flag?: string) => { const value = flag ? catalog[flag.toLowerCase()] : undefined; return value ? flagSource(value) : undefined; };
 
   const isCountries = album === "countries";
-  const navigable: string[] = isCountries ? visible.filter((card) => card.mastery > 0).map((card) => card.id) : visibleHistorical.filter((card) => card.discovered).map((card) => card.id);
+  const isHistorical = album === "historical";
+  const isMuseum = album === "museum";
+  const navigable: string[] = isCountries ? visible.filter((card) => card.mastery > 0).map((card) => card.id) : isHistorical ? visibleHistorical.filter((card) => card.discovered).map((card) => card.id) : [];
   const position = selected ? navigable.indexOf(selected) : -1;
   const openCard = (id: string) => { lastOpened.current = id; setSelected(id); };
   // ao fechar, devolve o foco à carta (o <dialog> só restaura se o clique tiver focado o botão; no Safari não focam)
@@ -197,12 +203,12 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
   };
   const go = (delta: number) => { const next = navigable[position + delta]; if (position >= 0 && next) openCard(next); };
   const selectedCountry = isCountries && selected ? cards.find((card) => card.id === selected) : undefined;
-  const selectedHistorical = !isCountries && selected ? allHistorical.find((card) => card.id === selected) : undefined;
-  const switchAlbum = (next: "countries" | "historical") => { setAlbum(next); setQuery(""); setSelected(null); };
+  const selectedHistorical = isHistorical && selected ? allHistorical.find((card) => card.id === selected) : undefined;
+  const switchAlbum = (next: "countries" | "historical" | "museum") => { setAlbum(next); setQuery(""); setSelected(null); };
   const clearFilters = () => { setRegion("mundo"); setLevel("todas"); setUnOnly(false); setQuery(""); setHistoricalType("todos"); setHistoricalState("todas"); };
   const pick = (chip: HTMLElement) => chip.scrollIntoView?.({ inline: "center", block: "nearest" });
-  const shown = isCountries ? visible.length : visibleHistorical.length;
-  const total = isCountries ? cards.length : allHistorical.length;
+  const shown = isCountries ? visible.length : isHistorical ? visibleHistorical.length : MUSEUM_PIECES.length;
+  const total = isCountries ? cards.length : isHistorical ? allHistorical.length : MUSEUM_PIECES.length;
 
   const missing = cards.length - discovered;
   const heroLegend = isCountries
@@ -213,7 +219,7 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
       })}</>;
 
   return <section className="col" aria-label={t.collection.aria}>
-    <ProgressHero
+    {!isMuseum && <ProgressHero
       value={isCountries ? discovered : historicalDiscovered} total={isCountries ? cards.length : allHistorical.length}
       ringLabel={isCountries ? t.collection.ringCountries(discovered, cards.length) : t.collection.ringHistorical(historicalDiscovered, allHistorical.length)}
       eyebrow={isCountries ? t.collection.eyebrow : t.collection.eyebrowHistorical} title={isCountries ? t.collection.title : t.collection.titleHistorical}
@@ -222,19 +228,21 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
         ? (missing > 0 ? <b>{t.collection.missingAtlas(missing)}</b> : <b>{t.collection.atlasComplete}</b>)
         : (allHistorical.length - historicalDiscovered > 0 ? <b>{t.collection.missing(allHistorical.length - historicalDiscovered)}</b> : <b>{t.collection.complete2}</b>)}
       legendLabel={isCountries ? t.collection.legend : t.collection.legendHistorical} legend={heroLegend}
-    />
+    />}
 
     <div className="col-toolbar">
       <div className="col-tabs" role="group" aria-label={t.collection.album}>
         <button type="button" className="col-tab" aria-pressed={isCountries} onClick={() => switchAlbum("countries")}>{t.collection.countries} <em>{discovered}/{cards.length}</em></button>
-        <button type="button" className="col-tab" aria-pressed={!isCountries} onClick={() => switchAlbum("historical")}>{t.collection.historical} <em>{historicalDiscovered}/{allHistorical.length}</em></button>
+        <button type="button" className="col-tab" aria-pressed={isHistorical} onClick={() => switchAlbum("historical")}>{t.collection.historical} <em>{historicalDiscovered}/{allHistorical.length}</em></button>
+        <button type="button" className="col-tab" data-album="museum" aria-pressed={isMuseum} onClick={() => switchAlbum("museum")}>{museumCopy[locale].title} <em>03</em></button>
       </div>
-      <div className="col-tools">
+      {!isMuseum && <div className="col-tools">
         {isCountries && <label className="col-switch"><input type="checkbox" checked={unOnly} onChange={(event) => setUnOnly(event.target.checked)} /><i aria-hidden="true" />{t.collection.onlyUn}</label>}
         <label className="col-search"><Glyph name="search" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isCountries ? t.collection.searchCountry : t.collection.searchEntity} aria-label={isCountries ? t.collection.searchCountryAria : t.collection.searchEntityAria} /></label>
-      </div>
+      </div>}
     </div>
 
+    {!isMuseum && <>
     <div className="col-frow"><span className="col-flabel">{t.collection.region}</span>
       <div className="pg-chips" role="group" aria-label={t.collection.regionFilter}>
         {REGION_ITEMS.map(([key, name]) => <button type="button" className="pg-chip" key={key} aria-pressed={region === key} onClick={(event) => { setRegion(key); pick(event.currentTarget); }}>{name}</button>)}
@@ -269,5 +277,7 @@ export function CollectionView({ state, meta, names, initialRegion }: Props) {
 
     {selectedCountry && selectedCountry.mastery > 0 && <CountryDetail card={selectedCountry} meta={meta[selectedCountry.id]} names={names} src={src(flags, selectedCountry.flag)} onClose={closeCard} onPrev={position > 0 ? () => go(-1) : undefined} onNext={position >= 0 && position < navigable.length - 1 ? () => go(1) : undefined} />}
     {selectedHistorical && selectedHistorical.discovered && <HistoricalDetail card={selectedHistorical} src={src(historicalFlags, selectedHistorical.flag)} onClose={closeCard} onPrev={position > 0 ? () => go(-1) : undefined} onNext={position >= 0 && position < navigable.length - 1 ? () => go(1) : undefined} />}
+    </>}
+    {isMuseum && <MuseumView onEconomyRefresh={onEconomyRefresh} />}
   </section>;
 }

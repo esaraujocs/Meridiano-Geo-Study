@@ -347,7 +347,7 @@ html[data-reduced-motion=true] .hit-pulse i{display:none}html[data-reduced-motio
 .pg-dot.is-imperio{border-color:#C49345}.pg-dot.is-extinto{border-color:#2F6F6A}.pg-dot.is-movimento{border-color:#B65F47}
 .pg-legend .pg-dot{margin-right:0}
 .col-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:26px}
-.col-tabs{display:flex;gap:8px}
+.col-tabs{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
 .col-tab{display:flex;align-items:center;gap:10px;min-height:42px;padding:10px 20px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);font-size:15px;cursor:pointer}
 .col-tab em{font:normal 400 12px 'DM Mono',monospace}
 .col-tab:hover{border-color:var(--green)}

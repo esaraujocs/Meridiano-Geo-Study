@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { pvpPlugin } from "./server/pvp-plugin.mjs";
 
 // O MapLibre resolve o worker como ./maplibre-gl-worker.mjs relativo ao bundle, e esse worker
@@ -35,6 +35,10 @@ const injectPrecacheManifest = () => ({
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
+      // Peças locais do museu: adquiridas continuam visíveis sem conexão.
+      ...(await readdir(new URL("./public/museum/", import.meta.url)))
+        .filter((file) => /\.(jpg|png|webp|svg)$/.test(file))
+        .map((file) => `/museum/${file}`),
       // conteúdo traduzido (ver scripts/i18n/build-i18n.mjs): pequeno, vai junto para o jogo abrir offline em qualquer idioma
       ...["en", "es"].flatMap((locale) => ["catalog", "historical", "languages"].map((file) => `/data/i18n/${locale}/${file}.json`)),
       ...assets.map((asset) => `/${asset}`),

@@ -208,6 +208,7 @@ export function App() {
     ],
   });
   const refreshEconomy = () => queryEconomy().then(setEconomy).catch(() => undefined);
+  const refreshEconomyForMuseum = () => queryEconomy().then(setEconomy);
   const [supplies, setSupplies] = useState<SupplyCounts>(emptySupplyCounts());
   const refreshSupplies = () => supplyCounts().then(setSupplies).catch(() => undefined);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
@@ -1152,7 +1153,7 @@ export function App() {
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
-     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} onOpenPlayer={openPlayer} /></div>;
+     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
     return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
