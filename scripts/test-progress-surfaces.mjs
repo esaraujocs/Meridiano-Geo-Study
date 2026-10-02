@@ -54,4 +54,31 @@ assert.equal(profile.filterHistoricalAlbum(historical, "europa", "imperio").leng
 const achievements = profile.evaluateAchievements(progress, [current], []);
 assert.equal(achievements.find((item) => item.id === "first-session").unlocked, true);
 assert.equal(achievements.find((item) => item.id === "coverage-10").unlocked, false);
+
+// Nota do título: a melhor entre a de sempre e a das últimas 100 rodadas (quem aprende jogando não fica preso aos erros do começo)
+const capSession = (id, startedAt, hits, extra = {}) => ({ id, family: "capitais", variant: "capital-pais", mode: "capital-pais", startedAt, rounds: hits.map((ok, i) => ({ targetId: "x" + i, correct: ok, responseTimeMs: 900, ...extra })) });
+const alternate = (n, every) => Array.from({ length: n }, (_, i) => i % every !== 0); // erra 1 a cada `every`
+const learner = [
+  capSession("b", 2000, alternate(100, 25)), // as 100 mais recentes: 96%
+  capSession("a", 1000, alternate(1000, 2)), // as primeiras 1000: 50% (fora de ordem no array de propósito)
+];
+const learned = profile.deriveProgress([], undefined, learner.map((s, i) => profile.normalizeSession(s, i)));
+assert.ok(learned.pillars.capitais.bayesianScore < 0.6, "a de sempre segue baixa");
+assert.equal(learned.pillars.capitais.recent, 0.96);
+assert.equal(learned.pillars.capitais.titleScore, 0.96);
+assert.equal(learned.pillars.bandeiras.recent, null, "sem 100 rodadas a janela não vale");
+assert.equal(learned.pillars.bandeiras.titleScore, null);
+// poucas rodadas: a janela não existe ainda e vale só a de sempre
+const few = profile.deriveProgress([], undefined, [profile.normalizeSession(capSession("f", 1, Array(99).fill(true)))]);
+assert.equal(few.pillars.capitais.recent, null);
+assert.equal(few.pillars.capitais.titleScore, few.pillars.capitais.bayesianScore, "sem janela, vale só a de sempre");
+// rodada com suprimento não entra na janela: 100 acertos assistidos + 100 reais a 80% => 80%
+const mixed = profile.deriveProgress([], undefined, [
+  profile.normalizeSession(capSession("m1", 1, Array(100).fill(true), { assisted: true })),
+  profile.normalizeSession(capSession("m2", 2, alternate(100, 5))),
+]);
+assert.equal(mixed.pillars.capitais.recent, 0.8);
+// quem já é bom desde o começo não perde nada: vale a maior das duas
+const steady = profile.deriveProgress([], undefined, [profile.normalizeSession(capSession("s", 1, Array(500).fill(true)))]);
+assert.ok(steady.pillars.capitais.titleScore >= steady.pillars.capitais.bayesianScore);
 console.log("profile surface tests passed");

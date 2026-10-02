@@ -4,7 +4,7 @@ import type { querySurfaces } from "../domain/progress-surfaces";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { TITLE_IDS } from "../domain/hub-profile";
 import {
-  TITLE_GOAL, buildProgressDashboard, groupHistory,
+  TITLE_GOAL, TITLE_WINDOW, buildProgressDashboard, groupHistory,
   type Dashboard, type HistoryGroup, type PillarCard, type RegionRow, type ReviewItem, type SessionRow,
 } from "../domain/progress-dashboard";
 import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup } from "../domain/session-view";
@@ -111,7 +111,7 @@ function PillarCardView({ pillar, onTrain }: { pillar: PillarCard; onTrain: () =
           ? <>{t.progress.alreadyTitle(pillar.title, pillar.scorePct)}</>
           : <>{t.progress.goalBeaten(pillar.goalPct, pillar.title)}</>)
         : (() => { const [a, pts, b] = t.progress.missingPts(pillar.gapPts); return <>{a}<b>{pts}</b>{b}{pillar.title}.</>; })()}
-      {!empty && <span className="pr-raw">{t.progress.raw(pillar.correct, pillar.seen)}</span>}
+      {!empty && <span className="pr-raw">{t.progress.raw(pillar.correct, pillar.seen)}{pillar.basis === "recent" && pillar.lifetimePct !== null && t.progress.recentBasis(TITLE_WINDOW, pillar.lifetimePct)}</span>}
     </p>
     <dl className="pr-pstats">
       <div><dt>{t.progress.coverage}</dt><dd>{pillar.coverage}<em>{t.progress.ofCountries(pillar.coverageTotal)}</em></dd></div>
@@ -413,7 +413,7 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
       <dl>
         <div><dt>{t.progress.howDominated}</dt><dd>{t.progress.howDominatedText}</dd></div>
         <div><dt>{t.progress.howStages}</dt><dd>{t.progress.howStagesText}</dd></div>
-        <div><dt>{t.progress.howTitles}</dt><dd>{t.progress.howTitlesText(TITLE_GOAL)}</dd></div>
+        <div><dt>{t.progress.howTitles}</dt><dd>{t.progress.howTitlesText(TITLE_GOAL, TITLE_WINDOW)}</dd></div>
         <div><dt>{t.progress.howXp}</dt><dd>{t.progress.howXpText}</dd></div>
         <div><dt>{t.progress.howReview}</dt><dd>{t.progress.howReviewText}</dd></div>
       </dl>

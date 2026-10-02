@@ -12,13 +12,38 @@ export type PillarSession = {
   subject?: string;
   correct?: number;
   roundCount?: number;
-  rounds?: ReadonlyArray<{ correct: boolean }>;
+  startedAt?: number | null;
+  rounds?: ReadonlyArray<{ correct: boolean; assisted?: boolean }>;
 };
 
 // Prior bayesiano do clássico: (acertos + 12 × 0,45) ÷ (rodadas + 12). Poucas rodadas puxam a nota para baixo.
 export const BAYES_WEIGHT = 12;
 export const BAYES_PRIOR = 0.45;
 export const bayesianScore = (correct: number, seen: number) => (correct + BAYES_WEIGHT * BAYES_PRIOR) / (seen + BAYES_WEIGHT);
+
+// Nota que abre os títulos: a MELHOR entre a precisão de sempre (acima) e a das últimas TITLE_WINDOW rodadas do pilar.
+// Só a de sempre punia quem aprende jogando: 3.380 rodadas em Capitais a 87% (os primeiros erros pesando para sempre) com ~97% nas últimas 100
+// pediam mais de mil rodadas sem erro para chegar a 90%. A janela mede quem a pessoa é agora; exige TITLE_WINDOW rodadas (não vale sorte em poucas)
+// e não conta rodada com suprimento (assistida).
+export const TITLE_WINDOW = 100;
+export const TITLE_SCORE = 0.9;
+export function recentPrecision(sessions: readonly PillarSession[]) {
+  const flags: Record<PillarKey, boolean[]> = { bandeiras: [], mapa: [], capitais: [], escrita: [] };
+  const ordered = sessions.map((session, index) => ({ session, index })).sort((a, b) => ((a.session.startedAt ?? 0) - (b.session.startedAt ?? 0)) || a.index - b.index);
+  for (const { session } of ordered) {
+    const key = pillarOfSession(session);
+    if (!key) continue;
+    for (const round of session.rounds ?? []) if (!round.assisted) flags[key].push(Boolean(round.correct));
+  }
+  const out = {} as Record<PillarKey, number | null>;
+  for (const key of PILLAR_KEYS) {
+    const recent = flags[key].slice(-TITLE_WINDOW);
+    out[key] = recent.length >= TITLE_WINDOW ? recent.filter(Boolean).length / recent.length : null;
+  }
+  return out;
+}
+/** A nota do título: o maior entre a bayesiana (sempre) e a janela recente (quando já há rodadas para ela). */
+export const titleScore = (bayes: number | null, recent: number | null | undefined) => (bayes === null && recent == null ? null : Math.max(bayes ?? 0, recent ?? 0));
 
 export function pillarStatus(score: number | null, seen: number) {
   if (score === null) return "sem evidência";

@@ -7,7 +7,7 @@ import type { HistoricalEntity } from "./special-data.js";
 import { regionMatches } from "./regions.js";
 import { matchesSearch, type ProgressColumns } from "./collection-view.js";
 import type { Region } from "./types.js";
-import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals } from "./pillars.js";
+import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals, recentPrecision, titleScore } from "./pillars.js";
 import { dominatedIdsFromSessions } from "./dominated.js";
 import { t } from "./i18n/index.js";
 import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
@@ -23,7 +23,7 @@ export type SurfaceSession = {
   startedAt: number | null;
   endedAt: number | null;
   complete: boolean;
-  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean }>;
+  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean }>;
   /** Rodadas jogadas: as listadas em `rounds` ou, em partida antiga já resumida, o total do resumo. */
   roundCount: number;
   /** Tamanho pedido ao começar (10/20/50/100) ou `null` quando o jogador escolheu "Todas" — o baralho
@@ -46,7 +46,7 @@ export type ProgressSnapshot = {
   total: number;
   discovered: number;
   distribution: number[];
-  pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; status: string; aggregate?: boolean }>;
+  pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; /** precisão das últimas rodadas do pilar (null com menos de TITLE_WINDOW) */ recent?: number | null; /** a nota que abre o título: max(bayesianScore, recent) */ titleScore?: number | null; status: string; aggregate?: boolean }>;
   records?: any[];
 };
 export type CollectionCard = { id: string; name: string; mastery: number; region?: string; sub?: string; un?: boolean; flag?: string; fields: Array<[string, string]>; columns?: ProgressColumns };
@@ -172,6 +172,12 @@ export function deriveProgress(records: any[], universe?: string[], sessions?: S
       item.accuracy = seen ? correct / seen : null;
       item.bayesianScore = seen ? bayesianScore(correct, seen) : null;
       item.status = pillarStatus(item.bayesianScore, seen);
+    }
+    const recent = recentPrecision(sessions);
+    for (const key of PILLAR_KEYS) {
+      const item = pillars[key];
+      item.recent = recent[key];
+      item.titleScore = titleScore(item.bayesianScore, recent[key]);
     }
   }
   const collection = collectionSummary(records, ids);

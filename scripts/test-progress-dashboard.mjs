@@ -131,6 +131,17 @@ assert.deepEqual([mapa.seen, mapa.correct], [10, 6]);
 assert.deepEqual([capitais.seen, capitais.correct], [10, 4]);
 assert.equal(bandeiras.scorePct, Math.round(bayesianScore(15, 20) * 100));
 assert.equal(bandeiras.gapPts, 90 - bandeiras.scorePct);
+assert.equal(bandeiras.basis, "lifetime", "sem 100 rodadas vale só a precisão de sempre");
+// quem aprende jogando: de sempre 87%, últimas 100 rodadas a 97% => a janela vale (basis "recent") e o que falta some
+const learnerPillars = { ...progress.pillars, capitais: { seen: 3380, correct: 2949, bayesianScore: bayesianScore(2949, 3380), recent: 0.97, titleScore: 0.97, status: "forte" } };
+const learnerCap = build({ pillars: learnerPillars }).pillars[2];
+assert.equal(learnerCap.lifetimePct, 87);
+assert.equal(learnerCap.scorePct, 97);
+assert.equal(learnerCap.basis, "recent");
+assert.equal(learnerCap.gapPts, 0, "passou de 90% pela janela: não falta nada");
+const nearCap = build({ pillars: { ...progress.pillars, capitais: { ...learnerPillars.capitais, recent: 0.86, titleScore: 0.87 } } }).pillars[2];
+assert.equal(nearCap.basis, "lifetime", "a janela pior que a de sempre não toma o lugar dela");
+assert.equal(nearCap.gapPts, 3);
 assert.equal(bandeiras.tone, "mid");
 assert.equal(bandeiras.status, "Em desenvolvimento");
 assert.equal(capitais.tone, "warn");

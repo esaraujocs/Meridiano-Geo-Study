@@ -4,7 +4,7 @@ import type { Meta } from "./types";
 import type { SurfaceSession } from "./progress-surfaces.js";
 import { MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
 import { MASTERY_STAGES, PILLAR_TITLES, clampPercent, hubProfile } from "./hub-profile.js";
-import { pillarOfSession, type PillarKey } from "./pillars.js";
+import { TITLE_WINDOW, pillarOfSession, type PillarKey } from "./pillars.js";
 import { REGION_ITEMS, regionMatches } from "./regions.js";
 import { placeLabel } from "./collection-view.js";
 import {
@@ -19,6 +19,7 @@ import { botLabel, styleLabel } from "./duel-labels.js";
 import type { PvpMatchRecord } from "./pvp-store.js";
 
 export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
+export { TITLE_WINDOW };
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
 export const REVIEW_MIN_TRIES = 3;
 export const REVIEW_BELOW = 0.5;
@@ -26,7 +27,7 @@ export const HEATMAP_WEEKS = 12;
 export const EVOLUTION_POINTS = 14;
 
 export type ProgressRecordLike = { entityId?: unknown; id?: unknown; mastery?: unknown; columns?: Record<string, number | undefined> };
-export type PillarSnapshot = { seen: number; correct: number; bayesianScore: number | null; status: string };
+export type PillarSnapshot = { seen: number; correct: number; bayesianScore: number | null; /** precisão das últimas TITLE_WINDOW rodadas (null com menos) */ recent?: number | null; /** a nota do título: max(bayesianScore, recent) */ titleScore?: number | null; status: string };
 
 export type DashboardInput = {
   now: number;
@@ -57,8 +58,11 @@ export type PillarCard = {
   earned: boolean;
   seen: number;
   correct: number;
-  /** nota do pilar (bayesiana) em %, a mesma que abre o título. */
+  /** nota do pilar em %, a mesma que abre o título: a melhor entre a precisão de sempre (bayesiana) e a das últimas TITLE_WINDOW rodadas. */
   scorePct: number | null;
+  /** de onde veio `scorePct`: "recent" quando a janela das últimas rodadas é que vale (a de sempre é `lifetimePct`). */
+  basis: "lifetime" | "recent";
+  lifetimePct: number | null;
   goalPct: number;
   gapPts: number;
   status: string;
@@ -400,9 +404,12 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
     const snapshot = input.pillars[key];
     const seen = snapshot?.seen ?? 0;
     const correct = snapshot?.correct ?? 0;
-    const score = snapshot?.bayesianScore ?? null;
+    const lifetime = snapshot?.bayesianScore ?? null;
+    const score = snapshot?.titleScore ?? lifetime;
     const earned = input.titleIds.includes(titleId);
     const scorePct = score === null ? null : roundPct(score);
+    const lifetimePct = lifetime === null ? null : roundPct(lifetime);
+    const basis = scorePct !== null && lifetimePct !== null && scorePct > lifetimePct ? "recent" : "lifetime";
     const status = snapshot?.status ?? "sem evidência";
     const tone: PillarTone = earned ? "earned" : status === "forte" ? "good" : status === "revisar" ? "warn" : "mid";
     const labels = t.progress.status;
@@ -415,7 +422,7 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
     return {
       key, label,
       title: PILLAR_TITLES.find((item) => item.id === titleId)?.label ?? "",
-      earned, seen, correct, scorePct, goalPct: TITLE_GOAL,
+      earned, seen, correct, scorePct, basis, lifetimePct, goalPct: TITLE_GOAL,
       gapPts: earned || scorePct === null ? (earned ? 0 : TITLE_GOAL) : Math.max(0, TITLE_GOAL - scorePct),
       status: statusLabel, tone,
       coverage, coverageTotal: total,
