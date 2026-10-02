@@ -7,7 +7,7 @@ import { SYNC_STATE_ID, syncUntilSettled, type CurrentLocal, type LocalStore, ty
 import { BOT_RANKING_ROW_ID } from "./account-sync.js";
 import { parseBotRanking } from "./bot-ranking.js";
 import { deviceId, readLocalPrefs, setMissingLocalPrefs } from "./progress-backup.js";
-import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpIdentity, pvpSyncCommit, pvpSyncPlan, pvpSyncRows } from "./pvp-client.js";
+import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpAccountRefresh, pvpIdentity, pvpSyncCommit, pvpSyncPlan, pvpSyncRows } from "./pvp-client.js";
 import type { ProgressRecord } from "./learning-rules.js";
 
 const ROW_AND_PROGRESS_STORES = [...SYNC_ROW_STORES, "progress"] as const;
@@ -177,6 +177,12 @@ export async function runAccountSync(options: { mode?: "sum" | "adopt" } = {}): 
       }
       return result;
     } catch (error) {
+      // 401: este aparelho foi desconectado da conta (a senha foi trocada em outro aparelho, ou o segredo dele foi revogado). Confere com o servidor, que esquece a identidade daqui
+      // (aí a linha Conta volta a mostrar Entrar/Criar e o aviso "crie uma conta" volta a valer), em vez de continuar "conectado" sem conseguir sincronizar.
+      if (error instanceof PvpClientError && error.code === "unauthorized") {
+        await pvpAccountRefresh().catch(() => undefined);
+        window.dispatchEvent(new CustomEvent("carta-sync", { detail: { status: "signed-out" } }));
+      }
       const network = error instanceof PvpClientError && error.code === "network";
       const message = error instanceof Error ? error.message : String(error);
       const previous = syncStatus();

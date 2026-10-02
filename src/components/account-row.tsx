@@ -74,6 +74,7 @@ export function AccountRow() {
     const onSync = (event: Event) => {
       const detail = (event as CustomEvent<{ status?: string; changedFromAccount?: boolean }>).detail;
       if (detail?.status === "ok" && detail.changedFromAccount) setArrived(true);
+      if (detail?.status === "signed-out") setUsername(pvpAccountName()); // o servidor desconectou este aparelho: a linha volta a mostrar Entrar/Criar
       setTick((tick) => tick + 1);
     };
     window.addEventListener("carta-sync", onSync);
