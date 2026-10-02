@@ -223,7 +223,7 @@ export type PvpCommand =
   | { type: "leave" }
   | { type: "ping" };
 
-export type PvpErrorCode = "bad_request" | "unauthorized" | "not_found" | "room_full" | "wrong_phase" | "forbidden" | "too_many";
+export type PvpErrorCode = "bad_request" | "unauthorized" | "not_found" | "room_full" | "wrong_phase" | "forbidden" | "too_many" | "taken";
 
 // ---- Regras ----
 /** Totais de um lado a partir das rodadas relatadas. Tempo incompleto (menos de LEG_ROUNDS rodadas) não tem tempo total. */

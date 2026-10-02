@@ -1,6 +1,7 @@
 // Identidade dos jogadores do PvP, sem login: cada aparelho sorteia um id e um segredo; o servidor guarda só o hash do segredo (na primeira vez que vê o id, registra).
-// Depois, quem apresenta o segredo certo é a mesma pessoa. É o ponto de partida do login opcional: uma conta (Google, e-mail...) poderá ser ligada a este id, e
-// "recuperar a conta" num aparelho novo será receber de volta o segredo do id ligado. Por ora, perdeu o segredo (dados apagados), perdeu a identidade.
+// Depois, quem apresenta o segredo certo é a mesma pessoa. Uma conta (usuário + senha, ./pvp-accounts.ts) pode ser ligada a este id: quem entra nela em outro
+// aparelho ganha um segredo NOVO daquele aparelho (`devices`, ver addDevice/revoke), porque o segredo original só existe como hash e não dá para "devolvê-lo".
+// Sem conta, perdeu o segredo (dados apagados), perdeu a identidade.
 //
 // Arquivo (.pvp-data/players.json), versão 2: { "version": 2, "players": { "<id>": { hash, createdAt, lastSeen, name } } }. A versão 1 (a primeira, sem
 // "version") era o objeto { "<id>": { hash, createdAt, lastSeen } } direto: é lida e convertida (id e hash intactos, nome vazio), e o arquivo original fica
@@ -8,7 +9,7 @@
 // (pvp-history.ts), relido a cada abertura. Desde 28/09 cada linha pode ter `ladders` (troféus e MMR por escada, o último que o aparelho informou) e
 // `ladderAt` (quando): é de onde sai o ranking, só com gente de verdade. E `code` (o código de amigo, sorteado na primeira vez que alguém precisa dele: é
 // como os outros acham a pessoa, nunca pelo id) e `summary` + `summaryAt` (o resumo do perfil que o aparelho informa).
-import { createHash, randomInt, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { LADDERS, type Ladder } from "../src/domain/duel-modes.js";
@@ -18,11 +19,19 @@ import { FRIEND_CODE_LENGTH, isFriendCode, parseSummary, type PlayerSummary } fr
 export const isPlayerId = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(value);
 export const isPlayerSecret = (value: unknown): value is string => typeof value === "string" && /^[A-Za-z0-9_-]{24,128}$/.test(value);
 const hashSecret = (secret: string) => createHash("sha256").update(secret).digest("hex");
+const sameHash = (stored: string, given: string) => {
+  const a = Buffer.from(stored, "hex"), b = Buffer.from(given, "hex");
+  return a.length === b.length && timingSafeEqual(a, b);
+};
 
 export const PLAYERS_FILE_VERSION = 2;
-export type PlayerRow = { hash: string; createdAt: number; lastSeen: number; name: string; ladders?: LadderStandings; ladderAt?: number; code?: string; summary?: PlayerSummary; summaryAt?: number };
+/** `devices`: hashes de segredos de OUTROS aparelhos que entraram na conta deste jogador (login em ./pvp-accounts.ts). Cada aparelho tem o seu segredo, então
+ *  sair num deles revoga só o dele. Campo novo e opcional: o arquivo continua versão 2 e quem não o conhece simplesmente não o lê. */
+export type PlayerRow = { hash: string; devices?: string[]; createdAt: number; lastSeen: number; name: string; ladders?: LadderStandings; ladderAt?: number; code?: string; summary?: PlayerSummary; summaryAt?: number };
+export const MAX_DEVICES = 10;
 
 const finiteOr = (value: unknown, fallback: number) => (typeof value === "number" && Number.isFinite(value) ? value : fallback);
+const isHash = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 
 /** Lê o conteúdo do arquivo de jogadores (qualquer versão conhecida) e devolve as linhas válidas e a versão encontrada (0 se não reconheceu nada). */
 export function readPlayersFile(raw: unknown, now = Date.now()): { version: number; rows: [string, PlayerRow][] } {
@@ -40,7 +49,9 @@ export function readPlayersFile(raw: unknown, now = Date.now()): { version: numb
     const code = isFriendCode(row.code) ? { code: row.code } : {};
     const summary = parseSummary(row.summary);
     const profile = summary ? { summary, summaryAt: finiteOr(row.summaryAt, createdAt) } : {};
-    rows.push([id, { hash: row.hash, createdAt, lastSeen: finiteOr(row.lastSeen, createdAt), name: typeof row.name === "string" ? cleanPlayerName(row.name) : "", ...ladders, ...code, ...profile }]);
+    const deviceList = Array.isArray(row.devices) ? [...new Set(row.devices.filter(isHash))].slice(-MAX_DEVICES) : [];
+    const devices = deviceList.length ? { devices: deviceList } : {};
+    rows.push([id, { hash: row.hash, ...devices, createdAt, lastSeen: finiteOr(row.lastSeen, createdAt), name: typeof row.name === "string" ? cleanPlayerName(row.name) : "", ...ladders, ...code, ...profile }]);
   }
   return { version: isV2 ? PLAYERS_FILE_VERSION : 1, rows };
 }
@@ -155,10 +166,46 @@ export class PlayerRegistry {
       this.scheduleSave();
       return true;
     }
-    const a = Buffer.from(known.hash, "hex"), b = Buffer.from(hash, "hex");
-    if (a.length !== b.length || !timingSafeEqual(a, b)) return false;
+    if (!sameHash(known.hash, hash) && !(known.devices ?? []).some((device) => sameHash(device, hash))) return false;
     if (this.now() - known.lastSeen > 60 * 60 * 1000) { known.lastSeen = this.now(); this.scheduleSave(); }
     return true;
+  }
+
+  // ---- Aparelhos de uma conta (login): cada um com o seu segredo ----
+  /** Aceita também este segredo para o jogador (o aparelho entrou na conta). Passa de MAX_DEVICES, sai o mais antigo. Id desconhecido: não faz nada. */
+  addDevice(id: string, secret: string): boolean {
+    const row = this.players.get(id);
+    if (!row || !isPlayerSecret(secret)) return false;
+    const hash = hashSecret(secret);
+    if (sameHash(row.hash, hash) || (row.devices ?? []).some((device) => sameHash(device, hash))) return true;
+    row.devices = [...(row.devices ?? []), hash].slice(-MAX_DEVICES);
+    this.scheduleSave();
+    return true;
+  }
+  /** Este segredo deixa de valer (o aparelho saiu da conta). Se era o primeiro segredo do jogador, entra o do aparelho mais antigo no lugar; sem nenhum, o jogador
+   *  fica sem segredo válido (só o login devolve acesso), em vez de apagar o jogador. */
+  revoke(id: string, secret: string): boolean {
+    const row = this.players.get(id);
+    if (!row || !isPlayerSecret(secret)) return false;
+    const hash = hashSecret(secret);
+    const devices = (row.devices ?? []).filter((device) => !sameHash(device, hash));
+    if (sameHash(row.hash, hash)) {
+      const [next, ...rest] = devices;
+      row.hash = next ?? randomBytes(32).toString("hex"); // sem sucessor: um valor que ninguém conhece
+      row.devices = rest;
+    } else if (devices.length === (row.devices ?? []).length) return false;
+    else row.devices = devices;
+    if (!row.devices?.length) delete row.devices;
+    this.scheduleSave();
+    return true;
+  }
+  /** Só este segredo passa a valer (usado ao trocar a senha: derruba os outros aparelhos). */
+  keepOnly(id: string, secret: string) {
+    const row = this.players.get(id);
+    if (!row || !isPlayerSecret(secret)) return;
+    row.hash = hashSecret(secret);
+    delete row.devices;
+    this.scheduleSave();
   }
 
   /** Grava agora (o desligamento do servidor chama isto). */

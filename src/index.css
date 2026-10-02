@@ -1458,6 +1458,14 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .pvp-name input{min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:500 15px 'Plus Jakarta Sans',sans-serif;-webkit-appearance:none;appearance:none}
 .pvp-name input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .pvp-name input:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+/* Conta (Opções): reaproveita o campo do nome do PvP, só mais compacto; o campo "fantasma" existe só para o gerenciador de senhas saber o usuário na troca de senha */
+.acct-form{display:flex;flex-direction:column;gap:2px;max-width:360px}
+.acct-form .pvp-name{margin:0 0 10px}
+.acct-form .acct-note{margin:-4px 0 12px}
+.acct-form .pvp-error{margin:0 0 12px}
+.acct-ghost{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+.cv-chip.acct-go{background:var(--green);border-color:var(--green);color:#fff;font-weight:700}
+.cv-chip.acct-go:hover:not(:disabled){filter:brightness(1.08);border-color:var(--green)}
 .pvp-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px}
 .pvp-modes .pg-chip{flex-direction:column;align-items:flex-start;gap:2px;height:auto;padding:12px 14px;border-radius:14px;text-align:left}
 .pvp-modes .pg-chip b{font:700 14px 'Plus Jakarta Sans',sans-serif;color:var(--ink)}

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type CSSProperties, type TransitionEvent } from "react";
 import { Icon } from "./icons";
+import { AccountRow } from "./account-row";
 import { BrandLogo } from "./brand-logo";
 import { LevelTicks } from "./level-badge";
 import type { AnyQuizVariant, Family, Legacy } from "../domain/types";
@@ -183,6 +184,7 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
             <p className="cv-hint">{t.options.timerHint}</p>
           </div>
         </div>
+        <AccountRow />
         <BackupRow />
         <div className="cv-row cv-last">
           <span className="cv-k">{t.options.offline}</span>

@@ -8,6 +8,7 @@ const BASE = "/api/pvp";
 const ID_KEY = "carta-pvp-id";
 const SECRET_KEY = "carta-pvp-secret";
 const NAME_KEY = "carta-pvp-name";
+const ACCOUNT_KEY = "carta-pvp-account";
 
 export class PvpClientError extends Error {
   constructor(readonly code: PvpErrorCode | "network", message: string) { super(message); this.name = "PvpClientError"; }
@@ -38,7 +39,10 @@ export function hasPvpIdentity(): boolean {
 export function pvpName(): string { try { return localStorage.getItem(NAME_KEY) ?? ""; } catch { return ""; } }
 export function setPvpName(name: string) { try { localStorage.setItem(NAME_KEY, name.slice(0, 20)); } catch { /* sem armazenamento */ } }
 
-type Payload = { room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView | PlayerProfile; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[]; friends?: FriendsView; result?: string };
+type Payload = {
+  room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView | PlayerProfile; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[]; friends?: FriendsView; result?: string;
+  account?: { username: string | null }; player?: { id: string; name: string };
+};
 
 async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<Payload> {
   let response: Response;
@@ -159,6 +163,68 @@ export async function pvpLeaderboard(ladder: Ladder): Promise<LeaderboardRow[]> 
 export async function pvpServerMatches(limit = 100): Promise<PvpServerMatch[]> {
   const { matches } = await request("GET", `/me/matches?limit=${limit}`, requireIdentity());
   return matches ?? [];
+}
+
+// ---- Conta (usuário + senha): a mesma identidade do PvP em vários aparelhos. A senha nunca fica guardada aqui: só passa para o servidor. Quem fica no
+// aparelho é o id do jogador e o segredo NOVO deste aparelho (o mesmo localStorage de sempre), por isso a pessoa continua entrada ao recarregar a página. ----
+/** O usuário da conta, como o aparelho lembrou da última vez que falou com o servidor (vazio = sem conta). Só para mostrar rápido; quem manda é o servidor. */
+export function pvpAccountName(): string { try { return localStorage.getItem(ACCOUNT_KEY) ?? ""; } catch { return ""; } }
+function rememberAccount(username: string | null) {
+  try { if (username) localStorage.setItem(ACCOUNT_KEY, username); else localStorage.removeItem(ACCOUNT_KEY); } catch { /* sem armazenamento */ }
+}
+
+/** Pergunta ao servidor se este aparelho está numa conta. Sem identidade, nem pergunta (não registra ninguém à toa). Sem rede, fica com o que lembrava. */
+export async function pvpAccountRefresh(): Promise<string> {
+  if (!hasPvpIdentity()) { rememberAccount(null); return ""; }
+  try {
+    const { account } = await request("GET", "/account", requireIdentity());
+    rememberAccount(account?.username ?? null);
+    return account?.username ?? "";
+  } catch (error) {
+    // 401: este aparelho foi desconectado (a senha foi trocada em outro aparelho, por exemplo): vira um aparelho sem conta
+    if (error instanceof PvpClientError && error.code === "unauthorized") { forgetIdentity(); return ""; }
+    return pvpAccountName();
+  }
+}
+
+/** Cria a conta ligada à identidade deste aparelho (cria a identidade, se for a primeira vez). Devolve o usuário como o servidor guardou. */
+export async function pvpRegister(username: string, password: string): Promise<string> {
+  const { account } = await request("POST", "/account/register", requireIdentity(), { username, password });
+  const saved = account?.username ?? username;
+  rememberAccount(saved);
+  return saved;
+}
+
+/** Entra numa conta que já existe: este aparelho passa a ser o jogador dela (id novo, com um segredo só deste aparelho; o antigo id anônimo fica para trás). */
+export async function pvpLogin(username: string, password: string): Promise<string> {
+  const deviceSecret = randomToken(32);
+  const { account, player } = await request("POST", "/account/login", null, { username, password, secret: deviceSecret });
+  if (!player?.id) throw new PvpClientError("network", "Resposta inesperada do servidor.");
+  try {
+    localStorage.setItem(ID_KEY, player.id);
+    localStorage.setItem(SECRET_KEY, deviceSecret);
+    if (player.name) localStorage.setItem(NAME_KEY, player.name.slice(0, 20)); else localStorage.removeItem(NAME_KEY);
+  } catch { throw new PvpClientError("network", "Sem armazenamento neste navegador."); }
+  rememberAccount(account?.username ?? username);
+  return account?.username ?? username;
+}
+
+function forgetIdentity() {
+  try { localStorage.removeItem(ID_KEY); localStorage.removeItem(SECRET_KEY); localStorage.removeItem(NAME_KEY); } catch { /* sem armazenamento */ }
+  rememberAccount(null);
+}
+
+/** Sai da conta neste aparelho: avisa o servidor (para o segredo deste aparelho deixar de valer) e esquece a identidade. Sem rede, esquece mesmo assim.
+ *  O progresso solo e os duelos já guardados aqui continuam no aparelho; o próximo uso do PvP cria uma identidade anônima nova. */
+export async function pvpLogout(): Promise<void> {
+  const identity = hasPvpIdentity() ? pvpIdentity() : null;
+  if (identity) { try { await request("POST", "/account/logout", identity, {}); } catch { /* sem rede ou já desconectado: sai do mesmo jeito */ } }
+  forgetIdentity();
+}
+
+/** Troca a senha; os outros aparelhos da conta saem (este continua). */
+export async function pvpChangePassword(current: string, next: string): Promise<void> {
+  await request("POST", "/account/password", requireIdentity(), { current, next });
 }
 
 /** O canal do jogador (SSE /me/events): a visão da fila a cada mudança e os avisos de amizade/desafio. Enquanto ele está aberto, o servidor sabe

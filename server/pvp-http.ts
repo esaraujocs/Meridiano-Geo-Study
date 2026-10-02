@@ -7,6 +7,8 @@
 //   Fila:     GET /queue   POST /queue {ladder, mode, name, ladders}   POST /queue/leave   POST /queue/offer {id, accept}
 //   Perfil:   GET /me   GET /me/matches?limit=   GET /me/events (SSE do jogador: a visão da fila)   POST /me/profile {name, ladders}
 //   Ranking:  GET /leaderboard?ladder=&limit= (identidade opcional: só marca "você")
+//   Conta:    POST /account/login {username, password, secret} (sem identidade; `secret` é o segredo NOVO do aparelho)   GET /account   POST /account/register {username, password}
+//             POST /account/logout (revoga só o segredo deste aparelho)   POST /account/password {current, next} (derruba os outros aparelhos)
 // Identidade nos cabeçalhos x-pvp-player e x-pvp-secret (no SSE, na URL: ?player=&secret=, porque o EventSource não manda cabeçalhos).
 // A força (rating) de cada jogador vem do histórico do servidor (pvp-history.ts); o que o aparelho mandar em `rating` é ignorado.
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -17,10 +19,12 @@ import { FriendGraph } from "./pvp-friends.js";
 import { PvpHistory } from "./pvp-history.js";
 import { PvpQueue } from "./pvp-queue.js";
 import { PvpError, type PlayerInput, type PvpRooms } from "./pvp-rooms.js";
-import type { PlayerRegistry } from "./pvp-players.js";
+import { isPlayerSecret, type PlayerRegistry } from "./pvp-players.js";
+import { AccountRegistry } from "./pvp-accounts.js";
+import { PASSWORD_MAX, cleanUsername, passwordProblem, usernameProblem } from "../src/domain/pvp-account.js";
 
 const BASE = "/api/pvp";
-const STATUS: Record<PvpErrorCode, number> = { bad_request: 400, unauthorized: 401, forbidden: 403, not_found: 404, room_full: 409, wrong_phase: 409, too_many: 429 };
+const STATUS: Record<PvpErrorCode, number> = { bad_request: 400, unauthorized: 401, forbidden: 403, not_found: 404, room_full: 409, wrong_phase: 409, too_many: 429, taken: 409 };
 const MAX_BODY = 8192;
 const MAX_STREAMS = 100;
 const SSE_HEADERS = { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache, no-transform", connection: "keep-alive", "x-accel-buffering": "no" };
@@ -33,6 +37,8 @@ export type PvpHttpOptions = {
   queue?: PvpQueue;
   history?: PvpHistory;
   friends?: FriendGraph;
+  /** Sem contas explícitas, nasce um registro só na memória (testes). */
+  accounts?: AccountRegistry;
   tickMs?: number;
   heartbeatMs?: number;
 };
@@ -43,11 +49,13 @@ export type PvpHttp = {
   queue: PvpQueue;
   history: PvpHistory;
   friends: FriendGraph;
+  accounts: AccountRegistry;
 };
 
-export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, friends: givenFriends, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
+export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, friends: givenFriends, accounts: givenAccounts, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
   const history = givenHistory ?? new PvpHistory(null);
   const friends = givenFriends ?? new FriendGraph(null);
+  const accounts = givenAccounts ?? new AccountRegistry(null);
   const queue = givenQueue ?? new PvpQueue({ rooms });
   // o placar de cada sala vai para o histórico (que devolve a força antes/depois); sala da fila desfeita antes de começar põe quem ficou de volta na fila
   rooms.onSettle = (match) => history.record(match);
@@ -220,6 +228,85 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     throw new PvpError("not_found", "Rota desconhecida.");
   };
 
+  /** O IP de quem chamou, para os limites de tentativa: atrás do Funnel vem no cabeçalho do proxy (vale o ÚLTIMO item, o que o proxy acrescentou; os de antes o próprio cliente pode inventar). */
+  const clientIp = (req: IncomingMessage) => {
+    const forwarded = header(req, "x-forwarded-for");
+    const last = forwarded?.split(",").pop()?.trim();
+    return last || req.socket.remoteAddress || "desconhecido";
+  };
+  const minutes = (ms: number) => Math.max(1, Math.ceil(ms / 60000));
+  const accountFields = (body: Record<string, unknown>) => ({ username: cleanUsername(body.username), password: typeof body.password === "string" ? body.password : "" });
+  const checkNewCredentials = (username: string, password: string) => {
+    const nameProblem = usernameProblem(username);
+    if (nameProblem === "chars") throw new PvpError("bad_request", "O usuário usa só letras, números, ponto, traço e sublinhado, e começa com letra ou número.");
+    if (nameProblem) throw new PvpError("bad_request", "O usuário precisa ter de 3 a 20 caracteres.");
+    if (passwordProblem(password)) throw new PvpError("bad_request", "A senha precisa ter de 8 a 128 caracteres.");
+  };
+
+  // Conta (usuário + senha): liga um usuário ao id de jogador do aparelho. Sem e-mail: a senha esquecida não tem recuperação (a trava de tentativas expira sozinha).
+  const routeAccount = async (req: IncomingMessage, res: ServerResponse, parts: string[], method: string) => {
+    const action = parts[1];
+    if (action === "login" && method === "POST") {
+      // sem identidade nos cabeçalhos: é justamente quem ainda não entrou. O aparelho manda o segredo NOVO dele, que passa a valer para o jogador da conta.
+      const body = (await readJson(req)) as Record<string, unknown>;
+      const { username, password } = accountFields(body);
+      if (!username || !password || password.length > PASSWORD_MAX || !isPlayerSecret(body.secret)) throw new PvpError("bad_request", "Informe usuário e senha.");
+      const ip = clientIp(req);
+      const wait = accounts.loginLockedFor(username, ip);
+      if (wait > 0) throw new PvpError("too_many", `Muitas tentativas. Tente de novo em ${minutes(wait)} min.`);
+      const playerId = await accounts.login(username, password);
+      if (!playerId || !players.has(playerId)) {
+        accounts.noteLoginFailure(username, ip);
+        throw new PvpError("unauthorized", "Usuário ou senha incorretos.");
+      }
+      accounts.noteLoginSuccess(username);
+      players.addDevice(playerId, body.secret as string);
+      return json(res, 200, { account: { username: accounts.usernameOf(playerId) }, player: { id: playerId, name: players.nameOf(playerId) } });
+    }
+    if (!action && method === "GET") {
+      const id = header(req, "x-pvp-player");
+      if (!id || !players.has(id)) return json(res, 200, { account: { username: null } }); // GET não registra ninguém à toa
+      return json(res, 200, { account: { username: accounts.usernameOf(authenticateHeaders(req)) } });
+    }
+    const playerId = authenticateHeaders(req);
+    if (action === "register" && method === "POST") {
+      const body = (await readJson(req)) as Record<string, unknown>;
+      const { username, password } = accountFields(body);
+      checkNewCredentials(username, password);
+      const ip = clientIp(req);
+      const wait = accounts.registerLockedFor(ip);
+      if (wait > 0) throw new PvpError("too_many", `Contas demais criadas daqui. Tente de novo em ${minutes(wait)} min.`);
+      accounts.noteRegister(ip);
+      const result = await accounts.register(playerId, username, password);
+      if (result === "taken") throw new PvpError("taken", "Esse usuário já existe.");
+      if (result === "has_account") throw new PvpError("wrong_phase", "Este jogador já tem uma conta.");
+      return json(res, 201, { account: { username } });
+    }
+    if (action === "logout" && method === "POST") {
+      players.revoke(playerId, header(req, "x-pvp-secret") ?? ""); // só este aparelho sai; os outros continuam entrados
+      return json(res, 200, { ok: true });
+    }
+    if (action === "password" && method === "POST") {
+      const body = (await readJson(req)) as Record<string, unknown>;
+      const current = typeof body.current === "string" ? body.current : "";
+      const next = typeof body.next === "string" ? body.next : "";
+      if (!accounts.usernameOf(playerId)) throw new PvpError("not_found", "Este jogador não tem conta.");
+      if (passwordProblem(next)) throw new PvpError("bad_request", "A senha precisa ter de 8 a 128 caracteres.");
+      const username = accounts.usernameOf(playerId) as string;
+      const ip = clientIp(req);
+      const wait = accounts.loginLockedFor(username, ip);
+      if (wait > 0) throw new PvpError("too_many", `Muitas tentativas. Tente de novo em ${minutes(wait)} min.`);
+      if (current.length > PASSWORD_MAX || !(await accounts.changePassword(playerId, current, next))) {
+        accounts.noteLoginFailure(username, ip);
+        throw new PvpError("unauthorized", "A senha atual não confere.");
+      }
+      accounts.noteLoginSuccess(username);
+      players.keepOnly(playerId, header(req, "x-pvp-secret") ?? ""); // trocar a senha derruba os outros aparelhos
+      return json(res, 200, { ok: true });
+    }
+    throw new PvpError("not_found", "Rota desconhecida.");
+  };
+
   const routeRooms = async (req: IncomingMessage, res: ServerResponse, parts: string[], method: string, url: URL) => {
     if (parts.length === 1 && method === "POST") {
       const playerId = authenticateHeaders(req);
@@ -308,6 +395,7 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (parts[0] === "queue") return routeQueue(req, res, parts, method);
     if (parts[0] === "me") return routeMe(req, res, parts, method, url);
     if (parts[0] === "friends") return routeFriends(req, res, parts, method);
+    if (parts[0] === "account") return routeAccount(req, res, parts, method);
     if (parts[0] === "players" && parts.length === 2 && method === "GET") return json(res, 200, { profile: profileOf(authenticateHeaders(req), byCode(parts[1])) });
     if (path === "/leaderboard" && method === "GET") {
       const ladder = url.searchParams.get("ladder");
@@ -348,5 +436,6 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     queue,
     history,
     friends,
+    accounts,
   };
 }
