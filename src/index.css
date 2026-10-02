@@ -1464,6 +1464,8 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .acct-form .acct-note{margin:-4px 0 12px}
 .acct-form .pvp-error{margin:0 0 12px}
 .acct-ghost{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+.acct-choice{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(196,147,69,.1)}
+.acct-choice strong{font-size:14px;color:var(--ink)}
 .cv-chip.acct-go{background:var(--green);border-color:var(--green);color:#fff;font-weight:700}
 .cv-chip.acct-go:hover:not(:disabled){filter:brightness(1.08);border-color:var(--green)}
 .pvp-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px}

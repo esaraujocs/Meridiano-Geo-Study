@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Game } from "./components/map-game";
 import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens";
+import { useAccountSync } from "./components/use-account-sync";
 import { StoreView } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
@@ -277,6 +278,7 @@ export function App() {
   }), [economy, data, collectionSummary, achievementSummary, duels]);
   const standingsKey = JSON.stringify(standings);
   const summaryKey = JSON.stringify(profileSummary);
+  useAccountSync(); // progresso sincronizado com a conta (só quando este aparelho está numa conta)
   const [identityOn, setIdentityOn] = useState(() => hasPvpIdentity());
   useEffect(() => {
     if (!ladderLoaded || !economyReady || !identityOn) return;

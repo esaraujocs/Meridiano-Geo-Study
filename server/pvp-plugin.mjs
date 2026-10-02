@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { createPvpHttp } from "./pvp-http.ts";
 import { FriendGraph } from "./pvp-friends.ts";
 import { PvpHistory } from "./pvp-history.ts";
+import { AccountData } from "./pvp-account-data.ts";
 import { AccountRegistry } from "./pvp-accounts.ts";
 import { PlayerRegistry } from "./pvp-players.ts";
 import { PvpQueue } from "./pvp-queue.ts";
@@ -26,13 +27,14 @@ export function pvpPlugin() {
     const queue = new PvpQueue({ rooms });
     const friends = new FriendGraph(dataFile("friends.json"));
     const accounts = new AccountRegistry(dataFile("accounts.json"));
-    state = { players, friends, accounts, http: createPvpHttp({ rooms, players, queue, history, friends, accounts }) };
+    const accountData = new AccountData(dataFile("sync")); // uma pasta: um arquivo de progresso por conta
+    state = { players, friends, accounts, accountData, http: createPvpHttp({ rooms, players, queue, history, friends, accounts, accountData }) };
     return state;
   };
   const mount = (server) => {
-    const { http, players, friends, accounts } = setup();
+    const { http, players, friends, accounts, accountData } = setup();
     server.middlewares.use((req, res, next) => { if (!http.handle(req, res)) next(); });
-    server.httpServer?.once("close", () => { http.dispose(); players.flush(); friends.flush(); accounts.flush(); state = null; });
+    server.httpServer?.once("close", () => { http.dispose(); players.flush(); friends.flush(); accounts.flush(); accountData.flush(); state = null; });
   };
   return { name: "meridiano-pvp", configureServer: mount, configurePreviewServer: mount };
 }

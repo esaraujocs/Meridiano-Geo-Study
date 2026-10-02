@@ -3,6 +3,8 @@
 import type { LadderStandings, LeaderboardRow, PvpCommand, PvpErrorCode, PvpInvite, PvpMode, PvpProfileView, PvpQueueView, PvpRoomView, PvpServerMatch, QueuePrefs } from "./pvp.js";
 import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { isSocialEvent, type FriendsView, type PlayerProfile, type PlayerSummary, type SocialEvent } from "./pvp-social.js";
+import type { CounterState, Manifest, SyncRows } from "./account-sync.js";
+import type { CommitResponse, PlanResponse } from "./account-sync-engine.js";
 
 const BASE = "/api/pvp";
 const ID_KEY = "carta-pvp-id";
@@ -42,6 +44,7 @@ export function setPvpName(name: string) { try { localStorage.setItem(NAME_KEY, 
 type Payload = {
   room?: PvpRoomView; invite?: PvpInvite; queue?: PvpQueueView; profile?: PvpProfileView | PlayerProfile; matches?: PvpServerMatch[]; leaderboard?: LeaderboardRow[]; friends?: FriendsView; result?: string;
   account?: { username: string | null }; player?: { id: string; name: string };
+  plan?: PlanResponse; commit?: CommitResponse;
 };
 
 async function request(method: "GET" | "POST", path: string, identity: { id: string; secret: string } | null, body?: unknown): Promise<Payload> {
@@ -220,6 +223,21 @@ export async function pvpLogout(): Promise<void> {
   const identity = hasPvpIdentity() ? pvpIdentity() : null;
   if (identity) { try { await request("POST", "/account/logout", identity, {}); } catch { /* sem rede ou já desconectado: sai do mesmo jeito */ } }
   forgetIdentity();
+}
+
+// Progresso da conta (o motor está em account-sync-engine.ts; aqui só a rede). Só com conta: sem ela o servidor responde 403.
+export async function pvpSyncPlan(manifest: Manifest): Promise<PlanResponse> {
+  const { plan } = await request("POST", "/sync/plan", requireIdentity(), { manifest });
+  if (!plan) throw new PvpClientError("network", "Resposta inesperada do servidor.");
+  return plan;
+}
+export async function pvpSyncRows(rows: SyncRows): Promise<void> {
+  await request("POST", "/sync/rows", requireIdentity(), { rows });
+}
+export async function pvpSyncCommit(args: { deviceId: string; seq: number; delta: CounterState; local: Record<string, string> }): Promise<CommitResponse> {
+  const { commit } = await request("POST", "/sync/commit", requireIdentity(), args);
+  if (!commit) throw new PvpClientError("network", "Resposta inesperada do servidor.");
+  return commit;
 }
 
 /** Troca a senha; os outros aparelhos da conta saem (este continua). */

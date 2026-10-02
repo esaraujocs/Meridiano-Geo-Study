@@ -1,12 +1,13 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
 import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpAccountRefresh, pvpChangePassword, pvpLogin, pvpLogout, pvpRegister } from "../domain/pvp-client";
+import { forgetSyncStatus, lastSyncedAccount, runAccountSync, syncStatus } from "../domain/account-sync-client";
 import { USERNAME_MAX, cleanUsername, passwordProblem, usernameProblem } from "../domain/pvp-account";
 import { t } from "../domain/i18n";
 
-// Linha "Conta" das Opções: criar conta, entrar, sair e trocar a senha (usuário + senha, ver server/pvp-accounts.ts). A pessoa continua entrada ao recarregar a
-// página porque o aparelho guarda o id do jogador e um segredo só dele (o mesmo localStorage do PvP); a SENHA nunca é guardada pelo app. Para "salvar a senha", os
-// campos são de um formulário de verdade com `autocomplete` certo (usuário, senha atual / nova senha), que é o que os gerenciadores de senha dos navegadores
-// reconhecem, e, onde o navegador tem a API de credenciais (Chrome, Edge), a senha também é oferecida para salvar explicitamente depois de dar certo.
+// Linha "Conta" das Opções: criar conta, entrar, sair, trocar a senha e o estado da sincronização do progresso (usuário + senha, ver server/pvp-accounts.ts; progresso, ver
+// domain/account-sync*.ts). A pessoa continua entrada ao recarregar a página porque o aparelho guarda o id do jogador e um segredo só dele (o mesmo localStorage do PvP); a SENHA
+// nunca é guardada pelo app. Para "salvar a senha", os campos são de um formulário de verdade com `autocomplete` certo (usuário, senha atual / nova senha), que é o que os
+// gerenciadores de senha dos navegadores reconhecem, e, onde o navegador tem a API de credenciais (Chrome, Edge), a senha também é oferecida para salvar explicitamente.
 
 type Mode = "idle" | "signIn" | "create" | "password";
 type Context = "signIn" | "create" | "password";
@@ -30,6 +31,14 @@ function errorText(error: unknown, context: Context): string {
   return t.account.errors.generic;
 }
 
+function syncedAgo(at: number): string {
+  const minutes = Math.max(0, Math.floor((Date.now() - at) / 60000));
+  if (minutes < 1) return t.account.syncedNow;
+  if (minutes < 60) return t.account.syncedMinutes(minutes);
+  if (minutes < 60 * 24) return t.account.syncedHours(Math.floor(minutes / 60));
+  return t.account.syncedDays(Math.floor(minutes / 60 / 24));
+}
+
 export function AccountRow() {
   const ids = useId();
   const [username, setUsername] = useState(() => pvpAccountName());
@@ -39,8 +48,11 @@ export function AccountRow() {
   const [repeat, setRepeat] = useState("");
   const [next, setNext] = useState("");
   const [busy, setBusy] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [arrived, setArrived] = useState(false);
+  const [, setTick] = useState(0);
 
   // ao abrir as Opções, confere com o servidor se este aparelho ainda está na conta (a senha pode ter sido trocada em outro aparelho)
   useEffect(() => {
@@ -48,9 +60,35 @@ export function AccountRow() {
     void pvpAccountRefresh().then((name) => { if (alive) setUsername(name); });
     return () => { alive = false; };
   }, []);
+  // a sincronização roda por fora (ao abrir o app, de tempos em tempos): a linha só relê o estado
+  useEffect(() => {
+    const onSync = (event: Event) => {
+      const detail = (event as CustomEvent<{ status?: string; changedFromAccount?: boolean }>).detail;
+      if (detail?.status === "ok" && detail.changedFromAccount) setArrived(true);
+      setTick((tick) => tick + 1);
+    };
+    window.addEventListener("carta-sync", onSync);
+    return () => window.removeEventListener("carta-sync", onSync);
+  }, []);
+
+  const status = username ? syncStatus() : null;
+  const needsChoice = Boolean(username && status?.needsChoice);
 
   const open = (to: Mode) => { setMode(to); setUser(""); setPassword(""); setRepeat(""); setNext(""); setError(""); setMessage(""); };
   const reloadSoon = (text: string) => { setMessage(text); window.setTimeout(() => window.location.reload(), 1200); };
+
+  /** Sincroniza agora (botão, ou logo depois de criar a conta). Mostra o que houve; a escolha "somar ou usar o da conta" aparece sozinha (needsChoice). */
+  const syncNow = async (chosen?: "sum" | "adopt") => {
+    if (syncing) return;
+    setSyncing(true); setError(""); setMessage(""); setArrived(false);
+    const outcome = await runAccountSync({ mode: chosen });
+    setSyncing(false);
+    setTick((tick) => tick + 1);
+    if (outcome.status === "ok") {
+      if (chosen) { reloadSoon(t.account.signedIn); return; } // escolheu: recarrega para o app inteiro ler o que mudou
+      setMessage(outcome.changedFromAccount ? t.account.syncArrived : t.account.syncDone);
+    } else if (outcome.status === "error") setError(outcome.network ? t.account.syncOffline : t.account.syncFailed);
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -71,12 +109,18 @@ export function AccountRow() {
       if (mode === "password" && !password) { setError(t.account.errors.wrongCurrent); return; }
     }
     if (mode === "signIn" && hasPvpIdentity() && !window.confirm(t.account.confirmSignIn)) return;
+    // outra conta no mesmo aparelho: o progresso que ele guardou da anterior iria também para esta
+    const previous = lastSyncedAccount();
+    if ((mode === "signIn" || mode === "create") && previous && previous.toLowerCase() !== name.toLowerCase() && !window.confirm(t.account.confirmOtherAccount(previous))) return;
     setBusy(true);
     try {
       if (mode === "signIn") {
         const saved = await pvpLogin(name, password);
         await offerToSavePassword(saved, password);
-        reloadSoon(t.account.signedIn); // recarrega para o app inteiro (fila, amigos, nome) ler a identidade da conta
+        setUsername(saved);
+        const outcome = await runAccountSync(); // o progresso deste aparelho entra na conta (e o da conta chega aqui) antes de recarregar
+        if (outcome.status === "needs-choice") { open("idle"); return; } // a pergunta "somar ou usar o da conta" aparece na linha
+        reloadSoon(t.account.signedIn); // recarrega para o app inteiro (fila, amigos, nome, progresso) ler a identidade da conta
         return;
       }
       if (mode === "create") {
@@ -85,6 +129,7 @@ export function AccountRow() {
         await offerToSavePassword(saved, password);
         open("idle");
         setMessage(t.account.created);
+        void syncNow(); // o progresso que este aparelho já tem sobe para a conta nova
         return;
       }
       await pvpChangePassword(password, next);
@@ -101,19 +146,32 @@ export function AccountRow() {
   const signOut = async () => {
     if (busy || !window.confirm(t.account.confirmSignOut)) return;
     setBusy(true);
+    await runAccountSync(); // última sincronização antes de sair, para nada do que foi jogado ficar de fora da conta
     await pvpLogout();
+    forgetSyncStatus();
     reloadSoon(t.account.signedOut);
   };
 
   const field = (suffix: string) => `${ids}-${suffix}`;
+  const statusLine = syncing ? t.account.syncing : status?.error ? t.account.syncFailed : status?.ok && status.at ? syncedAgo(status.at) : t.account.syncNever;
   return <div className="cv-row">
     <span className="cv-k">{t.account.label}</span>
     <div className="cv-ctl acct">
       {mode === "idle" && <>
         <p className="cv-hint">{username ? t.account.hintIn(username) : t.account.hintOut}</p>
+        {needsChoice && <div className="acct-choice" role="group" aria-label={t.account.choiceTitle}>
+          <strong>{t.account.choiceTitle}</strong>
+          <p className="cv-hint">{t.account.choiceBody}</p>
+          <div className="cv-chips">
+            <button type="button" className="cv-chip acct-go" disabled={syncing} onClick={() => void syncNow("sum")}>{t.account.choiceSum}</button>
+            <button type="button" className="cv-chip" disabled={syncing} onClick={() => void syncNow("adopt")}>{t.account.choiceAdopt}</button>
+          </div>
+        </div>}
+        {username && !needsChoice && <p className="cv-hint acct-sync" role="status">{statusLine}</p>}
         <div className="cv-chips">
           {username
             ? <>
+              {!needsChoice && <button type="button" className="cv-chip" disabled={busy || syncing} onClick={() => void syncNow()}>{t.account.syncNow}</button>}
               <button type="button" className="cv-chip" disabled={busy} onClick={() => open("password")}>{t.account.changePassword}</button>
               <button type="button" className="cv-chip" disabled={busy} onClick={() => void signOut()}>{t.account.signOut}</button>
             </>
@@ -153,7 +211,9 @@ export function AccountRow() {
           <button type="button" className="cv-chip" disabled={busy} onClick={() => open("idle")}>{t.account.cancel}</button>
         </div>
       </form>}
+      {mode === "idle" && error && <p className="pvp-error" role="alert">{error}</p>}
       {message && <p className="cv-hint" role="status">{message}</p>}
+      {arrived && !message && <p className="cv-hint" role="status">{t.account.syncArrived}</p>}
     </div>
   </div>;
 }

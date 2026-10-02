@@ -3,6 +3,7 @@
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { masteryForProgress, type ProgressRecord } from "./learning-rules.js";
 import { BOT_RANKING_ID, parseBotRanking } from "./bot-ranking.js";
+import { SYNC_STATE_ROW_PREFIX } from "./account-sync.js";
 
 export const BACKUP_FORMAT = "meridiano-backup";
 export const BACKUP_VERSION = 1;
@@ -60,7 +61,8 @@ export function parseBackup(text: string): BackupFile | null {
         stores[name] = (rows as Row[]).map((row) =>
           row.id === BOT_RANKING_ID ? parseBotRanking(row) as unknown as Row : row);
       } catch { return null; }
-    } else stores[name] = rows as Row[];
+    } else if (name === "state") stores[name] = (rows as Row[]).filter((row) => !row.id.startsWith(SYNC_STATE_ROW_PREFIX));
+    else stores[name] = rows as Row[];
   }
   const local: Record<string, string> = {};
   for (const [key, value] of Object.entries(file.local ?? {})) if (typeof value === "string") local[key] = value;
@@ -152,7 +154,8 @@ async function readAll(database: IDBDatabase): Promise<StoreRows> {
 }
 
 const LOCAL_KEY = /^carta-(theme|pace|round-tier|flag-direction|reduced-motion|timer-late|last-variant:.+)$/;
-function readLocalPrefs() {
+/** Preferências leves (tema, ritmo…) deste aparelho; a sincronização com a conta as leva também. */
+export function readLocalPrefs() {
   const out: Record<string, string> = {};
   try {
     for (let i = 0; i < localStorage.length; i += 1) {
@@ -163,7 +166,14 @@ function readLocalPrefs() {
   return out;
 }
 
-function deviceId() {
+/** Grava só as preferências que este aparelho ainda não tem (a conta nunca troca o que a pessoa já escolheu aqui). */
+export function setMissingLocalPrefs(prefs: Record<string, string>) {
+  try {
+    for (const [key, value] of Object.entries(prefs)) if (LOCAL_KEY.test(key) && localStorage.getItem(key) === null) localStorage.setItem(key, value);
+  } catch { /* sem armazenamento */ }
+}
+
+export function deviceId() {
   try {
     let id = localStorage.getItem("carta-device-id");
     if (!id) { id = crypto.randomUUID(); localStorage.setItem("carta-device-id", id); }
@@ -176,7 +186,12 @@ const planFor = (rows: StoreRows, file: BackupFile) =>
 
 export async function exportProgress(): Promise<BackupFile> {
   const database = await openDatabase();
-  try { return buildBackup(await readAll(database), readLocalPrefs(), deviceId()); } finally { database.close(); }
+  try {
+    const rows = await readAll(database);
+    // o estado da sincronização com a conta (baselines, números de envio) é deste aparelho: levá-lo num arquivo para outro aparelho o faria somar o que já foi somado
+    rows.state = rows.state.filter((row) => !row.id.startsWith(SYNC_STATE_ROW_PREFIX));
+    return buildBackup(rows, readLocalPrefs(), deviceId());
+  } finally { database.close(); }
 }
 
 export async function previewImport(file: BackupFile): Promise<MergePlan> {

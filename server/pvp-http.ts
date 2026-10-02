@@ -9,6 +9,7 @@
 //   Ranking:  GET /leaderboard?ladder=&limit= (identidade opcional: só marca "você")
 //   Conta:    POST /account/login {username, password, secret} (sem identidade; `secret` é o segredo NOVO do aparelho)   GET /account   POST /account/register {username, password}
 //             POST /account/logout (revoga só o segredo deste aparelho)   POST /account/password {current, next} (derruba os outros aparelhos)
+//   Progresso da conta (só com conta; corpo de até 8 MB): POST /sync/plan {manifest}   POST /sync/rows {rows}   POST /sync/commit {deviceId, seq, delta, local}
 // Identidade nos cabeçalhos x-pvp-player e x-pvp-secret (no SSE, na URL: ?player=&secret=, porque o EventSource não manda cabeçalhos).
 // A força (rating) de cada jogador vem do histórico do servidor (pvp-history.ts); o que o aparelho mandar em `rating` é ignorado.
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -21,6 +22,8 @@ import { PvpQueue } from "./pvp-queue.js";
 import { PvpError, type PlayerInput, type PvpRooms } from "./pvp-rooms.js";
 import { isPlayerSecret, type PlayerRegistry } from "./pvp-players.js";
 import { AccountRegistry } from "./pvp-accounts.js";
+import { AccountData } from "./pvp-account-data.js";
+import { SYNC_LIMITS, parseCounters, parseManifest, parseRows } from "../src/domain/account-sync.js";
 import { PASSWORD_MAX, cleanUsername, passwordProblem, usernameProblem } from "../src/domain/pvp-account.js";
 
 const BASE = "/api/pvp";
@@ -39,6 +42,8 @@ export type PvpHttpOptions = {
   friends?: FriendGraph;
   /** Sem contas explícitas, nasce um registro só na memória (testes). */
   accounts?: AccountRegistry;
+  /** O progresso das contas; sem ele, só na memória (testes). */
+  accountData?: AccountData;
   tickMs?: number;
   heartbeatMs?: number;
 };
@@ -50,12 +55,14 @@ export type PvpHttp = {
   history: PvpHistory;
   friends: FriendGraph;
   accounts: AccountRegistry;
+  accountData: AccountData;
 };
 
-export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, friends: givenFriends, accounts: givenAccounts, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
+export function createPvpHttp({ rooms, players, queue: givenQueue, history: givenHistory, friends: givenFriends, accounts: givenAccounts, accountData: givenAccountData, tickMs = 1000, heartbeatMs = 15000 }: PvpHttpOptions): PvpHttp {
   const history = givenHistory ?? new PvpHistory(null);
   const friends = givenFriends ?? new FriendGraph(null);
   const accounts = givenAccounts ?? new AccountRegistry(null);
+  const accountData = givenAccountData ?? new AccountData(null);
   const queue = givenQueue ?? new PvpQueue({ rooms });
   // o placar de cada sala vai para o histórico (que devolve a força antes/depois); sala da fila desfeita antes de começar põe quem ficou de volta na fila
   rooms.onSettle = (match) => history.record(match);
@@ -75,9 +82,9 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     console.error("[pvp] erro inesperado:", error);
     return json(res, 500, { error: "internal", message: "Erro no servidor." });
   };
-  const readJson = (req: IncomingMessage) => new Promise<unknown>((resolve, reject) => {
+  const readJson = (req: IncomingMessage, maxBody = MAX_BODY) => new Promise<unknown>((resolve, reject) => {
     let size = 0; const chunks: Buffer[] = [];
-    req.on("data", (chunk: Buffer) => { size += chunk.length; if (size > MAX_BODY) { reject(new PvpError("bad_request", "Pedido grande demais.")); req.destroy(); } else chunks.push(chunk); });
+    req.on("data", (chunk: Buffer) => { size += chunk.length; if (size > maxBody) { reject(new PvpError("bad_request", "Pedido grande demais.")); req.destroy(); } else chunks.push(chunk); });
     req.on("end", () => { try { resolve(chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) : {}); } catch { reject(new PvpError("bad_request", "JSON inválido.")); } });
     req.on("error", reject);
   });
@@ -307,6 +314,33 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     throw new PvpError("not_found", "Rota desconhecida.");
   };
 
+  // Progresso da conta (sincronização entre aparelhos; regras em src/domain/account-sync.ts, armazenamento em ./pvp-account-data.ts). Só com conta: o progresso é "da conta".
+  // Três passos que o aparelho repete a cada sincronização: plan (manda o resumo do que tem e recebe o que falta + o que a conta pede), rows (manda as linhas pedidas,
+  // em lotes) e commit (soma o delta dos contadores, uma vez por `seq`, e devolve os totais da conta).
+  const routeSync = async (req: IncomingMessage, res: ServerResponse, parts: string[], method: string) => {
+    if (method !== "POST") throw new PvpError("not_found", "Rota desconhecida.");
+    const playerId = authenticateHeaders(req);
+    if (!accounts.usernameOf(playerId)) throw new PvpError("forbidden", "Entre numa conta para sincronizar o progresso.");
+    const action = parts[1];
+    if (action !== "plan" && action !== "rows" && action !== "commit") throw new PvpError("not_found", "Rota desconhecida.");
+    const body = (await readJson(req, SYNC_LIMITS.bodyBytes)) as Record<string, unknown>;
+    if (action === "plan") {
+      const manifest = parseManifest(body.manifest);
+      if (!manifest) throw new PvpError("bad_request", "Resumo inválido.");
+      return json(res, 200, { plan: accountData.plan(playerId, manifest) });
+    }
+    if (action === "rows") {
+      const rows = parseRows(body.rows);
+      if (!rows) throw new PvpError("bad_request", "Linhas inválidas.");
+      return json(res, 200, { pushed: accountData.pushRows(playerId, rows) });
+    }
+    const delta = parseCounters(body.delta);
+    if (!delta) throw new PvpError("bad_request", "Contadores inválidos.");
+    const local: Record<string, string> = {};
+    if (body.local && typeof body.local === "object" && !Array.isArray(body.local)) for (const [key, value] of Object.entries(body.local)) if (typeof value === "string") local[key] = value;
+    return json(res, 200, { commit: accountData.commit(playerId, String(body.deviceId ?? ""), Number(body.seq ?? 0), delta, local) });
+  };
+
   const routeRooms = async (req: IncomingMessage, res: ServerResponse, parts: string[], method: string, url: URL) => {
     if (parts.length === 1 && method === "POST") {
       const playerId = authenticateHeaders(req);
@@ -396,6 +430,7 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (parts[0] === "me") return routeMe(req, res, parts, method, url);
     if (parts[0] === "friends") return routeFriends(req, res, parts, method);
     if (parts[0] === "account") return routeAccount(req, res, parts, method);
+    if (parts[0] === "sync") return routeSync(req, res, parts, method);
     if (parts[0] === "players" && parts.length === 2 && method === "GET") return json(res, 200, { profile: profileOf(authenticateHeaders(req), byCode(parts[1])) });
     if (path === "/leaderboard" && method === "GET") {
       const ladder = url.searchParams.get("ladder");
@@ -437,5 +472,6 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     history,
     friends,
     accounts,
+    accountData,
   };
 }
