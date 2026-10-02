@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
 import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpAccountRefresh, pvpChangePassword, pvpLogin, pvpLogout, pvpRegister } from "../domain/pvp-client";
 import { forgetSyncStatus, lastSyncedAccount, runAccountSync, syncStatus } from "../domain/account-sync-client";
-import { USERNAME_MAX, cleanUsername, passwordProblem, usernameProblem } from "../domain/pvp-account";
+import { ACCOUNT_INTENT_KEY, USERNAME_MAX, cleanUsername, passwordProblem, usernameProblem } from "../domain/pvp-account";
 import { t } from "../domain/i18n";
 
 // Linha "Conta" das Opções: criar conta, entrar, sair, trocar a senha e o estado da sincronização do progresso (usuário + senha, ver server/pvp-accounts.ts; progresso, ver
@@ -54,6 +54,15 @@ export function AccountRow() {
   const [arrived, setArrived] = useState(false);
   const [, setTick] = useState(0);
 
+  // veio do pop-up "crie uma conta": abre já o formulário que a pessoa pediu (só quem ainda não tem conta)
+  useEffect(() => {
+    try {
+      const intent = sessionStorage.getItem(ACCOUNT_INTENT_KEY);
+      if (!intent) return;
+      sessionStorage.removeItem(ACCOUNT_INTENT_KEY);
+      if (!pvpAccountName()) { setMode(intent === "signIn" ? "signIn" : "create"); }
+    } catch { /* sem armazenamento: abre as Opções sem o formulário */ }
+  }, []);
   // ao abrir as Opções, confere com o servidor se este aparelho ainda está na conta (a senha pode ter sido trocada em outro aparelho)
   useEffect(() => {
     let alive = true;

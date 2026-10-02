@@ -1464,6 +1464,12 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .acct-form .acct-note{margin:-4px 0 12px}
 .acct-form .pvp-error{margin:0 0 12px}
 .acct-ghost{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+/* Pop-up "Não perca seus dados" (Hub): o rodapé tem a caixa "Não mostrar de novo" e o "Agora não" */
+.acct-nudge-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-top:6px}
+.acct-nudge-never{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.acct-nudge-never input{width:18px;height:18px;accent-color:var(--green)}
+.acct-nudge-later{border:0;background:transparent;color:var(--ink);font:600 13.5px 'Plus Jakarta Sans',sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:36px;padding:0 4px}
+.acct-nudge-later:focus-visible,.acct-nudge-never input:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .acct-choice{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(196,147,69,.1)}
 .acct-choice strong{font-size:14px;color:var(--ink)}
 .cv-chip.acct-go{background:var(--green);border-color:var(--green);color:#fff;font-weight:700}

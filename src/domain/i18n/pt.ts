@@ -651,6 +651,15 @@ export const pt = {
     choiceSum: "Somar os dois",
     choiceAdopt: "Usar o da conta",
     confirmOtherAccount: (account: string) => `Este aparelho já guardou o progresso da conta ${account}. Entrar em outra conta envia esse progresso para ela também. Se outra pessoa usa este aparelho, use outro perfil do navegador. Continuar?`,
+    nudge: {
+      kicker: "Seu progresso",
+      title: "Não perca seus dados",
+      detail: "Crie uma conta e mantenha o seu progresso guardado: cartas, moedas, conquistas e duelos ficam salvos e você joga de qualquer aparelho. Leva menos de um minuto.",
+      create: "Criar conta",
+      haveAccount: "Já tenho conta",
+      later: "Agora não",
+      never: "Não mostrar de novo",
+    },
   },
   regions: {
     mundo: ["Mundo", "A extensão completa do atlas"],

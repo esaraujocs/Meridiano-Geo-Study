@@ -28,3 +28,6 @@ export function passwordProblem(password: string): PasswordProblem | null {
   if (password.length < PASSWORD_MIN) return "short";
   return password.length > PASSWORD_MAX ? "long" : null;
 }
+
+/** O aviso "crie uma conta" (components/account-nudge.tsx) deixa aqui, até a próxima tela de Opções, o que a pessoa pediu ("create" | "signIn"); a linha Conta abre o formulário certo. */
+export const ACCOUNT_INTENT_KEY = "carta-account-intent";

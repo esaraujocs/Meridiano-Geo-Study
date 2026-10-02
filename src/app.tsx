@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Game } from "./components/map-game";
 import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens";
 import { useAccountSync } from "./components/use-account-sync";
+import { AccountNudge } from "./components/account-nudge";
 import { StoreView } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
@@ -1278,6 +1279,7 @@ export function App() {
   return (
     <div className={`app-shell grain ${screen === "recorte" ? "focused-flow" : ""}`}>
         {screen === "hub" && themeById(theme)?.wash && <ThemeWash />}
+        {screen === "hub" && <AccountNudge onGo={() => setScreen("options")} />}
         <Header legacy={legacy} economy={economy} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && (
         <Hub

@@ -648,6 +648,15 @@ export const en: Messages = {
     choiceSum: "Add both up",
     choiceAdopt: "Use the account's",
     confirmOtherAccount: (account: string) => `This device already stored the progress of account ${account}. Signing in to another account sends that progress to it too. If someone else uses this device, use another browser profile. Continue?`,
+    nudge: {
+      kicker: "Your progress",
+      title: "Don't lose your data",
+      detail: "Create an account and keep your progress safe: cards, coins, achievements and duels are saved and you can play from any device. It takes less than a minute.",
+      create: "Create account",
+      haveAccount: "I already have an account",
+      later: "Not now",
+      never: "Don't show this again",
+    },
   },
   regions: {
     mundo: ["World", "The whole atlas"],
