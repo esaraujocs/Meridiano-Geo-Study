@@ -1988,6 +1988,9 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 .pz-rank strong{font:500 14px 'Fraunces',serif}
 .pz-rank li.rk-gap{display:block;padding:0 6px;text-align:center;color:var(--muted);line-height:.8}
 .pz-rank small{display:block;margin-top:6px;font-size:11px;line-height:1.35;color:var(--muted)}
+.lg-rank-view{margin:2px 0 10px}
+.lg-rank-view button[aria-pressed=true]:last-child{background:rgba(47,111,106,.16);color:#245e58}
+.lg-rank-more{margin-top:10px}
 .lg-rank ol.rk{list-style:none;margin:0;padding:0}
 .lg-rank .rk-n{width:28px;font:500 14px 'DM Mono',monospace;color:var(--muted)}
 .lg-rank li.is-you{background:rgba(196,147,69,.18);border-radius:10px}

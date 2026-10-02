@@ -264,6 +264,12 @@ export const en: Messages = {
       bot: "bot",
       offline: "Player rankings are currently unavailable. Bots still appear.",
       alone: "Nobody else in the ranking yet. Anyone who duels people shows up here.",
+      viewAria: "What to show in the ranking",
+      viewAll: "Everyone",
+      viewPlayers: "Players only",
+      showMore: (hidden: number) => `See more (${hidden})`,
+      showLess: "See less",
+      playersAlone: "Nobody else has played against people on this ladder yet.",
     },
     league: {
       eyebrow: (ladder: string) => `Duels · ${ladder}`,

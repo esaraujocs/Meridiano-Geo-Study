@@ -808,6 +808,31 @@ const WAIT = 15000;
   assert.ok(isFriendCode("K7Q2MP") && !isFriendCode("K7Q2M0"));
 }
 
+// ───────────── contas fora do ranking (contas de teste) ─────────────
+{
+  const dir = mkdtempSync(join(tmpdir(), "pvp-hidden-"));
+  const hiddenFile = join(dir, "ranking-hidden.json");
+  const registry = new PlayerRegistry(null, Date.now, hiddenFile);
+  const ids = ["pteste-oculto-000000001", "pjogador-real-0000000002", "pconta-teste-00000000003"];
+  ids.forEach((id, index) => { registry.authenticate(id, `segredo-de-teste-${index}-0000000000000`); registry.setName(id, ["Teste", "Real", "Outro teste"][index]); registry.setStandings(id, standings(500 - index * 100)); });
+  const names = () => registry.leaderboard("mapas", 50, ids[1]).map((row) => row.name);
+  assert.deepEqual(names(), ["Teste", "Real", "Outro teste"], "sem arquivo, todos aparecem");
+  writeFileSync(hiddenFile, JSON.stringify({ hidden: [ids[0], ids[2], "id-invalido", 42] }));
+  assert.deepEqual(names(), ["Real"], "quem está na lista some do ranking, sem reiniciar (lista em formato de array; ids inválidos são ignorados)");
+  assert.equal(registry.leaderboard("mapas", 50, ids[1])[0].you, true, "quem vê continua marcado como você");
+  assert.deepEqual(registry.leaderboard("mapas", 50, ids[0]).map((row) => row.you), [false], "quem está escondido não aparece nem para si mesmo");
+  await new Promise((resolve) => setTimeout(resolve, 30)); // garante outro mtime
+  writeFileSync(hiddenFile, JSON.stringify({ hidden: { [ids[1]]: "Real" } }));
+  assert.deepEqual(names(), ["Teste", "Outro teste"], "o arquivo mudou: relido (formato de objeto id → nome)");
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  writeFileSync(hiddenFile, "{isto não é json");
+  assert.deepEqual(names(), ["Teste", "Real", "Outro teste"], "arquivo ilegível: ninguém fica de fora");
+  rmSync(hiddenFile);
+  assert.deepEqual(names(), ["Teste", "Real", "Outro teste"], "sem arquivo de novo: todos aparecem");
+  assert.equal(registry.has(ids[0]), true, "esconder do ranking não apaga o jogador");
+  rmSync(dir, { recursive: true, force: true });
+}
+
 // ───────────── HTTP + SSE de verdade ─────────────
 const registry = new PlayerRegistry(null);
 assert.equal(registry.authenticate("id-curto", "segredo-curto"), false, "id e segredo fora do formato");

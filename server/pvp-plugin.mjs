@@ -22,7 +22,7 @@ export function pvpPlugin() {
   const setup = () => {
     if (state) return state;
     const rooms = new PvpRooms();
-    const players = new PlayerRegistry(dataFile("players.json"));
+    const players = new PlayerRegistry(dataFile("players.json"), Date.now, dataFile("ranking-hidden.json")); // contas de teste fora do ranking: scripts/pvp-ranking.mjs
     const history = new PvpHistory(dataFile("matches.jsonl"));
     const queue = new PvpQueue({ rooms });
     const friends = new FriendGraph(dataFile("friends.json"));

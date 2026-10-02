@@ -265,6 +265,12 @@ export const pt = {
       bot: "bot",
       offline: "Ranking das pessoas indisponível no momento. Os bots continuam aparecendo.",
       alone: "Ninguém mais no ranking ainda. Quem duela contra pessoas aparece aqui.",
+      viewAria: "O que mostrar no ranking",
+      viewAll: "Todos",
+      viewPlayers: "Só jogadores",
+      showMore: (hidden: number) => `Ver mais (${hidden})`,
+      showLess: "Ver menos",
+      playersAlone: "Ninguém mais jogou contra pessoas nesta escada ainda.",
     },
     league: {
       eyebrow: (ladder: string) => `Duelos · ${ladder}`,

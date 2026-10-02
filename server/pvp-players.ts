@@ -10,7 +10,7 @@
 // `ladderAt` (quando): é de onde sai o ranking, só com gente de verdade. E `code` (o código de amigo, sorteado na primeira vez que alguém precisa dele: é
 // como os outros acham a pessoa, nunca pelo id) e `summary` + `summaryAt` (o resumo do perfil que o aparelho informa).
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { LADDERS, type Ladder } from "../src/domain/duel-modes.js";
 import { ROOM_CODE_ALPHABET, cleanPlayerName, parseStandings, type LadderStandings, type LeaderboardRow } from "../src/domain/pvp.js";
@@ -63,8 +63,11 @@ export class PlayerRegistry {
   /** Versão do arquivo lido na abertura (1 = migrado agora; 2 = já estava no formato novo; 0 = sem arquivo). */
   readonly loadedVersion: number = 0;
 
-  /** `file` (JSON) guarda os jogadores entre reinícios; sem ele, tudo fica só na memória (testes). */
-  constructor(private file: string | null = null, private now: () => number = Date.now) {
+  private hidden = new Set<string>();
+  private hiddenMtime = -2; // -2: ainda não olhou; -1: o arquivo não existe
+
+  /** `file` (JSON) guarda os jogadores entre reinícios; sem ele, tudo fica só na memória (testes). `hiddenFile` (opcional) lista quem fica de fora do ranking, ver `hiddenIds`. */
+  constructor(private file: string | null = null, private now: () => number = Date.now, private hiddenFile: string | null = null) {
     if (!file || !existsSync(file)) return;
     let raw: unknown;
     try { raw = JSON.parse(readFileSync(file, "utf8")); }
@@ -146,10 +149,30 @@ export class PlayerRegistry {
     row.ladderAt = this.now();
     this.scheduleSave();
   }
-  /** O ranking de uma escada: quem já informou os troféus, do mais alto para o mais baixo (empate: quem chegou antes). `viewer` sai marcado como "você". */
+  /** Quem fica de fora do ranking (contas de teste, por exemplo). Vem do arquivo `hiddenFile` (ranking-hidden.json: `{ "hidden": ["<id>", ...] }` ou `{ "hidden": { "<id>": "nome" } }`),
+   *  editado à mão ou por scripts/pvp-ranking.mjs, e é relido sempre que o arquivo muda, sem reiniciar o servidor. Arquivo ilegível: ninguém fica de fora (e o erro vai para o log). */
+  hiddenIds(): ReadonlySet<string> {
+    const file = this.hiddenFile;
+    if (!file) return this.hidden;
+    let mtime = -1;
+    try { mtime = statSync(file).mtimeMs; } catch { mtime = -1; }
+    if (mtime === this.hiddenMtime) return this.hidden;
+    this.hiddenMtime = mtime;
+    this.hidden = new Set();
+    if (mtime < 0) return this.hidden;
+    try {
+      const listed = (JSON.parse(readFileSync(file, "utf8")) as { hidden?: unknown })?.hidden;
+      const ids = Array.isArray(listed) ? listed : listed && typeof listed === "object" ? Object.keys(listed) : [];
+      for (const id of ids) if (isPlayerId(id)) this.hidden.add(id);
+    } catch (error) { console.error(`[pvp] ${file} ilegível; ninguém fica fora do ranking:`, error); }
+    return this.hidden;
+  }
+
+  /** O ranking de uma escada: quem já informou os troféus (e não está na lista de fora), do mais alto para o mais baixo (empate: quem chegou antes). `viewer` sai marcado como "você". */
   leaderboard(ladder: Ladder, limit: number, viewer: string | null = null): LeaderboardRow[] {
+    const hidden = this.hiddenIds();
     return [...this.players.entries()]
-      .filter(([, row]) => row.ladders)
+      .filter(([id, row]) => row.ladders && !hidden.has(id))
       .sort(([, a], [, b]) => (b.ladders as LadderStandings)[ladder].trophies - (a.ladders as LadderStandings)[ladder].trophies || a.createdAt - b.createdAt)
       .slice(0, Math.max(1, limit))
       .map(([id, row]) => ({ name: row.name || "Jogador", trophies: (row.ladders as LadderStandings)[ladder].trophies, you: id === viewer, code: this.codeOf(id) }));

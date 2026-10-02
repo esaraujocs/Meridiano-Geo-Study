@@ -264,6 +264,12 @@ export const es: Messages = {
       bot: "bot",
       offline: "La clasificación de personas no está disponible ahora. Los bots siguen apareciendo.",
       alone: "Nadie más en el ranking todavía. Quien se bate contra personas aparece aquí.",
+      viewAria: "Qué mostrar en el ranking",
+      viewAll: "Todos",
+      viewPlayers: "Solo jugadores",
+      showMore: (hidden: number) => `Ver más (${hidden})`,
+      showLess: "Ver menos",
+      playersAlone: "Nadie más ha jugado contra personas en esta escalera todavía.",
     },
     league: {
       eyebrow: (ladder: string) => `Duelos · ${ladder}`,

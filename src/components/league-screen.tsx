@@ -4,7 +4,7 @@ import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, styleLabel } from "../domain/duel-labels";
-import { globalLeaderboard, rankWindow } from "../domain/leaderboard";
+import { globalLeaderboard, playersLeaderboard, rankWindow } from "../domain/leaderboard";
 import type { BotRankingState } from "../domain/bot-ranking";
 import type { LeaderboardRow } from "../domain/pvp";
 import type { LadderEntry } from "../domain/pvp-trophies";
@@ -37,6 +37,8 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
   const byLadder = trophiesByLadder(entries);
   const best = LADDERS.reduce((top, item) => (byLadder[item] > byLadder[top] ? item : top), LADDERS[0]);
   const [ladder, setLadder] = useState<Ladder>(initialLadder ?? best);
+  const [rankView, setRankView] = useState<"all" | "players">("all");
+  const [rankExpanded, setRankExpanded] = useState(false);
   const trophies = byLadder[ladder];
   const bestTrophies = byLadder[best];
   const status = leagueOf(trophies);
@@ -46,7 +48,11 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
     : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
   const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
   const board = boards[ladder];
-  const rank = rankWindow(globalLeaderboard(ladder, board ?? [], trophies, undefined, botRanking), 10);
+  // o ranking: por padrão os 10 primeiros (e a pessoa, se estiver mais abaixo); "Ver mais" mostra a lista inteira; "Só jogadores" tira os bots
+  const rankRows = rankView === "players" ? playersLeaderboard(board ?? [], trophies) : globalLeaderboard(ladder, board ?? [], trophies, undefined, botRanking);
+  const RANK_TOP = 10;
+  const rank = rankExpanded ? rankRows : rankWindow(rankRows, RANK_TOP);
+  const rankMore = rankRows.length - RANK_TOP;
   // os últimos duelos da escada, contra bot e contra pessoas, numa lista só
   const recent = [
     ...duels.filter((duel) => duel.ladder === ladder).map((duel) => {
@@ -136,6 +142,10 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
 
         <section className="pr-card lg-rank" style={{ marginTop: 16 }}>
           <header><div><h2>{t.duel.rank.title(t.duel.ladders[ladder])}</h2><p>{t.duel.rank.sub}</p></div></header>
+          <div className="mode-switch lg-rank-view" role="group" aria-label={t.duel.rank.viewAria}>
+            <button type="button" aria-pressed={rankView === "all"} onClick={() => setRankView("all")}>{t.duel.rank.viewAll}</button>
+            <button type="button" aria-pressed={rankView === "players"} onClick={() => setRankView("players")}>{t.duel.rank.viewPlayers}</button>
+          </div>
           <ol className="rk">{rank.map((line, index) => "gap" in line
             ? <li key={`gap${index}`} className="rk-gap" aria-hidden="true">⋯</li>
             : <li key={line.id} className={`rk-li${line.you ? " is-you" : ""}`} data-league={line.league}>
@@ -145,6 +155,8 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
                 : <b>{line.you ? t.duel.rank.you : line.name}{line.bot && <em className="rk-bot">{t.duel.rank.bot}</em>}</b>}<small>{t.duel.leagues[line.league]}</small></span>
               <strong className="rk-val">{formatNumber(line.trophies)}</strong>
             </li>)}</ol>
+          {rankMore > 0 && <button type="button" className="cv-chip lg-rank-more" aria-expanded={rankExpanded} onClick={() => setRankExpanded(!rankExpanded)}>{rankExpanded ? t.duel.rank.showLess : t.duel.rank.showMore(rankMore)}</button>}
+          {rankView === "players" && board !== null && rankRows.length <= 1 && <p className="lg-empty">{t.duel.rank.playersAlone}</p>}
           {board === null && <p className="lg-empty">{t.duel.rank.offline}</p>}
         </section>
 
