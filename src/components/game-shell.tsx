@@ -90,7 +90,7 @@ export function SupplyTray({ variant, timed = true, counts, usedThisRound, disab
   const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
   if (!available.length) return null;
   return createPortal(
-    <div className="gs-supplies gs-hotbar" role="region" aria-label={t.supplies.trayAria}>
+    <div className={`gs-supplies gs-hotbar${disabled ? " is-idle" : ""}`} role="region" aria-label={t.supplies.trayAria}>
       {available.map((id) => {
         const used = usedThisRound.has(id);
         return (

@@ -1207,8 +1207,18 @@ html[data-reduced-motion=true] :is(.quiz-option.is-hit,.quiz-option.wrong,.quiz-
 .gs-slot.is-used{opacity:.55}
 .gs-slot.is-used .gs-slot-art{filter:grayscale(.7)}
 .gs-slot-used{position:absolute;left:50%;top:7px;display:grid;place-items:center;width:46px;height:46px;margin-left:-23px;border-radius:13px;background:rgba(20,38,36,.55);color:#9be3c0;font-style:normal}
-body:has(.gs-hotbar) .gs-body{padding-bottom:104px}
+/* a hotbar fixa ocupa ~104 px embaixo: o conteúdo reserva esse espaço (seletor mais específico que o padding do .gs-body no desktop) e as bandeiras encolhem junto */
+body:has(.gs-hotbar) .gs .gs-body{padding-bottom:104px}
+@media (min-width:761px){body:has(.gs-hotbar) .gs .quiz-options.gs-opts.flags{--tile:clamp(150px,calc((100dvh - 452px - 104px) * .667),420px)}}
 @media (max-width:760px){.gs-hotbar{gap:6px;padding:6px;border-radius:20px}.gs-slot{width:76px}}
+/* janela baixa (celular pequeno, notebook com muitas barras): só ícones, menos reserva, e a barra sai de cena enquanto a rodada está fechada (os itens estão bloqueados) */
+@media (max-height:700px){
+  .gs-slot{width:58px;padding:5px 3px}.gs-slot-t{display:none}
+  .gs-slot-art{width:44px;height:44px}.gs-slot-used{top:5px;width:44px;height:44px;margin-left:-22px}
+  body:has(.gs-hotbar) .gs .gs-body{padding-bottom:84px}
+  .gs-hotbar{transition:opacity .2s,transform .2s}
+  .gs-hotbar.is-idle{opacity:0;transform:translate(-50%,18px);pointer-events:none;animation:none}
+}
 .gs-body{flex:1;min-height:0;display:flex;flex-direction:column}
 .gs-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:12px 20px;margin:12px 16px 8px;border-radius:22px;background:rgba(255,255,255,.34);border:1px solid rgba(199,182,143,.7)}
 .gs-kicker{font:700 16px/1.3 'Plus Jakarta Sans',sans-serif;color:var(--muted)}
