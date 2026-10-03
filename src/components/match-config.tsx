@@ -1,5 +1,6 @@
 import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { Icon, type IconType } from "./icons";
+import { ScreenBar } from "./screen-bar";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
@@ -13,9 +14,8 @@ import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
 import { formatNumber as money, t } from "../domain/i18n";
 
-/** As famílias da faixa do topo (família do Hub, ícone e a família do motor que `selectFamily` espera) e as que ainda vêm. */
-const FAMILY_TILES: ReadonlyArray<readonly [TopFamily, IconType, Family]> = [["mapa", "map", "mapa"], ["bandeiras", "flag", "bandeiras"], ["capitais", "capital", "capitais"], ["idiomas", "language", "idiomas"]];
-const SOON_TILES: ReadonlyArray<readonly ["gentilico" | "moedas", IconType]> = [["gentilico", "people"], ["moedas", "coins"]];
+/** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
+const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language" };
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -41,7 +41,6 @@ export function Recorte({
   onBuyRounds,
   presetApi,
   pillarPct = {},
-  onPickTop,
 }: {
   data: Legacy;
   family: Family;
@@ -67,8 +66,6 @@ export function Recorte({
   presetApi: PresetApi;
   /** Precisão de cada pilar (0 a 100) para mostrar nas famílias e no histórico. */
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
-  /** Troca de família sem voltar ao Hub. */
-  onPickTop: (family: Family) => void;
 }) {
   const familyLabel = t.families[topFamily];
   const selectedRegions = normalizeRegionSelection(region);
@@ -168,36 +165,14 @@ export function Recorte({
 
   return (
     <main className="content cv-page mz-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
-      <div className="cv-top">
-        <button type="button" className="back" onClick={onBack}>{t.common.backHub}</button>
-        <div className="hub-coin" aria-label={`${money(balance)} ${t.common.coins}`}><i aria-hidden="true">$</i><strong>{money(balance)}</strong></div>
-      </div>
+      <ScreenBar onBack={onBack} eyebrow={t.config.table} title={familyLabel} balance={balance} badge={<span className="mz-badge" data-fam={topFamily} aria-hidden="true"><Icon type={FAMILY_ICON[topFamily]} size={22} /></span>} />
       <div className="cv mz" data-fam={topFamily}>
         <div className="mz-main">
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
-            <header className="cv-head"><span className="eyebrow">{t.config.table} · {familyLabel}</span><h1>{t.config.title}</h1></header>
+            <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
             <div className="mz-block">
               <span className="cv-k">{t.config.mode}</span>
-              <div className="mz-fams" role="group" aria-label={t.config.mode}>
-                {FAMILY_TILES.map(([top, topIcon, rep]) => {
-                  const pct = top === "idiomas" ? null : pillarPct[top] ?? null;
-                  return <button type="button" key={top} className="mz-fam" data-fam={top} aria-pressed={topFamily === top} onClick={() => { if (topFamily !== top) { setPendingTier(null); onPickTop(rep); } }}>
-                    <span className="mz-fam-ic"><Icon type={topIcon} size={22} /></span>
-                    <b>{t.families[top]}</b>
-                    <small>{pct != null ? `${pct}%` : " "}</small>
-                  </button>;
-                })}
-                {SOON_TILES.map(([key, soonIcon]) => <span key={key} className="mz-fam is-soon" data-fam={key} aria-disabled="true">
-                  <i className="mz-soon-tag">{t.hub.soon}</i>
-                  <span className="mz-fam-ic"><Icon type={soonIcon} size={22} /></span>
-                  <b>{t.families[key]}</b>
-                  <small>{" "}</small>
-                </span>)}
-              </div>
-            </div>
-            <div className="mz-block">
-              <span className="cv-k">{t.config.howTo}</span>
-              <div className="mz-ways" role="group" aria-label={t.config.howTo}>
+              <div className="mz-ways" role="group" aria-label={t.config.mode}>
                 {modes.map((mode) => {
                   const modeOwned = owned(mode.family, mode.variant);
                   const cost = priceOf(mode.family, mode.variant);

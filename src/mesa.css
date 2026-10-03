@@ -10,19 +10,6 @@
 .mz-block+.mz-block,.mz-trio{border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
 .mz .cv-k{display:block;margin:0 0 10px;padding:0}
 
-/* famílias */
-.mz-fams{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-.mz-fam{position:relative;display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;padding:12px 6px 9px;border:1.5px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--paper) 72%,transparent);color:var(--ink);font:inherit;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
-.mz-fam:hover:not(.is-soon){transform:translateY(-2px);border-color:var(--h,var(--green))}
-.mz-fam-ic{display:grid;place-items:center;width:46px;height:46px;margin-bottom:3px;border-radius:14px;background:color-mix(in srgb,var(--h,var(--green)) 18%,transparent);color:color-mix(in srgb,var(--h,var(--green)) 70%,var(--ink))}
-.mz-fam b{font:700 13.5px 'Plus Jakarta Sans',sans-serif}
-.mz-fam small{font:500 11px 'DM Mono',monospace;color:var(--muted)}
-.mz-fam[aria-pressed=true]{border-color:var(--h,var(--green));background:color-mix(in srgb,var(--h,var(--green)) 13%,var(--paper));box-shadow:0 0 0 3px color-mix(in srgb,var(--h,var(--green)) 24%,transparent)}
-.mz-fam[aria-pressed=true] .mz-fam-ic{background:var(--h,var(--green));color:#fff}
-.mz-fam.is-soon{border-style:dashed;filter:saturate(.5);cursor:default}
-.mz-soon-tag{position:absolute;right:6px;top:6px;font:500 8.5px 'DM Mono',monospace;font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
-.mz-fam.is-soon{padding-top:18px}
-
 /* como responder */
 .mz-ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
 .mz-ways+.cv-sub{margin-top:12px}
@@ -70,9 +57,6 @@
 @media (max-width:760px){
   .mz{gap:14px;margin-top:6px}
   .mz-card{padding:16px 16px 18px}
-  .mz-fams{display:flex;overflow-x:auto;gap:8px;margin-inline:-4px;padding:4px;scrollbar-width:none}
-  .mz-fams::-webkit-scrollbar{display:none}
-  .mz-fam{flex:0 0 84px}
   .mz-ways{grid-template-columns:1fr;gap:8px}
   .mz-way{padding:11px 12px;gap:12px}
   .mz-way-ic{width:40px;height:40px}

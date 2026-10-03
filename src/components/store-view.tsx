@@ -11,6 +11,7 @@ import type { AnyQuizVariant, Family } from "../domain/types";
 import type { RoundUnlockKey } from "../domain/pace";
 import { MUSEUM_PIECES } from "../domain/museum";
 import { SupplyArt } from "./supply-art";
+import { ScreenBar } from "./screen-bar";
 import { formatNumber as money, t } from "../domain/i18n";
 
 // Prévias do Hub de cada tema (geradas por scripts/build-theme-previews.mjs). Sem a imagem, a amostra de cores ocupa o lugar.
@@ -206,11 +207,7 @@ export function StoreView({ initialTab = "all", onTry, economy, activeTheme, onE
   const showAll = tab === "all";
 
   return <section className="st" aria-label={t.store.aria}>
-    <header className="st-bar">
-      <button type="button" className="st-back" onClick={onBack}>{t.common.backHub}</button>
-      <div className="st-crumb"><small>{t.store.eyebrow}</small><h1>{t.store.title}</h1></div>
-      <span className="st-balance" aria-label={t.hub.coinAria(money(balance))}><i aria-hidden="true">$</i><b>{money(balance)}</b></span>
-    </header>
+    <ScreenBar onBack={onBack} eyebrow={t.store.eyebrow} title={t.store.title} balance={balance} />
     {featured && showAll && (() => {
       const missing = missingCoins(featured.cost, balance);
       return <section className="st-hero" aria-label={t.store.heroKicker}>
