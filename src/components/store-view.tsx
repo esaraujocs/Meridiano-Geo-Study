@@ -55,8 +55,11 @@ const pendingInfo = (pending: Pending) => {
   return { name: t.supplies[pending.id].name, blurb: t.supplies[pending.id].detail, price: SUPPLY_COST[pending.id] * pending.qty, permanent: false };
 };
 
-function Art({ icon, size = 38 }: { icon: IconType; size?: number }) {
-  return <span className="st-art" aria-hidden="true"><Icon type={icon} size={size} /></span>;
+/** A cor do cartão de um modo: a da família do Hub a que ele pertence (Mapa, Bandeiras, Capitais ou Idiomas). */
+const modeFam = (variant: string) => variant.startsWith("idioma") ? "idiomas" : variant === "escrita-capital" ? "capitais" : variant === "escrita-pais" || variant.startsWith("historica") ? "bandeiras" : "mapa";
+
+function Art({ icon, size = 38, fam }: { icon: IconType; size?: number; fam?: string }) {
+  return <span className="st-art" data-fam={fam} aria-hidden="true"><Icon type={icon} size={size} /></span>;
 }
 
 function Price({ value }: { value: number }) {
@@ -107,7 +110,7 @@ function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: 
   }, [onCancel]);
   const art = pending.kind === "theme" ? <ThemeArt theme={pending.theme} />
     : pending.kind === "supply" ? <span className="st-art is-supply" data-supply={pending.id} aria-hidden="true"><SupplyArt id={pending.id} size={84} /></span>
-    : <Art icon={pending.kind === "mode" ? modeIcon(pending.mode.variant) : "layers"} size={44} />;
+    : <Art icon={pending.kind === "mode" ? modeIcon(pending.mode.variant) : "layers"} fam={pending.kind === "mode" ? modeFam(pending.mode.variant) : undefined} size={44} />;
   return <div className="st-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel(); }}>
     <div className="st-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <button type="button" className="st-x" onClick={onCancel} aria-label={t.store.close}><Icon type="close" size={16} /></button>
@@ -180,7 +183,7 @@ export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, o
         : use}
     />;
   };
-  const modeCard = (mode: StoreMode) => <Card key={mode.key} art={<Art icon={modeIcon(mode.variant)} />} owned={mode.owned} name={modeName(mode.variant)} blurb={modeBlurb(mode.variant)} price={mode.price} balance={balance} onOpen={() => setPending({ kind: "mode", mode })} />;
+  const modeCard = (mode: StoreMode) => <Card key={mode.key} art={<Art icon={modeIcon(mode.variant)} fam={modeFam(mode.variant)} />} owned={mode.owned} name={modeName(mode.variant)} blurb={modeBlurb(mode.variant)} price={mode.price} balance={balance} onOpen={() => setPending({ kind: "mode", mode })} />;
   const roundsCard = (item: StoreRounds) => <Card key={item.key} art={<Art icon="layers" />} owned={item.owned} name={t.roundUnlocks[item.tier as "long" | "fifty" | "hundred" | "all"]} blurb={t.store.roundBlurbs[item.tier]} price={item.price} balance={balance} onOpen={() => setPending({ kind: "rounds", rounds: item })} />;
   const supplyCard = (id: SupplyId) => <Card key={id} art={<span className="st-art is-supply" data-supply={id} aria-hidden="true"><SupplyArt id={id} size={72} /></span>} owned={false} name={t.supplies[id].name} blurb={t.supplies[id].detail} price={SUPPLY_COST[id]} balance={balance} onOpen={() => setPending({ kind: "supply", id, qty: 1 })}
     extra={<small className="st-stock">{t.store.supplies.owned(supplies[id])}</small>} />;
@@ -231,11 +234,11 @@ export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, o
     </div>
     <p className="st-notice" role="status" aria-live="polite">{notice}</p>
 
-    {showAll && suggestions.length > 0 && <section aria-labelledby="st-sug">{heading(t.store.suggestions, t.store.suggestionsSub, "st-sug")}<div className="st-grid">{suggestions.map(suggestionCard)}</div></section>}
+    {showAll && suggestions.length > 0 && <section aria-labelledby="st-sug">{heading(t.store.suggestions, t.store.suggestionsSub, "st-sug")}<div className="st-grid is-row">{suggestions.map(suggestionCard)}</div></section>}
     {(showAll || tab === "themes") && <section aria-labelledby="st-themes">
       {heading(t.store.themesTitle, <>{t.store.themesCount(SHOP_THEMES.length)}{showAll && <> <button type="button" className="st-link" onClick={() => setTab("themes")}>{t.store.seeAll} <Icon type="arrow" size={14} /></button></>}</>, "st-themes")}
       {showAll
-        ? <div className="st-grid">{byOwnership(shop.filter((theme) => theme.id !== featured?.id)).slice(0, 4).map((theme) => themeCard(theme))}</div>
+        ? <div className="st-grid is-row">{byOwnership(shop.filter((theme) => theme.id !== featured?.id)).slice(0, 6).map((theme) => themeCard(theme))}</div>
         : THEME_TIERS.filter((tier) => SHOP_THEMES.some((theme) => theme.tier === tier)).map((tier: ThemeTier) => <div key={tier} className="st-tier">
           <div className="st-sec is-tier"><h3>{t.store.tiers[tier][0]}</h3><span>{t.store.tiers[tier][1]}</span></div>
           <div className="st-grid">{SHOP_THEMES.filter((theme) => theme.tier === tier).map((theme) => themeCard(theme))}</div>

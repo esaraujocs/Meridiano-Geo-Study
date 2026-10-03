@@ -62,7 +62,14 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
   useLayoutEffect(() => {
     const el = track.current;
     if (!el || !loop) return;
-    const align = () => { const width = stepWidth(); if (width) el.scrollLeft = (count + activeRef.current) * width; };
+    // só a LARGURA muda o passo; a altura mudar (barra de endereço do celular, janela baixa) não pode interromper um deslize em andamento
+    let lastWidth = -1;
+    const align = () => {
+      if (el.clientWidth === lastWidth) return;
+      lastWidth = el.clientWidth;
+      const width = stepWidth();
+      if (width) el.scrollLeft = (count + activeRef.current) * width;
+    };
     align();
     const observer = new ResizeObserver(align);
     observer.observe(el);
