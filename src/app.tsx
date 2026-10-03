@@ -1372,6 +1372,8 @@ export function App() {
            onlyUn={onlyUn}
            setOnlyUn={setOnlyUn}
            presetApi={presetApi}
+           pillarPct={pillarPct}
+           onPickTop={(next) => void selectFamily(next)}
             setVariant={setVariant}
             topFamily={topFamily}
             onFamilyChange={(nextFamily, nextVariant) => {

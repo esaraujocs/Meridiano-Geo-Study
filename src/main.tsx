@@ -8,6 +8,7 @@ import { intlLocale, t } from "./domain/i18n";
 import "./index.css";
 import "./hub.css";
 import "./store.css";
+import "./mesa.css";
 import "./themes.css";
 import "./themes-league.css";
 import "./themes-dark.css";

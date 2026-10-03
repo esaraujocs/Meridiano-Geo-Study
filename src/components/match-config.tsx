@@ -1,5 +1,6 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { Icon } from "./icons";
+import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { Icon, type IconType } from "./icons";
+import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
 import type { EconomySnapshot } from "../domain/economy-store";
@@ -12,7 +13,11 @@ import { PresetBar, type PresetApi } from "./preset-bar";
 import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
 import { formatNumber as money, t } from "../domain/i18n";
 
-// Tela "Configure a partida": Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
+/** As famílias da faixa do topo (família do Hub, ícone e a família do motor que `selectFamily` espera) e as que ainda vêm. */
+const FAMILY_TILES: ReadonlyArray<readonly [TopFamily, IconType, Family]> = [["mapa", "map", "mapa"], ["bandeiras", "flag", "bandeiras"], ["capitais", "capital", "capitais"], ["idiomas", "language", "idiomas"]];
+const SOON_TILES: ReadonlyArray<readonly ["gentilico" | "moedas", IconType]> = [["gentilico", "people"], ["moedas", "coins"]];
+
+// Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
   family,
   counts,
@@ -35,6 +40,8 @@ export function Recorte({
   setRoundTier,
   onBuyRounds,
   presetApi,
+  pillarPct = {},
+  onPickTop,
 }: {
   data: Legacy;
   family: Family;
@@ -58,6 +65,10 @@ export function Recorte({
   setRoundTier: (value: RoundTier) => void;
   onBuyRounds: (key: RoundUnlockKey) => Promise<unknown>;
   presetApi: PresetApi;
+  /** Precisão de cada pilar (0 a 100) para mostrar nas famílias e no histórico. */
+  pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
+  /** Troca de família sem voltar ao Hub. */
+  onPickTop: (family: Family) => void;
 }) {
   const familyLabel = t.families[topFamily];
   const selectedRegions = normalizeRegionSelection(region);
@@ -151,94 +162,127 @@ export function Recorte({
       : t.config.modeMissing(money(activeCost - balance), money(balance))
     : active.hint;
 
+  const trio = (label: string, children: ReactNode, extra = "") => <div className={`mz-group ${extra}`}><span className="cv-k">{label}</span><div className="cv-ctl">{children}</div></div>;
+  const accuracy = topFamily === "idiomas" ? null : pillarPct[topFamily] ?? null;
+  const hitFirst = summary.earn.split(/[^\d]/)[0];
+
   return (
-    <main className="content cv-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
+    <main className="content cv-page mz-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
       <div className="cv-top">
         <button type="button" className="back" onClick={onBack}>{t.common.backHub}</button>
         <div className="hub-coin" aria-label={`${money(balance)} ${t.common.coins}`}><i aria-hidden="true">$</i><strong>{money(balance)}</strong></div>
       </div>
-      <div className="cv">
-        <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
-        <section className="cv-card" aria-label={t.config.cardAria}>
-          <div className="cv-row">
-            <span className="cv-k">{t.config.mode}</span>
-            <div className="cv-ctl">
-              <div className="cv-chips cv-modes" role="group" aria-label={t.config.mode}>
+      <div className="cv mz" data-fam={topFamily}>
+        <div className="mz-main">
+          <section className="cv-card mz-card" aria-label={t.config.cardAria}>
+            <header className="cv-head"><span className="eyebrow">{t.config.table} · {familyLabel}</span><h1>{t.config.title}</h1></header>
+            <div className="mz-block">
+              <span className="cv-k">{t.config.mode}</span>
+              <div className="mz-fams" role="group" aria-label={t.config.mode}>
+                {FAMILY_TILES.map(([top, topIcon, rep]) => {
+                  const pct = top === "idiomas" ? null : pillarPct[top] ?? null;
+                  return <button type="button" key={top} className="mz-fam" data-fam={top} aria-pressed={topFamily === top} onClick={() => { if (topFamily !== top) { setPendingTier(null); onPickTop(rep); } }}>
+                    <span className="mz-fam-ic"><Icon type={topIcon} size={22} /></span>
+                    <b>{t.families[top]}</b>
+                    <small>{pct != null ? `${pct}%` : " "}</small>
+                  </button>;
+                })}
+                {SOON_TILES.map(([key, soonIcon]) => <span key={key} className="mz-fam is-soon" data-fam={key} aria-disabled="true">
+                  <i className="mz-soon-tag">{t.hub.soon}</i>
+                  <span className="mz-fam-ic"><Icon type={soonIcon} size={22} /></span>
+                  <b>{t.families[key]}</b>
+                  <small>{" "}</small>
+                </span>)}
+              </div>
+            </div>
+            <div className="mz-block">
+              <span className="cv-k">{t.config.howTo}</span>
+              <div className="mz-ways" role="group" aria-label={t.config.howTo}>
                 {modes.map((mode) => {
                   const modeOwned = owned(mode.family, mode.variant);
                   const cost = priceOf(mode.family, mode.variant);
-                  return <button type="button" key={mode.key} className={`cv-chip${modeOwned ? "" : " is-locked"}`} aria-pressed={active.key === mode.key} onClick={() => pickMode(mode)}>
-                    <span className="cv-l"><Icon type={mode.icon} size={16} /><span>{mode.label}</span></span>
-                    {!modeOwned && <b><Icon type="lock" size={12} /> {money(cost)}</b>}
+                  return <button type="button" key={mode.key} className={`mz-way${modeOwned ? "" : " is-locked"}`} aria-pressed={active.key === mode.key} onClick={() => pickMode(mode)}>
+                    <span className="mz-way-ic"><Icon type={mode.icon} size={20} /></span>
+                    <span className="mz-way-t"><b>{mode.label}</b><small>{mode.hint}</small></span>
+                    {modeOwned ? <i className="mz-way-check" aria-hidden="true"><Icon type="check" size={14} /></i> : <em><Icon type="lock" size={12} /> {money(cost)}</em>}
                   </button>;
                 })}
               </div>
               {active.direction && <div className="cv-chips cv-sub" role="group" aria-label={t.config.direction}>
                 {(["name-to-flag", "flag-to-name"] as const).map((direction) => <button type="button" key={direction} className="cv-chip" aria-pressed={flagDirection === direction} onClick={() => pickDirection(direction)}><span className="cv-l"><span>{directionLabel(direction)}</span></span></button>)}
               </div>}
-              <p className="cv-hint" role="status">{modeHint}</p>
+              {!activeOwned && <p className="cv-hint" role="status">{modeHint}</p>}
             </div>
-          </div>
-          <div className="cv-row">
-            <span className="cv-k">{t.config.pace}</span>
-            <div className="cv-ctl">
-              <div className="cv-chips" role="group" aria-label={t.config.pace}>
-                <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
-                <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
-              </div>
-              <p className="cv-hint">{paceHint(pace, variant)}</p>
+            <div className="mz-trio">
+              {trio(t.config.pace, <>
+                <div className="cv-chips" role="group" aria-label={t.config.pace}>
+                  <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
+                  <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
+                </div>
+                <p className="cv-hint">{paceHint(pace, variant)}</p>
+              </>)}
+              {trio(t.config.rounds, <>
+                <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>
+                  {roundChips(family, selectedCount).map(({ tier, label }) => {
+                    const unlock = roundUnlockFor(tier);
+                    const tierOwned = isRoundTierUnlocked(tier, economy?.unlocked ?? []);
+                    return <button type="button" key={tier} className={`cv-chip${tierOwned ? "" : " is-locked"}`} aria-pressed={displayTier(roundTier, family, selectedCount) === tier && tierOwned} onClick={() => { if (tierOwned) { setPendingTier(null); setRoundTier(tier); } else setPendingTier(tier); }}>
+                      <span className="cv-l"><span>{label}</span></span>
+                      {!tierOwned && unlock && <b><Icon type="lock" size={12} /> {money(unlock.cost)}</b>}
+                    </button>;
+                  })}
+                </div>
+                {pending && <p className="cv-hint cv-confirm" role="status">
+                  {balance >= pending.cost
+                    ? <>{t.config.unlockRounds(pending.label.toLowerCase(), money(pending.cost))} <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>{t.config.unlock}</button></>
+                    : <>{t.config.missingRounds(money(pending.cost - balance), pending.label.toLowerCase(), money(balance))}</>}
+                </p>}
+              </>)}
+              {trio(t.config.region, <>
+                <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
+                  {REGION_ITEMS.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={counts[key] === 0} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key]}</em></span></button>)}
+                </div>
+                {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
+              </>, "mz-region")}
             </div>
-          </div>
-          <div className="cv-row">
-            <span className="cv-k">{t.config.rounds}</span>
-            <div className="cv-ctl">
-              <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>
-                {roundChips(family, selectedCount).map(({ tier, label }) => {
-                  const unlock = roundUnlockFor(tier);
-                  const tierOwned = isRoundTierUnlocked(tier, economy?.unlocked ?? []);
-                  return <button type="button" key={tier} className={`cv-chip${tierOwned ? "" : " is-locked"}`} aria-pressed={displayTier(roundTier, family, selectedCount) === tier && tierOwned} onClick={() => { if (tierOwned) { setPendingTier(null); setRoundTier(tier); } else setPendingTier(tier); }}>
-                    <span className="cv-l"><span>{label}</span></span>
-                    {!tierOwned && unlock && <b><Icon type="lock" size={12} /> {money(unlock.cost)}</b>}
-                  </button>;
-                })}
-              </div>
-              {pending && <p className="cv-hint cv-confirm" role="status">
-                {balance >= pending.cost
-                  ? <>{t.config.unlockRounds(pending.label.toLowerCase(), money(pending.cost))} <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>{t.config.unlock}</button></>
-                  : <>{t.config.missingRounds(money(pending.cost - balance), pending.label.toLowerCase(), money(balance))}</>}
-              </p>}
-            </div>
-          </div>
-          <div className={`cv-row${showFilter ? "" : " cv-last"}`}>
-            <span className="cv-k">{t.config.region}</span>
-            <div className="cv-ctl">
-              <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
-                {REGION_ITEMS.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={counts[key] === 0} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key]}</em></span></button>)}
-              </div>
-              {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
-            </div>
-          </div>
-          {showFilter && <div className="cv-row cv-last">
-            <span className="cv-k">{t.config.filter}</span>
-            <div className="cv-ctl">
+            {showFilter && <div className="mz-block mz-filter">
+              <span className="cv-k">{t.config.filter}</span>
               <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>{t.config.onlyUn}</span></button>
-            </div>
-          </div>}
-        </section>
-        <PresetBar
-          api={presetApi}
-          topFamily={topFamily}
-          draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
-          canSave={activeOwned && selectedCount > 0}
-          onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
-        />
-        <div className="cv-bar">
-          <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
-          <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
-          <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
-            {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
-          </button>
+            </div>}
+          </section>
+          <PresetBar
+            api={presetApi}
+            topFamily={topFamily}
+            draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
+            canSave={activeOwned && selectedCount > 0}
+            onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
+          />
+          <div className="cv-bar">
+            <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
+            <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
+            <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
+              {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
+            </button>
+          </div>
         </div>
+        <aside className="mz-side" aria-label={t.config.table}>
+          <section className="mz-panel">
+            <h2>{t.config.historyIn(familyLabel)}</h2>
+            <div className="mz-history">
+              <span className="mz-ring" style={{ ["--p" as string]: accuracy ?? 0 }} aria-hidden="true"><b>{accuracy != null ? accuracy : "–"}</b></span>
+              <p>{accuracy != null ? t.hub.pillarAccuracy(accuracy) : t.config.noHistory}</p>
+            </div>
+          </section>
+          <section className="mz-panel">
+            <h2>{t.config.reward}</h2>
+            <div className="mz-reward">
+              <div><b>{hitFirst}</b><small>{summary.earnUnit}</small></div>
+              <div><b>+{Math.round(STREAK_CAP * 100)}%</b><small>{t.config.rewardStreak}</small></div>
+              <div><b>+{completionPerRound(0.9)}</b><small>{t.config.rewardRound}</small></div>
+            </div>
+            {pace === "training" && <p className="cv-hint">{t.config.rewardTraining}</p>}
+          </section>
+        </aside>
       </div>
     </main>
   );

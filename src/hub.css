@@ -67,6 +67,8 @@
 .hx .hx-mode{position:relative}
 .hx-hit{position:absolute;inset:0;z-index:2;width:100%;height:100%;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer}
 .hx-hit:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+/* a arte e o texto do cartão não recebem clique: alguns temas (Noturno) põem camadas por cima da área clicável */
+.hx .hx-mode .family-visual,.hx .hx-mode .family-visual *,.hx .hx-mode .family-copy,.hx .hx-mode .family-copy *{pointer-events:none}
 .hx .hx-mode .family-footer{position:relative;z-index:3}
 .hx-last{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin-top:8px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--h) 14%,transparent);color:color-mix(in srgb,var(--h) 72%,#1c2c2a);font:700 11px 'Plus Jakarta Sans',sans-serif}
 .hx-last span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
