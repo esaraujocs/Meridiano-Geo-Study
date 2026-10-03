@@ -355,15 +355,18 @@ assert.equal(withMissAndWrongFamily.silhouettes.size, 1, "só o acerto conta, o 
 assert.equal(withMissAndWrongFamily.historicalEntities.size, 0, "sessão de outro modo não vaza pro contador de históricas");
 
 
-// Títulos pela nota do título (melhor entre a de sempre e a das últimas 100 rodadas)
-const titleProgress = (cap) => ({ ...realisticProgress, pillars: { ...realisticProgress.pillars, capitais: cap, escrita: { seen: 10, correct: 5, accuracy: 0.5, bayesianScore: 0.4, status: "" } } });
-const slowButNow = achievementContext(titleProgress({ seen: 3380, correct: 2949, accuracy: 0.87, bayesianScore: 0.87, recent: 0.97, titleScore: 0.97, status: "" }), [], {});
-assert.equal(slowButNow.titles.has("Diplomata"), true, "87% de sempre mas 97% nas últimas 100 rodadas: Diplomata");
-const slowNoWindow = achievementContext(titleProgress({ seen: 3380, correct: 2949, accuracy: 0.87, bayesianScore: 0.87, recent: 0.88, titleScore: 0.88, status: "" }), [], {});
-assert.equal(slowNoWindow.titles.has("Diplomata"), false, "88% nas últimas também não chega a 90%");
-const oldSnapshot = achievementContext(titleProgress({ seen: 500, correct: 480, accuracy: 0.96, bayesianScore: 0.95, status: "" }), [], {});
-assert.equal(oldSnapshot.titles.has("Diplomata"), true, "sem titleScore cai na bayesiana");
-const noWriting = achievementContext({ ...titleProgress({ seen: 3380, correct: 2949, accuracy: 0.87, bayesianScore: 0.87, recent: 0.97, titleScore: 0.97, status: "" }), pillars: { ...realisticProgress.pillars, capitais: { seen: 3380, correct: 2949, accuracy: 0.87, bayesianScore: 0.87, recent: 0.97, titleScore: 0.97, status: "" } } }, [], {});
+// Títulos pelo DOMÍNIO do pilar (países conquistados, permanente): escada Bandeiras 90%, Mapa 85%, Capitais 80%; a precisão histórica não abre título
+const domain = (done, total = 250) => ({ done, total, pct: (done / total) * 100 });
+const withDomain = (key, dom, extra = {}) => ({ ...realisticProgress, pillars: { ...realisticProgress.pillars, [key]: { seen: 500, correct: 400, accuracy: 0.8, bayesianScore: 0.8, status: "", domain: dom, ...extra }, escrita: { seen: 10, correct: 5, accuracy: 0.5, bayesianScore: 0.4, status: "" } } });
+assert.equal(achievementContext(withDomain("capitais", domain(200)), [], {}).titles.has("Diplomata"), true, "80% das capitais conquistadas: Diplomata");
+assert.equal(achievementContext(withDomain("capitais", domain(199)), [], {}).titles.has("Diplomata"), false, "79,6% ainda não");
+assert.equal(achievementContext(withDomain("mapa", domain(212)), [], {}).titles.has("Cartógrafo"), false, "o Mapa pede 85%: 84,8% não chega");
+assert.equal(achievementContext(withDomain("mapa", domain(213)), [], {}).titles.has("Cartógrafo"), true, "85,2% do Mapa: Cartógrafo");
+assert.equal(achievementContext(withDomain("bandeiras", domain(224)), [], {}).titles.has("Vexilólogo"), false, "as Bandeiras pedem 90%: 89,6% não chega");
+assert.equal(achievementContext(withDomain("bandeiras", domain(225)), [], {}).titles.has("Vexilólogo"), true, "90% das Bandeiras: Vexilólogo");
+const highAccuracyNoDomain = achievementContext(withDomain("capitais", domain(10), { seen: 3380, correct: 3300, accuracy: 0.976, bayesianScore: 0.97 }), [], {});
+assert.equal(highAccuracyNoDomain.titles.has("Diplomata"), false, "precisão altíssima sem domínio não abre título");
+assert.equal(highAccuracyNoDomain.fit, true, "mas a conquista Em forma segue na precisão histórica");
+const noWriting = achievementContext({ ...withDomain("capitais", domain(240)), pillars: { ...withDomain("capitais", domain(240)).pillars, escrita: { seen: 1, correct: 1, accuracy: 1, bayesianScore: 0.5, status: "" } } }, [], {});
 assert.equal(noWriting.titles.has("Diplomata"), false, "a escrita validada (2 acertos digitados) continua valendo");
-assert.equal(slowButNow.fit, true, "a conquista Em forma usa a mesma nota");
 console.log("achievements: 49 canonical rules pass");

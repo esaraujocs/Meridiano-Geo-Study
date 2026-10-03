@@ -4,10 +4,10 @@ import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type Unlock
 import { playerStatsFromSessions } from "./player-stats.js";
 import { XP_ADJUST_ID } from "./debug-rules.js";
 import { levelForXp, xpForLevel, xpFrom } from "./player-level.js";
-import { dominatedFromSessions, everDominatedFromSessions } from "./dominated.js";
+import { everDominatedFromSessions, masteredFromSessions } from "./dominated.js";
 import { ROUND_UNLOCKS, type RoundUnlockKey } from "./pace.js";
 import { themeById, themeUnlockKey } from "./themes.js";
-export { dominatedFromSessions, dominatedIdsFromSessions, everDominatedFromSessions, everDominatedIdsFromSessions } from "./dominated.js";
+export { dominatedFromSessions, dominatedIdsFromSessions, everDominatedFromSessions, everDominatedIdsFromSessions, masteredFromSessions, masteredIdsFromSessions } from "./dominated.js";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
 export type EconomySnapshot = {
@@ -136,8 +136,8 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   };
   const playerStats = playerStatsFromSessions(sessions as any[]);
   const rounds = playerStats.rounds;
-  // maestria mostra o domínio de agora; o XP conta todo país que já foi dominado, então nunca cai
-  const dominated = dominatedFromSessions(sessions, progress);
+  // maestria = países dominados pela regra permanente (dominated.ts, 04/10); o XP segue na regra antiga (todo país que já teve as 3 certas em 2 modos), então ninguém perde nível
+  const dominated = masteredFromSessions(sessions);
   const xpReal = xpFrom(rounds, everDominatedFromSessions(sessions, progress));
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);

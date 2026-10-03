@@ -1,6 +1,8 @@
 // Pilares de maestria (Bandeiras, Mapa, Capitais + Escrita como validador) calculados a partir das partidas.
 // Lógica pura, sem React nem IndexedDB.
 
+import { NO_CAPITAL_IDS } from "./dominated.js";
+
 export type PillarKey = "bandeiras" | "mapa" | "capitais" | "escrita";
 export const PILLAR_KEYS: readonly PillarKey[] = ["bandeiras", "mapa", "capitais", "escrita"];
 
@@ -21,29 +23,23 @@ export const BAYES_WEIGHT = 12;
 export const BAYES_PRIOR = 0.45;
 export const bayesianScore = (correct: number, seen: number) => (correct + BAYES_WEIGHT * BAYES_PRIOR) / (seen + BAYES_WEIGHT);
 
-// Nota que abre os títulos: a MELHOR entre a precisão de sempre (acima) e a das últimas TITLE_WINDOW rodadas do pilar.
-// Só a de sempre punia quem aprende jogando: 3.380 rodadas em Capitais a 87% (os primeiros erros pesando para sempre) com ~97% nas últimas 100
-// pediam mais de mil rodadas sem erro para chegar a 90%. A janela mede quem a pessoa é agora; exige TITLE_WINDOW rodadas (não vale sorte em poucas)
-// e não conta rodada com suprimento (assistida).
-export const TITLE_WINDOW = 100;
-export const TITLE_SCORE = 0.9;
-export function recentPrecision(sessions: readonly PillarSession[]) {
-  const flags: Record<PillarKey, boolean[]> = { bandeiras: [], mapa: [], capitais: [], escrita: [] };
-  const ordered = sessions.map((session, index) => ({ session, index })).sort((a, b) => ((a.session.startedAt ?? 0) - (b.session.startedAt ?? 0)) || a.index - b.index);
-  for (const { session } of ordered) {
-    const key = pillarOfSession(session);
-    if (!key) continue;
-    for (const round of session.rounds ?? []) if (!round.assisted) flags[key].push(Boolean(round.correct));
-  }
-  const out = {} as Record<PillarKey, number | null>;
-  for (const key of PILLAR_KEYS) {
-    const recent = flags[key].slice(-TITLE_WINDOW);
-    out[key] = recent.length >= TITLE_WINDOW ? recent.filter(Boolean).length / recent.length : null;
+// A precisão do pilar é a HISTÓRICA (acima, bayesiana): volta a ser só uma métrica (04/10/2026). Os TÍTULOS não dependem mais dela, e sim do domínio.
+/** "Em forma" (conquista) pede precisão histórica de pelo menos 90% em algum pilar. */
+export const FIT_SCORE = 0.9;
+/** Títulos de pilar: % dos países do pilar CONQUISTADOS (5 certas seguidas já feitas no pilar, para sempre; ver dominated.ts) que abre o título. Escada de
+ *  dificuldade pedida pelo Enzo: Bandeiras a mais alta, Mapa no meio, Capitais um pouco abaixo (mas ainda alta). Vexilólogo e Diplomata seguem pedindo a escrita validada. */
+export const TITLE_DOMAIN_PCT: Readonly<Record<"bandeiras" | "mapa" | "capitais", number>> = { bandeiras: 90, mapa: 85, capitais: 80 };
+export type PillarDomain = { done: number; total: number; pct: number };
+/** Quantos dos países do universo cada pilar já conquistou (Capitais não conta Antártida e Macau, que não têm capital). */
+export function pillarDomain(conquered: Record<"bandeiras" | "mapa" | "capitais", ReadonlySet<string>>, universe: readonly string[]): Record<"bandeiras" | "mapa" | "capitais", PillarDomain> {
+  const out = {} as Record<"bandeiras" | "mapa" | "capitais", PillarDomain>;
+  for (const key of ["bandeiras", "mapa", "capitais"] as const) {
+    const ids = key === "capitais" ? universe.filter((id) => !NO_CAPITAL_IDS.has(id)) : universe;
+    const done = ids.filter((id) => conquered[key].has(id)).length;
+    out[key] = { done, total: ids.length, pct: ids.length ? (done / ids.length) * 100 : 0 };
   }
   return out;
 }
-/** A nota do título: o maior entre a bayesiana (sempre) e a janela recente (quando já há rodadas para ela). */
-export const titleScore = (bayes: number | null, recent: number | null | undefined) => (bayes === null && recent == null ? null : Math.max(bayes ?? 0, recent ?? 0));
 
 export function pillarStatus(score: number | null, seen: number) {
   if (score === null) return "sem evidência";

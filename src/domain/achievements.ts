@@ -1,6 +1,6 @@
 import type { ProgressSnapshot, SurfaceSession } from "./progress-surfaces";
 import { MAP_ERROR_GOAL_KM, MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
-import { TITLE_SCORE } from "./pillars.js";
+import { FIT_SCORE, TITLE_DOMAIN_PCT } from "./pillars.js";
 import { t } from "./i18n/index.js";
 
 export type AchievementCategory = "hab" | "exp" | "conh" | "evo" | "dom" | "desc";
@@ -196,16 +196,16 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
   }
   const continents = [...continentCounts.values()].filter(value => value.seen > 0).length;
   const wholeContinent = [...continentCounts.values()].some(value => value.total > 0 && value.seen === value.total);
-  // Nota do título = a melhor entre a precisão de sempre e a das últimas 100 rodadas do pilar (pillars.ts: quem aprende jogando não fica preso aos primeiros erros).
-  const scoreOf = (key: string) => progress.pillars[key]?.titleScore ?? progress.pillars[key]?.bayesianScore ?? 0;
-  const fit = Object.keys(progress.pillars).some(key => scoreOf(key) >= TITLE_SCORE);
+  // Precisão histórica (bayesiana): só alimenta o "Em forma". Os títulos vêm do domínio do pilar (países conquistados), ver pillars.ts.
+  const scoreOf = (key: string) => progress.pillars[key]?.bayesianScore ?? 0;
+  const fit = Object.keys(progress.pillars).some(key => scoreOf(key) >= FIT_SCORE);
   const accuracy = completed.map(session => session.accuracy ?? 0);
   const evolved = accuracy.length >= 10 && accuracy.slice(-5).reduce((a,b)=>a+b,0)/5 - accuracy.slice(0,5).reduce((a,b)=>a+b,0)/5 >= .15;
   const masteryIndex = mastered.length ? Math.min(4, Math.max(...mastered.map(r => Number(r.mastery ?? 0))) - 1) : 0;
   // Current v2 does not store legacy title strings. Adapt the classic title
   // gates to pillar mastery plus written validation.
   const titles = new Set<string>();
-  const strong = (key: string) => scoreOf(key) >= TITLE_SCORE;
+  const strong = (key: string) => (progress.pillars[key]?.domain?.pct ?? 0) >= (TITLE_DOMAIN_PCT[key as keyof typeof TITLE_DOMAIN_PCT] ?? 101);
   const writingValidated = (progress.pillars.escrita?.correct ?? 0) >= 2;
   if (strong("bandeiras") && writingValidated) titles.add("Vexilólogo");
   if (strong("mapa")) titles.add("Cartógrafo");

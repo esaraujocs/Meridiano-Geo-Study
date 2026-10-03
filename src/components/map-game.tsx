@@ -119,7 +119,7 @@ export function Game({
   const nameFor = (id: string) => (capitalMode ? data.meta[id]?.cap : data.meta[id]?.pt);
   const cardParents = useMemo(() => cardParentsOf(data.meta), [data.meta]);
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
-  const suppliesEnabled = pace === "timed" && !settings.duel && !settings.pvp;
+  const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const bussolaUsed = supply.usedThisRound.has("bussola");
 
@@ -762,7 +762,7 @@ export function Game({
             {bussolaUsed && !feedback && <em className="map-bussola-hint">{continentLabel(data.meta[target]?.reg)}</em>}
             <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
             {suppliesEnabled && (
-              <SupplyTray
+              <SupplyTray timed={pace === "timed"}
                 variant={engineVariant}
                 counts={supply.counts}
                 usedThisRound={supply.usedThisRound}

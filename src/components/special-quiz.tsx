@@ -31,7 +31,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
-  const suppliesEnabled = pace === "timed" && !settings.duel && !settings.pvp;
+  const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
@@ -285,7 +285,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
       <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
         <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
         {suppliesEnabled && (
-          <SupplyTray
+          <SupplyTray timed={pace === "timed"}
             variant={variant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}

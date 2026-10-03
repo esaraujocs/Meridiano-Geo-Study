@@ -39,6 +39,8 @@ const counts = { ampulheta: 1, bussola: 1, lupa: 1 };
 assert.deepEqual(supplies.usableSupplies(counts, "mapa").sort(), ["ampulheta", "bussola"]);
 assert.deepEqual(supplies.usableSupplies(counts, "bandeira-nome").sort(), ["ampulheta", "lupa"]);
 assert.deepEqual(supplies.usableSupplies({ ampulheta: 0, bussola: 0, lupa: 0 }, "mapa"), [], "sem estoque, nada aparece");
+assert.deepEqual(supplies.usableSupplies(counts, "mapa", false), ["bussola"], "no Treino a Ampulheta some (não há cronômetro)");
+assert.deepEqual(supplies.usableSupplies(counts, "bandeira-nome", false), ["lupa"], "no Treino a Lupa segue valendo");
 
 // ---- rodada assistida paga ASSISTED_COIN_FACTOR (metade) do normal, ver spoils.ts
 assert.equal(spoils.ASSISTED_COIN_FACTOR, 0.5);

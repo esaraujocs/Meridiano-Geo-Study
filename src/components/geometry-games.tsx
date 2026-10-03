@@ -93,7 +93,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? engineVariant, settings.pace);
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts). Lupa só na Silhueta · alternativas.
-  const suppliesEnabled = settings.pace === "timed" && !settings.duel && !settings.pvp;
+  const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
   const leave = async (destination: Destination = "recorte") => {
@@ -210,7 +210,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`}>
         <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
         {suppliesEnabled && (
-          <SupplyTray
+          <SupplyTray timed={settings.pace === "timed"}
             variant={engineVariant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
@@ -266,7 +266,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const log = useRoundLog("travel", settings.pace);
   const flow = useAdvance();
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP); no Travel só a Ampulheta faz sentido.
-  const suppliesEnabled = settings.pace === "timed" && !settings.duel && !settings.pvp;
+  const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
@@ -397,7 +397,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel("travel")} · ${regionLabel(region)}`}>
         <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
         {suppliesEnabled && (
-          <SupplyTray
+          <SupplyTray timed={settings.pace === "timed"}
             variant="travel"
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}

@@ -4,7 +4,7 @@ import type { Meta } from "./types";
 import type { SurfaceSession } from "./progress-surfaces.js";
 import { MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
 import { MASTERY_STAGES, PILLAR_TITLES, clampPercent, hubProfile } from "./hub-profile.js";
-import { TITLE_WINDOW, pillarOfSession, type PillarKey } from "./pillars.js";
+import { TITLE_DOMAIN_PCT, pillarOfSession, type PillarDomain, type PillarKey } from "./pillars.js";
 import { REGION_ITEMS, regionMatches } from "./regions.js";
 import { placeLabel } from "./collection-view.js";
 import {
@@ -18,8 +18,7 @@ import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { botLabel, styleLabel } from "./duel-labels.js";
 import type { PvpMatchRecord } from "./pvp-store.js";
 
-export const TITLE_GOAL = 90; // % de precisão do pilar que abre o título
-export { TITLE_WINDOW };
+export { TITLE_DOMAIN_PCT }; // % de países conquistados do pilar que abre cada título (a escada: pillars.ts)
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
 export const REVIEW_MIN_TRIES = 3;
 export const REVIEW_BELOW = 0.5;
@@ -27,7 +26,7 @@ export const HEATMAP_WEEKS = 12;
 export const EVOLUTION_POINTS = 14;
 
 export type ProgressRecordLike = { entityId?: unknown; id?: unknown; mastery?: unknown; columns?: Record<string, number | undefined> };
-export type PillarSnapshot = { seen: number; correct: number; bayesianScore: number | null; /** precisão das últimas TITLE_WINDOW rodadas (null com menos) */ recent?: number | null; /** a nota do título: max(bayesianScore, recent) */ titleScore?: number | null; status: string };
+export type PillarSnapshot = { seen: number; correct: number; bayesianScore: number | null; /** países conquistados no pilar (permanente); abre o título */ domain?: PillarDomain; status: string };
 
 export type DashboardInput = {
   now: number;
@@ -58,13 +57,15 @@ export type PillarCard = {
   earned: boolean;
   seen: number;
   correct: number;
-  /** nota do pilar em %, a mesma que abre o título: a melhor entre a precisão de sempre (bayesiana) e a das últimas TITLE_WINDOW rodadas. */
-  scorePct: number | null;
-  /** de onde veio `scorePct`: "recent" quando a janela das últimas rodadas é que vale (a de sempre é `lifetimePct`). */
-  basis: "lifetime" | "recent";
-  lifetimePct: number | null;
+  /** precisão histórica do pilar em % (a bayesiana de sempre): só informa, não abre título. */
+  accuracyPct: number | null;
+  /** domínio do pilar: países conquistados (5 certas seguidas, permanente), o total e a % arredondada para baixo. É o que abre o título. */
+  domainDone: number;
+  domainTotal: number;
+  domainPct: number;
+  /** meta do título em % de países e quantos países ainda faltam para ela. */
   goalPct: number;
-  gapPts: number;
+  missing: number;
   status: string;
   tone: PillarTone;
   coverage: number;
@@ -404,12 +405,11 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
     const snapshot = input.pillars[key];
     const seen = snapshot?.seen ?? 0;
     const correct = snapshot?.correct ?? 0;
-    const lifetime = snapshot?.bayesianScore ?? null;
-    const score = snapshot?.titleScore ?? lifetime;
+    const accuracy = snapshot?.bayesianScore ?? null;
     const earned = input.titleIds.includes(titleId);
-    const scorePct = score === null ? null : roundPct(score);
-    const lifetimePct = lifetime === null ? null : roundPct(lifetime);
-    const basis = scorePct !== null && lifetimePct !== null && scorePct > lifetimePct ? "recent" : "lifetime";
+    const domainDone = snapshot?.domain?.done ?? 0;
+    const domainTotal = snapshot?.domain?.total ?? 0;
+    const goalPct = TITLE_DOMAIN_PCT[key];
     const status = snapshot?.status ?? "sem evidência";
     const tone: PillarTone = earned ? "earned" : status === "forte" ? "good" : status === "revisar" ? "warn" : "mid";
     const labels = t.progress.status;
@@ -422,8 +422,9 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
     return {
       key, label,
       title: PILLAR_TITLES.find((item) => item.id === titleId)?.label ?? "",
-      earned, seen, correct, scorePct, basis, lifetimePct, goalPct: TITLE_GOAL,
-      gapPts: earned || scorePct === null ? (earned ? 0 : TITLE_GOAL) : Math.max(0, TITLE_GOAL - scorePct),
+      earned, seen, correct, accuracyPct: accuracy === null ? null : roundPct(accuracy),
+      domainDone, domainTotal, domainPct: domainTotal ? Math.floor((domainDone / domainTotal) * 100) : 0, goalPct,
+      missing: earned ? 0 : Math.max(0, Math.ceil((goalPct / 100) * domainTotal) - domainDone),
       status: statusLabel, tone,
       coverage, coverageTotal: total,
       formPct: formNow, formDelta: formNow !== null && formBefore !== null ? formNow - formBefore : null,

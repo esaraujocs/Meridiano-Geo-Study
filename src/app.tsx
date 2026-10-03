@@ -977,7 +977,7 @@ export function App() {
         titles: state.achievements.filter((item) => item.unlocked && TITLE_IDS.includes(item.id)).map((item) => item.id),
         next: near ? { name: near.name, current: Number(near.current ?? 0), target: Number(near.target ?? 0) } : null,
       });
-      const pct = (key: "mapa" | "bandeiras" | "capitais") => { const pillar = state.progress.pillars[key]; const score = pillar?.titleScore ?? pillar?.bayesianScore ?? null; return pillar && pillar.seen > 0 && score !== null ? Math.round(score * 100) : null; };
+      const pct = (key: "mapa" | "bandeiras" | "capitais") => { const pillar = state.progress.pillars[key]; const score = pillar?.bayesianScore ?? null; return pillar && pillar.seen > 0 && score !== null ? Math.round(score * 100) : null; };
       setPillarPct({ mapa: pct("mapa"), bandeiras: pct("bandeiras"), capitais: pct("capitais") });
       achievementToasts.push(fresh.map(({ id, name, description, rarity }) => ({ id, name, description, rarity })));
     };

@@ -4,7 +4,7 @@ import type { querySurfaces } from "../domain/progress-surfaces";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { TITLE_IDS } from "../domain/hub-profile";
 import {
-  TITLE_GOAL, TITLE_WINDOW, buildProgressDashboard, groupHistory,
+  TITLE_DOMAIN_PCT, buildProgressDashboard, groupHistory,
   type Dashboard, type HistoryGroup, type PillarCard, type RegionRow, type ReviewItem, type SessionRow,
 } from "../domain/progress-dashboard";
 import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup } from "../domain/session-view";
@@ -96,25 +96,25 @@ function Kpis({ kpis, onOpenCollection }: { kpis: Dashboard["kpis"]; onOpenColle
 // ---------- pilares ----------
 function PillarCardView({ pillar, onTrain }: { pillar: PillarCard; onTrain: () => void }) {
   const icon = pillar.key === "bandeiras" ? "flag" : pillar.key === "mapa" ? "map" : "pin";
-  const empty = pillar.scorePct === null;
+  const empty = pillar.seen === 0;
   return <article data-fam={pillar.key} className={`pr-pillar${pillar.earned ? " is-earned" : ""}${empty ? " is-empty" : ""}`}>
     <header>
       <span className="pr-picon"><Glyph name={icon} size={24} /></span>
       <div><h3>{pillar.label}</h3><small>{pillar.title}</small></div>
       <span className={`pr-status is-${pillar.tone}`}>{pillar.tone === "earned" && <Glyph name="trophy" size={13} stroke={2} />}{pillar.status}</span>
     </header>
-    <div className="pr-acc"><b>{empty ? "—" : `${pillar.scorePct}%`}</b><span>{t.progress.ofAccuracy}</span></div>
-    <div className="pr-goal" role="img" aria-label={empty ? t.progress.noRounds : t.progress.goalAria(pillar.scorePct ?? 0, pillar.goalPct)}><i style={{ width: `${pillar.scorePct ?? 0}%` }} /><s style={{ left: `${pillar.goalPct}%` }}><em>{pillar.goalPct}%</em></s></div>
+    <div className="pr-acc"><b>{empty ? "—" : `${pillar.domainPct}%`}</b><span>{t.progress.ofDomain}</span></div>
+    <div className="pr-goal" role="img" aria-label={empty ? t.progress.noRounds : t.progress.goalAria(pillar.domainPct, pillar.goalPct)}><i style={{ width: `${pillar.domainPct}%` }} /><s style={{ left: `${pillar.goalPct}%` }}><em>{pillar.goalPct}%</em></s></div>
     <p className="pr-goal-text">
-      {empty ? <>{t.progress.playToMeasure(pillar.label, pillar.title)}<b>{TITLE_GOAL}%</b>.</>
-        : pillar.earned ? (pillar.scorePct !== null && pillar.scorePct < pillar.goalPct
-          ? <>{t.progress.alreadyTitle(pillar.title, pillar.scorePct)}</>
+      {empty ? <>{t.progress.playToMeasure(pillar.label, pillar.title, pillar.goalPct)}</>
+        : pillar.earned ? (pillar.domainPct < pillar.goalPct
+          ? <>{t.progress.alreadyTitle(pillar.title, pillar.domainPct)}</>
           : <>{t.progress.goalBeaten(pillar.goalPct, pillar.title)}</>)
-        : (() => { const [a, pts, b] = t.progress.missingPts(pillar.gapPts); return <>{a}<b>{pts}</b>{b}{pillar.title}.</>; })()}
-      {!empty && <span className="pr-raw">{t.progress.raw(pillar.correct, pillar.seen)}{pillar.basis === "recent" && pillar.lifetimePct !== null && t.progress.recentBasis(TITLE_WINDOW, pillar.lifetimePct)}</span>}
+        : (() => { const [x, countries, y] = t.progress.missingCountries(pillar.missing); return <>{x}<b>{countries}</b>{y}{pillar.title}.</>; })()}
+      {!empty && <span className="pr-raw">{t.progress.domainCount(pillar.domainDone, pillar.domainTotal)}</span>}
     </p>
     <dl className="pr-pstats">
-      <div><dt>{t.progress.coverage}</dt><dd>{pillar.coverage}<em>{t.progress.ofCountries(pillar.coverageTotal)}</em></dd></div>
+      <div><dt>{t.progress.accuracyHist}</dt><dd>{pillar.accuracyPct === null ? "—" : `${pillar.accuracyPct}%`}</dd></div>
       <div><dt>{t.progress.recentForm}</dt><dd>{pillar.formPct === null ? "—" : `${pillar.formPct}%`}{pillar.formDelta !== null && pillar.formDelta !== 0 && <em className={pillar.formDelta > 0 ? "up" : "down"}>{pillar.formDelta > 0 ? "▲" : "▼"} {Math.abs(pillar.formDelta)}</em>}</dd></div>
     </dl>
     <p className={`pr-write ${pillar.writing ? (pillar.writing.ok ? "ok" : "no") : "na"}`}>
@@ -413,7 +413,7 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
       <dl>
         <div><dt>{t.progress.howDominated}</dt><dd>{t.progress.howDominatedText}</dd></div>
         <div><dt>{t.progress.howStages}</dt><dd>{t.progress.howStagesText}</dd></div>
-        <div><dt>{t.progress.howTitles}</dt><dd>{t.progress.howTitlesText(TITLE_GOAL, TITLE_WINDOW)}</dd></div>
+        <div><dt>{t.progress.howTitles}</dt><dd>{t.progress.howTitlesText(TITLE_DOMAIN_PCT.bandeiras, TITLE_DOMAIN_PCT.mapa, TITLE_DOMAIN_PCT.capitais)}</dd></div>
         <div><dt>{t.progress.howXp}</dt><dd>{t.progress.howXpText}</dd></div>
         <div><dt>{t.progress.howReview}</dt><dd>{t.progress.howReviewText}</dd></div>
       </dl>

@@ -129,9 +129,10 @@
 .hx-dots button::before{content:"";position:absolute;left:8px;top:7px;width:10px;height:8px;border-radius:99px;background:rgba(47,111,106,.28);transition:width .2s,left .2s}
 .hx-dots button[aria-current=true]::before{left:3px;width:20px;background:var(--green)}
 
-/* modos que ainda vêm (Gentílicos, Moedas): cartão na tinta do tema, sem jogar */
-[data-fam=gentilico],[data-fam=moedas]{--h:var(--green);--hb:var(--green);--hg:var(--green);--h2:var(--green);--on:#fff4df}
-.hx .family.hx-mode.is-soon{filter:saturate(.55);border-style:dashed}
+/* modos que ainda vêm (Gentílicos, Moedas): cartão com cor própria (derivada da paleta de cada tema, então muda com ele) e borda tracejada; sem ação */
+[data-fam=gentilico]{--h:color-mix(in srgb,var(--h-mapa,#2f8f83) 48%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
+[data-fam=moedas]{--h:color-mix(in srgb,var(--h-band,#c0553f) 52%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
+.hx .family.hx-mode.is-soon{border-style:dashed}
 .hx-soon{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px dashed currentColor;border-radius:99px;color:var(--ink);font:800 12px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
 
 /* ───────── Duelo ───────── */

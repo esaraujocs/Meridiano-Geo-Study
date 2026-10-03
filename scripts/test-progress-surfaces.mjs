@@ -55,30 +55,24 @@ const achievements = profile.evaluateAchievements(progress, [current], []);
 assert.equal(achievements.find((item) => item.id === "first-session").unlocked, true);
 assert.equal(achievements.find((item) => item.id === "coverage-10").unlocked, false);
 
-// Nota do título: a melhor entre a de sempre e a das últimas 100 rodadas (quem aprende jogando não fica preso aos erros do começo)
-const capSession = (id, startedAt, hits, extra = {}) => ({ id, family: "capitais", variant: "capital-pais", mode: "capital-pais", startedAt, rounds: hits.map((ok, i) => ({ targetId: "x" + i, correct: ok, responseTimeMs: 900, ...extra })) });
-const alternate = (n, every) => Array.from({ length: n }, (_, i) => i % every !== 0); // erra 1 a cada `every`
-const learner = [
-  capSession("b", 2000, alternate(100, 25)), // as 100 mais recentes: 96%
-  capSession("a", 1000, alternate(1000, 2)), // as primeiras 1000: 50% (fora de ordem no array de propósito)
-];
-const learned = profile.deriveProgress([], undefined, learner.map((s, i) => profile.normalizeSession(s, i)));
-assert.ok(learned.pillars.capitais.bayesianScore < 0.6, "a de sempre segue baixa");
-assert.equal(learned.pillars.capitais.recent, 0.96);
-assert.equal(learned.pillars.capitais.titleScore, 0.96);
-assert.equal(learned.pillars.bandeiras.recent, null, "sem 100 rodadas a janela não vale");
-assert.equal(learned.pillars.bandeiras.titleScore, null);
-// poucas rodadas: a janela não existe ainda e vale só a de sempre
-const few = profile.deriveProgress([], undefined, [profile.normalizeSession(capSession("f", 1, Array(99).fill(true)))]);
-assert.equal(few.pillars.capitais.recent, null);
-assert.equal(few.pillars.capitais.titleScore, few.pillars.capitais.bayesianScore, "sem janela, vale só a de sempre");
-// rodada com suprimento não entra na janela: 100 acertos assistidos + 100 reais a 80% => 80%
-const mixed = profile.deriveProgress([], undefined, [
-  profile.normalizeSession(capSession("m1", 1, Array(100).fill(true), { assisted: true })),
-  profile.normalizeSession(capSession("m2", 2, alternate(100, 5))),
-]);
-assert.equal(mixed.pillars.capitais.recent, 0.8);
-// quem já é bom desde o começo não perde nada: vale a maior das duas
-const steady = profile.deriveProgress([], undefined, [profile.normalizeSession(capSession("s", 1, Array(500).fill(true)))]);
-assert.ok(steady.pillars.capitais.titleScore >= steady.pillars.capitais.bayesianScore);
+// A precisão do pilar é a HISTÓRICA (bayesiana); não existe mais janela das últimas 100 rodadas
+const capSession = (id, startedAt, hits) => ({ id, family: "capitais", variant: "capital-pais", mode: "capital-pais", complete: true, startedAt, rounds: hits.map((ok, i) => ({ targetId: "x" + i, correct: ok, responseTimeMs: 900 })) });
+const alternate = (n, every) => Array.from({ length: n }, (_, i) => i % every !== 0);
+const history = profile.deriveProgress([], undefined, [capSession("a", 1000, alternate(1000, 2)), capSession("b", 2000, alternate(100, 25))].map((x, i) => profile.normalizeSession(x, i)));
+assert.ok(history.pillars.capitais.bayesianScore < 0.6, "a precisão segue histórica: o fim bom não a levanta");
+assert.equal(history.pillars.capitais.titleScore, undefined);
+assert.equal(history.pillars.capitais.recent, undefined);
+
+// Domínio do pilar: país conquistado = 5 certas seguidas já feitas no pilar, para sempre
+const domSession = (id, startedAt, family, variant, hits) => profile.normalizeSession({ id, family, variant, mode: variant, complete: true, startedAt, rounds: Object.entries(hits).map(([targetId, correct]) => ({ targetId, correct, responseTimeMs: 900 })) });
+const five = [1, 2, 3, 4, 5].map((n) => domSession("c" + n, n, "capitais", "capital-pais", { a: true, b: n !== 3, c: false }));
+const afterMiss = domSession("c6", 6, "capitais", "capital-pais", { a: false }); // errar depois não tira a conquista
+const domain = profile.deriveProgress([], ["a", "b", "c", "d"], [...five, afterMiss]);
+assert.deepEqual(domain.pillars.capitais.domain, { done: 1, total: 4, pct: 25 }, "só o país a fez 5 seguidas (o b quebrou no meio) e o erro posterior não desfaz");
+assert.equal(domain.pillars.mapa.domain.done, 0);
+assert.equal(domain.pillars.bandeiras.domain.pct, 0);
+// Antártida (10) e Macau (446) não têm capital: não entram no total das Capitais
+const noCap = profile.deriveProgress([], ["10", "446", "a", "b"], []);
+assert.equal(noCap.pillars.capitais.domain.total, 2);
+assert.equal(noCap.pillars.mapa.domain.total, 4);
 console.log("profile surface tests passed");

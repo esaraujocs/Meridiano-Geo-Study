@@ -7,8 +7,8 @@ import type { HistoricalEntity } from "./special-data.js";
 import { regionMatches } from "./regions.js";
 import { matchesSearch, type ProgressColumns } from "./collection-view.js";
 import type { Region } from "./types.js";
-import { PILLAR_KEYS, bayesianScore, pillarStatus, pillarTotals, recentPrecision, titleScore } from "./pillars.js";
-import { dominatedIdsFromSessions } from "./dominated.js";
+import { PILLAR_KEYS, bayesianScore, pillarDomain, pillarStatus, pillarTotals, type PillarDomain } from "./pillars.js";
+import { conqueredByPillar, masteredIdsFromSessions } from "./dominated.js";
 import { t } from "./i18n/index.js";
 import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
 import { PVP_ID_PREFIX, parsePvpMatch, type PvpMatchRecord } from "./pvp-store.js";
@@ -46,7 +46,7 @@ export type ProgressSnapshot = {
   total: number;
   discovered: number;
   distribution: number[];
-  pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; /** precisão das últimas rodadas do pilar (null com menos de TITLE_WINDOW) */ recent?: number | null; /** a nota que abre o título: max(bayesianScore, recent) */ titleScore?: number | null; status: string; aggregate?: boolean }>;
+  pillars: Record<string, { seen: number; correct: number; accuracy: number | null; bayesianScore: number | null; /** domínio do pilar (países conquistados, permanente): é o que abre o título */ domain?: PillarDomain; status: string; aggregate?: boolean }>;
   records?: any[];
 };
 export type CollectionCard = { id: string; name: string; mastery: number; region?: string; sub?: string; un?: boolean; flag?: string; fields: Array<[string, string]>; columns?: ProgressColumns };
@@ -173,12 +173,8 @@ export function deriveProgress(records: any[], universe?: string[], sessions?: S
       item.bayesianScore = seen ? bayesianScore(correct, seen) : null;
       item.status = pillarStatus(item.bayesianScore, seen);
     }
-    const recent = recentPrecision(sessions);
-    for (const key of PILLAR_KEYS) {
-      const item = pillars[key];
-      item.recent = recent[key];
-      item.titleScore = titleScore(item.bayesianScore, recent[key]);
-    }
+    const domain = pillarDomain(conqueredByPillar(sessions), [...ids]);
+    for (const key of ["bandeiras", "mapa", "capitais"] as const) pillars[key].domain = domain[key];
   }
   const collection = collectionSummary(records, ids);
   return { total: collection.total, discovered: collection.discovered, distribution, pillars, records };
@@ -263,7 +259,7 @@ export async function querySurfaces(data?: Legacy) {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl, record?.columns);
   }) : [];
-   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
+   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...masteredIdsFromSessions(rawSessions)] };
 }
 
 /** Só as partidas, normalizadas e da mais nova para a mais antiga: leitura leve para as estatísticas da Mesa de jogo (sem recalcular progresso nem gravar conquistas, como faz `querySurfaces`). */

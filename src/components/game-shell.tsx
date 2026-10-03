@@ -76,15 +76,17 @@ const SUPPLY_ICON: Record<SupplyId, IconType> = { ampulheta: "hourglass", bussol
  * Suprimentos de expedição disponíveis nesta rodada: só aparece com estoque > 0 e num modo em que o item faz sentido
  * (supplyApplies). Some da tela quando não sobra nenhum aplicável, sem cadeado nem "0" — a Loja é onde se aprende que existem.
  */
-export function SupplyTray({ variant, counts, usedThisRound, disabled, onUse }: {
+export function SupplyTray({ variant, timed = true, counts, usedThisRound, disabled, onUse }: {
   variant: AnyQuizVariant;
+  /** A partida tem cronômetro (no Treino a Ampulheta não aparece). */
+  timed?: boolean;
   counts: SupplyCounts;
   /** Suprimentos já usados nesta rodada (cada um só pode ser usado uma vez por rodada). */
   usedThisRound: ReadonlySet<SupplyId>;
   disabled?: boolean;
   onUse: (id: SupplyId) => void;
 }) {
-  const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant));
+  const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
   if (!available.length) return null;
   return (
     <div className="gs-supplies" role="group" aria-label={t.supplies.trayAria}>
