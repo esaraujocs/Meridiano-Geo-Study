@@ -888,6 +888,8 @@ export const pt = {
     ampulheta: { name: "Ampulheta", short: "+5 s", detail: "Soma 5 segundos ao cronômetro desta rodada." },
     bussola: { name: "Bússola", short: "Continente", detail: "Mostra o continente do país procurado." },
     lupa: { name: "Lupa", short: "Eliminar 2", detail: "Tira duas alternativas erradas, sobrando a certa e mais uma." },
+    tonico: { name: "Tônico de XP", short: "XP ×4", detail: "Nas próximas 50 rodadas, cada rodada rende 8 de XP em vez de 2. Só vale quando a partida termina; não vale em duelo." },
+    tonicLeft: (n: number) => `${n} rod.`,
     lanterna: { name: "Lanterna", short: "Aproximar", detail: "Aproxima o mapa numa janela de cerca de 1.200 km em volta do país procurado." },
     vizinho: { name: "Pista de vizinhos", short: "Vizinho", detail: "Revela um país que faz fronteira com o alvo (ou o mais próximo, se for uma ilha)." },
     neighborBorder: (name: string) => `Faz fronteira com ${name}`,

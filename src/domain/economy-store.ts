@@ -138,7 +138,7 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const rounds = playerStats.rounds;
   // maestria = países dominados pela regra permanente (dominated.ts, 04/10); o XP segue na regra antiga (todo país que já teve as 3 certas em 2 modos), então ninguém perde nível
   const dominated = masteredFromSessions(sessions);
-  const xpReal = xpFrom(rounds, everDominatedFromSessions(sessions, progress));
+  const xpReal = xpFrom(rounds, everDominatedFromSessions(sessions, progress), playerStats.boostedRounds);
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);
   const level = levelForXp(xp);

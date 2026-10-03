@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AMPULHETA_BONUS_SECONDS, isArmedSupply, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { useSupply } from "../domain/supplies-store";
+import { activateTonic, loadTonic, onTonicChange, tonicLeft as tonicLeftNow } from "../domain/tonic-store";
 
 export type SupplyRoundState = {
   counts: SupplyCounts;
@@ -23,6 +24,8 @@ export type SupplyRoundState = {
   consumeArmed: (id: SupplyId) => boolean;
   /** Desarma tudo (ao recomeçar a partida). */
   clearArmed: () => void;
+  /** Tônico de XP: quantas rodadas ainda valem XP em dobro (0 = apagado). Muda sozinho a cada rodada gravada. */
+  tonicLeft: number;
 };
 
 /**
@@ -36,6 +39,11 @@ export function useSupplies(initialCounts: SupplyCounts, enabled: boolean): Supp
   const [usedThisRound, setUsedThisRound] = useState<ReadonlySet<SupplyId>>(new Set());
   const [armed, setArmed] = useState<ReadonlySet<SupplyId>>(new Set());
   const [bonusSeconds, setBonusSeconds] = useState(0);
+  const [tonicLeft, setTonicLeft] = useState(tonicLeftNow());
+  useEffect(() => {
+    void loadTonic().then(setTonicLeft);
+    return onTonicChange(setTonicLeft);
+  }, []);
   const countsRef = useRef(counts);
   countsRef.current = counts;
   const armedRef = useRef(armed);
@@ -55,6 +63,16 @@ export function useSupplies(initialCounts: SupplyCounts, enabled: boolean): Supp
   }, []);
 
   const use = useCallback((id: SupplyId) => {
+    // Tônico de XP: gasta 1 do estoque e liga as próximas 50 rodadas; não mexe na rodada atual (não a torna assistida) e não empilha.
+    if (id === "tonico") {
+      if (!enabled || tonicLeftNow() > 0 || countsRef.current.tonico <= 0) return false;
+      const next = { ...countsRef.current, tonico: countsRef.current.tonico - 1 };
+      countsRef.current = next;
+      setCounts(next);
+      void useSupply("tonico").catch(() => undefined);
+      void activateTonic();
+      return true;
+    }
     if (!enabled || isArmedSupply(id) || usedThisRound.has(id) || countsRef.current[id] <= 0) return false;
     spend(id);
     if (id === "ampulheta") setBonusSeconds((value) => value + AMPULHETA_BONUS_SECONDS);
@@ -82,5 +100,5 @@ export function useSupplies(initialCounts: SupplyCounts, enabled: boolean): Supp
 
   const clearArmed = useCallback(() => { armedRef.current = new Set(); setArmed(armedRef.current); }, []);
 
-  return { counts, usedThisRound, armed, assisted: usedThisRound.size > 0, bonusSeconds, resetRound, use, toggleArm, consumeArmed, clearArmed };
+  return { counts, usedThisRound, armed, assisted: usedThisRound.size > 0, bonusSeconds, resetRound, use, toggleArm, consumeArmed, clearArmed, tonicLeft };
 }

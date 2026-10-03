@@ -13,6 +13,7 @@ import {
 } from "./learning-rules";
 import { computeSpoils, emptySpoils, scaleSpoils, type Pace, type Spoils, type Tier } from "./spoils.js";
 import { notifyAchievementLifecycle } from "./achievements.js";
+import { loadTonic, takeTonicRound } from "./tonic-store.js";
 export { mergeProgressRecord, masteryForProgress };
 export type { LearningColumn, ProgressRecord };
 
@@ -41,6 +42,8 @@ export type LearningRound = {
   assisted?: boolean;
   /** O Escudo de sequência cobriu este erro (a rodada também é `assisted`): fica de fora da sequência e da precisão da partida. */
   shielded?: boolean;
+  /** Jogada com o Tônico de XP ativo: o XP desta rodada é TONIC_XP_PER_ROUND (player-level.ts) quando a partida termina. */
+  boosted?: boolean;
 };
 
 /** Carta que subiu de nível nesta partida (de 0 = carta nova). */
@@ -149,6 +152,7 @@ export async function startLearningSession(input: {
   cardParents?: Readonly<Record<string, string>>;
 }): Promise<LearningSessionHandle> {
   const database = await openDatabase();
+  await loadTonic().catch(() => 0);
   const idle = (): LearningSessionHandle => {
     const empty: CurrentLearningSession = {
       id: `current-v2-${newId()}`, source: "current-v2", family: input.family, variant: input.variant, region: "mundo",
@@ -245,8 +249,10 @@ export async function startLearningSession(input: {
 
   return {
     id: session.id,
-    recordRound(round) {
+    recordRound(roundIn) {
       if (ended) return;
+      // Tônico de XP: a rodada de uma partida solo (nunca duelo/PvP) gasta uma rodada do Tônico e fica marcada `boosted`.
+      const round: LearningRound = !input.duel && takeTonicRound() ? { ...roundIn, boosted: true } : roundIn;
       input.onRound?.(round);
       const sessionAfterRound = {
         ...current,

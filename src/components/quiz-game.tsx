@@ -316,7 +316,7 @@ export function QuizGame({
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
           <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
         </GameTopBar>
-        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} armed={supply.armed} onArm={supply.toggleArm} blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
+        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} armed={supply.armed} tonicLeft={supply.tonicLeft} onArm={supply.toggleArm} blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
         <div className="gs-body">
           <main className="gs-stage" data-target-id={import.meta.env.DEV ? question.target : undefined}>
             <div className="gs-kicker">{kicker}</div>

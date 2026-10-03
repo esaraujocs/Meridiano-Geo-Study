@@ -78,7 +78,7 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
  * o estoque e uma legenda curta). Só mostra o que tem estoque e faz sentido no modo (supplyApplies); some quando não sobra nenhum, sem cadeado nem
  * "0" — a Loja é onde se aprende que existem. Vai para o <body> por um portal para a posição fixa nunca depender dos cartões em volta.
  */
-export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed, blocked, disabled, onUse, onArm }: {
+export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed, blocked, tonicLeft = 0, disabled, onUse, onArm }: {
   variant: AnyQuizVariant;
   /** A partida tem cronômetro (no Treino a Ampulheta não aparece). */
   timed?: boolean;
@@ -89,28 +89,31 @@ export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed
   armed?: ReadonlySet<SupplyId>;
   /** Suprimentos que não dá para usar agora (ex.: Pular na última carta do baralho). */
   blocked?: ReadonlySet<SupplyId>;
+  /** Rodadas que faltam do Tônico de XP (0 = apagado): com ele aceso o slot fica à mostra mesmo sem estoque. */
+  tonicLeft?: number;
   disabled?: boolean;
   onUse: (id: SupplyId) => void;
   onArm?: (id: SupplyId) => void;
 }) {
-  const available = SUPPLY_IDS.filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
+  const available = SUPPLY_IDS.filter((id) => (counts[id] > 0 || (id === "tonico" && tonicLeft > 0)) && supplyApplies(id, variant, timed));
   if (!available.length) return null;
   return createPortal(
-    <div className={`gs-supplies gs-hotbar${disabled ? " is-idle" : ""}${available.length > 4 ? " is-dense" : ""}`} role="region" aria-label={t.supplies.trayAria}>
+    <div className={`gs-supplies gs-hotbar${disabled ? " is-idle" : ""}${available.length > 4 ? " is-dense" : ""}${available.length > 7 ? " is-tight" : ""}`} role="region" aria-label={t.supplies.trayAria}>
       {available.map((id) => {
         const used = usedThisRound.has(id);
         const arms = isArmedSupply(id);
-        const on = arms && Boolean(armed?.has(id));
+        const lit = id === "tonico" && tonicLeft > 0;
+        const on = lit || (arms && Boolean(armed?.has(id)));
         return (
           <button
             key={id} type="button" className={`gs-supply gs-slot${used ? " is-used" : ""}${on ? " is-armed" : ""}`} data-supply={id}
-            disabled={disabled || used || Boolean(blocked?.has(id))}
-            aria-pressed={arms ? on : undefined}
-            aria-label={arms ? t.supplies.armAria(t.supplies[id].name, counts[id], on) : t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
+            disabled={disabled || used || lit || Boolean(blocked?.has(id))}
+            aria-pressed={arms || id === "tonico" ? on : undefined}
+            aria-label={arms || lit ? t.supplies.armAria(t.supplies[id].name, counts[id], on) : t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
             onClick={() => (arms ? onArm?.(id) : onUse(id))}
           >
             <span className="gs-slot-art"><SupplyArt id={id} size={40} /></span>
-            <span className="gs-slot-t">{on ? t.supplies.armedShort : t.supplies[id].short}</span>
+            <span className="gs-slot-t">{lit ? t.supplies.tonicLeft(tonicLeft) : on ? t.supplies.armedShort : t.supplies[id].short}</span>
             <b className="gs-slot-n">{counts[id]}</b>
             {used && <i className="gs-slot-used" aria-hidden="true"><Icon type="check" size={16} /></i>}
           </button>

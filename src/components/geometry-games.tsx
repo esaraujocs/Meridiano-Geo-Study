@@ -242,7 +242,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
             variant={engineVariant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
-            armed={supply.armed}
+            armed={supply.armed} tonicLeft={supply.tonicLeft}
             onArm={supply.toggleArm}
             blocked={deck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={locked}
@@ -450,7 +450,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
             variant="travel"
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
-            armed={supply.armed}
+            armed={supply.armed} tonicLeft={supply.tonicLeft}
             onArm={supply.toggleArm}
             blocked={destinationDeck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={over}

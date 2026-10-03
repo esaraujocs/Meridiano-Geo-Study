@@ -845,7 +845,7 @@ export function Game({
                 variant={engineVariant}
                 counts={supply.counts}
                 usedThisRound={supply.usedThisRound}
-                armed={supply.armed}
+                armed={supply.armed} tonicLeft={supply.tonicLeft}
                 onArm={supply.toggleArm}
                 blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
                 disabled={Boolean(feedback) || !mapReady}

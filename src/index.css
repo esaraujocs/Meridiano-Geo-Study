@@ -1202,6 +1202,7 @@ html[data-reduced-motion=true] :is(.quiz-option.is-hit,.quiz-option.wrong,.quiz-
 .gs-slot[data-supply=lupa] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#d7f1f6,#6fb0c2)}
 .gs-slot[data-supply=bussola] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#fbebc4,#d2a24c)}
 .gs-slot[data-supply=ampulheta] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#e7def5,#9582c0)}
+.gs-slot[data-supply=tonico] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#d2f1e3,#3f9f84)}
 .gs-slot[data-supply=lanterna] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#d6def0,#5e6f9a)}
 .gs-slot[data-supply=vizinho] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#efe6d4,#a99a78)}
 .gs-slot[data-supply=letra] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#fbe3dc,#d98a76)}
@@ -1231,6 +1232,11 @@ body:has(.gs-hotbar) .gs .gs-body{padding-bottom:104px}
   .gs-hotbar.is-dense .gs-slot-art{width:38px;height:38px}.gs-hotbar.is-dense .gs-slot-art svg{width:30px;height:30px}
   .gs-hotbar.is-dense .gs-slot-n{right:2px;top:2px;min-width:16px;height:16px;font-size:10px}
   .gs-hotbar.is-dense .gs-slot-used{top:4px;width:38px;height:38px;margin-left:-19px}
+  /* oito itens (mapa com tudo): ainda mais justo, para caber em 360 px */
+  .gs-hotbar.is-tight{gap:3px;padding:4px}.gs-hotbar.is-tight .gs-slot{width:40px;padding:3px 1px;border-radius:13px}
+  .gs-hotbar.is-tight .gs-slot-art{width:34px;height:34px;border-radius:10px}.gs-hotbar.is-tight .gs-slot-art svg{width:27px;height:27px}
+  .gs-hotbar.is-tight .gs-slot-n{right:0;top:0;min-width:15px;height:15px;font-size:9px}
+  .gs-hotbar.is-tight .gs-slot-used{top:3px;width:34px;height:34px;margin-left:-17px}
 }
 /* no celular a hotbar ocupa a largura toda: os controles e a atribuição do mapa sobem para não ficarem por baixo dela */
 @media (max-width:760px){body:has(.gs-hotbar) .gs-map-screen .maplibregl-ctrl-bottom-right,body:has(.gs-hotbar) .gs-map-screen .maplibregl-ctrl-bottom-left{margin-bottom:76px}}
@@ -1343,7 +1349,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
     .gs-lang p{margin:3px 0 5px}
   }
   @media (max-height:700px){.gs .silhouette-frame{width:min(100%,250px)}.gs .travel-frame{width:min(100%,320px)}}
-  .gs-keys kbd{font:500 11px 'DM Mono',monospace;padding:2px 7px;border-radius:5px;background:#E2D5B3;color:var(--muted)}
+  .gs-keys kbd{font:500 11px 'DM Mono',monospace;padding:2px 7px;border-radius:5px;background:#E2D5B3;color:#4d5a57}
 }
 
 /* confirmação de saída em folha, com o que ficaria pendente */

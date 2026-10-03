@@ -6,9 +6,14 @@
 export const XP_STEP = 50;
 export const XP_PER_ROUND = 2;
 export const XP_PER_DOMINATED = 50;
+/** Tônico de XP: nas próximas `TONIC_ROUNDS` rodadas cada uma rende `TONIC_XP_PER_ROUND` de XP em vez de `XP_PER_ROUND` (×4). */
+export const TONIC_ROUNDS = 50;
+export const TONIC_XP_PER_ROUND = 8;
 
 export const xpForLevel = (level: number) => XP_STEP * (level - 1) * level;
-export const xpFrom = (rounds: number, everDominated: number) => rounds * XP_PER_ROUND + everDominated * XP_PER_DOMINATED;
+/** `boostedRounds`: quantas das `rounds` foram jogadas com o Tônico ativo (já estão contadas em `rounds`; ganham a diferença). */
+export const xpFrom = (rounds: number, everDominated: number, boostedRounds = 0) =>
+  rounds * XP_PER_ROUND + Math.min(boostedRounds, rounds) * (TONIC_XP_PER_ROUND - XP_PER_ROUND) + everDominated * XP_PER_DOMINATED;
 
 export function levelForXp(xp: number) {
   let level = 1;

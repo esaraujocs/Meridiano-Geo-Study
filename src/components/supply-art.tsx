@@ -35,6 +35,15 @@ export function SupplyArt({ id, size = 64 }: { id: SupplyId; size?: number }) {
       </g>
       <circle cx="32" cy="32" r="3.2" fill={`url(#${brass})`} stroke="#6b4a18" strokeWidth=".8" />
     </>}
+    {id === "tonico" && <g transform="translate(-6.400 -5.800) scale(1.200)">
+      <rect x="27" y="5" width="10" height="8" rx="2.4" fill={`url(#${brass})`} />
+      <path d="M28.5 13h7v8.5c6.8 2.6 11.5 8.4 11.5 15.4A15 15 0 0 1 32 52 15 15 0 0 1 17 36.900c0-7 4.700-12.800 11.500-15.400z" fill={`url(#${glass})`} stroke="#8a5f1f" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M17.600 35.500c4.200-2.600 8.400 1.600 14.400-.4 5.200-1.700 9.200.5 14.400 1.300A14.400 14.400 0 0 1 32 51.400 14.400 14.400 0 0 1 17.600 35.500z" fill="#45b98c" />
+      <path d="M17.600 35.500c4.200-2.600 8.400 1.600 14.400-.4 5.200-1.700 9.200.5 14.400 1.300-.4 1.800-1 3.400-1.800 4.800H19.500a14 14 0 0 1-1.900-5.700z" fill="#d6e86a" opacity=".55" />
+      <path d="M32 31.500l1.900 4.600 4.600 1.900-4.600 1.900L32 44.500l-1.900-4.600-4.600-1.900 4.600-1.900z" fill="#fff8d8" stroke="#e6b04a" strokeWidth=".8" strokeLinejoin="round" />
+      <path d="M22.500 31c.9-2.400 2.800-4.200 5.200-5" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity=".7" />
+      <circle cx="39.500" cy="29" r="1.400" fill="#fff" opacity=".6" />
+    </g>}
     {id === "lanterna" && <>
       <circle cx="32" cy="36" r="27" fill="#ffe7a0" opacity=".32" />
       <path d="M24.5 15a7.5 7.5 0 0 1 15 0" fill="none" stroke={`url(#${brass})`} strokeWidth="3.2" strokeLinecap="round" />

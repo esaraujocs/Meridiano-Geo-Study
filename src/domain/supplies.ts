@@ -2,15 +2,15 @@
 // isso; a Ampulheta só vale com cronômetro). Regras puras, sem IndexedDB (o estoque mora em supplies-store.ts).
 import type { AnyQuizVariant, Meta } from "./types";
 
-export type SupplyId = "lupa" | "bussola" | "lanterna" | "vizinho" | "letra" | "pular" | "retorno" | "escudo" | "ampulheta";
+export type SupplyId = "lupa" | "bussola" | "lanterna" | "vizinho" | "letra" | "pular" | "retorno" | "escudo" | "ampulheta" | "tonico";
 /** Na ordem da hotbar e da Loja: primeiro as dicas, depois os que mexem na rodada, o que protege e, por último, o tempo. */
-export const SUPPLY_IDS: readonly SupplyId[] = ["lupa", "bussola", "lanterna", "vizinho", "letra", "pular", "retorno", "escudo", "ampulheta"];
+export const SUPPLY_IDS: readonly SupplyId[] = ["lupa", "bussola", "lanterna", "vizinho", "letra", "pular", "retorno", "escudo", "ampulheta", "tonico"];
 
 /** Os três em destaque na vitrine do Hub e no cartaz da Loja (os sete cabem só na aba Suprimentos). */
 export const FEATURED_SUPPLIES: readonly SupplyId[] = ["lupa", "escudo", "retorno"];
 
 /** Preço por unidade (chute inicial, a calibrar jogando — mesmo espírito dos outros números da economia). */
-export const SUPPLY_COST: Record<SupplyId, number> = { lupa: 400, bussola: 250, lanterna: 300, vizinho: 350, letra: 200, pular: 120, retorno: 300, escudo: 500, ampulheta: 150 };
+export const SUPPLY_COST: Record<SupplyId, number> = { lupa: 400, bussola: 250, lanterna: 300, vizinho: 350, letra: 200, pular: 120, retorno: 300, escudo: 500, ampulheta: 150, tonico: 600 };
 
 /** Quantas opções erradas a Lupa tira (de 4, sobram 2: a certa e mais 1). */
 export const LUPA_REMOVE_COUNT = 2;
@@ -52,11 +52,11 @@ export function supplyApplies(id: SupplyId, variant: AnyQuizVariant, timed = tru
   if (id === "letra") return TYPED_VARIANTS.has(variant);
   if (id === "retorno") return variant !== "travel";
   if (id === "ampulheta") return timed;
-  return true;
+  return true; // pular, escudo e tônico
 }
 
 export type SupplyCounts = Record<SupplyId, number>;
-export const emptySupplyCounts = (): SupplyCounts => ({ lupa: 0, bussola: 0, lanterna: 0, vizinho: 0, letra: 0, pular: 0, retorno: 0, escudo: 0, ampulheta: 0 });
+export const emptySupplyCounts = (): SupplyCounts => ({ lupa: 0, bussola: 0, lanterna: 0, vizinho: 0, letra: 0, pular: 0, retorno: 0, escudo: 0, ampulheta: 0, tonico: 0 });
 
 /** Os suprimentos que fazem sentido no modo `variant` e que a pessoa tem pelo menos 1 (o que a bandeja de jogo mostra). */
 export function usableSupplies(counts: SupplyCounts, variant: AnyQuizVariant, timed = true): SupplyId[] {

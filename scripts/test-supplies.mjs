@@ -93,7 +93,7 @@ for (const id of supplies.SUPPLY_IDS) {
   assert.ok(supplies.SUPPLY_COST[id] > 0, `${id} tem preço`);
   assert.equal(supplies.emptySupplyCounts()[id], 0, `${id} começa zerado no estoque`);
 }
-assert.equal(new Set(supplies.SUPPLY_IDS).size, 9, "são nove suprimentos, sem repetição");
+assert.equal(new Set(supplies.SUPPLY_IDS).size, 10, "são dez suprimentos, sem repetição");
 assert.equal(Object.keys(supplies.emptySupplyCounts()).length, supplies.SUPPLY_IDS.length);
 assert.ok(supplies.FEATURED_SUPPLIES.every((id) => supplies.SUPPLY_IDS.includes(id)), "os destaques da vitrine são suprimentos de verdade");
 assert.deepEqual([...supplies.ARMED_SUPPLIES].sort(), ["escudo", "retorno"], "só Escudo e Segunda chance ficam armados");
@@ -112,12 +112,17 @@ for (const variant of everyVariant) {
   assert.equal(supplies.supplyApplies("pular", variant, false), true);
   assert.equal(supplies.supplyApplies("escudo", variant, false), true);
 }
-const all = { lupa: 1, bussola: 1, lanterna: 1, vizinho: 1, letra: 1, pular: 1, retorno: 1, escudo: 1, ampulheta: 1 };
-assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["vizinho", "letra", "pular", "retorno", "escudo", "ampulheta"], "hotbar da escrita, na ordem de sempre");
-assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "lanterna", "vizinho", "pular", "retorno", "escudo", "ampulheta"]);
-assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "vizinho", "pular", "retorno", "escudo", "ampulheta"]);
-assert.deepEqual(supplies.usableSupplies(all, "idioma-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta"], "idiomas não falam de países vizinhos");
-assert.deepEqual(supplies.usableSupplies(all, "travel", false), ["pular", "escudo"], "Travel no Treino: só Pular e Escudo");
+const all = { lupa: 1, bussola: 1, lanterna: 1, vizinho: 1, letra: 1, pular: 1, retorno: 1, escudo: 1, ampulheta: 1, tonico: 1 };
+assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["vizinho", "letra", "pular", "retorno", "escudo", "ampulheta", "tonico"], "hotbar da escrita, na ordem de sempre");
+assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "lanterna", "vizinho", "pular", "retorno", "escudo", "ampulheta", "tonico"]);
+assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "vizinho", "pular", "retorno", "escudo", "ampulheta", "tonico"]);
+assert.deepEqual(supplies.usableSupplies(all, "idioma-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta", "tonico"], "idiomas não falam de países vizinhos");
+assert.deepEqual(supplies.usableSupplies(all, "travel", false), ["pular", "escudo", "tonico"], "Travel no Treino: Pular, Escudo e o Tônico (que não depende do modo)");
+for (const variant of everyVariant) {
+  assert.equal(supplies.supplyApplies("tonico", variant), true, `Tônico de XP em ${variant}`);
+  assert.equal(supplies.supplyApplies("tonico", variant, false), true);
+}
+assert.equal(supplies.SUPPLY_COST.tonico, 600);
 
 // ---- Primeira letra: só a inicial, o resto vira ponto; espaços e pontuação ficam
 assert.equal(supplies.letterHint("Costa do Marfim"), "C•••• •• ••••••");

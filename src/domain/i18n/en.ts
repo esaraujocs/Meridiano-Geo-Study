@@ -885,6 +885,8 @@ export const en: Messages = {
     ampulheta: { name: "Hourglass", short: "+5 s", detail: "Adds 5 seconds to this round's timer." },
     bussola: { name: "Compass", short: "Continent", detail: "Shows the continent of the country you're looking for." },
     lupa: { name: "Magnifier", short: "Remove 2", detail: "Removes two wrong options, leaving the right one and one more." },
+    tonico: { name: "XP Tonic", short: "XP ×4", detail: "For the next 50 rounds, each round gives 8 XP instead of 2. Only counts when the match is finished; not valid in duels." },
+    tonicLeft: (n: number) => `${n} rds`,
     lanterna: { name: "Lantern", short: "Zoom in", detail: "Zooms the map into a window of about 1,200 km around the country you're looking for." },
     vizinho: { name: "Neighbor clue", short: "Neighbor", detail: "Reveals a country that borders the target (or the closest one, for an island)." },
     neighborBorder: (name: string) => `Borders ${name}`,

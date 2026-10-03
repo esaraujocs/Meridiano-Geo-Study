@@ -885,6 +885,8 @@ export const es: Messages = {
     ampulheta: { name: "Reloj de arena", short: "+5 s", detail: "Suma 5 segundos al cronómetro de esta ronda." },
     bussola: { name: "Brújula", short: "Continente", detail: "Muestra el continente del país buscado." },
     lupa: { name: "Lupa", short: "Eliminar 2", detail: "Quita dos alternativas incorrectas, dejando la correcta y una más." },
+    tonico: { name: "Tónico de XP", short: "XP ×4", detail: "En las próximas 50 rondas, cada ronda da 8 de XP en lugar de 2. Solo vale cuando la partida termina; no vale en duelo." },
+    tonicLeft: (n: number) => `${n} rond.`,
     lanterna: { name: "Linterna", short: "Acercar", detail: "Acerca el mapa a una ventana de unos 1.200 km alrededor del país buscado." },
     vizinho: { name: "Pista de vecinos", short: "Vecino", detail: "Revela un país que limita con el objetivo (o el más cercano, si es una isla)." },
     neighborBorder: (name: string) => `Limita con ${name}`,

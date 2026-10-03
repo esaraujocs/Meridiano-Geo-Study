@@ -311,7 +311,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
             variant={variant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
-            armed={supply.armed}
+            armed={supply.armed} tonicLeft={supply.tonicLeft}
             onArm={supply.toggleArm}
             blocked={deck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={locked}
