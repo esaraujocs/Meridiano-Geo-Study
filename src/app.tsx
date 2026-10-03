@@ -207,6 +207,10 @@ export function App() {
     useState<OfflineMapStatus>("checking");
   const [surfaceRevision, setSurfaceRevision] = useState(0);
   const [collectionRegion, setCollectionRegion] = useState<Region>("mundo");
+  /** Aba da Coleção que abre primeiro (o Hub abre o Museu direto). */
+  const [collectionAlbum, setCollectionAlbum] = useState<"countries" | "historical" | "museum" | undefined>(undefined);
+  /** Precisão atual dos pilares, para os cartões de modo do Hub. */
+  const [pillarPct, setPillarPct] = useState<Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>>({});
   const [collectionSummary, setCollectionSummary] = useState({ discovered: 0, total: 0 });
   const [achievementSummary, setAchievementSummary] = useState<AchievementSummary>(EMPTY_ACHIEVEMENT_SUMMARY);
   const [economy, setEconomy] = useState<EconomySnapshot>({
@@ -857,8 +861,9 @@ export function App() {
   const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
   // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
   const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
-  const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") setCollectionRegion("mundo"); setScreen(surface); };
-  const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") setCollectionRegion("mundo"); setScreen(destination); };
+  const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
+  const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(destination); };
+  const openMuseum = () => { setCollectionRegion("mundo"); setCollectionAlbum("museum"); setScreen("collection"); };
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
   const trainGroup = async (group: ModeGroup) => {
     const mode = groupDef(group).variants[0];
@@ -871,7 +876,7 @@ export function App() {
     setScreen("game");
   };
   const openLeague = (ladder?: Ladder) => { setLeagueLadder(ladder); setScreen("league"); };
-  const openCollectionAt = (target: Region) => { setCollectionRegion(target); setScreen("collection"); };
+  const openCollectionAt = (target: Region) => { setCollectionRegion(target); setCollectionAlbum(undefined); setScreen("collection"); };
   const restoreVariantContext = (familyKey: TopFamily, saved: string) => {
     const context = variantContextFor(familyKey, saved);
     if (context) { setFamily(context.family); setVariant(context.variant); }
@@ -935,6 +940,8 @@ export function App() {
         titles: state.achievements.filter((item) => item.unlocked && TITLE_IDS.includes(item.id)).map((item) => item.id),
         next: near ? { name: near.name, current: Number(near.current ?? 0), target: Number(near.target ?? 0) } : null,
       });
+      const pct = (key: "mapa" | "bandeiras" | "capitais") => { const pillar = state.progress.pillars[key]; const score = pillar?.titleScore ?? pillar?.bayesianScore ?? null; return pillar && pillar.seen > 0 && score !== null ? Math.round(score * 100) : null; };
+      setPillarPct({ mapa: pct("mapa"), bandeiras: pct("bandeiras"), capitais: pct("capitais") });
       achievementToasts.push(fresh.map(({ id, name, description, rarity }) => ({ id, name, description, rarity })));
     };
     // uma avaliação por vez, na ordem: a base de abertura sempre vem antes de qualquer aviso
@@ -1198,7 +1205,7 @@ export function App() {
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
-     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} /></div>;
+     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
     return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
@@ -1283,18 +1290,15 @@ export function App() {
         <Header legacy={legacy} economy={economy} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && (
         <Hub
-          legacy={legacy}
             economy={economy}
-            onSurface={openSurface}
-          offlineMap={offlineMap}
+          onOpenMuseum={openMuseum}
+          pillarPct={pillarPct}
           totalEntities={data.mapEntityIds.length}
           collectionSummary={collectionSummary}
           achievementSummary={achievementSummary}
           onSelect={selectFamily}
            onNavigate={navigate}
-          duelMode={duelMode}
           duelReady={isRoundTierUnlocked("long", economy.unlocked)}
-          onDuelMode={setDuelMode}
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}

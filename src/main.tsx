@@ -6,6 +6,7 @@ import { ThemeFilters } from "./components/theme-decor";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, themeAttributes } from "./domain/themes";
 import { intlLocale, t } from "./domain/i18n";
 import "./index.css";
+import "./hub.css";
 import "./themes.css";
 import "./themes-league.css";
 import "./themes-dark.css";

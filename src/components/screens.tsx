@@ -14,7 +14,8 @@ import type { TopFamily } from "../domain/match-config";
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
-import { DuelArenas, type ArenaSearch } from "./duel-arenas";
+import type { ArenaSearch } from "./duel-arenas";
+import { HubCarousel, HubDuel, HubMuseum, HubShowcase } from "./hub-parts";
 import type { LadderCard } from "../domain/duel-view";
 import type { Milestone } from "../domain/duel-rewards";
 import type { LeaderboardRow } from "../domain/pvp";
@@ -202,82 +203,37 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
 
 export function Hub({
   onSelect,
-  legacy,
   economy,
-  offlineMap,
-  onToggleOfflineMap,
-  onSurface,
   onNavigate,
+  onOpenMuseum,
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
-  duelMode = false,
-  duelReady = true,
-  onDuelMode,
+  pillarPct = {},
   trophies = 0,
   duelsPlayed = 0,
+  duelReady = true,
   onOpenLeague,
   arenas,
 }: {
   onSelect: (family: Family) => void;
-  legacy?: LegacyProfile | null;
   economy?: EconomySnapshot | null;
-  offlineMap?: OfflineMapStatus;
-  onToggleOfflineMap?: () => void;
-  onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void;
   onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void;
+  /** Abre o Museu (a aba do Museu dentro da Coleção). */
+  onOpenMuseum?: () => void;
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
   achievementSummary?: AchievementSummary;
-  /** Duelo contra bots: liga o modo, mostra os troféus e abre a tela da Liga. */
-  duelMode?: boolean;
-  /** O corte de 20 rodadas (Loja) já foi comprado; senão o Duelo mostra um cadeado. */
-  duelReady?: boolean;
-  onDuelMode?: (value: boolean) => void;
+  /** Precisão atual de cada pilar (0 a 100), mostrada no cartão do modo; `null`/ausente = ainda sem partidas. */
+  pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
   trophies?: number;
   duelsPlayed?: number;
+  /** O corte de 20 rodadas (Loja) já foi comprado; senão o duelo contra bot mostra um cadeado. */
+  duelReady?: boolean;
   onOpenLeague?: () => void;
-  /** Hub em Duelo: as arenas (uma por escada) e os próximos prêmios, no lugar dos cartões de modo. */
+  /** Os dois cartões de escada (Mapas e Bandeiras), a fila e os atalhos do Duelo, que mora no Hub. */
   arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; search: ArenaSearch; boards: Record<Ladder, readonly LeaderboardRow[] | null>; botRanking?: import("../domain/bot-ranking").BotRankingState | null; onFriends?: () => void; onOpenPlayer?: (code: string) => void };
 }) {
-  const [activeFamily, setActiveFamily] = useState(0);
-  const [familyTrackIndex, setFamilyTrackIndex] = useState(1);
-  const [familyTrackTransition, setFamilyTrackTransition] = useState(false);
-  const [carouselMode, setCarouselMode] = useState(
-     () => matchMedia("(max-width: 899px)").matches,
-  );
-  const familyCount = 4;
-  useEffect(() => {
-    const media = matchMedia("(max-width: 899px)");
-    const update = () => setCarouselMode(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  useEffect(() => {
-    if (!carouselMode) return;
-    const frame = requestAnimationFrame(() => setFamilyTrackTransition(true));
-    return () => cancelAnimationFrame(frame);
-  }, [carouselMode]);
-  const scrollFamily = (index: number) => {
-    const next = (index + familyCount) % familyCount;
-    setActiveFamily(next);
-    setFamilyTrackTransition(true);
-    setFamilyTrackIndex((current) => (
-      (index < 0 || next === familyCount - 1) && current === 1 ? 0 :
-        (index >= familyCount || next === 0) && current === familyCount ? familyCount + 1 :
-          next + 1
-    ));
-  };
-  const finishFamilyTrack = (event: TransitionEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
-    if (familyTrackIndex !== 0 && familyTrackIndex !== familyCount + 1) return;
-    setFamilyTrackTransition(false);
-    requestAnimationFrame(() => {
-      setFamilyTrackIndex(familyTrackIndex === 0 ? familyCount : 1);
-      requestAnimationFrame(() => setFamilyTrackTransition(true));
-    });
-  };
   const unlocked = (family: Family, variant: AnyQuizVariant) => {
     const policy = policyFor(family, variant, "caribe");
     return (
@@ -286,12 +242,17 @@ export function Hub({
       Boolean(economy?.unlocked.includes(policy.key as UnlockKey))
     );
   };
-  const familyItems: Array<{ family: Family; variant: AnyQuizVariant; label: string; description: string; icon: Parameters<typeof Icon>[0]["type"]; color?: string }> = [
-    { family: "mapa", variant: "mapa", label: t.families.mapa, description: t.hub.familyDescriptions.mapa, icon: "map" },
-    { family: "bandeiras", variant: "bandeira-nome", label: t.families.bandeiras, description: t.hub.familyDescriptions.bandeiras, icon: "flag", color: "var(--coral)" },
-    { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", color: "var(--gold)" },
-    { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language", color: "var(--terracotta)" },
+  const familyItems: Array<{ family: Family; variant: AnyQuizVariant; label: string; description: string; icon: Parameters<typeof Icon>[0]["type"]; pillar?: "mapa" | "bandeiras" | "capitais" }> = [
+    { family: "mapa", variant: "mapa", label: t.families.mapa, description: t.hub.familyDescriptions.mapa, icon: "map", pillar: "mapa" },
+    { family: "bandeiras", variant: "bandeira-nome", label: t.families.bandeiras, description: t.hub.familyDescriptions.bandeiras, icon: "flag", pillar: "bandeiras" },
+    { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", pillar: "capitais" },
+    { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language" },
   ];
+  /** Os três primeiros são os modos "principais" (no celular viram cartões pequenos; os demais, pílulas em "Mais modos"). */
+  const MAIN_MODES = 3;
+  const isFamilyUnlocked = (item: (typeof familyItems)[number]) => item.family === "idiomas"
+    ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
+    : unlocked(item.family, item.variant);
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
   const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
@@ -307,18 +268,29 @@ export function Hub({
     { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
     { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct, caption: profile.caption },
   ] as const;
-  const visibleFamilyIndexes = carouselMode
-    ? [familyCount - 1, ...familyItems.map((_, index) => index), 0]
-    : familyItems.map((_, index) => index);
+  const modeCard = (item: (typeof familyItems)[number], index: number) => {
+    const open = isFamilyUnlocked(item);
+    const pct = item.pillar ? pillarPct[item.pillar] : null;
+    return <button
+      type="button"
+      key={item.family}
+      data-fam={item.family}
+      data-extra={index >= MAIN_MODES ? "true" : undefined}
+      className={`family hx-mode ${economy && !open ? "locked" : ""}`}
+      onClick={() => onSelect(item.family)}
+    >
+      <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
+      <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
+      <div className="family-footer">
+        <span className="hx-stat">{pct != null ? <><span className="hx-meter"><i style={{ width: `${pct}%` }} /></span><small>{t.hub.pillarAccuracy(pct)}</small></> : <small>{open ? t.hub.open : t.hub.locked}</small>}</span>
+        <span className="family-play">{t.hub.play} <Icon type="arrow" /></span>
+      </div>
+    </button>;
+  };
   return (
-    <main className="content hub-content">
+    <main className="content hub-content hx">
       <h1 className="sr-only">Meridiano</h1>
-      <div className="hub-bar" aria-label={t.hub.profileAria}>
-        <svg className="hub-meridian" width="300" height="300" viewBox="0 0 170 170" aria-hidden="true">
-          <defs><clipPath id="hub-globe"><circle cx="85" cy="85" r="78" /></clipPath></defs>
-          <circle cx="85" cy="85" r="78" fill="none" strokeWidth="1" opacity=".5" />
-          <g clipPath="url(#hub-globe)" fill="none" strokeWidth=".8" opacity=".3"><ellipse cx="85" cy="85" rx="30" ry="78" /><ellipse cx="85" cy="85" rx="58" ry="78" /><line x1="85" y1="7" x2="85" y2="163" /><line x1="7" y1="85" x2="163" y2="85" /><line x1="15" y1="55" x2="155" y2="55" /><line x1="15" y1="115" x2="155" y2="115" /></g>
-        </svg>
+      <header className="hub-bar hx-bar" aria-label={t.hub.profileAria}>
         <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
         <div className="hub-player">
           <div className={`hub-level${framed ? " lg-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
@@ -329,81 +301,46 @@ export function Hub({
             {framed && <span className="lg-pip" title={t.duel.frameAria(leagueLabel)}>{divisionRoman(league.division) || "M"}</span>}
           </div>
           <div className="hub-head">
-            <span className="hub-eyebrow">{t.hub.levelLine(level, xpInLevel, xpSpan)}</span>
             <p className="hub-title">{profile.title}</p>
-            {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge"><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
-            <p className="hub-mastery"><b>{masteryHead}</b>{masteryRest.length > 0 && ` · ${masteryRest.join(" · ")}`}</p>
+            {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge" title={title.label}><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
+            <p className="hub-mastery" title={masteryRest.join(" · ") || undefined}><b>{masteryHead}</b></p>
           </div>
           <div className="hub-xp">
-            <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}</span>
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
-            <span className="hub-xp-next">{t.hub.xpToNext(xpToNext)}</span>
+            <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}<span className="hub-xp-next"> · {t.hub.xpToNext(xpToNext)}</span></span>
           </div>
         </div>
         <div className="hub-stats">
-          <div className="hub-totals" aria-label={t.hub.statsAria}><span><small>{t.hub.matches}</small><strong>{formatNumber(economy?.completedSessions ?? 0)}</strong></span><span><small>{t.hub.rounds}</small><strong>{formatNumber(economy?.rounds ?? 0)}</strong></span></div>
-          {onOpenLeague && <button type="button" className={`hub-rank${duelMode ? " is-hot" : ""}`} data-league={league.league} aria-label={t.duel.chipAria(formatNumber(trophies), leagueLabel)} title={leagueLabel} onClick={onOpenLeague}><i aria-hidden="true"><Icon type="achievements" size={15} /></i><strong>{formatNumber(trophies)}</strong><small>{leagueLabel}</small></button>}
-          <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><Icon type="store" size={17} /></button>
+          {onOpenLeague && <button type="button" className="hub-rank" data-league={league.league} aria-label={t.duel.chipAria(formatNumber(trophies), leagueLabel)} title={leagueLabel} onClick={onOpenLeague}><i aria-hidden="true"><Icon type="achievements" size={15} /></i><strong>{formatNumber(trophies)}</strong><small>{leagueLabel}</small></button>}
+          <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><span className="hub-coin-store"><Icon type="store" size={15} /> {t.nav.store}</span></button>
           <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
         </div>
+      </header>
+      <div className="hx-grid">
+        <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
+          <div className="section-label"><h2 id="hx-modes-title">{t.hub.modesTitle}</h2></div>
+          <HubCarousel label={t.hub.modesRegion}>{familyItems.map(modeCard)}</HubCarousel>
+          <nav className="hx-more" aria-label={t.hub.moreModes}>
+            <span className="hx-more-k">{t.hub.moreModes}</span>
+            {familyItems.slice(MAIN_MODES).map((item) => <button key={item.family} type="button" data-fam={item.family} className={economy && !isFamilyUnlocked(item) ? "locked" : ""} onClick={() => onSelect(item.family)}><span aria-hidden="true"><Icon type={item.icon} size={16} /></span>{item.label}{economy && !isFamilyUnlocked(item) && <Icon type="lock" size={12} />}</button>)}
+          </nav>
+        </section>
+        <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
+          <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
+          {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} onFriends={arenas.onFriends} />}
+          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} />
+        </section>
+        <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
+          <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
+          <div className="hub-progress-grid">
+            {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}
+          </div>
+        </section>
+        <section className="hx-cell hx-mecenato" aria-labelledby="hx-mec-title">
+          <div className="section-label"><h2 id="hx-mec-title">{t.hub.mecenato}</h2></div>
+          <HubMuseum balance={economy?.balance ?? 0} onOpen={() => onOpenMuseum?.()} />
+        </section>
       </div>
-      <div className="hub-rule" aria-hidden="true" />
-      <div className={`section-label${onDuelMode ? " with-cta" : ""}`}><h2>{t.hub.modesTitle}</h2>{onDuelMode && <div className="mode-switch" role="group" aria-label={t.duel.switchAria} title={t.duel.switchTitle}><button type="button" aria-pressed={!duelMode} onClick={() => onDuelMode(false)}><Icon type="map" size={15} /> {t.duel.modeSolo}</button><button type="button" aria-pressed={duelMode} onClick={() => onDuelMode(true)}><Icon type="swords" size={15} /> {t.duel.modeDuel}</button></div>}</div>
-      {duelMode && arenas ? <DuelArenas cards={arenas.cards} next={arenas.next} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} boards={arenas.boards} botRanking={arenas.botRanking} onLeague={onOpenLeague} onFriends={arenas.onFriends} onOpenPlayer={arenas.onOpenPlayer} /> : (
-      <div className="family-carousel">
-          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-prev" aria-label={t.hub.prevMode} onClick={() => scrollFamily(activeFamily - 1)}><Icon type="arrow" /></button>}
-        <div
-          className={`family-grid ${carouselMode ? "is-carousel" : ""}`}
-          style={carouselMode ? {
-            "--track-index": familyTrackIndex,
-            transition: familyTrackTransition ? undefined : "none",
-          } as CSSProperties : undefined}
-          onTransitionEnd={carouselMode ? finishFamilyTrack : undefined}
-          role="region"
-           aria-label={t.hub.modesRegion}
-          onTouchStart={(event) => { event.currentTarget.dataset.x = String(event.touches[0].clientX); }}
-          onTouchEnd={(event) => {
-            const start = Number(event.currentTarget.dataset.x);
-            const end = event.changedTouches[0].clientX;
-            if (Math.abs(end - start) > 40) scrollFamily(activeFamily + (end < start ? 1 : -1));
-          }}
-        >
-        {visibleFamilyIndexes.map((index, position) => {
-          const item = familyItems[index];
-            const clone = carouselMode && (position === 0 || position === visibleFamilyIndexes.length - 1);
-            const current = !carouselMode || position === familyTrackIndex;
-          const isUnlocked = item.family === "idiomas"
-            ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
-            : unlocked(item.family, item.variant);
-          return <button
-            type="button"
-             key={`${clone ? "clone" : "real"}-${item.family}`}
-            data-fam={item.family}
-            className={`family ${current && carouselMode ? "active" : ""} ${economy && !isUnlocked ? "locked" : ""}`}
-            onClick={() => onSelect(item.family)}
-            aria-hidden={carouselMode && !current ? true : undefined}
-            inert={carouselMode && !current ? true : undefined}
-          >
-             <div className="family-visual" style={item.color ? { color: item.color } : undefined}><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
-            <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-            <div className="family-footer"><span>{isUnlocked ? t.hub.open : t.hub.locked}</span><span className="family-play">{t.hub.play} <Icon type="arrow" /></span></div>
-          </button>;
-        })}
-        </div>
-          {carouselMode && <button type="button" className="carousel-arrow carousel-arrow-next" aria-label={t.hub.nextMode} onClick={() => scrollFamily(activeFamily + 1)}><Icon type="arrow" /></button>}
-        {carouselMode && <div className="carousel-dots" aria-label={t.hub.carouselPosition}>
-          {Array.from({ length: familyCount }, (_, index) => (
-            <button type="button" key={index} aria-label={t.hub.goToFamily(index + 1)} aria-current={activeFamily === index ? "true" : undefined} onClick={() => scrollFamily(index)} />
-          ))}
-        </div>}
-      </div>
-      )}
-      <section className={`hub-progress${duelMode && arenas ? " is-duel" : ""}`} aria-labelledby="hub-progress-title">
-        <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
-        <div className="hub-progress-grid">
-          {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}
-        </div>
-      </section>
     </main>
   );
 }

@@ -26,7 +26,7 @@ import { museumCopy } from "./museum-copy";
 import { locale } from "../domain/i18n/locale";
 
 type SurfaceState = Awaited<ReturnType<typeof querySurfaces>>;
-type Props = { state: SurfaceState; meta: Record<string, Meta>; names?: Record<string, string>; initialRegion?: Region; onEconomyRefresh?: () => void | Promise<void> };
+type Props = { state: SurfaceState; meta: Record<string, Meta>; names?: Record<string, string>; initialRegion?: Region; initialAlbum?: "countries" | "historical" | "museum"; onEconomyRefresh?: () => void | Promise<void> };
 type LevelFilter = "todas" | "descobertas" | "faltando" | "1" | "2" | "3" | "4" | "5";
 type StateFilter = "todas" | "descobertas" | "faltando";
 
@@ -160,11 +160,11 @@ function HistoricalDetail({ card, src, onClose, onPrev, onNext }: { card: Histor
   </CardDialog>;
 }
 
-export function CollectionView({ state, meta, names, initialRegion, onEconomyRefresh }: Props) {
+export function CollectionView({ state, meta, names, initialRegion, initialAlbum, onEconomyRefresh }: Props) {
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
-  const [album, setAlbum] = useState<"countries" | "historical" | "museum">("countries");
+  const [album, setAlbum] = useState<"countries" | "historical" | "museum">(initialAlbum ?? "countries");
   const [region, setRegion] = useState<Region>(initialRegion ?? "mundo");
   const [level, setLevel] = useState<LevelFilter>("todas");
   const [unOnly, setUnOnly] = useState(false);
