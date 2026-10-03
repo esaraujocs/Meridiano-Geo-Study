@@ -1,13 +1,14 @@
 // Peças do Hub novo: carrossel dos modos, cartão do Duelo (a fila mora nele), Vitrine da Loja e Mecenato do Museu.
 // Cada peça só recebe dados e devolve eventos; o Hub (screens.tsx) monta a grade.
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
 import type { ArenaSearch } from "./duel-arenas";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
-import { SUPPLY_COST } from "../domain/supplies";
+import { SUPPLY_COST, SUPPLY_IDS } from "../domain/supplies";
+import { SupplyArt } from "./supply-art";
 import { leagueLabel, nextStep } from "../domain/duel-labels";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { pickShowcaseTheme } from "../domain/hub-showcase";
@@ -22,35 +23,106 @@ const previewFor = (id: string) => PREVIEWS[`../assets/themes/${id}.webp`];
 
 const reducedMotion = () => document.documentElement.dataset.reducedMotion === "true" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** Faixa de cartões que desliza na horizontal (setas, névoa na borda e pontos de página). Quem monta decide quantos cartões cabem (CSS). */
+/** Carrossel em laço: a fila de cartões aparece três vezes e, quando o deslize termina, a posição volta em silêncio para a cópia do meio,
+ *  então as setas (e o toque) nunca chegam a um fim. Os vizinhos espiam dos dois lados (`--peek` no CSS) e clicar neles avança.
+ *  Só a cópia do meio é interativa; as outras duas são `inert`, por isso o leitor de tela e o Tab veem cada cartão uma vez. */
 export function HubCarousel({ label, children }: { label: string; children: ReactNode }) {
+  const items = Children.toArray(children);
+  const count = items.length;
+  const loop = count > 1;
   const track = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState({ prev: false, next: false, page: 0, pages: 1 });
-  const measure = useCallback(() => {
-    const el = track.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    const pages = max > 4 ? Math.max(2, Math.ceil((el.scrollWidth - 1) / el.clientWidth)) : 1;
-    const page = max <= 4 ? 0 : el.scrollLeft >= max - 4 ? pages - 1 : Math.min(pages - 1, Math.round(el.scrollLeft / el.clientWidth));
-    setView((current) => (current.prev === el.scrollLeft > 4 && current.next === el.scrollLeft < max - 4 && current.page === page && current.pages === pages ? current : { prev: el.scrollLeft > 4, next: el.scrollLeft < max - 4, page, pages }));
+  const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+  const target = useRef<number | null>(null);
+  const timer = useRef<number | undefined>(undefined);
+  const stepWidth = useCallback(() => {
+    const slides = track.current?.querySelectorAll<HTMLElement>(".hx-slide");
+    // getBoundingClientRect devolve o passo fracionário; offsetLeft arredonda e o erro cresce a cada cartão
+    return slides && slides.length > 1 ? slides[1].getBoundingClientRect().left - slides[0].getBoundingClientRect().left : 0;
   }, []);
-  useEffect(() => {
+  const indexAt = useCallback((width: number) => Math.round((track.current?.scrollLeft ?? 0) / width), []);
+  /** Terminado o deslize: volta para a cópia do meio e guarda qual cartão está na frente. Se uma seta mandou rolar para um destino e a animação
+   *  ainda não chegou (quadros lentos), espera mais um pouco em vez de cortá-la. */
+  const settle = useCallback((attempt = 0) => {
     const el = track.current;
-    if (!el) return;
-    measure();
-    const observer = new ResizeObserver(measure);
+    const width = stepWidth();
+    if (!el || !width || !loop) return;
+    if (target.current !== null && Math.abs(el.scrollLeft - target.current * width) > Math.max(4, width * 0.04) && attempt < 15) {
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => settle(attempt + 1), 100);
+      return;
+    }
+    target.current = null;
+    const wrapped = ((indexAt(width) % count) + count) % count;
+    activeRef.current = wrapped;
+    setActive(wrapped);
+    const home = (count + wrapped) * width;
+    if (Math.abs(el.scrollLeft - home) > 1) el.scrollLeft = home;
+  }, [count, indexAt, loop, stepWidth]);
+  useLayoutEffect(() => {
+    const el = track.current;
+    if (!el || !loop) return;
+    const align = () => { const width = stepWidth(); if (width) el.scrollLeft = (count + activeRef.current) * width; };
+    align();
+    const observer = new ResizeObserver(align);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [measure]);
-  const scrollTo = (left: number) => track.current?.scrollTo({ left, behavior: reducedMotion() ? "auto" : "smooth" });
-  const step = (direction: 1 | -1) => { const el = track.current; if (el) scrollTo(el.scrollLeft + direction * el.clientWidth); };
-  const goTo = (page: number) => { const el = track.current; if (el) scrollTo(page >= view.pages - 1 ? el.scrollWidth : page * el.clientWidth); };
-  return <div className="hx-car">
-    <div className="hx-track" ref={track} onScroll={measure} role="region" aria-label={label}>{children}</div>
-    {view.next && <i className="hx-fog" aria-hidden="true" />}
-    {view.prev && <button type="button" className="hx-arrow is-prev" aria-label={t.hub.prevMode} onClick={() => step(-1)}><Icon type="chevron" size={20} /></button>}
-    {view.next && <button type="button" className="hx-arrow is-next" aria-label={t.hub.nextMode} onClick={() => step(1)}><Icon type="chevron" size={20} /></button>}
-    {view.pages > 1 && <div className="hx-dots" aria-label={t.hub.carouselPosition}>{Array.from({ length: view.pages }, (_, index) => <button key={index} type="button" aria-label={t.hub.goToFamily(index + 1)} aria-current={view.page === index ? "true" : undefined} onClick={() => goTo(index)} />)}</div>}
+  }, [count, loop, stepWidth]);
+  useEffect(() => {
+    const el = track.current;
+    if (!el || !loop) return;
+    const done = () => settle();
+    el.addEventListener("scrollend", done);
+    return () => { el.removeEventListener("scrollend", done); window.clearTimeout(timer.current); };
+  }, [loop, settle]);
+  const onScroll = () => {
+    const width = stepWidth();
+    if (!loop || !width) return;
+    setActive(((indexAt(width) % count) + count) % count);
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => settle(), 120);
+  };
+  const move = (delta: number) => {
+    const width = stepWidth();
+    if (!width) return;
+    target.current = (target.current ?? indexAt(width)) + delta;
+    track.current?.scrollTo({ left: target.current * width, behavior: reducedMotion() ? "auto" : "smooth" });
+    // não depende do evento de rolagem (que só vem junto de um quadro desenhado): o assentar também é agendado aqui
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => settle(), 160);
+  };
+  const goTo = (index: number) => {
+    let delta = index - active;
+    if (delta > count / 2) delta -= count;
+    if (delta < -count / 2) delta += count;
+    if (delta !== 0) move(delta);
+  };
+  /** Clicar num cartão que só aparece pela metade leva ele para a frente em vez de abri-lo. */
+  const onClickCapture = (event: MouseEvent<HTMLDivElement>) => {
+    const el = track.current;
+    if (!el || !loop) return;
+    const box = el.getBoundingClientRect();
+    const peek = parseFloat(getComputedStyle(el).paddingLeft) || 0;
+    const slide = [...el.querySelectorAll<HTMLElement>(".hx-slide")].find((node) => { const rect = node.getBoundingClientRect(); return event.clientX >= rect.left && event.clientX <= rect.right; });
+    if (!slide) return;
+    const rect = slide.getBoundingClientRect();
+    const toLeft = rect.left < box.left + peek - 3;
+    const toRight = rect.right > box.right - peek + 3;
+    if (!toLeft && !toRight) return;
+    event.preventDefault();
+    event.stopPropagation();
+    move(toLeft ? -1 : 1);
+  };
+  const middle = loop ? 1 : 0;
+  return <div className="hx-car" data-loop={loop ? "true" : undefined}>
+    <div className="hx-track" ref={track} onScroll={onScroll} onClickCapture={onClickCapture} onPointerDown={() => { target.current = null; }} onWheel={() => { target.current = null; }} role="region" aria-label={label}>
+      {Array.from({ length: loop ? 3 : 1 }, (_, copy) => items.map((child, index) => <div key={`${copy}-${index}`} className="hx-slide" aria-hidden={copy === middle ? undefined : true} inert={copy !== middle}>{child}</div>))}
+    </div>
+    {loop && <>
+      <button type="button" className="hx-arrow is-prev" aria-label={t.hub.prevMode} onClick={() => move(-1)}><Icon type="chevron" size={20} /></button>
+      <button type="button" className="hx-arrow is-next" aria-label={t.hub.nextMode} onClick={() => move(1)}><Icon type="chevron" size={20} /></button>
+      <div className="hx-dots" aria-label={t.hub.carouselPosition}>{items.map((_, index) => <button key={index} type="button" aria-label={t.hub.goToFamily(index + 1)} aria-current={active === index ? "true" : undefined} onClick={() => goTo(index)} />)}</div>
+    </>}
   </div>;
 }
 
@@ -136,13 +208,13 @@ function Searching({ ladder, search, formatReady, formatCost }: { ladder: Ladder
   </div>;
 }
 
-/** A Vitrine: um tema da Loja em destaque (o mais caro que cabe no saldo ou, se nenhum cabe, o mais perto). */
-export function HubShowcase({ economy, onOpenStore }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void }) {
+/** A Vitrine: um tema da Loja em destaque (o mais caro que cabe no saldo ou, se nenhum cabe, o mais perto). Com todos os temas comprados, destaca os suprimentos. */
+export function HubShowcase({ economy, onOpenStore, onOpenSupplies }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void; onOpenSupplies?: () => void }) {
   const theme = economy ? pickShowcaseTheme(economy.balance, economy.unlocked) : null;
   const preview = theme ? previewFor(theme.id) : undefined;
   const missing = theme && economy ? missingCoins(theme.cost, economy.balance) : 0;
-  return <section className="hx-showcase" aria-label={t.hub.showcase}>
-    <header><h3>{t.hub.showcase}</h3><button type="button" className="hx-link" onClick={onOpenStore}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
+  return <section className={`hx-showcase${theme ? "" : " is-supplies"}`} aria-label={t.hub.showcase}>
+    <header><h3>{t.hub.showcase}</h3><button type="button" className="hx-link" onClick={theme ? onOpenStore : (onOpenSupplies ?? onOpenStore)}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
     {theme
       ? <button type="button" className="hx-showcase-body" onClick={onOpenStore} aria-label={`${theme.name} · ${money(theme.cost)}`}>
         <span className="hx-showcase-img" style={preview ? { backgroundImage: `url(${preview})` } : { background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }}>
@@ -156,13 +228,19 @@ export function HubShowcase({ economy, onOpenStore }: { economy: EconomySnapshot
           </span>
         </span>
       </button>
-      : <button type="button" className="hx-showcase-body is-supply" onClick={onOpenStore} aria-label={`${t.supplies.lupa.name} · ${money(SUPPLY_COST.lupa)}`}>
-        <span className="hx-showcase-img is-supply"><Icon type="search" size={44} /><i className="hx-tag">{t.hub.showcaseDone}</i></span>
-        <span className="hx-showcase-info">
-          <span className="hx-showcase-name"><b>{t.supplies.lupa.name}</b></span>
-          <span className="hx-showcase-buy"><span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST.lupa)}</span><span className="hx-btn">{t.store.buy}</span></span>
-        </span>
-      </button>}
+      : <>
+        <p className="hx-showcase-done"><i className="hx-tag">{t.hub.showcaseDone}</i></p>
+        <ul className="hx-supplies">
+          {SUPPLY_IDS.map((id) => <li key={id}>
+            <button type="button" onClick={onOpenSupplies ?? onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
+              <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
+              <b>{t.supplies[id].name}</b>
+              <small>{t.supplies[id].short}</small>
+              <span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST[id])}</span>
+            </button>
+          </li>)}
+        </ul>
+      </>}
   </section>;
 }
 

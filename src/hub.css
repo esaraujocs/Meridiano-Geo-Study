@@ -38,16 +38,23 @@
 .hx .hub-gear:hover{border-color:var(--green);color:var(--green)}
 
 /* ───────── grade ───────── */
-.hx-grid{display:grid;grid-template-columns:minmax(0,1.78fr) minmax(360px,1fr);grid-template-rows:auto auto;column-gap:22px;align-items:stretch}
+/* A página usa a largura que a janela der (até 1760 px): o Hub é a tela de entrada e as laterais ficavam vazias. A coluna da direita (Duelo, Vitrine) cresce
+   com a janela e o vão entre as duas colunas também; os cartões de modo não encolhem, quem cede é o vão. */
+@media (min-width:1024px){
+  .hx.hub-content{max-width:1760px;padding-inline:clamp(24px,2.8vw,56px)}
+}
+.hx-grid{display:grid;grid-template-columns:minmax(0,1fr) clamp(320px,24vw,460px);grid-template-rows:auto auto;column-gap:clamp(30px,3.2vw,60px);align-items:stretch}
 .hx-cell{display:flex;flex-direction:column;min-width:0}
 .hx-modes{grid-area:1/1}.hx-arena{grid-area:1/2;gap:14px}.hx-progress{grid-area:2/1}.hx-mecenato{grid-area:2/2}
 .hx-arena>.section-label{margin-bottom:-2px}
 
-/* carrossel dos modos */
-.hx-car{position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
-.hx-track{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 40px) / 3);gap:20px;overflow-x:auto;overflow-y:hidden;padding:2px;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none}
+/* carrossel dos modos: 3 cartões inteiros, a borda do vizinho aparecendo dos dois lados, laço sem fim (HubCarousel) */
+.hx-car{--per:3;--gap:18px;--peek:calc(var(--gap) + clamp(32px,3vw,60px));position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
+.hx-track{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));gap:var(--gap);overflow-x:auto;overflow-y:hidden;padding:6px var(--peek);scroll-padding-inline:var(--peek);scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35));mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35))}
 .hx-track::-webkit-scrollbar{display:none}
-.hx .family.hx-mode{height:auto;min-height:360px;padding:16px 16px 16px;border-radius:11px;scroll-snap-align:start;width:auto;max-width:none;flex:none}
+.hx-slide{display:flex;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.hx-slide>.family{flex:1}
+.hx .family.hx-mode{height:auto;min-height:clamp(360px,40vh,520px);padding:16px 16px 16px;border-radius:11px;width:auto;max-width:none;min-width:0}
 .hx .hx-mode .family-visual{height:auto;flex:1;min-height:90px}
 :root[data-treat] .hx .hx-mode .family-visual .family-icon{width:84px;height:84px}
 :root[data-treat] .hx .hx-mode .family-visual .family-icon svg{width:36px;height:36px}
@@ -69,16 +76,15 @@
 .hx-stat small{font-size:11.5px;font-weight:600;white-space:nowrap}
 .hx-meter{display:block;width:44px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--h) 22%,transparent);overflow:hidden}
 .hx-meter i{display:block;height:100%;background:var(--h);border-radius:2px}
-.hx-fog{position:absolute;top:0;right:-1px;bottom:0;width:120px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--paper) 78%);z-index:3}
-.hx-arrow{position:absolute;top:50%;z-index:4;display:grid;place-items:center;width:42px;height:42px;margin-top:-21px;padding:0;border:1px solid var(--green);border-radius:50%;background:var(--paper);color:var(--green);box-shadow:0 8px 18px -8px rgba(36,59,58,.55)}
-.hx-arrow.is-prev{left:-18px}.hx-arrow.is-prev svg{transform:rotate(180deg)}
-.hx-arrow.is-next{right:-18px}
+.hx-arrow{position:absolute;top:calc(50% - 14px);z-index:4;display:grid;place-items:center;width:42px;height:42px;margin-top:-21px;padding:0;border:1px solid var(--green);border-radius:50%;background:var(--paper);color:var(--green);box-shadow:0 8px 18px -8px rgba(36,59,58,.55)}
+.hx-arrow.is-prev{left:calc((var(--peek) - var(--gap)) / 2 - 21px)}
+.hx-arrow.is-prev svg{transform:rotate(90deg)}.hx-arrow.is-next svg{transform:rotate(-90deg)}
+.hx-arrow.is-next{right:calc((var(--peek) - var(--gap)) / 2 - 21px)}
 .hx-arrow:hover{background:var(--green);color:#fff}
 .hx-dots{display:flex;justify-content:center;gap:2px;margin-top:2px}
 .hx-dots button{position:relative;width:26px;height:22px;padding:0;border:0;background:transparent}
 .hx-dots button::before{content:"";position:absolute;left:8px;top:7px;width:10px;height:8px;border-radius:99px;background:rgba(47,111,106,.28);transition:width .2s,left .2s}
 .hx-dots button[aria-current=true]::before{left:3px;width:20px;background:var(--green)}
-.hx-more{display:none}
 
 /* ───────── Duelo ───────── */
 .hx-duel{position:relative;display:grid;gap:9px;padding:12px 16px 14px;border-radius:18px;border:1px solid var(--duel-c);background:linear-gradient(160deg,var(--duel-a),var(--duel-b) 60%,var(--duel-c));color:#fff4df;box-shadow:0 16px 26px -18px var(--duel-a);overflow:hidden;text-align:left}
@@ -138,8 +144,19 @@
 .hx-btn.is-missing{background:rgba(36,59,58,.1);color:var(--muted);font-weight:700}
 .hx-btn.is-light{background:#f0cf8f;color:#4a2f14}
 .hx-showcase-body:hover .hx-btn:not(.is-missing){filter:brightness(.93)}
-.hx-showcase-img.is-supply{display:grid;place-items:center;background:linear-gradient(135deg,#4a7fa8,#335f85);color:#fff4df}
-.hx-showcase-img.is-supply .hx-tag{position:absolute}
+.hx-showcase-done{margin:0}
+.hx-showcase-done .hx-tag{position:static;display:inline-block}
+.hx-supplies{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.hx-supplies li{display:flex;min-width:0}
+.hx-supplies button{flex:1;display:grid;justify-items:center;align-content:center;gap:3px;min-width:0;padding:12px 6px 12px;border:1px solid color-mix(in srgb,var(--brass) 38%,var(--line));border-radius:14px;background:color-mix(in srgb,var(--paper) 55%,transparent);color:var(--ink);text-align:center;transition:transform .15s,box-shadow .15s,border-color .15s}
+.hx-supplies button:hover{transform:translateY(-2px);border-color:var(--brass);box-shadow:0 12px 18px -14px rgba(60,40,10,.7)}
+.hx-supplies b{margin-top:6px;font:700 15px/1.1 'Fraunces',Georgia,serif;letter-spacing:-.02em}
+.hx-supplies small{font-size:11px;color:var(--muted)}
+.hx-supplies .hx-price{margin-top:6px;font-size:15px}
+.hx-supply-art{display:grid;place-items:center;width:76px;height:76px;border-radius:20px;box-shadow:0 8px 14px -8px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.35)}
+.hx-supply-art[data-supply=lupa]{background:radial-gradient(circle at 30% 22%,#d7f1f6,#6fb0c2)}
+.hx-supply-art[data-supply=bussola]{background:radial-gradient(circle at 30% 22%,#fbebc4,#d2a24c)}
+.hx-supply-art[data-supply=ampulheta]{background:radial-gradient(circle at 30% 22%,#e7def5,#9582c0)}
 
 /* ───────── progresso (tiles verticais) ───────── */
 .hx-progress .section-label{margin-top:22px}
@@ -176,20 +193,23 @@
 @media (max-width:1099px){
   .hx-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:none;row-gap:0}
   .hx-modes,.hx-arena,.hx-progress,.hx-mecenato{grid-area:auto}
+  .hx-car{--per:2}
   .hx .family.hx-mode{min-height:300px}
-  .hx-arrow.is-prev{left:-6px}.hx-arrow.is-next{right:-6px}
 }
 @media (min-width:761px) and (max-width:1023px){
   .app-shell:has(.hub-content)>.topbar{display:none}
+  /* a barra do jogador não cabe inteira: sai a marca, os selos e o texto de XP que sobreporiam as fichas da direita */
+  .hx .hub-brand,.hx .hub-badges,.hx .hub-xp-next{display:none}
 }
 
-/* ───────── celular: tudo numa tela ───────── */
+/* ───────── celular: tudo numa tela, sem rolagem ─────────
+   cabeçalho, UM modo por vez (com os vizinhos espiando e laço), Duelo e, na última linha, Vitrine e Mecenato; o progresso fica por conta da barra de baixo */
 @media (max-width:760px){
-  .hx{padding:8px 10px 10px!important;min-height:0}
+  .hx{padding:8px 8px 10px!important;min-height:0;grid-template-rows:auto minmax(min-content,1fr);overflow-x:hidden;overflow-y:auto}
   .hx .section-label{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .hx .hub-bar{gap:10px;height:auto;padding:8px 10px;border-radius:16px}
+  .hx .hub-bar{gap:8px;height:auto;padding:7px 9px;margin:0;border-radius:16px}
   .hx .hub-brand{display:none}
-  .hx .hub-player{column-gap:10px;row-gap:3px}
+  .hx .hub-player{column-gap:9px;row-gap:3px}
   .hx .hub-level{grid-column:auto;grid-row:auto;grid-area:ring;width:42px;height:42px;margin:0;border:2px solid var(--green);border-radius:50%;background:var(--paper)}
   .hx .hub-level-ring{display:none}
   .hx .hub-level strong{font-size:19px}
@@ -199,51 +219,36 @@
   .hx .hub-xp{grid-area:xp;align-self:start}
   .hx .hub-track{flex:1 1 auto}
   .hx .hub-xp-label{display:none}
-  .hx .hub-stats{gap:6px;padding:0;border:0}
-  .hx .hub-rank{padding:4px 10px;gap:5px}
+  .hx .hub-stats{gap:5px;padding:0;border:0}
+  .hx .hub-rank{padding:3px 9px;gap:4px;margin:0}
   .hx .hub-rank i{display:none}
   .hx .hub-rank small{display:none}
-  .hx .hub-coin{margin:0;padding:4px 10px 4px 5px;gap:5px}
+  .hx .hub-rank strong{font-size:16px}
+  .hx .hub-coin{margin:0;padding:3px 9px 3px 4px;gap:5px}
   .hx .hub-coin-store{display:none}
-  .hx .hub-coin strong{font-size:15px}
-  .hx .hub-gear{display:grid;width:34px;height:34px}
-  .hx .hub-gear svg{width:18px;height:18px}
-  .hx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .hx-modes{order:1;grid-column:1/-1}
+  .hx .hub-coin strong{font-size:14.5px}
+  .hx .hub-gear{display:grid;width:30px;height:30px}
+  .hx .hub-gear svg{width:17px;height:17px}
+  .hx-grid{grid-template-columns:1fr 1fr;grid-template-rows:minmax(210px,1fr) auto auto;gap:10px;margin-top:8px;min-height:0}
+  .hx-modes{grid-column:1/-1;grid-row:1;min-height:0}
   .hx-arena{display:contents}
-  .hx-duel{order:2;grid-column:1/-1}
-  .hx-progress{order:3;grid-column:1/-1}
-  .hx-showcase{order:4;grid-column:1}
-  .hx-mecenato{order:4;grid-column:2}
-  /* modos: três cartões pequenos lado a lado; o resto vira pílulas */
-  .hx-track{grid-auto-columns:calc((100% - 16px) / 3);gap:8px;overflow:visible;scroll-snap-type:none}
-  .hx-mode[data-extra]{display:none}
-  .hx-arrow,.hx-fog,.hx-dots{display:none}
-  .hx .family.hx-mode{position:relative;min-height:128px;height:128px;padding:10px 10px 9px;border-radius:14px;justify-content:flex-end}
-  .hx .hx-mode .family-visual{position:absolute;left:10px;top:10px;height:auto;flex:none;min-height:0;display:block}
-  .hx .hx-mode .family-geo{opacity:.3;inset:-6px -30px auto auto;width:100px;height:80px;right:-24px;top:-8px}
-  :root[data-treat] .hx .hx-mode .family-visual .family-icon{width:38px;height:38px;box-shadow:0 0 0 4px color-mix(in srgb,var(--h) 20%,transparent)}
-  :root[data-treat] .hx .hx-mode .family-visual .family-icon svg{width:19px;height:19px}
-  .hx .hx-mode .family-copy p{display:none}
-  .hx .hx-mode h3{margin:0;font-size:17px;letter-spacing:-.04em}
-  .hx .hx-mode .family-footer{position:static;gap:0}
-  .hx-stat{gap:0}.hx-meter{display:none}
-  .hx-stat small{font-size:10.5px;white-space:normal;line-height:1.2}
-  .hx-last{display:none}
-  .hx .hx-mode .family-footer{z-index:3}
-  .hx .hx-mode .family-footer>.hx-continue,.hx .hx-mode .hx-split{position:absolute;right:8px;top:9px}
-  .hx .hx-mode .hx-continue{display:grid;place-items:center;width:30px;height:30px;padding:0;border-radius:50%;font-size:0;gap:0}
-  .hx .hx-mode .hx-continue span{display:none}
-  .hx .hx-mode .hx-continue svg{width:14px;height:14px}
-  .hx .hx-mode .hx-split{border-radius:50%}
-  .hx .hx-mode .hx-adjust{display:none}
-  .hx .hx-mode .hx-split .hx-continue{padding:0}
-  .hx-more{display:flex;align-items:center;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
-  .hx-more::-webkit-scrollbar{display:none}
-  .hx-more-k{display:none}
-  .hx-more button{display:inline-flex;align-items:center;gap:7px;flex:none;padding:7px 14px 7px 8px;border:1.5px solid var(--line);border-radius:99px;background:rgba(250,244,229,.85);color:var(--ink);font:700 12.5px 'Plus Jakarta Sans',sans-serif}
-  .hx-more button span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--h);color:#fbf3df}
-  .hx-more button.locked{opacity:.7}
+  .hx-duel{grid-column:1/-1;grid-row:2}
+  .hx-progress{display:none}
+  .hx-showcase{grid-column:1;grid-row:3}
+  .hx-mecenato{grid-column:2;grid-row:3}
+  /* modos: um cartão grande por vez, os vizinhos espiando */
+  .hx-car{--per:1;--gap:10px;--peek:calc(var(--gap) + 16px)}
+  .hx-track{padding-block:4px}
+  .hx .family.hx-mode{min-height:0;padding:14px 14px 13px;border-radius:16px}
+  .hx .hx-mode .family-visual{min-height:70px}
+  :root[data-treat] .hx .hx-mode .family-visual .family-icon{width:68px;height:68px}
+  :root[data-treat] .hx .hx-mode .family-visual .family-icon svg{width:30px;height:30px}
+  .hx .hx-mode h3{font-size:27px}
+  .hx .hx-mode p{min-height:0;font-size:12.5px}
+  .hx-arrow{width:36px;height:36px;margin-top:-18px;top:calc(50% - 12px)}
+  .hx-arrow.is-prev{left:calc((var(--peek) - var(--gap)) / 2 - 18px)}
+  .hx-arrow.is-next{right:calc((var(--peek) - var(--gap)) / 2 - 18px)}
+  .hx-dots{margin-top:0}
   /* Duelo: faixa larga */
   .hx-duel{padding:11px 12px 12px;border-radius:16px;gap:8px}
   .hx-duel-name h3{font-size:22px}
@@ -255,31 +260,37 @@
   .hx-duel-acts{gap:6px}
   .hx-duel-acts button{padding:8px 4px;font-size:10.5px}
   .hx-duel-foot.is-search,.hx-duel-foot:has(.hx-duel-err){grid-template-columns:1fr}
-  /* progresso: três números */
-  .hx-progress .hub-progress-grid{gap:8px}
-  .hx-progress .hub-progress-grid button{min-height:0;height:auto;padding:8px 10px;display:block}
-  .hx-progress .hub-progress-icon,.hx-progress .hub-progress-bar,.hx-progress .hub-progress-caption,.hx-progress .hub-progress-grid button>svg{display:none}
-  .hx-progress .hub-progress-grid strong{font-size:18px}
-  .hx-progress .hub-progress-grid small{margin:0;font-size:10.5px;line-height:1.25}
   /* Vitrine e Mecenato lado a lado */
   .hx-showcase{padding:0;border:0;background:none;gap:0}
   .hx-showcase>header{display:none}
-  .hx-showcase-body{position:relative;height:150px;border-radius:14px;overflow:hidden;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8));gap:0}
+  .hx-showcase-body{position:relative;height:112px;border-radius:14px;overflow:hidden;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8));gap:0}
   .hx-showcase-img{min-height:0;border-radius:0;box-shadow:none}
-  .hx-showcase-info{padding:7px 10px 8px;gap:4px}
+  .hx-showcase-info{padding:6px 10px 7px;gap:3px}
   .hx-showcase-name b{font-size:14px}
   .hx-showcase-name .store-swatches{display:none}
   .hx-showcase-buy{gap:6px}
   .hx-price{font-size:13px;gap:5px}.hx-price i{width:16px;height:16px;font-size:9px}
   .hx-btn{display:none}
-  .hx-showcase-img.is-supply .hx-tag{display:none}
-  .hx-museum{height:150px;min-height:0;grid-template-columns:1fr;align-content:end;padding:10px 12px;border-radius:14px}
+  .hx-showcase.is-supplies{height:112px;padding:8px 6px;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));border-radius:14px;background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8))}
+  .hx-showcase-done{display:none}
+  .hx-supplies{gap:2px}
+  .hx-supplies button{padding:2px 0;border:0;background:none;gap:3px;align-content:center}
+  .hx-supplies b,.hx-supplies small{display:none}
+  .hx-supply-art{width:46px;height:46px;border-radius:13px}
+  .hx-supply-art svg{width:36px;height:36px}
+  .hx-supplies .hx-price{margin:0;font-size:12.5px}
+  .hx-museum{height:112px;min-height:0;grid-template-columns:1fr;align-content:end;padding:10px 12px;border-radius:14px}
   .hx-museum-text b{font-size:16px}
   .hx-museum-text>span:not(.hx-museum-dots){display:none}
   .hx-museum-dots em{display:none}
   .hx-museum-act{justify-items:start}
   .hx-museum-act .hx-btn{display:none}
   .hx-museum .hx-price{font-size:13px}
+}
+/* telefone baixo: o resumo da última partida sai do cartão para o modo caber */
+@media (max-width:760px) and (max-height:700px){
+  .hx-last{display:none}
+  .hx .hx-mode p{display:none}
 }
 @media (max-width:760px){
   .app-shell:has(.hub-content)>.hub-content{padding-top:8px}

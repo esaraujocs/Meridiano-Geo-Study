@@ -151,3 +151,9 @@
   .st-scrim{align-items:end;padding:0}
   .st-dialog{width:100%;border-radius:20px 20px 0 0;padding:18px 18px 22px}
 }
+
+/* suprimentos: cada objeto tem o próprio fundo, como na Vitrine do Hub */
+.st-art.is-supply{background:radial-gradient(circle at 30% 22%,var(--s1),var(--s2))}
+.st-art[data-supply=lupa]{--s1:#d7f1f6;--s2:#6fb0c2}
+.st-art[data-supply=bussola]{--s1:#fbebc4;--s2:#d2a24c}
+.st-art[data-supply=ampulheta]{--s1:#e7def5;--s2:#9582c0}

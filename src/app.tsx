@@ -3,7 +3,7 @@ import { Game } from "./components/map-game";
 import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens";
 import { useAccountSync } from "./components/use-account-sync";
 import { AccountNudge } from "./components/account-nudge";
-import { StoreView } from "./components/store-view";
+import { StoreView, type StoreTab } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
 import { variantContextFor } from "./domain/match-config";
@@ -210,6 +210,7 @@ export function App() {
   const [collectionRegion, setCollectionRegion] = useState<Region>("mundo");
   /** Aba da Coleção que abre primeiro (o Hub abre o Museu direto). */
   const [collectionAlbum, setCollectionAlbum] = useState<"countries" | "historical" | "museum" | undefined>(undefined);
+  const [storeTab, setStoreTab] = useState<StoreTab>("all");
   /** Precisão atual dos pilares, para os cartões de modo do Hub. */
   const [pillarPct, setPillarPct] = useState<Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>>({});
   const [collectionSummary, setCollectionSummary] = useState({ discovered: 0, total: 0 });
@@ -886,7 +887,8 @@ export function App() {
   // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
   const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
-  const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(destination); };
+  const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } if (destination === "store") setStoreTab("all"); setScreen(destination); };
+  const openSupplies = () => { setStoreTab("supplies"); setScreen("store"); };
   const openMuseum = () => { setCollectionRegion("mundo"); setCollectionAlbum("museum"); setScreen("collection"); };
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
   const trainGroup = async (group: ModeGroup) => {
@@ -1263,7 +1265,7 @@ export function App() {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><StoreView initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
   }
   if (screen === "options") {
     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {
@@ -1316,6 +1318,7 @@ export function App() {
         <Hub
             economy={economy}
           onOpenMuseum={openMuseum}
+          onOpenSupplies={openSupplies}
           pillarPct={pillarPct}
           lastConfigs={lastConfigs}
           onContinue={(config) => void continueGame(config)}

@@ -207,6 +207,7 @@ export function Hub({
   economy,
   onNavigate,
   onOpenMuseum,
+  onOpenSupplies,
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
@@ -224,6 +225,8 @@ export function Hub({
   onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void;
   /** Abre o Museu (a aba do Museu dentro da Coleção). */
   onOpenMuseum?: () => void;
+  /** Abre a Loja direto na aba Suprimentos (a Vitrine destaca os suprimentos quando todos os temas já são seus). */
+  onOpenSupplies?: () => void;
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
   achievementSummary?: AchievementSummary;
@@ -255,8 +258,6 @@ export function Hub({
     { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", pillar: "capitais" },
     { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language" },
   ];
-  /** Os três primeiros são os modos "principais" (no celular viram cartões pequenos; os demais, pílulas em "Mais modos"). */
-  const MAIN_MODES = 3;
   const isFamilyUnlocked = (item: (typeof familyItems)[number]) => item.family === "idiomas"
     ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
     : unlocked(item.family, item.variant);
@@ -275,7 +276,7 @@ export function Hub({
     { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
     { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct, caption: profile.caption },
   ] as const;
-  const modeCard = (item: (typeof familyItems)[number], index: number) => {
+  const modeCard = (item: (typeof familyItems)[number]) => {
     const open = isFamilyUnlocked(item);
     const pct = item.pillar ? pillarPct[item.pillar] : null;
     const last = lastConfigs[item.family as TopFamily];
@@ -283,7 +284,6 @@ export function Hub({
     return <div
       key={item.family}
       data-fam={item.family}
-      data-extra={index >= MAIN_MODES ? "true" : undefined}
       className={`family hx-mode ${economy && !open ? "locked" : ""}`}
     >
       <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={item.label} />
@@ -333,15 +333,11 @@ export function Hub({
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
           <div className="section-label"><h2 id="hx-modes-title">{t.hub.modesTitle}</h2></div>
           <HubCarousel label={t.hub.modesRegion}>{familyItems.map(modeCard)}</HubCarousel>
-          <nav className="hx-more" aria-label={t.hub.moreModes}>
-            <span className="hx-more-k">{t.hub.moreModes}</span>
-            {familyItems.slice(MAIN_MODES).map((item) => <button key={item.family} type="button" data-fam={item.family} className={economy && !isFamilyUnlocked(item) ? "locked" : ""} onClick={() => onSelect(item.family)}><span aria-hidden="true"><Icon type={item.icon} size={16} /></span>{item.label}{economy && !isFamilyUnlocked(item) && <Icon type="lock" size={12} />}</button>)}
-          </nav>
         </section>
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} onFriends={arenas.onFriends} />}
-          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} />
+          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} onOpenSupplies={onOpenSupplies} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>

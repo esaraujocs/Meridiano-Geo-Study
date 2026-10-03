@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { pvpPlugin } from "./server/pvp-plugin.mjs";
 
 // O MapLibre resolve o worker como ./maplibre-gl-worker.mjs relativo ao bundle, e esse worker
@@ -8,11 +10,15 @@ import { pvpPlugin } from "./server/pvp-plugin.mjs";
 // produção o worker falhava (404/HTML) e o mapa nunca carregava. Copiamos ambos para dist/assets.
 const MAPLIBRE_WORKER_FILES = ["maplibre-gl-worker.mjs", "maplibre-gl-shared.mjs"];
 
-const injectPrecacheManifest = () => ({
+// Escreve na pasta de saída configurada (`build.outDir`, padrão dist/). Com `--outDir` dá para conferir um build sem tocar no dist/ que o servidor ao vivo serve.
+const injectPrecacheManifest = () => {
+  let outDir = "dist";
+  return {
   name: "carta-cega-precache-manifest",
   apply: "build" as const,
+  configResolved(config: { root: string; build: { outDir: string } }) { outDir = resolve(config.root, config.build.outDir); },
   async writeBundle(_options: unknown, bundle: Record<string, unknown>) {
-    const dist = new URL("./dist/", import.meta.url);
+    const dist = pathToFileURL(`${outDir}/`);
     await mkdir(new URL("assets/", dist), { recursive: true });
     for (const file of MAPLIBRE_WORKER_FILES) {
       await copyFile(
@@ -47,14 +53,15 @@ const injectPrecacheManifest = () => ({
     const source = await readFile(serviceWorker, "utf8");
     const marker = "/*__CARTA_PRECACHE__*/[]";
     if (!source.includes(marker)) {
-      throw new Error("Marcador de precache não encontrado em dist/sw.js.");
+      throw new Error(`Marcador de precache não encontrado em ${outDir}/sw.js.`);
     }
     await writeFile(
       serviceWorker,
       source.replace(marker, `/*__CARTA_PRECACHE__*/${JSON.stringify(precache)}`),
     );
   },
-});
+  };
+};
 
 export default defineConfig({
   plugins: [react(), injectPrecacheManifest(), pvpPlugin()],

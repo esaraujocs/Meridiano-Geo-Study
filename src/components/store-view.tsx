@@ -10,6 +10,7 @@ import type { EconomySnapshot } from "../domain/economy-store";
 import type { AnyQuizVariant, Family } from "../domain/types";
 import type { RoundUnlockKey } from "../domain/pace";
 import { MUSEUM_PIECES } from "../domain/museum";
+import { SupplyArt } from "./supply-art";
 import { formatNumber as money, t } from "../domain/i18n";
 
 // Prévias do Hub de cada tema (geradas por scripts/build-theme-previews.mjs). Sem a imagem, a amostra de cores ocupa o lugar.
@@ -17,6 +18,8 @@ const PREVIEWS = import.meta.glob("../assets/themes/*.webp", { eager: true, quer
 const previewFor = (id: string) => PREVIEWS[`../assets/themes/${id}.webp`];
 
 type Props = {
+  /** A aba que abre primeiro (a Vitrine do Hub leva direto aos Suprimentos). */
+  initialTab?: StoreTab;
   economy: EconomySnapshot;
   activeTheme: string;
   onEquip: (id: string) => void;
@@ -29,7 +32,6 @@ type Props = {
   onBack: () => void;
 };
 
-const SUPPLY_ICON: Record<SupplyId, IconType> = { ampulheta: "hourglass", bussola: "compass", lupa: "search" };
 const modeIcon = (variant: AnyQuizVariant): IconType => variant.startsWith("silhueta") ? "puzzle" : variant.startsWith("escrita") ? "type" : variant.startsWith("historica") ? "clock" : variant.startsWith("idioma") ? "language" : variant === "travel" ? "route" : "map";
 /** O texto do modo (o mesmo da configuração da partida) para a variante; o Travel e as silhuetas têm chave própria. */
 const MODE_TEXT_KEY: Record<string, string> = { "silhueta-opcoes": "silhueta-opcoes", silhueta: "silhueta", travel: "travel", "escrita-pais": "escrita-pais", "escrita-capital": "escrita-capital", "historica-nome": "historicas", "idioma-nome": "idioma-nome", "idioma-pais": "idioma-pais" };
@@ -43,7 +45,8 @@ type Pending =
   | { kind: "rounds"; rounds: StoreRounds }
   | { kind: "supply"; id: SupplyId; qty: number };
 
-type Tab = "all" | "themes" | "modes" | "rounds" | "supplies" | "leagues";
+export type StoreTab = "all" | "themes" | "modes" | "rounds" | "supplies" | "leagues";
+type Tab = StoreTab;
 
 const pendingInfo = (pending: Pending) => {
   if (pending.kind === "theme") return { name: pending.theme.name, blurb: pending.theme.tagline, price: pending.theme.cost, permanent: true };
@@ -103,7 +106,8 @@ function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: 
     return () => document.removeEventListener("keydown", onKey);
   }, [onCancel]);
   const art = pending.kind === "theme" ? <ThemeArt theme={pending.theme} />
-    : <Art icon={pending.kind === "mode" ? modeIcon(pending.mode.variant) : pending.kind === "rounds" ? "layers" : SUPPLY_ICON[pending.id]} size={44} />;
+    : pending.kind === "supply" ? <span className="st-art is-supply" data-supply={pending.id} aria-hidden="true"><SupplyArt id={pending.id} size={84} /></span>
+    : <Art icon={pending.kind === "mode" ? modeIcon(pending.mode.variant) : "layers"} size={44} />;
   return <div className="st-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel(); }}>
     <div className="st-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <button type="button" className="st-x" onClick={onCancel} aria-label={t.store.close}><Icon type="close" size={16} /></button>
@@ -132,8 +136,8 @@ function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: 
   </div>;
 }
 
-export function StoreView({ economy, activeTheme, onEquip, onBuy, supplies, onBuySupply, onBuyMode, onBuyRounds, onOpenMuseum, onBack }: Props) {
-  const [tab, setTab] = useState<Tab>("all");
+export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, onBuy, supplies, onBuySupply, onBuyMode, onBuyRounds, onOpenMuseum, onBack }: Props) {
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -178,7 +182,7 @@ export function StoreView({ economy, activeTheme, onEquip, onBuy, supplies, onBu
   };
   const modeCard = (mode: StoreMode) => <Card key={mode.key} art={<Art icon={modeIcon(mode.variant)} />} owned={mode.owned} name={modeName(mode.variant)} blurb={modeBlurb(mode.variant)} price={mode.price} balance={balance} onOpen={() => setPending({ kind: "mode", mode })} />;
   const roundsCard = (item: StoreRounds) => <Card key={item.key} art={<Art icon="layers" />} owned={item.owned} name={t.roundUnlocks[item.tier as "long" | "fifty" | "hundred" | "all"]} blurb={t.store.roundBlurbs[item.tier]} price={item.price} balance={balance} onOpen={() => setPending({ kind: "rounds", rounds: item })} />;
-  const supplyCard = (id: SupplyId) => <Card key={id} art={<Art icon={SUPPLY_ICON[id]} />} owned={false} name={t.supplies[id].name} blurb={t.supplies[id].detail} price={SUPPLY_COST[id]} balance={balance} onOpen={() => setPending({ kind: "supply", id, qty: 1 })}
+  const supplyCard = (id: SupplyId) => <Card key={id} art={<span className="st-art is-supply" data-supply={id} aria-hidden="true"><SupplyArt id={id} size={72} /></span>} owned={false} name={t.supplies[id].name} blurb={t.supplies[id].detail} price={SUPPLY_COST[id]} balance={balance} onOpen={() => setPending({ kind: "supply", id, qty: 1 })}
     extra={<small className="st-stock">{t.store.supplies.owned(supplies[id])}</small>} />;
   const suggestionCard = (item: Suggestion) => item.kind === "theme" ? themeCard(item.theme) : item.kind === "mode" ? modeCard(item.mode) : item.kind === "rounds" ? roundsCard(item.rounds) : supplyCard(item.id);
 
