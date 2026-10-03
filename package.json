@@ -64,6 +64,7 @@
     "test:store-catalog": "rm -rf .tmp-store-catalog && tsc --ignoreConfig src/domain/store-catalog.ts --outDir .tmp-store-catalog --module ES2022 --moduleResolution Bundler --target ES2022 --skipLibCheck --lib ES2022,DOM && node scripts/test-store-catalog.mjs",
     "test:themes": "rm -rf .tmp-themes && tsc --ignoreConfig src/domain/themes.ts src/domain/map-fauna-scale.ts --outDir .tmp-themes --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-themes.mjs",
     "test:i18n": "node scripts/test-i18n.mjs",
+    "test:mecenato": "node scripts/test-mecenato.mjs",
     "build:i18n": "node scripts/i18n/build-i18n.mjs"
   },
   "keywords": [],

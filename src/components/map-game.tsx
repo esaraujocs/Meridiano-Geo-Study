@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
@@ -16,6 +16,9 @@ import { sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { addMapFauna } from "./map-fauna";
+import { addMapOrnaments } from "./map-ornaments";
+import { activeCosmetics } from "../domain/mecenato-store";
+import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
@@ -85,6 +88,9 @@ export function Game({
   // No Treino (sem cronômetro, rende 50%) cada país/capital perguntado fica marcado no mapa com o nome
   // escrito, acertando ou errando — é o que diferencia Treino de Partida além do cronômetro/moedas.
   const revealNames = pace === "training";
+  // Estilo de mapa do Mecenato (item de expedição), lido uma vez por partida: vale por cima da paleta do tema.
+  const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
+  const paletteNow = () => withMapStyle(currentPalette(), mapStyleId);
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
@@ -396,7 +402,7 @@ export function Game({
     const activeFilter = markerFilter(markerIds);
     setMapReady(false);
     let map: maplibregl.Map;
-    const palette = currentPalette();
+    const palette = paletteNow();
     try {
       map = new maplibregl.Map({
         container: mapEl.current,
@@ -411,8 +417,8 @@ export function Game({
                 "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
             },
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
-            ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines() as unknown as GeoJSON.FeatureCollection } } : {}),
-            ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs) as unknown as GeoJSON.FeatureCollection } } : {}),
+            ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
+            ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs, palette.rhumb.directions) as unknown as GeoJSON.FeatureCollection } } : {}),
             absorbed: { type: "geojson", data: ABSORBED_URL },
             splits: { type: "geojson", data: SPLIT_URL },
           },
@@ -467,6 +473,8 @@ export function Game({
                 "fill-opacity": palette.landOpacity,
               },
             },
+            // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
+            ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
             {
               id: "pts",
               type: "circle",
@@ -558,6 +566,7 @@ export function Game({
     map.on("error", handleError);
     // Navios e criaturas do mar do tema (Cartógrafo): ancorados no oceano, acompanham o arrasto e o zoom do mapa.
     const removeFauna = addMapFauna(map, document.documentElement.dataset.theme);
+    const removeOrnaments = addMapOrnaments(map, mapStyleId);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
@@ -665,6 +674,7 @@ export function Game({
       labelMarkersRef.current.forEach((marker) => marker.remove());
       labelMarkersRef.current.clear();
       removeFauna();
+      removeOrnaments();
       map.remove();
       mapRef.current = null;
       setMapReady(false);
@@ -696,7 +706,7 @@ export function Game({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !target || !mapReady || !map.isStyleLoaded()) return;
-    const palette = currentPalette();
+    const palette = paletteNow();
     const answerColor = palette.answer;
     const settled = Boolean(feedback);
     // Fora do alvo desta rodada: só fica marcado no Treino (revealNames), com todo país já perguntado até aqui.
@@ -857,6 +867,7 @@ export function Game({
             {feedback || t.map.currentTarget(targetName)}
           </p>
           <p className="map-keyboard-hint">{t.map.keyboardHint}</p>
+          {isMapStyleId(mapStyleId) && <div className="map-cartouche" data-style={mapStyleId} aria-hidden="true" style={{ "--c-paper": MAP_STYLES[mapStyleId].ornament.paper, "--c-ink": MAP_STYLES[mapStyleId].ornament.ink, "--c-accent": MAP_STYLES[mapStyleId].ornament.accent } as CSSProperties}><b>{MAP_STYLES[mapStyleId].cartouche[0]}</b><small>{MAP_STYLES[mapStyleId].cartouche[1]}</small></div>}
           <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>{t.map.crosshair}</span></div>
           <div className="map-hud">
             <div className="map-note">{t.map.note}</div>

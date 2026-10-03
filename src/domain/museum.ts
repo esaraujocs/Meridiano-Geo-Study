@@ -69,6 +69,47 @@ export const MUSEUM_PIECES: readonly MuseumPiece[] = [
         detail: "La tripulación del Apollo 17 fotografió la Tierra el 7 de diciembre de 1972, durante el viaje a la Luna. La imagen muestra casi toda la costa de África, la península arábiga, Madagascar y el casquete polar de la Antártida. Su identificador es AS17-148-22727. A diferencia de los mapas antiguos del acervo, registra la apariencia del planeta en un instante real." },
     },
   },
+  // Mecenato v2 (04/10/2026): etapas 3 e 4 da rota "Cartas do Velho Mundo". O preço agora é o da etapa da expedição (mecenato.ts); `cost` fica só como referência.
+  {
+    id: "mercator-1569", year: 1569, cost: 300_000,
+    image: "/museum/mercator-1569.jpg", author: "Gerardus Mercator",
+    institution: "Universitätsbibliothek Basel · foto de Wilhelm Krucken",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Mercator_1569_world_map_composite.jpg",
+    rightsUrl: "https://commons.wikimedia.org/wiki/File:Mercator_1569_world_map_composite.jpg#Licensing",
+    rights: {
+      pt: "Domínio público: obra de 1569. Fotografia da cópia de Basileia por Wilhelm Krucken, que libera o uso destas digitalizações em resolução média (Wikimedia Commons).",
+      en: "Public domain: a 1569 work. Photograph of the Basel copy by Wilhelm Krucken, who permits use of these medium-resolution scans (Wikimedia Commons).",
+      es: "Dominio público: obra de 1569. Fotografía del ejemplar de Basilea por Wilhelm Krucken, que permite usar estos escaneos en resolución media (Wikimedia Commons).",
+    },
+    text: {
+      pt: { title: "O mapa do navegante", subtitle: "Mapa-múndi de Mercator · 1569", description: "A projeção que deixou retas as rotas de quem navega por bússola.",
+        detail: "Gravado em 18 folhas e publicado em Duisburgo, o mapa se chama Nova et aucta orbis terrae descriptio ad usum navigantium: uma descrição do mundo pensada para navegar. Na projeção de Mercator, uma rota de rumo constante na bússola vira uma linha reta, por isso as cartas náuticas a adotaram. O preço disso é o tamanho: quanto mais perto dos polos, mais as terras aumentam — a Groenlândia parece do tamanho da África. A imagem reúne as folhas da cópia guardada em Basileia." },
+      en: { title: "The navigator's map", subtitle: "Mercator world map · 1569", description: "The projection that made compass-bearing routes straight.",
+        detail: "Engraved on 18 sheets and published in Duisburg, the map is titled Nova et aucta orbis terrae descriptio ad usum navigantium: a description of the world designed for navigation. On Mercator's projection a route of constant compass bearing becomes a straight line, which is why nautical charts adopted it. The cost is size: the closer to the poles, the larger the land appears — Greenland looks as big as Africa. This image combines the sheets of the copy kept in Basel." },
+      es: { title: "El mapa del navegante", subtitle: "Mapamundi de Mercator · 1569", description: "La proyección que volvió rectas las rutas de quien navega con brújula.",
+        detail: "Grabado en 18 hojas y publicado en Duisburgo, el mapa se titula Nova et aucta orbis terrae descriptio ad usum navigantium: una descripción del mundo pensada para navegar. En la proyección de Mercator, una ruta de rumbo constante en la brújula se convierte en una línea recta, por eso las cartas náuticas la adoptaron. El precio es el tamaño: cuanto más cerca de los polos, más grandes parecen las tierras — Groenlandia parece del tamaño de África. La imagen reúne las hojas del ejemplar guardado en Basilea." },
+    },
+  },
+  {
+    id: "fra-mauro-1450", year: 1450, cost: 540_000,
+    image: "/museum/fra-mauro-1450.jpg", author: "Fra Mauro",
+    institution: "Biblioteca Nazionale Marciana · Veneza",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:FraMauroDetailedMap.jpg",
+    rightsUrl: "https://commons.wikimedia.org/wiki/File:FraMauroDetailedMap.jpg#Licensing",
+    rights: {
+      pt: "Domínio público: obra de cerca de 1450. Reprodução fotográfica da Biblioteca Nazionale Marciana publicada em domínio público (Wikimedia Commons).",
+      en: "Public domain: a work from around 1450. Photographic reproduction from the Biblioteca Nazionale Marciana released in the public domain (Wikimedia Commons).",
+      es: "Dominio público: obra de hacia 1450. Reproducción fotográfica de la Biblioteca Nazionale Marciana publicada en dominio público (Wikimedia Commons).",
+    },
+    text: {
+      pt: { title: "O mundo de Fra Mauro", subtitle: "Mapa-múndi de Veneza · c. 1450", description: "O mundo inteiro num círculo de mais de dois metros, com o sul em cima.",
+        detail: "Um monge do mosteiro de Murano, em Veneza, desenhou este mapa sobre pergaminho, num círculo de cerca de 2,4 metros. Ele reuniu relatos de mercadores, viajantes e marinheiros, e encheu o mundo conhecido de notas, cidades e navios. O sul fica no alto, como era comum em mapas da época. É um dos últimos grandes mapas-múndi medievais, feito poucas décadas antes de os europeus contornarem a África por mar." },
+      en: { title: "The world of Fra Mauro", subtitle: "Venetian world map · c. 1450", description: "The whole known world in a circle over two metres wide, with south at the top.",
+        detail: "A monk from the monastery of Murano, in Venice, drew this map on parchment, in a circle about 2.4 metres across. He gathered accounts from merchants, travellers and sailors, filling the known world with notes, cities and ships. South is at the top, as was common on maps of the time. It is one of the last great medieval world maps, made a few decades before Europeans sailed around Africa." },
+      es: { title: "El mundo de Fra Mauro", subtitle: "Mapamundi de Venecia · c. 1450", description: "Todo el mundo conocido en un círculo de más de dos metros, con el sur arriba.",
+        detail: "Un monje del monasterio de Murano, en Venecia, dibujó este mapa sobre pergamino, en un círculo de unos 2,4 metros. Reunió relatos de mercaderes, viajeros y marineros, y llenó el mundo conocido de notas, ciudades y barcos. El sur está arriba, como era habitual en los mapas de la época. Es uno de los últimos grandes mapamundis medievales, hecho pocas décadas antes de que los europeos rodearan África por mar." },
+    },
+  },
 ];
 
 export const museumPieceById = (id: string) => MUSEUM_PIECES.find((piece) => piece.id === id);

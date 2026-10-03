@@ -2,7 +2,7 @@
 // agrupando as violações por alvo, com as cores e a lista do que continua claro (útil em tema escuro). Serve para todo tema novo.
 // Uso: node scripts/audit-theme.mjs <id do tema> [cenas separadas por vírgula] [base, padrão http://127.0.0.1:5101/, o app em dev ou o build servido]
 //   MOBILE=1 audita no celular; EXPLAIN=".seletor|.outro" mostra quais regras de CSS definem a cor dos elementos (achar quem ganha da regra do tema).
-// Cenas: hub, duelo, revelacao, liga, config, quiz, resultado, progresso, colecao, conquistas, opcoes, loja. Capturas em .tmp-audit/.
+// Cenas: hub, duelo, revelacao, liga, config, quiz, resultado, progresso, colecao, conquistas, opcoes, mecenato, loja. Capturas em .tmp-audit/.
 import { readFileSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -94,6 +94,12 @@ const scenes = {
   async colecao() { await home(); await navText("Coleção"); await sleep(2500); await audit("colecao"); },
   async conquistas() { await home(); await navText("Achievements"); await sleep(5500); await audit("conquistas"); },
   async opcoes() { await home(); await navText("Opções"); await sleep(1500); await audit("opcoes"); },
+  async mecenato() {
+    await home(); await page.evaluate(() => document.querySelector(".hx-museum")?.click()); await sleep(1800);
+    for (const [index, name] of ["Expedições", "Equipamento", "Acervo", "Patronato"].entries()) { await page.evaluate((i) => document.querySelectorAll(".mc2 .st-tabs button")[i]?.click(), index); await sleep(700); await audit(`mecenato ${name}`); }
+    await page.evaluate(() => document.querySelectorAll(".mc2 .st-tabs button")[0]?.click()); await sleep(500);
+    if (await page.evaluate(() => { const b = [...document.querySelectorAll(".mc2-plan .st-btn")].find((x) => /^Zarpar/.test(x.textContent.trim())); b?.click(); return Boolean(b); })) { await sleep(600); await audit("mecenato zarpar"); }
+  },
   async loja() {
     await home(); await page.evaluate(() => document.querySelector("button.hub-coin")?.click()); await sleep(1800);
     for (const tab of ["Tudo", "Temas", "Modos", "Rodadas", "Suprimentos", "Ligas"]) { await page.evaluate((t) => [...document.querySelectorAll(".st-tabs button")].find((b) => b.firstChild?.textContent.trim() === t)?.click(), tab); await sleep(500); await audit(`loja ${tab}`); }

@@ -254,6 +254,10 @@ export async function startLearningSession(input: {
       // Tônico de XP: a rodada de uma partida solo (nunca duelo/PvP) gasta uma rodada do Tônico e fica marcada `boosted`.
       const round: LearningRound = !input.duel && takeTonicRound() ? { ...roundIn, boosted: true } : roundIn;
       input.onRound?.(round);
+      // Mecenato: o acerto limpo (sem suprimento, fora do duelo/PvP) acelera as expedições da região do país (mecenato-store.ts).
+      if (!input.duel && round.correct && !round.assisted) {
+        void import("./mecenato-store.js").then((mecenato) => mecenato.noteExpeditionHit({ targetId: round.targetId, family: input.family, variant: input.variant, pace: input.pace ?? "timed", tier: round.tier })).catch(() => undefined);
+      }
       const sessionAfterRound = {
         ...current,
         rounds: [...current.rounds, round],

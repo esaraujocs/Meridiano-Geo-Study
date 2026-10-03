@@ -14,7 +14,9 @@ import type { EconomySnapshot } from "../domain/economy-store";
 import { pickShowcaseTheme } from "../domain/hub-showcase";
 import { missingCoins } from "../domain/themes";
 import { MUSEUM_PIECES, museumPieceById, museumPieceText } from "../domain/museum";
-import { queryMuseum, type MuseumSnapshot } from "../domain/museum-store";
+import { ROUTES, activeExpeditions, emptyProgress, isBack, nextStage, remainingMs, routeById, stageCost } from "../domain/mecenato";
+import { useMecenato } from "./use-mecenato";
+import { duration } from "./mecenato-view";
 import { formatNumber as money, t } from "../domain/i18n";
 
 // Prévias do Hub de cada tema (geradas por scripts/build-theme-previews.mjs). Sem a imagem, a amostra de cores ocupa o lugar.
@@ -271,26 +273,34 @@ export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: E
   </section>;
 }
 
-/** O Mecenato: a próxima peça do Museu Meridiano (ou o acervo completo). Abre o Museu. */
-export function HubMuseum({ balance, onOpen }: { balance: number; onOpen: () => void }) {
-  const [snapshot, setSnapshot] = useState<MuseumSnapshot | null>(null);
-  useEffect(() => { void queryMuseum().then(setSnapshot).catch(() => undefined); }, [balance]);
-  const next = snapshot?.nextId ? museumPieceById(snapshot.nextId) : undefined;
-  const shown = next ?? (snapshot ? MUSEUM_PIECES[MUSEUM_PIECES.length - 1] : MUSEUM_PIECES[0]);
-  const text = museumPieceText(shown);
-  const owned = new Set(snapshot?.owned ?? []);
-  const done = Boolean(snapshot) && !next;
-  return <button type="button" className="hx-museum" onClick={onOpen} aria-label={`${t.hub.museumName} · ${text.title}`}>
-    <span className="hx-museum-img" style={{ backgroundImage: `url(${shown.image})` }} aria-hidden="true" />
+/** O Mecenato (v2): o que está acontecendo no porto — a expedição que voltou, a que está no mar ou a próxima etapa da rota aberta. Abre o Mecenato. */
+export function HubMecenato({ onOpen }: { onOpen: () => void }) {
+  const view = useMecenato();
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const timer = window.setInterval(() => setNow(Date.now()), 60_000); return () => window.clearInterval(timer); }, []);
+  const active = view ? activeExpeditions(view) : [];
+  const backRecord = view ? active.find((record) => isBack(record, view.progress[record.id] ?? emptyProgress(), now)) : undefined;
+  const sailingRecord = active.find((record) => record !== backRecord);
+  const route = ROUTES.find((item) => item.open)!;
+  const next = view ? nextStage(route, view) : 0;
+  const pieceOf = (record?: { route: string; stage: number }) => (record ? museumPieceById(routeById(record.route)?.stages[record.stage]?.piece ?? "") : undefined);
+  const shownRecord = backRecord ?? sailingRecord;
+  const nextPiece = next !== null ? museumPieceById(route.stages[next]?.piece ?? "") : undefined;
+  const piece = pieceOf(shownRecord) ?? nextPiece ?? MUSEUM_PIECES[0];
+  const text = museumPieceText(piece);
+  const label = backRecord ? t.mecenato.hubBack : sailingRecord && view ? t.mecenato.hubSailing(duration(remainingMs(sailingRecord, view.progress[sailingRecord.id] ?? emptyProgress(), now))) : next !== null ? t.mecenato.hubNext : t.mecenato.hubDone;
+  const owned = view ? MUSEUM_PIECES.filter((item) => view.ownedPieces.has(item.id)).length : 0;
+  return <button type="button" className={`hx-museum${backRecord ? " is-back" : ""}`} onClick={onOpen} aria-label={`${t.hub.museumName} · ${label} · ${text.title}`}>
+    <span className="hx-museum-img" style={{ backgroundImage: `url(${piece.image})` }} aria-hidden="true" />
     <span className="hx-museum-text">
-      <small>{t.hub.museumName}</small>
-      <b>{done ? t.hub.museumDone : text.title}</b>
-      <span>{done ? t.hub.museumCount(owned.size, MUSEUM_PIECES.length) : `${text.subtitle}`}</span>
-      <span className="hx-museum-dots" aria-hidden="true">{MUSEUM_PIECES.map((piece) => <i key={piece.id} className={owned.has(piece.id) ? "on" : ""} />)}<em>{t.hub.museumCount(owned.size, MUSEUM_PIECES.length)}</em></span>
+      <small>{t.hub.museumName} · {label}</small>
+      <b>{text.title}</b>
+      <span>{text.subtitle}</span>
+      <span className="hx-museum-dots" aria-hidden="true">{MUSEUM_PIECES.map((item) => <i key={item.id} className={view?.ownedPieces.has(item.id) ? "on" : ""} />)}<em>{t.mecenato.archiveCount(owned, MUSEUM_PIECES.length)}</em></span>
     </span>
     <span className="hx-museum-act">
-      {!done && next && <span className="hx-price"><i aria-hidden="true">$</i>{money(next.cost)}</span>}
-      <span className="hx-btn is-light">{done ? t.hub.museumVisit : t.hub.museumReveal} <Icon type="arrow" size={14} /></span>
+      {!shownRecord && next !== null && <span className="hx-price"><i aria-hidden="true">$</i>{money(stageCost(route, next))}</span>}
+      <span className="hx-btn is-light">{backRecord ? t.mecenato.land : shownRecord ? t.hub.museumVisit : next !== null ? t.mecenato.go : t.hub.museumVisit} <Icon type="arrow" size={14} /></span>
     </span>
   </button>;
 }

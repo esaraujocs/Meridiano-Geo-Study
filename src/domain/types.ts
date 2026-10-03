@@ -73,6 +73,7 @@ export type Screen =
   | "history"
    | "options"
   | "store"
+  | "mecenato"
   | "league"
   | "duel-reveal"
   | "duel-interlude"

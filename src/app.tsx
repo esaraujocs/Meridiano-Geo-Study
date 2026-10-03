@@ -85,6 +85,9 @@ import {
   pvpChallenge, pvpFriendRemove, pvpFriendRequest, pvpFriendRespond, pvpFriends, pvpLeaderboard, pvpPlayer, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
 } from "./domain/pvp-client";
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
+import { MecenatoView } from "./components/mecenato-view";
+import { queryMecenato } from "./domain/mecenato-store";
+import "./mecenato.css";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
   Boolean(meta?.un || id === "336");
@@ -246,6 +249,8 @@ export function App() {
   const refreshEconomyForMuseum = () => queryEconomy().then(setEconomy);
   const [supplies, setSupplies] = useState<SupplyCounts>(emptySupplyCounts());
   const refreshSupplies = () => supplyCounts().then(setSupplies).catch(() => undefined);
+  // Mecenato: carrega o Acervo e o Equipamento em memória cedo (o mapa da partida e o Hub leem os itens equipados de lá)
+  useEffect(() => { void queryMecenato().catch(() => undefined); }, []);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
   const arenaCards = useMemo(() => ladderCards(ladderEntries, economy.unlocked), [ladderEntries, economy.unlocked]);
   const arenaNext = useMemo(() => nextMilestones(ladderEntries), [ladderEntries]);
@@ -895,7 +900,7 @@ export function App() {
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } if (destination === "store") setStoreTab("all"); setScreen(destination); };
   const openThemes = () => { setStoreTab("themes"); setScreen("store"); };
-  const openMuseum = () => { setCollectionRegion("mundo"); setCollectionAlbum("museum"); setScreen("collection"); };
+  const openMuseum = () => setScreen("mecenato");
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
   const trainGroup = async (group: ModeGroup) => {
     const mode = groupDef(group).variants[0];
@@ -1274,6 +1279,9 @@ export function App() {
   }
   if (screen === "league") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
+  }
+  if (screen === "mecenato") {
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="collection" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><MecenatoView onBack={() => setScreen("hub")} onEconomyRefresh={refreshEconomy} onSuppliesRefresh={refreshSupplies} /></main></div>;
   }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store">{trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onEnd={endTrial} />}<StoreView onTry={tryTheme} initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;

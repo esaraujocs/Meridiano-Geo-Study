@@ -20,9 +20,7 @@ import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
 import { ProgressHero } from "./progress-hero";
 import { t } from "../domain/i18n";
-import { MuseumView } from "./museum-view";
 import { MUSEUM_PIECES } from "../domain/museum";
-import { museumCopy } from "./museum-copy";
 import { locale } from "../domain/i18n/locale";
 
 type SurfaceState = Awaited<ReturnType<typeof querySurfaces>>;
@@ -164,7 +162,8 @@ export function CollectionView({ state, meta, names, initialRegion, initialAlbum
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
-  const [album, setAlbum] = useState<"countries" | "historical" | "museum">(initialAlbum ?? "countries");
+  // o Museu saiu da Coleção (04/10/2026): virou a tela própria do Mecenato
+  const [album, setAlbum] = useState<"countries" | "historical" | "museum">(initialAlbum === "historical" ? "historical" : "countries");
   const [region, setRegion] = useState<Region>(initialRegion ?? "mundo");
   const [level, setLevel] = useState<LevelFilter>("todas");
   const [unOnly, setUnOnly] = useState(false);
@@ -234,7 +233,6 @@ export function CollectionView({ state, meta, names, initialRegion, initialAlbum
       <div className="col-tabs" role="group" aria-label={t.collection.album}>
         <button type="button" className="col-tab" aria-pressed={isCountries} onClick={() => switchAlbum("countries")}>{t.collection.countries} <em>{discovered}/{cards.length}</em></button>
         <button type="button" className="col-tab" aria-pressed={isHistorical} onClick={() => switchAlbum("historical")}>{t.collection.historical} <em>{historicalDiscovered}/{allHistorical.length}</em></button>
-        <button type="button" className="col-tab" data-album="museum" aria-pressed={isMuseum} onClick={() => switchAlbum("museum")}>{museumCopy[locale].title} <em>03</em></button>
       </div>
       {!isMuseum && <div className="col-tools">
         {isCountries && <label className="col-switch"><input type="checkbox" checked={unOnly} onChange={(event) => setUnOnly(event.target.checked)} /><i aria-hidden="true" />{t.collection.onlyUn}</label>}
@@ -278,6 +276,6 @@ export function CollectionView({ state, meta, names, initialRegion, initialAlbum
     {selectedCountry && selectedCountry.mastery > 0 && <CountryDetail card={selectedCountry} meta={meta[selectedCountry.id]} names={names} src={src(flags, selectedCountry.flag)} onClose={closeCard} onPrev={position > 0 ? () => go(-1) : undefined} onNext={position >= 0 && position < navigable.length - 1 ? () => go(1) : undefined} />}
     {selectedHistorical && selectedHistorical.discovered && <HistoricalDetail card={selectedHistorical} src={src(historicalFlags, selectedHistorical.flag)} onClose={closeCard} onPrev={position > 0 ? () => go(-1) : undefined} onNext={position >= 0 && position < navigable.length - 1 ? () => go(1) : undefined} />}
     </>}
-    {isMuseum && <MuseumView onEconomyRefresh={onEconomyRefresh} />}
+
   </section>;
 }

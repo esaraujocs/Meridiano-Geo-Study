@@ -3,7 +3,7 @@
 // carta portulana. Lógica pura.
 
 /** Linhas de rumo: 16 direções a partir de cada rosa dos ventos (longitude e latitude), retas no Mercator como nas cartas portulanas. */
-export type RhumbSpec = { color: string; opacity: number; hubs: readonly (readonly [number, number])[] };
+export type RhumbSpec = { color: string; opacity: number; hubs: readonly (readonly [number, number])[]; directions?: number };
 
 export type MapPalette = {
   ocean: string;
@@ -25,6 +25,10 @@ export type MapPalette = {
   coast: string | null;
   /** Linhas de rumo sobre o mar; sem elas (null) não há. */
   rhumb: RhumbSpec | null;
+  /** Traço de tinta por cima das costas e fronteiras (estilos de mapa do Mecenato, como a gravura de 1507); sem ele (null) vale só o contorno fino da terra. */
+  ink?: { color: string; width: number; opacity: number } | null;
+  /** Espaçamento da quadrícula em graus (padrão 30). */
+  graticuleStep?: number;
 };
 
 export const DEFAULT_MAP_PALETTE: MapPalette = {

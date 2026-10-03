@@ -16,7 +16,11 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HubCarousel, HubDuel, HubMuseum, HubShowcase } from "./hub-parts";
+import { HubCarousel, HubDuel, HubMecenato, HubShowcase } from "./hub-parts";
+import { useMecenato } from "./use-mecenato";
+import { activeCosmetics } from "../domain/mecenato-store";
+import { rankFor } from "../domain/mecenato";
+import { LevelFrame } from "./level-frame";
 import type { LadderCard } from "../domain/duel-view";
 import type { Milestone } from "../domain/duel-rewards";
 import type { LeaderboardRow } from "../domain/pvp";
@@ -273,6 +277,10 @@ export function Hub({
   const league = leagueOf(trophies);
   const leagueLabel = t.duel.leagueName(t.duel.leagues[league.league], divisionRoman(league.division));
   const framed = duelsPlayed > 0;
+  // Mecenato: a moldura do nível equipada (no lugar da da liga) e o posto do Patronato ao lado do título
+  const mecenato = useMecenato();
+  const mcFrame = mecenato ? activeCosmetics()["level-frame"] : undefined;
+  const patron = mecenato ? rankFor(mecenato.invested) : null;
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
   const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");
@@ -316,7 +324,8 @@ export function Hub({
       <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
         <div className="hub-bar hx-piece hx-p-brand"><div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div></div>
         <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
-          <div className={`hub-level${framed ? " lg-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
+          <div className={`hub-level${framed && !mcFrame ? " lg-frame" : ""}${mcFrame ? " has-mc-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
+            {mcFrame && <LevelFrame id={mcFrame} />}
             <LevelTicks />
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
             <strong>{level}</strong>
@@ -327,6 +336,7 @@ export function Hub({
             <p className="hub-title">{profile.title}</p>
             {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge" title={title.label}><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
             <p className="hub-mastery" title={masteryRest.join(" · ") || undefined}><b>{masteryHead}</b></p>
+            {patron && <p className="hub-patron" title={t.mecenato.rank.label}><i aria-hidden="true">{patron.roman}</i>{(t.mecenato.rank.names as Record<string, string>)[patron.id]}</p>}
             {economy && <p className="hub-tally" title={t.hub.tallyTitle}>{t.hub.tally(economy.completedSessions, economy.rounds, formatNumber)}</p>}
           </div>
           <div className="hub-xp">
@@ -363,7 +373,7 @@ export function Hub({
         </section>
         <section className="hx-cell hx-mecenato" aria-labelledby="hx-mec-title">
           <div className="section-label"><h2 id="hx-mec-title">{t.hub.mecenato}</h2></div>
-          <HubMuseum balance={economy?.balance ?? 0} onOpen={() => onOpenMuseum?.()} />
+          <HubMecenato onOpen={() => onOpenMuseum?.()} />
         </section>
       </div>
     </main>
