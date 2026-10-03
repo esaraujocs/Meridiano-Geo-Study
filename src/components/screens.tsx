@@ -261,6 +261,11 @@ export function Hub({
   const isFamilyUnlocked = (item: (typeof familyItems)[number]) => item.family === "idiomas"
     ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
     : unlocked(item.family, item.variant);
+  /** Modos que ainda vêm: aparecem no carrossel, sem jogar. */
+  const soonItems = [
+    { key: "gentilico", label: t.families.gentilico, description: t.hub.familyDescriptions.gentilico, icon: "people" as const },
+    { key: "moedas", label: t.families.moedas, description: t.hub.familyDescriptions.moedas, icon: "coins" as const },
+  ];
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
   const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
@@ -300,6 +305,11 @@ export function Hub({
       </div>
     </div>;
   };
+  const soonCard = (item: (typeof soonItems)[number]) => <div key={item.key} data-fam={item.key} className="family hx-mode is-soon">
+    <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
+    <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
+    <div className="family-footer"><span className="hx-stat" /><span className="hx-soon"><Icon type="clock" size={14} /> {t.hub.soon}</span></div>
+  </div>;
   return (
     <main className="content hub-content hx">
       <h1 className="sr-only">Meridiano</h1>
@@ -324,7 +334,7 @@ export function Hub({
           </div>
         </div>
         <div className="hub-stats">
-          {onOpenLeague && <button type="button" className="hub-rank" data-league={league.league} aria-label={t.duel.chipAria(formatNumber(trophies), leagueLabel)} title={leagueLabel} onClick={onOpenLeague}><i aria-hidden="true"><Icon type="achievements" size={15} /></i><strong>{formatNumber(trophies)}</strong><small>{leagueLabel}</small></button>}
+          {arenas?.onFriends && <button type="button" className="hub-friends" aria-label={t.hub.duelFriends} title={t.hub.duelFriends} onClick={arenas.onFriends}><Icon type="people" size={19} /><span>{t.hub.duelFriends}</span></button>}
           <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><span className="hub-coin-store"><Icon type="store" size={15} /> {t.nav.store}</span></button>
           <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
         </div>
@@ -332,7 +342,7 @@ export function Hub({
       <div className="hx-grid">
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
           <div className="section-label"><h2 id="hx-modes-title">{t.hub.modesTitle}</h2></div>
-          <HubCarousel label={t.hub.modesRegion}>{familyItems.map(modeCard)}</HubCarousel>
+          <HubCarousel label={t.hub.modesRegion}>{[...familyItems.map(modeCard), ...soonItems.map(soonCard)]}</HubCarousel>
         </section>
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
@@ -342,7 +352,12 @@ export function Hub({
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
           <div className="hub-progress-grid">
-            {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}><span className="hub-progress-icon"><Icon type={tile.icon} /></span><span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span><em className="hub-progress-caption">{tile.caption}</em></span><Icon type="arrow" /></button>)}
+            {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}>
+              <span className="hx-tile-mark" aria-hidden="true"><Icon type={tile.icon} size={150} /></span>
+              <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" /><circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} /></svg><Icon type={tile.icon} /></span>
+              <span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span></span>
+              <span className="hx-tile-foot"><em className="hub-progress-caption">{tile.caption}</em><span className="hx-tile-go" aria-hidden="true">{t.hub.progressGo} <Icon type="arrow" size={14} /></span></span>
+            </button>)}
           </div>
         </section>
         <section className="hx-cell hx-mecenato" aria-labelledby="hx-mec-title">

@@ -32,7 +32,9 @@ export type IconType =
   | "compass"
   | "hourglass"
   | "check"
-  | "close";
+  | "close"
+  | "people"
+  | "coins";
 
 export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
   return (
@@ -70,6 +72,8 @@ export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
         </>
       )}
       {type === "cross" && <path d="M12 3v18M3 12h18" />}
+      {type === "people" && <><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.4 2.7-6 6-6s6 2.6 6 6" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.2c3 .1 5 2.3 5 5.8" /></>}
+      {type === "coins" && <><ellipse cx="12" cy="7" rx="7" ry="3" /><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7" /><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" /></>}
       {type === "close" && <path d="M6 6l12 12M18 6L6 18" />}
       {type === "settings" && <><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37 1 .608 2.296.07 2.572-1.065Z" /><circle cx="12" cy="12" r="3" /></>}
       {type === "collection" && <><path d="M5 5h11a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V5Z" /><path d="M8 2h11a2 2 0 0 1 2 2v12M8 9h7M8 13h7" /></>}

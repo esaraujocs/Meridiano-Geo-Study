@@ -48,6 +48,7 @@ async function freshWith(themeId) {
       const button = document.querySelectorAll(".hub-progress-grid button")[index];
       const value = button?.querySelector("strong"); if (value) value.textContent = text;
       const bar = button?.querySelector(".hub-progress-bar i"); if (bar) bar.style.width = `${pct}%`;
+      const arc = button?.querySelector(".hx-ring-arc"); if (arc) arc.setAttribute("stroke-dasharray", `${2 * Math.PI * 32 * pct / 100} ${2 * Math.PI * 32}`);
     });
   });
   await sleep(250);
@@ -62,8 +63,9 @@ for (const theme of THEMES.filter((item) => !only || only.includes(item.id))) {
     const content = rect(".hub-content"), bar = rect(".hub-bar"), progress = rect(".hx-progress");
     return { x: content.left, width: content.width, top: bar.top, bottom: progress.bottom };
   });
-  const width = box.width + 72;
-  const clip = { x: Math.max(0, box.x - 36), y: Math.max(0, box.top - 16), width, height: Math.round(width * FRAME) };
+  // o quadro tem proporção fixa: se o conteúdo for mais alto que ele, a janela de captura alarga (sobra só o fundo do tema dos lados)
+  const width = Math.min(1920, Math.max(box.width + 72, (box.bottom - box.top + 32) / FRAME));
+  const clip = { x: Math.max(0, box.x + box.width / 2 - width / 2), y: Math.max(0, box.top - 16), width, height: Math.round(width * FRAME) };
   // captureBeyondViewport:false — o padrão redimensiona a janela na captura e o carrossel (scroll-snap) mudava de cartão. Sem ele o Puppeteer ignora a escala,
   // então a captura sai inteira e é reduzida aqui no Chrome (meio a meio, com suavização) até a largura da Loja.
   const shot = await page.screenshot({ type: "png", captureBeyondViewport: false, clip });

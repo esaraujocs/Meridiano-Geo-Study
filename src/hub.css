@@ -10,8 +10,8 @@
 /* ───────── header fino ───────── */
 .hx .hub-bar{display:flex;align-items:center;gap:18px;height:80px;min-height:0;padding:0 18px;margin:0 0 4px;overflow:visible;border-radius:18px}
 .hx .hub-meridian,.hx .hub-rule,.hx .hub-eyebrow{display:none}
-.hx .hub-brand{display:flex;flex-direction:row;align-items:center;gap:10px;flex:none;padding:0 18px 0 0;border-right:1px solid var(--line);color:var(--ink);font-size:11.5px;font-weight:800;letter-spacing:.12em;white-space:nowrap}
-.hx .hub-brand .brand-logo{width:38px;height:38px}
+.hx .hub-brand{display:flex;flex-direction:row;align-items:center;gap:12px;flex:none;padding:0 26px 0 8px;border-right:1px solid var(--line);color:var(--ink);font-size:11.5px;font-weight:800;letter-spacing:.12em;white-space:nowrap}
+.hx .hub-brand .brand-logo{width:46px;height:46px;border-radius:12px}
 .hx .hub-brand span{padding-left:0}
 .hx .hub-player{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ring head" "ring xp";column-gap:14px;row-gap:5px;align-items:center;flex:1;min-width:0;padding:0;border:0;justify-content:start}
 .hx .hub-level{grid-area:ring;width:54px;height:54px;margin:0}
@@ -27,10 +27,12 @@
 .hx .hub-xp{grid-area:xp;display:flex;flex-wrap:nowrap;align-items:center;gap:10px;margin:0;min-width:0;white-space:nowrap}
 .hx .hub-xp-label{flex:none}
 .hx .hub-xp-next{display:inline}
-.hx .hub-track{flex:0 1 240px;height:6px;margin:0}
+.hx .hub-track{flex:1 1 240px;max-width:560px;height:7px;margin:0}
 .hx .hub-xp-label{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.hx .hub-friends{display:inline-flex;align-items:center;gap:8px;flex:none;padding:0 16px 0 12px;height:42px;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);font:700 12.5px 'Plus Jakarta Sans',sans-serif}
+.hx .hub-friends:hover{border-color:var(--green);color:var(--green)}
+@media (min-width:1280px){.hx .hub-badge{width:auto;padding:3px 11px 3px 8px;gap:6px}.hx .hub-badge-label{position:static;width:auto;height:auto;overflow:visible;clip:auto;font:700 11px 'Plus Jakarta Sans',sans-serif}}
 .hx .hub-stats{display:flex;align-items:center;gap:10px;flex:none;padding:0;border:0;justify-content:flex-end}
-.hx .hub-rank{display:inline-flex;align-items:center;gap:7px}
 .hx .hub-coin{margin:0;padding:5px 12px 5px 6px;gap:8px}
 .hx .hub-coin strong{font-size:18px}
 .hx .hub-coin-store{display:inline-flex;align-items:center;gap:5px;margin-left:2px;padding-left:9px;border-left:1px solid var(--line);color:var(--green);font:700 11.5px 'Plus Jakarta Sans',sans-serif}
@@ -41,7 +43,7 @@
 /* A página usa a largura que a janela der (até 1760 px): o Hub é a tela de entrada e as laterais ficavam vazias. A coluna da direita (Duelo, Vitrine) cresce
    com a janela e o vão entre as duas colunas também; os cartões de modo não encolhem, quem cede é o vão. */
 @media (min-width:1024px){
-  .hx.hub-content{max-width:1760px;padding-inline:clamp(24px,2.8vw,56px)}
+  .hx.hub-content{max-width:1560px;padding-inline:clamp(24px,2.8vw,56px)}
 }
 .hx-grid{display:grid;grid-template-columns:minmax(0,1fr) clamp(320px,24vw,460px);grid-template-rows:auto auto;column-gap:clamp(30px,3.2vw,60px);align-items:stretch}
 .hx-cell{display:flex;flex-direction:column;min-width:0}
@@ -85,6 +87,11 @@
 .hx-dots button{position:relative;width:26px;height:22px;padding:0;border:0;background:transparent}
 .hx-dots button::before{content:"";position:absolute;left:8px;top:7px;width:10px;height:8px;border-radius:99px;background:rgba(47,111,106,.28);transition:width .2s,left .2s}
 .hx-dots button[aria-current=true]::before{left:3px;width:20px;background:var(--green)}
+
+/* modos que ainda vêm (Gentílicos, Moedas): cartão na tinta do tema, sem jogar */
+[data-fam=gentilico],[data-fam=moedas]{--h:var(--green);--hb:var(--green);--hg:var(--green);--h2:var(--green);--on:#fff4df}
+.hx .family.hx-mode.is-soon{filter:saturate(.55);border-style:dashed}
+.hx-soon{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px dashed currentColor;border-radius:99px;color:var(--ink);font:800 12px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
 
 /* ───────── Duelo ───────── */
 .hx-duel{position:relative;display:grid;gap:9px;padding:12px 16px 14px;border-radius:18px;border:1px solid var(--duel-c);background:linear-gradient(160deg,var(--duel-a),var(--duel-b) 60%,var(--duel-c));color:#fff4df;box-shadow:0 16px 26px -18px var(--duel-a);overflow:hidden;text-align:left}
@@ -158,18 +165,30 @@
 .hx-supply-art[data-supply=bussola]{background:radial-gradient(circle at 30% 22%,#fbebc4,#d2a24c)}
 .hx-supply-art[data-supply=ampulheta]{background:radial-gradient(circle at 30% 22%,#e7def5,#9582c0)}
 
-/* ───────── progresso (tiles verticais) ───────── */
+/* ───────── progresso (tiles com anel) ───────── */
 .hx-progress .section-label{margin-top:22px}
 .hx-progress .hub-progress-grid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.hx-progress .hub-progress-grid button{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"icon arrow" "text text";align-content:space-between;align-items:start;justify-items:stretch;gap:6px 8px;min-height:150px;height:100%;padding:14px 16px 13px;text-align:left}
-.hx-progress .hub-progress-icon{grid-area:icon;width:42px;height:42px}
-.hx-progress .hub-progress-icon svg{width:22px;height:22px}
-.hx-progress .hub-progress-grid button>svg{grid-area:arrow;position:static;justify-self:end;margin:0;color:var(--muted)}
-.hx-progress .hub-progress-text{grid-area:text;flex:none;display:grid;gap:0}
-.hx-progress .hub-progress-grid strong{font-size:30px;line-height:1;white-space:nowrap}
-.hx-progress .hub-progress-grid small{margin-top:4px;font-size:12.5px}
-.hx-progress .hub-progress-bar{display:block;height:5px;margin:9px 0 6px}
-.hx-progress .hub-progress-caption{display:block;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hx-progress .hub-progress-grid button{--tile:var(--green);position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"icon text" "foot foot";align-content:space-between;align-items:center;gap:12px 16px;min-height:170px;height:100%;padding:18px 20px 14px;overflow:hidden;text-align:left;transition:transform .15s,box-shadow .15s}
+.hx-progress .hub-progress-grid button:hover{transform:translateY(-3px);box-shadow:0 18px 28px -20px rgba(36,59,58,.6)}
+.hx-progress [data-tile=collection]{--tile:#b98a2e}.hx-progress [data-tile=achievements]{--tile:#b65f47}.hx-progress [data-tile=progress]{--tile:#2f8f83}
+:root[data-scheme=dark] .hx-progress [data-tile=collection]{--tile:#e8b84a}:root[data-scheme=dark] .hx-progress [data-tile=achievements]{--tile:#ee7968}:root[data-scheme=dark] .hx-progress [data-tile=progress]{--tile:#58d6d0}
+.hx-tile-mark{position:absolute;right:-26px;top:-30px;color:var(--tile);opacity:.07;pointer-events:none}
+.hx-tile-mark svg{width:170px;height:170px;stroke-width:1}
+.hx-progress .hub-progress-icon{grid-area:icon;position:relative;display:grid;place-items:center;width:62px;height:62px;margin:9px;border-radius:50%}
+.hx-progress .hub-progress-icon>svg:not(.hx-ring){width:30px;height:30px}
+.hx-progress .hub-progress-icon>svg.hx-ring{position:absolute;inset:-9px;width:calc(100% + 18px);height:calc(100% + 18px);margin:0;transform:rotate(-90deg)}
+.hx-ring circle{fill:none;stroke-width:4.5}
+.hx-ring-track{stroke:color-mix(in srgb,var(--tile) 20%,transparent)}
+.hx-ring-arc{stroke:var(--tile);stroke-linecap:round}
+.hx-progress .hub-progress-text{grid-area:text;display:grid;gap:0;min-width:0}
+.hx-progress .hub-progress-grid strong{font-size:36px;line-height:1;white-space:nowrap}
+.hx-progress .hub-progress-grid small{margin-top:5px;font-size:13px}
+.hx-progress .hub-progress-bar{display:none}
+.hx-tile-foot{grid-area:foot;position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:11px;border-top:1px solid color-mix(in srgb,var(--tile) 24%,transparent)}
+.hx-progress .hub-progress-caption{display:block;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hx-tile-go{display:inline-flex;align-items:center;gap:5px;flex:none;padding:5px 12px;border-radius:99px;background:var(--tile);color:#fff;font:800 11.5px 'Plus Jakarta Sans',sans-serif}
+.hx-progress .hub-progress-grid button:hover .hx-tile-go{filter:brightness(.92)}
+:root[data-scheme=dark] .hx-tile-go{color:#0c1a24}
 
 /* ───────── Mecenato ───────── */
 .hx-mecenato .section-label{margin-top:22px}
@@ -220,10 +239,9 @@
   .hx .hub-track{flex:1 1 auto}
   .hx .hub-xp-label{display:none}
   .hx .hub-stats{gap:5px;padding:0;border:0}
-  .hx .hub-rank{padding:3px 9px;gap:4px;margin:0}
-  .hx .hub-rank i{display:none}
-  .hx .hub-rank small{display:none}
-  .hx .hub-rank strong{font-size:16px}
+  .hx .hub-friends{width:30px;height:30px;padding:0;justify-content:center}
+  .hx .hub-friends span{display:none}
+  .hx .hub-friends svg{width:17px;height:17px}
   .hx .hub-coin{margin:0;padding:3px 9px 3px 4px;gap:5px}
   .hx .hub-coin-store{display:none}
   .hx .hub-coin strong{font-size:14.5px}

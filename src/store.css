@@ -1,5 +1,5 @@
 /* Loja reimaginada (03/10/2026). Só layout e as peças novas (`st-*`); usa as variáveis de cor de cada tema. */
-.st-screen{max-width:1760px;padding-inline:clamp(24px,2.8vw,56px)}
+.st-screen{max-width:1560px;padding-inline:clamp(24px,2.8vw,56px)}
 .st{display:flex;flex-direction:column}
 .st-bar{display:flex;align-items:center;gap:16px;padding:10px 16px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--paper) 70%,transparent);box-shadow:0 14px 26px -22px rgba(36,59,58,.5)}
 .st-back{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
