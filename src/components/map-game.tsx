@@ -47,6 +47,8 @@ const SPLIT_ISLAND_IDS = ["534", "663", "16", "162"];
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
+/** Cor do continente marcado pela Bússola: âmbar, que não se confunde com o verde do acerto nem com o vermelho do erro. */
+const BUSSOLA_COLOR = "#e6b04a";
 const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -122,6 +124,11 @@ export function Game({
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const bussolaUsed = supply.usedThisRound.has("bussola");
+  // Bússola: o continente do alvo fica pintado no mapa (todos os países dele), além do nome embaixo do alvo
+  const bussolaIds = useMemo(() => {
+    const reg = bussolaUsed ? data.meta[target]?.reg : undefined;
+    return reg ? Object.keys(data.meta).filter((id) => data.meta[id]?.reg === reg) : null;
+  }, [bussolaUsed, target, data.meta]);
 
   const openSession = () => {
     const pending = startLearningSession({
@@ -639,6 +646,8 @@ export function Game({
     const settled = Boolean(feedback);
     // Fora do alvo desta rodada: só fica marcado no Treino (revealNames), com todo país já perguntado até aqui.
     const marked = revealNames && revealed.length ? revealed : null;
+    const hintColor = BUSSOLA_COLOR;
+    const tinted = bussolaIds && !settled ? bussolaIds : null;
     try {
       map.setPaintProperty("land", "fill-color", [
         "case",
@@ -646,6 +655,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         palette.wrong,
+        ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -655,6 +665,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         palette.wrong,
+        ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -664,6 +675,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         palette.wrong,
+        ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -673,6 +685,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         palette.wrong,
+        ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
          palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -683,6 +696,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
         palette.wrong,
+        ...(tinted ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", marked]], answerColor] : []),
         palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
@@ -697,7 +711,7 @@ export function Game({
           : t.map.highlightFailed,
       );
     }
-  }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames]);
+  }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames, bussolaIds]);
 
   // Rótulo escrito (HTML por cima do mapa, não texto nativo do MapLibre) para cada país/capital já perguntado.
   // Reaproveita maplibregl.Marker: ele já se reposiciona sozinho a cada pan/zoom, sem projetar coordenada à mão.

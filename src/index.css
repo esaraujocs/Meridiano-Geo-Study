@@ -97,7 +97,8 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 .map-crosshair span{position:absolute;top:43px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:6px 9px;border:1px solid rgba(246,239,223,.5);border-radius:var(--radius);background:rgba(20,38,36,.92);color:#f6efdf;font:10px 'DM Mono'}
 .map-target-overlay{position:absolute;z-index:3;top:86px;left:50%;transform:translateX(-50%);display:grid;gap:4px;text-align:center;padding:11px 18px;border:1px solid rgba(199,182,143,.7);border-radius:var(--radius);background:rgba(20,38,36,.94);color:#d5cba8;pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.15)}
 .map-target-overlay span{font:10px 'DM Mono';text-transform:uppercase;letter-spacing:.15em}.map-target-overlay strong{font-family:'Fraunces',Georgia,serif;font-size:clamp(24px,3vw,42px);color:#f6efdf;line-height:1}
-.map-bussola-hint{font:600 12px 'Plus Jakarta Sans',sans-serif;color:#9bd3c2;font-style:normal}
+.map-bussola-hint{display:inline-flex;align-items:center;gap:7px;font:700 14px 'Plus Jakarta Sans',sans-serif;color:#f0cf8f;font-style:normal}
+.map-bussola-hint::before{content:"";width:10px;height:10px;border-radius:50%;background:#e6b04a;box-shadow:0 0 0 3px rgba(230,176,74,.28)}
 .map-target-overlay .gs-supplies{pointer-events:auto;margin-top:2px}
 /* .map-target-overlay span vira claro (para o nome do alvo em fundo escuro): a bandeja de suprimentos fica num botão claro por cima, então o texto dela precisa do próprio contraste. */
 .map-target-overlay .gs-supply span{color:var(--ink)!important;font:700 11px 'Plus Jakarta Sans',sans-serif;text-transform:none;letter-spacing:normal}
