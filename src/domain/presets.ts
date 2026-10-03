@@ -77,6 +77,24 @@ export function parsePreset(value: unknown): Preset | null {
   return { ...config, id: row.id, name, favorite: row.favorite === true, createdAt: Number(row.createdAt) || 0, updatedAt: Number(row.updatedAt) || 0 };
 }
 
+// ---- Última partida de cada família (o "Continuar" do Hub) ----
+// Gravada ao começar uma partida solo: o mesmo desenho da favorita (modo, ritmo, rodadas, recorte e filtro), sem nome. Fica no localStorage do aparelho.
+export const LAST_CONFIG_PREFIX = "carta-last-config:";
+
+/** Lê o que foi gravado como última partida; qualquer coisa fora do que o jogo conhece vira `null` (o Hub então mostra "Jogar"). */
+export function parseLastConfig(raw: unknown, topFamily: TopFamily): PresetConfig | null {
+  let value: unknown = raw;
+  if (typeof raw === "string") { try { value = JSON.parse(raw); } catch { return null; } }
+  const row = value as Partial<PresetConfig> | null;
+  if (!row || typeof row !== "object" || row.topFamily !== topFamily) return null;
+  if (typeof row.variant !== "string" || !variantContextFor(topFamily, row.variant)) return null;
+  if (!isPace(row.pace) || !isRoundTier(row.roundTier)) return null;
+  if (!Array.isArray(row.region) || row.region.length === 0) return null;
+  const knownRegions = new Set(REGION_ITEMS.map(([key]) => key));
+  if (!row.region.every((item) => knownRegions.has(item as Region))) return null;
+  return configOf({ topFamily, variant: row.variant as AnyQuizVariant, pace: row.pace, roundTier: row.roundTier, region: row.region as Region[], onlyUn: Boolean(row.onlyUn) });
+}
+
 export const presetsFor = (list: readonly Preset[], top: TopFamily) =>
   list.filter((item) => item.topFamily === top).sort((a, b) => Number(b.favorite) - Number(a.favorite) || a.createdAt - b.createdAt);
 

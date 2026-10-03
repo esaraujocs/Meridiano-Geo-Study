@@ -107,6 +107,9 @@ export const en: Messages = {
     museumDone: "Collection complete",
     museumVisit: "Visit",
     museumCount: (n: number, total: number) => `${n} of ${total} revealed`,
+    continue: "Continue",
+    adjust: "Adjust the match",
+    continueAria: (what: string) => `Continue: ${what}`,
     moreModes: "More modes",
   },
   duel: {

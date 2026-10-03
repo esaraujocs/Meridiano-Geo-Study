@@ -7,7 +7,7 @@ import { StoreView } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
 import { variantContextFor } from "./domain/match-config";
-import { createPreset, diffPresets, removePreset, renamePreset, setFavorite, updatePreset, type Preset, type PresetDraft, type PresetResult } from "./domain/presets";
+import { LAST_CONFIG_PREFIX, TOP_FAMILIES, configOf, createPreset, diffPresets, parseLastConfig, removePreset, renamePreset, setFavorite, updatePreset, type Preset, type PresetConfig, type PresetDraft, type PresetResult } from "./domain/presets";
 import { listPresets, savePresets } from "./domain/presets-store";
 import {
   buildFeatures,
@@ -37,6 +37,7 @@ import { buySupply, supplyCounts } from "./domain/supplies-store";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, resolveTheme, themeAttributes, themeById } from "./domain/themes";
 import { ResultScreen } from "./components/result-screen";
 import { buildResultView, type ResultView } from "./domain/result-view";
+import { policyFor, type UnlockKey } from "./domain/economy-rules";
 import { DEFAULT_PACE, isPace, isRoundTier, isRoundTierUnlocked, roundLimitFor, roundUnlockFor, type RoundTier, type RoundUnlockKey } from "./domain/pace";
 import type { Pace } from "./domain/spoils";
 import type { SessionResult } from "./domain/learning-store";
@@ -700,7 +701,29 @@ export function App() {
     : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, pvpRun, screen, economy.unlocked, trainOnce, pace, effectiveTier, family]);
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
-  const startGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
+  const beginGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
+  // ---- Última partida de cada modo: o "Continuar" dos cartões do Hub ----
+  const readLastConfigs = () => {
+    const found: Partial<Record<TopFamily, PresetConfig>> = {};
+    for (const top of TOP_FAMILIES) { try { const config = parseLastConfig(localStorage.getItem(LAST_CONFIG_PREFIX + top), top); if (config) found[top] = config; } catch { /* sem armazenamento */ } }
+    return found;
+  };
+  const [lastConfigs, setLastConfigs] = useState(readLastConfigs);
+  useEffect(() => { if (screen === "hub") setLastConfigs(readLastConfigs()); }, [screen]);
+  const rememberConfig = (config: PresetConfig) => { try { localStorage.setItem(LAST_CONFIG_PREFIX + config.topFamily, JSON.stringify(config)); } catch { /* sem armazenamento */ } };
+  const startGame = () => { rememberConfig(configOf({ topFamily, variant, pace, roundTier, region, onlyUn })); beginGame(); };
+  /** Repete a última partida do modo sem passar pela configuração; se algo mudou (modo ou corte de rodadas sem desbloqueio), abre a configuração. */
+  const continueGame = async (config: PresetConfig) => {
+    const context = variantContextFor(config.topFamily, config.variant);
+    const policy = context ? policyFor(context.family, context.variant, "caribe") : null;
+    const modeOpen = !policy || (policy.cost === 0 && policy.sessions === 0) || economy.unlocked.includes(policy.key as UnlockKey);
+    if (!context || !modeOpen || !isRoundTierUnlocked(config.roundTier, economy.unlocked)) { await selectFamily(config.topFamily); return; }
+    if (context.family === "bandeiras" || context.family === "historicas" || context.family === "idiomas" || context.family === "escrita") await loadSpecial();
+    setTrainOnce(false);
+    applyPreset(config);
+    rememberConfig(config);
+    beginGame();
+  };
 
   // ---- Duelo em dois tempos ----
   const newDuelId = () => (typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`);
@@ -1095,7 +1118,7 @@ export function App() {
     apply: (preset: Preset) => applyPreset(preset),
   };
   // Coloca no estado tudo o que a favorita guarda (modo, ritmo, rodadas, recorte e filtro).
-  const applyPreset = (preset: Preset) => {
+  const applyPreset = (preset: PresetConfig) => {
     const context = variantContextFor(preset.topFamily, preset.variant);
     if (!context) return;
     try { localStorage.setItem(`carta-last-variant:${preset.topFamily}`, context.variant); } catch { /* sem armazenamento */ }
@@ -1293,6 +1316,8 @@ export function App() {
             economy={economy}
           onOpenMuseum={openMuseum}
           pillarPct={pillarPct}
+          lastConfigs={lastConfigs}
+          onContinue={(config) => void continueGame(config)}
           totalEntities={data.mapEntityIds.length}
           collectionSummary={collectionSummary}
           achievementSummary={achievementSummary}

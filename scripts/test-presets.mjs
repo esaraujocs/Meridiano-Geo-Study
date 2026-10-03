@@ -97,3 +97,16 @@ assert.deepEqual(d.removedIds, [before[1].id]);
 assert.deepEqual(P.diffPresets(before, before), { changed: [], removedIds: [] });
 
 console.log("presets: ok");
+
+// última partida do Hub ("Continuar"): lê o que foi gravado e descarta o que o jogo não conhece
+const last = P.configOf(draft({ topFamily: "capitais", variant: "escrita-capital", region: "mundo", roundTier: "long", pace: "timed" }));
+assert.deepEqual(P.parseLastConfig(JSON.stringify(last), "capitais"), last, "ida e volta pelo localStorage");
+assert.equal(P.parseLastConfig(JSON.stringify(last), "mapa"), null, "de outra família não vale");
+assert.equal(P.parseLastConfig("{quebrado", "capitais"), null, "texto ilegível");
+assert.equal(P.parseLastConfig(null, "capitais"), null);
+assert.equal(P.parseLastConfig({ ...last, variant: "nao-existe" }, "capitais"), null, "modo desconhecido");
+assert.equal(P.parseLastConfig({ ...last, pace: "veloz" }, "capitais"), null, "ritmo desconhecido");
+assert.equal(P.parseLastConfig({ ...last, region: [] }, "capitais"), null, "sem recorte");
+assert.equal(P.parseLastConfig({ ...last, region: ["marte"] }, "capitais"), null, "recorte desconhecido");
+assert.equal(P.parseLastConfig({ ...last, onlyUn: 1 }, "capitais").onlyUn, true, "filtro vira booleano");
+console.log("presets: última partida do Hub ok");

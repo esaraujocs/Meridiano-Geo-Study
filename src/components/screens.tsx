@@ -11,6 +11,7 @@ import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
+import { defaultPresetName, type PresetConfig } from "../domain/presets";
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
@@ -30,8 +31,8 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
     ["achievements", t.nav.achievements, "achievements"], ["progress", t.nav.progress, "progress"],
     ["store", t.nav.store, "store"],
   ] as const;
-  // no celular a Loja abre pela moeda do Hub; o lugar dela na barra de baixo é das Opções
-  const mobileItems = [...items.slice(0, 4), ["options", t.nav.options, "settings"] as const];
+  // no celular a barra de baixo tem os mesmos cinco destinos; as Opções abrem pela engrenagem do Hub
+  const mobileItems = items;
   return (
     <>
     <header className="topbar">
@@ -210,6 +211,8 @@ export function Hub({
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
   pillarPct = {},
+  lastConfigs = {},
+  onContinue,
   trophies = 0,
   duelsPlayed = 0,
   duelReady = true,
@@ -226,6 +229,10 @@ export function Hub({
   achievementSummary?: AchievementSummary;
   /** Precisão atual de cada pilar (0 a 100), mostrada no cartão do modo; `null`/ausente = ainda sem partidas. */
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
+  /** A última partida de cada modo (o "Continuar" do cartão); sem ela o cartão só oferece "Jogar". */
+  lastConfigs?: Partial<Record<TopFamily, PresetConfig>>;
+  /** Repete a última partida do modo, sem passar pela configuração. */
+  onContinue?: (config: PresetConfig) => void;
   trophies?: number;
   duelsPlayed?: number;
   /** O corte de 20 rodadas (Loja) já foi comprado; senão o duelo contra bot mostra um cadeado. */
@@ -271,21 +278,27 @@ export function Hub({
   const modeCard = (item: (typeof familyItems)[number], index: number) => {
     const open = isFamilyUnlocked(item);
     const pct = item.pillar ? pillarPct[item.pillar] : null;
-    return <button
-      type="button"
+    const last = lastConfigs[item.family as TopFamily];
+    const lastName = last ? defaultPresetName(last) : null;
+    return <div
       key={item.family}
       data-fam={item.family}
       data-extra={index >= MAIN_MODES ? "true" : undefined}
       className={`family hx-mode ${economy && !open ? "locked" : ""}`}
-      onClick={() => onSelect(item.family)}
     >
+      <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={item.label} />
       <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
-      <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
+      <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p>{lastName && <span className="hx-last"><Icon type="repeat" size={12} /> <span>{lastName}</span></span>}</div>
       <div className="family-footer">
-        <span className="hx-stat">{pct != null ? <><span className="hx-meter"><i style={{ width: `${pct}%` }} /></span><small>{t.hub.pillarAccuracy(pct)}</small></> : <small>{open ? t.hub.open : t.hub.locked}</small>}</span>
-        <span className="family-play">{t.hub.play} <Icon type="arrow" /></span>
+        <span className="hx-stat">{pct != null ? <><span className="hx-meter"><i style={{ width: `${pct}%` }} /></span><small title={t.hub.pillarAccuracy(pct)} aria-label={t.hub.pillarAccuracy(pct)}>{pct}%</small></> : <small>{open ? t.hub.open : t.hub.locked}</small>}</span>
+        {last && onContinue
+          ? <span className="hx-split">
+            <button type="button" className="family-play hx-continue" onClick={() => onContinue(last)} aria-label={t.hub.continueAria(lastName ?? item.label)}><span>{t.hub.continue}</span> <Icon type="arrow" /></button>
+            <button type="button" className="family-play hx-adjust" onClick={() => onSelect(item.family)} aria-label={t.hub.adjust} title={t.hub.adjust}><Icon type="sliders" size={15} /></button>
+          </span>
+          : <button type="button" className="family-play hx-continue" onClick={() => onSelect(item.family)} aria-label={`${t.hub.play}: ${item.label}`}><span>{t.hub.play}</span> <Icon type="arrow" /></button>}
       </div>
-    </button>;
+    </div>;
   };
   return (
     <main className="content hub-content hx">

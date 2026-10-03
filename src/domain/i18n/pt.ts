@@ -108,6 +108,9 @@ export const pt = {
     museumDone: "Acervo completo",
     museumVisit: "Visitar",
     museumCount: (n: number, total: number) => `${n} de ${total} reveladas`,
+    continue: "Continuar",
+    adjust: "Ajustar a partida",
+    continueAria: (what: string) => `Continuar: ${what}`,
     moreModes: "Mais modos",
   },
   duel: {

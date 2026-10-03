@@ -55,6 +55,16 @@
 .hx .hx-mode p{max-width:none;min-height:38px;font-size:12.5px}
 .hx .hx-mode .family-footer{align-items:flex-end;gap:6px;font-size:12px}
 .hx .hx-mode .family-play{padding:9px 16px;font-size:12.5px;white-space:nowrap}
+.hx .hx-mode{position:relative}
+.hx-hit{position:absolute;inset:0;z-index:2;width:100%;height:100%;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer}
+.hx-hit:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.hx .hx-mode .family-footer{position:relative;z-index:3}
+.hx-last{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin-top:8px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--h) 14%,transparent);color:color-mix(in srgb,var(--h) 72%,#1c2c2a);font:700 11px 'Plus Jakarta Sans',sans-serif}
+.hx-last span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hx-split{display:inline-flex;border-radius:99px;overflow:hidden;box-shadow:0 6px 12px -8px var(--hb)}
+.hx-split .family-play{border-radius:0;box-shadow:none;border:0}
+.hx .hx-mode .hx-split .hx-continue{padding:9px 10px 9px 14px;gap:5px}
+:root[data-treat] .hx .hx-split .hx-adjust{display:grid;place-items:center;width:34px;padding:0;border-left:1px solid rgba(255,255,255,.4);background:color-mix(in srgb,var(--hb) 78%,#000)}
 .hx-stat{display:grid;gap:5px;min-width:0}
 .hx-stat small{font-size:11.5px;font-weight:600;white-space:nowrap}
 .hx-meter{display:block;width:44px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--h) 22%,transparent);overflow:hidden}
@@ -190,7 +200,8 @@
   .hx .hub-track{flex:1 1 auto}
   .hx .hub-xp-label{display:none}
   .hx .hub-stats{gap:6px;padding:0;border:0}
-  .hx .hub-rank{padding:4px 9px 4px 7px;gap:5px}
+  .hx .hub-rank{padding:4px 10px;gap:5px}
+  .hx .hub-rank i{display:none}
   .hx .hub-rank small{display:none}
   .hx .hub-coin{margin:0;padding:4px 10px 4px 5px;gap:5px}
   .hx .hub-coin-store{display:none}
@@ -218,8 +229,15 @@
   .hx .hx-mode .family-footer{position:static;gap:0}
   .hx-stat{gap:0}.hx-meter{display:none}
   .hx-stat small{font-size:10.5px;white-space:normal;line-height:1.2}
-  .hx .hx-mode .family-play{position:absolute;right:8px;top:9px;display:grid;place-items:center;width:30px;height:30px;padding:0;border-radius:50%;font-size:0;gap:0}
-  .hx .hx-mode .family-play svg{width:14px;height:14px}
+  .hx-last{display:none}
+  .hx .hx-mode .family-footer{z-index:3}
+  .hx .hx-mode .family-footer>.hx-continue,.hx .hx-mode .hx-split{position:absolute;right:8px;top:9px}
+  .hx .hx-mode .hx-continue{display:grid;place-items:center;width:30px;height:30px;padding:0;border-radius:50%;font-size:0;gap:0}
+  .hx .hx-mode .hx-continue span{display:none}
+  .hx .hx-mode .hx-continue svg{width:14px;height:14px}
+  .hx .hx-mode .hx-split{border-radius:50%}
+  .hx .hx-mode .hx-adjust{display:none}
+  .hx .hx-mode .hx-split .hx-continue{padding:0}
   .hx-more{display:flex;align-items:center;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
   .hx-more::-webkit-scrollbar{display:none}
   .hx-more-k{display:none}
@@ -254,6 +272,7 @@
   .hx-showcase-buy{gap:6px}
   .hx-price{font-size:13px;gap:5px}.hx-price i{width:16px;height:16px;font-size:9px}
   .hx-btn{display:none}
+  .hx-showcase-img.is-supply .hx-tag{display:none}
   .hx-museum{height:150px;min-height:0;grid-template-columns:1fr;align-content:end;padding:10px 12px;border-radius:14px}
   .hx-museum-text b{font-size:16px}
   .hx-museum-text>span:not(.hx-museum-dots){display:none}
@@ -264,4 +283,14 @@
 }
 @media (max-width:760px){
   .app-shell:has(.hub-content)>.hub-content{padding-top:8px}
+}
+
+/* barra de baixo do celular com os rótulos (Modos, Coleção, Conquistas, Progresso e Loja) */
+@media (max-width:760px){
+  .mobile-nav{gap:0;padding:6px max(6px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+  .mobile-nav button{width:100%;min-width:0;height:auto;min-height:54px;padding:5px 0 4px;grid-template-rows:auto auto;gap:3px;place-items:center;align-content:start;border-radius:12px}
+  .mobile-nav button::before{top:3px;left:50%;width:52px;height:28px;margin-left:-26px}
+  .mobile-nav button svg{width:22px;height:22px;margin-top:5px}
+  .mobile-nav button span{position:static;width:auto;height:auto;overflow:visible;clip:auto;font:700 10.5px/1 'Plus Jakarta Sans',sans-serif;color:var(--muted)}
+  .mobile-nav button[aria-current=page] span{color:var(--green)}
 }
