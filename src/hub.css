@@ -39,6 +39,38 @@
 .hx .hub-gear{display:grid;place-items:center;flex:none;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink)}
 .hx .hub-gear:hover{border-color:var(--green);color:var(--green)}
 
+/* ───────── cabeçalho "medalhas" (04/10/2026; mock em mockups-carta-cega/hub-header, opção C) ─────────
+   Jogador em destaque: anel maior, títulos como medalhas de latão, maestria em pílula, barra de XP com marcas e fichas brancas à direita.
+   O fundo, a borda e a sombra continuam sendo dos temas; o brilho de latão é uma camada à parte (::before) para não brigar com eles. */
+.hx .hub-bar{position:relative}
+.hx .hub-bar::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 220% at 8% 0%,color-mix(in srgb,var(--brass) 22%,transparent),transparent 55%)}
+.hx .hub-bar>*{position:relative}
+.hx .hub-friends,.hx .hub-gear,.hx .hub-coin{background:rgba(255,255,255,.78);border:1px solid color-mix(in srgb,var(--line) 80%,#fff);color:var(--ink)}
+:root[data-scheme=dark] .hx .hub-friends,:root[data-scheme=dark] .hx .hub-gear,:root[data-scheme=dark] .hx .hub-coin{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2)}
+@media (min-width:761px){
+  .hx .hub-bar{height:100px;padding:0 26px;gap:24px;border-radius:26px;box-shadow:0 22px 34px -24px rgba(36,59,58,.6)}
+  .hx .hub-brand{border-right:0;padding:0}
+  .hx .hub-brand span{display:none}
+  .hx .hub-brand .brand-logo{width:54px;height:54px;border-radius:15px;box-shadow:0 10px 16px -10px rgba(0,0,0,.6)}
+  .hx .hub-player{column-gap:20px;row-gap:7px}
+  .hx .hub-level{width:78px;height:78px;filter:drop-shadow(0 10px 14px rgba(36,59,58,.3))}
+  .hx .hub-level strong{font-size:32px}
+  .hx .hub-title{font-size:32px;letter-spacing:-.03em}
+  .hx .hub-badges{gap:7px}
+  .hx .hub-badge{width:34px;height:34px;padding:0;gap:0;border-radius:50%;background:linear-gradient(145deg,#f6dc9a,#c9953f);color:#3a2606;border:2px solid #fff6dc;box-shadow:0 6px 10px -5px rgba(90,60,10,.6)}
+  .hx .hub-badge svg{width:17px;height:17px}
+  .hx .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .hx .hub-mastery{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:99px;background:color-mix(in srgb,var(--green) 62%,#04161a);color:#fff4df}
+  .hx .hub-mastery b{color:#fff4df}
+  .hx .hub-track{flex:1 1 240px;max-width:560px;height:12px;border-radius:7px;background-image:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(255,255,255,.55) calc(10% - 1px) 10%);box-shadow:inset 0 1px 3px rgba(0,0,0,.2)}
+  .hx .hub-xp-label{font-size:12.5px;color:var(--ink)}
+  .hx .hub-friends{width:46px;height:46px;padding:0;justify-content:center;border-radius:50%}
+  .hx .hub-friends span{display:none}
+  .hx .hub-gear{width:46px;height:46px}
+  .hx .hub-coin{height:46px;padding:0 18px 0 8px;box-shadow:0 10px 16px -12px rgba(36,59,58,.55)}
+  .hx .hub-coin strong{font-size:22px}
+}
+
 /* ───────── grade ───────── */
 /* A página usa a largura que a janela der (até 1760 px): o Hub é a tela de entrada e as laterais ficavam vazias. A coluna da direita (Duelo, Vitrine) cresce
    com a janela e o vão entre as duas colunas também; os cartões de modo não encolhem, quem cede é o vão. */
