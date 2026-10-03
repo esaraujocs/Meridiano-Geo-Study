@@ -3,7 +3,7 @@ import { Game } from "./components/map-game";
 import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens";
 import { useAccountSync } from "./components/use-account-sync";
 import { AccountNudge } from "./components/account-nudge";
-import { StoreView, type StoreTab } from "./components/store-view";
+import { StoreView, TrialBar, type StoreTab } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
 import { variantContextFor } from "./domain/match-config";
@@ -130,6 +130,13 @@ export function App() {
     try { const saved = localStorage.getItem(THEME_STORAGE_KEY); return isThemeId(saved) ? saved : DEFAULT_THEME; } catch { return DEFAULT_THEME; }
   });
   const setTheme = (id: string) => { setThemeState(id); try { localStorage.setItem(THEME_STORAGE_KEY, id); } catch { /* sem armazenamento */ } };
+  // Teste de tema ("Experimentar" na Loja): o tema vale na tela, sem gravar nem cobrar, até a pessoa sair do resultado da próxima partida.
+  const [trial, setTrial] = useState<{ id: string; seenResult: boolean } | null>(null);
+  const endTrial = () => {
+    setTrial(null);
+    try { const saved = localStorage.getItem(THEME_STORAGE_KEY); setThemeState(isThemeId(saved) ? saved : DEFAULT_THEME); } catch { setThemeState(DEFAULT_THEME); }
+  };
+  const tryTheme = (id: string) => { setThemeState(id); setTrial({ id, seenResult: false }); setScreen("hub"); };
   // Os troféus vêm do histórico de duelos (como XP e maestria), por escada (Mapas e Bandeiras). O adversário é sorteado entre os
   // 5 bots da liga da pessoa na escada (sem repetir o do duelo anterior). O Hub mostra a melhor das duas escadas.
   const [duels, setDuels] = useState<DuelRecord[]>([]);
@@ -883,7 +890,7 @@ export function App() {
   const buyRounds = async (key: RoundUnlockKey) => { setEconomy(await unlockRounds(key)); };
   // Compra na Loja: debita as moedas e já aplica o tema.
   const buyMode = async (family: Family, variant: AnyQuizVariant) => { setEconomy(await unlockContent(family, variant, "mundo")); };
-  const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
+  const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTrial(null); setTheme(id); };
   // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
   const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
@@ -926,10 +933,15 @@ export function App() {
   }, [theme]);
   // Tema guardado que não é do jogador (dados limpos, valor antigo) volta ao padrão, mas só depois de a economia carregar de verdade.
   useEffect(() => {
-    if (!economyReady) return;
+    if (!economyReady || trial?.id === theme) return;
     const valid = resolveTheme(theme, economy.unlocked);
     if (valid !== theme) setTheme(valid);
-  }, [economyReady, economy.unlocked, theme]);
+  }, [economyReady, economy.unlocked, theme, trial]);
+  useEffect(() => {
+    if (!trial) return;
+    if (screen === "result" && !trial.seenResult) setTrial({ ...trial, seenResult: true });
+    else if (screen !== "result" && trial.seenResult) endTrial();
+  }, [screen, trial]);
   useEffect(() => {
     const saved = localStorage.getItem(`carta-last-variant:${topFamily}`);
     if (saved) restoreVariantContext(topFamily, saved);
@@ -1265,7 +1277,7 @@ export function App() {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><StoreView initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store">{trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onEnd={endTrial} />}<StoreView onTry={tryTheme} initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
   }
   if (screen === "options") {
     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {
@@ -1314,6 +1326,7 @@ export function App() {
         {screen === "hub" && themeById(theme)?.wash && <ThemeWash />}
         {screen === "hub" && <AccountNudge onGo={() => setScreen("options")} />}
         <Header legacy={legacy} economy={economy} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
+      {screen === "hub" && trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onBuy={() => setScreen("store")} onEnd={endTrial} />}
       {screen === "hub" && (
         <Hub
             economy={economy}

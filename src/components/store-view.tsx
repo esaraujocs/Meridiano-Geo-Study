@@ -20,6 +20,8 @@ const previewFor = (id: string) => PREVIEWS[`../assets/themes/${id}.webp`];
 type Props = {
   /** A aba que abre primeiro (a Vitrine do Hub leva direto aos Suprimentos). */
   initialTab?: StoreTab;
+  /** Aplica um tema que ainda não é seu até o fim da próxima partida. */
+  onTry?: (id: string) => void;
   economy: EconomySnapshot;
   activeTheme: string;
   onEquip: (id: string) => void;
@@ -97,7 +99,7 @@ function ThemeArt({ theme }: { theme: Theme }) {
 const Swatches = ({ theme }: { theme: Theme }) => <span className="store-swatches" aria-hidden="true">{theme.swatches.map((color) => <i key={color} style={{ background: color }} />)}</span>;
 
 /** A confirmação de compra: o item, o preço, o saldo e o saldo depois. */
-function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: { pending: Pending; balance: number; busy: boolean; onConfirm: () => void; onCancel: () => void; onQty: (qty: number) => void }) {
+function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty, onTry }: { onTry?: () => void; pending: Pending; balance: number; busy: boolean; onConfirm: () => void; onCancel: () => void; onQty: (qty: number) => void }) {
   const info = pendingInfo(pending);
   const missing = missingCoins(info.price, balance);
   const confirm = useRef<HTMLButtonElement>(null);
@@ -131,6 +133,7 @@ function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: 
           : <div><dt>{t.store.rowAfter}</dt><dd>{money(balance - info.price)}</dd></div>}
       </dl>
       {info.permanent && <small className="st-note">{t.store.permanent}</small>}
+      {onTry && pending.kind === "theme" && <button type="button" className="st-try" onClick={onTry}><Icon type="eye" size={15} /> <span><b>{t.store.trialBtn}</b> · {t.store.trialNote}</span></button>}
       <div className="st-dialog-actions">
         <button type="button" className="st-btn is-ghost" onClick={onCancel}>{t.store.notNow}</button>
         <button type="button" className="st-btn is-buy" ref={confirm} disabled={busy || missing > 0} onClick={onConfirm}>{pending.kind === "supply" ? t.store.supplies.buy(pending.qty) : t.store.confirm}</button>
@@ -139,7 +142,7 @@ function PurchaseDialog({ pending, balance, busy, onConfirm, onCancel, onQty }: 
   </div>;
 }
 
-export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, onBuy, supplies, onBuySupply, onBuyMode, onBuyRounds, onOpenMuseum, onBack }: Props) {
+export function StoreView({ initialTab = "all", onTry, economy, activeTheme, onEquip, onBuy, supplies, onBuySupply, onBuyMode, onBuyRounds, onOpenMuseum, onBack }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
@@ -224,11 +227,28 @@ export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, o
             {missing > 0
               ? <span className="st-btn is-missing">{t.store.missing(money(missing))}</span>
               : <button type="button" className="st-btn is-buy" onClick={() => setPending({ kind: "theme", theme: featured })}>{t.store.buy}</button>}
+            {onTry && <button type="button" className="st-btn is-ghost-light" onClick={() => onTry(featured.id)}><Icon type="eye" size={15} /> {t.store.trialBtn}</button>}
           </div>
         </div>
         <div className="st-hero-img"><div className="st-frame"><ThemeArt theme={featured} /></div></div>
       </section>;
     })()}
+    {!featured && showAll && <section className="st-hero is-supplies" aria-label={t.store.heroKicker}>
+      <div className="st-hero-t">
+        <span className="st-kicker"><Icon type="star" size={13} /> {t.store.heroKicker}</span>
+        <h2>{t.store.suppliesTab}</h2>
+        <p>{t.store.heroSuppliesLead}</p>
+      </div>
+      <ul className="st-hero-supplies">{SUPPLY_IDS.map((id) => {
+        const missing = missingCoins(SUPPLY_COST[id], balance);
+        return <li key={id}><button type="button" onClick={() => setPending({ kind: "supply", id, qty: 1 })} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
+          <span className="st-art is-supply" data-supply={id} aria-hidden="true"><SupplyArt id={id} size={84} /></span>
+          <b>{t.supplies[id].name}</b><small>{t.supplies[id].short} · {t.store.supplies.owned(supplies[id])}</small>
+          <Price value={SUPPLY_COST[id]} />
+          <span className={`st-btn${missing > 0 ? " is-missing" : ""}`}>{missing > 0 ? t.store.missing(money(missing)) : t.store.buy}</span>
+        </button></li>;
+      })}</ul>
+    </section>}
     <div className="st-tabs" role="group" aria-label={t.store.tabsAria}>
       {tabs.map(([key, label, count]) => <button key={key} type="button" aria-pressed={tab === key} onClick={() => { setTab(key); setNotice(""); }}>{label}{count && <em>{count}</em>}</button>)}
     </div>
@@ -258,6 +278,11 @@ export function StoreView({ initialTab = "all", economy, activeTheme, onEquip, o
         <span className="st-btn is-light">{t.hub.museumVisit} <Icon type="arrow" size={14} /></span>
       </button>
     </section>}
-    {pending && <PurchaseDialog pending={pending} balance={balance} busy={busy} onConfirm={() => void confirm()} onCancel={() => setPending(null)} onQty={(qty) => setPending((current) => (current && current.kind === "supply" ? { ...current, qty } : current))} />}
+    {pending && <PurchaseDialog onTry={pending.kind === "theme" && !pending.theme.league && onTry ? () => { onTry(pending.theme.id); setPending(null); } : undefined} pending={pending} balance={balance} busy={busy} onConfirm={() => void confirm()} onCancel={() => setPending(null)} onQty={(qty) => setPending((current) => (current && current.kind === "supply" ? { ...current, qty } : current))} />}
   </section>;
+}
+
+/** A faixa que avisa que um tema está sendo testado (fica no Hub e na Loja até o fim da próxima partida). */
+export function TrialBar({ name, onBuy, onEnd }: { name: string; onBuy?: () => void; onEnd: () => void }) {
+  return <div className="st-trial" role="status"><span className="st-trial-name"><Icon type="eye" size={16} /> {t.store.trialActive(name)}</span><span className="st-trial-note">{t.store.trialNote}</span>{onBuy && <button type="button" className="st-btn" onClick={onBuy}>{t.store.trialBuy}</button>}<button type="button" className="st-btn is-ghost" onClick={onEnd}>{t.store.trialEnd}</button></div>;
 }
