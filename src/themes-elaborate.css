@@ -137,10 +137,6 @@
 :root[data-theme="noturno"] .rs-xp{background:rgba(63,198,208,.16);color:#9FEAF0}
 :root[data-theme="noturno"] .dr-emb b{color:#7FE8C2}
 :root[data-theme="noturno"] .dr-meter.is-loss .dr-emb b{color:#FFA3B1}
-:root[data-theme="noturno"] .store-btn.primary{background:linear-gradient(180deg,#2AA8B4,#17707A);border:1px solid #7DE3EA;color:#03181C}
-:root[data-theme="noturno"] .store-btn:not(.primary){background:transparent;color:#DCE9F0;border-color:var(--glass-edge)}
-:root[data-theme="noturno"] .store-card{background:var(--glass);border-color:var(--glass-edge)}
-:root[data-theme="noturno"] .store-price{color:#F0F6F9}
 :root[data-theme="noturno"] .maplibregl-ctrl-attrib{background:rgba(6,16,27,.85)!important;color:#A9C0CF!important}
 :root[data-theme="noturno"] .maplibregl-ctrl-attrib a{color:#7DE3EA!important}
 :root[data-theme="noturno"] .hub-mastery{color:#8CA5B8}

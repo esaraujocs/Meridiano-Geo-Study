@@ -108,7 +108,6 @@ export function App() {
   const [data, setData] = useState<Legacy | null>(null);
   const [error, setError] = useState("");
   // Duelo contra bots (liga no Hub): sempre Mundo inteiro, sem o filtro ONU; a escolha do solo fica guardada.
-  const [duelMode, setDuelMode] = useState(false);
   // "Treinar" no resultado de uma derrota: a próxima partida é um Treino curto do modo, no Mundo inteiro e sem o filtro ONU.
   const [trainOnce, setTrainOnce] = useState(false);
   const [regionPref, setRegion] = useState<RegionSelection>("mundo");
@@ -179,14 +178,14 @@ export function App() {
         setError(t.duel.rank.loadError);
       });
     };
-    if (screen === "league" || (screen === "hub" && duelMode)) refresh();
+    if (screen === "league") refresh();
     document.addEventListener("visibilitychange", refresh);
     window.addEventListener("focus", refresh);
     return () => {
       document.removeEventListener("visibilitychange", refresh);
       window.removeEventListener("focus", refresh);
     };
-  }, [screen, duelMode]);
+  }, [screen]);
   // Só com ?debug=1: `__cartaDuelResult("t4")` no console abre o resultado de um cenário pronto (sem gravar nada).
   useEffect(() => {
     if (!isDebugEnabled()) return;
@@ -299,7 +298,7 @@ export function App() {
     const timer = window.setTimeout(() => { void pvpSendProfile(pvpNameState, standings, profileSummary).then(refreshBoards).catch(() => undefined); }, 600);
     return () => window.clearTimeout(timer);
   }, [ladderLoaded, economyReady, identityOn, standingsKey, summaryKey]);
-  useEffect(() => { if ((screen === "hub" && duelMode) || screen === "league") refreshBoards(); }, [screen, duelMode]);
+  useEffect(() => { if (screen === "league") refreshBoards(); }, [screen]);
   // ---- Fila ("Buscar duelo") ----
   const [pvpQueue, setPvpQueueState] = useState<PvpQueueView>(IDLE_QUEUE_VIEW);
   const pvpQueueRef = useRef<PvpQueueView>(IDLE_QUEUE_VIEW);
@@ -313,8 +312,8 @@ export function App() {
   const pvpResultLegs = useMemo(() => (pvpRoom ? roomLegs(pvpRoom) : null), [pvpRoom?.seed, pvpRoom?.ladder, pvpRoom?.groups?.join()]);
   // Duelo (contra bot ou com amigo): sempre Mundo inteiro, sem o filtro ONU — os dois lados do PvP precisam do MESMO baralho disponível
   // (a semente sozinha não basta se o recorte/filtro pessoal de cada aparelho for diferente; region/onlyUn não podem vir da preferência solo).
-  const region: RegionSelection = duelMode || trainOnce || pvpRoom ? "mundo" : regionPref;
-  const onlyUn = duelMode || trainOnce || pvpRoom ? false : onlyUnPref;
+  const region: RegionSelection = trainOnce || pvpRoom ? "mundo" : regionPref;
+  const onlyUn = trainOnce || pvpRoom ? false : onlyUnPref;
   const pvpErrorMessage = (error: unknown) => {
     if (error instanceof PvpClientError) {
       if (error.code === "not_found") return t.pvp.invite.notFound;
@@ -1234,7 +1233,7 @@ export function App() {
       onChallenge={openFriends} onBack={() => setScreen(playerReturnRef.current === "player" ? "hub" : playerReturnRef.current)} /></div>;
   }
   if (screen === "pvp-home") {
-    return <div className="app-shell grain"><PvpHome standings={standings} onFriends={openFriends} prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => { setDuelMode(true); setScreen("hub"); }} onBack={() => setScreen("hub")} /></div>;
+    return <div className="app-shell grain"><PvpHome standings={standings} onFriends={openFriends} prefs={queuePrefs} onPrefsChange={setQueuePrefs} name={pvpNameState} onNameChange={setPvpDisplayName} queue={pvpQueue} profile={pvpProfileView} busy={pvpBusy} error={pvpError} notice={queueNotice} onDismissNotice={() => setQueueNotice(null)} onSearch={() => void queueSearch()} onCancel={() => void queueCancel()} onInvite={() => pvpOpenSetup(queuePrefs.ladder)} onPlayBots={() => setScreen("hub")} onBack={() => setScreen("hub")} /></div>;
   }
 
   if (screen === "result") {

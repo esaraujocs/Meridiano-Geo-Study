@@ -239,40 +239,7 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 :root[data-treat="brush-o"] .hub-progress-bar i{background:var(--h)}
 
 /* ═══ LOJA ═══ */
-.store-sec{display:flex;align-items:baseline;gap:14px;margin:34px 0 4px}
-.store-sec h2{font:500 26px 'Fraunces',Georgia,serif;margin:0}
-.store-sec span{font:400 12px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.store-notice{min-height:22px;margin:6px 0 0;font-size:14px;color:#245e58;font-weight:700}
-.store-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
-.store-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
-.store-card.is-active{border-color:var(--green);box-shadow:0 0 0 2px rgba(47,111,106,.28)}
-.store-thumb{display:block;width:100%;height:auto;aspect-ratio:640/323;object-fit:cover;background:var(--paper);border-bottom:1px solid var(--line)}
-.store-card.is-locked .store-thumb{filter:saturate(.92)}
-.store-body{display:flex;flex:1;flex-direction:column;gap:8px;padding:16px 18px 18px}
-.store-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.store-head h3{margin:0;font:500 22px/1.1 'Fraunces',Georgia,serif;color:var(--ink)}
-.store-swatches{display:inline-flex;gap:5px;flex:none}
-.store-swatches i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
-.store-body>p{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
-.store-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px}
-.store-state{font:400 12px 'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.store-price{display:inline-flex;align-items:center;gap:7px;font:500 20px 'Fraunces',Georgia,serif;color:var(--ink)}
-.store-price i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--brass);color:#2b1f06;font:700 12px 'Plus Jakarta Sans',sans-serif}
-.store-btn{min-height:40px;padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.store-btn:hover:not(:disabled){border-color:var(--green)}
-.store-btn.primary{background:var(--green);border-color:var(--green);color:#FFF4DF}
-.store-btn.primary:hover:not(:disabled){background:#265d59}
-.store-btn:disabled{cursor:default;color:#5b6a65}
-.store-btn.is-current{border-color:transparent;background:rgba(47,111,106,.14);color:#1b4a45}
-.store-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.store-confirm{margin:6px 0 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:13px;line-height:1.5;color:var(--ink)}
-.store-confirm span{display:flex;gap:8px;margin-top:10px}
 .supply-thumb{aspect-ratio:640/220;display:grid;place-items:center;background:var(--paper);color:var(--muted)}
-.store-qty{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:2px}
-.store-qty .store-btn{min-height:34px;width:34px;padding:0;border-radius:50%}
-.store-qty b{min-width:20px;text-align:center;font:700 16px 'Plus Jakarta Sans',sans-serif;color:var(--ink)}
-@media (max-width:1023px){.store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:640px){.store-grid{grid-template-columns:1fr}.store-sec h2{font-size:22px}}
 .option-toggle select{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}
 
 /* ═══ OUTRAS TELAS: Coleção, Achievements, Progresso e Loja ═══
@@ -300,14 +267,12 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 :root[data-treat] .ach-med.ach-r4.is-unlocked{box-shadow:0 0 0 4px color-mix(in srgb,var(--rar-4) 16%,transparent)}
 
 /* textos e fundos com teal fixo */
-:root[data-treat] :is(.pg-eyebrow,.col-eyebrow,.ach-done,.pr-inline,.pr-how,.pr-node.now .pr-node-label b,.pr-kpi small.up,.pr-pstats dd em.up,.pr-write.ok,.pr-link,.pr-regions li>button:hover .pr-rname b,.pr-titles li.is-earned,.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.col-modes li.is-done,.pr-seg button[aria-pressed=true],.pr-status.is-good,.pr-delta,.pr-tag.good,.store-notice,.ach-cat-icon){color:var(--hd)}
-:root[data-treat] :is(.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.ach-cat-icon,.col-modes li.is-done,.pr-titles li.is-earned,.pr-status.is-good,.pr-seg button[aria-pressed=true],.pr-tag.good,.pr-delta,.store-btn.is-current){background:var(--ht)}
+:root[data-treat] :is(.pg-eyebrow,.col-eyebrow,.ach-done,.pr-inline,.pr-how,.pr-node.now .pr-node-label b,.pr-kpi small.up,.pr-pstats dd em.up,.pr-write.ok,.pr-link,.pr-regions li>button:hover .pr-rname b,.pr-titles li.is-earned,.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.col-modes li.is-done,.pr-seg button[aria-pressed=true],.pr-status.is-good,.pr-delta,.pr-tag.good,.ach-cat-icon){color:var(--hd)}
+:root[data-treat] :is(.pg-chip[aria-pressed=true],.col-tab[aria-pressed=true],.ach-cat-icon,.col-modes li.is-done,.pr-titles li.is-earned,.pr-status.is-good,.pr-seg button[aria-pressed=true],.pr-tag.good,.pr-delta){background:var(--ht)}
 :root[data-treat] .col-next{background:color-mix(in srgb,var(--h) 9%,transparent)}
 :root[data-treat] .pr-node.now{box-shadow:0 0 0 6px color-mix(in srgb,var(--h) 22%,transparent)}
 :root[data-treat] .pr-pillar.is-earned{box-shadow:0 0 0 3px color-mix(in srgb,var(--h) 14%,transparent)}
 :root[data-treat] .pr-sess.is-open{box-shadow:0 0 0 3px color-mix(in srgb,var(--h) 12%,transparent)}
-:root[data-treat] .store-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--h) 32%,transparent)}
-:root[data-treat] .store-btn.primary:hover:not(:disabled){background:color-mix(in srgb,var(--hg) 82%,#000)}
 :root[data-treat] .col-tick{color:var(--hg)}
 :root[data-treat] .hl1{background:color-mix(in srgb,var(--h) 26%,#F3E9D2)}
 :root[data-treat] .hl2{background:color-mix(in srgb,var(--h) 52%,#F3E9D2)}
@@ -330,7 +295,7 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 :root[data-treat="aquarela"] .pg-hero,:root[data-treat="fusion"] .pg-hero,:root[data-treat="brush-wash"] .pg-hero{background:linear-gradient(115deg,color-mix(in srgb,var(--h) 22%,rgba(251,246,232,.7)),rgba(244,234,212,.55) 66%);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--h) 30%,rgba(255,255,255,.8))}
 :root[data-treat="aquarela"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar),:root[data-treat="fusion"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar),:root[data-treat="brush-wash"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar){background:rgba(250,244,229,.6)}
 :root[data-treat="atlas"] .pg-hero{background:#F5ECD6;border:1px solid #8A7C5A;border-left:8px solid var(--h);border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.13)}
-:root[data-treat="atlas"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar,.store-card){background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.12)}
+:root[data-treat="atlas"] :is(.ach-card,.pr-card,.pr-kpi,.pr-pillar){background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.12)}
 /* pincelada vertical atrás do anel (Pinceladas, Pinceladas · Terra, Ateliê) */
 :root[data-treat="brush-v"] .pg-hero::before,:root[data-treat="brush-wash"] .pg-hero::before{content:"";position:absolute;left:13px;top:-14px;width:170px;height:min(calc(100% + 24px),232px);background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 2px,transparent 2px 9px),linear-gradient(180deg,var(--h) 0%,var(--h) 42%,var(--h2) 80%,color-mix(in srgb,var(--h2) 40%,transparent) 94%,transparent 100%);border-radius:46% 46% 58% 58%/6% 6% 40% 40%;filter:url(#roughV);opacity:.95}
 /* faixa horizontal no topo (Listras) */

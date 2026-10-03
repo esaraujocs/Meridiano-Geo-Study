@@ -15,7 +15,7 @@ import { defaultPresetName, type PresetConfig } from "../domain/presets";
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
-import type { ArenaSearch } from "./duel-arenas";
+import type { ArenaSearch } from "./hub-parts";
 import { HubCarousel, HubDuel, HubMuseum, HubShowcase } from "./hub-parts";
 import type { LadderCard } from "../domain/duel-view";
 import type { Milestone } from "../domain/duel-rewards";

@@ -3,7 +3,7 @@
 import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
-import type { ArenaSearch } from "./duel-arenas";
+import type { PvpQueueView } from "../domain/pvp";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
@@ -132,6 +132,19 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     </>}
   </div>;
 }
+
+/** O que a arena faz com a fila de pessoas. "Duelar" busca uma pessoa (valendo) na escada; enquanto espera dá para duelar contra um bot (vale
+ *  troféu, na transição) e, se alguém aparecer, a proposta chega em qualquer tela (aceitar anula o duelo contra o bot). */
+export type ArenaSearch = {
+  queue: PvpQueueView;
+  /** Erro ao entrar na fila (sem conexão, por exemplo), na escada em que foi pedido: a arena oferece o bot direto. */
+  error: { ladder: Ladder; message: string } | null;
+  busy: boolean;
+  onSearch: (ladder: Ladder) => void;
+  onCancel: () => void;
+  onBot: (ladder: Ladder) => void;
+  onFriendly: (ladder: Ladder) => void;
+};
 
 /** Progresso dentro da divisão atual (0 a 100). */
 const divisionProgress = (card: LadderCard) => {
