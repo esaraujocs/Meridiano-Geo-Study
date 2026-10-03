@@ -4,6 +4,9 @@
 
 :root[data-scheme="dark"]{color-scheme:dark}
 
+/* a barra superior das telas fora do Hub (aparece em larguras médias) tinha o creme fixo do tema claro, com o nome e os links claros em cima dele */
+:root[data-scheme="dark"] .topbar{background:color-mix(in srgb,var(--paper) 92%,transparent)}
+
 /* ── textos de apoio, rótulos e etiquetas que tinham cor fixa de tema claro ── */
 :root[data-scheme="dark"] .eyebrow,:root[data-scheme="dark"] .surface .eyebrow{color:var(--accent-ink)!important}
 :root[data-scheme="dark"] :is(.cv-k,.cv-hint,.cv-sum small,.cv-chip em,.cv-chip.is-locked){color:var(--muted)}

@@ -31,7 +31,7 @@ import {
   removeOfflineMap,
   type OfflineMapStatus,
 } from "./domain/offline-map";
-import { initializeEconomy, queryEconomy, unlockRounds, unlockTheme, type EconomySnapshot } from "./domain/economy-store";
+import { initializeEconomy, queryEconomy, unlockContent, unlockRounds, unlockTheme, type EconomySnapshot } from "./domain/economy-store";
 import { emptySupplyCounts, type SupplyCounts, type SupplyId } from "./domain/supplies";
 import { buySupply, supplyCounts } from "./domain/supplies-store";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, resolveTheme, themeAttributes, themeById } from "./domain/themes";
@@ -881,6 +881,7 @@ export function App() {
   };
   const buyRounds = async (key: RoundUnlockKey) => { setEconomy(await unlockRounds(key)); };
   // Compra na Loja: debita as moedas e já aplica o tema.
+  const buyMode = async (family: Family, variant: AnyQuizVariant) => { setEconomy(await unlockContent(family, variant, "mundo")); };
   const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTheme(id); };
   // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
   const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
@@ -1262,7 +1263,7 @@ export function App() {
     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface" data-surface="store"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} /></main></div>;
+    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><StoreView economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
   }
   if (screen === "options") {
     return <div className="app-shell grain"><Header legacy={legacy} economy={economy} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {

@@ -92,7 +92,15 @@ const scenes = {
   async colecao() { await home(); await navText("Coleção"); await sleep(2500); await audit("colecao"); },
   async conquistas() { await home(); await navText("Achievements"); await sleep(5500); await audit("conquistas"); },
   async opcoes() { await home(); await navText("Opções"); await sleep(1500); await audit("opcoes"); },
-  async loja() { await home(); await page.evaluate(() => document.querySelector("button.hub-coin")?.click()); await sleep(1800); for (const tab of ["Paletas", "Pintados", "Elaborados", "Ligas"]) { await page.evaluate((t) => [...document.querySelectorAll(".store-tabs .pg-chip")].find((b) => b.textContent.trim().startsWith(t))?.click(), tab); await sleep(500); await audit(`loja ${tab}`); } },
+  async loja() {
+    await home(); await page.evaluate(() => document.querySelector("button.hub-coin")?.click()); await sleep(1800);
+    for (const tab of ["Tudo", "Temas", "Modos", "Rodadas", "Suprimentos", "Ligas"]) { await page.evaluate((t) => [...document.querySelectorAll(".st-tabs button")].find((b) => b.firstChild?.textContent.trim() === t)?.click(), tab); await sleep(500); await audit(`loja ${tab}`); }
+    await page.evaluate(() => [...document.querySelectorAll(".st-tabs button")].find((b) => b.firstChild?.textContent.trim() === "Suprimentos")?.click()); await sleep(400);
+    await page.evaluate(() => document.querySelector(".st-supplies .st-card .st-btn")?.click()); await sleep(900); await audit("loja confirmacao de suprimento");
+    await page.keyboard.press("Escape"); await sleep(400);
+    await page.evaluate(() => [...document.querySelectorAll(".st-tabs button")].find((b) => b.firstChild?.textContent.trim() === "Tudo")?.click()); await sleep(400);
+    await page.evaluate(() => document.querySelector(".st-hero .st-btn.is-buy, .st-grid .st-card .st-btn.is-buy")?.click()); await sleep(900); await audit("loja confirmacao de tema");
+  },
 };
 for (const [name, run] of Object.entries(scenes)) { if (only && !only.includes(name)) continue; try { await run(); } catch (error) { console.log(`\n!! cena ${name} falhou: ${String(error).slice(0, 160)}`); } }
 console.log("\nerros de página:", JSON.stringify(errors.slice(0, 4)));
