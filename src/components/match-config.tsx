@@ -1,6 +1,7 @@
 import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { Icon, type IconType } from "./icons";
 import { ScreenBar } from "./screen-bar";
+import { ModePanels } from "./mode-panels";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
@@ -172,7 +173,7 @@ export function Recorte({
             <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
             <div className="mz-block">
               <span className="cv-k">{t.config.mode}</span>
-              <div className="mz-ways" role="group" aria-label={t.config.mode}>
+              <div className="mz-ways" role="group" aria-label={t.config.mode} style={{ ["--cols" as string]: modes.length === 4 ? 2 : modes.length }}>
                 {modes.map((mode) => {
                   const modeOwned = owned(mode.family, mode.variant);
                   const cost = priceOf(mode.family, mode.variant);
@@ -220,18 +221,20 @@ export function Recorte({
                 {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
               </>, "mz-region")}
             </div>
-            {showFilter && <div className="mz-block mz-filter">
-              <span className="cv-k">{t.config.filter}</span>
-              <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>{t.config.onlyUn}</span></button>
-            </div>}
+            <div className="mz-block mz-foot">
+              {showFilter && <div className="mz-filter">
+                <span className="cv-k">{t.config.filter}</span>
+                <button type="button" role="switch" aria-checked={onlyUn} className="cv-switch" onClick={() => setOnlyUn(!onlyUn)}><i aria-hidden="true" /><span>{t.config.onlyUn}</span></button>
+              </div>}
+              <PresetBar
+                api={presetApi}
+                topFamily={topFamily}
+                draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
+                canSave={activeOwned && selectedCount > 0}
+                onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
+              />
+            </div>
           </section>
-          <PresetBar
-            api={presetApi}
-            topFamily={topFamily}
-            draft={{ topFamily, variant, pace, roundTier, region, onlyUn: showFilter ? onlyUn : false }}
-            canSave={activeOwned && selectedCount > 0}
-            onApplied={(preset) => { setPendingTier(null); const direction = flagDirectionFromVariant(preset.variant); if (direction) setFlagDirection(direction); }}
-          />
           <div className="cv-bar">
             <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
             <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
@@ -241,13 +244,7 @@ export function Recorte({
           </div>
         </div>
         <aside className="mz-side" aria-label={t.config.table}>
-          <section className="mz-panel">
-            <h2>{t.config.historyIn(familyLabel)}</h2>
-            <div className="mz-history">
-              <span className="mz-ring" style={{ ["--p" as string]: accuracy ?? 0 }} aria-hidden="true"><b>{accuracy != null ? accuracy : "–"}</b></span>
-              <p>{accuracy != null ? t.hub.pillarAccuracy(accuracy) : t.config.noHistory}</p>
-            </div>
-          </section>
+          <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
           <section className="mz-panel">
             <h2>{t.config.reward}</h2>
             <div className="mz-reward">

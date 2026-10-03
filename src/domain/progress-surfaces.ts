@@ -266,6 +266,14 @@ export async function querySurfaces(data?: Legacy) {
    return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...dominatedIdsFromSessions(rawSessions, progress)] };
 }
 
+/** Só as partidas, normalizadas e da mais nova para a mais antiga: leitura leve para as estatísticas da Mesa de jogo (sem recalcular progresso nem gravar conquistas, como faz `querySurfaces`). */
+export async function querySessions(): Promise<SurfaceSession[]> {
+  const db = await openDb();
+  const rows = await all<any>(db.transaction("sessions", "readonly").objectStore("sessions"));
+  db.close();
+  return rows.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
+}
+
 export async function queryCollectionSummary(data: Legacy) {
   const db = await openDb();
   const progress = await all<any>(db.transaction("progress", "readonly").objectStore("progress"));
