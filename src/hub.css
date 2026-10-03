@@ -23,6 +23,7 @@
 .hx .hub-badge{width:24px;height:24px;padding:0;gap:0;border-radius:50%;justify-content:center}
 .hx .hub-badge svg{width:13px;height:13px}
 .hx .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hx .hub-tally{order:3;flex:none;margin:0 0 0 auto;font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--muted)}
 .hx .hub-mastery{order:2;margin:0;padding:3px 9px;border-radius:999px;background:rgba(47,111,106,.13);font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .hx .hub-xp{grid-area:xp;display:flex;flex-wrap:nowrap;align-items:center;gap:10px;margin:0;min-width:0;white-space:nowrap}
 .hx .hub-xp-label{flex:none}
@@ -264,7 +265,7 @@
 @media (min-width:761px) and (max-width:1023px){
   .app-shell:has(.hub-content)>.topbar{display:none}
   /* a barra do jogador não cabe inteira: sai a marca, os selos e o texto de XP que sobreporiam as fichas da direita */
-  .hx .hub-brand,.hx .hub-badges,.hx .hub-xp-next{display:none}
+  .hx .hub-brand,.hx .hub-badges,.hx .hub-xp-next,.hx .hub-tally{display:none}
 }
 
 /* ───────── celular: tudo numa tela, sem rolagem ─────────
@@ -281,7 +282,7 @@
   .hx .hub-level strong{font-size:19px}
   .hx .hub-head{display:contents}
   .hx .hub-title{grid-area:head;font-size:17px;margin:0;align-self:end}
-  .hx .hub-badges,.hx .hub-mastery{display:none}
+  .hx .hub-badges,.hx .hub-mastery,.hx .hub-tally{display:none}
   .hx .hub-xp{grid-area:xp;align-self:start}
   .hx .hub-track{flex:1 1 auto}
   .hx .hub-xp-label{display:none}

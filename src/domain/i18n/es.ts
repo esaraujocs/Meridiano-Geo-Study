@@ -68,6 +68,8 @@ export const es: Messages = {
     badgesAria: "Títulos obtenidos",
     xpProgressAria: "Progreso de XP",
     xpToNext: (xp: number) => `${xp} para el siguiente`,
+    tally: (sessions: number, rounds: number, fmt: (n: number) => string) => `${fmt(sessions)} ${sessions === 1 ? "partida" : "partidas"} · ${fmt(rounds)} ${rounds === 1 ? "ronda" : "rondas"}`,
+    tallyTitle: "Partidas terminadas y rondas jugadas",
     statsAria: "Estadísticas del jugador",
     matches: "Partidas",
     rounds: "Rondas",

@@ -236,14 +236,14 @@ function Searching({ ladder, search, formatReady, formatCost }: { ladder: Ladder
 }
 
 /** A Vitrine: um tema da Loja em destaque (o mais caro que cabe no saldo ou, se nenhum cabe, o mais perto). Com todos os temas comprados, destaca os suprimentos. */
-export function HubShowcase({ economy, onOpenStore, onOpenSupplies }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void; onOpenSupplies?: () => void }) {
+export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void; onOpenThemes?: () => void }) {
   const theme = economy ? pickShowcaseTheme(economy.balance, economy.unlocked) : null;
   const preview = theme ? previewFor(theme.id) : undefined;
   const missing = theme && economy ? missingCoins(theme.cost, economy.balance) : 0;
   return <section className={`hx-showcase${theme ? "" : " is-supplies"}`} aria-label={t.hub.showcase}>
-    <header><h3>{t.hub.showcase}</h3><button type="button" className="hx-link" onClick={theme ? onOpenStore : (onOpenSupplies ?? onOpenStore)}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
+    <header><h3>{t.hub.showcase}</h3><button type="button" className="hx-link" onClick={onOpenStore}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
     {theme
-      ? <button type="button" className="hx-showcase-body" onClick={onOpenStore} aria-label={`${theme.name} · ${money(theme.cost)}`}>
+      ? <button type="button" className="hx-showcase-body" onClick={onOpenThemes ?? onOpenStore} aria-label={`${theme.name} · ${money(theme.cost)}`}>
         <span className="hx-showcase-img" style={preview ? { backgroundImage: `url(${preview})` } : { background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }}>
           <i className="hx-tag">{t.hub.featured}</i>
         </span>
@@ -259,7 +259,7 @@ export function HubShowcase({ economy, onOpenStore, onOpenSupplies }: { economy:
         <p className="hx-showcase-done"><i className="hx-tag">{t.hub.showcaseDone}</i></p>
         <ul className="hx-supplies">
           {FEATURED_SUPPLIES.map((id) => <li key={id}>
-            <button type="button" onClick={onOpenSupplies ?? onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
+            <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
               <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
               <b>{t.supplies[id].name}</b>
               <small>{t.supplies[id].short}</small>

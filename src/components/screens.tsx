@@ -207,7 +207,7 @@ export function Hub({
   economy,
   onNavigate,
   onOpenMuseum,
-  onOpenSupplies,
+  onOpenThemes,
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
@@ -226,7 +226,7 @@ export function Hub({
   /** Abre o Museu (a aba do Museu dentro da Coleção). */
   onOpenMuseum?: () => void;
   /** Abre a Loja direto na aba Suprimentos (a Vitrine destaca os suprimentos quando todos os temas já são seus). */
-  onOpenSupplies?: () => void;
+  onOpenThemes?: () => void;
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
   achievementSummary?: AchievementSummary;
@@ -327,6 +327,7 @@ export function Hub({
             <p className="hub-title">{profile.title}</p>
             {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge" title={title.label}><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
             <p className="hub-mastery" title={masteryRest.join(" · ") || undefined}><b>{masteryHead}</b></p>
+            {economy && <p className="hub-tally" title={t.hub.tallyTitle}>{t.hub.tally(economy.completedSessions, economy.rounds, formatNumber)}</p>}
           </div>
           <div className="hub-xp">
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
@@ -347,7 +348,7 @@ export function Hub({
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} onFriends={arenas.onFriends} />}
-          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} onOpenSupplies={onOpenSupplies} />
+          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} onOpenThemes={onOpenThemes} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
