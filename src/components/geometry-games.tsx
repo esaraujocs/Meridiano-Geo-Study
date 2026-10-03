@@ -4,9 +4,9 @@ import type { Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion, regionLabel } from "../domain/regions";
 import { inSilhouetteDeck } from "../domain/silhouette";
 import { variantLabel } from "../domain/result-view";
-import { ContinueBar, GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { emptySupplyCounts, letterHint, LUPA_REMOVE_COUNT, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import {
   aliases,
   evaluateTravelGuess,
@@ -209,8 +209,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   // Lupa: esconde 2 alternativas erradas ao acaso (só na Silhueta · alternativas).
   const useLupa = () => {
     if (!target || locked || !supply.use("lupa")) return;
-    const wrongIds = shuffleAnswerOptions(choices.filter((id) => id !== target)).slice(0, LUPA_REMOVE_COUNT);
-    setLupaHidden(new Set(wrongIds));
+    setLupaHidden(new Set(lupaToHide(choices, target, lupaHidden, triedWrong, shuffleAnswerOptions)));
   };
   const visibleChoices = useMemo(() => choices.filter((id) => !lupaHidden.has(id)), [choices, lupaHidden]);
   // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e a próxima silhueta entra. Na última carta não há para onde mandar.
@@ -256,6 +255,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
           <div className="gs-kicker">{t.silhouette.kicker}</div>
           <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label={t.silhouette.aria}><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
           {typedMode && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(targetName)}</div>}
+          {!answerResult && supply.usedThisRound.has("vizinho") && <NeighborChip meta={data.meta} targetId={target} />}
           <div className={`gs-ribbon${retryNotice && !answerResult ? " on info" : answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {answerResult ? (shieldSaved ? `${feedback} ${t.supplies.shieldSaved}` : feedback) : retryNotice ? t.supplies.retryNote : ""}

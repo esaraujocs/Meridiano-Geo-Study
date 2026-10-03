@@ -93,7 +93,7 @@ for (const id of supplies.SUPPLY_IDS) {
   assert.ok(supplies.SUPPLY_COST[id] > 0, `${id} tem preço`);
   assert.equal(supplies.emptySupplyCounts()[id], 0, `${id} começa zerado no estoque`);
 }
-assert.equal(new Set(supplies.SUPPLY_IDS).size, 7, "são sete suprimentos, sem repetição");
+assert.equal(new Set(supplies.SUPPLY_IDS).size, 9, "são nove suprimentos, sem repetição");
 assert.equal(Object.keys(supplies.emptySupplyCounts()).length, supplies.SUPPLY_IDS.length);
 assert.ok(supplies.FEATURED_SUPPLIES.every((id) => supplies.SUPPLY_IDS.includes(id)), "os destaques da vitrine são suprimentos de verdade");
 assert.deepEqual([...supplies.ARMED_SUPPLIES].sort(), ["escudo", "retorno"], "só Escudo e Segunda chance ficam armados");
@@ -112,10 +112,11 @@ for (const variant of everyVariant) {
   assert.equal(supplies.supplyApplies("pular", variant, false), true);
   assert.equal(supplies.supplyApplies("escudo", variant, false), true);
 }
-const all = { lupa: 1, bussola: 1, letra: 1, pular: 1, retorno: 1, escudo: 1, ampulheta: 1 };
-assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["letra", "pular", "retorno", "escudo", "ampulheta"], "hotbar da escrita, na ordem de sempre");
-assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "pular", "retorno", "escudo", "ampulheta"]);
-assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta"]);
+const all = { lupa: 1, bussola: 1, lanterna: 1, vizinho: 1, letra: 1, pular: 1, retorno: 1, escudo: 1, ampulheta: 1 };
+assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["vizinho", "letra", "pular", "retorno", "escudo", "ampulheta"], "hotbar da escrita, na ordem de sempre");
+assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "lanterna", "vizinho", "pular", "retorno", "escudo", "ampulheta"]);
+assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "vizinho", "pular", "retorno", "escudo", "ampulheta"]);
+assert.deepEqual(supplies.usableSupplies(all, "idioma-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta"], "idiomas não falam de países vizinhos");
 assert.deepEqual(supplies.usableSupplies(all, "travel", false), ["pular", "escudo"], "Travel no Treino: só Pular e Escudo");
 
 // ---- Primeira letra: só a inicial, o resto vira ponto; espaços e pontuação ficam
@@ -150,3 +151,69 @@ const shieldedForDomain = { complete: true, rounds: [
 ] };
 assert.ok(dominated.dominatedIdsFromSessions([shieldedForDomain]).has("BRA"), "o erro coberto não zera a evidência de domínio (nem conta como acerto)");
 console.log("novos suprimentos ok");
+
+// ---- Lanterna e Pista de vizinhos: onde valem
+for (const variant of ["mapa", "capital-pais"]) assert.equal(supplies.supplyApplies("lanterna", variant), true);
+for (const variant of ["bandeira-nome", "silhueta", "silhueta-opcoes", "escrita-pais", "travel", "idioma-nome"]) assert.equal(supplies.supplyApplies("lanterna", variant), false, `Lanterna só no mapa (${variant})`);
+for (const variant of ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "escrita-pais", "escrita-capital"]) assert.equal(supplies.supplyApplies("vizinho", variant), true, `Vizinhos em ${variant}`);
+for (const variant of ["travel", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"]) assert.equal(supplies.supplyApplies("vizinho", variant), false, `Vizinhos não em ${variant}`);
+assert.equal(supplies.supplyApplies("lanterna", "mapa", false), true, "sem cronômetro (Treino) a Lanterna segue valendo");
+assert.equal(supplies.supplyApplies("vizinho", "mapa", false), true);
+
+// ---- Lanterna: o zoom enquadra ~1.200 km na largura da tela
+const z0 = supplies.lanternZoom(0, 1440);
+assert.ok(z0 > 6.4 && z0 < 6.7, `no equador, 1440 px cobrem ~1.200 km (zoom ${z0.toFixed(2)})`);
+assert.ok(supplies.lanternZoom(60, 1440) < z0, "perto dos polos, o mesmo zoom cobre menos terra: precisa afastar");
+assert.ok(supplies.lanternZoom(0, 390) < z0, "tela estreita, zoom menor para ainda caber os 1.200 km");
+assert.ok(supplies.lanternZoom(0, 1440) <= 7.5 && supplies.lanternZoom(0, 5000) === 7.5, "nunca passa de 7,5");
+assert.ok(supplies.lanternZoom(89, 200) >= 3, "nunca fica abaixo de 3");
+
+// ---- Pista de vizinhos, com o catálogo de verdade
+import { readFileSync } from "node:fs";
+const catalog = JSON.parse(readFileSync("public/data/legacy/catalog.json", "utf8"));
+const meta = catalog.meta;
+const idOf = (cca3) => Object.keys(meta).find((id) => meta[id].cca3 === cca3);
+const byCca3 = (hint) => hint && meta[hint.id].cca3;
+const br = supplies.neighborHint(meta, idOf("BRA"));
+assert.equal(br.sea, false);
+assert.ok(meta[idOf("BRA")].borders.includes(byCca3(br)), "o vizinho do Brasil é de fato um país com que ele faz fronteira");
+assert.deepEqual(supplies.neighborHint(meta, idOf("BRA")), br, "o mesmo alvo dá sempre a mesma pista");
+assert.equal(byCca3(supplies.neighborHint(meta, idOf("PRT"))), "ESP", "Portugal só tem a Espanha");
+assert.equal(byCca3(supplies.neighborHint(meta, idOf("LSO"))), "ZAF", "Lesoto só tem a África do Sul");
+// ilhas: sem fronteira por terra, vale o país mais próximo e a pista avisa que é por mar
+for (const code of ["JPN", "NZL", "MDG", "ISL", "CUB", "AUS"]) {
+  const hint = supplies.neighborHint(meta, idOf(code));
+  assert.ok(hint, `${code} tem pista`);
+  assert.equal(hint.sea, true, `${code} é ilha: pista por mar`);
+  assert.notEqual(hint.id, idOf(code), "nunca devolve o próprio alvo");
+  assert.ok(meta[hint.id].un, "o vizinho por mar é membro da ONU, não um território obscuro");
+}
+assert.equal(byCca3(supplies.neighborHint(meta, idOf("JPN"))) !== "JPN", true);
+// todo país do mapa com fronteira devolve um vizinho que existe e que não é ele mesmo; nenhum devolve nulo
+let checked = 0;
+for (const id of catalog.mapEntityIds.map(String)) {
+  const hint = supplies.neighborHint(meta, id);
+  if (!meta[id]?.ll && !(meta[id]?.borders ?? []).length) continue;
+  assert.ok(hint, `${meta[id].pt} (${id}) tem pista`);
+  assert.ok(meta[hint.id] && hint.id !== id, "o vizinho existe e não é o próprio alvo");
+  checked += 1;
+}
+assert.ok(checked > 190, `conferiu ${checked} países`);
+assert.equal(supplies.neighborHint(meta, "inexistente"), null);
+console.log("lote 2 ok (" + checked + " países com pista)");
+
+// ---- Lupa: sobram duas alternativas (a certa e uma errada); a errada que fica é uma ainda não tentada
+const first = (items) => items;
+const noTried = new Set();
+const hide4 = supplies.lupaToHide(["a", "b", "c", "d"], "a", new Set(), noTried, first);
+assert.equal(hide4.length, 2, "de 4 alternativas, esconde 2");
+assert.ok(!hide4.includes("a"), "nunca esconde a certa");
+const hideTried = supplies.lupaToHide(["a", "b", "c", "d"], "a", new Set(), new Set(["b"]), first);
+assert.ok(hideTried.includes("b"), "a que a Segunda chance já riscou sai junto");
+assert.equal(hideTried.length, 2, "e ainda sobram a certa e uma errada nova");
+assert.ok(!hideTried.includes("a"));
+const alreadyHidden = supplies.lupaToHide(["a", "b", "c", "d"], "a", new Set(["c"]), noTried, first);
+assert.equal(alreadyHidden.length, 1, "o que já estava escondido não conta");
+assert.deepEqual(supplies.lupaToHide(["a", "b"], "a", new Set(), noTried, first), [], "com uma errada só, não há o que esconder");
+assert.deepEqual(supplies.lupaToHide(["a", "b", "c"], "a", new Set(), new Set(["b", "c"]), first).length, 1, "tudo tentado: sobra uma das tentadas");
+console.log("lupa ok");

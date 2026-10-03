@@ -17,9 +17,9 @@ import { RoundTimer } from "./round-timer";
 import { cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
 import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
-import { ContinueBar, GameTopBar, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { LUPA_REMOVE_COUNT, emptySupplyCounts, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { emptySupplyCounts, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { variantLabel } from "../domain/result-view";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { t } from "../domain/i18n";
@@ -237,8 +237,7 @@ export function QuizGame({
     if (id === "pular") { skipRound(); return; }
     if (feedback || !supply.use(id)) return;
     if (id === "lupa" && question) {
-      const wrong = question.options.filter((option) => option !== question.target && !lupaHidden.has(option) && !triedWrong.has(option));
-      const toHide = shuffleAnswerOptions(wrong).slice(0, LUPA_REMOVE_COUNT);
+      const toHide = lupaToHide(question.options, question.target, lupaHidden, triedWrong, shuffleAnswerOptions);
       setLupaHidden((current) => new Set([...current, ...toHide]));
     }
   };
@@ -324,6 +323,7 @@ export function QuizGame({
             {promptFlag
               ? <div className="gs-flag"><img src={flagSource(promptFlag)} alt={t.common.flagStimulus} /></div>
               : <div className={bigClass(promptText)}>{promptText}</div>}
+            {!feedback && supply.usedThisRound.has("vizinho") && <NeighborChip meta={data.meta} targetId={question.target} />}
             <div className={`gs-ribbon${retrying ? " on info" : feedback ? ` on ${feedback === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
               {feedback === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
               {ribbonText}

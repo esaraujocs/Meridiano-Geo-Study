@@ -99,6 +99,7 @@ button,a{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visib
 .map-target-overlay span{font:10px 'DM Mono';text-transform:uppercase;letter-spacing:.15em}.map-target-overlay strong{font-family:'Fraunces',Georgia,serif;font-size:clamp(24px,3vw,42px);color:#f6efdf;line-height:1}
 .map-bussola-hint{display:inline-flex;align-items:center;gap:7px;font:700 14px 'Plus Jakarta Sans',sans-serif;color:#f0cf8f;font-style:normal}
 .map-bussola-hint::before{content:"";width:10px;height:10px;flex:none;border-radius:50%;background:#e6b04a;box-shadow:0 0 0 3px rgba(230,176,74,.28)}
+.map-bussola-hint.is-neighbor::before{background:#5d8fd6;box-shadow:0 0 0 3px rgba(93,143,214,.32)}
 .map-bussola-hint.is-note{max-width:min(78vw,420px);text-align:left;line-height:1.25}
 .quiz-prompt .target-kicker{font-size:clamp(18px,2vw,24px);font-weight:700;letter-spacing:-.02em;color:var(--ink);text-transform:none}
 .quiz-option{border-radius:var(--radius);min-height:88px}.quiz-option img{width:100%;height:auto;min-height:120px;max-height:190px;object-fit:contain;object-position:center}
@@ -1201,6 +1202,8 @@ html[data-reduced-motion=true] :is(.quiz-option.is-hit,.quiz-option.wrong,.quiz-
 .gs-slot[data-supply=lupa] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#d7f1f6,#6fb0c2)}
 .gs-slot[data-supply=bussola] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#fbebc4,#d2a24c)}
 .gs-slot[data-supply=ampulheta] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#e7def5,#9582c0)}
+.gs-slot[data-supply=lanterna] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#d6def0,#5e6f9a)}
+.gs-slot[data-supply=vizinho] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#efe6d4,#a99a78)}
 .gs-slot[data-supply=letra] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#fbe3dc,#d98a76)}
 .gs-slot[data-supply=pular] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#e3f0cf,#8fb46a)}
 .gs-slot[data-supply=retorno] .gs-slot-art{background:radial-gradient(circle at 30% 22%,#fde6cf,#e39a58)}
@@ -1229,6 +1232,8 @@ body:has(.gs-hotbar) .gs .gs-body{padding-bottom:104px}
   .gs-hotbar.is-dense .gs-slot-n{right:2px;top:2px;min-width:16px;height:16px;font-size:10px}
   .gs-hotbar.is-dense .gs-slot-used{top:4px;width:38px;height:38px;margin-left:-19px}
 }
+/* no celular a hotbar ocupa a largura toda: os controles e a atribuição do mapa sobem para não ficarem por baixo dela */
+@media (max-width:760px){body:has(.gs-hotbar) .gs-map-screen .maplibregl-ctrl-bottom-right,body:has(.gs-hotbar) .gs-map-screen .maplibregl-ctrl-bottom-left{margin-bottom:76px}}
 /* janela baixa (celular pequeno, notebook com muitas barras): só ícones, menos reserva, e a barra sai de cena enquanto a rodada está fechada (os itens estão bloqueados) */
 @media (max-height:700px){
   .gs-slot{width:58px;padding:5px 3px}.gs-slot-t{display:none}
@@ -1272,6 +1277,7 @@ body:has(.gs-hotbar) .gs .gs-body{padding-bottom:104px}
 .gs-field .go:disabled{background:#B9C4BC;cursor:default}
 .gs-hintline{padding:0 4px;font-size:12.5px;color:var(--muted)}
 /* Primeira letra: o molde da resposta (inicial + pontos), logo abaixo do estímulo */
+.gs-hintchip{margin-top:10px;padding:7px 16px;border:1px dashed color-mix(in srgb,#5d8fd6 70%,transparent);border-radius:99px;background:color-mix(in srgb,#5d8fd6 12%,transparent);color:var(--ink);font:700 14px 'Plus Jakarta Sans',sans-serif;text-align:center}
 .gs-letterhint{margin-top:10px;padding:8px 18px;border:1px dashed color-mix(in srgb,var(--brass,#c9953f) 70%,transparent);border-radius:14px;background:color-mix(in srgb,var(--brass,#c9953f) 12%,transparent);color:var(--ink);font:800 clamp(20px,2.6vw,30px)/1.2 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-align:center;word-break:break-word}
 .gs-keys{display:none}
 .gs .reveal-skip{display:none}

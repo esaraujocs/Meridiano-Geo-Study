@@ -35,6 +35,25 @@ export function SupplyArt({ id, size = 64 }: { id: SupplyId; size?: number }) {
       </g>
       <circle cx="32" cy="32" r="3.2" fill={`url(#${brass})`} stroke="#6b4a18" strokeWidth=".8" />
     </>}
+    {id === "lanterna" && <>
+      <circle cx="32" cy="36" r="27" fill="#ffe7a0" opacity=".32" />
+      <path d="M24.5 15a7.5 7.5 0 0 1 15 0" fill="none" stroke={`url(#${brass})`} strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M21 24h22l-3-9H24z" fill={`url(#${brass})`} />
+      <rect x="19.5" y="23" width="25" height="26" rx="4.5" fill="#fff2bd" stroke="#8a5f1f" strokeWidth="1.4" />
+      <rect x="19.5" y="23" width="25" height="26" rx="4.5" fill="#f6b73b" opacity=".35" />
+      <path d="M32 29c1.6 3.6 5.2 5.4 5.2 9.6a5.2 5.2 0 0 1-10.4 0c0-2.2 1.1-3.7 2.2-4.8.2 1.5.9 2.2 1.6 2.6C30.4 34.4 30.8 31.6 32 29z" fill="#ee8a22" stroke="#fde7a6" strokeWidth=".9" strokeLinejoin="round" />
+      <path d="M26.2 24v25M37.8 24v25" stroke="#8a5f1f" strokeWidth="1.2" opacity=".55" />
+      <rect x="17" y="48" width="30" height="8" rx="3.2" fill={`url(#${brass})`} />
+      <path d="M23 27.5v8" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity=".75" />
+    </>}
+    {id === "vizinho" && <>
+      <circle cx="32" cy="32" r="28" fill={`url(#${brass})`} />
+      <circle cx="32" cy="32" r="22.5" fill="#fbf1d6" stroke="#8a5f1f" strokeWidth="1.2" />
+      <path d="M31 17.5L17.5 21.5 15.5 37 30 45z" fill="#cfdcc6" stroke="#6b4a18" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d="M31 17.5L46 20.5 49 36 40 46 30 45z" fill="#e6b04a" stroke="#6b4a18" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d="M31 17.5L30 45" stroke="#6b4a18" strokeWidth="1.4" strokeDasharray="2.6 2.4" />
+      <circle cx="41" cy="31" r="3.4" fill="#fff" opacity=".85" /><circle cx="41" cy="31" r="1.5" fill="#c9493a" />
+    </>}
     {id === "letra" && <>
       <rect x="8" y="7" width="48" height="40" rx="8" fill={`url(#${brass})`} />
       <rect x="12" y="11" width="40" height="32" rx="5.5" fill="#fbf1d6" stroke="#8a5f1f" strokeWidth="1.1" />

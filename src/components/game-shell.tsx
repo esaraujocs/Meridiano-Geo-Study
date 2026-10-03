@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeSpoils, type Pace, type Tier } from "../domain/spoils";
 import { createPortal } from "react-dom";
-import { SUPPLY_IDS, isArmedSupply, supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { SUPPLY_IDS, isArmedSupply, neighborHint, supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import type { Meta } from "../domain/types";
 import { SupplyArt } from "./supply-art";
 import type { AnyQuizVariant } from "../domain/types";
 import { Icon, type IconType } from "./icons";
@@ -118,6 +119,18 @@ export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed
     </div>,
     document.body,
   );
+}
+
+/** Pista de vizinhos: a frase ("Faz fronteira com X" / "País mais próximo, por mar: X") e o id do vizinho (o mapa o pinta). Nulo sem pista possível. */
+export function neighborClue(meta: Record<string, Meta>, targetId: string): { id: string; text: string } | null {
+  const hint = neighborHint(meta, targetId);
+  if (!hint) return null;
+  const name = meta[hint.id]?.pt ?? hint.id;
+  return { id: hint.id, text: hint.sea ? t.supplies.neighborSea(name) : t.supplies.neighborBorder(name) };
+}
+export function NeighborChip({ meta, targetId }: { meta: Record<string, Meta>; targetId: string }) {
+  const clue = neighborClue(meta, targetId);
+  return clue ? <div className="gs-hintchip" role="note">{clue.text}</div> : null;
 }
 
 /** Botão "Continuar" do retorno de um erro: enche durante o prazo e pula se tocado. */

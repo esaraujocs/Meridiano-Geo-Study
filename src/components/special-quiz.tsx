@@ -8,9 +8,9 @@ import { RoundTimer } from "./round-timer";
 import { AnswerReveal, cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
 import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
-import { ContinueBar, GameTopBar, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
+import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { emptySupplyCounts, letterHint, LUPA_REMOVE_COUNT, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { variantLabel } from "../domain/result-view";
 import { regionLabel } from "../domain/regions";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
@@ -214,8 +214,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   // Lupa: esconde 2 alternativas erradas ao acaso (nunca a certa) — não existe na escrita, que não tem opções.
   const useLupa = () => {
     if (!target || locked || !supply.use("lupa")) return;
-    const wrongIds = shuffleAnswerOptions(choices.filter((choice) => choice.id !== target.id).map((choice) => choice.id)).slice(0, LUPA_REMOVE_COUNT);
-    setLupaHidden(new Set(wrongIds));
+    setLupaHidden(new Set(lupaToHide(choices.map((choice) => choice.id), target.id, lupaHidden, triedWrong, shuffleAnswerOptions)));
   };
   const visibleChoices = useMemo(() => choices.filter((choice) => !lupaHidden.has(choice.id)), [choices, lupaHidden]);
   // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e a próxima carta entra. Na última carta não há para onde mandar.
@@ -325,6 +324,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
           <div className="gs-kicker">{kicker}</div>
           {stimulus}
           {writing && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(String(expectedLabel(target)))}</div>}
+          {!answerResult && supply.usedThisRound.has("vizinho") && <NeighborChip meta={data.meta} targetId={target.id} />}
           <div className={`gs-ribbon${retryNotice && !answerResult ? " on info" : answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
             {answerResult ? (shieldSaved ? `${feedback} ${t.supplies.shieldSaved}` : feedback) : retryNotice ? t.supplies.retryNote : ""}

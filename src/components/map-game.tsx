@@ -17,9 +17,9 @@ import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { addMapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
-import { GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
+import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { compassGroup, emptySupplyCounts, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { compassGroup, emptySupplyCounts, lanternZoom, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { continentLabel } from "../domain/collection-view";
 import { variantLabel } from "../domain/result-view";
 import {
@@ -49,6 +49,8 @@ const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
 /** Cor do continente marcado pela Bússola: âmbar, que não se confunde com o verde do acerto nem com o vermelho do erro. */
 const BUSSOLA_COLOR = "#e6b04a";
+/** Cor do vizinho revelado pela Pista de vizinhos: azul, que não se confunde com o âmbar da Bússola, o verde do acerto nem o vermelho do erro. */
+const VIZINHO_COLOR = "#5d8fd6";
 const compassLabel = (group: string | null) => (group === "america-do-sul" || group === "america-do-norte-central" ? t.regions[group][0] : continentLabel(group ?? undefined));
 const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
 const pmtilesProtocol = new Protocol();
@@ -128,6 +130,10 @@ export function Game({
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const bussolaUsed = supply.usedThisRound.has("bussola");
+  // Pista de vizinhos: um país vizinho do alvo fica pintado de azul e o nome vai embaixo do alvo
+  const vizinhoUsed = supply.usedThisRound.has("vizinho");
+  const clue = useMemo(() => (vizinhoUsed ? neighborClue(data.meta, target) : null), [vizinhoUsed, target, data.meta]);
+  const neighborIds = useMemo(() => (clue ? [clue.id] : null), [clue]);
   // Bússola: o continente do alvo fica pintado no mapa (todos os países dele), além do nome embaixo do alvo
   const bussolaIds = useMemo(() => {
     const group = bussolaUsed ? compassGroup(data.meta[target]) : null;
@@ -229,6 +235,22 @@ export function Game({
     setShieldSaved(false);
     setSerial((value) => value + 1);
     supply.resetRound();
+    // Lanterna: a câmera que se aproximou do alvo anterior volta ao enquadramento do recorte
+    if (lanternRef.current) { lanternRef.current = false; resetCamera(); }
+  };
+  const lanternRef = useRef(false);
+  const flyOptions = () => (document.documentElement.dataset.reducedMotion === "true" ? { duration: 0 } : { duration: 900 });
+  const resetCamera = () => {
+    const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
+    mapRef.current?.flyTo({ center: camera.center, zoom: camera.zoom, ...flyOptions() });
+  };
+  // Lanterna: a câmera voa até o alvo e fecha numa janela de ~1.200 km (lanternZoom), ainda dá para mexer no mapa.
+  const shine = () => {
+    const map = mapRef.current;
+    const ll = data.meta[targetRef.current]?.ll;
+    if (!map || !ll) return;
+    lanternRef.current = true;
+    map.flyTo({ center: [ll[1], ll[0]], zoom: lanternZoom(ll[0], map.getContainer().clientWidth), ...flyOptions() });
   };
   // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e o próximo entra. No último alvo não há para onde mandar.
   const skipRound = () => {
@@ -681,6 +703,8 @@ export function Game({
     const marked = revealNames && revealed.length ? revealed : null;
     const hintColor = BUSSOLA_COLOR;
     const tinted = bussolaIds && !settled ? bussolaIds : null;
+    const nbr = neighborIds && !settled ? neighborIds : null;
+    const neighborColor = VIZINHO_COLOR;
     try {
       map.setPaintProperty("land", "fill-color", [
         "case",
@@ -688,6 +712,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         palette.wrong,
+        ...(nbr ? [["in", ["get", "carta_id"], ["literal", nbr]], neighborColor] : []),
         ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         palette.land,
@@ -698,6 +723,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         palette.wrong,
+        ...(nbr ? [["in", ["get", "answer_id"], ["literal", nbr]], neighborColor] : []),
         ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
@@ -708,6 +734,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
         palette.wrong,
+        ...(nbr ? [["in", ["get", "answer_id"], ["literal", nbr]], neighborColor] : []),
         ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
         palette.land,
@@ -718,6 +745,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
         palette.wrong,
+        ...(nbr ? [["in", ["get", "carta_id"], ["literal", nbr]], neighborColor] : []),
         ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
          palette.marker,
@@ -729,6 +757,7 @@ export function Game({
         answerColor,
         ["all", wrong, ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selectedAnswer]],
         palette.wrong,
+        ...(nbr ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", nbr]], neighborColor] : []),
         ...(tinted ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], ["literal", marked]], answerColor] : []),
         palette.marker,
@@ -744,7 +773,7 @@ export function Game({
           : t.map.highlightFailed,
       );
     }
-  }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames, bussolaIds]);
+  }, [target, wrong, feedback, selectedAnswer, mapReady, revealed, revealNames, bussolaIds, neighborIds]);
 
   // Rótulo escrito (HTML por cima do mapa, não texto nativo do MapLibre) para cada país/capital já perguntado.
   // Reaproveita maplibregl.Marker: ele já se reposiciona sozinho a cada pan/zoom, sem projetar coordenada à mão.
@@ -807,6 +836,7 @@ export function Game({
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
             {bussolaUsed && !feedback && <em className="map-bussola-hint">{compassLabel(compassGroup(data.meta[target]))}</em>}
+            {clue && !feedback && <em className="map-bussola-hint is-neighbor is-note">{clue.text}</em>}
             {retryNote && !feedback && <em className="map-bussola-hint is-note">{t.supplies.retryNote}</em>}
             {shieldSaved && feedback && <em className="map-bussola-hint is-note">{t.supplies.shieldSaved}</em>}
             <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
@@ -819,7 +849,7 @@ export function Game({
                 onArm={supply.toggleArm}
                 blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
                 disabled={Boolean(feedback) || !mapReady}
-                onUse={(id) => (id === "pular" ? skipRound() : supply.use(id))}
+                onUse={(id) => (id === "pular" ? skipRound() : id === "lanterna" ? (supply.use(id) && shine()) : supply.use(id))}
               />
             )}
           </div>
