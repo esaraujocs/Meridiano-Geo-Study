@@ -877,10 +877,19 @@ export const pt = {
   supplies: {
     trayAria: "Suprimentos de expedição",
     useAria: (name: string, count: number) => `Usar ${name} (${count} no estoque)`,
+    armAria: (name: string, count: number, on: boolean) => `${name}: ${on ? "ligado" : "desligado"} (${count} no estoque)`,
+    armedShort: "Ligado",
+    shieldSaved: "O Escudo protegeu a sua sequência.",
+    retryNote: "Errou, mas dá para tentar de novo.",
+    letterAria: "Dica da resposta",
     assistedHint: "Rodada com suprimento: paga metade e não conta para maestria nem domínio.",
     ampulheta: { name: "Ampulheta", short: "+5 s", detail: "Soma 5 segundos ao cronômetro desta rodada." },
     bussola: { name: "Bússola", short: "Continente", detail: "Mostra o continente do país procurado." },
     lupa: { name: "Lupa", short: "Eliminar 2", detail: "Tira duas alternativas erradas, sobrando a certa e mais uma." },
+    letra: { name: "Primeira letra", short: "1ª letra", detail: "Mostra a primeira letra da resposta e quantas letras ela tem." },
+    pular: { name: "Pular", short: "Pular", detail: "Descarta este alvo sem contar erro. Ele volta no fim da partida." },
+    retorno: { name: "Segunda chance", short: "2ª chance", detail: "Ligue antes: se você errar, a rodada não fecha e dá para tentar de novo. Só gasta se o erro acontecer." },
+    escudo: { name: "Escudo", short: "Escudo", detail: "Ligue antes: o próximo erro não quebra a sua sequência nem pesa na partida. Só gasta se o erro acontecer." },
   },
   quiz: {
     unavailable: "Quiz indisponível",
@@ -1476,7 +1485,7 @@ export const pt = {
     leagueOwned: (owned: number, total: number) => `${owned} de ${total} conquistados`,
     suppliesTab: "Suprimentos",
     supplies: {
-      note: "Ajudam numa rodada difícil, na Partida e no Treino (nunca no duelo). Rodada com suprimento paga metade e não conta para maestria nem domínio.",
+      note: "Ajudam numa rodada difícil, na Partida e no Treino (nunca no duelo). Rodada com suprimento paga metade e não conta para maestria nem domínio. Escudo e Segunda chance só gastam se você errar.",
       owned: (n: number) => (n === 1 ? "1 no estoque" : `${n} no estoque`),
       unitPrice: (price: string) => `${price} a unidade`,
       less: "Diminuir quantidade",

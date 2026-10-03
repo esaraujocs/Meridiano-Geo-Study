@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Icon, type IconType } from "./icons";
 import { LEAGUE_THEMES, SHOP_THEMES, THEME_TIERS, isThemeOwned, missingCoins, themeById, type Theme, type ThemeTier } from "../domain/themes";
-import { SUPPLY_COST, SUPPLY_IDS, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { FEATURED_SUPPLIES, SUPPLY_COST, SUPPLY_IDS, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { pickShowcaseTheme } from "../domain/hub-showcase";
 import { storeCounts, storeModes, storeRounds, storeSuggestions, type StoreMode, type StoreRounds, type Suggestion } from "../domain/store-catalog";
 import type { EconomySnapshot } from "../domain/economy-store";
@@ -236,7 +236,7 @@ export function StoreView({ initialTab = "all", onTry, economy, activeTheme, onE
         <h2>{t.store.suppliesTab}</h2>
         <p>{t.store.heroSuppliesLead}</p>
       </div>
-      <ul className="st-hero-supplies">{SUPPLY_IDS.map((id) => {
+      <ul className="st-hero-supplies">{FEATURED_SUPPLIES.map((id) => {
         const missing = missingCoins(SUPPLY_COST[id], balance);
         return <li key={id}><button type="button" onClick={() => setPending({ kind: "supply", id, qty: 1 })} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
           <span className="st-art is-supply" data-supply={id} aria-hidden="true"><SupplyArt id={id} size={84} /></span>

@@ -7,7 +7,7 @@ import type { PvpQueueView } from "../domain/pvp";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
-import { SUPPLY_COST, SUPPLY_IDS } from "../domain/supplies";
+import { FEATURED_SUPPLIES, SUPPLY_COST } from "../domain/supplies";
 import { SupplyArt } from "./supply-art";
 import { leagueLabel, nextStep } from "../domain/duel-labels";
 import type { EconomySnapshot } from "../domain/economy-store";
@@ -258,7 +258,7 @@ export function HubShowcase({ economy, onOpenStore, onOpenSupplies }: { economy:
       : <>
         <p className="hx-showcase-done"><i className="hx-tag">{t.hub.showcaseDone}</i></p>
         <ul className="hx-supplies">
-          {SUPPLY_IDS.map((id) => <li key={id}>
+          {FEATURED_SUPPLIES.map((id) => <li key={id}>
             <button type="button" onClick={onOpenSupplies ?? onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
               <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
               <b>{t.supplies[id].name}</b>

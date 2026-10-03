@@ -51,6 +51,9 @@ export function QuizGame({
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const [lupaHidden, setLupaHidden] = useState<ReadonlySet<string>>(new Set());
+  // Segunda chance: alternativas já tentadas (e erradas) nesta rodada; Escudo: o erro desta rodada foi coberto.
+  const [triedWrong, setTriedWrong] = useState<ReadonlySet<string>>(new Set());
+  const [shieldSaved, setShieldSaved] = useState(false);
   const [flags, setFlags] = useState<FlagCatalog | null>(null);
   const [error, setError] = useState("");
   const [target, setTarget] = useState("");
@@ -112,7 +115,7 @@ export function QuizGame({
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     leaveGuard.noteAnswer();
-    log.push({ correct: round.correct, tier: round.tier });
+    log.push({ correct: round.correct, tier: round.tier, shielded: round.shielded });
     if (sessionRef.current) sessionRef.current.recordRound(round);
     else queuedRoundsRef.current.push(round);
   };
@@ -177,6 +180,8 @@ export function QuizGame({
     setSerial((value) => value + 1);
     supply.resetRound();
     setLupaHidden(new Set());
+    setTriedWrong(new Set());
+    setShieldSaved(false);
   };
   const newDeck = () => createFiniteDeck(pool, deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed), roundLimit);
 
@@ -190,8 +195,12 @@ export function QuizGame({
   // id nulo = o tempo da pergunta acabou (conta como erro, sem alternativa marcada).
   const resolveRound = (id: string | null) => {
     if (!question || feedback || settledRef.current === question.target) return;
-    settledRef.current = question.target;
     const correct = id !== null && id === question.target;
+    // Segunda chance: errou escolhendo (o tempo acabar não vale): a rodada segue aberta, só a alternativa errada fica marcada.
+    if (!correct && id !== null && supply.consumeArmed("retorno")) { setTriedWrong((current) => new Set(current).add(id)); return; }
+    // Escudo: o erro não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
+    const shielded = !correct && supply.consumeArmed("escudo");
+    settledRef.current = question.target;
     recordRound({
       targetId: question.target,
       correct,
@@ -199,13 +208,15 @@ export function QuizGame({
       answeredAt: Date.now(),
       tier: entityTier(data.meta, question.target),
       ...(id === null ? { timedOut: true } : { selectedId: id }),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     });
     setSelected(id ?? "");
     setTimedOut(id === null);
     setFeedback(correct ? "correct" : "wrong");
+    setShieldSaved(shielded);
     setScore((value) => value + (correct ? 1 : 0));
-    setStreak((value) => (correct ? value + 1 : 0));
+    setStreak((value) => (correct ? value + 1 : shielded ? value : 0));
     const exhausted = deckRef.current?.remaining === 0;
     advance.schedule(async () => {
       if (exhausted) await finishSession();
@@ -214,10 +225,19 @@ export function QuizGame({
     if (correct) cueCorrect();
   };
   const answer = (id: string) => resolveRound(id);
+  // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e a próxima carta entra. Na última carta não há para onde mandar.
+  const skipRound = () => {
+    const deck = deckRef.current;
+    if (feedback || !question || !deck || deck.remaining === 0 || !supply.use("pular")) return;
+    deck.defer(question.target);
+    advance.cancel();
+    nextQuestion();
+  };
   const useSupplyItem = (id: SupplyId) => {
+    if (id === "pular") { skipRound(); return; }
     if (feedback || !supply.use(id)) return;
     if (id === "lupa" && question) {
-      const wrong = question.options.filter((option) => option !== question.target && !lupaHidden.has(option));
+      const wrong = question.options.filter((option) => option !== question.target && !lupaHidden.has(option) && !triedWrong.has(option));
       const toHide = shuffleAnswerOptions(wrong).slice(0, LUPA_REMOVE_COUNT);
       setLupaHidden((current) => new Set([...current, ...toHide]));
     }
@@ -234,6 +254,7 @@ export function QuizGame({
     setScore(0);
     setStreak(0);
     setRound(0);
+    supply.clearArmed();
     deckRef.current = newDeck();
     nextQuestion();
   };
@@ -241,7 +262,7 @@ export function QuizGame({
   const totalRounds = deckRef.current?.size ?? pool.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leaveSession(), onRestart: restart, coins: log.pending, xp: totalRounds });
   const visibleOptions = useMemo(() => question?.options.filter((id) => !lupaHidden.has(id)) ?? [], [question, lupaHidden]);
-  useGameKeys({ exit, choose: (index) => { const id = visibleOptions[index]; if (id && !feedback) answer(id); } });
+  useGameKeys({ exit, choose: (index) => { const id = visibleOptions[index]; if (id && !feedback && !triedWrong.has(id)) answer(id); } });
 
   const targetMeta = data.meta[target];
   const isFlagPrompt = variant === "bandeira-nome";
@@ -254,6 +275,8 @@ export function QuizGame({
       : titleFor(question?.target ?? target);
   // A linha visível é curta e calma; a alternativa certa fica destacada nas opções e a frase completa vai para leitores de tela.
   const feedbackText = feedback === "correct" ? t.common.correct : feedback === "wrong" ? (timedOut ? t.common.timeUp : t.common.wrong) : t.quiz.pickAnswer;
+  const retrying = !feedback && triedWrong.size > 0;
+  const ribbonText = retrying ? t.supplies.retryNote : feedback ? (shieldSaved ? `${feedbackText} ${t.supplies.shieldSaved}` : feedbackText) : "";
 
   if (error) {
     return (
@@ -294,16 +317,16 @@ export function QuizGame({
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
           <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
         </GameTopBar>
-        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
+        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} armed={supply.armed} onArm={supply.toggleArm} blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
         <div className="gs-body">
-          <main className="gs-stage">
+          <main className="gs-stage" data-target-id={import.meta.env.DEV ? question.target : undefined}>
             <div className="gs-kicker">{kicker}</div>
             {promptFlag
               ? <div className="gs-flag"><img src={flagSource(promptFlag)} alt={t.common.flagStimulus} /></div>
               : <div className={bigClass(promptText)}>{promptText}</div>}
-            <div className={`gs-ribbon${feedback ? ` on ${feedback === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
+            <div className={`gs-ribbon${retrying ? " on info" : feedback ? ` on ${feedback === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
               {feedback === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-              {feedback ? feedbackText : ""}
+              {ribbonText}
               {feedback === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(correctAnswer)}</span>}
             </div>
           </main>
@@ -312,8 +335,9 @@ export function QuizGame({
               {visibleOptions.map((id, index) => (
                 <button
                   key={id}
-                  className={`${optionClass(id === question.target, id === selected, feedback)} gs-opt`}
-                  disabled={Boolean(feedback)}
+                  data-option-id={id}
+                  className={`${triedWrong.has(id) && !feedback ? "quiz-option wrong is-tried" : optionClass(id === question.target, id === selected, feedback)} gs-opt`}
+                  disabled={Boolean(feedback) || triedWrong.has(id)}
                   aria-pressed={selected === id}
                   onClick={() => answer(id)}
                 >
@@ -329,6 +353,7 @@ export function QuizGame({
                     )
                   ) : <span className="gs-opt-label">{valueFor(id)}</span>}
                   <OptionMarks isTarget={id === question.target} isPicked={id === selected} verdict={feedback} />
+                  {triedWrong.has(id) && !feedback && <><span className="opt-mark opt-mark-miss" aria-hidden="true">✕</span><span className="sr-only">{t.feedback.wrongPickSr}</span></>}
                 </button>
               ))}
             </div>

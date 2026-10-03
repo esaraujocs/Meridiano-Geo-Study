@@ -874,10 +874,19 @@ export const en: Messages = {
   supplies: {
     trayAria: "Expedition supplies",
     useAria: (name: string, count: number) => `Use ${name} (${count} in stock)`,
+    armAria: (name: string, count: number, on: boolean) => `${name}: ${on ? "on" : "off"} (${count} in stock)`,
+    armedShort: "On",
+    shieldSaved: "The Shield protected your streak.",
+    retryNote: "Missed, but you can try again.",
+    letterAria: "Answer hint",
     assistedHint: "Round with a supply: pays half and doesn't count toward mastery or mastery streaks.",
     ampulheta: { name: "Hourglass", short: "+5 s", detail: "Adds 5 seconds to this round's timer." },
     bussola: { name: "Compass", short: "Continent", detail: "Shows the continent of the country you're looking for." },
     lupa: { name: "Magnifier", short: "Remove 2", detail: "Removes two wrong options, leaving the right one and one more." },
+    letra: { name: "First letter", short: "1st letter", detail: "Shows the first letter of the answer and how many letters it has." },
+    pular: { name: "Skip", short: "Skip", detail: "Discards this target without counting a miss. It comes back at the end of the match." },
+    retorno: { name: "Second chance", short: "2nd chance", detail: "Turn it on first: if you miss, the round stays open and you can try again. It's only spent if the miss happens." },
+    escudo: { name: "Shield", short: "Shield", detail: "Turn it on first: your next miss won't break your streak or weigh on the match. It's only spent if the miss happens." },
   },
   quiz: {
     unavailable: "Quiz unavailable",
@@ -1414,7 +1423,7 @@ export const en: Messages = {
     leagueOwned: (owned: number, total: number) => `${owned} of ${total} earned`,
     suppliesTab: "Supplies",
     supplies: {
-      note: "Help on a tough round, in Match and Practice (never in duels). A round with a supply pays half and doesn't count toward mastery or dominance.",
+      note: "Help on a tough round, in Match and Practice (never in duels). A round with a supply pays half and doesn't count toward mastery or dominance. Shield and Second chance are only spent if you miss.",
       owned: (n: number) => (n === 1 ? "1 in stock" : `${n} in stock`),
       unitPrice: (price: string) => `${price} each`,
       less: "Decrease quantity",

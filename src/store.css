@@ -161,6 +161,10 @@
 .st-art[data-supply=lupa]{--s1:#d7f1f6;--s2:#6fb0c2}
 .st-art[data-supply=bussola]{--s1:#fbebc4;--s2:#d2a24c}
 .st-art[data-supply=ampulheta]{--s1:#e7def5;--s2:#9582c0}
+.st-art[data-supply=letra]{--s1:#fbe3dc;--s2:#d98a76}
+.st-art[data-supply=pular]{--s1:#e3f0cf;--s2:#8fb46a}
+.st-art[data-supply=retorno]{--s1:#fde6cf;--s2:#e39a58}
+.st-art[data-supply=escudo]{--s1:#d5e6fa;--s2:#5b8ccc}
 
 /* cartões de modo: a cor da família do Hub (as variáveis --h vêm de [data-fam] nos temas); rodadas e suprimentos seguem na tinta do tema */
 .st-art[data-fam]{background:linear-gradient(135deg,color-mix(in srgb,var(--h) 74%,#000),var(--h));color:#fff}

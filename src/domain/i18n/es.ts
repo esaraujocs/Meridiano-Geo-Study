@@ -874,10 +874,19 @@ export const es: Messages = {
   supplies: {
     trayAria: "Suministros de expedición",
     useAria: (name: string, count: number) => `Usar ${name} (${count} en existencia)`,
+    armAria: (name: string, count: number, on: boolean) => `${name}: ${on ? "activado" : "desactivado"} (${count} en existencia)`,
+    armedShort: "Activo",
+    shieldSaved: "El Escudo protegió tu racha.",
+    retryNote: "Fallaste, pero puedes intentarlo de nuevo.",
+    letterAria: "Pista de la respuesta",
     assistedHint: "Ronda con suministro: paga la mitad y no cuenta para la maestría ni el dominio.",
     ampulheta: { name: "Reloj de arena", short: "+5 s", detail: "Suma 5 segundos al cronómetro de esta ronda." },
     bussola: { name: "Brújula", short: "Continente", detail: "Muestra el continente del país buscado." },
     lupa: { name: "Lupa", short: "Eliminar 2", detail: "Quita dos alternativas incorrectas, dejando la correcta y una más." },
+    letra: { name: "Primera letra", short: "1ª letra", detail: "Muestra la primera letra de la respuesta y cuántas letras tiene." },
+    pular: { name: "Saltar", short: "Saltar", detail: "Descarta este objetivo sin contar fallo. Vuelve al final de la partida." },
+    retorno: { name: "Segunda oportunidad", short: "2ª opción", detail: "Actívala antes: si fallas, la ronda sigue abierta y puedes intentarlo de nuevo. Solo se gasta si el fallo ocurre." },
+    escudo: { name: "Escudo", short: "Escudo", detail: "Actívalo antes: tu próximo fallo no rompe tu racha ni pesa en la partida. Solo se gasta si el fallo ocurre." },
   },
   quiz: {
     unavailable: "Quiz no disponible",
@@ -1414,7 +1423,7 @@ export const es: Messages = {
     leagueOwned: (owned: number, total: number) => `${owned} de ${total} conseguidos`,
     suppliesTab: "Suministros",
     supplies: {
-      note: "Ayudan en una ronda difícil, en Partida y en Entrenamiento (nunca en duelo). Una ronda con suministro paga la mitad y no cuenta para la maestría ni el dominio.",
+      note: "Ayudan en una ronda difícil, en Partida y en Entrenamiento (nunca en duelo). Una ronda con suministro paga la mitad y no cuenta para la maestría ni el dominio. El Escudo y la Segunda oportunidad solo se gastan si fallas.",
       owned: (n: number) => (n === 1 ? "1 en existencia" : `${n} en existencia`),
       unitPrice: (price: string) => `${price} cada uno`,
       less: "Disminuir cantidad",

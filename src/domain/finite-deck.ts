@@ -40,9 +40,11 @@ export function createFiniteDeck<T>(
   const shuffled = shuffleSeeded(items, seed);
   const deck = limit && limit > 0 ? shuffled.slice(0, limit) : shuffled;
   let cursor = 0;
+  // Cartas que o Pular mandou para o fim do baralho: voltam a ser sorteadas, mas não aumentam o tamanho da partida.
+  let deferred = 0;
   return {
     get size() {
-      return deck.length;
+      return deck.length - deferred;
     },
     get remaining() {
       return deck.length - cursor;
@@ -52,6 +54,13 @@ export function createFiniteDeck<T>(
     },
     values() {
       return [...deck];
+    },
+    /** Pular: devolve a carta já sorteada para o fim do baralho (sem contar como rodada). Com o baralho no fim, não há para onde mandar: devolve falso. */
+    defer(item: T) {
+      if (cursor >= deck.length) return false;
+      deck.push(item);
+      deferred += 1;
+      return true;
     },
   };
 }

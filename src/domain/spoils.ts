@@ -66,6 +66,8 @@ export type SpoilsRound = {
   weight?: number;
   /** Rodada respondida com ajuda de um suprimento de expedição (Lupa/Bússola/Ampulheta): paga ASSISTED_COIN_FACTOR do normal. */
   assisted?: boolean;
+  /** O Escudo de sequência cobriu este erro: a rodada sai da conta da sequência e da precisão da partida (não quebra nem soma). */
+  shielded?: boolean;
 };
 export type SpoilsInput = {
   variant: AnyQuizVariant;
@@ -137,6 +139,9 @@ export function computeSpoils(input: SpoilsInput): Spoils {
   let best = 0;
   let streakRaw = 0;
   let correctRounds = 0;
+  // Rodada coberta pelo Escudo: não quebra a sequência nem entra na precisão que paga o bônus de conclusão (só o que já foi acertado dentro dela, como
+  // os países de uma rota do Travel, ainda paga).
+  const counted = input.rounds.filter((round) => !round.shielded);
   for (const round of input.rounds) {
     const weight = round.weight ?? (round.correct ? 1 : 0);
     const assistedFactor = round.assisted ? ASSISTED_COIN_FACTOR : 1;
@@ -144,6 +149,7 @@ export function computeSpoils(input: SpoilsInput): Spoils {
       hitCount += 1;
       hitCoinsRaw += hitCoins(input.variant, round.tier ?? 1) * weight * assistedFactor;
     }
+    if (round.shielded) continue;
     if (round.correct) {
       correctRounds += 1;
       streak += 1;
@@ -151,8 +157,8 @@ export function computeSpoils(input: SpoilsInput): Spoils {
       streakRaw += hitCoins(input.variant, round.tier ?? 1) * weight * assistedFactor * Math.min(streak * STREAK_STEP, STREAK_CAP);
     } else streak = 0;
   }
-  const accuracy = input.rounds.length ? correctRounds / input.rounds.length : 0;
-  const completionRaw = input.complete ? completionPerRound(accuracy) * input.rounds.length : 0;
+  const accuracy = counted.length ? correctRounds / counted.length : 0;
+  const completionRaw = input.complete ? completionPerRound(accuracy) * counted.length : 0;
   const scale = (value: number) => Math.round(value * factor);
   const lines = {
     hits: { count: hitCount, coins: scale(hitCoinsRaw) },

@@ -206,6 +206,10 @@
 .hx-supply-art[data-supply=lupa]{background:radial-gradient(circle at 30% 22%,#d7f1f6,#6fb0c2)}
 .hx-supply-art[data-supply=bussola]{background:radial-gradient(circle at 30% 22%,#fbebc4,#d2a24c)}
 .hx-supply-art[data-supply=ampulheta]{background:radial-gradient(circle at 30% 22%,#e7def5,#9582c0)}
+.hx-supply-art[data-supply=letra]{background:radial-gradient(circle at 30% 22%,#fbe3dc,#d98a76)}
+.hx-supply-art[data-supply=pular]{background:radial-gradient(circle at 30% 22%,#e3f0cf,#8fb46a)}
+.hx-supply-art[data-supply=retorno]{background:radial-gradient(circle at 30% 22%,#fde6cf,#e39a58)}
+.hx-supply-art[data-supply=escudo]{background:radial-gradient(circle at 30% 22%,#d5e6fa,#5b8ccc)}
 
 /* ───────── progresso (tiles com anel) ───────── */
 .hx-progress .section-label{margin-top:22px}

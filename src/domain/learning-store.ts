@@ -39,6 +39,8 @@ export type LearningRound = {
   /** Respondida com ajuda de um suprimento de expedição (Lupa/Bússola/Ampulheta): não conta para maestria/domínio nem para "sem falhas",
    *  e paga menos moedas (ASSISTED_COIN_FACTOR em spoils.ts). Ver dominated.ts e progress-surfaces.ts. */
   assisted?: boolean;
+  /** O Escudo de sequência cobriu este erro (a rodada também é `assisted`): fica de fora da sequência e da precisão da partida. */
+  shielded?: boolean;
 };
 
 /** Carta que subiu de nível nesta partida (de 0 = carta nova). */
@@ -210,7 +212,7 @@ export async function startLearningSession(input: {
             ? computeSpoils({
               variant: current.coinVariant ?? current.variant,
               pace: current.pace ?? "timed",
-              rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight, assisted: round.assisted })),
+              rounds: current.rounds.map((round) => ({ correct: round.correct, tier: round.tier, weight: round.weight, assisted: round.assisted, shielded: round.shielded })),
               complete,
               newCards: promotions.filter((item) => item.from === 0).length,
               levelUps: promotions.filter((item) => item.from > 0).length,

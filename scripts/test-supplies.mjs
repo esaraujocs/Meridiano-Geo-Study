@@ -87,3 +87,66 @@ assert.equal(supplies.compassGroup({ reg: "Americas", sub: "Caribbean" }), "amer
 assert.equal(supplies.compassGroup({ reg: "Europe", sub: "Western Europe" }), "Europe", "os outros continentes seguem como são");
 assert.equal(supplies.compassGroup(undefined), null);
 console.log("compass groups ok");
+
+// ---- catálogo: todo suprimento tem preço, entra no estoque vazio e os destaques existem
+for (const id of supplies.SUPPLY_IDS) {
+  assert.ok(supplies.SUPPLY_COST[id] > 0, `${id} tem preço`);
+  assert.equal(supplies.emptySupplyCounts()[id], 0, `${id} começa zerado no estoque`);
+}
+assert.equal(new Set(supplies.SUPPLY_IDS).size, 7, "são sete suprimentos, sem repetição");
+assert.equal(Object.keys(supplies.emptySupplyCounts()).length, supplies.SUPPLY_IDS.length);
+assert.ok(supplies.FEATURED_SUPPLIES.every((id) => supplies.SUPPLY_IDS.includes(id)), "os destaques da vitrine são suprimentos de verdade");
+assert.deepEqual([...supplies.ARMED_SUPPLIES].sort(), ["escudo", "retorno"], "só Escudo e Segunda chance ficam armados");
+
+// ---- aplicabilidade dos novos: Primeira letra só onde se digita; Pular e Escudo em tudo; Segunda chance em tudo menos o Travel
+for (const variant of ["escrita-pais", "escrita-capital", "silhueta"]) assert.equal(supplies.supplyApplies("letra", variant), true, `Primeira letra em ${variant}`);
+for (const variant of ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta-opcoes", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais", "travel"]) {
+  assert.equal(supplies.supplyApplies("letra", variant), false, `Primeira letra não faz sentido em ${variant}`);
+}
+const everyVariant = ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "travel", "escrita-pais", "escrita-capital", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"];
+for (const variant of everyVariant) {
+  assert.equal(supplies.supplyApplies("pular", variant), true, `Pular em ${variant}`);
+  assert.equal(supplies.supplyApplies("escudo", variant), true, `Escudo em ${variant}`);
+  assert.equal(supplies.supplyApplies("retorno", variant), variant !== "travel", `Segunda chance em ${variant}`);
+  // nenhum deles depende do cronômetro: no Treino continuam valendo
+  assert.equal(supplies.supplyApplies("pular", variant, false), true);
+  assert.equal(supplies.supplyApplies("escudo", variant, false), true);
+}
+const all = { lupa: 1, bussola: 1, letra: 1, pular: 1, retorno: 1, escudo: 1, ampulheta: 1 };
+assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["letra", "pular", "retorno", "escudo", "ampulheta"], "hotbar da escrita, na ordem de sempre");
+assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "pular", "retorno", "escudo", "ampulheta"]);
+assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta"]);
+assert.deepEqual(supplies.usableSupplies(all, "travel", false), ["pular", "escudo"], "Travel no Treino: só Pular e Escudo");
+
+// ---- Primeira letra: só a inicial, o resto vira ponto; espaços e pontuação ficam
+assert.equal(supplies.letterHint("Costa do Marfim"), "C•••• •• ••••••");
+assert.equal(supplies.letterHint("Brasil"), "B•••••");
+assert.equal(supplies.letterHint("são tomé"), "S•• ••••", "a inicial sai em maiúscula, acento conta como uma letra");
+assert.equal(supplies.letterHint("Guiné-Bissau"), "G••••-••••••", "o hífen fica");
+assert.equal(supplies.letterHint("Timor-Leste"), "T••••-•••••");
+assert.equal(supplies.letterHint("  Peru "), "P•••", "espaços nas pontas não contam");
+assert.equal(supplies.letterHint(""), "");
+assert.equal(supplies.letterHint(undefined), "");
+
+// ---- Escudo: a rodada coberta sai da sequência e da precisão, mas o que foi acertado dentro dela (rota do Travel) ainda paga
+const run = (rounds) => spoils.computeSpoils({ variant: "bandeira-nome", pace: "timed", complete: true, newCards: 0, levelUps: 0, rounds });
+const hit = (extra = {}) => ({ correct: true, tier: 1, ...extra });
+const missShielded = { correct: false, tier: 1, assisted: true, shielded: true };
+const missPlain = { correct: false, tier: 1 };
+assert.equal(run([hit(), hit(), missShielded, hit(), hit()]).streak.best, 4, "com o Escudo a sequência segue: 2 + 2 = 4");
+assert.equal(run([hit(), hit(), missPlain, hit(), hit()]).streak.best, 2, "sem o Escudo o erro quebra a sequência");
+assert.ok(run([hit(), hit(), missShielded, hit(), hit()]).streak.coins > run([hit(), hit(), missPlain, hit(), hit()]).streak.coins, "e o bônus de sequência é maior");
+assert.equal(run([hit(), hit(), missShielded]).completion.pct, 100, "a rodada coberta não entra na precisão da partida");
+assert.equal(run([hit(), hit(), missPlain]).completion.pct, 67);
+assert.equal(run([hit(), missShielded]).hits.count, 1, "o erro coberto não paga acerto");
+const travelShielded = { correct: false, tier: 1, weight: 2, assisted: true, shielded: true };
+assert.equal(spoils.computeSpoils({ variant: "travel", pace: "timed", complete: true, newCards: 0, levelUps: 0, rounds: [travelShielded] }).hits.count, 1, "a rota do Travel coberta paga o que foi acertado nela");
+// erro coberto + rodada assistida: continua fora do domínio (o Escudo é um suprimento como os outros)
+const shieldedForDomain = { complete: true, rounds: [
+  { targetId: "BRA", correct: true, column: "mapa", answeredAt: 1 },
+  { targetId: "BRA", correct: false, column: "mapa", answeredAt: 2, assisted: true, shielded: true },
+  { targetId: "BRA", correct: true, column: "capitais", answeredAt: 3 },
+  { targetId: "BRA", correct: true, column: "mapa", answeredAt: 4 },
+] };
+assert.ok(dominated.dominatedIdsFromSessions([shieldedForDomain]).has("BRA"), "o erro coberto não zera a evidência de domínio (nem conta como acerto)");
+console.log("novos suprimentos ok");

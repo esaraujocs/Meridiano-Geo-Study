@@ -6,7 +6,7 @@ import { inSilhouetteDeck } from "../domain/silhouette";
 import { variantLabel } from "../domain/result-view";
 import { ContinueBar, GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { emptySupplyCounts, LUPA_REMOVE_COUNT, type SupplyCounts } from "../domain/supplies";
+import { emptySupplyCounts, letterHint, LUPA_REMOVE_COUNT, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import {
   aliases,
   evaluateTravelGuess,
@@ -96,6 +96,10 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
+  // Segunda chance: alternativas já tentadas (e erradas) / aviso de "tente de novo" na digitação; Escudo: o erro desta rodada foi coberto.
+  const [triedWrong, setTriedWrong] = useState<ReadonlySet<string>>(new Set());
+  const [retryNotice, setRetryNotice] = useState(false);
+  const [shieldSaved, setShieldSaved] = useState(false);
   const leave = async (destination: Destination = "recorte") => {
     const result = await session.abandon();
     if (destination === "home") location.href = "/";
@@ -139,10 +143,22 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
        setTyped(""); setFeedback(""); setAnswerResult(""); setLocked(false); setSerial((value) => value + 1);
        if (variant === "silhueta-opcoes") setChoices(optionsFor(first));
        setLupaHidden(new Set());
+       setTriedWrong(new Set()); setRetryNotice(false); setShieldSaved(false);
        supply.resetRound();
     }
   }, [ids, variant, region]);
   // Depois do retorno da resposta: próxima silhueta ou, se o baralho acabou, o resultado da partida.
+  const showTarget = (next: string) => {
+    setTarget(next);
+    settled.current = false;
+    startedAt.current = Date.now();
+    setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedSilhouette(""); setLocked(false); setSerial((value) => value + 1);
+    if (variant === "silhueta-opcoes") setChoices(optionsFor(next));
+    setLupaHidden(new Set());
+    setTriedWrong(new Set()); setRetryNotice(false); setShieldSaved(false);
+    supply.resetRound();
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
   const advance = (delay: number, skipAfter: number) => {
     flow.schedule(async () => {
       const next = deck.current?.draw();
@@ -152,32 +168,36 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
         else onBack();
         return;
       }
-      setTarget(next);
-      settled.current = false;
-      startedAt.current = Date.now();
-      setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedSilhouette(""); setLocked(false); setSerial((value) => value + 1);
-      if (variant === "silhueta-opcoes") setChoices(optionsFor(next));
-      setLupaHidden(new Set());
-      supply.resetRound();
-      requestAnimationFrame(() => inputRef.current?.focus());
+      showTarget(next);
     }, delay, skipAfter);
   };
   // Uma resposta (digitada ou escolhida) ou o fim do tempo (timedOut) fecha a rodada.
   const resolve = (value: string, correct: boolean, timedOut = false) => {
     if (!target || locked || settled.current) return;
+    // Segunda chance: errou respondendo (o tempo acabar não vale): a rodada segue aberta. Nas alternativas a errada fica marcada; na digitação o campo limpa.
+    if (!correct && !timedOut && supply.consumeArmed("retorno")) {
+      if (variant === "silhueta-opcoes") { setTriedWrong((current) => new Set(current).add(value)); setSelectedSilhouette(""); }
+      else { setTyped(""); requestAnimationFrame(() => inputRef.current?.focus()); }
+      setRetryNotice(true);
+      return;
+    }
+    // Escudo: o erro não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
+    const shielded = !correct && supply.consumeArmed("escudo");
+    setShieldSaved(shielded); setRetryNotice(false);
     settled.current = true;
     setScore((current) => current + (correct ? 1 : 0));
-    setStreak((current) => correct ? current + 1 : 0);
+    setStreak((current) => correct ? current + 1 : shielded ? current : 0);
     setLocked(true); setAnswerResult(correct ? "correct" : "wrong");
     setFeedback(correct ? t.common.correct : timedOut ? t.common.timeUp : t.common.wrong);
     setTimedOutRound(timedOut);
     leaveGuard.noteAnswer();
-    log.push({ correct, tier: entityTier(data.meta, target) });
+    log.push({ correct, tier: entityTier(data.meta, target), shielded });
     session.recordRound({
       targetId: target, correct, responseTimeMs: Math.max(0, Date.now() - startedAt.current), answeredAt: Date.now(),
       tier: entityTier(data.meta, target),
       ...(timedOut ? { timedOut: true, ...(value ? { selectedId: value } : {}) } : { selectedId: value }),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     });
     advance(feedbackHoldMs(correct, variant !== "silhueta-opcoes"), feedbackSkipAfterMs(correct));
     if (correct) cueCorrect();
@@ -193,11 +213,20 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     setLupaHidden(new Set(wrongIds));
   };
   const visibleChoices = useMemo(() => choices.filter((id) => !lupaHidden.has(id)), [choices, lupaHidden]);
+  // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e a próxima silhueta entra. Na última carta não há para onde mandar.
+  const skipRound = () => {
+    const cards = deck.current;
+    if (!target || locked || !cards || cards.remaining === 0 || !supply.use("pular")) return;
+    cards.defer(target);
+    const next = cards.draw();
+    if (next) showTarget(next);
+  };
+  const useItem = (id: SupplyId) => { if (id === "pular") skipRound(); else if (id === "lupa") useLupa(); else supply.use(id); };
   const total = deck.current?.size ?? ids.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: total });
   useGameKeys({
     exit,
-    choose: (index) => { if (variant !== "silhueta-opcoes" || locked) return; const id = visibleChoices[index]; if (id) { setSelectedSilhouette(id); resolve(id, id === target); } },
+    choose: (index) => { if (variant !== "silhueta-opcoes" || locked) return; const id = visibleChoices[index]; if (id && !triedWrong.has(id)) { setSelectedSilhouette(id); resolve(id, id === target); } },
     enabled: Boolean(features && target),
   });
   const path = featurePath(features?.get(target));
@@ -214,18 +243,22 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
             variant={engineVariant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
+            armed={supply.armed}
+            onArm={supply.toggleArm}
+            blocked={deck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={locked}
-            onUse={(id) => (id === "lupa" ? useLupa() : supply.use(id))}
+            onUse={useItem}
           />
         )}
       </GameTopBar>
       <div className="gs-body">
-        <main className="gs-stage">
+        <main className="gs-stage" data-target-id={import.meta.env.DEV ? target : undefined}>
           <div className="gs-kicker">{t.silhouette.kicker}</div>
           <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label={t.silhouette.aria}><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
-          <div className={`gs-ribbon${answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
+          {typedMode && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(targetName)}</div>}
+          <div className={`gs-ribbon${retryNotice && !answerResult ? " on info" : answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-            {answerResult ? feedback : ""}
+            {answerResult ? (shieldSaved ? `${feedback} ${t.supplies.shieldSaved}` : feedback) : retryNotice ? t.supplies.retryNote : ""}
             {answerResult === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(targetName)}</span>}
           </div>
         </main>
@@ -241,7 +274,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
             <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
-            <div className="quiz-options gs-opts">{visibleChoices.map((id, index) => <button className={`${optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked} key={id} onClick={() => {
+            <div className="quiz-options gs-opts">{visibleChoices.map((id, index) => <button className={`${triedWrong.has(id) && !answerResult ? "quiz-option wrong is-tried" : optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked || triedWrong.has(id)} key={id} data-option-id={id} onClick={() => {
               if (locked) return;
               setSelectedSilhouette(id);
               resolve(id, id === target);
@@ -249,6 +282,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
               <span className="gs-key" aria-hidden="true">{index + 1}</span>
               <span className="gs-opt-label">{data.meta[id]?.pt ?? id}</span>
               <OptionMarks isTarget={id === target} isPicked={id === selectedSilhouette} verdict={answerResult} />
+              {triedWrong.has(id) && !answerResult && <><span className="opt-mark opt-mark-miss" aria-hidden="true">✕</span><span className="sr-only">{t.feedback.wrongPickSr}</span></>}
             </button>)}</div>
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, false)} onSkip={flow.skip} />}
             <div className="gs-keys" aria-hidden="true"><span><kbd>1</kbd>–<kbd>4</kbd> {t.common.keyChoose}</span><span><kbd>Enter</kbd> {t.common.keyContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
@@ -308,6 +342,13 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const intermediates = route?.slice(1, -1) ?? [];
   const next = intermediates[guesses.length];
   // Depois do retorno da rota: próximo destino ou, se o baralho acabou, o resultado da partida.
+  const openRoute = (destination: string) => {
+    const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
+    if (!nextRoute) { setError(t.travel.noRoute); return; }
+    setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setOver(false); overRef.current = false; setRound((current) => current + 1); destinationStarted.current = Date.now();
+    supply.resetRound();
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
   const advance = (delay: number, skipAfter: number) => {
     flow.schedule(async () => {
       const destination = destinationDeck.current?.draw();
@@ -317,28 +358,36 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
         else onBack();
         return;
       }
-      const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
-      if (!nextRoute) { setError(t.travel.noRoute); return; }
-      setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setOver(false); overRef.current = false; setRound((current) => current + 1); destinationStarted.current = Date.now();
-      supply.resetRound();
-      requestAnimationFrame(() => inputRef.current?.focus());
+      openRoute(destination);
     }, delay, skipAfter);
+  };
+  // Pular: o destino vai para o fim do baralho (sem contar acerto nem erro) e o próximo entra. No último destino não há para onde mandar.
+  const skipRound = () => {
+    const cards = destinationDeck.current;
+    if (!route || over || overRef.current || !cards || cards.remaining === 0 || !supply.use("pular")) return;
+    cards.defer(route[route.length - 1]);
+    const destination = cards.draw();
+    if (destination) openRoute(destination);
   };
   // A rota acabou (fechou, estourou as tentativas ou o tempo): grava a rodada com quantos países foram acertados.
   const closeRoute = (activeRoute: string[], complete: boolean, newGuesses: string[], nextAttempts: number, value: string, timedOut = false) => {
     overRef.current = true;
     setOver(true);
+    // Escudo: a rota perdida não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
+    const shielded = !complete && supply.consumeArmed("escudo");
+    if (shielded) setFeedbackState((current) => ({ ...current, text: `${current.text} · ${t.supplies.shieldSaved}`.trim() }));
     setScore((current) => current + (complete ? 1 : 0));
-    setStreak((current) => complete ? current + 1 : 0);
+    setStreak((current) => complete ? current + 1 : shielded ? current : 0);
     const destination = activeRoute[activeRoute.length - 1];
     leaveGuard.noteAnswer();
-    log.push({ correct: complete, tier: entityTier(data.meta, destination), weight: newGuesses.length });
+    log.push({ correct: complete, tier: entityTier(data.meta, destination), weight: newGuesses.length, shielded });
     session.recordRound({
       targetId: destination, correct: complete, responseTimeMs: Date.now() - destinationStarted.current, answeredAt: Date.now(),
       selectedId: value, attempts: nextAttempts, guesses: newGuesses,
       tier: entityTier(data.meta, destination), weight: newGuesses.length,
       ...(timedOut ? { timedOut: true } : {}),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     });
     advance(feedbackHoldMs(complete, true), feedbackSkipAfterMs(complete));
     if (complete) cueCorrect();
@@ -401,13 +450,16 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
             variant="travel"
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
+            armed={supply.armed}
+            onArm={supply.toggleArm}
+            blocked={destinationDeck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={over}
-            onUse={(id) => supply.use(id)}
+            onUse={(id) => (id === "pular" ? skipRound() : supply.use(id))}
           />
         )}
       </GameTopBar>
       <div className="gs-body">
-        <main className="gs-stage">
+        <main className="gs-stage" data-target-id={import.meta.env.DEV ? activeRoute.at(-1) : undefined}>
           <div className="gs-kicker">{t.travel.destination} <b>{nameOf(activeRoute.at(-1)!)}</b></div>
           <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label={t.travel.routeAria}><path d={routePath.d} /></svg></div>
           <ol className="gs-route" aria-label={t.travel.route}>

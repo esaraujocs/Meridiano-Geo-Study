@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeSpoils, type Pace, type Tier } from "../domain/spoils";
 import { createPortal } from "react-dom";
-import { supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { SUPPLY_IDS, isArmedSupply, supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { SupplyArt } from "./supply-art";
 import type { AnyQuizVariant } from "../domain/types";
 import { Icon, type IconType } from "./icons";
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** Uma rodada já respondida, como o topo do jogo precisa dela (certa/errada) e como o espólio pendente é calculado. */
-export type RoundResult = { correct: boolean; tier?: Tier; weight?: number };
+export type RoundResult = { correct: boolean; tier?: Tier; weight?: number; shielded?: boolean };
 
 /**
  * Registro das rodadas da partida em curso, só para a interface: os segmentos do topo e as moedas pendentes.
@@ -77,30 +77,39 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
  * o estoque e uma legenda curta). Só mostra o que tem estoque e faz sentido no modo (supplyApplies); some quando não sobra nenhum, sem cadeado nem
  * "0" — a Loja é onde se aprende que existem. Vai para o <body> por um portal para a posição fixa nunca depender dos cartões em volta.
  */
-export function SupplyTray({ variant, timed = true, counts, usedThisRound, disabled, onUse }: {
+export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed, blocked, disabled, onUse, onArm }: {
   variant: AnyQuizVariant;
   /** A partida tem cronômetro (no Treino a Ampulheta não aparece). */
   timed?: boolean;
   counts: SupplyCounts;
   /** Suprimentos já usados nesta rodada (cada um só pode ser usado uma vez por rodada). */
   usedThisRound: ReadonlySet<SupplyId>;
+  /** Suprimentos armados (Escudo e Segunda chance): o botão liga e desliga, e fica aceso enquanto espera o erro. */
+  armed?: ReadonlySet<SupplyId>;
+  /** Suprimentos que não dá para usar agora (ex.: Pular na última carta do baralho). */
+  blocked?: ReadonlySet<SupplyId>;
   disabled?: boolean;
   onUse: (id: SupplyId) => void;
+  onArm?: (id: SupplyId) => void;
 }) {
-  const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
+  const available = SUPPLY_IDS.filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
   if (!available.length) return null;
   return createPortal(
-    <div className={`gs-supplies gs-hotbar${disabled ? " is-idle" : ""}`} role="region" aria-label={t.supplies.trayAria}>
+    <div className={`gs-supplies gs-hotbar${disabled ? " is-idle" : ""}${available.length > 4 ? " is-dense" : ""}`} role="region" aria-label={t.supplies.trayAria}>
       {available.map((id) => {
         const used = usedThisRound.has(id);
+        const arms = isArmedSupply(id);
+        const on = arms && Boolean(armed?.has(id));
         return (
           <button
-            key={id} type="button" className={`gs-supply gs-slot${used ? " is-used" : ""}`} data-supply={id} disabled={disabled || used}
-            aria-label={t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
-            onClick={() => onUse(id)}
+            key={id} type="button" className={`gs-supply gs-slot${used ? " is-used" : ""}${on ? " is-armed" : ""}`} data-supply={id}
+            disabled={disabled || used || Boolean(blocked?.has(id))}
+            aria-pressed={arms ? on : undefined}
+            aria-label={arms ? t.supplies.armAria(t.supplies[id].name, counts[id], on) : t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
+            onClick={() => (arms ? onArm?.(id) : onUse(id))}
           >
             <span className="gs-slot-art"><SupplyArt id={id} size={40} /></span>
-            <span className="gs-slot-t">{t.supplies[id].short}</span>
+            <span className="gs-slot-t">{on ? t.supplies.armedShort : t.supplies[id].short}</span>
             <b className="gs-slot-n">{counts[id]}</b>
             {used && <i className="gs-slot-used" aria-hidden="true"><Icon type="check" size={16} /></i>}
           </button>

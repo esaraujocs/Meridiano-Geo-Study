@@ -10,7 +10,7 @@ import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
 import { ContinueBar, GameTopBar, SupplyTray, bigClass, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { emptySupplyCounts, LUPA_REMOVE_COUNT, type SupplyCounts } from "../domain/supplies";
+import { emptySupplyCounts, letterHint, LUPA_REMOVE_COUNT, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { variantLabel } from "../domain/result-view";
 import { regionLabel } from "../domain/regions";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
@@ -34,6 +34,10 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const [lupaHidden, setLupaHidden] = useState<Set<string>>(new Set());
+  // Segunda chance: alternativas já tentadas (e erradas) / aviso de "tente de novo" na escrita; Escudo: o erro desta rodada foi coberto.
+  const [triedWrong, setTriedWrong] = useState<ReadonlySet<string>>(new Set());
+  const [retryNotice, setRetryNotice] = useState(false);
+  const [shieldSaved, setShieldSaved] = useState(false);
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
   const [languages, setLanguages] = useState<LanguageEntry[]>([]);
   const [flags, setFlags] = useState<FlagCatalog>({});
@@ -131,6 +135,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
     if (!item) return;
     setTarget(item); setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedChoice(""); setLocked(false); setTimedOutRound(false); setSerial((value) => value + 1); committedTarget.current = null; started.current = Date.now();
     setLupaHidden(new Set());
+    setTriedWrong(new Set()); setRetryNotice(false); setShieldSaved(false);
     supply.resetRound();
     if (!writing) {
       const distractors = shuffleAnswerOptions(pool.filter((candidate) => candidate.id !== item.id)).slice(0, 3);
@@ -154,7 +159,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
 
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     leaveGuard.noteAnswer();
-    log.push({ correct: round.correct, tier: round.tier });
+    log.push({ correct: round.correct, tier: round.tier, shielded: round.shielded });
     if (session.current) session.current.recordRound(round);
     else queuedRounds.current.push(round);
   };
@@ -164,8 +169,17 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const answer = (id: string, value: string, forcedCorrect?: boolean, timedOut = false) => {
     if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
+    // Segunda chance: errou respondendo (o tempo acabar não vale): a rodada segue aberta. Nas alternativas a errada fica marcada; na escrita o campo limpa.
+    if (!correct && !timedOut && supply.consumeArmed("retorno")) {
+      if (writing) { setTyped(""); requestAnimationFrame(() => inputRef.current?.focus()); } else setTriedWrong((current) => new Set(current).add(id));
+      setRetryNotice(true);
+      return;
+    }
+    // Escudo: o erro não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
+    const shielded = !correct && supply.consumeArmed("escudo");
+    setShieldSaved(shielded); setRetryNotice(false);
     setScore((current) => current + (correct ? 1 : 0));
-    setStreak((current) => correct ? current + 1 : 0);
+    setStreak((current) => correct ? current + 1 : shielded ? current : 0);
     setSelectedChoice(id);
     committedTarget.current = target.id;
     if (correct && historicalMode) {
@@ -176,7 +190,8 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
       targetId: target.id, correct, responseTimeMs: Date.now() - started.current, answeredAt: Date.now(),
       tier: entityTier(data.meta, target.id),
       ...(timedOut ? { timedOut: true, ...(value ? { selectedId: value } : {}) } : { selectedId: value }),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     });
     const exhausted = deck.current?.remaining === 0;
     advance.schedule(async () => {
@@ -203,6 +218,13 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
     setLupaHidden(new Set(wrongIds));
   };
   const visibleChoices = useMemo(() => choices.filter((choice) => !lupaHidden.has(choice.id)), [choices, lupaHidden]);
+  // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e a próxima carta entra. Na última carta não há para onde mandar.
+  const skipRound = () => {
+    if (!target || locked || !deck.current || deck.current.remaining === 0 || !supply.use("pular")) return;
+    deck.current.defer(target);
+    next();
+  };
+  const useItem = (id: SupplyId) => { if (id === "pular") skipRound(); else if (id === "lupa") useLupa(); else supply.use(id); };
   // Baralho fechado (complete) ou "Encerrar sessão": ambos levam ao resultado, que mostra as moedas ganhas.
   const finishSession = async (complete = false) => {
     const handle = session.current ?? await pendingSession.current?.catch(() => null);
@@ -241,6 +263,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
     }
     setScore(0);
     setStreak(0);
+    supply.clearArmed();
     deckKey.current = "";
     setRunKey((value) => value + 1);
   };
@@ -255,7 +278,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   };
   useGameKeys({
     exit: () => leaveGuard.ask({ onLeave: () => void finish(), onRestart: () => void restart(), coins: log.pending, xp: deck.current?.size ?? pool.length }),
-    choose: (index) => { if (writing || locked) return; const choice = visibleChoices[index]; if (choice) answer(choice.id, choice.label); },
+    choose: (index) => { if (writing || locked) return; const choice = visibleChoices[index]; if (choice && !triedWrong.has(choice.id)) answer(choice.id, choice.label); },
     enabled: Boolean(target),
   });
   if (error) return <div className="app-shell"><main className="content"><button className="back" onClick={finish}>{t.common.exitGame}</button><div className="diagnostic">{error}</div></main></div>;
@@ -289,18 +312,22 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
             variant={variant}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
+            armed={supply.armed}
+            onArm={supply.toggleArm}
+            blocked={deck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
             disabled={locked}
-            onUse={(id) => (id === "lupa" ? useLupa() : supply.use(id))}
+            onUse={useItem}
           />
         )}
       </GameTopBar>
       <div className="gs-body">
-        <main className="gs-stage">
+        <main className="gs-stage" data-target-id={import.meta.env.DEV ? target.id : undefined}>
           <div className="gs-kicker">{kicker}</div>
           {stimulus}
-          <div className={`gs-ribbon${answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}` : ""}`} role="status" aria-live="polite">
+          {writing && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(String(expectedLabel(target)))}</div>}
+          <div className={`gs-ribbon${retryNotice && !answerResult ? " on info" : answerResult ? ` on ${answerResult === "correct" ? "ok" : "no"}${shieldSaved ? " wrap" : ""}` : ""}`} role="status" aria-live="polite">
             {answerResult === "correct" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-            {answerResult ? feedback : ""}
+            {answerResult ? (shieldSaved ? `${feedback} ${t.supplies.shieldSaved}` : feedback) : retryNotice ? t.supplies.retryNote : ""}
             {answerResult === "wrong" && <span className="sr-only">{t.common.rightAnswerIs(String(expectedLabel(target)))}</span>}
           </div>
           {answerResult && richMode && "script" in target && <LanguageCard entry={target as LanguageEntry} />}
@@ -319,10 +346,11 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
           </> : <>
             <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>{visibleChoices.map((choice, index) => {
               const historicalFlag = choice.flag ? historicalFlags[choice.flag.toLowerCase()] : undefined;
-              return <button key={choice.id} className={`${optionClass(choice.id === target.id, choice.id === selectedChoice, answerResult)} gs-opt`} aria-invalid={locked && choice.id === selectedChoice && answerResult === "wrong" ? true : undefined} disabled={locked} onClick={() => answer(choice.id, choice.label)}>
+              return <button key={choice.id} data-option-id={choice.id} className={`${triedWrong.has(choice.id) && !answerResult ? "quiz-option wrong is-tried" : optionClass(choice.id === target.id, choice.id === selectedChoice, answerResult)} gs-opt`} aria-invalid={locked && choice.id === selectedChoice && answerResult === "wrong" ? true : undefined} disabled={locked || triedWrong.has(choice.id)} onClick={() => answer(choice.id, choice.label)}>
                 <span className="gs-key" aria-hidden="true">{index + 1}</span>
                 {variant === "nome-historica" && historicalFlag ? <OptionFlag src={flagSource(historicalFlag)} alt={t.common.historicalFlagOption} /> : <span className="gs-opt-label">{choice.label}</span>}
                 <OptionMarks isTarget={choice.id === target.id} isPicked={choice.id === selectedChoice} verdict={answerResult} />
+                {triedWrong.has(choice.id) && !answerResult && <><span className="opt-mark opt-mark-miss" aria-hidden="true">✕</span><span className="sr-only">{t.feedback.wrongPickSr}</span></>}
               </button>;
             })}</div>
             {answerResult && (richMode || answerResult === "wrong") && <ContinueBar holdMs={richMode ? null : feedbackHoldMs(false, false)} onSkip={advance.skip} />}

@@ -19,7 +19,7 @@ import { addMapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { compassGroup, emptySupplyCounts, type SupplyCounts } from "../domain/supplies";
+import { compassGroup, emptySupplyCounts, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { continentLabel } from "../domain/collection-view";
 import { variantLabel } from "../domain/result-view";
 import {
@@ -100,6 +100,9 @@ export function Game({
   const [mapError, setMapError] = useState("");
   const [mapReady, setMapReady] = useState(false);
   const [keyboardMode, setKeyboardMode] = useState(false);
+  // Segunda chance: o clique errado deixou a rodada aberta; Escudo: o erro desta rodada foi coberto.
+  const [retryNote, setRetryNote] = useState(false);
+  const [shieldSaved, setShieldSaved] = useState(false);
   // Ids já perguntados nesta partida, acertando ou errando (só usado no Treino, ver revealNames) — zera a cada baralho novo.
   const [revealed, setRevealed] = useState<string[]>([]);
   const labelMarkersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
@@ -179,7 +182,7 @@ export function Game({
   };
   const recordRound = (round: Parameters<LearningSessionHandle["recordRound"]>[0]) => {
     leaveGuard.noteAnswer();
-    log.push({ correct: round.correct, tier: round.tier });
+    log.push({ correct: round.correct, tier: round.tier, shielded: round.shielded });
     if (sessionRef.current) sessionRef.current.recordRound(round);
     else queuedRoundsRef.current.push(round);
   };
@@ -208,9 +211,11 @@ export function Game({
     };
   }, []);
 
+  const currentItemRef = useRef<GeoFeature | null>(null);
   const nextTarget = () => {
     const item = deckRef.current?.draw();
     if (!item) return;
+    currentItemRef.current = item;
     targetRef.current = item.id;
     targetStartedAtRef.current = Date.now();
     feedbackRef.current = "";
@@ -220,8 +225,18 @@ export function Game({
     setFeedback("");
     setWrong(false);
     setTimedOut(false);
+    setRetryNote(false);
+    setShieldSaved(false);
     setSerial((value) => value + 1);
     supply.resetRound();
+  };
+  // Pular: o alvo vai para o fim do baralho (sem contar acerto nem erro) e o próximo entra. No último alvo não há para onde mandar.
+  const skipRound = () => {
+    const deck = deckRef.current;
+    const item = currentItemRef.current;
+    if (feedbackRef.current || !item || !deck || deck.remaining === 0 || !supply.use("pular")) return;
+    deck.defer(item);
+    nextTarget();
   };
   const newDeck = () => createFiniteDeck(features, deckSeedFor(seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
 
@@ -247,6 +262,7 @@ export function Game({
     window.setTimeout(() => { try { marker.remove(); } catch { /* mapa já removido */ } }, 1000);
   };
 
+  const answerRef = useRef<(id: string, evidence?: { byWater?: boolean; distanceKm?: number | null; point?: [number, number] }) => void>(() => undefined);
   const answerId = (id: string, evidence?: { byWater?: boolean; distanceKm?: number | null; point?: [number, number] }) => {
     if (!id || feedbackRef.current || !targetRef.current) return;
     if (import.meta.env.DEV) {
@@ -257,24 +273,33 @@ export function Game({
     // (a carta, o destaque e o texto do acerto ficam com o país que a pessoa achou).
     if (capitalMode && id !== targetRef.current && sameCapitalName(data.meta[id]?.cap, data.meta[targetRef.current]?.cap)) { targetRef.current = id; setTarget(id); }
     const responseTimeMs = Math.max(0, Date.now() - targetStartedAtRef.current);
+    const correct = id === targetRef.current;
+    // Segunda chance: errou o clique: a rodada segue aberta, o lugar errado fica marcado em vermelho até o próximo clique.
+    if (!correct && supply.consumeArmed("retorno")) { setWrong(true); setRetryNote(true); return; }
+    // Escudo: o erro não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
+    const shielded = !correct && supply.consumeArmed("escudo");
     const round = {
       targetId: targetRef.current,
-      correct: id === targetRef.current,
+      correct,
       responseTimeMs,
       answeredAt: Date.now(),
       clickedId: id,
       byWater: evidence?.byWater,
       distanceKm: evidence?.distanceKm ?? null,
       tier: entityTier(data.meta, targetRef.current),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     };
     recordRound(round);
+    setRetryNote(false);
+    setShieldSaved(shielded);
     // No Treino, o alvo da rodada fica marcado no mapa com o nome — acertando ou errando.
     setRevealed((list) => (list.includes(targetRef.current) ? list : [...list, targetRef.current]));
     if (round.correct) {
       feedbackRef.current = t.map.hit(data.meta[targetRef.current]?.pt ?? t.map.targetFallback);
       setScore((value) => value + 1);
       setStreak((value) => value + 1);
+      setWrong(false);
       setFeedback(feedbackRef.current);
       celebrateHit(evidence?.point);
        const exhausted = deckRef.current?.remaining === 0;
@@ -285,7 +310,7 @@ export function Game({
        }, HIT_FEEDBACK_MS);
     } else {
       feedbackRef.current = t.map.miss;
-      setStreak(0);
+      setStreak((value) => (shielded ? value : 0));
       setWrong(true);
       setFeedback(feedbackRef.current);
       const exhausted = deckRef.current?.remaining === 0;
@@ -295,9 +320,13 @@ export function Game({
       }, 1400);
     }
   };
+  answerRef.current = answerId;
   // O tempo da pergunta acabou: conta como erro (sem clique) e o alvo fica marcado no mapa.
   const timeUp = () => {
     if (feedbackRef.current || !targetRef.current) return;
+    const shielded = supply.consumeArmed("escudo");
+    setShieldSaved(shielded);
+    setRetryNote(false);
     recordRound({
       targetId: targetRef.current,
       correct: false,
@@ -305,12 +334,13 @@ export function Game({
       answeredAt: Date.now(),
       timedOut: true,
       tier: entityTier(data.meta, targetRef.current),
-      ...(supply.assisted ? { assisted: true } : {}),
+      ...(supply.assisted || shielded ? { assisted: true } : {}),
+      ...(shielded ? { shielded: true } : {}),
     });
     feedbackRef.current = t.map.timeUp;
     setSelectedAnswer("");
     setTimedOut(true);
-    setStreak(0);
+    setStreak((value) => (shielded ? value : 0));
     setWrong(true);
     setFeedback(feedbackRef.current);
     const exhausted = deckRef.current?.remaining === 0;
@@ -332,6 +362,7 @@ export function Game({
     setStreak(0);
     setRound(0);
     setRevealed([]);
+    supply.clearArmed();
     deckRef.current = newDeck();
     nextTarget();
   };
@@ -582,7 +613,8 @@ export function Game({
       // já vem 0 quando o toque caiu de fato dentro do polígono do alvo (distanceToTargetKm/distanceToGeometriesKm),
       // então um id resolvido diferente nessa condição é a sobreposição, não um erro real do jogador.
       const resolvedId = !specific && id && id !== targetRef.current && distanceKm === 0 ? targetRef.current : id;
-      answerId(resolvedId || "__water_click__", { byWater, distanceKm, point: point ?? [lngLat.lng, lngLat.lat] });
+      // O clique é registrado uma vez, ao montar o mapa: chama sempre a versão mais nova (estoque, suprimentos armados e rodada assistida).
+      answerRef.current(resolvedId || "__water_click__", { byWater, distanceKm, point: point ?? [lngLat.lng, lngLat.lat] });
     };
     map.on("click", (event: MapMouseEvent) => tapAt(event.point.x, event.point.y, event.lngLat));
      const handleKey = (event: KeyboardEvent) => {
@@ -771,18 +803,23 @@ export function Game({
       <div className="gs gs-map-screen">
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
         <main className="map-wrap" aria-label={t.map.wrapAria}>
-          <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
+          <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`} data-target-id={import.meta.env.DEV ? target : undefined}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
             {bussolaUsed && !feedback && <em className="map-bussola-hint">{compassLabel(compassGroup(data.meta[target]))}</em>}
+            {retryNote && !feedback && <em className="map-bussola-hint is-note">{t.supplies.retryNote}</em>}
+            {shieldSaved && feedback && <em className="map-bussola-hint is-note">{t.supplies.shieldSaved}</em>}
             <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
             {suppliesEnabled && (
               <SupplyTray timed={pace === "timed"}
                 variant={engineVariant}
                 counts={supply.counts}
                 usedThisRound={supply.usedThisRound}
+                armed={supply.armed}
+                onArm={supply.toggleArm}
+                blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
                 disabled={Boolean(feedback) || !mapReady}
-                onUse={(id) => supply.use(id)}
+                onUse={(id) => (id === "pular" ? skipRound() : supply.use(id))}
               />
             )}
           </div>
