@@ -48,10 +48,17 @@
 .hx .hub-friends,.hx .hub-gear,.hx .hub-coin{background:rgba(255,255,255,.78);border:1px solid color-mix(in srgb,var(--line) 80%,#fff);color:var(--ink)}
 :root[data-scheme=dark] .hx .hub-friends,:root[data-scheme=dark] .hx .hub-gear,:root[data-scheme=dark] .hx .hub-coin{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2)}
 @media (min-width:761px){
-  .hx .hub-bar{height:100px;padding:0 26px;gap:24px;border-radius:26px;box-shadow:0 22px 34px -24px rgba(36,59,58,.6)}
-  .hx .hub-brand{border-right:0;padding:0}
-  .hx .hub-brand span{display:none}
-  .hx .hub-brand .brand-logo{width:54px;height:54px;border-radius:15px;box-shadow:0 10px 16px -10px rgba(0,0,0,.6)}
+  /* três peças soltas (marca · jogador · carteira): cada uma leva a classe hub-bar, então cada tema pinta as três com o próprio acabamento; o contêiner fica sem fundo */
+  .hx .hx-head{display:flex;align-items:stretch;gap:16px;height:auto;min-height:0;padding:0;margin:0 0 4px;overflow:visible;background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .hx .hx-head::before{content:none}
+  .hx .hx-piece{display:flex;align-items:center;height:auto;margin:0;padding:14px 24px;gap:14px;border-radius:22px;box-shadow:0 18px 28px -22px rgba(36,59,58,.6)}
+  .hx .hx-p-brand{flex:none;flex-direction:column;justify-content:center}
+  .hx .hx-p-brand .hub-brand{flex-direction:column;gap:8px;padding:0;border:0;font-size:10px;letter-spacing:.18em}
+  .hx .hx-p-brand .hub-brand span{display:block;padding:0}
+  .hx .hx-p-brand .hub-brand .brand-logo{width:50px;height:50px;border-radius:14px;box-shadow:0 10px 16px -10px rgba(0,0,0,.6)}
+  .hx .hx-p-player{flex:1;min-width:0}
+  .hx .hx-p-player .hub-player{flex:1}
+  .hx .hx-p-wallet{flex:none;padding:14px 20px}
   .hx .hub-player{column-gap:20px;row-gap:7px}
   .hx .hub-level{width:78px;height:78px;filter:drop-shadow(0 10px 14px rgba(36,59,58,.3))}
   .hx .hub-level strong{font-size:32px}
@@ -258,6 +265,7 @@
 /* ───────── celular: tudo numa tela, sem rolagem ─────────
    cabeçalho, UM modo por vez (com os vizinhos espiando e laço), Duelo e, na última linha, Vitrine e Mecenato; o progresso fica por conta da barra de baixo */
 @media (max-width:760px){
+  .hx .hx-piece{display:contents}
   .hx{padding:8px 8px 10px!important;min-height:0;grid-template-rows:auto minmax(min-content,1fr);overflow-x:hidden;overflow-y:auto}
   .hx .section-label{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .hx .hub-bar{gap:8px;height:auto;padding:7px 9px;margin:0;border-radius:16px}

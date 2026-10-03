@@ -313,9 +313,9 @@ export function Hub({
   return (
     <main className="content hub-content hx">
       <h1 className="sr-only">Meridiano</h1>
-      <header className="hub-bar hx-bar" aria-label={t.hub.profileAria}>
-        <div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
-        <div className="hub-player">
+      <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
+        <div className="hub-bar hx-piece hx-p-brand"><div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div></div>
+        <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
           <div className={`hub-level${framed ? " lg-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
             <LevelTicks />
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
@@ -332,12 +332,12 @@ export function Hub({
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
             <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}<span className="hub-xp-next"> · {t.hub.xpToNext(xpToNext)}</span></span>
           </div>
-        </div>
-        <div className="hub-stats">
+        </div></div>
+        <div className="hub-bar hx-piece hx-p-wallet"><div className="hub-stats">
           {arenas?.onFriends && <button type="button" className="hub-friends" aria-label={t.hub.duelFriends} title={t.hub.duelFriends} onClick={arenas.onFriends}><Icon type="people" size={19} /><span>{t.hub.duelFriends}</span></button>}
           <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><span className="hub-coin-store"><Icon type="store" size={15} /> {t.nav.store}</span></button>
           <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
-        </div>
+        </div></div>
       </header>
       <div className="hx-grid">
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
