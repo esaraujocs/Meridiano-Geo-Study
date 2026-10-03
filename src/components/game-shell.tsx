@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeSpoils, type Pace, type Tier } from "../domain/spoils";
+import { createPortal } from "react-dom";
 import { supplyApplies, type SupplyCounts, type SupplyId } from "../domain/supplies";
+import { SupplyArt } from "./supply-art";
 import type { AnyQuizVariant } from "../domain/types";
 import { Icon, type IconType } from "./icons";
 import { formatNumber as money, t } from "../domain/i18n";
@@ -70,11 +72,10 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
   </header>;
 }
 
-const SUPPLY_ICON: Record<SupplyId, IconType> = { ampulheta: "hourglass", bussola: "compass", lupa: "search" };
-
 /**
- * Suprimentos de expedição disponíveis nesta rodada: só aparece com estoque > 0 e num modo em que o item faz sentido
- * (supplyApplies). Some da tela quando não sobra nenhum aplicável, sem cadeado nem "0" — a Loja é onde se aprende que existem.
+ * Hotbar dos suprimentos de expedição (04/10/2026): uma barra fixa no centro inferior da tela de jogo, com um slot por item (a ilustração da Loja,
+ * o estoque e uma legenda curta). Só mostra o que tem estoque e faz sentido no modo (supplyApplies); some quando não sobra nenhum, sem cadeado nem
+ * "0" — a Loja é onde se aprende que existem. Vai para o <body> por um portal para a posição fixa nunca depender dos cartões em volta.
  */
 export function SupplyTray({ variant, timed = true, counts, usedThisRound, disabled, onUse }: {
   variant: AnyQuizVariant;
@@ -88,23 +89,25 @@ export function SupplyTray({ variant, timed = true, counts, usedThisRound, disab
 }) {
   const available = (Object.keys(counts) as SupplyId[]).filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
   if (!available.length) return null;
-  return (
-    <div className="gs-supplies" role="group" aria-label={t.supplies.trayAria}>
+  return createPortal(
+    <div className="gs-supplies gs-hotbar" role="region" aria-label={t.supplies.trayAria}>
       {available.map((id) => {
         const used = usedThisRound.has(id);
         return (
           <button
-            key={id} type="button" className="gs-supply" disabled={disabled || used}
+            key={id} type="button" className={`gs-supply gs-slot${used ? " is-used" : ""}`} data-supply={id} disabled={disabled || used}
             aria-label={t.supplies.useAria(t.supplies[id].name, counts[id])} title={t.supplies[id].detail}
             onClick={() => onUse(id)}
           >
-            <Icon type={SUPPLY_ICON[id]} size={15} />
-            <span>{t.supplies[id].short}</span>
-            <b>{counts[id]}</b>
+            <span className="gs-slot-art"><SupplyArt id={id} size={40} /></span>
+            <span className="gs-slot-t">{t.supplies[id].short}</span>
+            <b className="gs-slot-n">{counts[id]}</b>
+            {used && <i className="gs-slot-used" aria-hidden="true"><Icon type="check" size={16} /></i>}
           </button>
         );
       })}
-    </div>
+    </div>,
+    document.body,
   );
 }
 

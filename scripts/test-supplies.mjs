@@ -78,3 +78,12 @@ const ctxClean = achievements.achievementContext(progress, [perfectSession(0)], 
 assert.equal(ctxClean.perfect20, true, "o mesmo baralho sem suprimento conta para Perfeita");
 
 console.log("test:supplies ok");
+
+// ---- Bússola: as Américas se dividem em Sul e Norte/Central (só no item) ----
+assert.equal(supplies.compassGroup({ reg: "Americas", sub: "South America" }), "america-do-sul");
+assert.equal(supplies.compassGroup({ reg: "Americas", sub: "North America" }), "america-do-norte-central");
+assert.equal(supplies.compassGroup({ reg: "Americas", sub: "Central America" }), "america-do-norte-central");
+assert.equal(supplies.compassGroup({ reg: "Americas", sub: "Caribbean" }), "america-do-norte-central", "o Caribe vai com a América do Norte");
+assert.equal(supplies.compassGroup({ reg: "Europe", sub: "Western Europe" }), "Europe", "os outros continentes seguem como são");
+assert.equal(supplies.compassGroup(undefined), null);
+console.log("compass groups ok");

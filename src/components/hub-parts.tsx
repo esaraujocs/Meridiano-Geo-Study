@@ -32,6 +32,8 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
   const loop = count > 1;
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  /** Índice (entre as cópias) do cartão que está na frente: decide qual das cópias de cada modo é a clicável. */
+  const [lead, setLead] = useState(count);
   const activeRef = useRef(0);
   const target = useRef<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -58,6 +60,7 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     setActive(wrapped);
     const home = (count + wrapped) * width;
     if (Math.abs(el.scrollLeft - home) > 1) el.scrollLeft = home;
+    setLead(count + wrapped);
   }, [count, indexAt, loop, stepWidth]);
   useLayoutEffect(() => {
     const el = track.current;
@@ -85,7 +88,9 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
   const onScroll = () => {
     const width = stepWidth();
     if (!loop || !width) return;
-    setActive(((indexAt(width) % count) + count) % count);
+    const at = indexAt(width);
+    setLead(at);
+    setActive(((at % count) + count) % count);
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => settle(), 120);
   };
@@ -120,10 +125,12 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     event.stopPropagation();
     move(toLeft ? -1 : 1);
   };
-  const middle = loop ? 1 : 0;
+  // Um cartão de cada modo é o clicável: os `count` seguidos a partir do vizinho da esquerda. Atrelar ao "copy do meio" deixava inertes os cartões
+  // que, depois de voltar para a esquerda no começo, caíam na cópia da direita (botões de Jogar sem resposta).
+  const live = (copy: number, index: number) => !loop || (copy * count + index >= lead - 1 && copy * count + index <= lead - 2 + count);
   return <div className="hx-car" data-loop={loop ? "true" : undefined}>
     <div className="hx-track" ref={track} onScroll={onScroll} onClickCapture={onClickCapture} onPointerDown={() => { target.current = null; }} onWheel={() => { target.current = null; }} role="region" aria-label={label}>
-      {Array.from({ length: loop ? 3 : 1 }, (_, copy) => items.map((child, index) => <div key={`${copy}-${index}`} className="hx-slide" aria-hidden={copy === middle ? undefined : true} inert={copy !== middle}>{child}</div>))}
+      {Array.from({ length: loop ? 3 : 1 }, (_, copy) => items.map((child, index) => <div key={`${copy}-${index}`} className="hx-slide" aria-hidden={live(copy, index) ? undefined : true} inert={!live(copy, index)}>{child}</div>))}
     </div>
     {loop && <>
       <button type="button" className="hx-arrow is-prev" aria-label={t.hub.prevMode} onClick={() => move(-1)}><Icon type="chevron" size={20} /></button>

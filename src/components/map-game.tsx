@@ -19,7 +19,7 @@ import { addMapFauna } from "./map-fauna";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
-import { emptySupplyCounts, type SupplyCounts } from "../domain/supplies";
+import { compassGroup, emptySupplyCounts, type SupplyCounts } from "../domain/supplies";
 import { continentLabel } from "../domain/collection-view";
 import { variantLabel } from "../domain/result-view";
 import {
@@ -49,6 +49,7 @@ const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
 /** Cor do continente marcado pela Bússola: âmbar, que não se confunde com o verde do acerto nem com o vermelho do erro. */
 const BUSSOLA_COLOR = "#e6b04a";
+const compassLabel = (group: string | null) => (group === "america-do-sul" || group === "america-do-norte-central" ? t.regions[group][0] : continentLabel(group ?? undefined));
 const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
 const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -126,8 +127,8 @@ export function Game({
   const bussolaUsed = supply.usedThisRound.has("bussola");
   // Bússola: o continente do alvo fica pintado no mapa (todos os países dele), além do nome embaixo do alvo
   const bussolaIds = useMemo(() => {
-    const reg = bussolaUsed ? data.meta[target]?.reg : undefined;
-    return reg ? Object.keys(data.meta).filter((id) => data.meta[id]?.reg === reg) : null;
+    const group = bussolaUsed ? compassGroup(data.meta[target]) : null;
+    return group ? Object.keys(data.meta).filter((id) => compassGroup(data.meta[id]) === group) : null;
   }, [bussolaUsed, target, data.meta]);
 
   const openSession = () => {
@@ -773,7 +774,7 @@ export function Game({
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`}>
             <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (engineFamily === "capitais" ? t.map.capitalCountry : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
-            {bussolaUsed && !feedback && <em className="map-bussola-hint">{continentLabel(data.meta[target]?.reg)}</em>}
+            {bussolaUsed && !feedback && <em className="map-bussola-hint">{compassLabel(compassGroup(data.meta[target]))}</em>}
             <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={Boolean(target) && mapReady && !feedback && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
             {suppliesEnabled && (
               <SupplyTray timed={pace === "timed"}

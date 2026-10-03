@@ -34,3 +34,12 @@ export const emptySupplyCounts = (): SupplyCounts => ({ ampulheta: 0, bussola: 0
 export function usableSupplies(counts: SupplyCounts, variant: AnyQuizVariant, timed = true): SupplyId[] {
   return SUPPLY_IDS.filter((id) => counts[id] > 0 && supplyApplies(id, variant, timed));
 }
+
+/** A "região" que a Bússola mostra e pinta. É o continente, só que as Américas se dividem em duas (o item não serviria de nada se dissesse só
+ *  "Américas"): América do Sul × América do Norte e Central (o Caribe vai com a do Norte). Vale SÓ para a Bússola; o resto do jogo segue usando o
+ *  continente e os recortes de sempre. */
+export function compassGroup(meta: { reg?: string; sub?: string | null } | undefined): string | null {
+  if (!meta?.reg) return null;
+  if (meta.reg !== "Americas") return meta.reg;
+  return meta.sub === "South America" ? "america-do-sul" : "america-do-norte-central";
+}
