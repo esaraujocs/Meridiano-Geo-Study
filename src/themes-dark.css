@@ -63,3 +63,11 @@
 
 /* Liga: a régua de molduras (a exigida de nível e as ainda bloqueadas) */
 :root[data-scheme="dark"] :is(.lg-frame-item small,.lg-frame-item.is-locked b,.lg-frame-item.is-locked small,.lg-frame[data-league]>strong,div[data-league]>strong){color:var(--muted)}
+
+/* ── tela de jogo: alternativas de texto, campo de escrita e o "Continuar" tinham o creme fixo do tema claro (texto claro sobre creme no Noturno;
+   a varredura de quiz só passava por bandeiras com imagem, achado com Gentílicos e Moedas em 04/10) ── */
+:root[data-scheme="dark"] .gs .gs-opt{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+:root[data-scheme="dark"] .gs .gs-opt.correct{background:color-mix(in srgb,var(--ok-ink) 22%,var(--panel-2))}
+:root[data-scheme="dark"] .gs .gs-opt.wrong{background:color-mix(in srgb,var(--bad-ink) 22%,var(--panel-2))}
+:root[data-scheme="dark"] .gs-field input{background:var(--panel-2);color:var(--ink)}
+:root[data-scheme="dark"] .gs-continue{background:var(--green);color:var(--dark)}
