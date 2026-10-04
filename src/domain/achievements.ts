@@ -35,6 +35,8 @@ export type AchievementContext = {
   zonesMapa: Set<string>; zonesCapitais: Set<string>; zonesBandeiras: Set<string>;
   /** Cobertura dos modos que nunca tiveram conquista própria (ver seção "revisitada" de 23/09/2026). */
   silhouettes: Set<string>; historicalEntities: Set<string>; languagesKnown: Set<string>;
+  /** Países com o gentílico e com a moeda já acertados (modos Gentílicos e Moedas, os dois sentidos). */
+  demonymsKnown: Set<string>; currenciesKnown: Set<string>;
   travelRoutes: number; writtenCorrect: number;
 };
 const one = (f: (c: AchievementContext) => boolean) => ({ target: () => 1, progress: (c: AchievementContext) => f(c) ? 1 : 0 });
@@ -111,6 +113,8 @@ const ACHIEVEMENT_SEEDS: AchievementSeed[] = [
   { id:"historicas50",category:"conh",rarity:3,target:()=>50,progress:c=>c.historicalEntities.size},
   { id:"historicas150",category:"conh",rarity:4,target:()=>150,progress:c=>c.historicalEntities.size},
   { id:"idiomas40",category:"conh",rarity:3,target:()=>40,progress:c=>c.languagesKnown.size},
+  { id:"gentilicos100",category:"conh",rarity:3,target:()=>100,progress:c=>c.demonymsKnown.size},
+  { id:"moedas80",category:"conh",rarity:3,target:()=>80,progress:c=>c.currenciesKnown.size},
   { id:"gExplorador",category:"evo",rarity:1,...one(c=>c.masteryIndex>=2) },
   { id:"gNavegador",category:"evo",rarity:2,...one(c=>c.masteryIndex>=3) },
   { id:"gGeografo",category:"evo",rarity:3,...one(c=>c.masteryIndex>=4) },
@@ -157,7 +161,7 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
     .flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
   let bestStreak=0, byWater=0, lightning=0, flagsSet=new Set<string>(), capSet=new Set<string>(), perfect20=false, perfect40=false, precise=false, confines=false, worldComplete=false;
   let travelRoutes=0, writtenCorrect=0;
-  const silhouettesSet=new Set<string>(), historicalSet=new Set<string>(), languagesSet=new Set<string>();
+  const silhouettesSet=new Set<string>(), historicalSet=new Set<string>(), languagesSet=new Set<string>(), demonymsSet=new Set<string>(), currenciesSet=new Set<string>();
   for (const s of sessions) {
     let streak=0, rapid=0; const tiny=new Set<string>();
     for (const r of s.rounds) {
@@ -171,6 +175,8 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
       if (s.family==="silhueta" && r.correct) silhouettesSet.add(r.targetId);
       if (s.family==="historicas" && r.correct) historicalSet.add(r.targetId);
       if (s.family==="idiomas" && r.correct) languagesSet.add(r.targetId);
+      if (s.family==="gentilicos" && r.correct) demonymsSet.add(r.targetId);
+      if (s.family==="moedas" && r.correct) currenciesSet.add(r.targetId);
       if (s.family==="travel" && r.correct) travelRoutes++;
       if (s.family==="escrita" && r.correct) writtenCorrect++;
     }
@@ -224,6 +230,7 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
     perfectRegionsMapa,perfectRegionsCapitais,perfectRegionsBandeiras,perfectRegionsIdiomas,
     zonesMapa,zonesCapitais,zonesBandeiras,
     silhouettes: silhouettesSet, historicalEntities: historicalSet, languagesKnown: languagesSet,
+    demonymsKnown: demonymsSet, currenciesKnown: currenciesSet,
     travelRoutes, writtenCorrect};
 }
 

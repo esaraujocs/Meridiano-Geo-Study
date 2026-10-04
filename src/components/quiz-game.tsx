@@ -23,6 +23,8 @@ import { emptySupplyCounts, lupaToHide, type SupplyCounts, type SupplyId } from 
 import { variantLabel } from "../domain/result-view";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { t } from "../domain/i18n";
+import { loadPeoples } from "../domain/peoples-data";
+import { isPeoplesFamily, isPeoplesVariant, optionText, peoplesDeckPool, peoplesOptions, peoplesPool, promptText as peoplesPrompt, type Peoples } from "../domain/peoples";
 
 type Question = { target: string; options: string[] };
 
@@ -37,7 +39,7 @@ export function QuizGame({
   onEnd,
 }: {
   data: Legacy;
-  family: Extract<Family, "bandeiras" | "capitais">;
+  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas">;
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
   options?: SessionOptions;
@@ -55,6 +57,9 @@ export function QuizGame({
   const [triedWrong, setTriedWrong] = useState<ReadonlySet<string>>(new Set());
   const [shieldSaved, setShieldSaved] = useState(false);
   const [flags, setFlags] = useState<FlagCatalog | null>(null);
+  // Gentílicos e Moedas: os dados chegam à parte (public/data/peoples.json)
+  const peoplesMode = isPeoplesFamily(family) && isPeoplesVariant(variant) ? variant : null;
+  const [peoples, setPeoples] = useState<Peoples | null>(null);
   const [error, setError] = useState("");
   const [target, setTarget] = useState("");
   const [question, setQuestion] = useState<Question | null>(null);
@@ -78,7 +83,8 @@ export function QuizGame({
   const deckRef = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
 
   const openSession = () => {
-    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor });
+    // Gentílicos e Moedas não mexem na coleção (as colunas das cartas são mapa, bandeiras, capitais e escrita), como Idiomas.
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(peoplesMode ? { persistProgress: false } : {}) });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {
@@ -147,6 +153,9 @@ export function QuizGame({
   useEffect(() => {
     if (family === "bandeiras") {
       loadFlags().then(setFlags).catch((loadError: Error) => setError(loadError.message));
+    } else if (peoplesMode) {
+      setFlags({});
+      loadPeoples().then(setPeoples).catch((loadError: Error) => setError(loadError.message));
     } else {
       setFlags({});
     }
@@ -155,20 +164,33 @@ export function QuizGame({
     };
   }, [family]);
 
-  const pool = useMemo(
-    () => quizPool(data, family, region, flags ?? undefined),
-    [data, family, region, flags],
-  );
+  const pool = useMemo(() => {
+    if (!peoplesMode) return quizPool(data, family, region, flags ?? undefined);
+    if (!peoples) return [];
+    const ids = Object.entries(data.meta).filter(([id, meta]) => !meta.absorvido && !meta.soBandeira && inRegion(id, region, data)).map(([id]) => id);
+    return peoplesPool(ids, peoples, peoplesMode === "gentilico-pais" || peoplesMode === "pais-gentilico" ? "gentilicos" : "moedas");
+  }, [data, family, region, flags, peoples, peoplesMode]);
+  // Alternativas erradas de reserva (o mundo todo), para quando o recorte não tem 3 que sirvam (o Caribe divide o mesmo dólar).
+  const worldPool = useMemo(() => {
+    if (!peoplesMode || !peoples) return [];
+    const ids = Object.entries(data.meta).filter(([, meta]) => !meta.absorvido && !meta.soBandeira).map(([id]) => id);
+    return peoplesPool(ids, peoples, peoplesMode === "gentilico-pais" || peoplesMode === "pais-gentilico" ? "gentilicos" : "moedas");
+  }, [data, peoples, peoplesMode]);
+  const wrongOptions = (targetId: string) => {
+    const candidates = shuffleAnswerOptions(pool.filter((id) => id !== targetId));
+    if (!peoplesMode || !peoples) return candidates.slice(0, 3);
+    const wrong = peoplesOptions(targetId, candidates, peoples, peoplesMode);
+    if (wrong.length >= 3) return wrong;
+    const extra = peoplesOptions(targetId, shuffleAnswerOptions(worldPool.filter((id) => !wrong.includes(id))), peoples, peoplesMode, 3);
+    return peoplesOptions(targetId, [...wrong, ...extra], peoples, peoplesMode);
+  };
 
   const nextQuestion = () => {
     const deck = deckRef.current;
     if (!deck || deck.remaining === 0) return;
     const targetId = deck.draw();
     if (!targetId) return;
-    const options = shuffleAnswerOptions([
-      targetId,
-      ...shuffleAnswerOptions(pool.filter((id) => id !== targetId)).slice(0, 3),
-    ]);
+    const options = shuffleAnswerOptions([targetId, ...wrongOptions(targetId)]);
     setTarget(targetId);
     setRound(deck.size - deck.remaining);
     targetStartedAtRef.current = Date.now();
@@ -183,7 +205,12 @@ export function QuizGame({
     setTriedWrong(new Set());
     setShieldSaved(false);
   };
-  const newDeck = () => createFiniteDeck(pool, deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed), roundLimit);
+  const newDeck = () => {
+    const seed = deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed);
+    // Moeda → país: uma rodada por moeda (ver peoplesDeckPool)
+    const cards = peoplesMode && peoples ? peoplesDeckPool(pool, peoples, peoplesMode, String(seed)) : pool;
+    return createFiniteDeck(cards, seed, roundLimit);
+  };
 
   useEffect(() => {
     if (pool.length >= 4) {
@@ -267,9 +294,9 @@ export function QuizGame({
   const isFlagPrompt = variant === "bandeira-nome";
   const titleFor = (id: string) => data.meta[id]?.pt ?? id;
   const valueFor = (id: string) =>
-    variant === "pais-capital" ? data.meta[id]?.cap ?? "" : titleFor(id);
+    variant === "pais-capital" ? data.meta[id]?.cap ?? "" : peoplesMode && peoples ? optionText(peoples, peoplesMode, id) ?? titleFor(id) : titleFor(id);
   const correctAnswer =
-    variant === "pais-capital"
+    variant === "pais-capital" || peoplesMode
       ? valueFor(question?.target ?? target)
       : titleFor(question?.target ?? target);
   // A linha visível é curta e calma; a alternativa certa fica destacada nas opções e a frase completa vai para leitores de tela.
@@ -298,7 +325,7 @@ export function QuizGame({
         <main className="content">
           <button className="back" onClick={() => void leaveSession()}>{t.common.exitGame}</button>
           <div className="eyebrow" style={{ marginTop: 32 }}>{t.quiz.preparing}</div>
-          <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? t.quiz.loadingFlags : t.quiz.loadingCapitals}</h1>
+          <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? t.quiz.loadingFlags : peoplesMode ? t.quiz.loadingPeoples : t.quiz.loadingCapitals}</h1>
           <p className="lede">{t.quiz.buildingDeck}</p>
         </main>
       </div>
@@ -306,9 +333,10 @@ export function QuizGame({
   }
 
   const flagOptions = variant === "nome-bandeira";
-  const promptText = variant === "capital-pais" ? targetMeta?.cap : titleFor(target);
+  const promptText = variant === "capital-pais" ? targetMeta?.cap : peoplesMode && peoples ? peoplesPrompt(peoples, peoplesMode, target) ?? titleFor(target) : titleFor(target);
   const promptFlag = isFlagPrompt && targetMeta?.fl ? flags?.[targetMeta.fl.toLowerCase()] : undefined;
-  const kicker = isFlagPrompt ? t.quiz.whichCountryFlag : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital : t.quiz.whichCapital;
+  const PEOPLES_KICKER = { "gentilico-pais": t.quiz.whichCountryDemonym, "pais-gentilico": t.quiz.whichDemonym, "moeda-pais": t.quiz.whichCountryCurrency, "pais-moeda": t.quiz.whichCurrency } as const;
+  const kicker = peoplesMode ? PEOPLES_KICKER[peoplesMode] : isFlagPrompt ? t.quiz.whichCountryFlag : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital : t.quiz.whichCapital;
   return (
     <div className="app-shell gs-app">
       {leaveGuard.dialog}

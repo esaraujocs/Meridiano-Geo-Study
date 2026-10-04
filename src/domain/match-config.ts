@@ -4,8 +4,8 @@ import { timerSecondsFor } from "./pace.js";
 import { hitRange, type Pace } from "./spoils.js";
 import { t } from "./i18n/index.js";
 
-export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
-export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language";
+export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas" | "gentilicos" | "moedas";
+export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language" | "people" | "coins";
 export type FlagKind = "current" | "writing" | "historical";
 
 export type ModeOption = {
@@ -47,6 +47,14 @@ const MODE_SEEDS: Record<TopFamily, ModeSeed[]> = {
     { key: "idioma-nome", icon: "language", family: "idiomas", variant: "idioma-nome" },
     { key: "idioma-pais", icon: "language", family: "idiomas", variant: "idioma-pais" },
   ],
+  gentilicos: [
+    { key: "gentilico-pais", icon: "people", family: "gentilicos", variant: "gentilico-pais" },
+    { key: "pais-gentilico", icon: "people", family: "gentilicos", variant: "pais-gentilico" },
+  ],
+  moedas: [
+    { key: "pais-moeda", icon: "coins", family: "moedas", variant: "pais-moeda" },
+    { key: "moeda-pais", icon: "coins", family: "moedas", variant: "moeda-pais" },
+  ],
 };
 
 const MODES = Object.fromEntries(Object.entries(MODE_SEEDS).map(([top, list]) => [top, list.map(withText)])) as Record<TopFamily, ModeOption[]>;
@@ -58,6 +66,8 @@ export function variantContextFor(topFamily: TopFamily, saved: string): { family
     bandeiras: [["bandeira-nome", "bandeiras"], ["nome-bandeira", "bandeiras"], ["escrita-pais", "escrita"], ["nome-historica", "historicas"], ["historica-nome", "historicas"]],
     capitais: [["capital-pais", "capitais"], ["pais-capital", "capitais"], ["escrita-capital", "escrita"]],
     idiomas: [["idioma-nome", "idiomas"], ["idioma-pais", "idiomas"]],
+    gentilicos: [["gentilico-pais", "gentilicos"], ["pais-gentilico", "gentilicos"]],
+    moedas: [["pais-moeda", "moedas"], ["moeda-pais", "moedas"]],
   };
   const match = table[topFamily].find(([variant]) => variant === saved);
   return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;

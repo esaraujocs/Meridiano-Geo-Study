@@ -65,6 +65,8 @@
     "test:themes": "rm -rf .tmp-themes && tsc --ignoreConfig src/domain/themes.ts src/domain/map-fauna-scale.ts --outDir .tmp-themes --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && node scripts/test-themes.mjs",
     "test:i18n": "node scripts/test-i18n.mjs",
     "test:mecenato": "node scripts/test-mecenato.mjs",
+    "test:peoples": "node scripts/test-peoples.mjs",
+    "build:peoples": "node scripts/data/build-peoples.mjs",
     "build:i18n": "node scripts/i18n/build-i18n.mjs"
   },
   "keywords": [],

@@ -30,7 +30,7 @@ const expectedIds = [
   "primeira", "seq10", "seq25", "perfeita", "perfeitaGrande", "certeiro", "travel20", "escrita100",
   "todosModos", "todosRecortes", "voltaAoMundo", "pacifico", "capitalRodada",
   "dom50", "dom150", "band100", "cap50", "cadaContinente", "continenteInteiro", "micro",
-  "silhueta50", "silhueta150", "historicas50", "historicas150", "idiomas40",
+  "silhueta50", "silhueta150", "historicas50", "historicas150", "idiomas40", "gentilicos100", "moedas80",
   "gExplorador", "gNavegador", "gGeografo", "forma", "evoluiu",
   "vexilologo", "cartografo", "diplomata", "cosmografo",
   "mapaRecorte1", "mapaZonas3", "mapaSemFalhas",
@@ -40,9 +40,9 @@ const expectedIds = [
   "pescador", "relampago", "confins",
 ];
 
-assert.equal(ACHIEVEMENT_DEFINITIONS.length, 49);
+assert.equal(ACHIEVEMENT_DEFINITIONS.length, 51);
 assert.deepEqual(ACHIEVEMENT_DEFINITIONS.map((item) => item.id), expectedIds);
-assert.equal(new Set(expectedIds).size, 49);
+assert.equal(new Set(expectedIds).size, 51);
 assert.equal(ACHIEVEMENT_CATEGORIES.length, 6);
 assert.equal(ACHIEVEMENT_DEFINITIONS.filter((item) => item.hidden).length, 3);
 assert.deepEqual(new Set(ACHIEVEMENT_DEFINITIONS.map((item) => item.rarity)), new Set([1, 2, 3, 4, 5]));
@@ -89,6 +89,8 @@ const saturated = {
   silhouettes: new Set(Array.from({ length: 150 }, (_, i) => "s" + i)),
   historicalEntities: new Set(Array.from({ length: 150 }, (_, i) => "h" + i)),
   languagesKnown: new Set(Array.from({ length: 40 }, (_, i) => "l" + i)),
+  demonymsKnown: new Set(Array.from({ length: 100 }, (_, i) => "d" + i)),
+  currenciesKnown: new Set(Array.from({ length: 80 }, (_, i) => "c" + i)),
   travelRoutes: 20,
   writtenCorrect: 100,
 };
@@ -137,6 +139,8 @@ const empty = {
   silhouettes: new Set(),
   historicalEntities: new Set(),
   languagesKnown: new Set(),
+  demonymsKnown: new Set(),
+  currenciesKnown: new Set(),
   travelRoutes: 0,
   writtenCorrect: 0,
 };
@@ -369,4 +373,4 @@ assert.equal(highAccuracyNoDomain.titles.has("Diplomata"), false, "precisão alt
 assert.equal(highAccuracyNoDomain.fit, true, "mas a conquista Em forma segue na precisão histórica");
 const noWriting = achievementContext({ ...withDomain("capitais", domain(240)), pillars: { ...withDomain("capitais", domain(240)).pillars, escrita: { seen: 1, correct: 1, accuracy: 1, bayesianScore: 0.5, status: "" } } }, [], {});
 assert.equal(noWriting.titles.has("Diplomata"), false, "a escrita validada (2 acertos digitados) continua valendo");
-console.log("achievements: 49 canonical rules pass");
+console.log("achievements: 51 canonical rules pass");

@@ -16,7 +16,7 @@ import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selec
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
-const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language" };
+const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins" };
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -161,7 +161,7 @@ export function Recorte({
     : active.hint;
 
   const trio = (label: string, children: ReactNode, extra = "") => <div className={`mz-group ${extra}`}><span className="cv-k">{label}</span><div className="cv-ctl">{children}</div></div>;
-  const accuracy = topFamily === "idiomas" ? null : pillarPct[topFamily] ?? null;
+  const accuracy = topFamily === "mapa" || topFamily === "bandeiras" || topFamily === "capitais" ? pillarPct[topFamily] ?? null : null;
   const hitFirst = summary.earn.split(/[^\d]/)[0];
 
   return (

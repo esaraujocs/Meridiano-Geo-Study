@@ -70,6 +70,8 @@
 :root[data-treat="prata"] .family[data-fam="bandeiras"] .family-visual::before{content:"Chapa II"}
 :root[data-treat="prata"] .family[data-fam="capitais"] .family-visual::before{content:"Chapa III"}
 :root[data-treat="prata"] .family[data-fam="idiomas"] .family-visual::before{content:"Chapa IV"}
+:root[data-treat="prata"] .family[data-fam="gentilicos"] .family-visual::before{content:"Chapa V"}
+:root[data-treat="prata"] .family[data-fam="moedas"] .family-visual::before{content:"Chapa VI"}
 
 /* ── arenas do Duelo (as duas escadas) e o painel de prêmios ── */
 :root[data-treat="prata"] .arena::before{height:34%;opacity:.7}

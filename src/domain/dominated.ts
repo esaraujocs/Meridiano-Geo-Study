@@ -7,7 +7,11 @@
 
 export type EconomyRound = { targetId: string; correct: boolean; column: string; at: number; /** rodada de Escrita (digitada): na regra antiga ela caía em "capitais"/"escrita"; o domínio novo a trata à parte */ written: boolean; /** variante e assunto da partida (distingue escrita da capital de escrita do país) */ sub: string };
 
+/** Gentílicos e Moedas perguntam sobre países, mas não são prova de reconhecimento no mapa, na bandeira ou na capital: ficam fora do domínio e do XP de domínio. */
+export const OUTSIDE_DOMAIN_FAMILIES: ReadonlySet<string> = new Set(["gentilicos", "moedas"]);
+
 function sessionRounds(value: any, sessionIndex: number): EconomyRound[] {
+  if (OUTSIDE_DOMAIN_FAMILIES.has(String(value?.family ?? ""))) return [];
   const source = Array.isArray(value?.rounds) ? value.rounds : Array.isArray(value?.r)
     ? value.r.filter(Array.isArray).map((item: any[]) => ({ targetId: item[0], correct: item[1], distanceKm: item[3], tuple: true }))
     : [];

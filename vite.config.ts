@@ -41,6 +41,7 @@ const injectPrecacheManifest = () => {
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
+      "/data/peoples.json",
       // Peças locais do museu: adquiridas continuam visíveis sem conexão.
       ...(await readdir(new URL("./public/museum/", import.meta.url)))
         .filter((file) => /\.(jpg|png|webp|svg)$/.test(file))

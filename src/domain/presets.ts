@@ -11,7 +11,7 @@ export const MAX_PRESETS_PER_FAMILY = 5;
 export const MAX_PRESET_NAME = 40;
 export const PRESET_ID_PREFIX = "preset:";
 export const PRESET_SOURCE = "preset-v1";
-export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas"];
+export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas"];
 
 /** O que a tela "Configure a partida" decide (região já normalizada). */
 export type PresetConfig = {

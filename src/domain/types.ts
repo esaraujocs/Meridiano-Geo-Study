@@ -44,7 +44,7 @@ export type Region =
   | "america-do-sul"
   | "america-do-norte-central";
 export type RegionSelection = Region | Region[];
-export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel";
+export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel" | "gentilicos" | "moedas";
 export type QuizVariant =
   | "mapa"
   | "bandeira-nome"
@@ -53,7 +53,11 @@ export type QuizVariant =
   | "pais-capital"
   | "silhueta"
    | "silhueta-opcoes"
-  | "travel";
+  | "travel"
+  | "gentilico-pais"
+  | "pais-gentilico"
+  | "moeda-pais"
+  | "pais-moeda";
   // Non-map families retain explicit variant identifiers for session history.
 export type SpecialVariant =
   | "escrita-pais"

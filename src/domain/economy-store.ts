@@ -122,7 +122,7 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const spent = ledger.filter((e) => e.kind === "debit").reduce((n, e) => n + e.amount, 0);
   const unlocked = [...new Set(unlocks.flatMap((u) => {
     const value = String(u.key);
-    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-nome|idioma-pais|silhueta|silhueta-opcoes|travel)(?::.*)?$/);
+    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel|gentilicos|moedas):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-nome|idioma-pais|silhueta|silhueta-opcoes|travel|gentilico-pais|pais-gentilico|moeda-pais|pais-moeda)(?::.*)?$/);
     if (!match) return [u.key];
     const family = match[1] as Family;
     const variant = match[2] as AnyQuizVariant;

@@ -35,7 +35,7 @@ type Props = {
   onBack: () => void;
 };
 
-const modeIcon = (variant: AnyQuizVariant): IconType => variant.startsWith("silhueta") ? "puzzle" : variant.startsWith("escrita") ? "type" : variant.startsWith("historica") ? "clock" : variant.startsWith("idioma") ? "language" : variant === "travel" ? "route" : "map";
+const modeIcon = (variant: AnyQuizVariant): IconType => variant.startsWith("silhueta") ? "puzzle" : variant.startsWith("escrita") ? "type" : variant.startsWith("historica") ? "clock" : variant.startsWith("idioma") ? "language" : variant.includes("gentilico") ? "people" : variant.includes("moeda") ? "coins" : variant === "travel" ? "route" : "map";
 /** O texto do modo (o mesmo da configuração da partida) para a variante; o Travel e as silhuetas têm chave própria. */
 const MODE_TEXT_KEY: Record<string, string> = { "silhueta-opcoes": "silhueta-opcoes", silhueta: "silhueta", travel: "travel", "escrita-pais": "escrita-pais", "escrita-capital": "escrita-capital", "historica-nome": "historicas", "idioma-nome": "idioma-nome", "idioma-pais": "idioma-pais" };
 const modeName = (variant: string) => t.store.modeNames[variant] ?? variant;
@@ -58,8 +58,8 @@ const pendingInfo = (pending: Pending) => {
   return { name: t.supplies[pending.id].name, blurb: t.supplies[pending.id].detail, price: SUPPLY_COST[pending.id] * pending.qty, permanent: false };
 };
 
-/** A cor do cartão de um modo: a da família do Hub a que ele pertence (Mapa, Bandeiras, Capitais ou Idiomas). */
-const modeFam = (variant: string) => variant.startsWith("idioma") ? "idiomas" : variant === "escrita-capital" ? "capitais" : variant === "escrita-pais" || variant.startsWith("historica") ? "bandeiras" : "mapa";
+/** A cor do cartão de um modo: a da família do Hub a que ele pertence (Mapa, Bandeiras, Capitais, Idiomas, Gentílicos ou Moedas). */
+const modeFam = (variant: string) => variant.startsWith("idioma") ? "idiomas" : variant.includes("gentilico") ? "gentilicos" : variant.includes("moeda") ? "moedas" : variant === "escrita-capital" ? "capitais" : variant === "escrita-pais" || variant.startsWith("historica") ? "bandeiras" : "mapa";
 
 function Art({ icon, size = 38, fam }: { icon: IconType; size?: number; fam?: string }) {
   return <span className="st-art" data-fam={fam} aria-hidden="true"><Icon type={icon} size={size} /></span>;

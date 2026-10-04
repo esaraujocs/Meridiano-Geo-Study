@@ -23,6 +23,7 @@ const BASE_BY_VARIANT: Partial<Record<AnyQuizVariant, number>> = {
   "bandeira-nome": 32, "nome-bandeira": 32,
   "pais-capital": 40,
   "historica-nome": 44, "nome-historica": 44, "idioma-nome": 40, "idioma-pais": 44,
+  "gentilico-pais": 32, "pais-gentilico": 36, "pais-moeda": 40, "moeda-pais": 44,
   mapa: 48,
   "capital-pais": 56, "silhueta-opcoes": 56,
   travel: 64,

@@ -87,6 +87,8 @@ import {
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 import { MecenatoView } from "./components/mecenato-view";
 import { queryMecenato } from "./domain/mecenato-store";
+import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
+import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
 import "./mecenato.css";
 
 const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
@@ -251,6 +253,10 @@ export function App() {
   const refreshSupplies = () => supplyCounts().then(setSupplies).catch(() => undefined);
   // Mecenato: carrega o Acervo e o Equipamento em memória cedo (o mapa da partida e o Hub leem os itens equipados de lá)
   useEffect(() => { void queryMecenato().catch(() => undefined); }, []);
+  // Gentílicos e Moedas: os dados são pequenos (~30 KB) e entram nas contagens da configuração, então chegam logo na abertura.
+  const [peoples, setPeoples] = useState<Peoples | null>(cachedPeoples());
+  const ensurePeoples = () => loadPeoples().then((value) => { setPeoples(value); return value; }).catch(() => null);
+  useEffect(() => { void ensurePeoples(); }, []);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
   const arenaCards = useMemo(() => ladderCards(ladderEntries, economy.unlocked), [ladderEntries, economy.unlocked]);
   const arenaNext = useMemo(() => nextMilestones(ladderEntries), [ladderEntries]);
@@ -731,6 +737,7 @@ export function App() {
     const modeOpen = !policy || (policy.cost === 0 && policy.sessions === 0) || economy.unlocked.includes(policy.key as UnlockKey);
     if (!context || !modeOpen || !isRoundTierUnlocked(config.roundTier, economy.unlocked)) { await selectFamily(config.topFamily); return; }
     if (context.family === "bandeiras" || context.family === "historicas" || context.family === "idiomas" || context.family === "escrita") await loadSpecial();
+    if (isPeoplesFamily(context.family)) await ensurePeoples();
     setTrainOnce(false);
     applyPreset(config);
     rememberConfig(config);
@@ -1068,6 +1075,12 @@ export function App() {
     const regionCounts = (selected: Family) => Object.fromEntries(
       REGION_ITEMS.map(([key]) => [key, count(selected, key)]),
     ) as RegionCounts;
+    // Gentílicos e Moedas contam o baralho de verdade (em Moeda → país, uma rodada por moeda)
+    const peoplesCounts = (selected: "gentilicos" | "moedas", deckVariant: PeoplesVariant) => Object.fromEntries(REGION_ITEMS.map(([key]) => {
+      if (!peoples) return [key, 0];
+      const ids = Object.entries(data.meta).filter(([id, meta]) => !meta.absorvido && !meta.soBandeira && inRegion(id, key, data) && (!onlyUn || isUnPresetEntity(id, meta))).map(([id]) => id);
+      return [key, peoplesDeckSize(peoplesPool(ids, peoples, selected), peoples, deckVariant)];
+    })) as RegionCounts;
     return {
       mapa: regionCounts("mapa"),
       bandeiras: regionCounts("bandeiras"),
@@ -1077,8 +1090,10 @@ export function App() {
       idiomas: specialCounts.idiomas,
       silhueta: silhouetteCounts,
        travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
+      gentilicos: peoplesCounts("gentilicos", "gentilico-pais"),
+      moedas: peoplesCounts("moedas", variant === "moeda-pais" ? "moeda-pais" : "pais-moeda"),
     } as Record<Family, RegionCounts>;
-  }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts]);
+  }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts, peoples]);
   const selectedCount = useMemo(() => {
     if (!data) return 0;
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
@@ -1099,8 +1114,13 @@ export function App() {
       return source.filter((item) => specialInRegion(item, region)).length;
     }
     if (family === "travel") return travelDestinationIds(data.meta, travelIds.filter((id) => inRegion(id, region, data))).length;
+    if (isPeoplesFamily(family)) {
+      if (!peoples) return 0;
+      const pool = peoplesPool(ids.filter(([, meta]) => !meta.soBandeira).map(([id]) => id), peoples, family);
+      return peoplesDeckSize(pool, peoples, variant === "moeda-pais" ? "moeda-pais" : family === "gentilicos" ? "gentilico-pais" : "pais-moeda");
+    }
     return ids.length;
-  }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant]);
+  }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant, peoples]);
 
   // Contagens e entradas de Históricas e Idiomas (a configuração e a partida dependem delas).
   const loadSpecial = () => loadSpecialData().then((special) => {
@@ -1154,12 +1174,13 @@ export function App() {
             setTrainOnce(false);
             setFamily(selected);
             setRegion("mundo");
-             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : "idiomas";
+             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" ? selected : "idiomas";
              setTopFamily(selectedTopFamily);
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecial();
             }
-              const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "silhueta" ? "silhueta" : "travel";
+            if (isPeoplesFamily(selected)) await ensurePeoples();
+              const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "gentilicos" ? "gentilico-pais" : selected === "moedas" ? "pais-moeda" : selected === "silhueta" ? "silhueta" : "travel";
               const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
               const restored =
                 variantContextFor(selectedTopFamily, savedVariant ?? "") ??

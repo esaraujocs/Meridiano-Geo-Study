@@ -1,0 +1,8802 @@
+{
+ "AF": {
+  "pt": {
+   "name": "Afeganistão",
+   "dem": "afegão(s)/afegã(s)",
+   "adj": "afegão(s)/afegã(s)",
+   "curs": [
+    [
+     "afegâni",
+     "AFN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Afganistán",
+   "dem": "afgano",
+   "adj": "afgano",
+   "curs": [
+    [
+     "afgani",
+     "AFN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Afghanistan",
+   "dem": "Afghan",
+   "adj": "Afghan",
+   "curs": [
+    [
+     "afghani",
+     "AFN"
+    ]
+   ]
+  }
+ },
+ "ZA": {
+  "pt": {
+   "name": "África do Sul",
+   "dem": "sul-africano/a(s)",
+   "adj": "sul-africano/a(s)",
+   "curs": [
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sudáfrica",
+   "dem": "sudafricano",
+   "adj": "sudafricano",
+   "curs": [
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "South Africa",
+   "dem": "South African",
+   "adj": "South African",
+   "curs": [
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  }
+ },
+ "AX": {
+  "pt": {
+   "name": "Alanda",
+   "dem": "alandês (alandeses)//alandesa(s)",
+   "adj": "alandês (alandeses)//alandesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Aland",
+   "dem": "alandés",
+   "adj": "alandés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Åland Islands",
+   "dem": "of the Åland Islands",
+   "adj": "Åland Islander",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "AL": {
+  "pt": {
+   "name": "Albânia",
+   "dem": "albanês (albaneses)//albanesa(s)",
+   "adj": "albanês (albaneses)//albanesa(s)",
+   "curs": [
+    [
+     "lek",
+     "ALL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Albania",
+   "dem": "albanés",
+   "adj": "albanés",
+   "curs": [
+    [
+     "lek",
+     "ALL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Albania",
+   "dem": "Albanian",
+   "adj": "Albanian",
+   "curs": [
+    [
+     "lek",
+     "ALL"
+    ]
+   ]
+  }
+ },
+ "DE": {
+  "pt": {
+   "name": "Alemanha",
+   "dem": "alemão (alemães)//alemã(s)",
+   "adj": "alemão (alemães)//alemã(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Alemania",
+   "dem": "alemán",
+   "adj": "alemán",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Germany",
+   "dem": "German",
+   "adj": "German",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "AD": {
+  "pt": {
+   "name": "Andorra",
+   "dem": "andorrano/a(s)",
+   "adj": "andorrano/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Andorra",
+   "dem": "andorrano",
+   "adj": "andorrano",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Andorra",
+   "dem": "Andorran",
+   "adj": "Andorran",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "AO": {
+  "pt": {
+   "name": "Angola",
+   "dem": "angolano/a(s)",
+   "adj": "angolano/a(s)",
+   "curs": [
+    [
+     "kwanza",
+     "AOA"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Angola",
+   "dem": "angoleño",
+   "adj": "angoleño",
+   "curs": [
+    [
+     "kuanza",
+     "AOA"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Angola",
+   "dem": "Angolan",
+   "adj": "Angolan",
+   "curs": [
+    [
+     "kwanza",
+     "AOA"
+    ]
+   ]
+  }
+ },
+ "AI": {
+  "pt": {
+   "name": "Anguila",
+   "dem": "anguilano/a(s)",
+   "adj": "anguilano/a(s)",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Anguila",
+   "dem": "anguilense",
+   "adj": "anguilense",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Anguilla",
+   "dem": "Anguillan",
+   "adj": "Anguillan",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "AQ": {
+  "pt": {
+   "name": "Antártida",
+   "dem": "antártico/a(s)",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Antártida",
+   "dem": "antártico",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Antarctica",
+   "dem": "Antarctic",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  }
+ },
+ "AG": {
+  "pt": {
+   "name": "Antígua e Barbuda",
+   "dem": "de Antígua e Barbuda",
+   "adj": "de Antígua e Barbuda",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Antigua y Barbuda",
+   "dem": "antiguano",
+   "adj": "antiguano",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Antigua and Barbuda",
+   "dem": "of Antigua and Barbuda",
+   "adj": "of Antigua and Barbuda",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "SA": {
+  "pt": {
+   "name": "Arábia Saudita",
+   "dem": "saudita(s)",
+   "adj": "saudita(s)",
+   "curs": [
+    [
+     "rial saudita",
+     "SAR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Arabia Saudí",
+   "dem": "saudí",
+   "adj": "saudí",
+   "curs": [
+    [
+     "riyal [saudí]",
+     "SAR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saudi Arabia",
+   "dem": "Saudi Arabian",
+   "adj": "Saudi Arabian",
+   "curs": [
+    [
+     "riyal",
+     "SAR"
+    ]
+   ]
+  }
+ },
+ "DZ": {
+  "pt": {
+   "name": "Argélia",
+   "dem": "argelino/a(s)",
+   "adj": "argelino/a(s)",
+   "curs": [
+    [
+     "dinar argelino",
+     "DZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Argelia",
+   "dem": "argelino",
+   "adj": "argelino",
+   "curs": [
+    [
+     "dinar [argelino]",
+     "DZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Algeria",
+   "dem": "Algerian",
+   "adj": "Algerian",
+   "curs": [
+    [
+     "Algerian dinar",
+     "DZD"
+    ]
+   ]
+  }
+ },
+ "AR": {
+  "pt": {
+   "name": "Argentina",
+   "dem": "argentino/a(s)",
+   "adj": "argentino/a(s)",
+   "curs": [
+    [
+     "peso argentino",
+     "ARS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Argentina",
+   "dem": "argentino",
+   "adj": "argentino",
+   "curs": [
+    [
+     "peso [argentino]",
+     "ARS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Argentina",
+   "dem": "Argentine; Argentinian",
+   "adj": "Argentinian",
+   "curs": [
+    [
+     "Argentine peso",
+     "ARS"
+    ]
+   ]
+  }
+ },
+ "AM": {
+  "pt": {
+   "name": "Arménia",
+   "dem": "arménio/a(s)",
+   "adj": "arménio/a(s)",
+   "curs": [
+    [
+     "dram",
+     "AMD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Armenia",
+   "dem": "armenio",
+   "adj": "armenio",
+   "curs": [
+    [
+     "dram",
+     "AMD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Armenia",
+   "dem": "Armenian",
+   "adj": "Armenian",
+   "curs": [
+    [
+     "dram (inv.)",
+     "AMD"
+    ]
+   ]
+  }
+ },
+ "AW": {
+  "pt": {
+   "name": "Aruba",
+   "dem": "arubano/a(s)",
+   "adj": "arubano/a(s)",
+   "curs": [
+    [
+     "florim arubano",
+     "AWG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Aruba",
+   "dem": "arubeño",
+   "adj": "arubeño",
+   "curs": [
+    [
+     "florín [arubeño]",
+     "AWG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Aruba",
+   "dem": "Aruban",
+   "adj": "Aruban",
+   "curs": [
+    [
+     "Aruban guilder",
+     "AWG"
+    ]
+   ]
+  }
+ },
+ "AU": {
+  "pt": {
+   "name": "Austrália",
+   "dem": "australiano/a(s)",
+   "adj": "australiano/a(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Australia",
+   "dem": "australiano",
+   "adj": "australiano",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Australia",
+   "dem": "Australian",
+   "adj": "Australian",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "AT": {
+  "pt": {
+   "name": "Áustria",
+   "dem": "austríaco/a(s)",
+   "adj": "austríaco/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Austria",
+   "dem": "austriaco",
+   "adj": "austriaco",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Austria",
+   "dem": "Austrian",
+   "adj": "Austrian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "AZ": {
+  "pt": {
+   "name": "Azerbaijão",
+   "dem": "azerbaijano/a(s)",
+   "adj": "azerbaijano/a(s)",
+   "curs": [
+    [
+     "manat azerbaijano",
+     "AZN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Azerbaiyán",
+   "dem": "azerbaiyano",
+   "adj": "azerbaiyano",
+   "curs": [
+    [
+     "manat [azerbaiyano]",
+     "AZN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Azerbaijan",
+   "dem": "Azerbaijani",
+   "adj": "Azerbaijani",
+   "curs": [
+    [
+     "Azerbaijan manat",
+     "AZN"
+    ]
+   ]
+  }
+ },
+ "BS": {
+  "pt": {
+   "name": "Baamas",
+   "dem": "baamiano/a(s)",
+   "adj": "baamiano/a(s)",
+   "curs": [
+    [
+     "dólar baamiano",
+     "BSD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bahamas",
+   "dem": "bahameño",
+   "adj": "bahameño",
+   "curs": [
+    [
+     "dólar [bahameño]",
+     "BSD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bahamas",
+   "dem": "Bahamian",
+   "adj": "Bahamian",
+   "curs": [
+    [
+     "Bahamian dollar",
+     "BSD"
+    ]
+   ]
+  }
+ },
+ "BD": {
+  "pt": {
+   "name": "Bangladexe",
+   "dem": "bangladexiano/a(s)",
+   "adj": "bangladexiano/a(s)",
+   "curs": [
+    [
+     "taca",
+     "BDT"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bangladés",
+   "dem": "bangladesí",
+   "adj": "bangladesí",
+   "curs": [
+    [
+     "taka",
+     "BDT"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bangladesh",
+   "dem": "Bangladeshi",
+   "adj": "Bangladeshi",
+   "curs": [
+    [
+     "taka (inv.)",
+     "BDT"
+    ]
+   ]
+  }
+ },
+ "BB": {
+  "pt": {
+   "name": "Barbados",
+   "dem": "barbadense(s)",
+   "adj": "barbadense(s)",
+   "curs": [
+    [
+     "dólar barbadense",
+     "BBD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Barbados",
+   "dem": "barbadense",
+   "adj": "barbadense",
+   "curs": [
+    [
+     "dólar [barbadense]",
+     "BBD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Barbados",
+   "dem": "Barbadian",
+   "adj": "Barbadian",
+   "curs": [
+    [
+     "Barbados dollar",
+     "BBD"
+    ]
+   ]
+  }
+ },
+ "BH": {
+  "pt": {
+   "name": "Barém",
+   "dem": "baremita(s)",
+   "adj": "baremita(s)",
+   "curs": [
+    [
+     "dinar baremita",
+     "BHD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Baréin",
+   "dem": "bareiní",
+   "adj": "bareiní",
+   "curs": [
+    [
+     "dinar [bareiní]",
+     "BHD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bahrain",
+   "dem": "Bahraini",
+   "adj": "Bahraini",
+   "curs": [
+    [
+     "Bahraini dinar",
+     "BHD"
+    ]
+   ]
+  }
+ },
+ "BE": {
+  "pt": {
+   "name": "Bélgica",
+   "dem": "belga(s)",
+   "adj": "belga(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bélgica",
+   "dem": "belga",
+   "adj": "belga",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Belgium",
+   "dem": "Belgian",
+   "adj": "Belgian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "BZ": {
+  "pt": {
+   "name": "Belize",
+   "dem": "belizense(s)",
+   "adj": "belizense(s)",
+   "curs": [
+    [
+     "dólar belizense",
+     "BZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Belice",
+   "dem": "beliceño",
+   "adj": "beliceño",
+   "curs": [
+    [
+     "dólar [beliceño]",
+     "BZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Belize",
+   "dem": "Belizean",
+   "adj": "Belizean",
+   "curs": [
+    [
+     "Belize dollar",
+     "BZD"
+    ]
+   ]
+  }
+ },
+ "BJ": {
+  "pt": {
+   "name": "Benim",
+   "dem": "beninês (benineses)//beninesa(s)",
+   "adj": "beninês (benineses)//beninesa(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Benín",
+   "dem": "beninés",
+   "adj": "beninés",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Benin",
+   "dem": "Beninese",
+   "adj": "Beninese",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "BM": {
+  "pt": {
+   "name": "Bermudas",
+   "dem": "bermudense(s)",
+   "adj": "bermudense(s)",
+   "curs": [
+    [
+     "dólar bermudense",
+     "BMD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bermudas",
+   "dem": "bermudeño",
+   "adj": "bermudeño",
+   "curs": [
+    [
+     "dólar [bermudeño]",
+     "BMD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bermuda",
+   "dem": "Bermudian",
+   "adj": "Bermudian",
+   "curs": [
+    [
+     "Bermuda dollar",
+     "BMD"
+    ]
+   ]
+  }
+ },
+ "BY": {
+  "pt": {
+   "name": "Bielorrússia",
+   "dem": "bielorrusso/a(s)",
+   "adj": "bielorrusso/a(s)",
+   "curs": [
+    [
+     "rublo bielorrusso",
+     "BYN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bielorrusia",
+   "dem": "bielorruso",
+   "adj": "bielorruso",
+   "curs": [
+    [
+     "rublo [bielorruso]",
+     "BYN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Belarus",
+   "dem": "Belarusian",
+   "adj": "Belarusian",
+   "curs": [
+    [
+     "Belarusian rouble",
+     "BYN"
+    ]
+   ]
+  }
+ },
+ "BO": {
+  "pt": {
+   "name": "Bolívia",
+   "dem": "boliviano/a(s)",
+   "adj": "boliviano/a(s)",
+   "curs": [
+    [
+     "boliviano",
+     "BOB"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bolivia",
+   "dem": "boliviano",
+   "adj": "boliviano",
+   "curs": [
+    [
+     "boliviano",
+     "BOB"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bolivia",
+   "dem": "Bolivian",
+   "adj": "Bolivian",
+   "curs": [
+    [
+     "boliviano",
+     "BOB"
+    ]
+   ]
+  }
+ },
+ "BA": {
+  "pt": {
+   "name": "Bósnia--Herzegovina",
+   "dem": "da Bósnia--Herzegovina",
+   "adj": "da Bósnia--Herzegovina",
+   "curs": [
+    [
+     "marco convertível",
+     "BAM"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bosnia y Herzegovina",
+   "dem": "bosnioherzegovino",
+   "adj": "bosnioherzegovino",
+   "curs": [
+    [
+     "marco convertible",
+     "BAM"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bosnia and Herzegovina",
+   "dem": "of Bosnia and Herzegovina",
+   "adj": "of Bosnia and Herzegovina",
+   "curs": [
+    [
+     "convertible mark",
+     "BAM"
+    ]
+   ]
+  }
+ },
+ "BW": {
+  "pt": {
+   "name": "Botsuana",
+   "dem": "botsuano/a(s)",
+   "adj": "botsuano/a(s)",
+   "curs": [
+    [
+     "pula",
+     "BWP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Botsuana",
+   "dem": "botsuano",
+   "adj": "botsuano",
+   "curs": [
+    [
+     "pula",
+     "BWP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Botswana",
+   "dem": "Botswanan",
+   "adj": "Botswanan",
+   "curs": [
+    [
+     "pula (inv.)",
+     "BWP"
+    ]
+   ]
+  }
+ },
+ "BR": {
+  "pt": {
+   "name": "Brasil",
+   "dem": "brasileiro/a(s)",
+   "adj": "brasileiro/a(s)",
+   "curs": [
+    [
+     "real",
+     "BRL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Brasil",
+   "dem": "brasileño",
+   "adj": "brasileño",
+   "curs": [
+    [
+     "real",
+     "BRL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Brazil",
+   "dem": "Brazilian",
+   "adj": "Brazilian",
+   "curs": [
+    [
+     "real (pl. reais)",
+     "BRL"
+    ]
+   ]
+  }
+ },
+ "BN": {
+  "pt": {
+   "name": "Brunei",
+   "dem": "bruneíno/a(s)",
+   "adj": "bruneíno/a(s)",
+   "curs": [
+    [
+     "dólar bruneíno",
+     "BND"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Brunéi",
+   "dem": "bruneano",
+   "adj": "bruneano",
+   "curs": [
+    [
+     "dólar [bruneano]",
+     "BND"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Brunei",
+   "dem": "Bruneian",
+   "adj": "Bruneian",
+   "curs": [
+    [
+     "Brunei dollar",
+     "BND"
+    ]
+   ]
+  }
+ },
+ "BG": {
+  "pt": {
+   "name": "Bulgária",
+   "dem": "búlgaro/a(s)",
+   "adj": "búlgaro/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bulgaria",
+   "dem": "búlgaro",
+   "adj": "búlgaro",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bulgaria",
+   "dem": "Bulgarian",
+   "adj": "Bulgarian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "BF": {
+  "pt": {
+   "name": "Burquina Fasso",
+   "dem": "burquino/a(s)",
+   "adj": "burquino/a(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Burkina Faso",
+   "dem": "burkinés",
+   "adj": "burkinés",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Burkina Faso",
+   "dem": "Burkinabe",
+   "adj": "Burkinabe",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "BI": {
+  "pt": {
+   "name": "Burundi",
+   "dem": "burundiano/a(s)",
+   "adj": "burundiano/a(s)",
+   "curs": [
+    [
+     "franco burundiano",
+     "BIF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Burundi",
+   "dem": "burundés",
+   "adj": "burundés",
+   "curs": [
+    [
+     "franco [burundés]",
+     "BIF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Burundi",
+   "dem": "Burundian",
+   "adj": "Burundian",
+   "curs": [
+    [
+     "Burundi franc",
+     "BIF"
+    ]
+   ]
+  }
+ },
+ "BT": {
+  "pt": {
+   "name": "Butão",
+   "dem": "butanês (butaneses)//butanesa(s)",
+   "adj": "butanês (butaneses)//butanesa(s)",
+   "curs": [
+    [
+     "ngultrum",
+     "BTN"
+    ],
+    [
+     "rupia indiana",
+     "INR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Bután",
+   "dem": "butanés",
+   "adj": "butanés",
+   "curs": [
+    [
+     "gultrum",
+     "BTN"
+    ],
+    [
+     "rupia [india]",
+     "INR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bhutan",
+   "dem": "Bhutanese",
+   "adj": "Bhutanese",
+   "curs": [
+    [
+     "ngultrum (inv.)",
+     "BTN"
+    ],
+    [
+     "Indian rupee",
+     "INR"
+    ]
+   ]
+  }
+ },
+ "CV": {
+  "pt": {
+   "name": "Cabo Verde",
+   "dem": "cabo-verdiano/a(s)",
+   "adj": "cabo-verdiano/a(s)",
+   "curs": [
+    [
+     "escudo cabo‑verdiano",
+     "CVE"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Cabo Verde",
+   "dem": "caboverdiano",
+   "adj": "caboverdiano",
+   "curs": [
+    [
+     "escudo [caboverdiano]",
+     "CVE"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cabo Verde",
+   "dem": "Cabo Verdean",
+   "adj": "Cabo Verdean",
+   "curs": [
+    [
+     "Cabo Verde escudo",
+     "CVE"
+    ]
+   ]
+  }
+ },
+ "CM": {
+  "pt": {
+   "name": "Camarões",
+   "dem": "camaronês (camaroneses)//camaronesa(s)",
+   "adj": "camaronês (camaroneses)//camaronesa(s)",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Camerún",
+   "dem": "camerunés",
+   "adj": "camerunés",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cameroon",
+   "dem": "Cameroonian",
+   "adj": "Cameroonian",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "KH": {
+  "pt": {
+   "name": "Camboja",
+   "dem": "cambojano/a(s)",
+   "adj": "cambojano/a(s)",
+   "curs": [
+    [
+     "riel",
+     "KHR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Camboya",
+   "dem": "camboyano",
+   "adj": "camboyano",
+   "curs": [
+    [
+     "riel",
+     "KHR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cambodia",
+   "dem": "Cambodian",
+   "adj": "Cambodian",
+   "curs": [
+    [
+     "riel",
+     "KHR"
+    ]
+   ]
+  }
+ },
+ "CA": {
+  "pt": {
+   "name": "Canadá",
+   "dem": "canadiano/a(s)",
+   "adj": "canadiano/a(s)",
+   "curs": [
+    [
+     "dólar canadiano",
+     "CAD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Canadá",
+   "dem": "canadiense",
+   "adj": "canadiense",
+   "curs": [
+    [
+     "dólar [canadiense]",
+     "CAD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Canada",
+   "dem": "Canadian",
+   "adj": "Canadian",
+   "curs": [
+    [
+     "Canadian dollar",
+     "CAD"
+    ]
+   ]
+  }
+ },
+ "QA": {
+  "pt": {
+   "name": "Catar",
+   "dem": "catariano/a(s)",
+   "adj": "catariano/a(s)",
+   "curs": [
+    [
+     "rial catariano",
+     "QAR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Qatar",
+   "dem": "catarí",
+   "adj": "catarí",
+   "curs": [
+    [
+     "rial [catarí]",
+     "QAR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Qatar",
+   "dem": "Qatari",
+   "adj": "Qatari",
+   "curs": [
+    [
+     "Qatari riyal",
+     "QAR"
+    ]
+   ]
+  }
+ },
+ "KZ": {
+  "pt": {
+   "name": "Cazaquistão",
+   "dem": "cazaque(s)",
+   "adj": "cazaque(s)",
+   "curs": [
+    [
+     "tengue",
+     "KZT"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Kazajistán",
+   "dem": "kazajo",
+   "adj": "kazajo",
+   "curs": [
+    [
+     "tengue",
+     "KZT"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Kazakhstan",
+   "dem": "Kazakhstani, of Kazachstan",
+   "adj": "Kazakhstani",
+   "curs": [
+    [
+     "tenge (inv.)",
+     "KZT"
+    ]
+   ]
+  }
+ },
+ "TD": {
+  "pt": {
+   "name": "Chade",
+   "dem": "chadiano/a(s)",
+   "adj": "chadiano/a(s)",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Chad",
+   "dem": "chadiano",
+   "adj": "chadiano",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Chad",
+   "dem": "Chadian",
+   "adj": "Chadian",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "CZ": {
+  "pt": {
+   "name": "Chéquia",
+   "dem": "checo/a(s)",
+   "adj": "checo/a(s)",
+   "curs": [
+    [
+     "coroa checa",
+     "CZK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Chequia",
+   "dem": "checo",
+   "adj": "checo",
+   "curs": [
+    [
+     "corona [checa]",
+     "CZK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Czechia",
+   "dem": "Czech",
+   "adj": "Czech",
+   "curs": [
+    [
+     "Czech koruna (pl. koruny)",
+     "CZK"
+    ]
+   ]
+  }
+ },
+ "CL": {
+  "pt": {
+   "name": "Chile",
+   "dem": "chileno/a(s)",
+   "adj": "chileno/a(s)",
+   "curs": [
+    [
+     "peso chileno",
+     "CLP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Chile",
+   "dem": "chileno",
+   "adj": "chileno",
+   "curs": [
+    [
+     "peso [chileno]",
+     "CLP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Chile",
+   "dem": "Chilean",
+   "adj": "Chilean",
+   "curs": [
+    [
+     "Chilean peso",
+     "CLP"
+    ]
+   ]
+  }
+ },
+ "CN": {
+  "pt": {
+   "name": "China",
+   "dem": "chinês (chineses)//chinesa(s)",
+   "adj": "chinês (chineses)//chinesa(s)",
+   "curs": [
+    [
+     "iuane",
+     "CNY"
+    ]
+   ]
+  },
+  "es": {
+   "name": "China",
+   "dem": "chino",
+   "adj": "chino",
+   "curs": [
+    [
+     "yuan renminbi",
+     "CNY"
+    ]
+   ]
+  },
+  "en": {
+   "name": "China",
+   "dem": "Chinese",
+   "adj": "Chinese",
+   "curs": [
+    [
+     "renminbi-yuan (inv.)",
+     "CNY"
+    ]
+   ]
+  }
+ },
+ "CY": {
+  "pt": {
+   "name": "Chipre",
+   "dem": "cipriota(s)",
+   "adj": "cipriota(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Chipre",
+   "dem": "chipriota",
+   "adj": "chipriota",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cyprus",
+   "dem": "Cypriot",
+   "adj": "Cypriot",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "CP": {
+  "pt": {
+   "name": "Clipperton",
+   "dem": "da Ilha Clipperton",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Clipperton",
+   "dem": "de la Isla Clipperton",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Clipperton",
+   "dem": "of Clipperton Island",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  }
+ },
+ "CO": {
+  "pt": {
+   "name": "Colômbia",
+   "dem": "colombiano/a(s)",
+   "adj": "colombiano/a(s)",
+   "curs": [
+    [
+     "peso colombiano",
+     "COP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Colombia",
+   "dem": "colombiano",
+   "adj": "colombiano",
+   "curs": [
+    [
+     "peso [colombiano]",
+     "COP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Colombia",
+   "dem": "Colombian",
+   "adj": "Colombian",
+   "curs": [
+    [
+     "Colombian peso",
+     "COP"
+    ]
+   ]
+  }
+ },
+ "KM": {
+  "pt": {
+   "name": "Comores",
+   "dem": "comoriano/a(s)",
+   "adj": "comoriano/a(s)",
+   "curs": [
+    [
+     "franco comoriano",
+     "KMF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Comoras",
+   "dem": "comorense",
+   "adj": "comorense",
+   "curs": [
+    [
+     "franco [comorense]",
+     "KMF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Comoros",
+   "dem": "Comorian",
+   "adj": "Comorian",
+   "curs": [
+    [
+     "Comorian franc",
+     "KMF"
+    ]
+   ]
+  }
+ },
+ "CG": {
+  "pt": {
+   "name": "Congo",
+   "dem": "da República do Congo",
+   "adj": "da República do Congo",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Congo",
+   "dem": "congoleño",
+   "adj": "congoleño",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Congo",
+   "dem": "Congolese",
+   "adj": "Congolese",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "KP": {
+  "pt": {
+   "name": "Coreia do Norte",
+   "dem": "norte-coreano/a(s)",
+   "adj": "norte-coreano/a(s)",
+   "curs": [
+    [
+     "won norte‑coreano",
+     "KPW"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Corea del Norte",
+   "dem": "de la República Popular Democrática de Corea",
+   "adj": "de la República Popular Democrática de Corea",
+   "curs": [
+    [
+     "won [de la República Popular Democrática de Corea]",
+     "KPW"
+    ]
+   ]
+  },
+  "en": {
+   "name": "North Korea",
+   "dem": "North Korean",
+   "adj": "North Korean",
+   "curs": [
+    [
+     "North Korean won (inv.)",
+     "KPW"
+    ]
+   ]
+  }
+ },
+ "KR": {
+  "pt": {
+   "name": "Coreia do Sul",
+   "dem": "sul-coreano/a(s)",
+   "adj": "sul-coreano/a(s)",
+   "curs": [
+    [
+     "won sul-coreano",
+     "KRW"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Corea del Sur",
+   "dem": "de la República de Corea",
+   "adj": "de la República de Corea",
+   "curs": [
+    [
+     "won [de la República de Corea]",
+     "KRW"
+    ]
+   ]
+  },
+  "en": {
+   "name": "South Korea",
+   "dem": "South Korean",
+   "adj": "South Korean",
+   "curs": [
+    [
+     "South Korean won (inv.)",
+     "KRW"
+    ]
+   ]
+  }
+ },
+ "CI": {
+  "pt": {
+   "name": "Costa do Marfim",
+   "dem": "costa--marfinense(s)",
+   "adj": "costa--marfinense(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Costa de Marfil",
+   "dem": "costamarfileño",
+   "adj": "costamarfileño",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Côte d’Ivoire",
+   "dem": "Ivorian",
+   "adj": "Ivorian",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "CR": {
+  "pt": {
+   "name": "Costa Rica",
+   "dem": "costa--riquenho/a(s)",
+   "adj": "costa-riquenho/a(s)",
+   "curs": [
+    [
+     "colón costa‑riquenho",
+     "CRC"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Costa Rica",
+   "dem": "costarricense",
+   "adj": "costarricense",
+   "curs": [
+    [
+     "colón [costarricense]",
+     "CRC"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Costa Rica",
+   "dem": "Costa Rican",
+   "adj": "Costa Rican",
+   "curs": [
+    [
+     "Costa Rican colón (pl. colones)",
+     "CRC"
+    ]
+   ]
+  }
+ },
+ "HR": {
+  "pt": {
+   "name": "Croácia",
+   "dem": "croata(s)",
+   "adj": "croata(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Croacia",
+   "dem": "croata",
+   "adj": "croata",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Croatia",
+   "dem": "Croatian",
+   "adj": "Croat",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "CU": {
+  "pt": {
+   "name": "Cuba",
+   "dem": "cubano/a(s)",
+   "adj": "cubano/a(s)",
+   "curs": [
+    [
+     "peso cubano",
+     "CUP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Cuba",
+   "dem": "cubano",
+   "adj": "cubano",
+   "curs": [
+    [
+     "peso [cubano]",
+     "CUP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cuba",
+   "dem": "Cuban",
+   "adj": "Cuban",
+   "curs": [
+    [
+     "Cuban peso",
+     "CUP"
+    ]
+   ]
+  }
+ },
+ "CW": {
+  "pt": {
+   "name": "Curaçau",
+   "dem": "curaçauense(s)",
+   "adj": "curaçauense(s)",
+   "curs": [
+    [
+     "florim caribenho",
+     "XCG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Curazao",
+   "dem": "curazoleño",
+   "adj": "curazoleño",
+   "curs": [
+    [
+     "florín del Caribe",
+     "XCG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Curaçao",
+   "dem": "of Curaçao",
+   "adj": "Curaçaoan",
+   "curs": [
+    [
+     "Caribbean guilder",
+     "XCG"
+    ]
+   ]
+  }
+ },
+ "DK": {
+  "pt": {
+   "name": "Dinamarca",
+   "dem": "dinamarquês (dinamarqueses)//dinamarquesa(s)",
+   "adj": "dinamarquês (dinamarqueses)//dinamarquesa(s)",
+   "curs": [
+    [
+     "coroa dinamarquesa",
+     "DKK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Dinamarca",
+   "dem": "danés",
+   "adj": "danés",
+   "curs": [
+    [
+     "corona [danesa]",
+     "DKK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Denmark",
+   "dem": "Danish",
+   "adj": "Dane",
+   "curs": [
+    [
+     "Danish krone (pl. kroner)",
+     "DKK"
+    ]
+   ]
+  }
+ },
+ "DM": {
+  "pt": {
+   "name": "Domínica",
+   "dem": "dominiquense(s)",
+   "adj": "dominiquense(s)",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Dominica",
+   "dem": "dominiqués",
+   "adj": "dominiqués",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Dominica",
+   "dem": "of Dominica",
+   "adj": "Dominican",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "EG": {
+  "pt": {
+   "name": "Egito",
+   "dem": "egípcio/a(s)",
+   "adj": "egípcio/a(s)",
+   "curs": [
+    [
+     "libra egípcia",
+     "EGP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Egipto",
+   "dem": "egipcio",
+   "adj": "egipcio",
+   "curs": [
+    [
+     "libra [egipcia]",
+     "EGP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Egypt",
+   "dem": "Egyptian",
+   "adj": "Egyptian",
+   "curs": [
+    [
+     "Egyptian pound",
+     "EGP"
+    ]
+   ]
+  }
+ },
+ "AE": {
+  "pt": {
+   "name": "Emirados Árabes Unidos",
+   "dem": "emiradense(s)",
+   "adj": "emiradense(s)",
+   "curs": [
+    [
+     "dirame emiradense",
+     "AED"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Emiratos Árabes Unidos",
+   "dem": "emiratí",
+   "adj": "emiratí",
+   "curs": [
+    [
+     "dírham [emiratí]",
+     "AED"
+    ]
+   ]
+  },
+  "en": {
+   "name": "United Arab Emirates",
+   "dem": "Emirati",
+   "adj": "Emirati",
+   "curs": [
+    [
+     "UAE dirham",
+     "AED"
+    ]
+   ]
+  }
+ },
+ "EC": {
+  "pt": {
+   "name": "Equador",
+   "dem": "equatoriano/a(s)",
+   "adj": "equatoriano/a(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Ecuador",
+   "dem": "ecuatoriano",
+   "adj": "ecuatoriano",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Ecuador",
+   "dem": "Ecuadorian",
+   "adj": "Ecuadorian",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "ER": {
+  "pt": {
+   "name": "Eritreia",
+   "dem": "eritreu(s)/eritreia(s)",
+   "adj": "eritreu(s)/eritreia(s)",
+   "curs": [
+    [
+     "nakfa",
+     "ERN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Eritrea",
+   "dem": "eritreo",
+   "adj": "eritreo",
+   "curs": [
+    [
+     "nakfa",
+     "ERN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Eritrea",
+   "dem": "Eritrean",
+   "adj": "Eritrean",
+   "curs": [
+    [
+     "nakfa",
+     "ERN"
+    ]
+   ]
+  }
+ },
+ "SK": {
+  "pt": {
+   "name": "Eslováquia",
+   "dem": "eslovaco/a(s)",
+   "adj": "eslovaco/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Eslovaquia",
+   "dem": "eslovaco",
+   "adj": "eslovaco",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Slovakia",
+   "dem": "Slovak",
+   "adj": "Slovak",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "SI": {
+  "pt": {
+   "name": "Eslovénia",
+   "dem": "esloveno/a(s)",
+   "adj": "esloveno/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Eslovenia",
+   "dem": "esloveno",
+   "adj": "esloveno",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Slovenia",
+   "dem": "Slovenian",
+   "adj": "Slovene",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "ES": {
+  "pt": {
+   "name": "Espanha",
+   "dem": "espanhol (espanhóis)//espanhola(s)",
+   "adj": "espanhol (espanhóis)//espanhola(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "España",
+   "dem": "español",
+   "adj": "español",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Spain",
+   "dem": "Spanish",
+   "adj": "Spaniard",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "SZ": {
+  "pt": {
+   "name": "Essuatíni",
+   "dem": "essuatiniano/a(s)",
+   "adj": "essuatiniano/a(s)",
+   "curs": [
+    [
+     "lilangeni",
+     "SZL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Esuatini",
+   "dem": "esuatiní",
+   "adj": "esuatiní",
+   "curs": [
+    [
+     "lilangeni",
+     "SZL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Eswatini",
+   "dem": "Swazi",
+   "adj": "Swazi",
+   "curs": [
+    [
+     "lilangeni (pl. emalangeni)",
+     "SZL"
+    ]
+   ]
+  }
+ },
+ "US": {
+  "pt": {
+   "name": "Estados Unidos",
+   "dem": "norte--americano/a(s)",
+   "adj": "norte--americano/a(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Estados Unidos",
+   "dem": "estadounidense",
+   "adj": "estadounidense",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "United States",
+   "dem": "American; of the United States",
+   "adj": "American; US citizen",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "EE": {
+  "pt": {
+   "name": "Estónia",
+   "dem": "estónio/a(s)",
+   "adj": "estónio/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Estonia",
+   "dem": "estonio",
+   "adj": "estonio",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Estonia",
+   "dem": "Estonian",
+   "adj": "Estonian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "ET": {
+  "pt": {
+   "name": "Etiópia",
+   "dem": "etíope(s)",
+   "adj": "etíope(s)",
+   "curs": [
+    [
+     "birr",
+     "ETB"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Etiopía",
+   "dem": "etíope",
+   "adj": "etíope",
+   "curs": [
+    [
+     "bir",
+     "ETB"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Ethiopia",
+   "dem": "Ethiopian",
+   "adj": "Ethiopian",
+   "curs": [
+    [
+     "birr (inv.)",
+     "ETB"
+    ]
+   ]
+  }
+ },
+ "FO": {
+  "pt": {
+   "name": "Faroé",
+   "dem": "faroense(s)",
+   "adj": "faroense(s)",
+   "curs": [
+    [
+     "coroa dinamarquesa",
+     "DKK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Feroe",
+   "dem": "feroés",
+   "adj": "feroés",
+   "curs": [
+    [
+     "corona [danesa]",
+     "DKK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Faroes",
+   "dem": "Faroese",
+   "adj": "Faroese",
+   "curs": [
+    [
+     "Danish krone (pl. kroner)",
+     "DKK"
+    ]
+   ]
+  }
+ },
+ "FJ": {
+  "pt": {
+   "name": "Fiji",
+   "dem": "fijiano/a(s)",
+   "adj": "fijiano/a(s)",
+   "curs": [
+    [
+     "dólar fijiano",
+     "FJD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Fiyi",
+   "dem": "fiyiano",
+   "adj": "fiyiano",
+   "curs": [
+    [
+     "dólar [fiyiano]",
+     "FJD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Fiji",
+   "dem": "Fijian",
+   "adj": "Fijian",
+   "curs": [
+    [
+     "Fiji dollar",
+     "FJD"
+    ]
+   ]
+  }
+ },
+ "PH": {
+  "pt": {
+   "name": "Filipinas",
+   "dem": "filipino/a(s)",
+   "adj": "filipino/a(s)",
+   "curs": [
+    [
+     "peso filipino",
+     "PHP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Filipinas",
+   "dem": "filipino",
+   "adj": "filipino",
+   "curs": [
+    [
+     "peso [filipino]",
+     "PHP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Philippines",
+   "dem": "Philippine",
+   "adj": "Filipino",
+   "curs": [
+    [
+     "Philippine peso",
+     "PHP"
+    ]
+   ]
+  }
+ },
+ "FI": {
+  "pt": {
+   "name": "Finlândia",
+   "dem": "finlandês (finlandeses)//finlandesa(s)",
+   "adj": "finlandês (finlandeses)//finlandesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Finlandia",
+   "dem": "finlandés",
+   "adj": "finlandés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Finland",
+   "dem": "Finnish",
+   "adj": "Finn",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "FR": {
+  "pt": {
+   "name": "França",
+   "dem": "francês (franceses)//francesa(s)",
+   "adj": "francês (franceses)//francesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Francia",
+   "dem": "francés",
+   "adj": "francés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "France",
+   "dem": "French",
+   "adj": "Frenchman; Frenchwoman",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "GA": {
+  "pt": {
+   "name": "Gabão",
+   "dem": "gabonês (gaboneses)//gabonesa(s)",
+   "adj": "gabonês (gaboneses)//gabonesa(s)",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Gabón",
+   "dem": "gabonés",
+   "adj": "gabonés",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Gabon",
+   "dem": "Gabonese",
+   "adj": "Gabonese",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "GM": {
+  "pt": {
+   "name": "Gâmbia",
+   "dem": "gambiano/a(s)",
+   "adj": "gambiano/a(s)",
+   "curs": [
+    [
+     "dalasi",
+     "GMD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Gambia",
+   "dem": "gambiano",
+   "adj": "gambiano",
+   "curs": [
+    [
+     "dalasi",
+     "GMD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "The Gambia",
+   "dem": "Gambian",
+   "adj": "Gambian",
+   "curs": [
+    [
+     "dalasi (inv.)",
+     "GMD"
+    ]
+   ]
+  }
+ },
+ "GH": {
+  "pt": {
+   "name": "Gana",
+   "dem": "ganês (ganeses)//ganesa(s)",
+   "adj": "ganês (ganeses)//ganesa(s)",
+   "curs": [
+    [
+     "cedi",
+     "GHS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Ghana",
+   "dem": "ghanés",
+   "adj": "ghanés",
+   "curs": [
+    [
+     "cedi",
+     "GHS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Ghana",
+   "dem": "Ghanaian",
+   "adj": "Ghanaian",
+   "curs": [
+    [
+     "Ghana cedi",
+     "GHS"
+    ]
+   ]
+  }
+ },
+ "GE": {
+  "pt": {
+   "name": "Geórgia",
+   "dem": "georgiano/a(s)",
+   "adj": "georgiano/a(s)",
+   "curs": [
+    [
+     "lari",
+     "GEL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Georgia",
+   "dem": "georgiano",
+   "adj": "georgiano",
+   "curs": [
+    [
+     "lari",
+     "GEL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Georgia",
+   "dem": "Georgian",
+   "adj": "Georgian",
+   "curs": [
+    [
+     "lari",
+     "GEL"
+    ]
+   ]
+  }
+ },
+ "GI": {
+  "pt": {
+   "name": "Gibraltar",
+   "dem": "gibraltarino/a(s)",
+   "adj": "gibraltarino/a(s)",
+   "curs": [
+    [
+     "libra gibraltarina",
+     "GIP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Gibraltar",
+   "dem": "gibraltareño",
+   "adj": "gibraltareño",
+   "curs": [
+    [
+     "libra [gibraltareña]",
+     "GIP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Gibraltar",
+   "dem": "Gibraltarian",
+   "adj": "Gibraltarian",
+   "curs": [
+    [
+     "Gibraltar pound",
+     "GIP"
+    ]
+   ]
+  }
+ },
+ "GD": {
+  "pt": {
+   "name": "Granada",
+   "dem": "granadino/a(s)",
+   "adj": "granadino/a(s)",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Granada",
+   "dem": "granadino",
+   "adj": "granadino",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Grenada",
+   "dem": "Grenadian",
+   "adj": "Grenadian",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "EL": {
+  "pt": {
+   "name": "Grécia",
+   "dem": "grego/a(s)",
+   "adj": "grego/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Grecia",
+   "dem": "griego",
+   "adj": "griego",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Greece",
+   "dem": "Greek",
+   "adj": "Greek",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "GL": {
+  "pt": {
+   "name": "Gronelândia",
+   "dem": "gronelandês (gronelandeses)//gronelandesa(s)",
+   "adj": "gronelandês (gronelandeses)//gronelandesa(s)",
+   "curs": [
+    [
+     "coroa dinamarquesa",
+     "DKK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Groenlandia",
+   "dem": "groenlandés",
+   "adj": "groenlandés",
+   "curs": [
+    [
+     "corona [danesa]",
+     "DKK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Greenland",
+   "dem": "Greenlandic",
+   "adj": "Greenlander",
+   "curs": [
+    [
+     "Danish krone (pl. kroner)",
+     "DKK"
+    ]
+   ]
+  }
+ },
+ "GP": {
+  "pt": {
+   "name": "Guadalupe",
+   "dem": "guadalupino/a(s)",
+   "adj": "guadalupino/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guadalupe",
+   "dem": "guadalupeño",
+   "adj": "guadalupeño",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guadeloupe",
+   "dem": "Guadeloupean",
+   "adj": "Guadeloupean",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "GU": {
+  "pt": {
+   "name": "Guame",
+   "dem": "guamês (guameses)//guamesa(s)",
+   "adj": "guamês (guameses)//guamesa(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guam",
+   "dem": "guameño",
+   "adj": "guameño",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guam",
+   "dem": "Guamanian",
+   "adj": "Guamanian",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "GT": {
+  "pt": {
+   "name": "Guatemala",
+   "dem": "guatemalteco/a(s)",
+   "adj": "guatemalteco/a(s)",
+   "curs": [
+    [
+     "quetzal",
+     "GTQ"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guatemala",
+   "dem": "guatemalteco",
+   "adj": "guatemalteco",
+   "curs": [
+    [
+     "quetzal",
+     "GTQ"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guatemala",
+   "dem": "Guatemalan",
+   "adj": "Guatemalan",
+   "curs": [
+    [
+     "quetzal (pl. quetzales)",
+     "GTQ"
+    ]
+   ]
+  }
+ },
+ "GG": {
+  "pt": {
+   "name": "Guernesey",
+   "dem": "guernesiano/a(s)",
+   "adj": "guernesiano/a(s)",
+   "curs": [
+    [
+     "libra guernesiana",
+     "GGP"
+    ],
+    [
+     "libra esterlina",
+     "GBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guernesey",
+   "dem": "de Guernesey",
+   "adj": "de Guernesey",
+   "curs": [
+    [
+     "libra [de Guernesey]",
+     "GGP"
+    ],
+    [
+     "libra [esterlina]",
+     "GBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guernsey",
+   "dem": "Guernsey",
+   "adj": "of Guernsey",
+   "curs": [
+    [
+     "Guernsey pound",
+     "GGP"
+    ],
+    [
+     "pound sterling",
+     "GBP"
+    ]
+   ]
+  }
+ },
+ "GY": {
+  "pt": {
+   "name": "Guiana",
+   "dem": "da República Cooperativa da Guiana",
+   "adj": "da República Cooperativa da Guiana",
+   "curs": [
+    [
+     "dólar guianês",
+     "GYD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guyana",
+   "dem": "guyanés",
+   "adj": "guyanés",
+   "curs": [
+    [
+     "dólar [guyanés]",
+     "GYD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guyana",
+   "dem": "Guyanese",
+   "adj": "Guyanese",
+   "curs": [
+    [
+     "Guyana dollar",
+     "GYD"
+    ]
+   ]
+  }
+ },
+ "GF": {
+  "pt": {
+   "name": "Guiana Francesa",
+   "dem": "da Guiana Francesa",
+   "adj": "da Guiana Francesa",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guayana Francesa",
+   "dem": "guayanés",
+   "adj": "guayanés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "French Guiana",
+   "dem": "Guianese",
+   "adj": "Guianese",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "GN": {
+  "pt": {
+   "name": "Guiné",
+   "dem": "da República da Guiné",
+   "adj": "da República da Guiné",
+   "curs": [
+    [
+     "franco guineense",
+     "GNF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guinea",
+   "dem": "guineano",
+   "adj": "guineano",
+   "curs": [
+    [
+     "franco [guineano]",
+     "GNF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guinea",
+   "dem": "Guinean",
+   "adj": "Guinean",
+   "curs": [
+    [
+     "Guinean franc",
+     "GNF"
+    ]
+   ]
+  }
+ },
+ "GW": {
+  "pt": {
+   "name": "Guiné-Bissau",
+   "dem": "guineense(s)",
+   "adj": "guineense(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guinea-Bisáu",
+   "dem": "de Guinea-Bisáu",
+   "adj": "de Guinea-Bisáu",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Guinea-Bissau",
+   "dem": "of Guinea-Bissau",
+   "adj": "Guinea-Bissau national",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "GQ": {
+  "pt": {
+   "name": "Guiné Equatorial",
+   "dem": "equato--guineense",
+   "adj": "equato--guineense",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Guinea Ecuatorial",
+   "dem": "ecuatoguineano",
+   "adj": "ecuatoguineano",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Equatorial Guinea",
+   "dem": "of Equatorial Guinea",
+   "adj": "Equatorial Guinean",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "HT": {
+  "pt": {
+   "name": "Haiti",
+   "dem": "haitiano/a(s)",
+   "adj": "haitiano/a(s)",
+   "curs": [
+    [
+     "gurde",
+     "HTG"
+    ],
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Haití",
+   "dem": "haitiano",
+   "adj": "haitiano",
+   "curs": [
+    [
+     "gurde",
+     "HTG"
+    ],
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Haiti",
+   "dem": "Haitian",
+   "adj": "Haitian",
+   "curs": [
+    [
+     "gourde",
+     "HTG"
+    ],
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "HN": {
+  "pt": {
+   "name": "Honduras",
+   "dem": "hondurenho/a(s)",
+   "adj": "hondurenho/a(s)",
+   "curs": [
+    [
+     "lempira",
+     "HNL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Honduras",
+   "dem": "hondureño",
+   "adj": "hondureño",
+   "curs": [
+    [
+     "lempira",
+     "HNL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Honduras",
+   "dem": "Honduran",
+   "adj": "Honduran",
+   "curs": [
+    [
+     "lempira",
+     "HNL"
+    ]
+   ]
+  }
+ },
+ "HK": {
+  "pt": {
+   "name": "Hong Kong",
+   "dem": "de Hong Kong",
+   "adj": "de Hong Kong",
+   "curs": [
+    [
+     "dólar de Hong Kong",
+     "HKD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Hong Kong",
+   "dem": "hongkonés",
+   "adj": "hongkonés",
+   "curs": [
+    [
+     "dólar [hongkonés]",
+     "HKD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Hong Kong",
+   "dem": "Hong Kong Chinese",
+   "adj": "Hong Kong Chinese",
+   "curs": [
+    [
+     "Hong Kong dollar",
+     "HKD"
+    ]
+   ]
+  }
+ },
+ "HU": {
+  "pt": {
+   "name": "Hungria",
+   "dem": "húngaro/a(s)",
+   "adj": "húngaro/a(s)",
+   "curs": [
+    [
+     "forinte",
+     "HUF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Hungría",
+   "dem": "húngaro",
+   "adj": "húngaro",
+   "curs": [
+    [
+     "forinto",
+     "HUF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Hungary",
+   "dem": "Hungarian",
+   "adj": "Hungarian",
+   "curs": [
+    [
+     "forint (inv.)",
+     "HUF"
+    ]
+   ]
+  }
+ },
+ "YE": {
+  "pt": {
+   "name": "Iémen",
+   "dem": "iemenita(s)",
+   "adj": "iemenita(s)",
+   "curs": [
+    [
+     "rial iemenita",
+     "YER"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Yemen",
+   "dem": "yemení",
+   "adj": "yemení",
+   "curs": [
+    [
+     "riyal [yemení]",
+     "YER"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Yemen",
+   "dem": "Yemeni",
+   "adj": "Yemenite",
+   "curs": [
+    [
+     "Yemeni rial",
+     "YER"
+    ]
+   ]
+  }
+ },
+ "BV": {
+  "pt": {
+   "name": "Ilha Bouvet",
+   "dem": "da Ilha Bouvet",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Isla Bouvet",
+   "dem": "de la Isla Bouvet",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Bouvet Island",
+   "dem": "of Bouvet Island",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  }
+ },
+ "IM": {
+  "pt": {
+   "name": "Ilha de Man",
+   "dem": "manês (maneses)//manesa(s)",
+   "adj": "manês (maneses)//manesa(s)",
+   "curs": [
+    [
+     "libra manesa",
+     "IMP"
+    ],
+    [
+     "libra esterlina",
+     "GBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Isla de Man",
+   "dem": "manés",
+   "adj": "manés",
+   "curs": [
+    [
+     "libra [manesa]",
+     "IMP"
+    ],
+    [
+     "libra [esterlina]",
+     "GBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Isle of Man",
+   "dem": "Manx",
+   "adj": "Manxman; Manxwoman",
+   "curs": [
+    [
+     "Manx pound",
+     "IMP"
+    ],
+    [
+     "pound sterling",
+     "GBP"
+    ]
+   ]
+  }
+ },
+ "CX": {
+  "pt": {
+   "name": "Ilha do Natal",
+   "dem": "natalense(s)",
+   "adj": "natalense(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Isla Christmas",
+   "dem": "de la Isla Christmas",
+   "adj": "de la Isla Christmas",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Christmas Island",
+   "dem": "of Christmas Island",
+   "adj": "Christmas Islander",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "HM": {
+  "pt": {
+   "name": "Ilha Heard e Ilhas McDonald",
+   "dem": "das Ilhas Heard e McDonald",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Heard y McDonald",
+   "dem": "de las Islas Heard y McDonald",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Heard Island and McDonald Islands",
+   "dem": "of the Heard Island and McDonald Islands",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  }
+ },
+ "NF": {
+  "pt": {
+   "name": "Ilha Norfolk",
+   "dem": "norfolkino",
+   "adj": "norfolkino",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Isla Norfolk",
+   "dem": "de la Isla Norfolk",
+   "adj": "de la Isla Norfolk",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Norfolk Island",
+   "dem": "of Norfolk Island",
+   "adj": "Norfolk Islander",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "KY": {
+  "pt": {
+   "name": "Ilhas Caimão",
+   "dem": "caimanês (caimaneses)//caimanesa(s)",
+   "adj": "caimanês (caimaneses)//caimanesa(s)",
+   "curs": [
+    [
+     "dólar caimanês",
+     "KYD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Caimán",
+   "dem": "caimanés",
+   "adj": "caimanés",
+   "curs": [
+    [
+     "dólar [caimanés]",
+     "KYD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cayman Islands",
+   "dem": "Caymanian",
+   "adj": "Caymanian",
+   "curs": [
+    [
+     "Cayman Islands dollar",
+     "KYD"
+    ]
+   ]
+  }
+ },
+ "CK": {
+  "pt": {
+   "name": "Ilhas Cook",
+   "dem": "cookense(s)",
+   "adj": "cookense(s)",
+   "curs": [
+    [
+     "dólar neozelandês",
+     "NZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Cook",
+   "dem": "de las Islas Cook",
+   "adj": "de las Islas Cook",
+   "curs": [
+    [
+     "dólar [neozelandés]",
+     "NZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cook Islands",
+   "dem": "of the Cook Islands",
+   "adj": "Cook Islander",
+   "curs": [
+    [
+     "New Zealand dollar",
+     "NZD"
+    ]
+   ]
+  }
+ },
+ "CC": {
+  "pt": {
+   "name": "Ilhas dos Cocos",
+   "dem": "coquense(s)",
+   "adj": "coquense(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Cocos",
+   "dem": "de las Islas Cocos",
+   "adj": "de las Islas Cocos",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Cocos (Keeling) Islands",
+   "dem": "of the Cocos (Keeling) Islands",
+   "adj": "Cocos Islander",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "FK": {
+  "pt": {
+   "name": "Ilhas Falkland",
+   "dem": "falklandês (falklandeses)//falklandesa(s)",
+   "adj": "falklandês (falklandeses)//falklandesa(s)",
+   "curs": [
+    [
+     "libra falklandesa",
+     "FKP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Malvinas",
+   "dem": "malvinense",
+   "adj": "malvinense",
+   "curs": [
+    [
+     "libra [de las Islas Malvinas]",
+     "FKP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Falkland Islands",
+   "dem": "of the Falkland Islands",
+   "adj": "Falkland Islander",
+   "curs": [
+    [
+     "Falkland Islands pound",
+     "FKP"
+    ]
+   ]
+  }
+ },
+ "GS": {
+  "pt": {
+   "name": "Ilhas Geórgia do Sul e Sandwich do Sul",
+   "dem": "das Ilhas Geórgia do Sul e Sandwich do Sul",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Georgias del Sur y Sandwich del Sur",
+   "dem": "de las Islas Georgias del Sur y Sandwich del Sur",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  },
+  "en": {
+   "name": "South Georgia and the South Sandwich Islands",
+   "dem": "of South Georgia and the South Sandwich Islands",
+   "adj": "—",
+   "curs": [
+    [
+     "—",
+     "—"
+    ]
+   ]
+  }
+ },
+ "MP": {
+  "pt": {
+   "name": "Ilhas Marianas do Norte",
+   "dem": "norte--marianense(s)",
+   "adj": "norte--marianense(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Marianas del Norte",
+   "dem": "de las Islas Marianas del Norte",
+   "adj": "de las Islas Marianas del Norte",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Northern Mariana Islands",
+   "dem": "of the Northern Mariana Islands",
+   "adj": "Northern Mariana Islander",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "MH": {
+  "pt": {
+   "name": "Ilhas Marshall",
+   "dem": "marshallino/a(s)",
+   "adj": "marshallino/a(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Marshall",
+   "dem": "marshalés",
+   "adj": "marshalés",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Marshall Islands",
+   "dem": "Marshallese",
+   "adj": "Marshallese",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "UM": {
+  "pt": {
+   "name": "Ilhas Menores Afastadas dos Estados Unidos",
+   "dem": "das Ilhas Menores Afastadas dos Estados Unidos",
+   "adj": "—",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas menores alejadas de los Estados Unidos",
+   "dem": "de las Islas menores alejadas de los Estados Unidos",
+   "adj": "—",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "United States Minor Outlying Islands",
+   "dem": "of the United States Minor Outlying Islands",
+   "adj": "—",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "PN": {
+  "pt": {
+   "name": "Ilhas Pitcairn",
+   "dem": "pitcairnês (pitcairneses)//pitcairnesa(s)",
+   "adj": "pitcairnês (pitcairneses)//pitcairnesa(s)",
+   "curs": [
+    [
+     "dólar neozelandês",
+     "NZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Pitcairn",
+   "dem": "de las Islas Pitcairn",
+   "adj": "de las Islas Pitcairn",
+   "curs": [
+    [
+     "dólar [neozelandés]",
+     "NZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Pitcairn Islands",
+   "dem": "Pitcairner",
+   "adj": "Pitcairner",
+   "curs": [
+    [
+     "New Zealand dollar",
+     "NZD"
+    ]
+   ]
+  }
+ },
+ "SB": {
+  "pt": {
+   "name": "Ilhas Salomão",
+   "dem": "salomonense(s)",
+   "adj": "salomonense(s)",
+   "curs": [
+    [
+     "dólar salomonense",
+     "SBD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Salomón",
+   "dem": "salomonense",
+   "adj": "salomonense",
+   "curs": [
+    [
+     "dólar [salomonense]",
+     "SBD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Solomon Islands",
+   "dem": "of the Solomon Islands",
+   "adj": "Solomon Islander",
+   "curs": [
+    [
+     "Solomon Islands dollar",
+     "SBD"
+    ]
+   ]
+  }
+ },
+ "TC": {
+  "pt": {
+   "name": "Ilhas Turcas e Caicos",
+   "dem": "das Ilhas Turcas e Caicos",
+   "adj": "das Ilhas Turcas e Caicos",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Turcas y Caicos",
+   "dem": "de las Islas Turcas y Caicos",
+   "adj": "de las Islas Turcas y Caicos",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Turks and Caicos Islands",
+   "dem": "of the Turks and Caicos Islands",
+   "adj": "Turks and Caicos Islander",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "VI": {
+  "pt": {
+   "name": "Ilhas Virgens Americanas",
+   "dem": "das Ilhas Virgens Americanas",
+   "adj": "das Ilhas Virgens Americanas",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Vírgenes de los Estados Unidos",
+   "dem": "de las Islas Vírgenes de los Estados Unidos",
+   "adj": "de las Islas Vírgenes de los Estados Unidos",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "US Virgin Islands",
+   "dem": "of the US Virgin Islands",
+   "adj": "US Virgin Islander",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "VG": {
+  "pt": {
+   "name": "Ilhas Virgens Britânicas",
+   "dem": "das Ilhas Virgens Britânicas",
+   "adj": "das Ilhas Virgens Britânicas",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islas Vírgenes Británicas",
+   "dem": "de las Islas Vírgenes Británicas",
+   "adj": "de las Islas Vírgenes Británicas",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "British Virgin Islands",
+   "dem": "of the British Virgin Islands",
+   "adj": "British Virgin Islander; BV Islander",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "IN": {
+  "pt": {
+   "name": "Índia",
+   "dem": "indiano/a(s)",
+   "adj": "indiano/a(s)",
+   "curs": [
+    [
+     "rupia indiana",
+     "INR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "India",
+   "dem": "indio",
+   "adj": "indio",
+   "curs": [
+    [
+     "rupia [india]",
+     "INR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "India",
+   "dem": "Indian",
+   "adj": "Indian",
+   "curs": [
+    [
+     "Indian rupee",
+     "INR"
+    ]
+   ]
+  }
+ },
+ "ID": {
+  "pt": {
+   "name": "Indonésia",
+   "dem": "indonésio/a(s)",
+   "adj": "indonésio/a(s)",
+   "curs": [
+    [
+     "rupia indonésia",
+     "IDR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Indonesia",
+   "dem": "indonesio",
+   "adj": "indonesio",
+   "curs": [
+    [
+     "rupia [indonesia]",
+     "IDR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Indonesia",
+   "dem": "Indonesian",
+   "adj": "Indonesian",
+   "curs": [
+    [
+     "rupiah (inv.)",
+     "IDR"
+    ]
+   ]
+  }
+ },
+ "IR": {
+  "pt": {
+   "name": "Irão",
+   "dem": "iraniano/a(s)",
+   "adj": "iraniano/a(s)",
+   "curs": [
+    [
+     "rial iraniano",
+     "IRR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Irán",
+   "dem": "iraní",
+   "adj": "iraní",
+   "curs": [
+    [
+     "rial [iraní]",
+     "IRR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Iran",
+   "dem": "Iranian",
+   "adj": "Iranian",
+   "curs": [
+    [
+     "Iranian rial",
+     "IRR"
+    ]
+   ]
+  }
+ },
+ "IQ": {
+  "pt": {
+   "name": "Iraque",
+   "dem": "iraquiano/a(s)",
+   "adj": "iraquiano/a(s)",
+   "curs": [
+    [
+     "dinar iraquiano",
+     "IQD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Irak",
+   "dem": "iraquí",
+   "adj": "iraquí",
+   "curs": [
+    [
+     "dinar [iraquí]",
+     "IQD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Iraq",
+   "dem": "Iraqi",
+   "adj": "Iraqi",
+   "curs": [
+    [
+     "Iraqi dinar",
+     "IQD"
+    ]
+   ]
+  }
+ },
+ "IE": {
+  "pt": {
+   "name": "Irlanda",
+   "dem": "irlandês (irlandeses)//irlandesa(s)",
+   "adj": "irlandês (irlandeses)//irlandesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Irlanda",
+   "dem": "irlandés",
+   "adj": "irlandés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Ireland",
+   "dem": "Irish",
+   "adj": "Irishman; Irishwoman",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "IS": {
+  "pt": {
+   "name": "Islândia",
+   "dem": "islandês (islandeses)//islandesa(s)",
+   "adj": "islandês (islandeses)//islandesa(s)",
+   "curs": [
+    [
+     "coroa islandesa",
+     "ISK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Islandia",
+   "dem": "islandés",
+   "adj": "islandés",
+   "curs": [
+    [
+     "corona [islandesa]",
+     "ISK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Iceland",
+   "dem": "Icelandic",
+   "adj": "Icelander",
+   "curs": [
+    [
+     "króna (pl. krónur)",
+     "ISK"
+    ]
+   ]
+  }
+ },
+ "IL": {
+  "pt": {
+   "name": "Israel",
+   "dem": "israelita(s)",
+   "adj": "israelita(s)",
+   "curs": [
+    [
+     "shekel",
+     "ILS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Israel",
+   "dem": "israelí",
+   "adj": "israelí",
+   "curs": [
+    [
+     "séquel",
+     "ILS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Israel",
+   "dem": "Israeli",
+   "adj": "Israeli",
+   "curs": [
+    [
+     "shekel",
+     "ILS"
+    ]
+   ]
+  }
+ },
+ "IT": {
+  "pt": {
+   "name": "Itália",
+   "dem": "italiano/a(s)",
+   "adj": "italiano/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Italia",
+   "dem": "italiano",
+   "adj": "italiano",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Italy",
+   "dem": "Italian",
+   "adj": "Italian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "JM": {
+  "pt": {
+   "name": "Jamaica",
+   "dem": "jamaicano/a(s)",
+   "adj": "jamaicano/a(s)",
+   "curs": [
+    [
+     "dólar jamaicano",
+     "JMD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Jamaica",
+   "dem": "jamaicano",
+   "adj": "jamaicano",
+   "curs": [
+    [
+     "dólar [jamaicano]",
+     "JMD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Jamaica",
+   "dem": "Jamaican",
+   "adj": "Jamaican",
+   "curs": [
+    [
+     "Jamaica dollar",
+     "JMD"
+    ]
+   ]
+  }
+ },
+ "JP": {
+  "pt": {
+   "name": "Japão",
+   "dem": "japonês (japoneses)//japonesa(s)",
+   "adj": "japonês (japoneses)//japonesa(s)",
+   "curs": [
+    [
+     "iene",
+     "JPY"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Japón",
+   "dem": "japonés",
+   "adj": "japonés",
+   "curs": [
+    [
+     "yen",
+     "JPY"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Japan",
+   "dem": "Japanese",
+   "adj": "Japanese",
+   "curs": [
+    [
+     "yen (inv.)",
+     "JPY"
+    ]
+   ]
+  }
+ },
+ "JE": {
+  "pt": {
+   "name": "Jersey",
+   "dem": "jersiano/a(s)",
+   "adj": "jersiano/a(s)",
+   "curs": [
+    [
+     "libra jersiana",
+     "JEP"
+    ],
+    [
+     "libra esterlina",
+     "GBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Jersey",
+   "dem": "de Jersey",
+   "adj": "de Jersey",
+   "curs": [
+    [
+     "libra [de Jersey]",
+     "JEP"
+    ],
+    [
+     "libra [esterlina]",
+     "GBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Jersey",
+   "dem": "Jersey",
+   "adj": "of Jersey",
+   "curs": [
+    [
+     "Jersey pound",
+     "JEP"
+    ],
+    [
+     "pound sterling",
+     "GBP"
+    ]
+   ]
+  }
+ },
+ "DJ": {
+  "pt": {
+   "name": "Jibuti",
+   "dem": "jibutiano/a(s)",
+   "adj": "jibutiano/a(s)",
+   "curs": [
+    [
+     "franco jibutiano",
+     "DJF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Yibuti",
+   "dem": "yibutiano",
+   "adj": "yibutiano",
+   "curs": [
+    [
+     "franco [yibutiano]",
+     "DJF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Djibouti",
+   "dem": "of Djibouti",
+   "adj": "Djiboutian",
+   "curs": [
+    [
+     "Djibouti franc",
+     "DJF"
+    ]
+   ]
+  }
+ },
+ "JO": {
+  "pt": {
+   "name": "Jordânia",
+   "dem": "jordano/a(s)",
+   "adj": "jordano/a(s)",
+   "curs": [
+    [
+     "dinar jordano",
+     "JOD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Jordania",
+   "dem": "jordano",
+   "adj": "jordano",
+   "curs": [
+    [
+     "dinar [jordano]",
+     "JOD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Jordan",
+   "dem": "Jordanian",
+   "adj": "Jordanian",
+   "curs": [
+    [
+     "Jordanian dinar",
+     "JOD"
+    ]
+   ]
+  }
+ },
+ "KW": {
+  "pt": {
+   "name": "Koweit",
+   "dem": "koweitiano/a(s)",
+   "adj": "koweitiano/a(s)",
+   "curs": [
+    [
+     "dinar koweitiano",
+     "KWD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Kuwait",
+   "dem": "kuwaití",
+   "adj": "kuwaití",
+   "curs": [
+    [
+     "dinar [kuwaití]",
+     "KWD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Kuwait",
+   "dem": "Kuwaiti",
+   "adj": "Kuwaiti",
+   "curs": [
+    [
+     "Kuwaiti dinar",
+     "KWD"
+    ]
+   ]
+  }
+ },
+ "LA": {
+  "pt": {
+   "name": "Laos",
+   "dem": "laociano/a(s)",
+   "adj": "laociano/a(s)",
+   "curs": [
+    [
+     "kipe",
+     "LAK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Laos",
+   "dem": "laosiano",
+   "adj": "laosiano",
+   "curs": [
+    [
+     "kip",
+     "LAK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Laos",
+   "dem": "Lao; Laotian",
+   "adj": "Lao",
+   "curs": [
+    [
+     "kip (inv.)",
+     "LAK"
+    ]
+   ]
+  }
+ },
+ "LS": {
+  "pt": {
+   "name": "Lesoto",
+   "dem": "lesotiano/a(s)",
+   "adj": "lesotiano/a(s)",
+   "curs": [
+    [
+     "loti",
+     "LSL"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Lesoto",
+   "dem": "lesotense",
+   "adj": "lesotense",
+   "curs": [
+    [
+     "loti",
+     "LSL"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Lesotho",
+   "dem": "of Lesotho",
+   "adj": "Basotho",
+   "curs": [
+    [
+     "loti (pl. maloti)",
+     "LSL"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  }
+ },
+ "LV": {
+  "pt": {
+   "name": "Letónia",
+   "dem": "letão(letões)//letã(s)",
+   "adj": "letão(letões)//letã(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Letonia",
+   "dem": "letón",
+   "adj": "letón",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Latvia",
+   "dem": "Latvian",
+   "adj": "Latvian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "LB": {
+  "pt": {
+   "name": "Líbano",
+   "dem": "libanês (libaneses)//libanesa(s)",
+   "adj": "libanês (libaneses)//libanesa(s)",
+   "curs": [
+    [
+     "libra libanesa",
+     "LBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Líbano",
+   "dem": "libanés",
+   "adj": "libanés",
+   "curs": [
+    [
+     "libra [libanesa]",
+     "LBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Lebanon",
+   "dem": "Lebanese",
+   "adj": "Lebanese",
+   "curs": [
+    [
+     "Lebanese pound",
+     "LBP"
+    ]
+   ]
+  }
+ },
+ "LR": {
+  "pt": {
+   "name": "Libéria",
+   "dem": "liberiano/a(s)",
+   "adj": "liberiano/a(s)",
+   "curs": [
+    [
+     "dólar liberiano",
+     "LRD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Liberia",
+   "dem": "liberiano",
+   "adj": "liberiano",
+   "curs": [
+    [
+     "dólar [liberiano]",
+     "LRD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Liberia",
+   "dem": "Liberian",
+   "adj": "Liberian",
+   "curs": [
+    [
+     "Liberian dollar",
+     "LRD"
+    ]
+   ]
+  }
+ },
+ "LY": {
+  "pt": {
+   "name": "Líbia",
+   "dem": "líbio/a(s)",
+   "adj": "líbio/a(s)",
+   "curs": [
+    [
+     "dinar líbio",
+     "LYD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Libia",
+   "dem": "libio",
+   "adj": "libio",
+   "curs": [
+    [
+     "dinar [libio]",
+     "LYD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Libya",
+   "dem": "Libyan",
+   "adj": "Libyan",
+   "curs": [
+    [
+     "Libyan dinar",
+     "LYD"
+    ]
+   ]
+  }
+ },
+ "LI": {
+  "pt": {
+   "name": "Listenstaine",
+   "dem": "listenstainiano/a(s)",
+   "adj": "listenstainiano/a(s)",
+   "curs": [
+    [
+     "franco suíço",
+     "CHF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Liechtenstein",
+   "dem": "liechtensteiniano",
+   "adj": "liechtensteiniano",
+   "curs": [
+    [
+     "franco [suizo]",
+     "CHF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Liechtenstein",
+   "dem": "of Liechtenstein",
+   "adj": "Liechtensteiner",
+   "curs": [
+    [
+     "Swiss franc",
+     "CHF"
+    ]
+   ]
+  }
+ },
+ "LT": {
+  "pt": {
+   "name": "Lituânia",
+   "dem": "lituano/a(s)",
+   "adj": "lituano/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Lituania",
+   "dem": "lituano",
+   "adj": "lituano",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Lithuania",
+   "dem": "Lithuanian",
+   "adj": "Lithuanian",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "LU": {
+  "pt": {
+   "name": "Luxemburgo",
+   "dem": "luxemburguês (luxemburgueses)//luxemburguesa(s)",
+   "adj": "luxemburguês (luxemburgueses)//luxemburguesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Luxemburgo",
+   "dem": "luxemburgués",
+   "adj": "luxemburgués",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Luxembourg",
+   "dem": "Luxembourg; Luxembourgish",
+   "adj": "Luxembourger",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MO": {
+  "pt": {
+   "name": "Macau",
+   "dem": "macaense(s)",
+   "adj": "macaense(s)",
+   "curs": [
+    [
+     "pataca",
+     "MOP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Macao",
+   "dem": "macaense",
+   "adj": "macaense",
+   "curs": [
+    [
+     "pataca",
+     "MOP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Macao",
+   "dem": "Macanese",
+   "adj": "Macanese",
+   "curs": [
+    [
+     "pataca",
+     "MOP"
+    ]
+   ]
+  }
+ },
+ "MK": {
+  "pt": {
+   "name": "Macedónia do Norte",
+   "dem": "da República da Macedónia do Norte, da Macedónia do Norte",
+   "adj": "macedónio/cidadão da República da Macedónia do Norte",
+   "curs": [
+    [
+     "denar",
+     "MKD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Macedonia del Norte",
+   "dem": "de la República de Macedonia del Norte, de Macedonia del Norte",
+   "adj": "macedonio/ciudadano de la República de Macedonia del Norte",
+   "curs": [
+    [
+     "denar",
+     "MKD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "North Macedonia",
+   "dem": "of the Republic of North Macedonia, of North Macedonia",
+   "adj": "Macedonian / citizen of the Republic of North Macedonia",
+   "curs": [
+    [
+     "denar (pl. denars)",
+     "MKD"
+    ]
+   ]
+  }
+ },
+ "MG": {
+  "pt": {
+   "name": "Madagáscar",
+   "dem": "malgaxe(s)",
+   "adj": "malgaxe(s)",
+   "curs": [
+    [
+     "ariari",
+     "MGA"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Madagascar",
+   "dem": "malgache",
+   "adj": "malgache",
+   "curs": [
+    [
+     "ariari",
+     "MGA"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Madagascar",
+   "dem": "Malagasy",
+   "adj": "Malagasy",
+   "curs": [
+    [
+     "ariary",
+     "MGA"
+    ]
+   ]
+  }
+ },
+ "YT": {
+  "pt": {
+   "name": "Maiote",
+   "dem": "maiotense",
+   "adj": "maiotense",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mayotte",
+   "dem": "mayotense",
+   "adj": "mayotense",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mayotte",
+   "dem": "Mahoran",
+   "adj": "Mahorais",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MY": {
+  "pt": {
+   "name": "Malásia",
+   "dem": "malaio/a(s)",
+   "adj": "malaio/a(s)",
+   "curs": [
+    [
+     "ringgit",
+     "MYR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Malasia",
+   "dem": "malasio",
+   "adj": "malasio",
+   "curs": [
+    [
+     "ringit",
+     "MYR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Malaysia",
+   "dem": "Malaysian",
+   "adj": "Malaysian",
+   "curs": [
+    [
+     "ringgit (inv.)",
+     "MYR"
+    ]
+   ]
+  }
+ },
+ "MW": {
+  "pt": {
+   "name": "Maláui",
+   "dem": "malauiano/a(s)",
+   "adj": "malauiano/a(s)",
+   "curs": [
+    [
+     "kwacha malauiano",
+     "MWK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Malaui",
+   "dem": "malauí",
+   "adj": "malauí",
+   "curs": [
+    [
+     "kuacha [malauí]",
+     "MWK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Malawi",
+   "dem": "Malawian",
+   "adj": "Malawian",
+   "curs": [
+    [
+     "Malawian kwacha (inv.)",
+     "MWK"
+    ]
+   ]
+  }
+ },
+ "MV": {
+  "pt": {
+   "name": "Maldivas",
+   "dem": "maldivo/a(s)",
+   "adj": "maldivo/a(s)",
+   "curs": [
+    [
+     "rupia maldiva",
+     "MVR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Maldivas",
+   "dem": "maldivo",
+   "adj": "maldivo",
+   "curs": [
+    [
+     "rufiya",
+     "MVR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Maldives",
+   "dem": "Maldivian",
+   "adj": "Maldivian",
+   "curs": [
+    [
+     "rufiyaa",
+     "MVR"
+    ]
+   ]
+  }
+ },
+ "ML": {
+  "pt": {
+   "name": "Mali",
+   "dem": "maliano/a(s)",
+   "adj": "maliano/a(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mali",
+   "dem": "malí",
+   "adj": "malí",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mali",
+   "dem": "Malian",
+   "adj": "Malian",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "MT": {
+  "pt": {
+   "name": "Malta",
+   "dem": "maltês (malteses)//maltesa(s)",
+   "adj": "maltês (malteses)//maltesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Malta",
+   "dem": "maltés",
+   "adj": "maltés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Malta",
+   "dem": "Maltese",
+   "adj": "Maltese",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MA": {
+  "pt": {
+   "name": "Marrocos",
+   "dem": "marroquino/a(s)",
+   "adj": "marroquino/a(s)",
+   "curs": [
+    [
+     "dirame marroquino",
+     "MAD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Marruecos",
+   "dem": "marroquí",
+   "adj": "marroquí",
+   "curs": [
+    [
+     "dírham [marroquí]",
+     "MAD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Morocco",
+   "dem": "Moroccan",
+   "adj": "Moroccan",
+   "curs": [
+    [
+     "Moroccan dirham",
+     "MAD"
+    ]
+   ]
+  }
+ },
+ "MQ": {
+  "pt": {
+   "name": "Martinica",
+   "dem": "martinicano/a(s)",
+   "adj": "martinicano/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Martinica",
+   "dem": "martiniqués",
+   "adj": "martiniqués",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Martinique",
+   "dem": "Martinican",
+   "adj": "Martinican",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MU": {
+  "pt": {
+   "name": "Maurícia",
+   "dem": "mauriciano/a(s)",
+   "adj": "mauriciano/a(s)",
+   "curs": [
+    [
+     "rupia mauriciana",
+     "MUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mauricio",
+   "dem": "mauriciano",
+   "adj": "mauriciano",
+   "curs": [
+    [
+     "rupia [mauriciana]",
+     "MUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mauritius",
+   "dem": "Mauritian",
+   "adj": "Mauritian",
+   "curs": [
+    [
+     "Mauritian rupee",
+     "MUR"
+    ]
+   ]
+  }
+ },
+ "MR": {
+  "pt": {
+   "name": "Mauritânia",
+   "dem": "mauritano/a(s)",
+   "adj": "mauritano/a(s)",
+   "curs": [
+    [
+     "ouguiya",
+     "MRU"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mauritania",
+   "dem": "mauritano",
+   "adj": "mauritano",
+   "curs": [
+    [
+     "uguiya",
+     "MRU"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mauritania",
+   "dem": "Mauritanian",
+   "adj": "Mauritanian",
+   "curs": [
+    [
+     "ouguiya",
+     "MRU"
+    ]
+   ]
+  }
+ },
+ "MX": {
+  "pt": {
+   "name": "México",
+   "dem": "mexicano/a(s)",
+   "adj": "mexicano/a(s)",
+   "curs": [
+    [
+     "peso mexicano",
+     "MXN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "México",
+   "dem": "mexicano",
+   "adj": "mexicano",
+   "curs": [
+    [
+     "peso [mexicano]",
+     "MXN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mexico",
+   "dem": "Mexican",
+   "adj": "Mexican",
+   "curs": [
+    [
+     "Mexican peso",
+     "MXN"
+    ]
+   ]
+  }
+ },
+ "MM": {
+  "pt": {
+   "name": "Mianmar/Birmânia",
+   "dem": "de Mianmar/Birmânia",
+   "adj": "de Mianmar/Birmânia",
+   "curs": [
+    [
+     "kyat",
+     "MMK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Myanmar/Birmania",
+   "dem": "de Myanmar/Birmania",
+   "adj": "de Myanmar/Birmania",
+   "curs": [
+    [
+     "kiat",
+     "MMK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Myanmar/Burma",
+   "dem": "of Myanmar/ Burma",
+   "adj": "of Myanmar/ Burma",
+   "curs": [
+    [
+     "kyat",
+     "MMK"
+    ]
+   ]
+  }
+ },
+ "FM": {
+  "pt": {
+   "name": "Micronésia",
+   "dem": "dos Estados Federados da Micronésia",
+   "adj": "dos Estados Federados da Micronésia",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Micronesia",
+   "dem": "micronesio",
+   "adj": "micronesio",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Micronesia",
+   "dem": "of Micronesia",
+   "adj": "Micronesian",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "MZ": {
+  "pt": {
+   "name": "Moçambique",
+   "dem": "moçambicano/a(s)",
+   "adj": "moçambicano/a(s)",
+   "curs": [
+    [
+     "metical",
+     "MZN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mozambique",
+   "dem": "mozambiqueño",
+   "adj": "mozambiqueño",
+   "curs": [
+    [
+     "metical",
+     "MZN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mozambique",
+   "dem": "Mozambican",
+   "adj": "Mozambican",
+   "curs": [
+    [
+     "metical (pl. meticais)",
+     "MZN"
+    ]
+   ]
+  }
+ },
+ "MD": {
+  "pt": {
+   "name": "Moldávia",
+   "dem": "moldavo/a(s)",
+   "adj": "moldavo/a(s)",
+   "curs": [
+    [
+     "leu moldavo",
+     "MDL"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Moldavia",
+   "dem": "moldavo",
+   "adj": "moldavo",
+   "curs": [
+    [
+     "leu [moldavo]",
+     "MDL"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Moldova",
+   "dem": "Moldovan",
+   "adj": "Moldovan",
+   "curs": [
+    [
+     "Moldovan leu (pl. lei)",
+     "MDL"
+    ]
+   ]
+  }
+ },
+ "MC": {
+  "pt": {
+   "name": "Mónaco",
+   "dem": "monegasco/a(s)",
+   "adj": "monegasco/a(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mónaco",
+   "dem": "monegasco",
+   "adj": "monegasco",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Monaco",
+   "dem": "Monegasque",
+   "adj": "Monegasque",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MN": {
+  "pt": {
+   "name": "Mongólia",
+   "dem": "mongol (mongóis)",
+   "adj": "mongol (mongóis)",
+   "curs": [
+    [
+     "tugrik",
+     "MNT"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Mongolia",
+   "dem": "mongol",
+   "adj": "mongol",
+   "curs": [
+    [
+     "tugrik",
+     "MNT"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Mongolia",
+   "dem": "Mongolian",
+   "adj": "Mongolian",
+   "curs": [
+    [
+     "tugrik",
+     "MNT"
+    ]
+   ]
+  }
+ },
+ "MS": {
+  "pt": {
+   "name": "Monserrate",
+   "dem": "monserratense(s)",
+   "adj": "monserratense(s)",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Montserrat",
+   "dem": "montserratense",
+   "adj": "montserratense",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Montserrat",
+   "dem": "Montserratian",
+   "adj": "Montserratian",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "ME": {
+  "pt": {
+   "name": "Montenegro",
+   "dem": "montenegrino/a (s)",
+   "adj": "montenegrino/a (s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Montenegro",
+   "dem": "montenegrino",
+   "adj": "montenegrino",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Montenegro",
+   "dem": "Montenegrin",
+   "adj": "Montenegrin",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "NA": {
+  "pt": {
+   "name": "Namíbia",
+   "dem": "namibiano/a(s)",
+   "adj": "namibiano/a(s)",
+   "curs": [
+    [
+     "dólar namibiano",
+     "NAD"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Namibia",
+   "dem": "namibio",
+   "adj": "namibio",
+   "curs": [
+    [
+     "dólar [namibio]",
+     "NAD"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Namibia",
+   "dem": "Namibian",
+   "adj": "Namibian",
+   "curs": [
+    [
+     "Namibian dollar",
+     "NAD"
+    ],
+    [
+     "rand",
+     "ZAR"
+    ]
+   ]
+  }
+ },
+ "NR": {
+  "pt": {
+   "name": "Nauru",
+   "dem": "nauruano/a(s)",
+   "adj": "nauruano/a(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nauru",
+   "dem": "nauruano",
+   "adj": "nauruano",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Nauru",
+   "dem": "Nauruan",
+   "adj": "Nauruan",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "NP": {
+  "pt": {
+   "name": "Nepal",
+   "dem": "nepalês (nepaleses)//nepalesa(s)",
+   "adj": "nepalês (nepaleses)//nepalesa(s)",
+   "curs": [
+    [
+     "rupia nepalesa",
+     "NPR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nepal",
+   "dem": "nepalés",
+   "adj": "nepalés",
+   "curs": [
+    [
+     "rupia [nepalesa]",
+     "NPR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Nepal",
+   "dem": "Nepalese",
+   "adj": "Nepalese",
+   "curs": [
+    [
+     "Nepalese rupee",
+     "NPR"
+    ]
+   ]
+  }
+ },
+ "NI": {
+  "pt": {
+   "name": "Nicarágua",
+   "dem": "nicaraguense(s)",
+   "adj": "nicaraguense(s)",
+   "curs": [
+    [
+     "córdoba ouro",
+     "NIO"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nicaragua",
+   "dem": "nicaragüense",
+   "adj": "nicaragüense",
+   "curs": [
+    [
+     "córdoba oro",
+     "NIO"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Nicaragua",
+   "dem": "Nicaraguan",
+   "adj": "Nicaraguan",
+   "curs": [
+    [
+     "córdoba oro",
+     "NIO"
+    ]
+   ]
+  }
+ },
+ "NE": {
+  "pt": {
+   "name": "Níger",
+   "dem": "nigerino/a(s)",
+   "adj": "nigerino/a(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Níger",
+   "dem": "nigerino",
+   "adj": "nigerino",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Niger",
+   "dem": "Nigerien",
+   "adj": "Nigerien",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "NG": {
+  "pt": {
+   "name": "Nigéria",
+   "dem": "nigeriano/a(s)",
+   "adj": "nigeriano/a(s)",
+   "curs": [
+    [
+     "naira",
+     "NGN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nigeria",
+   "dem": "nigeriano",
+   "adj": "nigeriano",
+   "curs": [
+    [
+     "naira",
+     "NGN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Nigeria",
+   "dem": "Nigerian",
+   "adj": "Nigerian",
+   "curs": [
+    [
+     "naira (inv.)",
+     "NGN"
+    ]
+   ]
+  }
+ },
+ "NU": {
+  "pt": {
+   "name": "Niuê",
+   "dem": "niueano/a(s)",
+   "adj": "niueano/a(s)",
+   "curs": [
+    [
+     "dólar neozelandês",
+     "NZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Niue",
+   "dem": "niueño",
+   "adj": "niueño",
+   "curs": [
+    [
+     "dólar [neozelandés]",
+     "NZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Niue",
+   "dem": "Niuean",
+   "adj": "Niuean",
+   "curs": [
+    [
+     "New Zealand dollar",
+     "NZD"
+    ]
+   ]
+  }
+ },
+ "NO": {
+  "pt": {
+   "name": "Noruega",
+   "dem": "norueguês (noruegueses)//norueguesa(s)",
+   "adj": "norueguês (noruegueses)//norueguesa(s)",
+   "curs": [
+    [
+     "coroa norueguesa",
+     "NOK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Noruega",
+   "dem": "noruego",
+   "adj": "noruego",
+   "curs": [
+    [
+     "corona [noruega]",
+     "NOK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Norway",
+   "dem": "Norwegian",
+   "adj": "Norwegian",
+   "curs": [
+    [
+     "Norwegian krone (pl. kroner)",
+     "NOK"
+    ]
+   ]
+  }
+ },
+ "NC": {
+  "pt": {
+   "name": "Nova Caledónia",
+   "dem": "neocaledónio/a(s)",
+   "adj": "neocaledónio/a(s)",
+   "curs": [
+    [
+     "franco CFP",
+     "XPF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nueva Caledonia",
+   "dem": "neocaledonio",
+   "adj": "neocaledonio",
+   "curs": [
+    [
+     "franco [CFP]",
+     "XPF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "New Caledonia",
+   "dem": "New Caledonian",
+   "adj": "New Caledonian",
+   "curs": [
+    [
+     "CFP franc",
+     "XPF"
+    ]
+   ]
+  }
+ },
+ "NZ": {
+  "pt": {
+   "name": "Nova Zelândia",
+   "dem": "neozelandês (neozelandeses)//neozelandesa(s)",
+   "adj": "neozelandês (neozelandeses)//neozelandesa(s)",
+   "curs": [
+    [
+     "dólar neozelandês",
+     "NZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Nueva Zelanda",
+   "dem": "neozelandés",
+   "adj": "neozelandés",
+   "curs": [
+    [
+     "dólar [neozelandés]",
+     "NZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "New Zealand",
+   "dem": "of New Zealand",
+   "adj": "New Zealander",
+   "curs": [
+    [
+     "New Zealand dollar",
+     "NZD"
+    ]
+   ]
+  }
+ },
+ "OM": {
+  "pt": {
+   "name": "Omã",
+   "dem": "omanense(s)",
+   "adj": "omanense(s)",
+   "curs": [
+    [
+     "rial omanense",
+     "OMR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Omán",
+   "dem": "omaní",
+   "adj": "omaní",
+   "curs": [
+    [
+     "rial [omaní]",
+     "OMR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Oman",
+   "dem": "Omani",
+   "adj": "Omani",
+   "curs": [
+    [
+     "Omani rial",
+     "OMR"
+    ]
+   ]
+  }
+ },
+ "NL": {
+  "pt": {
+   "name": "Países Baixos",
+   "dem": "neerlandês (neerlandeses)//neerlandesa(s)",
+   "adj": "neerlandês (neerlandeses)//neerlandesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Países Bajos",
+   "dem": "neerlandés",
+   "adj": "neerlandés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Netherlands",
+   "dem": "Netherlands; Dutch",
+   "adj": "Dutchman; Dutchwoman; Netherlander",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "PW": {
+  "pt": {
+   "name": "Palau",
+   "dem": "palauano/a(s)",
+   "adj": "palauano/a(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Palaos",
+   "dem": "palauano",
+   "adj": "palauano",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Palau",
+   "dem": "Palauan",
+   "adj": "Palauan",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "PA": {
+  "pt": {
+   "name": "Panamá",
+   "dem": "panamense(s)",
+   "adj": "panamense(s)",
+   "curs": [
+    [
+     "balboa",
+     "PAB"
+    ],
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Panamá",
+   "dem": "panameño",
+   "adj": "panameño",
+   "curs": [
+    [
+     "balboa",
+     "PAB"
+    ],
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Panama",
+   "dem": "Panamanian",
+   "adj": "Panamanian",
+   "curs": [
+    [
+     "balboa",
+     "PAB"
+    ],
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "PG": {
+  "pt": {
+   "name": "Papua-Nova Guiné",
+   "dem": "papua(s)",
+   "adj": "papua(s)",
+   "curs": [
+    [
+     "kina",
+     "PGK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Papúa Nueva Guinea",
+   "dem": "papú",
+   "adj": "papú",
+   "curs": [
+    [
+     "kina",
+     "PGK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Papua New Guinea",
+   "dem": "of Papua New Guinea",
+   "adj": "Papua New Guinean",
+   "curs": [
+    [
+     "kina (inv.)",
+     "PGK"
+    ]
+   ]
+  }
+ },
+ "PK": {
+  "pt": {
+   "name": "Paquistão",
+   "dem": "paquistanês (paquistaneses)//paquistanesa(s)",
+   "adj": "paquistanês (paquistaneses)//paquistanesa(s)",
+   "curs": [
+    [
+     "rupia paquistanesa",
+     "PKR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Pakistán",
+   "dem": "pakistaní",
+   "adj": "pakistaní",
+   "curs": [
+    [
+     "rupia [pakistaní]",
+     "PKR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Pakistan",
+   "dem": "Pakistani",
+   "adj": "Pakistani",
+   "curs": [
+    [
+     "Pakistani rupee",
+     "PKR"
+    ]
+   ]
+  }
+ },
+ "PY": {
+  "pt": {
+   "name": "Paraguai",
+   "dem": "paraguaio/a(s)",
+   "adj": "paraguaio/a(s)",
+   "curs": [
+    [
+     "guarani",
+     "PYG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Paraguay",
+   "dem": "paraguayo",
+   "adj": "paraguayo",
+   "curs": [
+    [
+     "guaraní",
+     "PYG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Paraguay",
+   "dem": "Paraguayan",
+   "adj": "Paraguayan",
+   "curs": [
+    [
+     "guaraní (pl. guaraníes)",
+     "PYG"
+    ]
+   ]
+  }
+ },
+ "PE": {
+  "pt": {
+   "name": "Peru",
+   "dem": "peruano/a(s)",
+   "adj": "peruano/a(s)",
+   "curs": [
+    [
+     "sol",
+     "PEN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Perú",
+   "dem": "peruano",
+   "adj": "peruano",
+   "curs": [
+    [
+     "sol",
+     "PEN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Peru",
+   "dem": "Peruvian",
+   "adj": "Peruvian",
+   "curs": [
+    [
+     "sol",
+     "PEN"
+    ]
+   ]
+  }
+ },
+ "PF": {
+  "pt": {
+   "name": "Polinésia Francesa",
+   "dem": "da Polinésia Francesa",
+   "adj": "da Polinésia Francesa",
+   "curs": [
+    [
+     "franco CFP",
+     "XPF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Polinesia Francesa",
+   "dem": "polinesio",
+   "adj": "polinesio",
+   "curs": [
+    [
+     "franco [CFP]",
+     "XPF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "French Polynesia",
+   "dem": "Polynesian",
+   "adj": "Polynesian",
+   "curs": [
+    [
+     "CFP franc",
+     "XPF"
+    ]
+   ]
+  }
+ },
+ "PL": {
+  "pt": {
+   "name": "Polónia",
+   "dem": "polaco/a(s)",
+   "adj": "polaco/a(s)",
+   "curs": [
+    [
+     "zlóti",
+     "PLN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Polonia",
+   "dem": "polaco",
+   "adj": "polaco",
+   "curs": [
+    [
+     "esloti",
+     "PLN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Poland",
+   "dem": "Polish",
+   "adj": "Pole",
+   "curs": [
+    [
+     "zloty (pl. zlotys)",
+     "PLN"
+    ]
+   ]
+  }
+ },
+ "PR": {
+  "pt": {
+   "name": "Porto Rico",
+   "dem": "porto-riquenho/a(s)",
+   "adj": "porto-riquenho/a(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Puerto Rico",
+   "dem": "puertorriqueño",
+   "adj": "puertorriqueño",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Puerto Rico",
+   "dem": "Puerto Rican",
+   "adj": "Puerto Rican",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "PT": {
+  "pt": {
+   "name": "Portugal",
+   "dem": "português (portugueses)//portuguesa(s)",
+   "adj": "português (portugueses)//portuguesa(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Portugal",
+   "dem": "portugués",
+   "adj": "portugués",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Portugal",
+   "dem": "Portuguese",
+   "adj": "Portuguese",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "KE": {
+  "pt": {
+   "name": "Quénia",
+   "dem": "queniano/a(s)",
+   "adj": "queniano/a(s)",
+   "curs": [
+    [
+     "xelim queniano",
+     "KES"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Kenia",
+   "dem": "keniata",
+   "adj": "keniata",
+   "curs": [
+    [
+     "chelín [keniata]",
+     "KES"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Kenya",
+   "dem": "Kenyan",
+   "adj": "Kenyan",
+   "curs": [
+    [
+     "Kenyan shilling",
+     "KES"
+    ]
+   ]
+  }
+ },
+ "KG": {
+  "pt": {
+   "name": "Quirguistão",
+   "dem": "quirguiz(es)",
+   "adj": "quirguiz(es)",
+   "curs": [
+    [
+     "som",
+     "KGS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Kirguistán",
+   "dem": "kirguís",
+   "adj": "kirguís",
+   "curs": [
+    [
+     "som",
+     "KGS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Kyrgyzstan",
+   "dem": "Kyrgyz",
+   "adj": "Kyrgyz",
+   "curs": [
+    [
+     "som",
+     "KGS"
+    ]
+   ]
+  }
+ },
+ "KI": {
+  "pt": {
+   "name": "Quiribáti",
+   "dem": "quiribatiano/a(s)",
+   "adj": "quiribatiano/a(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Kiribati",
+   "dem": "kiribatiano",
+   "adj": "kiribatiano",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Kiribati",
+   "dem": "Kiribatian",
+   "adj": "Kiribatian",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "UK": {
+  "pt": {
+   "name": "Reino Unido",
+   "dem": "britânico/a(s)",
+   "adj": "britânico/a(s)",
+   "curs": [
+    [
+     "libra esterlina",
+     "GBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Reino Unido",
+   "dem": "británico",
+   "adj": "británico",
+   "curs": [
+    [
+     "libra [esterlina]",
+     "GBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "United Kingdom",
+   "dem": "British",
+   "adj": "Briton",
+   "curs": [
+    [
+     "pound sterling",
+     "GBP"
+    ]
+   ]
+  }
+ },
+ "CF": {
+  "pt": {
+   "name": "República Centro‑Africana",
+   "dem": "centro--africano/a(s)",
+   "adj": "centro--africano/a(s)",
+   "curs": [
+    [
+     "franco CFA (BEAC)",
+     "XAF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "República Centroafricana",
+   "dem": "centroafricano",
+   "adj": "centroafricano",
+   "curs": [
+    [
+     "franco [CFA (BEAC)]",
+     "XAF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Central African Republic",
+   "dem": "Central African",
+   "adj": "Central African",
+   "curs": [
+    [
+     "CFA franc (BEAC)",
+     "XAF"
+    ]
+   ]
+  }
+ },
+ "CD": {
+  "pt": {
+   "name": "República Democrática do Congo",
+   "dem": "da República Democrática do Congo",
+   "adj": "da República Democrática do Congo",
+   "curs": [
+    [
+     "franco congolês",
+     "CDF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "República Democrática del Congo",
+   "dem": "congoleño",
+   "adj": "congoleño",
+   "curs": [
+    [
+     "franco [congoleño]",
+     "CDF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Democratic Republic of the Congo",
+   "dem": "of the Democratic Republic of the Congo",
+   "adj": "of the Democratic Republic of the Congo",
+   "curs": [
+    [
+     "Congolese franc",
+     "CDF"
+    ]
+   ]
+  }
+ },
+ "DO": {
+  "pt": {
+   "name": "República Dominicana",
+   "dem": "dominicano/a(s)",
+   "adj": "dominicano/a(s)",
+   "curs": [
+    [
+     "peso dominicano",
+     "DOP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "República Dominicana",
+   "dem": "dominicano",
+   "adj": "dominicano",
+   "curs": [
+    [
+     "peso [dominicano]",
+     "DOP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Dominican Republic",
+   "dem": "Dominican",
+   "adj": "Dominican",
+   "curs": [
+    [
+     "Dominican peso",
+     "DOP"
+    ]
+   ]
+  }
+ },
+ "RE": {
+  "pt": {
+   "name": "Reunião",
+   "dem": "reunionense(s)",
+   "adj": "reunionense(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Reunión",
+   "dem": "reunionés",
+   "adj": "reunionés",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Réunion",
+   "dem": "Reunionese",
+   "adj": "Reunionese",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "RO": {
+  "pt": {
+   "name": "Roménia",
+   "dem": "romeno/a(s)",
+   "adj": "romeno/a(s)",
+   "curs": [
+    [
+     "leu romeno",
+     "RON"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Rumanía",
+   "dem": "rumano",
+   "adj": "rumano",
+   "curs": [
+    [
+     "leu [rumano]",
+     "RON"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Romania",
+   "dem": "Romanian",
+   "adj": "Romanian",
+   "curs": [
+    [
+     "Romanian leu (pl. lei)",
+     "RON"
+    ]
+   ]
+  }
+ },
+ "RW": {
+  "pt": {
+   "name": "Ruanda",
+   "dem": "ruandês (ruandeses)//ruandesa(s)",
+   "adj": "ruandês (ruandeses)//ruandesa(s)",
+   "curs": [
+    [
+     "franco ruandês",
+     "RWF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Ruanda",
+   "dem": "ruandés",
+   "adj": "ruandés",
+   "curs": [
+    [
+     "franco [ruandés]",
+     "RWF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Rwanda",
+   "dem": "Rwandan; Rwandese",
+   "adj": "Rwandan; Rwandese",
+   "curs": [
+    [
+     "Rwandese franc",
+     "RWF"
+    ]
+   ]
+  }
+ },
+ "RU": {
+  "pt": {
+   "name": "Rússia",
+   "dem": "russo/a(s)",
+   "adj": "russo/a(s)",
+   "curs": [
+    [
+     "rublo",
+     "RUB"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Rusia",
+   "dem": "ruso",
+   "adj": "ruso",
+   "curs": [
+    [
+     "rublo [ruso]",
+     "RUB"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Russia",
+   "dem": "Russian",
+   "adj": "Russian",
+   "curs": [
+    [
+     "Russian rouble",
+     "RUB"
+    ]
+   ]
+  }
+ },
+ "SV": {
+  "pt": {
+   "name": "Salvador",
+   "dem": "salvadorenho/a(s)",
+   "adj": "salvadorenho/a(s)",
+   "curs": [
+    [
+     "colón salvadorenho",
+     "SVC"
+    ],
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "El Salvador",
+   "dem": "salvadoreño",
+   "adj": "salvadoreño",
+   "curs": [
+    [
+     "colón [salvadoreño]",
+     "SVC"
+    ],
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "El Salvador",
+   "dem": "Salvadorian; Salvadoran",
+   "adj": "Salvadorian; Salvadoran",
+   "curs": [
+    [
+     "Salvadorian colón (pl. colones)",
+     "SVC"
+    ],
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "WS": {
+  "pt": {
+   "name": "Samoa",
+   "dem": "do Estado Independente de Samoa",
+   "adj": "do Estado Independente de Samoa",
+   "curs": [
+    [
+     "tala",
+     "WST"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Samoa",
+   "dem": "samoano",
+   "adj": "samoano",
+   "curs": [
+    [
+     "tala",
+     "WST"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Samoa",
+   "dem": "Samoan",
+   "adj": "Samoan",
+   "curs": [
+    [
+     "tala (inv.)",
+     "WST"
+    ]
+   ]
+  }
+ },
+ "AS": {
+  "pt": {
+   "name": "Samoa Americana",
+   "dem": "da Samoa Americana",
+   "adj": "da Samoa Americana",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Samoa Americana",
+   "dem": "de Samoa Americana",
+   "adj": "de Samoa Americana",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "American Samoa",
+   "dem": "American Samoan",
+   "adj": "American Samoan",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "SH": {
+  "pt": {
+   "name": "Santa Helena, Ascensão e Tristão da Cunha",
+   "dem": "de Santa Helena, Ascensão e Tristão da Cunha",
+   "adj": "de Santa Helena, Ascensão e Tristão da Cunha",
+   "curs": [
+    [
+     "libra santa‑helenense (Santa Helena e Ascensão)",
+     "SHP"
+    ],
+    [
+     "libra esterlina (Ascensão e Tristão da Cunha)",
+     "GBP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Santa Elena, Ascensión y Tristán da Cunha",
+   "dem": "de Santa Elena, Ascensión y Tristán da Cunha",
+   "adj": "de Santa Elena, Ascensión y Tristán da Cunha",
+   "curs": [
+    [
+     "libra [de Santa Elena] (Santa Elena y Ascensión)",
+     "SHP"
+    ],
+    [
+     "libra [esterlina] (Ascensión y Tristán da Cunha)",
+     "GBP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Helena, Ascension and Tristan da Cunha",
+   "dem": "of Saint Helena, Ascension and Tristan da Cunha",
+   "adj": "of Saint Helena, Ascension and Tristan da Cunha",
+   "curs": [
+    [
+     "Saint Helena pound (Saint Helena and Ascension)",
+     "SHP"
+    ],
+    [
+     "pound sterling (Ascension and Tristan da Cunha)",
+     "GBP"
+    ]
+   ]
+  }
+ },
+ "LC": {
+  "pt": {
+   "name": "Santa Lúcia",
+   "dem": "santa-luciense(s)",
+   "adj": "santa-luciense(s)",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Santa Lucía",
+   "dem": "santalucense",
+   "adj": "santalucense",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Lucia",
+   "dem": "Saint Lucian",
+   "adj": "Saint Lucian",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "VA": {
+  "pt": {
+   "name": "Santa Sé/Estado da Cidade do Vaticano",
+   "dem": "da Santa Sé/do Estado da Cidade do Vaticano",
+   "adj": "da Santa Sé/do Estado da Cidade do Vaticano",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Santa Sede",
+   "dem": "de la Santa Sede",
+   "adj": "de la Santa Sede",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "the Holy See/ Vatican City State",
+   "dem": "of the Holy See/of the Vatican",
+   "adj": "of the Holy See/of the Vatican",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "BL": {
+  "pt": {
+   "name": "São Bartolomeu",
+   "dem": "são--bartolomeense(s)",
+   "adj": "são--bartolomeense(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Bartolomé",
+   "dem": "de San Bartolomé",
+   "adj": "de San Bartolomé",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Barthélemy",
+   "dem": "of Saint Barthélemy",
+   "adj": "of Saint Barthélemy",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "KN": {
+  "pt": {
+   "name": "São Cristóvão e Neves",
+   "dem": "de São Cristóvão e Neves",
+   "adj": "de São Cristóvão e Neves",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Cristóbal y Nieves",
+   "dem": "sancristobaleño",
+   "adj": "sancristobaleño",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Kitts and Nevis",
+   "dem": "of Saint Kitts and Nevis",
+   "adj": "Kittsian; Nevisian",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "SM": {
+  "pt": {
+   "name": "São Marinho",
+   "dem": "são-marinhense(s)",
+   "adj": "são-marinhense(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Marino",
+   "dem": "sanmarinense",
+   "adj": "sanmarinense",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "San Marino",
+   "dem": "of San Marino",
+   "adj": "San Marinese",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "MF": {
+  "pt": {
+   "name": "São Martinho",
+   "dem": "são--martinhense(s)",
+   "adj": "são--martinhense(s)",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Martín",
+   "dem": "de San Martín",
+   "adj": "de San Martín",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Martin",
+   "dem": "of Saint Martin",
+   "adj": "of Saint Martin",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "SX": {
+  "pt": {
+   "name": "São Martinho",
+   "dem": "são--martinhense(s)",
+   "adj": "são--martinhense(s)",
+   "curs": [
+    [
+     "florim caribenho",
+     "XCG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Martín",
+   "dem": "de San Martín",
+   "adj": "de San Martín",
+   "curs": [
+    [
+     "florín del Caribe",
+     "XCG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Sint Maarten",
+   "dem": "of Sint Maarten",
+   "adj": "Sint Maartener",
+   "curs": [
+    [
+     "Caribbean guilder",
+     "XCG"
+    ]
+   ]
+  }
+ },
+ "PM": {
+  "pt": {
+   "name": "São Pedro e Miquelão",
+   "dem": "de São Pedro e Miquelão",
+   "adj": "de São Pedro e Miquelão",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Pedro y Miquelón",
+   "dem": "de San Pedro y Miquelón",
+   "adj": "de San Pedro y Miquelón",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Pierre and Miquelon",
+   "dem": "of Saint Pierre and Miquelon",
+   "adj": "St-Pierrais; Miquelonnais",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "ST": {
+  "pt": {
+   "name": "São Tomé e Príncipe",
+   "dem": "são-tomense(s)",
+   "adj": "são-tomense(s)",
+   "curs": [
+    [
+     "dobra",
+     "STN"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Santo Tomé y Príncipe",
+   "dem": "santotomense",
+   "adj": "santotomense",
+   "curs": [
+    [
+     "dobra",
+     "STN"
+    ]
+   ]
+  },
+  "en": {
+   "name": "São Tomé and Príncipe",
+   "dem": "of São Tomé and Príncipe",
+   "adj": "São Toméan",
+   "curs": [
+    [
+     "dobra",
+     "STN"
+    ]
+   ]
+  }
+ },
+ "VC": {
+  "pt": {
+   "name": "São Vicente e Granadinas",
+   "dem": "de São Vicente e Granadinas",
+   "adj": "de São Vicente e Granadinas",
+   "curs": [
+    [
+     "dólar das Caraíbas Orientais",
+     "XCD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "San Vicente y las Granadinas",
+   "dem": "sanvicentino",
+   "adj": "sanvicentino",
+   "curs": [
+    [
+     "dólar [del Caribe Oriental]",
+     "XCD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Saint Vincent and the Grenadines",
+   "dem": "Vincentian; of Saint Vincent and the Grenadines",
+   "adj": "Vincentian",
+   "curs": [
+    [
+     "East Caribbean dollar",
+     "XCD"
+    ]
+   ]
+  }
+ },
+ "EH": {
+  "pt": {
+   "name": "Sara Ocidental",
+   "dem": "sarauí(s)",
+   "adj": "sarauí(s)",
+   "curs": [
+    [
+     "dirame marroquino",
+     "MAD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sáhara Occidental",
+   "dem": "saharaui",
+   "adj": "saharaui",
+   "curs": [
+    [
+     "dírham [marroquí]",
+     "MAD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Western Sahara",
+   "dem": "Sahrawi",
+   "adj": "Sahrawi",
+   "curs": [
+    [
+     "Moroccan dirham",
+     "MAD"
+    ]
+   ]
+  }
+ },
+ "SC": {
+  "pt": {
+   "name": "Seicheles",
+   "dem": "seichelense(s)",
+   "adj": "seichelense(s)",
+   "curs": [
+    [
+     "rupia seichelense",
+     "SCR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Seychelles",
+   "dem": "seychellense",
+   "adj": "seychellense",
+   "curs": [
+    [
+     "rupia [seychellense]",
+     "SCR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Seychelles",
+   "dem": "of Seychelles",
+   "adj": "Seychellois",
+   "curs": [
+    [
+     "Seychelles rupee",
+     "SCR"
+    ]
+   ]
+  }
+ },
+ "SN": {
+  "pt": {
+   "name": "Senegal",
+   "dem": "senegalês (senegaleses)//senegalesa(s)",
+   "adj": "senegalês (senegaleses)//senegalesa(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Senegal",
+   "dem": "senegalés",
+   "adj": "senegalés",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Senegal",
+   "dem": "Senegalese",
+   "adj": "Senegalese",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "LK": {
+  "pt": {
+   "name": "Seri Lanca",
+   "dem": "cingalês (cingaleses)//cingalesa(s)",
+   "adj": "cingalês (cingaleses)//cingalesa(s)",
+   "curs": [
+    [
+     "rupia cingalesa",
+     "LKR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sri Lanka",
+   "dem": "esrilanqués",
+   "adj": "esrilanqués",
+   "curs": [
+    [
+     "rupia [esrilanquesa]",
+     "LKR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Sri Lanka",
+   "dem": "Sri Lankan",
+   "adj": "Sri Lankan",
+   "curs": [
+    [
+     "Sri Lankan rupee",
+     "LKR"
+    ]
+   ]
+  }
+ },
+ "SL": {
+  "pt": {
+   "name": "Serra Leoa",
+   "dem": "serra-leonês (serra-leoneses)//serra-leonesa(s)",
+   "adj": "serra-leonês (serra-leoneses)//serra-leonesa(s)",
+   "curs": [
+    [
+     "leone",
+     "SLE"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sierra Leona",
+   "dem": "sierraleonés",
+   "adj": "sierraleonés",
+   "curs": [
+    [
+     "leona",
+     "SLE"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Sierra Leone",
+   "dem": "Sierra Leonean",
+   "adj": "Sierra Leonean",
+   "curs": [
+    [
+     "leone",
+     "SLE"
+    ]
+   ]
+  }
+ },
+ "RS": {
+  "pt": {
+   "name": "Sérvia",
+   "dem": "sérvio/a(s)",
+   "adj": "sérvio/a(s)",
+   "curs": [
+    [
+     "dinar sérvio",
+     "RSD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Serbia",
+   "dem": "serbio",
+   "adj": "serbio",
+   "curs": [
+    [
+     "dinar [serbio]",
+     "RSD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Serbia",
+   "dem": "Serbian",
+   "adj": "Serb",
+   "curs": [
+    [
+     "Serbian dinar",
+     "RSD"
+    ]
+   ]
+  }
+ },
+ "SG": {
+  "pt": {
+   "name": "Singapura",
+   "dem": "singapurense(s)",
+   "adj": "singapurense(s)",
+   "curs": [
+    [
+     "dólar singapurense",
+     "SGD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Singapur",
+   "dem": "singapurense",
+   "adj": "singapurense",
+   "curs": [
+    [
+     "dólar [singapurense]",
+     "SGD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Singapore",
+   "dem": "Singaporean",
+   "adj": "Singaporean",
+   "curs": [
+    [
+     "Singapore dollar",
+     "SGD"
+    ]
+   ]
+  }
+ },
+ "SY": {
+  "pt": {
+   "name": "Síria",
+   "dem": "sírio/a(s)",
+   "adj": "sírio/a(s)",
+   "curs": [
+    [
+     "libra síria",
+     "SYP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Siria",
+   "dem": "sirio",
+   "adj": "sirio",
+   "curs": [
+    [
+     "libra [siria]",
+     "SYP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Syria",
+   "dem": "Syrian",
+   "adj": "Syrian",
+   "curs": [
+    [
+     "Syrian pound",
+     "SYP"
+    ]
+   ]
+  }
+ },
+ "SO": {
+  "pt": {
+   "name": "Somália",
+   "dem": "somali(s)",
+   "adj": "somali(s)",
+   "curs": [
+    [
+     "xelim somali",
+     "SOS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Somalia",
+   "dem": "somalí",
+   "adj": "somalí",
+   "curs": [
+    [
+     "chelín [somalí]",
+     "SOS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Somalia",
+   "dem": "Somali; Somalian",
+   "adj": "Somali",
+   "curs": [
+    [
+     "Somali shilling",
+     "SOS"
+    ]
+   ]
+  }
+ },
+ "SD": {
+  "pt": {
+   "name": "Sudão",
+   "dem": "sudanês (sudaneses)//sudanesa(s)",
+   "adj": "sudanês (sudaneses)//sudanesa(s)",
+   "curs": [
+    [
+     "libra sudanesa",
+     "SDG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sudán",
+   "dem": "sudanés",
+   "adj": "sudanés",
+   "curs": [
+    [
+     "libra [sudanesa]",
+     "SDG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Sudan",
+   "dem": "Sudanese",
+   "adj": "Sudanese",
+   "curs": [
+    [
+     "Sudanese pound",
+     "SDG"
+    ]
+   ]
+  }
+ },
+ "SS": {
+  "pt": {
+   "name": "Sudão do Sul",
+   "dem": "sul-sudanês (sul‑sudaneses)//sul-sudanesa(s)",
+   "adj": "sul-sudanês (sul‑sudaneses)//sul-sudanesa(s)",
+   "curs": [
+    [
+     "libra sul‑sudanesa",
+     "SSP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Sudán del Sur",
+   "dem": "sursudanés",
+   "adj": "sursudanés",
+   "curs": [
+    [
+     "libra [sursudanesa]",
+     "SSP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "South Sudan",
+   "dem": "South Sudanese",
+   "adj": "South Sudanese",
+   "curs": [
+    [
+     "South Sudanese pound",
+     "SSP"
+    ]
+   ]
+  }
+ },
+ "SE": {
+  "pt": {
+   "name": "Suécia",
+   "dem": "sueco/a(s)",
+   "adj": "sueco/a(s)",
+   "curs": [
+    [
+     "coroa sueca",
+     "SEK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Suecia",
+   "dem": "sueco",
+   "adj": "sueco",
+   "curs": [
+    [
+     "corona [sueca]",
+     "SEK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Sweden",
+   "dem": "Swedish",
+   "adj": "Swede",
+   "curs": [
+    [
+     "krona (pl. kronor)",
+     "SEK"
+    ]
+   ]
+  }
+ },
+ "CH": {
+  "pt": {
+   "name": "Suíça",
+   "dem": "suíço/a(s)",
+   "adj": "suíço/a(s)",
+   "curs": [
+    [
+     "franco suíço",
+     "CHF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Suiza",
+   "dem": "suizo",
+   "adj": "suizo",
+   "curs": [
+    [
+     "franco [suizo]",
+     "CHF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Switzerland",
+   "dem": "Swiss",
+   "adj": "Swiss",
+   "curs": [
+    [
+     "Swiss franc",
+     "CHF"
+    ]
+   ]
+  }
+ },
+ "SR": {
+  "pt": {
+   "name": "Suriname",
+   "dem": "surinamês (surinameses)//surinamesa(s)",
+   "adj": "surinamês (surinameses)//surinamesa(s)",
+   "curs": [
+    [
+     "dólar surinamês",
+     "SRD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Surinam",
+   "dem": "surinamés",
+   "adj": "surinamés",
+   "curs": [
+    [
+     "dólar [surinamés]",
+     "SRD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Suriname",
+   "dem": "Surinamese",
+   "adj": "Surinamer",
+   "curs": [
+    [
+     "Surinamese dollar",
+     "SRD"
+    ]
+   ]
+  }
+ },
+ "SJ": {
+  "pt": {
+   "name": "Svalbard e Jan Mayen",
+   "dem": "svalbardense; jan‑mayenense",
+   "adj": "svalbardense; jan‑mayenense",
+   "curs": [
+    [
+     "coroa norueguesa",
+     "NOK"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Svalbard y Jan Mayen",
+   "dem": "de Svalbard, de Jan Mayen",
+   "adj": "de Svalbard, de Jan Mayen",
+   "curs": [
+    [
+     "corona [noruega]",
+     "NOK"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Svalbard and Jan Mayen",
+   "dem": "of Svalbard, of Jan Mayen",
+   "adj": "of Svalbard, of Jan Mayen",
+   "curs": [
+    [
+     "Norwegian krone (pl. kroner)",
+     "NOK"
+    ]
+   ]
+  }
+ },
+ "TH": {
+  "pt": {
+   "name": "Tailândia",
+   "dem": "tailandês (tailandeses)//tailandesa(s)",
+   "adj": "tailandês (tailandeses)//tailandesa(s)",
+   "curs": [
+    [
+     "baht",
+     "THB"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tailandia",
+   "dem": "tailandés",
+   "adj": "tailandés",
+   "curs": [
+    [
+     "bat",
+     "THB"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Thailand",
+   "dem": "Thai",
+   "adj": "Thai",
+   "curs": [
+    [
+     "baht (inv.)",
+     "THB"
+    ]
+   ]
+  }
+ },
+ "TW": {
+  "pt": {
+   "name": "Taiwan",
+   "dem": "taiwanês (taiwaneses)//taiwanesa(s)",
+   "adj": "taiwanês (taiwaneses)//taiwanesa(s)",
+   "curs": [
+    [
+     "novo dólar taiwanês",
+     "TWD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Taiwán",
+   "dem": "taiwanés",
+   "adj": "taiwanés",
+   "curs": [
+    [
+     "dólar [taiwanés]",
+     "TWD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Taiwan",
+   "dem": "Taiwanese",
+   "adj": "Taiwanese",
+   "curs": [
+    [
+     "new Taiwan dollar",
+     "TWD"
+    ]
+   ]
+  }
+ },
+ "TJ": {
+  "pt": {
+   "name": "Tajiquistão",
+   "dem": "tajique(s)",
+   "adj": "tajique(s)",
+   "curs": [
+    [
+     "somoni",
+     "TJS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tayikistán",
+   "dem": "tayiko",
+   "adj": "tayiko",
+   "curs": [
+    [
+     "somoni",
+     "TJS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tajikistan",
+   "dem": "Tajik",
+   "adj": "Tajik",
+   "curs": [
+    [
+     "somoni",
+     "TJS"
+    ]
+   ]
+  }
+ },
+ "TZ": {
+  "pt": {
+   "name": "Tanzânia",
+   "dem": "tanzaniano/a(s)",
+   "adj": "tanzaniano/a(s)",
+   "curs": [
+    [
+     "xelim tanzaniano",
+     "TZS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tanzania",
+   "dem": "tanzano",
+   "adj": "tanzano",
+   "curs": [
+    [
+     "chelín [tanzano]",
+     "TZS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tanzania",
+   "dem": "Tanzanian",
+   "adj": "Tanzanian",
+   "curs": [
+    [
+     "Tanzanian shilling",
+     "TZS"
+    ]
+   ]
+  }
+ },
+ "TF": {
+  "pt": {
+   "name": "Terras Austrais e Antárticas Francesas",
+   "dem": "das Terras Austrais e Antárticas Francesas",
+   "adj": "—",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Territorios Australes Franceses",
+   "dem": "de los Territorios Australes Franceses",
+   "adj": "—",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  },
+  "en": {
+   "name": "French Southern and Antarctic Lands",
+   "dem": "of the French Southern and Antarctic Lands",
+   "adj": "—",
+   "curs": [
+    [
+     "euro",
+     "EUR"
+    ]
+   ]
+  }
+ },
+ "IO": {
+  "pt": {
+   "name": "Território Britânico do Oceano Índico",
+   "dem": "do Território Britânico do Oceano Índico",
+   "adj": "—",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Territorio Británico del Océano Índico",
+   "dem": "del Territorio Británico del Océano Índico",
+   "adj": "—",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "British Indian Ocean Territory",
+   "dem": "of the British Indian Ocean Territory",
+   "adj": "—",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "TL": {
+  "pt": {
+   "name": "Timor-Leste",
+   "dem": "timorense(s)",
+   "adj": "timorense(s)",
+   "curs": [
+    [
+     "dólar dos Estados Unidos",
+     "USD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Timor Oriental",
+   "dem": "timorense",
+   "adj": "timorense",
+   "curs": [
+    [
+     "dólar [estadounidense]",
+     "USD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Timor-Leste",
+   "dem": "East Timorese",
+   "adj": "East Timorese",
+   "curs": [
+    [
+     "US dollar",
+     "USD"
+    ]
+   ]
+  }
+ },
+ "TG": {
+  "pt": {
+   "name": "Togo",
+   "dem": "togolês (togoleses)//togolesa(s)",
+   "adj": "togolês (togoleses)//togolesa(s)",
+   "curs": [
+    [
+     "franco CFA (BCEAO)",
+     "XOF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Togo",
+   "dem": "togolés",
+   "adj": "togolés",
+   "curs": [
+    [
+     "franco [CFA (BCEAO)]",
+     "XOF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Togo",
+   "dem": "Togolese",
+   "adj": "Togolese",
+   "curs": [
+    [
+     "CFA franc (BCEAO)",
+     "XOF"
+    ]
+   ]
+  }
+ },
+ "TO": {
+  "pt": {
+   "name": "Tonga",
+   "dem": "tonganês (tonganeses)//tonganesa(s)",
+   "adj": "tonganês (tonganeses)//tonganesa(s)",
+   "curs": [
+    [
+     "paanga",
+     "TOP"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tonga",
+   "dem": "tongano",
+   "adj": "tongano",
+   "curs": [
+    [
+     "paanga",
+     "TOP"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tonga",
+   "dem": "Tongan",
+   "adj": "Tongan",
+   "curs": [
+    [
+     "pa’anga (inv.)",
+     "TOP"
+    ]
+   ]
+  }
+ },
+ "TK": {
+  "pt": {
+   "name": "Toquelau",
+   "dem": "toquelauano/a(s)",
+   "adj": "toquelauano/a(s)",
+   "curs": [
+    [
+     "dólar neozelandês",
+     "NZD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tokelau",
+   "dem": "tokelauense",
+   "adj": "tokelauense",
+   "curs": [
+    [
+     "dólar [neozelandés]",
+     "NZD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tokelau",
+   "dem": "Tokelauan",
+   "adj": "Tokelauan",
+   "curs": [
+    [
+     "New Zealand dollar",
+     "NZD"
+    ]
+   ]
+  }
+ },
+ "TT": {
+  "pt": {
+   "name": "Trindade e Tobago",
+   "dem": "de Trindade e Tobago",
+   "adj": "de Trindade e Tobago",
+   "curs": [
+    [
+     "dólar de Trindade e Tobago",
+     "TTD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Trinidad y Tobago",
+   "dem": "trinitense",
+   "adj": "trinitense",
+   "curs": [
+    [
+     "dólar [trinitense]",
+     "TTD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Trinidad and Tobago",
+   "dem": "of Trinidad and Tobago",
+   "adj": "Trinidadian; Tobagonian",
+   "curs": [
+    [
+     "Trinidad and Tobago dollar",
+     "TTD"
+    ]
+   ]
+  }
+ },
+ "TN": {
+  "pt": {
+   "name": "Tunísia",
+   "dem": "tunisino/a(s)",
+   "adj": "tunisino/a(s)",
+   "curs": [
+    [
+     "dinar tunisino",
+     "TND"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Túnez",
+   "dem": "tunecino",
+   "adj": "tunecino",
+   "curs": [
+    [
+     "dinar [tunecino]",
+     "TND"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tunisia",
+   "dem": "Tunisian",
+   "adj": "Tunisian",
+   "curs": [
+    [
+     "Tunisian dinar",
+     "TND"
+    ]
+   ]
+  }
+ },
+ "TM": {
+  "pt": {
+   "name": "Turquemenistão",
+   "dem": "turquemeno/a(s)",
+   "adj": "turquemeno/a(s)",
+   "curs": [
+    [
+     "manat turquemeno",
+     "TMT"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Turkmenistán",
+   "dem": "turcomano",
+   "adj": "turcomano",
+   "curs": [
+    [
+     "manat [turcomano]",
+     "TMT"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Turkmenistan",
+   "dem": "Turkmen",
+   "adj": "Turkmen",
+   "curs": [
+    [
+     "Turkmen manat (inv.)",
+     "TMT"
+    ]
+   ]
+  }
+ },
+ "TR": {
+  "pt": {
+   "name": "Turquia",
+   "dem": "turco/a(s)",
+   "adj": "turco/a(s)",
+   "curs": [
+    [
+     "lira turca",
+     "TRY"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Turquía",
+   "dem": "turco",
+   "adj": "turco",
+   "curs": [
+    [
+     "lira [turca]",
+     "TRY"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Türkiye",
+   "dem": "Turkish",
+   "adj": "Turk",
+   "curs": [
+    [
+     "Turkish lira (inv.)",
+     "TRY"
+    ]
+   ]
+  }
+ },
+ "TV": {
+  "pt": {
+   "name": "Tuvalu",
+   "dem": "tuvaluano/a(s)",
+   "adj": "tuvaluano/a(s)",
+   "curs": [
+    [
+     "dólar australiano",
+     "AUD"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Tuvalu",
+   "dem": "tuvaluano",
+   "adj": "tuvaluano",
+   "curs": [
+    [
+     "dólar [australiano]",
+     "AUD"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Tuvalu",
+   "dem": "Tuvaluan",
+   "adj": "Tuvaluan",
+   "curs": [
+    [
+     "Australian dollar",
+     "AUD"
+    ]
+   ]
+  }
+ },
+ "UA": {
+  "pt": {
+   "name": "Ucrânia",
+   "dem": "ucraniano/a(s)",
+   "adj": "ucraniano/a(s)",
+   "curs": [
+    [
+     "hryvnia",
+     "UAH"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Ucrania",
+   "dem": "ucraniano",
+   "adj": "ucraniano",
+   "curs": [
+    [
+     "grivna",
+     "UAH"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Ukraine",
+   "dem": "Ukrainian",
+   "adj": "Ukrainian",
+   "curs": [
+    [
+     "hryvnia",
+     "UAH"
+    ]
+   ]
+  }
+ },
+ "UG": {
+  "pt": {
+   "name": "Uganda",
+   "dem": "ugandês (ugandeses)//ugandesa(s)",
+   "adj": "ugandês (ugandeses)//ugandesa(s)",
+   "curs": [
+    [
+     "xelim ugandês",
+     "UGX"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Uganda",
+   "dem": "ugandés",
+   "adj": "ugandés",
+   "curs": [
+    [
+     "chelín [ugandés]",
+     "UGX"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Uganda",
+   "dem": "Ugandan",
+   "adj": "Ugandan",
+   "curs": [
+    [
+     "Uganda shilling",
+     "UGX"
+    ]
+   ]
+  }
+ },
+ "UY": {
+  "pt": {
+   "name": "Uruguai",
+   "dem": "uruguaio/a(s)",
+   "adj": "uruguaio/a(s)",
+   "curs": [
+    [
+     "peso uruguaio",
+     "UYU"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Uruguay",
+   "dem": "uruguayo",
+   "adj": "uruguayo",
+   "curs": [
+    [
+     "peso [uruguayo]",
+     "UYU"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Uruguay",
+   "dem": "Uruguayan",
+   "adj": "Uruguayan",
+   "curs": [
+    [
+     "Uruguayan peso",
+     "UYU"
+    ]
+   ]
+  }
+ },
+ "UZ": {
+  "pt": {
+   "name": "Usbequistão",
+   "dem": "usbeque(s)",
+   "adj": "usbeque(s)",
+   "curs": [
+    [
+     "sum",
+     "UZS"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Uzbekistán",
+   "dem": "uzbeko",
+   "adj": "uzbeko",
+   "curs": [
+    [
+     "sum",
+     "UZS"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Uzbekistan",
+   "dem": "Uzbek",
+   "adj": "Uzbek",
+   "curs": [
+    [
+     "sum (inv.)",
+     "UZS"
+    ]
+   ]
+  }
+ },
+ "VU": {
+  "pt": {
+   "name": "Vanuatu",
+   "dem": "vanuatuense(s)",
+   "adj": "vanuatuense(s)",
+   "curs": [
+    [
+     "vatu",
+     "VUV"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Vanuatu",
+   "dem": "vanuatense",
+   "adj": "vanuatense",
+   "curs": [
+    [
+     "vatu",
+     "VUV"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Vanuatu",
+   "dem": "Vanuatuan",
+   "adj": "Vanuatuan",
+   "curs": [
+    [
+     "vatu (inv.)",
+     "VUV"
+    ]
+   ]
+  }
+ },
+ "VE": {
+  "pt": {
+   "name": "Venezuela",
+   "dem": "venezuelano/a(s)",
+   "adj": "venezuelano/a(s)",
+   "curs": [
+    [
+     "bolívar soberano",
+     "VES"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Venezuela",
+   "dem": "venezolano",
+   "adj": "venezolano",
+   "curs": [
+    [
+     "bolívar soberano",
+     "VES"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Venezuela",
+   "dem": "Venezuelan",
+   "adj": "Venezuelan",
+   "curs": [
+    [
+     "bolívar soberano (pl. bolívares soberanos)",
+     "VES"
+    ]
+   ]
+  }
+ },
+ "VN": {
+  "pt": {
+   "name": "Vietname",
+   "dem": "vietnamita(s)",
+   "adj": "vietnamita(s)",
+   "curs": [
+    [
+     "dong",
+     "VND"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Vietnam",
+   "dem": "vietnamita",
+   "adj": "vietnamita",
+   "curs": [
+    [
+     "dong",
+     "VND"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Viet Nam",
+   "dem": "Vietnamese",
+   "adj": "Vietnamese",
+   "curs": [
+    [
+     "dong",
+     "VND"
+    ]
+   ]
+  }
+ },
+ "WF": {
+  "pt": {
+   "name": "Wallis e Futuna",
+   "dem": "de Wallis e Futuna",
+   "adj": "de Wallis e Futuna",
+   "curs": [
+    [
+     "franco CFP",
+     "XPF"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Wallis y Futuna",
+   "dem": "de Wallis y Futuna",
+   "adj": "de Wallis y Futuna",
+   "curs": [
+    [
+     "franco [CFP]",
+     "XPF"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Wallis and Futuna",
+   "dem": "of the Wallis and Futuna Islands",
+   "adj": "Wallisian; Futunan; Wallis and Futuna Islander",
+   "curs": [
+    [
+     "CFP franc",
+     "XPF"
+    ]
+   ]
+  }
+ },
+ "ZM": {
+  "pt": {
+   "name": "Zâmbia",
+   "dem": "zambiano/a(s)",
+   "adj": "zambiano/a(s)",
+   "curs": [
+    [
+     "kwacha zambiano",
+     "ZMW"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Zambia",
+   "dem": "zambiano",
+   "adj": "zambiano",
+   "curs": [
+    [
+     "kuacha [zambiano]",
+     "ZMW"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Zambia",
+   "dem": "Zambian",
+   "adj": "Zambian",
+   "curs": [
+    [
+     "Zambian kwacha (inv.)",
+     "ZMW"
+    ]
+   ]
+  }
+ },
+ "ZW": {
+  "pt": {
+   "name": "Zimbabué",
+   "dem": "zimbabuense(s)",
+   "adj": "zimbabuense(s)",
+   "curs": [
+    [
+     "ouro zimbabuense",
+     "ZWG"
+    ]
+   ]
+  },
+  "es": {
+   "name": "Zimbabue",
+   "dem": "zimbabuense",
+   "adj": "zimbabuense",
+   "curs": [
+    [
+     "oro de Zimbabue",
+     "ZWG"
+    ]
+   ]
+  },
+  "en": {
+   "name": "Zimbabwe",
+   "dem": "Zimbabwean",
+   "adj": "Zimbabwean",
+   "curs": [
+    [
+     "Zimbabwe Gold",
+     "ZWG"
+    ]
+   ]
+  }
+ }
+}

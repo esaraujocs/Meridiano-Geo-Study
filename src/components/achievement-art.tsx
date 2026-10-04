@@ -27,6 +27,8 @@ export const PATHS: Record<string, string> = {
   clock: "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0 M12 7v5l3 3",
   coll: "M5 5h11a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V5Z M8 2h11a2 2 0 0 1 2 2v14 M8 9h7 M8 13h7",
   bars: "M5 20V10h4v10 M10 20V4h4v16 M15 20v-7h4v7",
+  people: "M5.8 8a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0 M3 20c0-3.4 2.7-6 6-6s6 2.6 6 6 M14.5 9a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0 M16 14.2c3 .1 5 2.3 5 5.8",
+  coins: "M5 7a7 3 0 1 0 14 0a7 3 0 1 0 -14 0 M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7 M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5",
   building: "M3 21l18 0 M9 8l1 0 M9 12l1 0 M9 16l1 0 M14 8l1 0 M14 12l1 0 M14 16l1 0 M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16",
 };
 export const CATEGORY_ICON: Record<string, string> = { target: "target", globe: "world", brain: "bulb", trend: "trend", trophy: "trophy", puzzle: "puzzle" };
@@ -38,6 +40,7 @@ export const ACHIEVEMENT_ICON: Record<string, string> = {
   gExplorador: "compass", gNavegador: "compass", gGeografo: "compass", forma: "bolt", evoluiu: "trend",
   vexilologo: "flag", cartografo: "map", diplomata: "building", cosmografo: "star",
   pescador: "anchor", relampago: "bolt", confins: "compass",
+  gentilicos100: "people", moedas80: "coins",
 };
 
 export function Glyph({ name, size = 20, stroke = 1.6 }: { name: string; size?: number; stroke?: number }) {

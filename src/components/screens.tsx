@@ -261,15 +261,15 @@ export function Hub({
     { family: "bandeiras", variant: "bandeira-nome", label: t.families.bandeiras, description: t.hub.familyDescriptions.bandeiras, icon: "flag", pillar: "bandeiras" },
     { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", pillar: "capitais" },
     { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language" },
+    { family: "gentilicos", variant: "gentilico-pais", label: t.families.gentilicos, description: t.hub.familyDescriptions.gentilicos, icon: "people" },
+    { family: "moedas", variant: "pais-moeda", label: t.families.moedas, description: t.hub.familyDescriptions.moedas, icon: "coins" },
   ];
-  const isFamilyUnlocked = (item: (typeof familyItems)[number]) => item.family === "idiomas"
-    ? unlocked("idiomas", "idioma-nome") || unlocked("idiomas", "idioma-pais")
-    : unlocked(item.family, item.variant);
-  /** Modos que ainda vêm: aparecem no carrossel, sem jogar. */
-  const soonItems = [
-    { key: "gentilico", label: t.families.gentilico, description: t.hub.familyDescriptions.gentilico, icon: "people" as const },
-    { key: "moedas", label: t.families.moedas, description: t.hub.familyDescriptions.moedas, icon: "coins" as const },
-  ];
+  // Famílias sem modo grátis: o cartão abre com qualquer um dos dois sentidos comprado.
+  const BOTH_WAYS: Partial<Record<Family, [AnyQuizVariant, AnyQuizVariant]>> = { idiomas: ["idioma-nome", "idioma-pais"], gentilicos: ["gentilico-pais", "pais-gentilico"], moedas: ["pais-moeda", "moeda-pais"] };
+  const isFamilyUnlocked = (item: (typeof familyItems)[number]) => {
+    const ways = BOTH_WAYS[item.family];
+    return ways ? ways.some((way) => unlocked(item.family, way)) : unlocked(item.family, item.variant);
+  };
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
   const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
@@ -313,11 +313,6 @@ export function Hub({
       </div>
     </div>;
   };
-  const soonCard = (item: (typeof soonItems)[number]) => <div key={item.key} data-fam={item.key} className="family hx-mode is-soon">
-    <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
-    <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-    <div className="family-footer"><span className="hx-stat" /><span className="hx-soon"><Icon type="clock" size={14} /> {t.hub.soon}</span></div>
-  </div>;
   return (
     <main className="content hub-content hx">
       <h1 className="sr-only">Meridiano</h1>
@@ -353,7 +348,7 @@ export function Hub({
       <div className="hx-grid">
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
           <div className="section-label"><h2 id="hx-modes-title">{t.hub.modesTitle}</h2></div>
-          <HubCarousel label={t.hub.modesRegion}>{[...familyItems.map(modeCard), ...soonItems.map(soonCard)]}</HubCarousel>
+          <HubCarousel label={t.hub.modesRegion}>{familyItems.map(modeCard)}</HubCarousel>
         </section>
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
@@ -404,6 +399,8 @@ export function Variant({
      bandeiras: [["bandeiras", "nome-bandeira", "Atuais", "Bandeiras atuais nos dois sentidos."], ["bandeiras", "bandeira-nome", "Bandeira → nome", "Reconheça o país pela bandeira."], ["escrita", "escrita-pais", "Escrita", "Digite o país pela bandeira."], ["historicas", "nome-historica", "Históricas", "Bandeiras históricas nos dois sentidos."]],
     capitais: [["capitais", "capital-pais", "Clicar no mapa", "Localize o país da capital."], ["escrita", "escrita-capital", "Escrita", "Digite a capital do país."]],
     idiomas: [["idiomas", "idioma-nome", "Nome do idioma", "Reconheça o idioma pela escrita."], ["idiomas", "idioma-pais", "Países do idioma", "Associe uma escrita aos países."]],
+    gentilicos: [["gentilicos", "gentilico-pais", t.modes["gentilico-pais"][0], t.modes["gentilico-pais"][1]], ["gentilicos", "pais-gentilico", t.modes["pais-gentilico"][0], t.modes["pais-gentilico"][1]]],
+    moedas: [["moedas", "pais-moeda", t.modes["pais-moeda"][0], t.modes["pais-moeda"][1]], ["moedas", "moeda-pais", t.modes["moeda-pais"][0], t.modes["moeda-pais"][1]]],
   };
   const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
   const continueWith = (engine: Family, key: AnyQuizVariant) => {

@@ -36,12 +36,15 @@ export const isArmedSupply = (id: SupplyId): boolean => ARMED_SUPPLIES.includes(
 // no Treino, que não tem cronômetro. Pular e Escudo servem em todos; a Segunda chance em todos menos o Travel (que já tem 10 tentativas por rota).
 const OPTION_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set([
   "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta-opcoes", "nome-historica", "historica-nome", "idioma-nome", "idioma-pais",
+  "gentilico-pais", "pais-gentilico", "moeda-pais", "pais-moeda",
 ]);
 const MAP_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set(["mapa", "capital-pais"]);
 const TYPED_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set(["escrita-pais", "escrita-capital", "silhueta"]);
 // A Pista de vizinhos fala de países: serve onde o alvo é um país (mapa, bandeiras, capitais, silhueta, escrita), não em históricas, idiomas nem Travel.
+// Em Gentílicos e Moedas só no sentido em que a resposta é o país (no outro sentido o país já está na pergunta).
 const COUNTRY_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set([
   "mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "escrita-pais", "escrita-capital",
+  "gentilico-pais", "moeda-pais",
 ]);
 
 /** Se o suprimento `id` faz sentido no modo `variant` — controla quais botões aparecem em cada motor de partida. */

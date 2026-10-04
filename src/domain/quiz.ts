@@ -68,5 +68,9 @@ export function variantLabel(variant: QuizVariant) {
     silhueta: "Silhueta",
     "silhueta-opcoes": "Silhueta · alternativas",
     travel: "Travel",
+    "gentilico-pais": "Gentílico → país",
+    "pais-gentilico": "País → gentílico",
+    "moeda-pais": "Moeda → país",
+    "pais-moeda": "País → moeda",
   }[variant];
 }

@@ -24,6 +24,8 @@ const expectedFamilies = {
   idiomas: ["idioma-nome", "idioma-pais"],
   silhueta: ["silhueta", "silhueta-opcoes"],
   travel: ["travel"],
+  gentilicos: ["gentilico-pais", "pais-gentilico"],
+  moedas: ["pais-moeda", "moeda-pais"],
 };
 const regions = ["caribe", "mundo", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
 const keys = new Set();
@@ -56,9 +58,13 @@ assert.deepEqual(
     "capitais:capital-pais": [0, undefined, 0, 0],
     "capitais:pais-capital": [0, undefined, 0, 0],
     "escrita:escrita-pais": [5000, undefined, 0, 0],
+    "gentilicos:gentilico-pais": [8000, undefined, 0, 0],
     "silhueta:silhueta-opcoes": [11000, undefined, 0, 0],
     "escrita:escrita-capital": [15000, undefined, 0, 0],
+    "gentilicos:pais-gentilico": [18000, undefined, 0, 0],
+    "moedas:pais-moeda": [22000, undefined, 0, 0],
     "silhueta:silhueta": [27000, undefined, 0, 0],
+    "moedas:moeda-pais": [30000, undefined, 0, 0],
     "historicas:historica-nome": [36000, undefined, 0, 0],
     "idiomas:idioma-nome": [40000, undefined, 0, 0],
     "idiomas:idioma-pais": [48000, undefined, 0, 0],
