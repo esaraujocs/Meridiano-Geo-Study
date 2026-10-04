@@ -722,7 +722,7 @@ export function App() {
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
   const beginGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
-  // ---- Última partida de cada modo: o "Continuar" dos cartões do Hub ----
+  // ---- Última partida de cada modo: a Mesa abre com ela montada (antes era o "Continuar" dos cartões do Hub, tirado em 04/10 por pesar o cartão) ----
   const readLastConfigs = () => {
     const found: Partial<Record<TopFamily, PresetConfig>> = {};
     for (const top of TOP_FAMILIES) { try { const config = parseLastConfig(localStorage.getItem(LAST_CONFIG_PREFIX + top), top); if (config) found[top] = config; } catch { /* sem armazenamento */ } }
@@ -732,18 +732,14 @@ export function App() {
   useEffect(() => { if (screen === "hub") setLastConfigs(readLastConfigs()); }, [screen]);
   const rememberConfig = (config: PresetConfig) => { try { localStorage.setItem(LAST_CONFIG_PREFIX + config.topFamily, JSON.stringify(config)); } catch { /* sem armazenamento */ } };
   const startGame = () => { rememberConfig(configOf({ topFamily, variant, pace, roundTier, region, onlyUn })); beginGame(); };
-  /** Repete a última partida do modo sem passar pela configuração; se algo mudou (modo ou corte de rodadas sem desbloqueio), abre a configuração. */
-  const continueGame = async (config: PresetConfig) => {
-    const context = variantContextFor(config.topFamily, config.variant);
-    const policy = context ? policyFor(context.family, context.variant, "caribe") : null;
+  /** A última partida do modo, se ainda dá para jogar igual (o modo e o corte de rodadas continuam liberados). */
+  const replayableConfig = (top: TopFamily) => {
+    const config = lastConfigs[top];
+    const context = config ? variantContextFor(config.topFamily, config.variant) : null;
+    if (!config || !context) return null;
+    const policy = policyFor(context.family, context.variant, "caribe");
     const modeOpen = !policy || (policy.cost === 0 && policy.sessions === 0) || economy.unlocked.includes(policy.key as UnlockKey);
-    if (!context || !modeOpen || !isRoundTierUnlocked(config.roundTier, economy.unlocked)) { await selectFamily(config.topFamily); return; }
-    if (context.family === "bandeiras" || context.family === "historicas" || context.family === "idiomas" || context.family === "escrita") await loadSpecial();
-    if (isPeoplesFamily(context.family)) await ensurePeoples();
-    setTrainOnce(false);
-    applyPreset(config);
-    rememberConfig(config);
-    beginGame();
+    return modeOpen && isRoundTierUnlocked(config.roundTier, economy.unlocked) ? config : null;
   };
 
   // ---- Duelo em dois tempos ----
@@ -1192,6 +1188,9 @@ export function App() {
                 setVariant(restored.variant);
                 localStorage.setItem(`carta-last-variant:${selectedTopFamily}`, restored.variant);
               }
+            // a Mesa abre com a última partida do modo montada (modo, ritmo, rodadas, recorte e filtro): repetir é só "Começar"
+            const last = replayableConfig(selectedTopFamily);
+            if (last) applyPreset(last);
              setScreen("recorte");
   };
 
@@ -1363,8 +1362,6 @@ export function App() {
           onOpenMuseum={openMuseum}
           onOpenThemes={openThemes}
           pillarPct={pillarPct}
-          lastConfigs={lastConfigs}
-          onContinue={(config) => void continueGame(config)}
           totalEntities={data.mapEntityIds.length}
           collectionSummary={collectionSummary}
           achievementSummary={achievementSummary}
