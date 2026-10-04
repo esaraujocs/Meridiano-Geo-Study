@@ -292,13 +292,12 @@ export function Hub({
       data-fam={item.family}
       className={`family hx-mode ${economy && !open ? "locked" : ""}`}
     >
-      <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={item.label} />
+      {/* o cartão inteiro abre a Mesa (sem botão "Jogar": repetia em todos os cartões; a Mesa já vem com a última partida montada) */}
+      <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={`${t.hub.play}: ${item.label}`} />
       <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
       <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
       <div className="family-footer">
         <span className="hx-stat">{pct != null ? <><span className="hx-meter"><i style={{ width: `${pct}%` }} /></span><small title={t.hub.pillarAccuracy(pct)} aria-label={t.hub.pillarAccuracy(pct)}>{pct}%</small></> : <small>{open ? t.hub.open : t.hub.locked}</small>}</span>
-        {/* a última configuração do modo não aparece aqui (pesava o cartão): a Mesa já abre com ela montada (selectFamily no app.tsx) */}
-        <button type="button" className="family-play hx-continue" onClick={() => onSelect(item.family)} aria-label={`${t.hub.play}: ${item.label}`}><span>{t.hub.play}</span> <Icon type="arrow" /></button>
       </div>
     </div>;
   };

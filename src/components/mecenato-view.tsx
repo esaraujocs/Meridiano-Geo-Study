@@ -26,7 +26,8 @@ const slotName = (slot: ItemSlot) => m().slots[slot]?.[0] ?? slot;
 const rankName = (id: string) => (m().rank.names as Record<string, string>)[id] ?? id;
 export function duration(ms: number) {
   if (ms < 60_000) return "< 1 min";
-  const hours = Math.floor(ms / 3_600_000), minutes = Math.round((ms % 3_600_000) / 60_000);
+  // arredonda o total para cima antes de separar horas e minutos (antes 1 h 59,5 min virava "1 h 60 min")
+  const total = Math.ceil(ms / 60_000), hours = Math.floor(total / 60), minutes = total % 60;
   return hours ? (minutes ? `${hours} h ${minutes} min` : `${hours} h`) : `${minutes} min`;
 }
 const hoursLabel = (stage: number) => `${STAGE_HOURS[stage]} h`;
