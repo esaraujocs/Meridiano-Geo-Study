@@ -193,6 +193,15 @@
 .hx-btn.is-light{background:#f0cf8f;color:#4a2f14}
 .hx-showcase-body:hover .hx-btn:not(.is-missing){filter:brightness(.93)}
 .hx-showcase-done{margin:0}
+/* rodízio da Vitrine: cada set entra com um esmaecer curto; os pontos do cabeçalho escolhem o set (e o rodízio para com o mouse ou o foco) */
+.hx-showcase-slide{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;animation:hx-fade .6s ease both}
+@keyframes hx-fade{from{opacity:0}to{opacity:1}}
+.hx-showcase-dots{display:flex;gap:0;margin-left:auto;margin-right:6px}
+.hx-showcase-dots button{position:relative;width:18px;height:20px;padding:0;border:0;background:transparent}
+.hx-showcase-dots button::before{content:"";position:absolute;left:5px;top:7px;width:7px;height:7px;border-radius:99px;background:color-mix(in srgb,var(--brass) 45%,transparent);transition:width .2s,left .2s}
+.hx-showcase-dots button[aria-current=true]::before{left:2px;width:14px;background:var(--brass)}
+@media (prefers-reduced-motion:reduce){.hx-showcase-slide{animation:none}}
+html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
 .hx-showcase-done .hx-tag{position:static;display:inline-block}
 .hx-supplies{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none}
 .hx-supplies li{display:flex;min-width:0}
@@ -247,7 +256,7 @@
 .hx-museum-text{display:grid;gap:3px;align-self:end}
 .hx-museum-text small{font:500 10px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#f0cf8f}
 .hx-museum-text b{font:700 27px/1.05 'Fraunces',Georgia,serif;letter-spacing:-.03em}
-.hx-museum-text>span:not(.hx-museum-dots){font-size:12.5px;color:#f3e6cc}
+.hx-museum-text>span:not(.hx-museum-dots):not(.hx-voyage){font-size:12.5px;color:#f3e6cc}
 .hx-museum-dots{display:flex;align-items:center;gap:5px;margin-top:6px}
 .hx-museum-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35)}
 .hx-museum-dots i.on{background:#f0cf8f}
@@ -255,6 +264,23 @@
 .hx-museum-act{display:grid;gap:10px;justify-items:end;align-self:end}
 .hx-museum .hx-price{color:#fff4df;font-size:19px}
 .hx-museum:hover .hx-btn{filter:brightness(.95)}
+/* expedição no mar: a faixa de viagem (o navio anda na barra até o porto); de volta, "Voltou!" e o cartão pulsa até desembarcar */
+.hx-voyage{display:grid;gap:6px;width:min(100%,280px);margin:3px 0 4px;padding:7px 10px 9px;border:1px solid rgba(240,207,143,.5);border-radius:10px;background:rgba(24,14,5,.62)}
+.hx-voyage-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.hx-voyage-head b{white-space:nowrap;font:800 11px 'Plus Jakarta Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#f0cf8f}
+.hx-voyage-head em{font:500 11.5px 'DM Mono',monospace;font-style:normal;color:#fff4df;white-space:nowrap}
+.hx-voyage-bar{position:relative;height:5px;margin:0 8px;border-radius:99px;background:rgba(255,244,223,.24)}
+.hx-voyage-bar>i{position:absolute;inset:0 auto 0 0;border-radius:inherit;background:linear-gradient(90deg,#a8742c,#f0cf8f)}
+.hx-voyage-ship{position:absolute;top:50%;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#f0cf8f;color:#3a2410;box-shadow:0 2px 6px rgba(0,0,0,.45);transform:translate(-50%,-55%);animation:hx-bob 2.8s ease-in-out infinite}
+@keyframes hx-bob{50%{transform:translate(-50%,-75%)}}
+.hx-voyage.is-back{display:inline-flex;align-items:center;gap:8px;width:auto;justify-self:start;padding:5px 12px;border-color:#f7df9a;background:#f0cf8f;color:#2c1a08}
+.hx-voyage.is-back b{font:800 12px 'Plus Jakarta Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.hx-voyage-dot{width:8px;height:8px;border-radius:50%;background:#2f7d5b;animation:hx-ping 1.6s ease-out infinite}
+@keyframes hx-ping{0%{box-shadow:0 0 0 0 rgba(47,125,91,.65)}100%{box-shadow:0 0 0 8px rgba(47,125,91,0)}}
+.hx-museum.is-back{border-color:#f0cf8f;animation:hx-glow 2.4s ease-in-out infinite}
+@keyframes hx-glow{0%,100%{box-shadow:0 0 0 2px rgba(240,207,143,.6),0 16px 26px -18px #6b4423}50%{box-shadow:0 0 0 6px rgba(240,207,143,.18),0 16px 26px -18px #6b4423}}
+@media (prefers-reduced-motion:reduce){.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-back{animation:none}}
+html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-back){animation:none}
 
 /* ───────── abaixo de 1100 px: sem a coluna da direita ───────── */
 @media (max-width:1099px){
@@ -296,7 +322,10 @@
   .hx .hub-coin strong{font-size:14.5px}
   .hx .hub-gear{display:grid;width:30px;height:30px}
   .hx .hub-gear svg{width:17px;height:17px}
-  .hx-grid{grid-template-columns:1fr 1fr;grid-template-rows:minmax(210px,1fr) auto auto;gap:10px;margin-top:8px;min-height:0}
+  /* a última linha (Vitrine e Mecenato) tem altura garantida: com overflow:hidden a grade podia espremê-la até cortar o conteúdo em tela baixa
+     (Safari com as barras); quem cede é o carrossel */
+  .hx-grid{grid-template-columns:1fr 1fr;grid-template-rows:minmax(160px,1fr) auto minmax(112px,auto);gap:10px;margin-top:8px;min-height:0}
+  .hx-showcase,.hx-mecenato{min-height:112px}
   .hx-modes{grid-column:1/-1;grid-row:1;min-height:0}
   .hx-arena{display:contents}
   .hx-duel{grid-column:1/-1;grid-row:2}
@@ -312,9 +341,10 @@
   :root[data-treat] .hx .hx-mode .family-visual .family-icon svg{width:30px;height:30px}
   .hx .hx-mode h3{font-size:27px}
   .hx .hx-mode p{min-height:0;font-size:12.5px}
-  .hx-arrow{width:36px;height:36px;margin-top:-18px;top:calc(50% - 12px)}
-  .hx-arrow.is-prev{left:calc((var(--peek) - var(--gap)) / 2 - 18px)}
-  .hx-arrow.is-next{right:calc((var(--peek) - var(--gap)) / 2 - 18px)}
+  /* as setas ficam inteiras dentro da tela (antes metade saía pela borda do celular), sobre a beira do cartão vizinho */
+  .hx-arrow{width:34px;height:34px;margin-top:-17px;top:calc(50% - 12px)}
+  .hx-arrow.is-prev{left:2px}
+  .hx-arrow.is-next{right:2px}
   .hx-dots{margin-top:0}
   /* Duelo: faixa larga */
   .hx-duel{padding:11px 12px 12px;border-radius:16px;gap:8px}
@@ -348,11 +378,20 @@
   .hx-supplies .hx-price{margin:0;font-size:12.5px}
   .hx-museum{height:112px;min-height:0;grid-template-columns:1fr;align-content:end;padding:10px 12px;border-radius:14px}
   .hx-museum-text b{font-size:16px}
-  .hx-museum-text>span:not(.hx-museum-dots){display:none}
+  .hx-museum-text>span:not(.hx-museum-dots):not(.hx-voyage){display:none}
   .hx-museum-dots em{display:none}
   .hx-museum-act{justify-items:start}
   .hx-museum-act .hx-btn{display:none}
   .hx-museum .hx-price{font-size:13px}
+  /* no celular a faixa de viagem toma o lugar do sobrescrito e dos pontos do Acervo (o cartão tem 112 px) */
+  .hx-museum:is(.is-sailing,.is-back) .hx-museum-text small,.hx-museum:is(.is-sailing,.is-back) .hx-museum-dots{display:none}
+  .hx-voyage{gap:5px;margin:0 0 3px;padding:5px 8px 7px}
+  .hx-voyage-head{flex-wrap:wrap;gap:0 8px}
+  .hx-voyage-head b{font-size:9.5px;letter-spacing:.1em}
+  .hx-voyage-head em{font-size:10.5px}
+  .hx-voyage-ship{width:17px;height:17px}
+  .hx-voyage.is-back{padding:4px 10px}
+  .hx-voyage.is-back b{font-size:11px}
 }
 /* telefone baixo: o resumo da última partida sai do cartão para o modo caber */
 @media (max-width:760px) and (max-height:700px){

@@ -87,12 +87,14 @@ import {
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 import { MecenatoView } from "./components/mecenato-view";
 import { queryMecenato } from "./domain/mecenato-store";
+import { MecenatoReturnToast } from "./components/mecenato-toast";
 import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
+import { isCountry } from "./domain/sovereignty";
 import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
 import "./mecenato.css";
 
-const isUnPresetEntity = (id: string, meta: { un?: boolean } | undefined) =>
-  Boolean(meta?.un || id === "336");
+// O filtro "Só países" (antes "Só membros da ONU"): o mesmo critério de país × território das perguntas.
+const isUnPresetEntity = isCountry;
 
 // Fila ("Buscar duelo"): o que a pessoa buscou por último e se havia uma busca ativa (para retomar depois de recarregar a página).
 const QUEUE_PREFS_KEY = "carta-pvp-queue-prefs";
@@ -970,7 +972,7 @@ export function App() {
   }, [data, onlyUn]);
   useEffect(() => {
     if (!data) return;
-    void queryCollectionSummary(data).then(setCollectionSummary).catch(() => undefined);
+    void loadSpecialData().then((special) => queryCollectionSummary(data, special.historical.map((entry) => entry.id)), () => queryCollectionSummary(data)).then(setCollectionSummary).catch(() => undefined);
   }, [data, economy.coverage, surfaceRevision]);
   // Conquistas: avalia depois de cada rodada/partida, atualiza o card do Hub e avisa as que acabaram de abrir.
   // A primeira leitura (ao abrir o app) só serve de base: o que já estava desbloqueado não vira aviso.
@@ -1415,5 +1417,7 @@ export function App() {
   const namePromptLayer = pvpNamePrompt && (
     <PvpNamePrompt busy={pvpBusy} error={pvpError} onConfirm={confirmPvpName} onCancel={() => setPvpNamePrompt(null)} />
   );
-  return <>{page}{queueLayer}{socialLayer}{namePromptLayer}</>;
+  // a expedição que voltou: aviso nas outras telas; no Hub o cartão mostra; numa partida espera ela acabar
+  const mecenatoLayer = <MecenatoReturnToast mode={inMatch ? "hold" : screen === "hub" || screen === "mecenato" ? "quiet" : "show"} onOpen={openMuseum} />;
+  return <>{page}{queueLayer}{socialLayer}{mecenatoLayer}{namePromptLayer}</>;
 }

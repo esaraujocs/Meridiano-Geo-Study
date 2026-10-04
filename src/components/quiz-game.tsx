@@ -23,6 +23,7 @@ import { emptySupplyCounts, lupaToHide, type SupplyCounts, type SupplyId } from 
 import { variantLabel } from "../domain/result-view";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { t } from "../domain/i18n";
+import { isCountry } from "../domain/sovereignty";
 import { loadPeoples } from "../domain/peoples-data";
 import { isPeoplesFamily, isPeoplesVariant, optionText, peoplesDeckPool, peoplesOptions, peoplesPool, promptText as peoplesPrompt, type Peoples } from "../domain/peoples";
 
@@ -336,7 +337,9 @@ export function QuizGame({
   const promptText = variant === "capital-pais" ? targetMeta?.cap : peoplesMode && peoples ? peoplesPrompt(peoples, peoplesMode, target) ?? titleFor(target) : titleFor(target);
   const promptFlag = isFlagPrompt && targetMeta?.fl ? flags?.[targetMeta.fl.toLowerCase()] : undefined;
   const PEOPLES_KICKER = { "gentilico-pais": t.quiz.whichCountryDemonym, "pais-gentilico": t.quiz.whichDemonym, "moeda-pais": t.quiz.whichCountryCurrency, "pais-moeda": t.quiz.whichCurrency } as const;
-  const kicker = peoplesMode ? PEOPLES_KICKER[peoplesMode] : isFlagPrompt ? t.quiz.whichCountryFlag : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital : t.quiz.whichCapital;
+  // "país" ou "território" conforme o alvo (Ossétia do Sul é território; ver domain/sovereignty.ts)
+  const territory = !isCountry(target, targetMeta);
+  const kicker = peoplesMode ? PEOPLES_KICKER[peoplesMode](territory) : isFlagPrompt ? t.quiz.whichCountryFlag(territory) : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital(territory) : t.quiz.whichCapital(territory);
   return (
     <div className="app-shell gs-app">
       {leaveGuard.dialog}

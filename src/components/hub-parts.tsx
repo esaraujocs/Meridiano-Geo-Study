@@ -7,11 +7,11 @@ import type { PvpQueueView } from "../domain/pvp";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
-import { FEATURED_SUPPLIES, SUPPLY_COST } from "../domain/supplies";
+import { FEATURED_SUPPLIES, SUPPLY_COST, type SupplyId } from "../domain/supplies";
 import { SupplyArt } from "./supply-art";
 import { leagueLabel, nextStep } from "../domain/duel-labels";
 import type { EconomySnapshot } from "../domain/economy-store";
-import { pickShowcaseTheme } from "../domain/hub-showcase";
+import { SHOWCASE_INTERVAL_MS, showcaseSets } from "../domain/hub-showcase";
 import { missingCoins } from "../domain/themes";
 import { MUSEUM_PIECES, museumPieceById, museumPieceText } from "../domain/museum";
 import { ROUTES, activeExpeditions, emptyProgress, isBack, nextStage, remainingMs, routeById, stageCost } from "../domain/mecenato";
@@ -28,15 +28,18 @@ const reducedMotion = () => document.documentElement.dataset.reducedMotion === "
 /** Carrossel em laço: a fila de cartões aparece três vezes e, quando o deslize termina, a posição volta em silêncio para a cópia do meio,
  *  então as setas (e o toque) nunca chegam a um fim. Os vizinhos espiam dos dois lados (`--peek` no CSS) e clicar neles avança.
  *  Só a cópia do meio é interativa; as outras duas são `inert`, por isso o leitor de tela e o Tab veem cada cartão uma vez. */
+/** Onde cada carrossel parou: voltar de outra tela (Loja, Mesa, partida) abre o Hub no mesmo cartão. Vale até recarregar a página. */
+const carouselMemory = new Map<string, number>();
 export function HubCarousel({ label, children }: { label: string; children: ReactNode }) {
   const items = Children.toArray(children);
   const count = items.length;
   const loop = count > 1;
   const track = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
+  const remembered = Math.min(carouselMemory.get(label) ?? 0, Math.max(0, count - 1));
+  const [active, setActive] = useState(remembered);
   /** Índice (entre as cópias) do cartão que está na frente: decide qual das cópias de cada modo é a clicável. */
-  const [lead, setLead] = useState(count);
-  const activeRef = useRef(0);
+  const [lead, setLead] = useState(count + remembered);
+  const activeRef = useRef(remembered);
   const target = useRef<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
   const stepWidth = useCallback(() => {
@@ -59,11 +62,12 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     target.current = null;
     const wrapped = ((indexAt(width) % count) + count) % count;
     activeRef.current = wrapped;
+    carouselMemory.set(label, wrapped);
     setActive(wrapped);
     const home = (count + wrapped) * width;
     if (Math.abs(el.scrollLeft - home) > 1) el.scrollLeft = home;
     setLead(count + wrapped);
-  }, [count, indexAt, loop, stepWidth]);
+  }, [count, indexAt, label, loop, stepWidth]);
   useLayoutEffect(() => {
     const el = track.current;
     if (!el || !loop) return;
@@ -238,12 +242,34 @@ function Searching({ ladder, search, formatReady, formatCost }: { ladder: Ladder
 }
 
 /** A Vitrine: um tema da Loja em destaque (o mais caro que cabe no saldo ou, se nenhum cabe, o mais perto). Com todos os temas comprados, destaca os suprimentos. */
+/** Onde a Vitrine parou no rodízio: voltar ao Hub continua do mesmo set. */
+let showcaseIndex = 0;
+/**
+ * Vitrine da Loja: alterna 3 sets em laço (`showcaseSets`: os temas à venda primeiro, os conjuntos de suprimentos completam), trocando a cada
+ * SHOWCASE_INTERVAL_MS. Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam).
+ */
 export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void; onOpenThemes?: () => void }) {
-  const theme = economy ? pickShowcaseTheme(economy.balance, economy.unlocked) : null;
+  const sets = economy ? showcaseSets(economy.balance, economy.unlocked) : [];
+  const [index, setIndex] = useState(() => showcaseIndex);
+  const [paused, setPaused] = useState(false);
+  const count = sets.length;
+  const at = count ? index % count : 0;
+  useEffect(() => { showcaseIndex = at; }, [at]);
+  useEffect(() => {
+    if (count < 2 || paused || reducedMotion()) return;
+    const timer = window.setInterval(() => { if (!document.hidden) setIndex((value) => (value + 1) % count); }, SHOWCASE_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, [count, paused]);
+  const set = sets[at];
+  const theme = set?.kind === "theme" ? set.theme : null;
   const preview = theme ? previewFor(theme.id) : undefined;
   const missing = theme && economy ? missingCoins(theme.cost, economy.balance) : 0;
-  return <section className={`hx-showcase${theme ? "" : " is-supplies"}`} aria-label={t.hub.showcase}>
-    <header><h3>{t.hub.showcase}</h3><button type="button" className="hx-link" onClick={onOpenStore}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
+  const supplies = (set?.kind === "supplies" ? set.ids : FEATURED_SUPPLIES) as readonly SupplyId[];
+  return <section className={`hx-showcase${theme ? "" : " is-supplies"}`} aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+    <header><h3>{t.hub.showcase}</h3>
+      {count > 1 && <span className="hx-showcase-dots">{sets.map((item, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>}
+      <button type="button" className="hx-link" onClick={onOpenStore}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
+    <div key={at} className="hx-showcase-slide">
     {theme
       ? <button type="button" className="hx-showcase-body" onClick={onOpenThemes ?? onOpenStore} aria-label={`${theme.name} · ${money(theme.cost)}`}>
         <span className="hx-showcase-img" style={preview ? { backgroundImage: `url(${preview})` } : { background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }}>
@@ -260,7 +286,7 @@ export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: E
       : <>
         <p className="hx-showcase-done"><i className="hx-tag">{t.hub.showcaseDone}</i></p>
         <ul className="hx-supplies">
-          {FEATURED_SUPPLIES.map((id) => <li key={id}>
+          {supplies.map((id) => <li key={id}>
             <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
               <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
               <b>{t.supplies[id].name}</b>
@@ -270,17 +296,23 @@ export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: E
           </li>)}
         </ul>
       </>}
+    </div>
   </section>;
 }
 
-/** O Mecenato (v2): o que está acontecendo no porto — a expedição que voltou, a que está no mar ou a próxima etapa da rota aberta. Abre o Mecenato. */
+/** O Mecenato (v2): o que está acontecendo no porto — a expedição que voltou, a que está no mar ou a próxima etapa da rota aberta. Abre o Mecenato.
+ *  No mar, o cartão mostra uma faixa de viagem (o navio anda na barra até o porto, com o tempo que falta, atualizado sozinho); de volta, a faixa vira
+ *  "Voltou!" e o cartão pulsa até desembarcar. */
 export function HubMecenato({ onOpen }: { onOpen: () => void }) {
   const view = useMecenato();
   const [now, setNow] = useState(Date.now());
-  useEffect(() => { const timer = window.setInterval(() => setNow(Date.now()), 60_000); return () => window.clearInterval(timer); }, []);
   const active = view ? activeExpeditions(view) : [];
   const backRecord = view ? active.find((record) => isBack(record, view.progress[record.id] ?? emptyProgress(), now)) : undefined;
   const sailingRecord = active.find((record) => record !== backRecord);
+  // no mar o relógio anda a cada 15 s (no último minuto, a cada segundo); parado no porto, a cada minuto
+  const left = sailingRecord && view ? remainingMs(sailingRecord, view.progress[sailingRecord.id] ?? emptyProgress(), now) : null;
+  const tick = left === null ? 60_000 : left < 60_000 ? 1000 : 15_000;
+  useEffect(() => { const timer = window.setInterval(() => setNow(Date.now()), tick); return () => window.clearInterval(timer); }, [tick]);
   const route = ROUTES.find((item) => item.open)!;
   const next = view ? nextStage(route, view) : 0;
   const pieceOf = (record?: { route: string; stage: number }) => (record ? museumPieceById(routeById(record.route)?.stages[record.stage]?.piece ?? "") : undefined);
@@ -288,12 +320,21 @@ export function HubMecenato({ onOpen }: { onOpen: () => void }) {
   const nextPiece = next !== null ? museumPieceById(route.stages[next]?.piece ?? "") : undefined;
   const piece = pieceOf(shownRecord) ?? nextPiece ?? MUSEUM_PIECES[0];
   const text = museumPieceText(piece);
-  const label = backRecord ? t.mecenato.hubBack : sailingRecord && view ? t.mecenato.hubSailing(duration(remainingMs(sailingRecord, view.progress[sailingRecord.id] ?? emptyProgress(), now))) : next !== null ? t.mecenato.hubNext : t.mecenato.hubDone;
+  const eta = left !== null ? duration(left) : "";
+  // quanto da viagem já foi (a viagem efetiva desconta o que os acertos cortaram)
+  const total = sailingRecord && view ? Math.max(1, sailingRecord.durationMs - Math.min(view.progress[sailingRecord.id]?.cutMs ?? 0, sailingRecord.durationMs)) : 1;
+  const pct = left !== null ? Math.min(100, Math.max(0, Math.round((1 - left / total) * 100))) : 0;
+  const label = backRecord ? t.mecenato.hubBack : sailingRecord ? t.mecenato.hubSailing(eta) : next !== null ? t.mecenato.hubNext : t.mecenato.hubDone;
   const owned = view ? MUSEUM_PIECES.filter((item) => view.ownedPieces.has(item.id)).length : 0;
-  return <button type="button" className={`hx-museum${backRecord ? " is-back" : ""}`} onClick={onOpen} aria-label={`${t.hub.museumName} · ${label} · ${text.title}`}>
+  return <button type="button" className={`hx-museum${backRecord ? " is-back" : sailingRecord ? " is-sailing" : ""}`} onClick={onOpen} aria-label={`${t.hub.museumName} · ${label} · ${text.title}`}>
     <span className="hx-museum-img" style={{ backgroundImage: `url(${piece.image})` }} aria-hidden="true" />
     <span className="hx-museum-text">
-      <small>{t.hub.museumName} · {label}</small>
+      <small>{t.hub.museumName}{shownRecord ? "" : ` · ${label}`}</small>
+      {backRecord && <span className="hx-voyage is-back" aria-hidden="true"><i className="hx-voyage-dot" /><b>{t.mecenato.hubLanded}</b></span>}
+      {sailingRecord && !backRecord && <span className="hx-voyage" role="img" aria-label={t.mecenato.hubVoyageAria(pct, eta)}>
+        <span className="hx-voyage-head"><b>{t.mecenato.hubAtSea}</b><em>{t.mecenato.hubEta(eta)}</em></span>
+        <span className="hx-voyage-bar"><i style={{ width: `${pct}%` }} /><span className="hx-voyage-ship" style={{ left: `${pct}%` }}><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2.5 10.5h11l-2.2 3H4.7z" fill="currentColor" /><path d="M7.5 1.8v7.6H3.2zM8.6 3.4l4 6H8.6z" fill="currentColor" opacity=".85" /></svg></span></span>
+      </span>}
       <b>{text.title}</b>
       <span>{text.subtitle}</span>
       <span className="hx-museum-dots" aria-hidden="true">{MUSEUM_PIECES.map((item) => <i key={item.id} className={view?.ownedPieces.has(item.id) ? "on" : ""} />)}<em>{t.mecenato.archiveCount(owned, MUSEUM_PIECES.length)}</em></span>

@@ -30,6 +30,7 @@ import { useLeaveGuard } from "./leave-guard";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { TypedAnswerInput } from "./typed-answer-input";
 import { t } from "../domain/i18n";
+import { isCountry } from "../domain/sovereignty";
 
 type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; options?: SessionOptions; onBack: () => void; onEnd?: (result: SessionResult | null) => void; supplies?: SupplyCounts };
 type Destination = "recorte" | "home" | "result";
@@ -252,7 +253,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage" data-target-id={import.meta.env.DEV ? target : undefined}>
-          <div className="gs-kicker">{t.silhouette.kicker}</div>
+          <div className="gs-kicker">{t.silhouette.kicker(!isCountry(target, data.meta[target]))}</div>
           <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label={t.silhouette.aria}><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
           {typedMode && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(targetName)}</div>}
           {!answerResult && supply.usedThisRound.has("vizinho") && <NeighborChip meta={data.meta} targetId={target} />}

@@ -22,6 +22,7 @@ import { shuffleAnswerOptions } from "../domain/answer-options";
 import { TypedAnswerInput } from "./typed-answer-input";
 import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
+import { isCountry } from "../domain/sovereignty";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void; supplies?: SupplyCounts };
 type Choice = { id: string; label: string; flag?: string };
@@ -296,7 +297,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
         ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.historicalFlagStimulus} /></div>
         : <div className={"script" in target ? `gs-big script${(stimulusText?.length ?? 0) > 110 ? " xlong" : (stimulusText?.length ?? 0) > 60 ? " long" : ""}` : bigClass(stimulusText)}>{stimulusText}</div>;
   const kicker = writing
-    ? (variant === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)
+    ? (variant === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)(!isCountry(target.id, data.meta[target.id]))
     : historicalMode
       ? (variant === "historica-nome" ? t.quiz.whichEntityFlag : t.quiz.pickFlag)
       : languageName ? t.quiz.whichLanguage : t.quiz.whichCountriesLanguage;

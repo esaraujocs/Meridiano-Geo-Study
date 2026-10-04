@@ -270,11 +270,17 @@ export async function querySessions(): Promise<SurfaceSession[]> {
   return rows.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
 }
 
-export async function queryCollectionSummary(data: Legacy) {
+/** O contador da Coleção (tile do Hub): as cartas de país e as bandeiras históricas juntas (255 + 200 = 455). */
+export async function queryCollectionSummary(data: Legacy, historicalIds: readonly string[] = []) {
   const db = await openDb();
-  const progress = await all<any>(db.transaction("progress", "readonly").objectStore("progress"));
+  const [progress, historical] = await Promise.all([
+    all<any>(db.transaction("progress", "readonly").objectStore("progress")),
+    all<any>(db.transaction("historicalCollection", "readonly").objectStore("historicalCollection")),
+  ]);
   db.close();
-  return collectionSummary(progress, canonicalCurrentIds(data.meta));
+  const countries = collectionSummary(progress, canonicalCurrentIds(data.meta));
+  const found = historicalAlbum(historicalIds.map((id) => ({ id }) as HistoricalEntity), historical).filter((card) => card.discovered).length;
+  return { discovered: countries.discovered + found, total: countries.total + historicalIds.length };
 }
 
 export async function addHistoricalCollection(id: string, value: unknown) {
