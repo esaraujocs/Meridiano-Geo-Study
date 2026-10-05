@@ -61,8 +61,8 @@ assert.equal(ratioPercent(1, 0), 0, "sem total não divide por zero");
 assert.equal(ratioPercent(300, 255), 100);
 
 // Legendas dos cards de progresso.
-assert.equal(collectionCaption(210, 255), "45 faltando para completar o atlas");
-assert.equal(collectionCaption(255, 255), "Atlas completo");
+assert.equal(collectionCaption(210, 255), "45 faltando para completar a coleção");
+assert.equal(collectionCaption(255, 255), "Coleção completa");
 assert.equal(collectionCaption(0, 0), "", "carregando: sem legenda");
 const base = { unlocked: 17, total: 30, titles: [], next: null };
 assert.equal(achievementCaption({ ...base, next: { name: "Sete mares", current: 5, target: 7 } }), "Próximo: Sete mares · 5/7");

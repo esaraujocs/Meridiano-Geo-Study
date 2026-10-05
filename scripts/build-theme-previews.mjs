@@ -42,7 +42,6 @@ async function freshWith(themeId) {
   await page.evaluate(() => {
     document.querySelectorAll(".family").forEach((card) => {
       card.classList.remove("locked");
-      const state = card.querySelector(".hx-stat small"); if (state) state.textContent = "aberta";
     });
     [["252/255", 99], ["24/30", 80], ["40%", 40]].forEach(([text, pct], index) => {
       const button = document.querySelectorAll(".hub-progress-grid button")[index];

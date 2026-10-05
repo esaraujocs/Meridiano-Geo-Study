@@ -201,9 +201,6 @@
 .mc2-spent header{display:flex;justify-content:space-between;gap:10px;font-size:13px}
 .mc2-spent header b{font:700 13px 'DM Mono',monospace}
 
-/* Hub: posto do Patronato ao lado do título */
-.hx .hub-patron{order:2;display:inline-flex;align-items:center;gap:6px;flex:none;padding:3px 10px 3px 4px;border-radius:99px;background:var(--mc-tinta,#14302d);color:#fff4df;font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
-.hx .hub-patron i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:conic-gradient(from 210deg,#f7df9a,#c9953f,#8d5f1a,#f7df9a);color:#14302d;font:700 10px 'Fraunces',serif;font-style:normal}
 
 /* celular */
 @media (max-width:760px){
@@ -226,5 +223,4 @@
   .mc2-step .mc2-medal{width:46px;height:46px}.mc2-step .mc2-medal b{font-size:16px}
   .mc2-step b.n{font-size:11px}.mc2-step small{display:none}
   .mc2-two{grid-template-columns:1fr}
-  .hx .hub-patron{display:none}
 }

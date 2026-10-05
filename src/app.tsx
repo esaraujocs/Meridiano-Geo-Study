@@ -904,7 +904,6 @@ export function App() {
   const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } if (destination === "store") setStoreTab("all"); setScreen(destination); };
-  const openThemes = () => { setStoreTab("themes"); setScreen("store"); };
   const openMuseum = () => setScreen("mecenato");
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
   const trainGroup = async (group: ModeGroup) => {
@@ -1360,8 +1359,6 @@ export function App() {
         <Hub
             economy={economy}
           onOpenMuseum={openMuseum}
-          onOpenThemes={openThemes}
-          pillarPct={pillarPct}
           totalEntities={data.mapEntityIds.length}
           collectionSummary={collectionSummary}
           achievementSummary={achievementSummary}

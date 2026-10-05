@@ -7,21 +7,15 @@ import type { PvpQueueView } from "../domain/pvp";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
-import { FEATURED_SUPPLIES, SUPPLY_COST, type SupplyId } from "../domain/supplies";
+import { SUPPLY_COST, type SupplyId } from "../domain/supplies";
 import { SupplyArt } from "./supply-art";
 import { leagueLabel, nextStep } from "../domain/duel-labels";
-import type { EconomySnapshot } from "../domain/economy-store";
-import { SHOWCASE_INTERVAL_MS, showcaseSets } from "../domain/hub-showcase";
-import { missingCoins } from "../domain/themes";
+import { SHOWCASE_INTERVAL_MS, SUPPLY_SETS } from "../domain/hub-showcase";
 import { MUSEUM_PIECES, museumPieceById, museumPieceText } from "../domain/museum";
 import { ROUTES, activeExpeditions, emptyProgress, isBack, nextStage, remainingMs, routeById, stageCost } from "../domain/mecenato";
 import { useMecenato } from "./use-mecenato";
 import { duration } from "./mecenato-view";
 import { formatNumber as money, t } from "../domain/i18n";
-
-// Prévias do Hub de cada tema (geradas por scripts/build-theme-previews.mjs). Sem a imagem, a amostra de cores ocupa o lugar.
-const PREVIEWS = import.meta.glob("../assets/themes/*.webp", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
-const previewFor = (id: string) => PREVIEWS[`../assets/themes/${id}.webp`];
 
 const reducedMotion = () => document.documentElement.dataset.reducedMotion === "true" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -170,14 +164,13 @@ const divisionProgress = (card: LadderCard) => {
 const LADDER_KEY = "carta-hub-ladder";
 
 /** O Duelo no Hub: a escada (Mapas ou Bandeiras), a liga e os últimos 5 resultados; "Duelar" entra na fila (valendo) e, enquanto espera,
- *  dá para duelar contra um bot. Amistoso, Ranking e Amigos ficam à mão no próprio cartão. */
-export function HubDuel({ cards, formatReady, formatCost, search, onLeague, onFriends }: {
+ *  dá para duelar contra um bot. Amistoso e Ranking ficam à mão no próprio cartão (Amigos fica no cabeçalho). */
+export function HubDuel({ cards, formatReady, formatCost, search, onLeague }: {
   cards: readonly LadderCard[];
   formatReady: boolean;
   formatCost: number;
   search: ArenaSearch;
   onLeague?: () => void;
-  onFriends?: () => void;
 }) {
   const best = cards.reduce((top, card) => (card.trophies > top.trophies ? card : top), cards[0]);
   const [picked, setPicked] = useState<Ladder>(() => {
@@ -197,7 +190,7 @@ export function HubDuel({ cards, formatReady, formatCost, search, onLeague, onFr
   return <section className="hx-duel" data-fam="duelo" data-league={status.league} aria-label={t.duel.modeDuel}>
     <div className="hx-duel-top">
       <span className="hx-duel-ic" aria-hidden="true"><Icon type="swords" size={26} /></span>
-      <div className="hx-duel-name"><h3>{t.duel.modeDuel}</h3><p>{t.hub.duelSub}</p></div>
+      <div className="hx-duel-name"><h3>{t.duel.modeDuel}</h3></div>
       <button type="button" className="hx-pill" onClick={onLeague} aria-label={t.duel.chipAria(money(card.trophies), label)}><Icon type="achievements" size={13} /> {label} · {money(card.trophies)}</button>
     </div>
     <div className="hx-duel-mid">
@@ -219,7 +212,6 @@ export function HubDuel({ cards, formatReady, formatCost, search, onLeague, onFr
       <div className="hx-duel-acts">
         <button type="button" onClick={() => search.onFriendly(card.ladder)}>{t.hub.duelFriendly}</button>
         {onLeague && <button type="button" onClick={onLeague}>{t.hub.duelRanking}</button>}
-        {onFriends && <button type="button" onClick={onFriends}>{t.hub.duelFriends}</button>}
       </div>
       {errorHere && <div className="hx-duel-err" role="alert"><p>{errorHere}</p><button type="button" onClick={() => search.onBot(card.ladder)}>{t.duel.arenas.botNow}{!formatReady && <Icon type="lock" size={13} />}</button></div>}
     </div>}
@@ -241,61 +233,38 @@ function Searching({ ladder, search, formatReady, formatCost }: { ladder: Ladder
   </div>;
 }
 
-/** A Vitrine: um tema da Loja em destaque (o mais caro que cabe no saldo ou, se nenhum cabe, o mais perto). Com todos os temas comprados, destaca os suprimentos. */
 /** Onde a Vitrine parou no rodízio: voltar ao Hub continua do mesmo set. */
 let showcaseIndex = 0;
 /**
- * Vitrine da Loja: alterna 3 sets em laço (`showcaseSets`: os temas à venda primeiro, os conjuntos de suprimentos completam), trocando a cada
- * SHOWCASE_INTERVAL_MS. Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam).
+ * Vitrine da Loja: só consumíveis (os temas ficam na Loja). Alterna os 3 conjuntos de `SUPPLY_SETS` em laço, trocando a cada SHOWCASE_INTERVAL_MS.
+ * Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam).
  */
-export function HubShowcase({ economy, onOpenStore, onOpenThemes }: { economy: EconomySnapshot | null | undefined; onOpenStore: () => void; onOpenThemes?: () => void }) {
-  const sets = economy ? showcaseSets(economy.balance, economy.unlocked) : [];
+export function HubShowcase({ onOpenStore }: { onOpenStore: () => void }) {
   const [index, setIndex] = useState(() => showcaseIndex);
   const [paused, setPaused] = useState(false);
-  const count = sets.length;
-  const at = count ? index % count : 0;
+  const count = SUPPLY_SETS.length;
+  const at = index % count;
   useEffect(() => { showcaseIndex = at; }, [at]);
   useEffect(() => {
-    if (count < 2 || paused || reducedMotion()) return;
+    if (paused || reducedMotion()) return;
     const timer = window.setInterval(() => { if (!document.hidden) setIndex((value) => (value + 1) % count); }, SHOWCASE_INTERVAL_MS);
     return () => window.clearInterval(timer);
   }, [count, paused]);
-  const set = sets[at];
-  const theme = set?.kind === "theme" ? set.theme : null;
-  const preview = theme ? previewFor(theme.id) : undefined;
-  const missing = theme && economy ? missingCoins(theme.cost, economy.balance) : 0;
-  const supplies = (set?.kind === "supplies" ? set.ids : FEATURED_SUPPLIES) as readonly SupplyId[];
-  return <section className={`hx-showcase${theme ? "" : " is-supplies"}`} aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+  const supplies = SUPPLY_SETS[at] as readonly SupplyId[];
+  return <section className="hx-showcase" aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
     <header><h3>{t.hub.showcase}</h3>
-      {count > 1 && <span className="hx-showcase-dots">{sets.map((item, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>}
-      <button type="button" className="hx-link" onClick={onOpenStore}>{t.hub.showcaseAll} <Icon type="arrow" size={14} /></button></header>
+      <span className="hx-showcase-dots">{SUPPLY_SETS.map((_, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>
+    </header>
     <div key={at} className="hx-showcase-slide">
-    {theme
-      ? <button type="button" className="hx-showcase-body" onClick={onOpenThemes ?? onOpenStore} aria-label={`${theme.name} · ${money(theme.cost)}`}>
-        <span className="hx-showcase-img" style={preview ? { backgroundImage: `url(${preview})` } : { background: `linear-gradient(90deg,${theme.swatches.map((color, index) => `${color} ${index * 25}% ${(index + 1) * 25}%`).join(",")})` }}>
-          <i className="hx-tag">{t.hub.featured}</i>
-        </span>
-        <span className="hx-showcase-info">
-          <span className="hx-showcase-name"><b>{theme.name}</b><span className="store-swatches" aria-hidden="true">{theme.swatches.map((color) => <i key={color} style={{ background: color }} />)}</span></span>
-          <span className="hx-showcase-buy">
-            <span className="hx-price"><i aria-hidden="true">$</i>{money(theme.cost)}</span>
-            <span className={`hx-btn${missing > 0 ? " is-missing" : ""}`}>{missing > 0 ? t.store.missing(money(missing)) : t.store.buy}</span>
-          </span>
-        </span>
-      </button>
-      : <>
-        <p className="hx-showcase-done"><i className="hx-tag">{t.hub.showcaseDone}</i></p>
-        <ul className="hx-supplies">
-          {supplies.map((id) => <li key={id}>
-            <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
-              <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
-              <b>{t.supplies[id].name}</b>
-              <small>{t.supplies[id].short}</small>
-              <span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST[id])}</span>
-            </button>
-          </li>)}
-        </ul>
-      </>}
+      <ul className="hx-supplies">
+        {supplies.map((id) => <li key={id}>
+          <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
+            <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
+            <b>{t.supplies[id].name}</b>
+            <span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST[id])}</span>
+          </button>
+        </li>)}
+      </ul>
     </div>
   </section>;
 }
@@ -325,19 +294,17 @@ export function HubMecenato({ onOpen }: { onOpen: () => void }) {
   const total = sailingRecord && view ? Math.max(1, sailingRecord.durationMs - Math.min(view.progress[sailingRecord.id]?.cutMs ?? 0, sailingRecord.durationMs)) : 1;
   const pct = left !== null ? Math.min(100, Math.max(0, Math.round((1 - left / total) * 100))) : 0;
   const label = backRecord ? t.mecenato.hubBack : sailingRecord ? t.mecenato.hubSailing(eta) : next !== null ? t.mecenato.hubNext : t.mecenato.hubDone;
-  const owned = view ? MUSEUM_PIECES.filter((item) => view.ownedPieces.has(item.id)).length : 0;
   return <button type="button" className={`hx-museum${backRecord ? " is-back" : sailingRecord ? " is-sailing" : ""}`} onClick={onOpen} aria-label={`${t.hub.museumName} · ${label} · ${text.title}`}>
     <span className="hx-museum-img" style={{ backgroundImage: `url(${piece.image})` }} aria-hidden="true" />
     <span className="hx-museum-text">
-      <small>{t.hub.museumName}{shownRecord ? "" : ` · ${label}`}</small>
+      <small>{shownRecord ? t.hub.museumName : label}</small>
       {backRecord && <span className="hx-voyage is-back" aria-hidden="true"><i className="hx-voyage-dot" /><b>{t.mecenato.hubLanded}</b></span>}
       {sailingRecord && !backRecord && <span className="hx-voyage" role="img" aria-label={t.mecenato.hubVoyageAria(pct, eta)}>
         <span className="hx-voyage-head"><b>{t.mecenato.hubAtSea}</b><em>{t.mecenato.hubEta(eta)}</em></span>
         <span className="hx-voyage-bar"><i style={{ width: `${pct}%` }} /><span className="hx-voyage-ship" style={{ left: `${pct}%` }}><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2.5 10.5h11l-2.2 3H4.7z" fill="currentColor" /><path d="M7.5 1.8v7.6H3.2zM8.6 3.4l4 6H8.6z" fill="currentColor" opacity=".85" /></svg></span></span>
       </span>}
       <b>{text.title}</b>
-      <span>{text.subtitle}</span>
-      <span className="hx-museum-dots" aria-hidden="true">{MUSEUM_PIECES.map((item) => <i key={item.id} className={view?.ownedPieces.has(item.id) ? "on" : ""} />)}<em>{t.mecenato.archiveCount(owned, MUSEUM_PIECES.length)}</em></span>
+      <span className="hx-museum-dots" aria-hidden="true">{MUSEUM_PIECES.map((item) => <i key={item.id} className={view?.ownedPieces.has(item.id) ? "on" : ""} />)}</span>
     </span>
     <span className="hx-museum-act">
       {!shownRecord && next !== null && <span className="hx-price"><i aria-hidden="true">$</i>{money(stageCost(route, next))}</span>}

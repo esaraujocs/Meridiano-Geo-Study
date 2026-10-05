@@ -6,7 +6,7 @@ import { LevelTicks } from "./level-badge";
 import type { AnyQuizVariant, Family, Legacy } from "../domain/types";
 import type { LegacyProfile } from "../domain/legacy-migration";
 import { isDebugEnabled } from "../domain/debug-flag";
-import { EMPTY_ACHIEVEMENT_SUMMARY, achievementCaption, collectionCaption, hubProfile, ratioPercent, type AchievementSummary } from "../domain/hub-profile";
+import { EMPTY_ACHIEVEMENT_SUMMARY, hubProfile, ratioPercent, type AchievementSummary } from "../domain/hub-profile";
 import type { OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
@@ -18,7 +18,6 @@ import type { ArenaSearch } from "./hub-parts";
 import { HubCarousel, HubDuel, HubMecenato, HubShowcase } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
-import { rankFor } from "../domain/mecenato";
 import { LevelFrame } from "./level-frame";
 import type { LadderCard } from "../domain/duel-view";
 import type { Milestone } from "../domain/duel-rewards";
@@ -210,11 +209,9 @@ export function Hub({
   economy,
   onNavigate,
   onOpenMuseum,
-  onOpenThemes,
   totalEntities = 0,
   collectionSummary = { discovered: 0, total: 0 },
   achievementSummary = EMPTY_ACHIEVEMENT_SUMMARY,
-  pillarPct = {},
   trophies = 0,
   duelsPlayed = 0,
   duelReady = true,
@@ -226,13 +223,9 @@ export function Hub({
   onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void;
   /** Abre o Museu (a aba do Museu dentro da Coleção). */
   onOpenMuseum?: () => void;
-  /** Abre a Loja direto na aba Suprimentos (a Vitrine destaca os suprimentos quando todos os temas já são seus). */
-  onOpenThemes?: () => void;
   totalEntities?: number;
   collectionSummary?: { discovered: number; total: number };
   achievementSummary?: AchievementSummary;
-  /** Precisão atual de cada pilar (0 a 100), mostrada no cartão do modo; `null`/ausente = ainda sem partidas. */
-  pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
   /** A última partida de cada modo (o "Continuar" do cartão); sem ela o cartão só oferece "Jogar". */
   /** Repete a última partida do modo, sem passar pela configuração. */
   trophies?: number;
@@ -268,25 +261,21 @@ export function Hub({
   const level = economy?.level ?? 1;
   const xpInLevel = Math.max(0, (economy?.xp ?? 0) - (economy?.xpBase ?? 0));
   const xpSpan = Math.max(1, (economy?.xpNext ?? 100) - (economy?.xpBase ?? 0));
-  const xpToNext = Math.max(0, (economy?.xpNext ?? 100) - (economy?.xp ?? 0));
   const league = leagueOf(trophies);
   const leagueLabel = t.duel.leagueName(t.duel.leagues[league.league], divisionRoman(league.division));
   const framed = duelsPlayed > 0;
-  // Mecenato: a moldura do nível equipada (no lugar da da liga) e o posto do Patronato ao lado do título
+  // Mecenato: a moldura do nível equipada (no lugar da da liga)
   const mecenato = useMecenato();
   const mcFrame = mecenato ? activeCosmetics()["level-frame"] : undefined;
-  const patron = mecenato ? rankFor(mecenato.invested) : null;
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
-  const [masteryHead, ...masteryRest] = profile.masteryLine.split(" · ");
   const progressTiles = [
-    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: t.hub.tileCollection, pct: ratioPercent(collectionSummary.discovered, collectionSummary.total), caption: collectionCaption(collectionSummary.discovered, collectionSummary.total) },
-    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total), caption: achievementCaption(achievementSummary) },
-    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct, caption: profile.caption },
+    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: t.hub.tileCollection, pct: ratioPercent(collectionSummary.discovered, collectionSummary.total) },
+    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total) },
+    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct },
   ] as const;
   const modeCard = (item: (typeof familyItems)[number]) => {
     const open = isFamilyUnlocked(item);
-    const pct = item.pillar ? pillarPct[item.pillar] : null;
     return <div
       key={item.family}
       data-fam={item.family}
@@ -296,16 +285,13 @@ export function Hub({
       <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={`${t.hub.play}: ${item.label}`} />
       <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
       <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-      <div className="family-footer">
-        <span className="hx-stat">{pct != null ? <><span className="hx-meter"><i style={{ width: `${pct}%` }} /></span><small title={t.hub.pillarAccuracy(pct)} aria-label={t.hub.pillarAccuracy(pct)}>{pct}%</small></> : <small>{open ? t.hub.open : t.hub.locked}</small>}</span>
-      </div>
+      <div className="family-footer">{economy && !open && <span className="hx-stat"><small>{t.hub.locked}</small></span>}</div>
     </div>;
   };
   return (
     <main className="content hub-content hx">
       <h1 className="sr-only">Meridiano</h1>
       <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
-        <div className="hub-bar hx-piece hx-p-brand"><div className="hub-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div></div>
         <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
           <div className={`hub-level${framed && !mcFrame ? " lg-frame" : ""}${mcFrame ? " has-mc-frame" : ""}`} data-league={framed ? league.league : undefined} role="img" aria-label={t.hub.levelAria(level, xpInLevel, xpSpan)}>
             {mcFrame && <LevelFrame id={mcFrame} />}
@@ -318,13 +304,11 @@ export function Hub({
           <div className="hub-head">
             <p className="hub-title">{profile.title}</p>
             {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge" title={title.label}><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
-            <p className="hub-mastery" title={masteryRest.join(" · ") || undefined}><b>{masteryHead}</b></p>
-            {patron && <p className="hub-patron" title={t.mecenato.rank.label}><i aria-hidden="true">{patron.roman}</i>{(t.mecenato.rank.names as Record<string, string>)[patron.id]}</p>}
             {economy && <p className="hub-tally" title={t.hub.tallyTitle}>{t.hub.tally(economy.completedSessions, economy.rounds, formatNumber)}</p>}
           </div>
           <div className="hub-xp">
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
-            <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}<span className="hub-xp-next"> · {t.hub.xpToNext(xpToNext)}</span></span>
+            <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}</span>
           </div>
         </div></div>
         <div className="hub-bar hx-piece hx-p-wallet"><div className="hub-stats">
@@ -340,8 +324,8 @@ export function Hub({
         </section>
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
-          {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} onFriends={arenas.onFriends} />}
-          <HubShowcase economy={economy} onOpenStore={() => onNavigate?.("store")} onOpenThemes={onOpenThemes} />
+          {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} />}
+          <HubShowcase onOpenStore={() => onNavigate?.("store")} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
@@ -350,7 +334,6 @@ export function Hub({
               <span className="hx-tile-mark" aria-hidden="true"><Icon type={tile.icon} size={150} /></span>
               <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" /><circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} /></svg><Icon type={tile.icon} /></span>
               <span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span></span>
-              <span className="hx-tile-foot"><em className="hub-progress-caption">{tile.caption}</em><span className="hx-tile-go" aria-hidden="true">{t.hub.progressGo} <Icon type="arrow" size={14} /></span></span>
             </button>)}
           </div>
         </section>

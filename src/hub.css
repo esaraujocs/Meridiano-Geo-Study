@@ -2,17 +2,12 @@
    e no celular tudo numa tela. Fica depois do index.css e antes dos temas: os temas seguem pintando `.hub-bar`, `.family` e os tiles de progresso
    (fundo, borda, sombra); aqui só entra layout e as peças novas, que usam as variáveis de cor de cada tema. */
 
-.hx{--duel-a:#b8475a;--duel-b:#8c2d40;--duel-c:#6f2233}
-[data-fam=duelo]{--h:#9b3347;--hb:#8c2d40;--hg:#9b3347;--h2:#b8475a;--on:#fff4df}
 .hx .section-label{margin:18px 0 10px}
 .hx .section-label h2{font-size:21px}
 
-/* ───────── header fino ───────── */
+/* ───────── header fino (sem o logo, sem o posto do Patronato e sem a maestria: ficam nas telas deles) ───────── */
 .hx .hub-bar{display:flex;align-items:center;gap:18px;height:80px;min-height:0;padding:0 18px;margin:0 0 4px;overflow:visible;border-radius:18px}
 .hx .hub-meridian,.hx .hub-rule,.hx .hub-eyebrow{display:none}
-.hx .hub-brand{display:flex;flex-direction:row;align-items:center;gap:12px;flex:none;padding:0 26px 0 8px;border-right:1px solid var(--line);color:var(--ink);font-size:11.5px;font-weight:800;letter-spacing:.12em;white-space:nowrap}
-.hx .hub-brand .brand-logo{width:46px;height:46px;border-radius:12px}
-.hx .hub-brand span{padding-left:0}
 .hx .hub-player{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ring head" "ring xp";column-gap:14px;row-gap:5px;align-items:center;flex:1;min-width:0;padding:0;border:0;justify-content:start}
 .hx .hub-level{grid-area:ring;width:54px;height:54px;margin:0}
 .hx .hub-level strong{font-size:23px}
@@ -24,14 +19,16 @@
 .hx .hub-badge svg{width:13px;height:13px}
 .hx .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .hx .hub-tally{order:3;flex:none;margin:0 0 0 auto;font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--muted)}
-.hx .hub-mastery{order:2;margin:0;padding:3px 9px;border-radius:999px;background:rgba(47,111,106,.13);font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .hx .hub-xp{grid-area:xp;display:flex;flex-wrap:nowrap;align-items:center;gap:10px;margin:0;min-width:0;white-space:nowrap}
 .hx .hub-xp-label{flex:none}
-.hx .hub-xp-next{display:inline}
 .hx .hub-track{flex:1 1 240px;max-width:560px;height:7px;margin:0}
 .hx .hub-xp-label{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .hx .hub-friends{display:inline-flex;align-items:center;gap:8px;flex:none;padding:0 16px 0 12px;height:42px;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);font:700 12.5px 'Plus Jakarta Sans',sans-serif}
 .hx .hub-friends:hover{border-color:var(--green);color:var(--green)}
+/* Hub limpo (05/10/2026): sem as listras do anel do nível e sem a borda do elo (por enquanto); o ícone de amigos fica ao lado da engrenagem */
+.hx .hub-level-ticks,.hx .hub-level .lg-pip{display:none}
+.hx .hub-level.lg-frame{box-shadow:none!important}
+.hx .hub-coin{order:1}.hx .hub-friends{order:2}.hx .hub-gear{order:3}
 @media (min-width:1280px){.hx .hub-badge{width:auto;padding:3px 11px 3px 8px;gap:6px}.hx .hub-badge-label{position:static;width:auto;height:auto;overflow:visible;clip:auto;font:700 11px 'Plus Jakarta Sans',sans-serif}}
 .hx .hub-stats{display:flex;align-items:center;gap:10px;flex:none;padding:0;border:0;justify-content:flex-end}
 .hx .hub-coin{margin:0;padding:5px 12px 5px 6px;gap:8px}
@@ -53,10 +50,6 @@
   .hx .hx-head{display:flex;align-items:stretch;gap:16px;height:auto;min-height:0;padding:0;margin:0 0 4px;overflow:visible;background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
   .hx .hx-head::before{content:none}
   .hx .hx-piece{display:flex;align-items:center;height:auto;margin:0;padding:14px 24px;gap:14px;border-radius:22px;box-shadow:0 18px 28px -22px rgba(36,59,58,.6)}
-  .hx .hx-p-brand{flex:none;flex-direction:column;justify-content:center}
-  .hx .hx-p-brand .hub-brand{flex-direction:column;gap:8px;padding:0;border:0;font-size:10px;letter-spacing:.18em}
-  .hx .hx-p-brand .hub-brand span{display:block;padding:0}
-  .hx .hx-p-brand .hub-brand .brand-logo{width:50px;height:50px;border-radius:14px;box-shadow:0 10px 16px -10px rgba(0,0,0,.6)}
   .hx .hx-p-player{flex:1;min-width:0}
   .hx .hx-p-player .hub-player{flex:1}
   .hx .hx-p-wallet{flex:none;padding:14px 20px}
@@ -68,8 +61,6 @@
   .hx .hub-badge{width:34px;height:34px;padding:0;gap:0;border-radius:50%;background:linear-gradient(145deg,#f6dc9a,#c9953f);color:#3a2606;border:2px solid #fff6dc;box-shadow:0 6px 10px -5px rgba(90,60,10,.6)}
   .hx .hub-badge svg{width:17px;height:17px}
   .hx .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-  .hx .hub-mastery{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:99px;background:color-mix(in srgb,var(--green) 62%,#04161a);color:#fff4df}
-  .hx .hub-mastery b{color:#fff4df}
   .hx .hub-track{flex:1 1 240px;max-width:560px;height:12px;border-radius:7px;background-image:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(255,255,255,.55) calc(10% - 1px) 10%);box-shadow:inset 0 1px 3px rgba(0,0,0,.2)}
   .hx .hub-xp-label{font-size:12.5px;color:var(--ink)}
   .hx .hub-friends{width:46px;height:46px;padding:0;justify-content:center;border-radius:50%}
@@ -115,10 +106,10 @@ html[data-reduced-motion=true] .hx .family.hx-mode:has(.hx-hit:hover){transform:
 /* a arte e o texto do cartão não recebem clique: alguns temas (Noturno) põem camadas por cima da área clicável */
 .hx .hx-mode .family-visual,.hx .hx-mode .family-visual *,.hx .hx-mode .family-copy,.hx .hx-mode .family-copy *{pointer-events:none}
 .hx .hx-mode .family-footer{position:relative;z-index:3}
+/* só o cartão bloqueado diz alguma coisa no rodapé; nos abertos o espaço fica (a altura do texto não muda) */
+.hx .hx-mode .family-footer{min-height:24px}
 .hx-stat{display:grid;gap:5px;min-width:0}
 .hx-stat small{font-size:11.5px;font-weight:600;white-space:nowrap}
-.hx-meter{display:block;width:44px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--h) 22%,transparent);overflow:hidden}
-.hx-meter i{display:block;height:100%;background:var(--h);border-radius:2px}
 .hx-arrow{position:absolute;top:calc(50% - 14px);z-index:4;display:grid;place-items:center;width:42px;height:42px;margin-top:-21px;padding:0;border:1px solid var(--green);border-radius:50%;background:var(--paper);color:var(--green);box-shadow:0 8px 18px -8px rgba(36,59,58,.55)}
 .hx-arrow.is-prev{left:calc((var(--peek) - var(--gap)) / 2 - 21px)}
 .hx-arrow.is-prev svg{transform:rotate(90deg)}.hx-arrow.is-next svg{transform:rotate(-90deg)}
@@ -133,65 +124,56 @@ html[data-reduced-motion=true] .hx .family.hx-mode:has(.hx-hit:hover){transform:
 [data-fam=gentilicos]{--h:color-mix(in srgb,var(--h-mapa,#2f8f83) 48%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
 [data-fam=moedas]{--h:color-mix(in srgb,var(--h-band,#c0553f) 52%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
 
-/* ───────── Duelo ───────── */
-.hx-duel{position:relative;display:grid;gap:9px;padding:12px 16px 14px;border-radius:18px;border:1px solid var(--duel-c);background:linear-gradient(160deg,var(--duel-a),var(--duel-b) 60%,var(--duel-c));color:#fff4df;box-shadow:0 16px 26px -18px var(--duel-a);overflow:hidden;text-align:left}
-.hx-duel::before{content:"";position:absolute;right:-30px;top:-20px;width:170px;height:140px;opacity:.18;pointer-events:none;background:repeating-linear-gradient(22deg,transparent 0 12px,#fff 13px 14px),repeating-linear-gradient(100deg,transparent 0 18px,#fff 19px 20px);transform:rotate(-12deg);border-radius:50%}
+/* ───────── Duelo ─────────
+   Tom claro (05/10/2026): o mesmo papel dos cartões de modo, com o vinho só nos detalhes. Os últimos resultados seguem as cores de sempre
+   (vitória verde, derrota terracota, empate neutro: `.ar-form` do index.css e dos temas), nada de vitória em vermelho. */
+.hx{--duel-a:#a03a4f;--duel-b:#7e2438;--duel-ink:#7e2438}
+:root[data-scheme=dark] .hx{--duel-ink:#f2b9c3}
+[data-fam=duelo]{--h:#9b3347;--hb:#8c2d40;--hg:#9b3347;--h2:#b8475a;--on:#fff4df}
+.hx-duel{position:relative;display:grid;gap:9px;padding:12px 16px 14px;border-radius:18px;border:1px solid color-mix(in srgb,var(--duel-a) 28%,var(--line));background:color-mix(in srgb,var(--duel-a) 9%,var(--paper));color:var(--ink);overflow:hidden;text-align:left}
+.hx-duel::before{content:"";position:absolute;right:-30px;top:-20px;width:170px;height:140px;opacity:.10;pointer-events:none;background:repeating-linear-gradient(22deg,transparent 0 12px,var(--duel-a) 13px 14px),repeating-linear-gradient(100deg,transparent 0 18px,var(--duel-a) 19px 20px);transform:rotate(-12deg);border-radius:50%}
 .hx-duel>*{position:relative}
 .hx-duel-top{display:flex;align-items:center;gap:12px}
-.hx-duel-ic{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:#fff4df;color:var(--duel-a);box-shadow:0 0 0 5px rgba(255,244,223,.2)}
+.hx-duel-ic{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:var(--duel-a);color:#fff4df;box-shadow:0 0 0 5px color-mix(in srgb,var(--duel-a) 14%,transparent)}
 .hx-duel-name{display:grid;gap:1px;min-width:0;flex:1}
-.hx-duel-name h3{margin:0;font:700 24px/1 'Fraunces',Georgia,serif;letter-spacing:-.04em;color:#fff}
-.hx-duel-name p{margin:0;font-size:11.5px;line-height:1.3;color:#fbe4e8}
-.hx-pill{flex:none;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border:0;border-radius:99px;background:#fff4df;color:var(--duel-b);font:700 10.5px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
+.hx-duel-name h3{margin:0;font:700 24px/1 'Fraunces',Georgia,serif;letter-spacing:-.04em;color:var(--duel-ink)}
+.hx-pill{flex:none;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border:0;border-radius:99px;background:color-mix(in srgb,var(--duel-a) 12%,transparent);color:var(--duel-ink);font:700 10.5px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
 .hx-pill:hover{filter:brightness(.95)}
 .hx-duel-mid{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.hx-ladder{display:inline-flex;padding:2px;border-radius:99px;background:rgba(255,255,255,.14)}
-.hx-ladder button{padding:5px 12px;border:0;border-radius:99px;background:transparent;color:#fbe4e8;font:700 11.5px 'Plus Jakarta Sans',sans-serif}
-.hx-ladder button[aria-pressed=true]{background:#fff4df;color:var(--duel-b)}
+.hx-ladder{display:inline-flex;padding:2px;border-radius:99px;background:color-mix(in srgb,var(--duel-a) 10%,transparent)}
+.hx-ladder button{padding:5px 12px;border:0;border-radius:99px;background:transparent;color:var(--duel-ink);font:700 11.5px 'Plus Jakarta Sans',sans-serif}
+.hx-ladder button[aria-pressed=true]{background:var(--duel-a);color:#fff4df}
 .hx-ladder button:disabled:not([aria-pressed=true]){opacity:.5}
-.hx-duel-form small{font-size:11px;color:#fbe4e8}
+.hx-duel-form small{font-size:11px;color:var(--muted)}
 .hx-duel .ar-form{display:inline-flex;gap:4px}
-.hx-duel .ar-form i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff4df;color:var(--duel-b);font:800 9.5px 'Plus Jakarta Sans',sans-serif;font-style:normal}
-.hx-duel .ar-form i.loss,.hx-duel .ar-form i.draw{background:rgba(255,244,223,.38);color:#fff}
 .hx-duel-step{display:flex;align-items:center;gap:10px}
-.hx-dbar{flex:0 0 90px;height:5px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden}
-.hx-dbar i{display:block;height:100%;border-radius:3px;background:#fff4df}
-.hx-duel-step small{font-size:11px;color:#fbe4e8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hx-dbar{flex:0 0 90px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--duel-a) 18%,transparent);overflow:hidden}
+.hx-dbar i{display:block;height:100%;border-radius:3px;background:var(--duel-a)}
+.hx-duel-step small{font-size:11px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hx-duel-foot{display:grid;gap:8px}
-.hx-go{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border:0;border-radius:99px;background:#fff4df;color:var(--duel-b);font:800 13.5px 'Plus Jakarta Sans',sans-serif;box-shadow:0 8px 16px -10px rgba(0,0,0,.6)}
-.hx-go:hover:not(:disabled){filter:brightness(.96)}
+.hx-go{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border:0;border-radius:99px;background:var(--duel-a);color:#fff4df;font:800 13.5px 'Plus Jakarta Sans',sans-serif}
+.hx-go:hover:not(:disabled){filter:brightness(.94)}
 .hx-go:disabled{opacity:.6}
-.hx-duel-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.hx-duel-acts.is-search{grid-template-columns:1fr 1fr}
-.hx-duel-acts button,.hx-duel-err button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;border:1px solid rgba(255,255,255,.35);border-radius:12px;background:rgba(255,255,255,.1);color:#fff4df;font:700 11.5px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
-.hx-duel-acts button:hover,.hx-duel-err button:hover{background:rgba(255,255,255,.2)}
+.hx-duel-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hx-duel-acts button,.hx-duel-err button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;border:1px solid color-mix(in srgb,var(--duel-a) 35%,transparent);border-radius:12px;background:transparent;color:var(--duel-ink);font:700 11.5px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
+.hx-duel-acts button:hover,.hx-duel-err button:hover{background:color-mix(in srgb,var(--duel-a) 10%,transparent)}
 .hx-duel-acts button:disabled{opacity:.55}
 .hx-search{display:flex;align-items:center;gap:10px}
 .hx-search div{display:grid;gap:1px}
 .hx-search b{font-size:13px}
-.hx-search small,.hx-need{font-size:11px;color:#fbe4e8}
+.hx-search small,.hx-need{font-size:11px;color:var(--muted)}
 .hx-duel-err{display:grid;gap:6px}
-.hx-duel-err p{margin:0;font-size:11.5px;color:#ffd9de}
+.hx-duel-err p{margin:0;font-size:11.5px;color:var(--duel-ink)}
 
-/* ───────── Vitrine ───────── */
+/* ───────── Vitrine (só consumíveis: os temas ficam na Loja) ───────── */
 .hx-showcase{flex:1;display:flex;flex-direction:column;gap:8px;padding:11px 14px 12px;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));border-radius:18px;background:linear-gradient(170deg,rgba(196,147,69,.14),rgba(250,244,229,.72))}
 .hx-showcase>header{display:flex;align-items:center;justify-content:space-between}
 .hx-showcase h3{margin:0;font:500 10.5px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a6a2a}
-.hx-link{display:inline-flex;align-items:center;gap:6px;padding:0;border:0;background:transparent;color:var(--green);font:700 12.5px 'Plus Jakarta Sans',sans-serif}
-.hx-showcase-body{flex:1;display:flex;flex-direction:column;gap:9px;padding:0;border:0;background:transparent;color:var(--ink);text-align:left}
-.hx-showcase-img{position:relative;display:block;flex:1;min-height:118px;border-radius:12px;background-size:cover;background-position:center 14%;box-shadow:0 8px 18px -8px rgba(0,0,0,.55)}
-.hx-tag{position:absolute;left:10px;top:10px;padding:3px 9px;border-radius:99px;background:rgba(255,244,223,.92);color:#6b4423;font:700 9px 'DM Mono',monospace;font-style:normal;letter-spacing:.12em;text-transform:uppercase}
-.hx-showcase-info{display:flex;flex-direction:column;gap:7px}
-.hx-showcase-name{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.hx-showcase-name b{font:700 17px/1.1 'Fraunces',Georgia,serif;letter-spacing:-.02em}
-.hx-showcase-buy{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .hx-price{display:inline-flex;align-items:center;gap:7px;font:700 17px 'Fraunces',Georgia,serif;color:var(--ink)}
 .hx-price i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--brass);color:#fff;font:700 12px 'Plus Jakarta Sans',sans-serif;font-style:normal}
 .hx-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:99px;background:var(--brass);color:#1a1103;font:800 12px 'Plus Jakarta Sans',sans-serif;white-space:nowrap}
 .hx-btn.is-missing{background:rgba(36,59,58,.1);color:var(--muted);font-weight:700}
 .hx-btn.is-light{background:#f0cf8f;color:#4a2f14}
-.hx-showcase-body:hover .hx-btn:not(.is-missing){filter:brightness(.93)}
-.hx-showcase-done{margin:0}
 /* rodízio da Vitrine: cada set entra com um esmaecer curto; os pontos do cabeçalho escolhem o set (e o rodízio para com o mouse ou o foco) */
 .hx-showcase-slide{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;animation:hx-fade .6s ease both}
 @keyframes hx-fade{from{opacity:0}to{opacity:1}}
@@ -201,13 +183,11 @@ html[data-reduced-motion=true] .hx .family.hx-mode:has(.hx-hit:hover){transform:
 .hx-showcase-dots button[aria-current=true]::before{left:2px;width:14px;background:var(--brass)}
 @media (prefers-reduced-motion:reduce){.hx-showcase-slide{animation:none}}
 html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
-.hx-showcase-done .hx-tag{position:static;display:inline-block}
 .hx-supplies{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none}
 .hx-supplies li{display:flex;min-width:0}
 .hx-supplies button{flex:1;display:grid;justify-items:center;align-content:center;gap:3px;min-width:0;padding:12px 6px 12px;border:1px solid color-mix(in srgb,var(--brass) 38%,var(--line));border-radius:14px;background:color-mix(in srgb,var(--paper) 55%,transparent);color:var(--ink);text-align:center;transition:transform .15s,box-shadow .15s,border-color .15s}
 .hx-supplies button:hover{transform:translateY(-2px);border-color:var(--brass);box-shadow:0 12px 18px -14px rgba(60,40,10,.7)}
 .hx-supplies b{margin-top:6px;font:700 15px/1.1 'Fraunces',Georgia,serif;letter-spacing:-.02em}
-.hx-supplies small{font-size:11px;color:var(--muted)}
 .hx-supplies .hx-price{margin-top:6px;font-size:15px}
 .hx-supply-art{display:grid;place-items:center;width:76px;height:76px;border-radius:20px;box-shadow:0 8px 14px -8px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.35)}
 .hx-supply-art[data-supply=lupa]{background:radial-gradient(circle at 30% 22%,#d7f1f6,#6fb0c2)}
@@ -224,27 +204,22 @@ html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
 /* ───────── progresso (tiles com anel) ───────── */
 .hx-progress .section-label{margin-top:22px}
 .hx-progress .hub-progress-grid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.hx-progress .hub-progress-grid button{--tile:var(--green);position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"icon text" "foot foot";align-content:space-between;align-items:center;gap:12px 16px;min-height:170px;height:100%;padding:18px 20px 14px;overflow:hidden;text-align:left;transition:transform .15s,box-shadow .15s}
+.hx-progress .hub-progress-grid button{--tile:var(--green);position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"icon text";align-content:center;align-items:center;gap:0 16px;min-height:0;height:auto;padding:14px 22px;overflow:hidden;text-align:left;transition:transform .15s,box-shadow .15s}
 .hx-progress .hub-progress-grid button:hover{transform:translateY(-3px);box-shadow:0 18px 28px -20px rgba(36,59,58,.6)}
 .hx-progress [data-tile=collection]{--tile:#b98a2e}.hx-progress [data-tile=achievements]{--tile:#b65f47}.hx-progress [data-tile=progress]{--tile:#2f8f83}
 :root[data-scheme=dark] .hx-progress [data-tile=collection]{--tile:#e8b84a}:root[data-scheme=dark] .hx-progress [data-tile=achievements]{--tile:#ee7968}:root[data-scheme=dark] .hx-progress [data-tile=progress]{--tile:#58d6d0}
 .hx-tile-mark{position:absolute;right:-26px;top:-30px;color:var(--tile);opacity:.07;pointer-events:none}
 .hx-tile-mark svg{width:170px;height:170px;stroke-width:1}
-.hx-progress .hub-progress-icon{grid-area:icon;position:relative;display:grid;place-items:center;width:62px;height:62px;margin:9px;border-radius:50%}
+.hx-progress .hub-progress-icon{grid-area:icon;position:relative;display:grid;place-items:center;width:52px;height:52px;margin:8px;border-radius:50%}
 .hx-progress .hub-progress-icon>svg:not(.hx-ring){width:30px;height:30px}
 .hx-progress .hub-progress-icon>svg.hx-ring{position:absolute;inset:-9px;width:calc(100% + 18px);height:calc(100% + 18px);margin:0;transform:rotate(-90deg)}
 .hx-ring circle{fill:none;stroke-width:4.5}
 .hx-ring-track{stroke:color-mix(in srgb,var(--tile) 20%,transparent)}
 .hx-ring-arc{stroke:var(--tile);stroke-linecap:round}
 .hx-progress .hub-progress-text{grid-area:text;display:grid;gap:0;min-width:0}
-.hx-progress .hub-progress-grid strong{font-size:36px;line-height:1;white-space:nowrap}
-.hx-progress .hub-progress-grid small{margin-top:5px;font-size:13px}
+.hx-progress .hub-progress-grid strong{font-size:32px;line-height:1;white-space:nowrap}
+.hx-progress .hub-progress-grid small{margin-top:4px;font-size:12.5px}
 .hx-progress .hub-progress-bar{display:none}
-.hx-tile-foot{grid-area:foot;position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:11px;border-top:1px solid color-mix(in srgb,var(--tile) 24%,transparent)}
-.hx-progress .hub-progress-caption{display:block;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hx-tile-go{display:inline-flex;align-items:center;gap:5px;flex:none;padding:5px 12px;border-radius:99px;background:var(--tile);color:#fff;font:800 11.5px 'Plus Jakarta Sans',sans-serif}
-.hx-progress .hub-progress-grid button:hover .hx-tile-go{filter:brightness(.92)}
-:root[data-scheme=dark] .hx-tile-go{color:#0c1a24}
 
 /* ───────── Mecenato ───────── */
 .hx-mecenato .section-label{margin-top:22px}
@@ -255,11 +230,9 @@ html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
 .hx-museum-text{display:grid;gap:3px;align-self:end}
 .hx-museum-text small{font:500 10px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#f0cf8f}
 .hx-museum-text b{font:700 27px/1.05 'Fraunces',Georgia,serif;letter-spacing:-.03em}
-.hx-museum-text>span:not(.hx-museum-dots):not(.hx-voyage){font-size:12.5px;color:#f3e6cc}
 .hx-museum-dots{display:flex;align-items:center;gap:5px;margin-top:6px}
 .hx-museum-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35)}
 .hx-museum-dots i.on{background:#f0cf8f}
-.hx-museum-dots em{margin-left:5px;font:500 10px 'DM Mono',monospace;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:#f0cf8f}
 .hx-museum-act{display:grid;gap:10px;justify-items:end;align-self:end}
 .hx-museum .hx-price{color:#fff4df;font-size:19px}
 .hx-museum:hover .hx-btn{filter:brightness(.95)}
@@ -290,8 +263,8 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
 }
 @media (min-width:761px) and (max-width:1023px){
   .app-shell:has(.hub-content)>.topbar{display:none}
-  /* a barra do jogador não cabe inteira: sai a marca, os selos e o texto de XP que sobreporiam as fichas da direita */
-  .hx .hub-brand,.hx .hub-badges,.hx .hub-xp-next,.hx .hub-tally{display:none}
+  /* a barra do jogador não cabe inteira: saem os selos e o resumo de partidas, que sobreporiam as fichas da direita */
+  .hx .hub-badges,.hx .hub-tally{display:none}
 }
 
 /* ───────── celular: tudo numa tela, sem rolagem ─────────
@@ -301,14 +274,13 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx{padding:8px 8px 10px!important;min-height:0;grid-template-rows:auto minmax(min-content,1fr);overflow-x:hidden;overflow-y:auto}
   .hx .section-label{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .hx .hub-bar{gap:8px;height:auto;padding:7px 9px;margin:0;border-radius:16px}
-  .hx .hub-brand{display:none}
   .hx .hub-player{column-gap:9px;row-gap:3px}
   .hx .hub-level{grid-column:auto;grid-row:auto;grid-area:ring;width:42px;height:42px;margin:0;border:2px solid var(--green);border-radius:50%;background:var(--paper)}
   .hx .hub-level-ring{display:none}
   .hx .hub-level strong{font-size:19px}
   .hx .hub-head{display:contents}
   .hx .hub-title{grid-area:head;font-size:17px;margin:0;align-self:end}
-  .hx .hub-badges,.hx .hub-mastery,.hx .hub-tally{display:none}
+  .hx .hub-badges,.hx .hub-tally{display:none}
   .hx .hub-xp{grid-area:xp;align-self:start}
   .hx .hub-track{flex:1 1 auto}
   .hx .hub-xp-label{display:none}
@@ -348,7 +320,6 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   /* Duelo: faixa larga */
   .hx-duel{padding:11px 12px 12px;border-radius:16px;gap:8px}
   .hx-duel-name h3{font-size:22px}
-  .hx-duel-name p{display:none}
   .hx-pill{padding:4px 9px;font-size:10px}
   .hx-duel-step{display:none}
   .hx-duel-foot{grid-template-columns:auto 1fr;align-items:center;gap:8px}
@@ -357,18 +328,10 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx-duel-acts button{padding:8px 4px;font-size:10.5px}
   .hx-duel-foot.is-search,.hx-duel-foot:has(.hx-duel-err){grid-template-columns:1fr}
   /* Vitrine e Mecenato lado a lado */
-  .hx-showcase{padding:0;border:0;background:none;gap:0}
+  .hx-showcase{height:112px;padding:8px 6px;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));border-radius:14px;background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8));gap:0}
   .hx-showcase>header{display:none}
-  .hx-showcase-body{position:relative;height:112px;border-radius:14px;overflow:hidden;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8));gap:0}
-  .hx-showcase-img{min-height:0;border-radius:0;box-shadow:none}
-  .hx-showcase-info{padding:6px 10px 7px;gap:3px}
-  .hx-showcase-name b{font-size:14px}
-  .hx-showcase-name .store-swatches{display:none}
-  .hx-showcase-buy{gap:6px}
   .hx-price{font-size:13px;gap:5px}.hx-price i{width:16px;height:16px;font-size:9px}
   .hx-btn{display:none}
-  .hx-showcase.is-supplies{height:112px;padding:8px 6px;border:1px solid color-mix(in srgb,var(--brass) 55%,var(--line));border-radius:14px;background:linear-gradient(170deg,rgba(196,147,69,.16),rgba(250,244,229,.8))}
-  .hx-showcase-done{display:none}
   .hx-supplies{gap:2px}
   .hx-supplies button{padding:2px 0;border:0;background:none;gap:3px;align-content:center}
   .hx-supplies b,.hx-supplies small{display:none}
@@ -377,8 +340,6 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx-supplies .hx-price{margin:0;font-size:12.5px}
   .hx-museum{height:112px;min-height:0;grid-template-columns:1fr;align-content:end;padding:10px 12px;border-radius:14px}
   .hx-museum-text b{font-size:16px}
-  .hx-museum-text>span:not(.hx-museum-dots):not(.hx-voyage){display:none}
-  .hx-museum-dots em{display:none}
   .hx-museum-act{justify-items:start}
   .hx-museum-act .hx-btn{display:none}
   .hx-museum .hx-price{font-size:13px}
