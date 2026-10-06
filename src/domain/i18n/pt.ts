@@ -753,6 +753,7 @@ export const pt = {
     newMatch: (family: string) => `${family} · nova partida`,
     title: "Monte sua partida",
     table: "Mesa de jogo",
+    stats: "Estatísticas",
     howTo: "Como responder",
     historyIn: (family: string) => `Seu histórico em ${family}`,
     noHistory: "Ainda sem partidas aqui.",

@@ -750,6 +750,7 @@ export const en: Messages = {
     newMatch: (family: string) => `${family} · new match`,
     title: "Set up your match",
     table: "Game table",
+    stats: "Stats",
     howTo: "How to answer",
     historyIn: (family: string) => `Your history in ${family}`,
     noHistory: "No matches here yet.",

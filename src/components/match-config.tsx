@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { Icon, type IconType } from "./icons";
 import { ScreenBar } from "./screen-bar";
 import { ModePanels } from "./mode-panels";
@@ -160,6 +160,18 @@ export function Recorte({
       : t.config.modeMissing(money(activeCost - balance), money(balance))
     : active.hint;
 
+  // Estatísticas do modo num menu suspenso (pedido do Enzo, 06/10): fecha com Esc, clique fora ou no próprio botão.
+  const [statsOpen, setStatsOpen] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!statsOpen) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setStatsOpen(false); };
+    const onDown = (event: PointerEvent) => { if (!statsRef.current?.contains(event.target as Node)) setStatsOpen(false); };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
+  }, [statsOpen]);
+
   const trio = (label: string, children: ReactNode, extra = "") => <div className={`mz-group ${extra}`}><span className="cv-k">{label}</span><div className="cv-ctl">{children}</div></div>;
   const accuracy = topFamily === "mapa" || topFamily === "bandeiras" || topFamily === "capitais" ? pillarPct[topFamily] ?? null : null;
   const hitFirst = summary.earn.split(/[^\d]/)[0];
@@ -170,7 +182,26 @@ export function Recorte({
       <div className="cv mz" data-fam={topFamily}>
         <div className="mz-main">
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
-            <header className="cv-head"><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></header>
+            <header className="cv-head mz-head">
+              <div><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></div>
+              <div className="mz-stats" ref={statsRef}>
+                <button type="button" className="mz-stats-toggle" aria-expanded={statsOpen} aria-controls="mz-stats" onClick={() => setStatsOpen((open) => !open)}>
+                  <Icon type="trend" size={16} /><span>{t.config.stats}</span><i aria-hidden="true"><Icon type="chevron" size={14} /></i>
+                </button>
+                <aside id="mz-stats" className="mz-side" aria-label={t.config.stats} hidden={!statsOpen}>
+                  <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
+                  <section className="mz-panel">
+                    <h2>{t.config.reward}</h2>
+                    <div className="mz-reward">
+                      <div><b>{hitFirst}</b><small>{summary.earnUnit}</small></div>
+                      <div><b>+{Math.round(STREAK_CAP * 100)}%</b><small>{t.config.rewardStreak}</small></div>
+                      <div><b>+{completionPerRound(0.9)}</b><small>{t.config.rewardRound}</small></div>
+                    </div>
+                    {pace === "training" && <p className="cv-hint">{t.config.rewardTraining}</p>}
+                  </section>
+                </aside>
+              </div>
+            </header>
             <div className="mz-block">
               <span className="cv-k">{t.config.mode}</span>
               <div className="mz-ways" role="group" aria-label={t.config.mode} style={{ ["--cols" as string]: modes.length === 4 ? 2 : modes.length }}>
@@ -243,18 +274,6 @@ export function Recorte({
             </button>
           </div>
         </div>
-        <aside className="mz-side" aria-label={t.config.table}>
-          <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
-          <section className="mz-panel">
-            <h2>{t.config.reward}</h2>
-            <div className="mz-reward">
-              <div><b>{hitFirst}</b><small>{summary.earnUnit}</small></div>
-              <div><b>+{Math.round(STREAK_CAP * 100)}%</b><small>{t.config.rewardStreak}</small></div>
-              <div><b>+{completionPerRound(0.9)}</b><small>{t.config.rewardRound}</small></div>
-            </div>
-            {pace === "training" && <p className="cv-hint">{t.config.rewardTraining}</p>}
-          </section>
-        </aside>
       </div>
     </main>
   );

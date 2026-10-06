@@ -750,6 +750,7 @@ export const es: Messages = {
     newMatch: (family: string) => `${family} · nueva partida`,
     title: "Monta tu partida",
     table: "Mesa de juego",
+    stats: "Estadísticas",
     howTo: "Cómo responder",
     historyIn: (family: string) => `Tu historial en ${family}`,
     noHistory: "Aún sin partidas aquí.",
