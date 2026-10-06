@@ -43,7 +43,7 @@ try {
       const map = window.__cartaMap;
       const point = map.project(ll);
       const rect = map.getContainer().getBoundingClientRect();
-      const corrected = map.queryRenderedFeatures(point, { layers: ["split-land"] });
+      const corrected = map.queryRenderedFeatures(point, { layers: ["land"] });
       return { x: rect.left + point.x, y: rect.top + point.y, ids: corrected.map((f) => f.properties.carta_id) };
     }, coordinates);
     assert.ok(hit.ids.includes(expectedId), `own polygon must exist at ${coordinates}: ${hit.ids}`);
@@ -67,8 +67,18 @@ try {
   await mount("162", [105.6441, -10.50476], 7);
   await click([105.6441, -10.50476], "162");
   assert.ok(await page.$(".map-target-overlay.is-correct"), "Christmas selection also works at island-wide zoom");
+  // São Martinho: as duas metades são polígonos próprios nos tiles (Marigot ao norte, Philipsburg ao sul).
+  await mount("663", [-63.07, 18.06], 12);
+  await click([-63.085, 18.07], "663");
+  assert.ok(await page.$(".map-target-overlay.is-correct"), "Marigot answers the French half");
+  await mount("534", [-63.07, 18.06], 12);
+  await click([-63.045, 18.025], "534");
+  assert.ok(await page.$(".map-target-overlay.is-correct"), "Philipsburg answers the Dutch half");
+  await mount("534", [-63.07, 18.06], 12);
+  await click([-63.085, 18.07], "663");
+  assert.ok(await page.$(".map-target-overlay.is-wrong"), "the French half is not the Dutch half");
   assert.deepEqual(errors, [], "no browser exceptions");
-  console.log("map territory browser: ASM/CXR own polygons and target-independent answers pass");
+  console.log("map territory browser: ASM/CXR/São Martinho own polygons and target-independent answers pass");
 } finally {
   await browser.close();
 }

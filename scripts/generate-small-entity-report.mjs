@@ -1,5 +1,5 @@
 // Gera src/data/small-entity-markers.json a partir dos MESMOS tiles que o mapa desenha
-// (public/maps/carta-boundary-candidate.pmtiles), não da geometria legada.
+// (public/maps/meridiano-hd.pmtiles, scripts/map-hd/), não da geometria legada.
 //
 // Critério: um marcador por entidade jogável cuja MAIOR parte, no zoom 2, mede menos de
 // THRESHOLD_PX na maior dimensão. switchZoom é o zoom em que essa maior parte chega a
@@ -23,7 +23,7 @@ const output = "src/data/small-entity-markers.json";
 
 const catalog = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8"));
 const playableIds = [...new Set(catalog.mapEntityIds.map(String))];
-const bytes = await readFile("public/maps/carta-boundary-candidate.pmtiles");
+const bytes = await readFile("public/maps/meridiano-hd.pmtiles");
 const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 const archive = new PMTiles({
   getKey: () => "local-markers",
@@ -212,49 +212,11 @@ for (const id of playableIds) {
   });
 }
 
-// Contornos corrigidos: São Martinho (534/663) é uma feição inteira nos tiles; Samoa Americana
-// (16) e Ilha Christmas (162) usam as feições 10m para âncoras e switchZoom coerentes com os
-// contornos desenhados pelo mapa. A lista é lida do arquivo para não manter uma segunda cópia
-// dos identificadores; todos os quatro contornos esperados precisam estar presentes.
-const splitData = JSON.parse(await readFile("public/data/split-islands.geojson", "utf8"));
-const splitIds = new Set();
-for (const feature of splitData.features) {
-  const marker = markers.find((item) => item.properties.carta_id === feature.properties.carta_id);
-  if (!marker) throw new Error(`${feature.properties.carta_id}: contorno corrigido sem marcador jogável.`);
-  if (splitIds.has(feature.properties.carta_id)) {
-    throw new Error(`${feature.properties.carta_id}: mais de um contorno corrigido.`);
-  }
-  splitIds.add(feature.properties.carta_id);
-  const part = polygonsOf(feature.geometry)
-    .filter((polygon) => polygon[0]?.length >= 3)
-    .map((polygon) => ({ outer: polygon[0], holes: polygon.slice(1), area: ringArea(polygon[0]) }))
-    .sort((a, b) => b.area - a.area)[0];
-  if (!part) throw new Error(`${feature.properties.carta_id}: ilha dividida sem polígono válido.`);
-  const [slon, slat] = interiorPoint(part.outer, part.holes);
-  const anchor = [Number(slon.toFixed(5)), Number(slat.toFixed(5))];
-  if (!pointInRings(anchor, [part.outer, ...part.holes])) {
-    throw new Error(`${feature.properties.carta_id}: âncora fora do contorno corrigido.`);
-  }
-  marker.geometry.coordinates = anchor;
-  if (["16", "162"].includes(feature.properties.carta_id)) {
-    const [minX, minY, maxX, maxY] = bboxOf(part.outer);
-    const [x0, y0] = project0([minX, maxY]);
-    const [x1, y1] = project0([maxX, minY]);
-    const size = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
-    marker.properties.switchZoom = Number(Math.min(
-      NEVER_HIDE_ZOOM,
-      Math.log2(THRESHOLD_PX / Math.max(size, 1e-9)),
-    ).toFixed(3));
-  }
-}
-for (const id of ["16", "162", "534", "663"]) {
-  if (!splitIds.has(id)) throw new Error(`${id}: contorno corrigido ausente em split-islands.geojson.`);
-}
-
-// Territórios absorvidos (Guadalupe, Martinica, Reunião...): não são alvo nem estão nos tiles;
-// vêm de public/data/absorbed-territories.geojson (npm run build:absorbed). O clique vale pelo
-// soberano (answer_id) e o marcador segue o mesmo critério de tamanho das demais entidades.
-const absorbedData = JSON.parse(await readFile("public/data/absorbed-territories.geojson", "utf8"));
+// Territórios absorvidos (Guadalupe, Martinica, Reunião...): nunca são alvo e, nos tiles, fazem parte do
+// polígono do soberano; o contorno de cada um vem de scripts/map-hd/absorbed.geojson (build-absorbed.py)
+// só para pôr o marcador no lugar. O clique vale pelo soberano (answer_id) e o marcador segue o mesmo
+// critério de tamanho das demais entidades (Svalbard, grande, não precisa de marcador).
+const absorbedData = JSON.parse(await readFile("scripts/map-hd/absorbed.geojson", "utf8"));
 const absorbedMarkers = [];
 for (const feature of absorbedData.features) {
   const { carta_id: id, answer_id: answerId } = feature.properties;
@@ -309,6 +271,33 @@ for (const marker of markers) {
     if (String(feature.properties?.carta_id ?? feature.id) !== id) continue;
     inside = polygonsOf(feature.toGeoJSON(tx, ty, VERIFY_ZOOM).geometry)
       .some((polygon) => pointInRings([lon, lat], polygon));
+  }
+  if (!inside) {
+    // âncora medida no zoom 6 caiu fora do contorno fino (Mônaco, no porto): refaz pelo maior pedaço no zoom de verificação
+    let best = null;
+    for (let dx = -1; dx <= 1; dx += 1) {
+      for (let dy = -1; dy <= 1; dy += 1) {
+        const around = await archive.getZxy(VERIFY_ZOOM, tx + dx, ty + dy);
+        const aroundLayer = around ? new VectorTile(new PbfReader(new Uint8Array(around.data))).layers.countries : null;
+        for (let index = 0; aroundLayer && index < aroundLayer.length; index += 1) {
+          const feature = aroundLayer.feature(index);
+          if (String(feature.properties?.carta_id ?? feature.id) !== id) continue;
+          for (const polygon of polygonsOf(feature.toGeoJSON(tx + dx, ty + dy, VERIFY_ZOOM).geometry)) {
+            if (!polygon[0] || polygon[0].length < 3) continue;
+            const area = ringArea(polygon[0]);
+            if (!best || area > best.area) best = { area, polygon };
+          }
+        }
+      }
+    }
+    if (best) {
+      const [rlon, rlat] = interiorPoint(best.polygon[0], best.polygon.slice(1));
+      const anchor = [Number(rlon.toFixed(5)), Number(rlat.toFixed(5))];
+      if (pointInRings(anchor, best.polygon)) {
+        marker.geometry.coordinates = anchor;
+        inside = true;
+      }
+    }
   }
   if (!inside) outside.push(catalog.meta[id]?.pt ?? id);
 }

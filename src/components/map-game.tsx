@@ -42,11 +42,9 @@ import { mapDeckSignature } from "../domain/map-round-engine";
 import { distanceToGeometriesKm, haversineKm, nearestWithin, SEA_TAP_PX } from "../domain/map-nearest";
 import { t } from "../domain/i18n";
 
-const ABSORBED_URL = "/data/absorbed-territories.geojson";
-/** Contornos próprios de ilhas: metades de São Martinho e territórios que os tiles
- * sobrepõem ao soberano (Samoa Americana e Christmas). Não dependem do alvo da rodada. */
-const SPLIT_URL = "/data/split-islands.geojson";
-const SPLIT_ISLAND_IDS = ["534", "663", "16", "162"];
+/** O mapa nunca amplia além disto: os tiles vão até o zoom 9 com o detalhe de um zoom 10 (~10 m), e daqui em diante o desenho
+ * só cresceria. */
+const MAP_MAX_ZOOM = 14;
 // Tempo em que o acerto fica visível antes do próximo alvo (antes 350 ms, curto demais para notar).
 const HIT_FEEDBACK_MS = 700;
 /** As cores do mapa vêm do tema em uso (oceano, terra, costas, marcadores, o tom do acerto e do erro e os enfeites do mar). */
@@ -414,13 +412,11 @@ export function Game({
               url: `pmtiles://${MAP_URL}`,
               promoteId: "carta_id",
               attribution:
-                "geoBoundaries · Natural Earth · © OpenStreetMap contributors",
+                "© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries",
             },
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
             ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
             ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs, palette.rhumb.directions) as unknown as GeoJSON.FeatureCollection } } : {}),
-            absorbed: { type: "geojson", data: ABSORBED_URL },
-            splits: { type: "geojson", data: SPLIT_URL },
           },
           layers: [
             {
@@ -445,28 +441,7 @@ export function Game({
               type: "fill",
               source: "atlas",
               "source-layer": "countries",
-              filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!", ["in", ["get", "carta_id"], ["literal", SPLIT_ISLAND_IDS]]]] as unknown as maplibregl.FilterSpecification,
-              paint: {
-                "fill-color": palette.land,
-                "fill-outline-color": palette.outline,
-                "fill-opacity": palette.landOpacity,
-              },
-            },
-            {
-              id: "absorbed-land",
-              type: "fill",
-              source: "absorbed",
-              filter: ["==", "$type", "Polygon"],
-              paint: {
-                "fill-color": palette.land,
-                "fill-outline-color": palette.outline,
-                "fill-opacity": palette.landOpacity,
-              },
-            },
-            {
-              id: "split-land",
-              type: "fill",
-              source: "splits",
+              filter: ["==", ["geometry-type"], "Polygon"] as unknown as maplibregl.FilterSpecification,
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
@@ -475,28 +450,6 @@ export function Game({
             },
             // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
             ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
-            {
-              id: "pts",
-              type: "circle",
-              source: "atlas",
-              "source-layer": "countries",
-              filter: ["==", "$type", "Point"],
-              paint: {
-                 "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 3.5, 3, 5, 5, 1.5],
-                 "circle-color": palette.marker,
-                 "circle-opacity": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 3, 0.7, 5, 0.25],
-                 "circle-stroke-color": palette.markerStroke,
-                "circle-stroke-width": 1,
-              },
-            },
-             {
-               id: "pts-hit",
-               type: "circle",
-               source: "atlas",
-               "source-layer": "countries",
-               filter: ["==", "$type", "Point"],
-               paint: { "circle-radius": 14, "circle-color": palette.marker, "circle-opacity": 0.01 },
-             },
              ...MARKER_BAND_ZOOMS.map((band) => ({
               id: markerLayerId(band),
               type: "circle" as const,
@@ -527,6 +480,7 @@ export function Game({
         },
         center: camera.center,
         zoom: camera.zoom,
+        maxZoom: MAP_MAX_ZOOM,
         attributionControl: { compact: true },
         // O norte fica sempre para cima: sem girar (dedos, botão direito, teclado) nem inclinar.
         dragRotate: false,
@@ -576,9 +530,9 @@ export function Game({
     const nearestLand = (x: number, y: number) => {
       const zoom = map.getZoom();
       const found = map
-        .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "absorbed-land", "split-land", "pts-hit", "small-entities-hit"] })
+        .queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: ["land", "small-entities-hit"] })
+        // terra sem entidade (Saba, Bir Tawil…) tem carta_id vazio: não responde por ninguém
         .filter((feature) => feature.properties?.carta_id && (feature.layer.id !== "small-entities-hit" || isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom)))
-        .sort((a, b) => Number(b.layer.id === "split-land") - Number(a.layer.id === "split-land"))
         .map((feature) => ({ answerId: String(feature.properties?.answer_id ?? feature.properties?.carta_id), geometry: feature.geometry as unknown as { type: string; coordinates: unknown } }));
       return nearestWithin(found, (position) => map.project(position), x, y, SEA_TAP_PX);
     };
@@ -587,10 +541,8 @@ export function Game({
       const id = targetRef.current;
       try {
         const filter = ["==", ["get", "carta_id"], id] as maplibregl.FilterSpecification;
-        // metade de ilha dividida: o polígono dos tiles é a ilha inteira (daria 0 km na outra metade); vale o contorno certo
-        const split = SPLIT_ISLAND_IDS.includes(id);
         const geometries = [
-          ...(split ? map.querySourceFeatures("splits", { filter }) : map.querySourceFeatures("atlas", { sourceLayer: "countries", filter })),
+          ...map.querySourceFeatures("atlas", { sourceLayer: "countries", filter }),
           ...map.querySourceFeatures("small-entities", { filter }),
         ].map((feature) => feature.geometry as unknown as { type: string; coordinates: unknown });
         const measured = geometries.length ? distanceToGeometriesKm(geometries, lng, lat) : null;
@@ -619,19 +571,14 @@ export function Game({
             coordinates,
           }];
         });
-      const landHits = map
-        .queryRenderedFeatures([x, y], { layers: ["split-land", "land", "absorbed-land", "pts-hit", "pts"] })
-        .filter((feature) => feature.properties?.carta_id);
-      // A ordem de queryRenderedFeatures não define a soberania: o contorno corrigido
-      // deve ganhar do polígono do soberano que também cobre a mesma ilha.
-      const landHit = landHits.find((feature) => feature.layer.id === "split-land")
-        ?? landHits.find((feature) => feature.layer.id === "land" || feature.layer.id === "absorbed-land")
-        ?? landHits[0];
-      const landId = landHit ? String(landHit.properties?.answer_id ?? landHit.properties?.carta_id) : "";
+      const landHit = map
+        .queryRenderedFeatures([x, y], { layers: ["land"] })
+        .find((feature) => feature.properties?.carta_id);
+      const landId = landHit ? String(landHit.properties?.carta_id) : "";
       const choice = chooseClickAnswer(candidates, landId);
       if (choice.answerId) return {
         id: choice.answerId, point: choice.marker?.coordinates, byWater: false,
-        specific: Boolean(choice.marker) || landHit?.layer.id === "split-land",
+        specific: Boolean(choice.marker),
       };
       return { id: nearestLand(x, y)?.answerId ?? "", point: undefined, byWater: true };
     };
@@ -726,39 +673,6 @@ export function Game({
         ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         palette.land,
-      ] as unknown as maplibregl.ExpressionSpecification);
-      map.setPaintProperty("split-land", "fill-color", [
-        "case",
-        ["all", settled, ["==", ["get", "answer_id"], target]],
-        answerColor,
-        ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
-        palette.wrong,
-        ...(nbr ? [["in", ["get", "answer_id"], ["literal", nbr]], neighborColor] : []),
-        ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
-        ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
-        palette.land,
-      ] as unknown as maplibregl.ExpressionSpecification);
-      map.setPaintProperty("absorbed-land", "fill-color", [
-        "case",
-        ["all", settled, ["==", ["get", "answer_id"], target]],
-        answerColor,
-        ["all", wrong, ["==", ["get", "answer_id"], selectedAnswer]],
-        palette.wrong,
-        ...(nbr ? [["in", ["get", "answer_id"], ["literal", nbr]], neighborColor] : []),
-        ...(tinted ? [["in", ["get", "answer_id"], ["literal", tinted]], hintColor] : []),
-        ...(marked ? [["in", ["get", "answer_id"], ["literal", marked]], answerColor] : []),
-        palette.land,
-      ] as unknown as maplibregl.ExpressionSpecification);
-       map.setPaintProperty("pts", "circle-color", [
-        "case",
-        ["all", settled, ["==", ["get", "carta_id"], target]],
-        answerColor,
-        ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
-        palette.wrong,
-        ...(nbr ? [["in", ["get", "carta_id"], ["literal", nbr]], neighborColor] : []),
-        ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]], hintColor] : []),
-        ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
-         palette.marker,
       ] as unknown as maplibregl.ExpressionSpecification);
       for (const band of MARKER_BAND_ZOOMS) {
         map.setPaintProperty(markerLayerId(band), "circle-color", [

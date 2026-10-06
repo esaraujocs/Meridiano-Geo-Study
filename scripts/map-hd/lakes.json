@@ -1,0 +1,26 @@
+{
+  "comment": "Lagos recortados da terra no mapa (contorno do OSM, via Overture base/water). Ponto = um lugar DENTRO do lago (lon, lat). Os de mais de ~1.000 km² e alguns menores que marcam fronteira (Genebra, Constança, Ohrid, Prespa, Escútari, Mar Morto, Tiberíades).",
+  "lakes": [
+    ["Superior", -87.5, 47.7], ["Vitória", 33.0, -1.0], ["Huron", -82.4, 44.8], ["Michigan", -87.0, 43.5],
+    ["Tanganica", 29.6, -6.5], ["Baikal", 108.0, 53.2], ["Grande Lago do Urso", -121.0, 66.0], ["Malawi", 34.6, -12.0],
+    ["Grande Lago do Escravo", -114.0, 61.6], ["Erie", -81.2, 42.2], ["Winnipeg", -97.5, 52.5], ["Ontário", -77.9, 43.6],
+    ["Ladoga", 31.5, 61.0], ["Balkhash", 74.5, 46.5], ["Onega", 35.4, 61.7], ["Titicaca", -69.4, -15.8],
+    ["Nicarágua", -85.4, 11.6], ["Athabasca", -109.9, 59.2], ["Taimir", 101.5, 74.5], ["Turkana", 36.1, 3.6],
+    ["Reindeer", -102.3, 57.3], ["Issyk-Kul", 77.3, 42.4], ["Úrmia", 45.4, 37.7], ["Vänern", 13.4, 58.9],
+    ["Winnipegosis", -100.0, 52.4], ["Albert", 30.9, 1.7], ["Mweru", 28.7, -9.0], ["Nettilling", -70.5, 66.5],
+    ["Nipigon", -88.5, 49.8], ["Manitoba", -98.8, 50.9], ["Grande Lago Salgado", -112.5, 41.1], ["Qinghai", 100.2, 36.9],
+    ["Lake of the Woods", -94.8, 49.3], ["Peipus", 27.5, 58.6], ["Tonlé Sap", 104.1, 12.8], ["Khanka", 132.4, 45.0],
+    ["Kariba", 27.9, -17.0], ["Volta", -0.05, 7.4], ["Nasser", 32.3, 22.8], ["Kuibyshev", 48.6, 54.8],
+    ["Rybinsk", 38.4, 58.4], ["Bratsk", 101.6, 56.0], ["Vättern", 14.6, 58.3], ["Poyang", 116.3, 29.1],
+    ["Taihu", 120.2, 31.2], ["Hulun", 117.4, 49.0], ["Chade", 14.2, 13.2], ["Sevan", 45.3, 40.3],
+    ["Van", 42.9, 38.6], ["Tana", 37.3, 12.0], ["Kivu", 29.2, -2.0], ["Eduardo", 29.6, -0.35],
+    ["Inari", 27.9, 69.0], ["Ilmen", 31.3, 58.3], ["Beloye", 37.7, 60.2], ["Mai-Ndombe", 18.3, -2.0],
+    ["Okeechobee", -80.8, 26.95], ["Toba", 98.8, 2.6], ["Mar Morto", 35.5, 31.5], ["Aral do Norte", 60.9, 46.4],
+    ["Zaysan", 84.0, 48.0], ["Alakol", 81.7, 46.1], ["Uvs", 92.8, 50.3], ["Khövsgöl", 100.5, 51.1],
+    ["Argentino", -72.6, -50.3], ["Viedma", -72.6, -49.6], ["General Carrera", -72.0, -46.6], ["Champlain", -73.3, 44.5],
+    ["Genebra", 6.5, 46.43], ["Constança", 9.4, 47.6], ["Balaton", 17.7, 46.85], ["Ohrid", 20.75, 41.0],
+    ["Prespa", 21.05, 40.9], ["Escútari", 19.3, 42.2], ["Tiberíades", 35.58, 32.8], ["Saimaa", 28.3, 61.3],
+    ["Päijänne", 25.5, 61.6], ["Mälaren", 17.0, 59.45], ["Hjälmaren", 15.8, 59.25], ["Kyoga", 33.0, 1.5],
+    ["Llanquihue", -72.8, -41.1], ["Nahuel Huapi", -71.5, -41.0], ["Great Salt Lake (sul)", -112.3, 40.95], ["Lago Urmia (sul)", 45.6, 37.4]
+  ]
+}

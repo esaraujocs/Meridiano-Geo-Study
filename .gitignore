@@ -13,3 +13,4 @@ vite.config.d.ts
 .tmp-*/
 .pvp-data/
 zipFile.zip
+__pycache__/

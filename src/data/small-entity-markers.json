@@ -6,13 +6,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          19.98449,
-          41.94387
+          19.98784,
+          41.95122
         ]
       },
       "properties": {
         "carta_id": "8",
-        "switchZoom": 2.298,
+        "switchZoom": 2.297,
         "un": true
       }
     },
@@ -21,13 +21,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -170.75641,
-          -14.31353
+          -170.76038,
+          -14.30629
         ]
       },
       "properties": {
         "carta_id": "16",
-        "switchZoom": 6.221,
+        "switchZoom": 6.121,
         "un": false
       }
     },
@@ -36,13 +36,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          1.57534,
-          42.54588
+          1.5765,
+          42.54591
         ]
       },
       "properties": {
         "carta_id": "20",
-        "switchZoom": 5.715,
+        "switchZoom": 5.699,
         "un": true
       }
     },
@@ -51,7 +51,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.79988,
+          -61.79883,
           17.0829
         ]
       },
@@ -66,13 +66,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -78.0375,
-          24.73972
+          -78.06732,
+          24.55484
         ]
       },
       "properties": {
         "carta_id": "44",
-        "switchZoom": 4.26,
+        "switchZoom": 4.292,
         "un": true
       }
     },
@@ -81,13 +81,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          50.55283,
-          26.02509
+          50.55058,
+          26.02386
         ]
       },
       "properties": {
         "carta_id": "48",
-        "switchZoom": 5.033,
+        "switchZoom": 5.026,
         "un": true
       }
     },
@@ -96,13 +96,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          44.3564,
-          40.3871
+          44.34645,
+          40.37987
         ]
       },
       "properties": {
         "carta_id": "51",
-        "switchZoom": 2.62,
+        "switchZoom": 2.614,
         "un": true
       }
     },
@@ -111,8 +111,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -59.53258,
-          13.16257
+          -59.53174,
+          13.15803
         ]
       },
       "properties": {
@@ -126,13 +126,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          4.18542,
-          50.81347
+          4.12769,
+          50.84624
         ]
       },
       "properties": {
         "carta_id": "56",
-        "switchZoom": 2.351,
+        "switchZoom": 2.35,
         "un": true
       }
     },
@@ -141,13 +141,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -64.777,
+          -64.77642,
           32.30391
         ]
       },
       "properties": {
         "carta_id": "60",
-        "switchZoom": 6.608,
+        "switchZoom": 6.531,
         "un": false
       }
     },
@@ -156,13 +156,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          90.95581,
-          27.46131
+          90.96748,
+          27.45484
         ]
       },
       "properties": {
         "carta_id": "64",
-        "switchZoom": 2.545,
+        "switchZoom": 2.542,
         "un": true
       }
     },
@@ -171,13 +171,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          18.18456,
-          44.02493
+          18.20327,
+          44.01533
         ]
       },
       "properties": {
         "carta_id": "70",
-        "switchZoom": 2.336,
+        "switchZoom": 2.338,
         "un": true
       }
     },
@@ -186,13 +186,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -88.67038,
-          17.51372
+          -88.66775,
+          17.49387
         ]
       },
       "properties": {
         "carta_id": "84",
-        "switchZoom": 2.849,
+        "switchZoom": 2.85,
         "un": true
       }
     },
@@ -201,13 +201,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          72.42029,
-          -7.31504
+          72.41946,
+          -7.3139
         ]
       },
       "properties": {
         "carta_id": "86",
-        "switchZoom": 6.731,
+        "switchZoom": 7.193,
         "un": false
       }
     },
@@ -216,13 +216,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          160.15113,
-          -9.59245
+          160.14783,
+          -9.59854
         ]
       },
       "properties": {
         "carta_id": "90",
-        "switchZoom": 3.997,
+        "switchZoom": 3.978,
         "un": true
       }
     },
@@ -231,13 +231,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -64.61483,
-          18.43067
+          -64.61305,
+          18.42994
         ]
       },
       "properties": {
         "carta_id": "92",
-        "switchZoom": 6.913,
+        "switchZoom": 6.9,
         "un": false
       }
     },
@@ -246,13 +246,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.50844,
-          4.5569
+          114.48948,
+          4.57374
         ]
       },
       "properties": {
         "carta_id": "96",
-        "switchZoom": 4.219,
+        "switchZoom": 4.236,
         "un": true
       }
     },
@@ -261,13 +261,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          30.03645,
-          -3.25519
+          30.03771,
+          -3.25442
         ]
       },
       "properties": {
         "carta_id": "108",
-        "switchZoom": 3.186,
+        "switchZoom": 3.185,
         "un": true
       }
     },
@@ -276,7 +276,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -23.62871,
+          -23.62833,
           15.0716
         ]
       },
@@ -291,7 +291,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -81.18985,
+          -81.19009,
           19.31949
         ]
       },
@@ -306,7 +306,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          80.79087,
+          80.79175,
           7.57178
         ]
       },
@@ -321,13 +321,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          120.84995,
-          23.59571
+          120.83461,
+          23.59826
         ]
       },
       "properties": {
         "carta_id": "158",
-        "switchZoom": 2.404,
+        "switchZoom": 2.406,
         "un": false
       }
     },
@@ -336,13 +336,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.6441,
-          -10.50476
+          105.63541,
+          -10.46738
         ]
       },
       "properties": {
         "carta_id": "162",
-        "switchZoom": 7.162,
+        "switchZoom": 6.785,
         "un": false
       }
     },
@@ -351,13 +351,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          96.83349609375,
-          -12.499599017202314
+          96.82571,
+          -12.18223
         ]
       },
       "properties": {
         "carta_id": "166",
-        "switchZoom": 24,
+        "switchZoom": 8.052,
         "un": false
       }
     },
@@ -366,7 +366,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          43.33896,
+          43.33907,
           -11.73266
         ]
       },
@@ -381,7 +381,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          45.13779,
+          45.13681,
           -12.74935
         ]
       },
@@ -396,7 +396,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -157.9187,
+          -157.91901,
           -21.93058
         ]
       },
@@ -411,8 +411,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -83.62845,
-          9.65838
+          -83.61509,
+          9.65802
         ]
       },
       "properties": {
@@ -426,8 +426,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          32.99351,
-          35.0223
+          33.07442,
+          34.98896
         ]
       },
       "properties": {
@@ -441,13 +441,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          9.55061,
-          56.38147
+          9.54596,
+          56.40296
         ]
       },
       "properties": {
         "carta_id": "208",
-        "switchZoom": 2.117,
+        "switchZoom": 2.109,
         "un": true
       }
     },
@@ -456,13 +456,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.35072,
-          15.46358
+          -61.35095,
+          15.46437
         ]
       },
       "properties": {
         "carta_id": "212",
-        "switchZoom": 5.459,
+        "switchZoom": 5.454,
         "un": true
       }
     },
@@ -471,13 +471,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -70.16414,
-          18.62221
+          -70.16795,
+          18.62294
         ]
       },
       "properties": {
         "carta_id": "214",
-        "switchZoom": 2.419,
+        "switchZoom": 2.417,
         "un": true
       }
     },
@@ -486,13 +486,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -88.92211,
-          13.71355
+          -88.89826,
+          13.80318
         ]
       },
       "properties": {
         "carta_id": "222",
-        "switchZoom": 2.952,
+        "switchZoom": 3.026,
         "un": true
       }
     },
@@ -501,13 +501,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          10.48251,
-          1.67437
+          10.46986,
+          1.63524
         ]
       },
       "properties": {
         "carta_id": "226",
-        "switchZoom": 3.286,
+        "switchZoom": 3.249,
         "un": true
       }
     },
@@ -516,13 +516,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          25.46685,
-          58.42388
+          25.97474,
+          58.1842
         ]
       },
       "properties": {
         "carta_id": "233",
-        "switchZoom": 2.034,
+        "switchZoom": 2.026,
         "un": true
       }
     },
@@ -531,13 +531,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -7.02543,
-          62.1358
+          -7.01958,
+          62.12934
         ]
       },
       "properties": {
         "carta_id": "234",
-        "switchZoom": 4.63,
+        "switchZoom": 4.635,
         "un": false
       }
     },
@@ -546,8 +546,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -58.42218,
-          -51.70863
+          -58.42268,
+          -51.70828
         ]
       },
       "properties": {
@@ -561,13 +561,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -37.18185,
-          -54.1299
+          -36.39445,
+          -54.47692
         ]
       },
       "properties": {
         "carta_id": "239",
-        "switchZoom": 3.13,
+        "switchZoom": 3.143,
         "un": false
       }
     },
@@ -576,13 +576,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          177.94378,
+          177.94531,
           -17.86844
         ]
       },
       "properties": {
         "carta_id": "242",
-        "switchZoom": 3.762,
+        "switchZoom": 3.76,
         "un": true
       }
     },
@@ -591,13 +591,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          19.87109,
-          60.15399
+          19.87158,
+          60.16405
         ]
       },
       "properties": {
         "carta_id": "248",
-        "switchZoom": 4.771,
+        "switchZoom": 4.733,
         "un": false
       }
     },
@@ -606,13 +606,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -53.02583,
-          3.94661
+          -52.99934,
+          4.07529
         ]
       },
       "properties": {
         "carta_id": "254",
-        "switchZoom": 2.449,
+        "switchZoom": 2.421,
         "un": false
       }
     },
@@ -621,13 +621,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -149.44488,
+          -149.44524,
           -17.68775
         ]
       },
       "properties": {
         "carta_id": "258",
-        "switchZoom": 5.311,
+        "switchZoom": 5.308,
         "un": false
       }
     },
@@ -636,13 +636,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          69.69259,
-          -49.3128
+          69.70983,
+          -49.32712
         ]
       },
       "properties": {
         "carta_id": "260",
-        "switchZoom": 3.451,
+        "switchZoom": 3.427,
         "un": false
       }
     },
@@ -651,13 +651,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          42.70446,
-          11.99126
+          42.7361,
+          12.00446
         ]
       },
       "properties": {
         "carta_id": "262",
-        "switchZoom": 3.439,
+        "switchZoom": 3.421,
         "un": true
       }
     },
@@ -666,13 +666,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -15.70717,
-          13.39682
+          -15.97215,
+          13.44409
         ]
       },
       "properties": {
         "carta_id": "270",
-        "switchZoom": 2.703,
+        "switchZoom": 2.707,
         "un": true
       }
     },
@@ -681,8 +681,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          35.26599,
-          32.19491
+          35.26501,
+          32.19398
         ]
       },
       "properties": {
@@ -696,13 +696,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -5.34946,
-          36.143
+          -5.34828,
+          36.1339
         ]
       },
       "properties": {
         "carta_id": "292",
-        "switchZoom": 8.485,
+        "switchZoom": 8.45,
         "un": false
       }
     },
@@ -711,7 +711,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -157.448,
+          -157.44653,
           1.85966
         ]
       },
@@ -726,7 +726,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.67749,
+          -61.6778,
           12.12591
         ]
       },
@@ -741,7 +741,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          144.75465,
+          144.75359,
           13.45668
         ]
       },
@@ -756,8 +756,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -91.04194,
-          15.24041
+          -91.04968,
+          15.23055
         ]
       },
       "properties": {
@@ -771,7 +771,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -72.27552,
+          -72.27466,
           19.05189
         ]
       },
@@ -786,8 +786,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          12.45266,
-          41.90381
+          12.45214,
+          41.90236
         ]
       },
       "properties": {
@@ -801,8 +801,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.14538,
-          22.39597
+          114.05914,
+          22.40623
         ]
       },
       "properties": {
@@ -816,8 +816,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.87836,
-          31.12737
+          34.87996,
+          31.11544
         ]
       },
       "properties": {
@@ -831,13 +831,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -77.15806,
-          18.11339
+          -77.16025,
+          18.11535
         ]
       },
       "properties": {
         "carta_id": "388",
-        "switchZoom": 3.173,
+        "switchZoom": 3.171,
         "un": true
       }
     },
@@ -846,8 +846,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.5893,
-          30.52554
+          36.5883,
+          30.51617
         ]
       },
       "properties": {
@@ -861,7 +861,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          47.35213,
+          47.3522,
           29.11646
         ]
       },
@@ -876,13 +876,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          35.92711,
-          33.87159
+          35.92478,
+          33.87333
         ]
       },
       "properties": {
         "carta_id": "422",
-        "switchZoom": 3.315,
+        "switchZoom": 3.32,
         "un": true
       }
     },
@@ -891,8 +891,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          28.64969,
-          -29.62349
+          28.66088,
+          -29.62406
         ]
       },
       "properties": {
@@ -906,8 +906,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -9.82506,
-          7.02957
+          -9.81545,
+          7.04051
         ]
       },
       "properties": {
@@ -921,7 +921,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          9.56463,
+          9.56408,
           47.14583
         ]
       },
@@ -936,7 +936,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          6.12978,
+          6.13057,
           49.80383
         ]
       },
@@ -951,8 +951,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          113.56542,
-          22.13271
+          113.57047,
+          22.14416
         ]
       },
       "properties": {
@@ -966,13 +966,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          73.08958,
-          -0.6055
+          73.09264,
+          -0.61119
         ]
       },
       "properties": {
         "carta_id": "462",
-        "switchZoom": 8.135,
+        "switchZoom": 8.026,
         "un": true
       }
     },
@@ -981,13 +981,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          14.4534,
+          14.451,
           35.87843
         ]
       },
       "properties": {
         "carta_id": "470",
-        "switchZoom": 6.268,
+        "switchZoom": 6.26,
         "un": true
       }
     },
@@ -996,13 +996,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          57.58973,
-          -20.25359
+          57.58899,
+          -20.25358
         ]
       },
       "properties": {
         "carta_id": "480",
-        "switchZoom": 5.09,
+        "switchZoom": 5.083,
         "un": true
       }
     },
@@ -1011,13 +1011,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.42367,
-          43.73749
+          7.41908,
+          43.73114
         ]
       },
       "properties": {
         "carta_id": "492",
-        "switchZoom": 9,
+        "switchZoom": 9.107,
         "un": true
       }
     },
@@ -1026,13 +1026,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          29.03966,
-          46.80894
+          29.03318,
+          46.80715
         ]
       },
       "properties": {
         "carta_id": "498",
-        "switchZoom": 2.151,
+        "switchZoom": 2.15,
         "un": true
       }
     },
@@ -1041,13 +1041,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          19.41174,
-          42.83605
+          19.40971,
+          42.83692
         ]
       },
       "properties": {
         "carta_id": "499",
-        "switchZoom": 3.079,
+        "switchZoom": 3.08,
         "un": true
       }
     },
@@ -1056,7 +1056,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -62.19181,
+          -62.19086,
           16.7493
         ]
       },
@@ -1071,7 +1071,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          166.93151,
+          166.93108,
           -0.52871
         ]
       },
@@ -1086,13 +1086,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          4.71289,
-          51.73654
+          4.71037,
+          51.73111
         ]
       },
       "properties": {
         "carta_id": "528",
-        "switchZoom": 2.095,
+        "switchZoom": 2.15,
         "un": true
       }
     },
@@ -1101,13 +1101,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -68.90648,
-          12.14686
+          -68.90654,
+          12.14594
         ]
       },
       "properties": {
         "carta_id": "531",
-        "switchZoom": 5.536,
+        "switchZoom": 5.531,
         "un": false
       }
     },
@@ -1116,7 +1116,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -69.98905,
+          -69.98651,
           12.52425
         ]
       },
@@ -1131,13 +1131,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -63.07221,
-          18.04062
+          -63.05935,
+          18.0295
         ]
       },
       "properties": {
         "carta_id": "534",
-        "switchZoom": 7.3,
+        "switchZoom": 7.877,
         "un": false
       }
     },
@@ -1146,13 +1146,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -68.29733,
-          12.22114
+          -68.30058,
+          12.22247
         ]
       },
       "properties": {
         "carta_id": "535",
-        "switchZoom": 6.253,
+        "switchZoom": 6.073,
         "un": false
       }
     },
@@ -1161,13 +1161,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          164.84539,
-          -20.81389
+          164.84676,
+          -20.80625
         ]
       },
       "properties": {
         "carta_id": "540",
-        "switchZoom": 2.696,
+        "switchZoom": 2.701,
         "un": false
       }
     },
@@ -1176,13 +1176,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          166.90158,
-          -15.17238
+          166.90137,
+          -15.1717
         ]
       },
       "properties": {
         "carta_id": "548",
-        "switchZoom": 4.211,
+        "switchZoom": 4.213,
         "un": true
       }
     },
@@ -1191,13 +1191,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -85.97428,
-          12.89895
+          -85.98384,
+          12.90235
         ]
       },
       "properties": {
         "carta_id": "558",
-        "switchZoom": 2.107,
+        "switchZoom": 2.11,
         "un": true
       }
     },
@@ -1206,8 +1206,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -169.86389,
-          -19.07328
+          -169.86189,
+          -19.07012
         ]
       },
       "properties": {
@@ -1236,7 +1236,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          145.7529,
+          145.75291,
           15.16606
         ]
       },
@@ -1251,8 +1251,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          158.2299,
-          6.89423
+          158.22225,
+          6.90049
         ]
       },
       "properties": {
@@ -1266,13 +1266,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          168.71515,
-          7.29726
+          168.11393,
+          5.59232
         ]
       },
       "properties": {
         "carta_id": "584",
-        "switchZoom": 6.974,
+        "switchZoom": 7.974,
         "un": true
       }
     },
@@ -1281,13 +1281,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          131.78453,
-          2.90531
+          134.5654,
+          7.50866
         ]
       },
       "properties": {
         "carta_id": "585",
-        "switchZoom": 5.968,
+        "switchZoom": 5.663,
         "un": true
       }
     },
@@ -1296,7 +1296,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -128.3254,
+          -128.32537,
           -24.37711
         ]
       },
@@ -1311,8 +1311,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -15.01096,
-          11.87825
+          -15.0501,
+          12.03844
         ]
       },
       "properties": {
@@ -1326,13 +1326,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          126.06362,
+          126.06235,
           -8.67815
         ]
       },
       "properties": {
         "carta_id": "626",
-        "switchZoom": 3.054,
+        "switchZoom": 3.055,
         "un": true
       }
     },
@@ -1341,13 +1341,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -66.39611,
-          18.22518
+          -66.40389,
+          18.22128
         ]
       },
       "properties": {
         "carta_id": "630",
-        "switchZoom": 3.55,
+        "switchZoom": 3.549,
         "un": false
       }
     },
@@ -1356,13 +1356,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          51.19377,
-          25.26226
+          51.19511,
+          25.26168
         ]
       },
       "properties": {
         "carta_id": "634",
-        "switchZoom": 3.398,
+        "switchZoom": 3.399,
         "un": true
       }
     },
@@ -1371,13 +1371,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          30.13335,
-          -1.63545
+          30.04917,
+          -1.91596
         ]
       },
       "properties": {
         "carta_id": "646",
-        "switchZoom": 3.273,
+        "switchZoom": 3.272,
         "un": true
       }
     },
@@ -1386,7 +1386,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -62.82184,
+          -62.82132,
           17.90281
         ]
       },
@@ -1401,8 +1401,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -5.70299,
-          -15.96786
+          -5.70209,
+          -15.96594
         ]
       },
       "properties": {
@@ -1416,13 +1416,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -62.76743,
-          17.33439
+          -62.77088,
+          17.33758
         ]
       },
       "properties": {
         "carta_id": "659",
-        "switchZoom": 6.348,
+        "switchZoom": 6.364,
         "un": true
       }
     },
@@ -1431,7 +1431,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -63.02872,
+          -63.02923,
           18.23095
         ]
       },
@@ -1446,7 +1446,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -60.9762,
+          -60.97635,
           13.89607
         ]
       },
@@ -1461,13 +1461,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -63.07792,
-          18.0736
+          -63.04985,
+          18.08515
         ]
       },
       "properties": {
         "carta_id": "663",
-        "switchZoom": 7.3,
+        "switchZoom": 7.853,
         "un": false
       }
     },
@@ -1476,13 +1476,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -56.31804,
-          47.03684
+          -56.3114,
+          46.85225
         ]
       },
       "properties": {
         "carta_id": "666",
-        "switchZoom": 5.093,
+        "switchZoom": 5.272,
         "un": false
       }
     },
@@ -1491,8 +1491,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.19535,
-          13.25261
+          -61.19569,
+          13.24446
         ]
       },
       "properties": {
@@ -1506,13 +1506,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          12.46022,
-          43.94288
+          12.46065,
+          43.94239
         ]
       },
       "properties": {
         "carta_id": "674",
-        "switchZoom": 7.178,
+        "switchZoom": 7.193,
         "un": true
       }
     },
@@ -1521,7 +1521,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          6.60499,
+          6.60384,
           0.24092
         ]
       },
@@ -1536,8 +1536,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          55.4781,
-          -4.67621
+          55.47105,
+          -4.67238
         ]
       },
       "properties": {
@@ -1551,13 +1551,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -12.19408,
-          8.36506
+          -12.14076,
+          8.46115
         ]
       },
       "properties": {
         "carta_id": "694",
-        "switchZoom": 2.663,
+        "switchZoom": 2.661,
         "un": true
       }
     },
@@ -1566,13 +1566,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.83224,
-          1.34913
+          103.82939,
+          1.34089
         ]
       },
       "properties": {
         "carta_id": "702",
-        "switchZoom": 5.508,
+        "switchZoom": 5.494,
         "un": true
       }
     },
@@ -1581,8 +1581,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          14.65275,
-          46.28891
+          14.69503,
+          46.30854
         ]
       },
       "properties": {
@@ -1596,13 +1596,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -55.1719,
-          3.59597
+          -55.16123,
+          3.58606
         ]
       },
       "properties": {
         "carta_id": "740",
-        "switchZoom": 2.233,
+        "switchZoom": 2.232,
         "un": true
       }
     },
@@ -1611,8 +1611,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          31.45606,
-          -26.46007
+          31.45584,
+          -26.44999
         ]
       },
       "properties": {
@@ -1641,13 +1641,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -171.77937,
-          -9.1791
+          -172.47905,
+          -8.55115
         ]
       },
       "properties": {
         "carta_id": "772",
-        "switchZoom": 8.381,
+        "switchZoom": 9.222,
         "un": false
       }
     },
@@ -1656,13 +1656,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -175.25183,
-          -21.14476
+          -175.24903,
+          -21.14147
         ]
       },
       "properties": {
         "carta_id": "776",
-        "switchZoom": 5.925,
+        "switchZoom": 5.919,
         "un": true
       }
     },
@@ -1671,8 +1671,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.4173,
-          10.14216
+          -61.41502,
+          10.14334
         ]
       },
       "properties": {
@@ -1686,13 +1686,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          53.62975,
-          23.92553
+          53.63194,
+          23.92077
         ]
       },
       "properties": {
         "carta_id": "784",
-        "switchZoom": 2.035,
+        "switchZoom": 2.036,
         "un": true
       }
     },
@@ -1701,13 +1701,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -71.9605,
-          21.89644
+          -71.79403,
+          21.78303
         ]
       },
       "properties": {
         "carta_id": "796",
-        "switchZoom": 4.777,
+        "switchZoom": 5.454,
         "un": false
       }
     },
@@ -1716,7 +1716,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          178.68692,
+          178.68584,
           -7.49062
         ]
       },
@@ -1731,13 +1731,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          21.56952,
-          41.63533
+          21.55689,
+          41.64364
         ]
       },
       "properties": {
         "carta_id": "807",
-        "switchZoom": 2.932,
+        "switchZoom": 2.931,
         "un": true
       }
     },
@@ -1746,8 +1746,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -2.5894,
-          49.4584
+          -2.59683,
+          49.45644
         ]
       },
       "properties": {
@@ -1761,13 +1761,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -2.12587,
+          -2.12471,
           49.21264
         ]
       },
       "properties": {
         "carta_id": "832",
-        "switchZoom": 6.373,
+        "switchZoom": 6.381,
         "un": false
       }
     },
@@ -1776,13 +1776,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -4.52844,
-          54.22986
+          -4.52754,
+          54.23024
         ]
       },
       "properties": {
         "carta_id": "833",
-        "switchZoom": 4.984,
+        "switchZoom": 4.981,
         "un": false
       }
     },
@@ -1791,13 +1791,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -64.74943,
-          17.73556
+          -64.74937,
+          17.73593
         ]
       },
       "properties": {
         "carta_id": "850",
-        "switchZoom": 5.906,
+        "switchZoom": 5.859,
         "un": false
       }
     },
@@ -1806,13 +1806,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -176.21545,
-          -13.29165
+          -176.21569,
+          -13.29104
         ]
       },
       "properties": {
         "carta_id": "876",
-        "switchZoom": 7.163,
+        "switchZoom": 7.149,
         "un": false
       }
     },
@@ -1821,8 +1821,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -172.45039,
-          -13.61553
+          -172.45549,
+          -13.60984
         ]
       },
       "properties": {
@@ -1836,13 +1836,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          20.89456,
-          42.55309
+          20.91476,
+          42.56225
         ]
       },
       "properties": {
         "carta_id": "926",
-        "switchZoom": 3.352,
+        "switchZoom": 3.362,
         "un": false
       }
     },
@@ -1851,13 +1851,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -4.04887,
-          51.89288
+          -4.06631,
+          51.9046
         ]
       },
       "properties": {
         "carta_id": "gb-wls",
-        "switchZoom": 2.609,
+        "switchZoom": 2.605,
         "un": false
       }
     },
@@ -1866,13 +1866,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -6.64884,
-          54.58211
+          -6.91591,
+          54.46492
         ]
       },
       "properties": {
         "carta_id": "gb-nir",
-        "switchZoom": 2.855,
+        "switchZoom": 2.842,
         "un": false
       }
     },
@@ -1881,13 +1881,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -14.360504150390625,
-          -7.950436835029365
+          -14.35691,
+          -7.94737
         ]
       },
       "properties": {
         "carta_id": "sh-ac",
-        "switchZoom": 24,
+        "switchZoom": 7.284,
         "un": false
       }
     },
@@ -1896,13 +1896,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -12.27996826171875,
-          -37.10995544464347
+          -12.28368,
+          -37.11651
         ]
       },
       "properties": {
         "carta_id": "sh-ta",
-        "switchZoom": 24,
+        "switchZoom": 7.193,
         "un": false
       }
     },
@@ -1911,13 +1911,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -62.969512939453125,
-          17.489530732385404
+          -62.97415,
+          17.48965
         ]
       },
       "properties": {
         "carta_id": "bq-se",
-        "switchZoom": 24,
+        "switchZoom": 8.253,
         "un": false
       }
     },
@@ -1926,13 +1926,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -109.34967041015625,
-          -27.110478641792135
+          -109.32881,
+          -27.12127
         ]
       },
       "properties": {
         "carta_id": "cl-ip",
-        "switchZoom": 24,
+        "switchZoom": 6.476,
         "un": false
       }
     },
@@ -1941,25 +1941,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          3.4,
-          -54.43333
-        ]
-      },
-      "properties": {
-        "carta_id": "74",
-        "answer_id": "578",
-        "absorbed": true,
-        "un": false,
-        "switchZoom": 24
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -61.67643,
-          16.1542
+          -61.67717,
+          16.15425
         ]
       },
       "properties": {
@@ -1967,7 +1950,7 @@
         "answer_id": "250",
         "absorbed": true,
         "un": false,
-        "switchZoom": 5.51
+        "switchZoom": 5.509
       }
     },
     {
@@ -1975,8 +1958,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          72.51667,
-          -53.1
+          73.59627,
+          -53.12147
         ]
       },
       "properties": {
@@ -1984,7 +1967,7 @@
         "answer_id": "36",
         "absorbed": true,
         "un": false,
-        "switchZoom": 24
+        "switchZoom": 4.976
       }
     },
     {
@@ -1992,8 +1975,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -61.01601,
-          14.63671
+          -61.01487,
+          14.63619
         ]
       },
       "properties": {
@@ -2001,7 +1984,7 @@
         "answer_id": "250",
         "absorbed": true,
         "un": false,
-        "switchZoom": 5.3
+        "switchZoom": 5.302
       }
     },
     {
@@ -2009,8 +1992,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          166.63333,
-          19.3
+          166.64095,
+          19.28192
         ]
       },
       "properties": {
@@ -2018,7 +2001,7 @@
         "answer_id": "840",
         "absorbed": true,
         "un": false,
-        "switchZoom": 24
+        "switchZoom": 8.429
       }
     },
     {
@@ -2026,8 +2009,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          55.54881,
-          -21.14631
+          55.54969,
+          -21.14693
         ]
       },
       "properties": {
@@ -2035,7 +2018,7 @@
         "answer_id": "250",
         "absorbed": true,
         "un": false,
-        "switchZoom": 4.99
+        "switchZoom": 4.989
       }
     },
     {
@@ -2043,16 +2026,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          20,
-          78
+          3.35957,
+          -54.41955
         ]
       },
       "properties": {
-        "carta_id": "744",
+        "carta_id": "74",
         "answer_id": "578",
         "absorbed": true,
         "un": false,
-        "switchZoom": 24
+        "switchZoom": 7.059
       }
     }
   ]

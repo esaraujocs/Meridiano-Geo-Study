@@ -7,7 +7,7 @@ import type { AnyQuizVariant, Family, Legacy } from "../domain/types";
 import type { LegacyProfile } from "../domain/legacy-migration";
 import { isDebugEnabled } from "../domain/debug-flag";
 import { EMPTY_ACHIEVEMENT_SUMMARY, hubProfile, ratioPercent, type AchievementSummary } from "../domain/hub-profile";
-import type { OfflineMapStatus } from "../domain/offline-map";
+import { MAP_BYTES, type OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
 import type { TopFamily } from "../domain/match-config";
@@ -195,7 +195,7 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
           <div className="cv-ctl">
             <p className="cv-hint offline-status">{t.options.appData(cacheReport)}</p>
             <p className="cv-hint offline-status">{t.options.mapStatus(mapLabel)}</p>
-            <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? t.options.removeMap : t.options.downloadMap}</button></div>
+            <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? t.options.removeMap : t.options.downloadMap(formatNumber(Math.round(MAP_BYTES / 1e6)))}</button></div>
           </div>
         </div>
       </section>

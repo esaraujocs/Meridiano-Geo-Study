@@ -614,7 +614,7 @@ export const pt = {
     mapError: "Falha — tentar novamente",
     mapAvailable: "Disponível para baixar",
     removeMap: "Remover mapa",
-    downloadMap: "Baixar mapa · 27,7 MB",
+    downloadMap: (size: string) => `Baixar mapa · ${size} MB`,
     debugAria: "Ferramentas de debug",
     debugLoading: "Carregando ferramentas de debug…",
   },

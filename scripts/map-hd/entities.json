@@ -1,0 +1,171 @@
+{
+  "comment": "Quais unidades do Overture (divisions/division_area, release 2026-09-23.1) formam cada entidade do mapa (carta_id). Sem regra aqui, a entidade usa o próprio cca2 do catálogo. As unidades marcadas em 'neutral' entram no mapa como terra sem entidade (carta_id vazio: nunca são alvo, e o clique nelas vale como água). 'unused' são unidades substituídas por regiões (o Reino Unido pelas 4 nações, Santa Helena pelas 3 ilhas). Áreas disputadas seguem o mapa anterior (consultado no ponto de cada uma com scripts/map-hd/sample-old-map.mjs).",
+  "entities": {
+    "bq-se": [
+      "XE"
+    ],
+    "152": [
+      "CL*"
+    ],
+    "cl-ip": [
+      "CL-IP"
+    ],
+    "504": [
+      "MA*"
+    ],
+    "732": [
+      "EH"
+    ],
+    "gb-eng": [
+      "GB-ENG"
+    ],
+    "gb-sct": [
+      "GB-SCT"
+    ],
+    "gb-wls": [
+      "GB-WLS"
+    ],
+    "gb-nir": [
+      "GB-NIR"
+    ],
+    "654": [
+      "SH-HL"
+    ],
+    "sh-ac": [
+      "SH-AC"
+    ],
+    "sh-ta": [
+      "SH-TA"
+    ],
+    "275": [
+      "XG",
+      "XW"
+    ],
+    "578": [
+      "NO",
+      "SJ",
+      "XJ",
+      "BV"
+    ],
+    "250": [
+      "FR",
+      "GP",
+      "MQ",
+      "RE",
+      "CP"
+    ],
+    "36": [
+      "AU",
+      "HM"
+    ],
+    "840": [
+      "US",
+      "UM"
+    ],
+    "643": [
+      "RU",
+      "XA",
+      "XI",
+      "XO",
+      "XU"
+    ],
+    "376": [
+      "IL",
+      "XH",
+      "XZ"
+    ],
+    "729": [
+      "SD",
+      "XY"
+    ],
+    "364": [
+      "IR",
+      "XM",
+      "XN"
+    ],
+    "392": [
+      "JP",
+      "XD"
+    ],
+    "156": [
+      "CN",
+      "XX"
+    ],
+    "356": [
+      "IN",
+      "XC",
+      "XL",
+      "XQ"
+    ]
+  },
+  "neutral": [
+    "XB",
+    "XP",
+    "XR",
+    "XT",
+    "XS"
+  ],
+  "unused": [
+    "GB",
+    "SH"
+  ],
+  "regions": {
+    "GB-ENG": {
+      "country": "GB",
+      "region": "GB-ENG"
+    },
+    "GB-SCT": {
+      "country": "GB",
+      "region": "GB-SCT"
+    },
+    "GB-WLS": {
+      "country": "GB",
+      "region": "GB-WLS"
+    },
+    "GB-NIR": {
+      "country": "GB",
+      "region": "GB-NIR"
+    },
+    "SH-HL": {
+      "country": "SH",
+      "region": "SH-HL"
+    },
+    "SH-AC": {
+      "country": "SH",
+      "region": "SH-AC"
+    },
+    "SH-TA": {
+      "country": "SH",
+      "region": "SH-TA"
+    },
+    "EH": {
+      "country": "MA",
+      "region": null
+    }
+  },
+  "derived": {
+    "MA*": {
+      "base": "MA",
+      "minus": "EH"
+    },
+    "CL*": {
+      "base": "CL",
+      "eastOf": -100
+    },
+    "CL-IP": {
+      "base": "CL",
+      "westOf": -100
+    }
+  },
+  "overlapWinners": {
+    "comment": "Terra que o Overture põe em duas unidades (áreas em disputa). Fica com quem cobre a área no mapa anterior; a outra unidade perde a área.",
+    "AR|CL*": "AR",
+    "BO|BR": "BR",
+    "DE|LU": "DE",
+    "FR|IT": "FR",
+    "HR|RS": "RS",
+    "RS|XK": "RS",
+    "IR|XM": "IR",
+    "IR|XN": "IR"
+  }
+}

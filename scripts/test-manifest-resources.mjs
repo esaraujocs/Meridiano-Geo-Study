@@ -21,8 +21,8 @@ for (const icon of manifest.icons ?? []) {
 const [sw, offlineMap, pmtiles, mapManifest] = await Promise.all([
   readFile("public/sw.js", "utf8"),
   readFile("src/domain/offline-map.ts", "utf8"),
-  stat("public/maps/carta-boundary-candidate.pmtiles"),
-  readFile("public/maps/carta-boundary-candidate.manifest.json", "utf8").then(JSON.parse),
+  stat("public/maps/meridiano-hd.pmtiles"),
+  readFile("public/maps/meridiano-hd.manifest.json", "utf8").then(JSON.parse),
 ]);
 const swBytes = Number(/const MAP_BYTES = (\d+);/.exec(sw)?.[1]);
 const swFile = /const MAP_FILE = "([^"]+)";/.exec(sw)?.[1];
@@ -30,8 +30,8 @@ const appBytes = Number(/export const MAP_BYTES =\s*([\d_]+);/.exec(offlineMap)?
 const appVersion = /export const MAP_VERSION =\s*"([^"]+)";/.exec(offlineMap)?.[1];
 assert.equal(swBytes, appBytes, "MAP_BYTES do sw.js diverge de offline-map.ts");
 assert.equal(appBytes, pmtiles.size, "MAP_BYTES não bate com o tamanho real do .pmtiles");
-assert.equal(appVersion, mapManifest.hashes.pmtilesSha256, "MAP_VERSION não bate com o hash do manifesto do mapa");
-assert.equal(swFile, `carta-boundary-candidate-${appVersion}.pmtiles`, "MAP_FILE do sw.js diverge do arquivo que o app grava no OPFS");
+assert.equal(appVersion, mapManifest.sha256, "MAP_VERSION não bate com o hash do manifesto do mapa");
+assert.equal(swFile, `meridiano-hd-${appVersion}.pmtiles`, "MAP_FILE do sw.js diverge do arquivo que o app grava no OPFS");
 for (const worker of ["maplibre-gl-worker.mjs", "maplibre-gl-shared.mjs"]) {
   await access(join(dist, "assets", worker));
 }

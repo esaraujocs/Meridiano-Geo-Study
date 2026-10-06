@@ -18,10 +18,15 @@ assert(playableMarkers.every((item) =>
 ), "every marker must belong to a playable entity and have finite coordinates");
 
 // Absorvidos (Guadalupe, Martinica, Reunião, Svalbard, Bouvet, Heard, Ilhas Menores): nunca são
-// alvo, respondem pelo soberano e existem no catálogo como absorvidos.
+// alvo, respondem pelo soberano e existem no catálogo como absorvidos. No mapa em alta definição eles
+// fazem parte do polígono do soberano; só os pequenos ganham marcador (Svalbard já se vê inteira).
 const absorbedInCatalog = Object.entries(catalog.meta).filter(([, meta]) => meta.absorvido).map(([id]) => id);
-assert.deepEqual(absorbedMarkers.map((item) => item.properties.carta_id).sort(), [...absorbedInCatalog].sort(),
-  "todo território absorvido do catálogo precisa de marcador");
+assert(absorbedMarkers.every((item) => absorbedInCatalog.includes(item.properties.carta_id)),
+  "marcador de absorvido só para território absorvido do catálogo");
+for (const name of ["Guadalupe", "Martinica", "Reunião", "Ilha Bouvet"]) {
+  const id = Object.entries(catalog.meta).find(([, meta]) => meta.pt === name)?.[0];
+  assert(absorbedMarkers.some((item) => item.properties.carta_id === id), `${name} precisa de marcador (ilha pequena)`);
+}
 for (const item of absorbedMarkers) {
   const { carta_id: id, answer_id: answerId } = item.properties;
   assert(!playableIds.has(id), `${id}: absorvido não pode ser jogável`);
@@ -30,12 +35,9 @@ for (const item of absorbedMarkers) {
   assert.equal(item.properties.un, false, `${id}: absorvido não é membro da ONU`);
   assert(item.geometry.coordinates.every(Number.isFinite), `${id}: coordenadas inválidas`);
 }
-const absorbedFile = await readFile("public/data/absorbed-territories.geojson", "utf8").then(JSON.parse);
+const absorbedFile = await readFile("scripts/map-hd/absorbed.geojson", "utf8").then(JSON.parse);
 const polygonIds = absorbedFile.features.filter((item) => item.geometry.type !== "Point").map((item) => item.properties.carta_id);
-for (const name of ["Guadalupe", "Martinica", "Reunião"]) {
-  const id = Object.entries(catalog.meta).find(([, meta]) => meta.pt === name)?.[0];
-  assert(polygonIds.includes(id), `${name} precisa de contorno em absorbed-territories.geojson`);
-}
+assert.deepEqual([...polygonIds].sort(), [...absorbedInCatalog].sort(), "todo território absorvido precisa de contorno em scripts/map-hd/absorbed.geojson");
 
 const idFor = (name) => Object.entries(catalog.meta)
   .find(([, meta]) => meta.pt === name)?.[0];

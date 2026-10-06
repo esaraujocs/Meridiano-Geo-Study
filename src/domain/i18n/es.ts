@@ -611,7 +611,7 @@ export const es: Messages = {
     mapError: "Falló — intentar de nuevo",
     mapAvailable: "Disponible para descargar",
     removeMap: "Quitar mapa",
-    downloadMap: "Descargar mapa · 27,7 MB",
+    downloadMap: (size: string) => `Descargar mapa · ${size} MB`,
     debugAria: "Herramientas de depuración",
     debugLoading: "Cargando herramientas de depuración…",
   },

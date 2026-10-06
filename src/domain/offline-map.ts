@@ -1,10 +1,10 @@
 import { t } from "./i18n/index.js";
 
-export const MAP_URL = "/maps/carta-boundary-candidate.pmtiles";
-export const MAP_BYTES = 27_823_584;
+export const MAP_URL = "/maps/meridiano-hd.pmtiles";
+export const MAP_BYTES = 84_287_096;
 export const MAP_VERSION =
-  "5781307c2aad1358a93311a32f0740723ba98a0104a29aaa10fdde2537a49316";
-const OPFS_FILE = `carta-boundary-candidate-${MAP_VERSION}.pmtiles`;
+  "a2647c393cc0b98fad9bc93bb780a478e1f15d05afb2fd6d2bc8069a2c30a078";
+const OPFS_FILE = `meridiano-hd-${MAP_VERSION}.pmtiles`;
 
 export type OfflineMapStatus =
   | "checking"
@@ -15,6 +15,7 @@ export type OfflineMapStatus =
   | "error";
 
 export async function hasOfflineMap() {
+  await removeStaleMaps().catch(() => undefined);
   const file = await getMapFile(false);
   if (!file) return false;
   const size = (await file.getFile()).size;
@@ -67,7 +68,18 @@ type OpfsFile = {
 type OpfsRoot = {
   getFileHandle: (name: string, options?: { create?: boolean }) => Promise<OpfsFile>;
   removeEntry: (name: string) => Promise<void>;
+  keys?: () => AsyncIterable<string>;
 };
+
+/** O nome do arquivo leva o hash do mapa: o de uma versão anterior (o mapa antigo, de 28 MB, ou um HD regerado, de ~86 MB)
+ * ficaria no aparelho para sempre. Só o mapa usa o OPFS, então todo `.pmtiles` que não é o atual sai. */
+async function removeStaleMaps() {
+  const root = await getOpfsRoot();
+  if (typeof root.keys !== "function") return;
+  const stale: string[] = [];
+  for await (const name of root.keys()) if (name.endsWith(".pmtiles") && name !== OPFS_FILE) stale.push(name);
+  for (const name of stale) await root.removeEntry(name).catch(() => undefined);
+}
 
 async function getOpfsRoot(): Promise<OpfsRoot> {
   const storage = navigator.storage as StorageManager & {
