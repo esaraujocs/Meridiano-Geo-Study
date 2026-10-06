@@ -40,6 +40,10 @@ const injectPrecacheManifest = () => {
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
       "/data/peoples.json",
+      // família Brasil (scripts/brasil): o catálogo, as silhuetas e as bandeiras dos estados; o mapa dos estados vai para o cache na primeira partida (sw.js)
+      "/data/brasil/states.json",
+      "/data/brasil/shapes.json",
+      "/data/brasil/flags.json",
       // Peças locais do museu: adquiridas continuam visíveis sem conexão.
       ...(await readdir(new URL("./public/museum/", import.meta.url)))
         .filter((file) => /\.(jpg|png|webp|svg)$/.test(file))

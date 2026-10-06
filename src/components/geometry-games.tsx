@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, Geometry } from "geojson";
-import type { Family, Legacy, RegionSelection } from "../domain/types";
+import type { AnyQuizVariant, Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion, regionLabel } from "../domain/regions";
 import { inSilhouetteDeck } from "../domain/silhouette";
 import { variantLabel } from "../domain/result-view";
@@ -31,18 +31,21 @@ import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { TypedAnswerInput } from "./typed-answer-input";
 import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
+import { baseVariant } from "../domain/brasil";
+import { loadBrasilShapes } from "../domain/brasil-data";
 
 type Props = { family: Family; variant?: string; data: Legacy; region: RegionSelection; options?: SessionOptions; onBack: () => void; onEnd?: (result: SessionResult | null) => void; supplies?: SupplyCounts };
 type Destination = "recorte" | "home" | "result";
 
 type SessionRound = Parameters<LearningSessionHandle["recordRound"]>[0];
-function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "travel", region: RegionSelection, settings: ReturnType<typeof sessionSettings>) {
+function useSession(family: Family, variant: AnyQuizVariant, region: RegionSelection, settings: ReturnType<typeof sessionSettings>) {
   const ref = useRef<LearningSessionHandle | null>(null);
   const pending = useRef<Promise<LearningSessionHandle> | null>(null);
   const queued = useRef<SessionRound[]>([]);
   useEffect(() => {
     let alive = true;
-    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor });
+    // os estados do Brasil não são cartas da coleção
+    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(family === "brasil" ? { persistProgress: false } : {}) });
     pending.current.then((handle) => {
       if (alive) {
         ref.current = handle;
@@ -82,17 +85,19 @@ function useSession(family: Family, variant: "silhueta" | "silhueta-opcoes" | "t
 export function GeometryGame({ family, variant, data, region, options, onBack, onEnd, supplies }: Props) {
   const [runKey, setRunKey] = useState(0);
   const restart = () => setRunKey((value) => value + 1);
-  return family === "silhueta"
-    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} />
+  return family === "silhueta" || family === "brasil"
+    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} brasil={family === "brasil"} />
     : <TravelGame key={runKey} data={data} region={region} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} />;
 }
 
-function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts() }: Omit<Props, "family"> & { onRestart: () => void }) {
-  const engineVariant = variant === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta";
+function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts(), brasil = false }: Omit<Props, "family"> & { onRestart: () => void; brasil?: boolean }) {
+  // a regra (alternativas ou escrita); na família Brasil a sessão grava a variante do Brasil, com os contornos dos estados
+  const engineVariant = baseVariant((variant ?? "silhueta") as AnyQuizVariant) === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta";
+  const sessionVariant = (brasil ? variant : engineVariant) as AnyQuizVariant;
   const settings = sessionSettings(options, engineVariant);
-  const session = useSession("silhueta", engineVariant, region, settings);
+  const session = useSession(brasil ? "brasil" : "silhueta", sessionVariant, region, settings);
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
-  const log = useRoundLog(settings.coinVariant ?? engineVariant, settings.pace);
+  const log = useRoundLog(settings.coinVariant ?? sessionVariant, settings.pace);
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts). Lupa só na Silhueta · alternativas.
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
@@ -127,10 +132,11 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<number | null>(null);
   useEffect(() => {
-    geometryIndex().then(({ features }) => setFeatures(features)).catch((e) => setError(e instanceof Error ? e.message : String(e)));
+    (brasil ? loadBrasilShapes() : geometryIndex().then(({ features }) => features)).then(setFeatures).catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, []);
+  // os 27 estados entram todos (o corte das ilhas pequenas é dos países)
   const ids = useMemo(() => features ? [...features.keys()].filter((id) => {
-    return inSilhouetteDeck(data.meta[id]) && inRegion(id, region, data);
+    return (brasil ? Boolean(data.meta[id]) : inSilhouetteDeck(data.meta[id])) && inRegion(id, region, data);
   }) : [], [features, data, region]);
   const optionsFor = (id: string) => shuffleAnswerOptions([id, ...shuffleAnswerOptions(ids.filter((item) => item !== id)).slice(0, 3)]);
   useEffect(() => {
@@ -142,7 +148,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
        settled.current = false;
        startedAt.current = Date.now();
        setTyped(""); setFeedback(""); setAnswerResult(""); setLocked(false); setSerial((value) => value + 1);
-       if (variant === "silhueta-opcoes") setChoices(optionsFor(first));
+       if (engineVariant === "silhueta-opcoes") setChoices(optionsFor(first));
        setLupaHidden(new Set());
        setTriedWrong(new Set()); setRetryNotice(false); setShieldSaved(false);
        supply.resetRound();
@@ -154,7 +160,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     settled.current = false;
     startedAt.current = Date.now();
     setTyped(""); setFeedback(""); setAnswerResult(""); setSelectedSilhouette(""); setLocked(false); setSerial((value) => value + 1);
-    if (variant === "silhueta-opcoes") setChoices(optionsFor(next));
+    if (engineVariant === "silhueta-opcoes") setChoices(optionsFor(next));
     setLupaHidden(new Set());
     setTriedWrong(new Set()); setRetryNotice(false); setShieldSaved(false);
     supply.resetRound();
@@ -177,7 +183,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     if (!target || locked || settled.current) return;
     // Segunda chance: errou respondendo (o tempo acabar não vale): a rodada segue aberta. Nas alternativas a errada fica marcada; na digitação o campo limpa.
     if (!correct && !timedOut && supply.consumeArmed("retorno")) {
-      if (variant === "silhueta-opcoes") { setTriedWrong((current) => new Set(current).add(value)); setSelectedSilhouette(""); }
+      if (engineVariant === "silhueta-opcoes") { setTriedWrong((current) => new Set(current).add(value)); setSelectedSilhouette(""); }
       else { setTyped(""); requestAnimationFrame(() => inputRef.current?.focus()); }
       setRetryNotice(true);
       return;
@@ -200,7 +206,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       ...(supply.assisted || shielded ? { assisted: true } : {}),
       ...(shielded ? { shielded: true } : {}),
     });
-    advance(feedbackHoldMs(correct, variant !== "silhueta-opcoes"), feedbackSkipAfterMs(correct));
+    advance(feedbackHoldMs(correct, engineVariant !== "silhueta-opcoes"), feedbackSkipAfterMs(correct));
     if (correct) cueCorrect();
   };
   const submit = (value = typed) => {
@@ -226,17 +232,17 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: total });
   useGameKeys({
     exit,
-    choose: (index) => { if (variant !== "silhueta-opcoes" || locked) return; const id = visibleChoices[index]; if (id && !triedWrong.has(id)) { setSelectedSilhouette(id); resolve(id, id === target); } },
+    choose: (index) => { if (engineVariant !== "silhueta-opcoes" || locked) return; const id = visibleChoices[index]; if (id && !triedWrong.has(id)) { setSelectedSilhouette(id); resolve(id, id === target); } },
     enabled: Boolean(features && target),
   });
   const path = featurePath(features?.get(target));
   if (error) return <GeometryError error={error} onBack={onBack} />;
   if (!features || !target) return <LoadingGeometry />;
-  const typedMode = variant !== "silhueta-opcoes";
+  const typedMode = engineVariant !== "silhueta-opcoes";
   const targetName = data.meta[target]?.pt ?? target;
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
-      <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`}>
+      <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(sessionVariant)} · ${regionLabel(region)}`}>
         <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={() => resolve(typedMode ? typed : "", false, true)} />
         {suppliesEnabled && (
           <SupplyTray timed={settings.pace === "timed"}
@@ -253,7 +259,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage" data-target-id={import.meta.env.DEV ? target : undefined}>
-          <div className="gs-kicker">{t.silhouette.kicker(!isCountry(target, data.meta[target]))}</div>
+          <div className="gs-kicker">{brasil ? t.brasil.silhouette : t.silhouette.kicker(!isCountry(target, data.meta[target]))}</div>
           <div className={`silhouette-frame${answerResult === "correct" ? " is-hit" : answerResult === "wrong" ? " is-miss" : ""}`}><svg viewBox={`0 0 ${path.width} ${path.height}`} role="img" aria-label={t.silhouette.aria}><path d={path.d} /></svg>{answerResult === "correct" && <span className="sil-check" aria-hidden="true">✓</span>}</div>
           {typedMode && !answerResult && supply.usedThisRound.has("letra") && <div className="gs-letterhint" role="note" aria-label={t.supplies.letterAria}>{letterHint(targetName)}</div>}
           {!answerResult && supply.usedThisRound.has("vizinho") && <NeighborChip meta={data.meta} targetId={target} />}

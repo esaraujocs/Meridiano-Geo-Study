@@ -11,6 +11,7 @@ import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup
 import { clockOf } from "../domain/duel-view";
 import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
+import { loadBrasil, loadBrasilFlags } from "../domain/brasil-data";
 import { Glyph } from "./achievement-art";
 import { Icon } from "./icons";
 import { ProgressHero } from "./progress-hero";
@@ -29,7 +30,7 @@ type Props = {
 type FlagOf = (code?: string) => string | undefined;
 
 const LEVEL_COLORS = ["rgba(199,182,143,.7)", "#857b5f", "var(--rar-2, #2F6F6A)", "var(--rar-3, #AB7A1A)", "var(--rar-4, #B65F47)", "#C49345"];
-const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins" };
+const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", brasil: "brazil" };
 const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0");
 
 // ---------- linhas de partida (o duelo é uma linha só: adversário, placar e troféus) ----------
@@ -432,10 +433,19 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     loadFlags().then(setFlags).catch(() => undefined);
     loadSpecialData().then((value) => { setHistoricalFlags(value.historicalFlags); setHistorical(value.historical); }).catch(() => undefined);
   }, []);
+  // Os estados do Brasil também ficam fora de `meta`: o histórico de uma partida da família Brasil nomeia e ilustra o que errou com o catálogo deles.
+  const [brasilMeta, setBrasilMeta] = useState<Record<string, Meta>>({});
+  const [brasilFlags, setBrasilFlags] = useState<FlagCatalog>({});
+  const playedBrasil = state.sessions.some((session) => session.family === "brasil");
+  useEffect(() => {
+    if (!playedBrasil) return;
+    loadBrasil().then((value) => setBrasilMeta(value.data.meta)).catch(() => undefined);
+    loadBrasilFlags().then(setBrasilFlags).catch(() => undefined);
+  }, [playedBrasil]);
   const now = useMemo(() => Date.now(), [state]);
   // Nome e bandeira das entidades históricas, para o "Você errou" de um tempo de Históricas no histórico (mesma ideia da Coleção): sem isto,
   // o id cru (ex.: "anhalt-ducado") aparecia no lugar do nome, porque o Históricas fica fora de `meta` de propósito (decisão 1 do CLAUDE.md).
-  const historicalMeta = useMemo(() => Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), [historical]);
+  const historicalMeta = useMemo(() => ({ ...Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), ...brasilMeta }), [historical, brasilMeta]);
   const dashboard = useMemo(() => buildProgressDashboard({
     now,
     sessions: state.sessions,
@@ -451,7 +461,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     album: { discovered: state.progress.discovered, total: state.progress.total, distribution: state.progress.distribution },
     economy,
   }), [now, state, data, historicalMeta, economy]);
-  const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
+  const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()] ?? brasilFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
   const { hero } = dashboard;
   const openCollection = () => onOpenCollection("mundo");
 

@@ -26,6 +26,7 @@ const expectedFamilies = {
   travel: ["travel"],
   gentilicos: ["gentilico-pais", "pais-gentilico"],
   moedas: ["pais-moeda", "moeda-pais"],
+  brasil: ["br-mapa", "br-capital-mapa", "br-silhueta-opcoes", "br-silhueta", "br-nome-bandeira", "br-bandeira-nome", "br-estado-capital", "br-escrita-estado", "br-escrita-capital"],
 };
 const regions = ["caribe", "mundo", "pacifico", "europa", "africa", "asia", "america-do-sul", "america-do-norte-central"];
 const keys = new Set();
@@ -38,7 +39,9 @@ for (const [family, variants] of Object.entries(expectedFamilies)) {
          ? "bandeira-nome"
          : family === "historicas" && variant === "nome-historica"
            ? "historica-nome"
-           : variant;
+           : family === "brasil" && variant === "br-nome-bandeira"
+             ? "br-bandeira-nome"
+             : variant;
        assert.equal(policy.key, `${family}:${canonical}`);
       keys.add(policy.key);
       assert.ok(policy.cost >= 0 && policy.sessions >= 0);
@@ -49,6 +52,10 @@ assert.equal(keys.size, rules.POLICIES.length);
 assert.equal(rules.policyFor("bandeiras", "nome-bandeira", "caribe").cost, 0);
 assert.equal(rules.policyFor("bandeiras", "nome-bandeira", "mundo").key, rules.policyFor("bandeiras", "bandeira-nome", "mundo").key);
 assert.equal(rules.policyFor("capitais", "capital-pais", "mundo").cost, 0);
+// família Brasil: o mapa dos estados é grátis e os dois sentidos das bandeiras são um modo só
+assert.equal(rules.policyFor("brasil", "br-mapa", "mundo").cost, 0);
+assert.equal(rules.policyFor("brasil", "br-nome-bandeira", "mundo").key, "brasil:br-bandeira-nome");
+assert.deepEqual(rules.unlockAliases("brasil", "br-nome-bandeira", "mundo"), ["brasil:br-bandeira-nome", "brasil:br-bandeira-nome", "brasil:br-nome-bandeira"]);
 // Economia v2: só moedas (sem cobertura nem partidas) e preços em ordem crescente.
 assert.deepEqual(
   Object.fromEntries(rules.POLICIES.map((policy) => [policy.key, [policy.cost, policy.coverage, policy.coverageCount, policy.sessions]])),
@@ -57,11 +64,19 @@ assert.deepEqual(
     "bandeiras:bandeira-nome": [0, undefined, 0, 0],
     "capitais:capital-pais": [0, undefined, 0, 0],
     "capitais:pais-capital": [0, undefined, 0, 0],
+    "brasil:br-mapa": [0, undefined, 0, 0],
+    "brasil:br-bandeira-nome": [2000, undefined, 0, 0],
+    "brasil:br-capital-mapa": [3000, undefined, 0, 0],
+    "brasil:br-estado-capital": [4000, undefined, 0, 0],
     "escrita:escrita-pais": [5000, undefined, 0, 0],
+    "brasil:br-silhueta-opcoes": [6000, undefined, 0, 0],
     "gentilicos:gentilico-pais": [8000, undefined, 0, 0],
+    "brasil:br-escrita-estado": [9000, undefined, 0, 0],
     "silhueta:silhueta-opcoes": [11000, undefined, 0, 0],
+    "brasil:br-escrita-capital": [13000, undefined, 0, 0],
     "escrita:escrita-capital": [15000, undefined, 0, 0],
     "gentilicos:pais-gentilico": [18000, undefined, 0, 0],
+    "brasil:br-silhueta": [20000, undefined, 0, 0],
     "moedas:pais-moeda": [22000, undefined, 0, 0],
     "silhueta:silhueta": [27000, undefined, 0, 0],
     "moedas:moeda-pais": [30000, undefined, 0, 0],

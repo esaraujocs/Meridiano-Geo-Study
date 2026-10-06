@@ -31,6 +31,7 @@ const expectedIds = [
   "todosModos", "todosRecortes", "voltaAoMundo", "pacifico", "capitalRodada",
   "dom50", "dom150", "band100", "cap50", "cadaContinente", "continenteInteiro", "micro",
   "silhueta50", "silhueta150", "historicas50", "historicas150", "idiomas40", "gentilicos100", "moedas80",
+  "brOiapoque", "brDeCor",
   "gExplorador", "gNavegador", "gGeografo", "forma", "evoluiu",
   "vexilologo", "cartografo", "diplomata", "cosmografo",
   "mapaRecorte1", "mapaZonas3", "mapaSemFalhas",
@@ -40,9 +41,9 @@ const expectedIds = [
   "pescador", "relampago", "confins",
 ];
 
-assert.equal(ACHIEVEMENT_DEFINITIONS.length, 51);
+assert.equal(ACHIEVEMENT_DEFINITIONS.length, 53);
 assert.deepEqual(ACHIEVEMENT_DEFINITIONS.map((item) => item.id), expectedIds);
-assert.equal(new Set(expectedIds).size, 51);
+assert.equal(new Set(expectedIds).size, 53);
 assert.equal(ACHIEVEMENT_CATEGORIES.length, 6);
 assert.equal(ACHIEVEMENT_DEFINITIONS.filter((item) => item.hidden).length, 3);
 assert.deepEqual(new Set(ACHIEVEMENT_DEFINITIONS.map((item) => item.rarity)), new Set([1, 2, 3, 4, 5]));
@@ -65,6 +66,8 @@ const saturated = {
   perfect40: true,
   precise: true,
   worldComplete: true,
+  brasilPerfectMap: true,
+  brasilByHeart: 27,
   dominated: 150,
   flags: 100,
   capitals: 50,
@@ -143,8 +146,10 @@ const empty = {
   currenciesKnown: new Set(),
   travelRoutes: 0,
   writtenCorrect: 0,
+  brasilPerfectMap: false,
+  brasilByHeart: 0,
 };
-assert.equal(evaluateAchievementDefinitions(empty).some((item) => item.unlocked), false);
+assert.deepEqual(evaluateAchievementDefinitions(empty).filter((item) => item.unlocked).map((item) => item.id), []);
 
 const unlockedAt = 1700000000000;
 const first = evaluateAchievementDefinitions(saturated, [{ achievementId: "primeira", unlockedAt }])
@@ -373,4 +378,30 @@ assert.equal(highAccuracyNoDomain.titles.has("Diplomata"), false, "precisão alt
 assert.equal(highAccuracyNoDomain.fit, true, "mas a conquista Em forma segue na precisão histórica");
 const noWriting = achievementContext({ ...withDomain("capitais", domain(240)), pillars: { ...withDomain("capitais", domain(240)).pillars, escrita: { seen: 1, correct: 1, accuracy: 1, bayesianScore: 0.5, status: "" } } }, [], {});
 assert.equal(noWriting.titles.has("Diplomata"), false, "a escrita validada (2 acertos digitados) continua valendo");
-console.log("achievements: 51 canonical rules pass");
+// ---- família Brasil: conquistas próprias, e as partidas dela não contam nas do mapa-múndi
+const BR_IDS = ["ac", "al", "ap", "am", "ba", "ce", "df", "es", "go", "ma", "mt", "ms", "mg", "pa", "pb", "pr", "pe", "pi", "rj", "rn", "rs", "ro", "rr", "sc", "sp", "se", "to"].map((sigla) => `br-${sigla}`);
+const brSession = (variant, ids, extra = {}) => ({
+  id: `br-${variant}-${ids.length}`, family: "brasil", variant, mode: variant, region: "brasil", regions: ["brasil"], complete: true, roundLimit: 50,
+  rounds: ids.map((id) => ({ targetId: id, correct: true, responseTimeMs: 900 })), correct: ids.length, assistedCount: 0, ...extra,
+});
+const brPerfect = achievementContext(realisticProgress, [brSession("br-mapa", BR_IDS)], {});
+assert.equal(brPerfect.brasilPerfectMap, true, "os 27 estados no mapa sem errar: Do Oiapoque ao Chuí (o corte Todas · 27 grava limite 50)");
+assert.equal(evaluateAchievementDefinitions(brPerfect).find((item) => item.id === "brOiapoque")?.unlocked, true);
+assert.equal(brPerfect.perfect20, false, "a partida do Brasil não vale a Partida limpa do mapa-múndi");
+assert.equal(brPerfect.bestStreak, 0, "nem a sequência");
+assert.equal(brPerfect.regions.size, 0, "nem os recortes");
+assert.equal(brPerfect.completed.length, 1, "mas a primeira partida concluída vale em qualquer família");
+assert.equal(evaluateAchievementDefinitions(brPerfect).find((item) => item.id === "primeira")?.unlocked, true);
+assert.equal(achievementContext(realisticProgress, [brSession("br-mapa", BR_IDS.slice(0, 26))], {}).brasilPerfectMap, false, "26 estados não são o Brasil inteiro");
+assert.equal(achievementContext(realisticProgress, [brSession("br-mapa", BR_IDS, { correct: 26 })], {}).brasilPerfectMap, false, "com um erro não vale");
+assert.equal(achievementContext(realisticProgress, [brSession("br-mapa", BR_IDS, { assistedCount: 1 })], {}).brasilPerfectMap, false, "com suprimento não vale");
+assert.equal(achievementContext(realisticProgress, [brSession("br-capital-mapa", BR_IDS)], {}).brasilPerfectMap, false, "é o mapa dos estados, não o das capitais");
+assert.equal(achievementContext(realisticProgress, [brSession("br-capital-mapa", BR_IDS)], {}).capitals, 0, "capitais dos estados não contam como capitais de países");
+// Brasil de cor: cada estado acertado nos quatro jeitos (mapa, silhueta, bandeira e capital), sem suprimento
+const fourWays = [brSession("br-mapa", BR_IDS.slice(0, 5)), brSession("br-silhueta", BR_IDS.slice(0, 5)), brSession("br-bandeira-nome", BR_IDS.slice(0, 4)), brSession("br-escrita-capital", BR_IDS.slice(0, 5))];
+assert.equal(achievementContext(realisticProgress, fourWays, {}).brasilByHeart, 4, "4 estados nos quatro jeitos (o 5º não teve a bandeira)");
+const assistedFlag = [...fourWays.slice(0, 2), { ...brSession("br-nome-bandeira", BR_IDS.slice(0, 5)), rounds: BR_IDS.slice(0, 5).map((id) => ({ targetId: id, correct: true, responseTimeMs: 900, assisted: true })) }, fourWays[3]];
+assert.equal(achievementContext(realisticProgress, assistedFlag, {}).brasilByHeart, 0, "acerto com suprimento não prova que sabe");
+const allFour = ["br-mapa", "br-silhueta-opcoes", "br-escrita-estado", "br-estado-capital"].map((variant) => brSession(variant, BR_IDS));
+assert.equal(evaluateAchievementDefinitions(achievementContext(realisticProgress, allFour, {})).find((item) => item.id === "brDeCor")?.unlocked, true, "os 27 nos quatro jeitos: Brasil de cor");
+console.log("achievements: 53 canonical rules pass");

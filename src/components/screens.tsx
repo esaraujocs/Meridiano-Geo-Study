@@ -251,6 +251,7 @@ export function Hub({
     { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language" },
     { family: "gentilicos", variant: "gentilico-pais", label: t.families.gentilicos, description: t.hub.familyDescriptions.gentilicos, icon: "people" },
     { family: "moedas", variant: "pais-moeda", label: t.families.moedas, description: t.hub.familyDescriptions.moedas, icon: "coins" },
+    { family: "brasil", variant: "br-mapa", label: t.families.brasil, description: t.hub.familyDescriptions.brasil, icon: "brazil" },
   ];
   // Famílias sem modo grátis: o cartão abre com qualquer um dos dois sentidos comprado.
   const BOTH_WAYS: Partial<Record<Family, [AnyQuizVariant, AnyQuizVariant]>> = { idiomas: ["idioma-nome", "idioma-pais"], gentilicos: ["gentilico-pais", "pais-gentilico"], moedas: ["pais-moeda", "moeda-pais"] };
@@ -372,6 +373,7 @@ export function Variant({
     idiomas: [["idiomas", "idioma-nome", "Nome do idioma", "Reconheça o idioma pela escrita."], ["idiomas", "idioma-pais", "Países do idioma", "Associe uma escrita aos países."]],
     gentilicos: [["gentilicos", "gentilico-pais", t.modes["gentilico-pais"][0], t.modes["gentilico-pais"][1]], ["gentilicos", "pais-gentilico", t.modes["pais-gentilico"][0], t.modes["pais-gentilico"][1]]],
     moedas: [["moedas", "pais-moeda", t.modes["pais-moeda"][0], t.modes["pais-moeda"][1]], ["moedas", "moeda-pais", t.modes["moeda-pais"][0], t.modes["moeda-pais"][1]]],
+    brasil: [["brasil", "br-mapa", t.modes["br-mapa"][0], t.modes["br-mapa"][1]]],
   };
   const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
   const continueWith = (engine: Family, key: AnyQuizVariant) => {

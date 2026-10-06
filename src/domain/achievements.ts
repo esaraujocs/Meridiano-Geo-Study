@@ -38,6 +38,8 @@ export type AchievementContext = {
   /** Países com o gentílico e com a moeda já acertados (modos Gentílicos e Moedas, os dois sentidos). */
   demonymsKnown: Set<string>; currenciesKnown: Set<string>;
   travelRoutes: number; writtenCorrect: number;
+  /** Família Brasil: o Brasil inteiro no mapa sem errar numa partida só, e os estados acertados nos quatro jeitos (mapa, silhueta, bandeira e capital). */
+  brasilPerfectMap: boolean; brasilByHeart: number;
 };
 const one = (f: (c: AchievementContext) => boolean) => ({ target: () => 1, progress: (c: AchievementContext) => f(c) ? 1 : 0 });
 const finiteTarget = (c: AchievementContext, min: number, fallback: number) => Math.max(min, Math.min(fallback, c.completed[0]?.rounds.length || fallback));
@@ -115,6 +117,9 @@ const ACHIEVEMENT_SEEDS: AchievementSeed[] = [
   { id:"idiomas40",category:"conh",rarity:3,target:()=>40,progress:c=>c.languagesKnown.size},
   { id:"gentilicos100",category:"conh",rarity:3,target:()=>100,progress:c=>c.demonymsKnown.size},
   { id:"moedas80",category:"conh",rarity:3,target:()=>80,progress:c=>c.currenciesKnown.size},
+  // Família Brasil: uma de domínio (o mapa inteiro sem falhas, como os "recortes sem falhas") e uma de conhecimento (cada estado nos quatro jeitos).
+  { id:"brOiapoque",category:"dom",rarity:3,...one(c=>c.brasilPerfectMap) },
+  { id:"brDeCor",category:"conh",rarity:4,target:()=>BRASIL_STATES,progress:c=>c.brasilByHeart},
   { id:"gExplorador",category:"evo",rarity:1,...one(c=>c.masteryIndex>=2) },
   { id:"gNavegador",category:"evo",rarity:2,...one(c=>c.masteryIndex>=3) },
   { id:"gGeografo",category:"evo",rarity:3,...one(c=>c.masteryIndex>=4) },
@@ -153,7 +158,38 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = ACHIEVEMENT_SEED
   return { ...seed, name, description };
 });
 
-export function achievementContext(progress: ProgressSnapshot, sessions: SurfaceSession[], catalog: Record<string, any> = {}): AchievementContext {
+/** Os 26 estados e o Distrito Federal. */
+const BRASIL_STATES = 27;
+/** Os quatro jeitos de acertar um estado (a conquista Brasil de cor): a variante da família Brasil → o jeito. */
+const BRASIL_WAY: Record<string, string> = {
+  "br-mapa": "mapa", "br-silhueta-opcoes": "silhueta", "br-silhueta": "silhueta",
+  "br-nome-bandeira": "bandeira", "br-bandeira-nome": "bandeira", "br-escrita-estado": "bandeira",
+  "br-capital-mapa": "capital", "br-estado-capital": "capital", "br-escrita-capital": "capital",
+};
+function brasilProgress(sessions: readonly SurfaceSession[]) {
+  // o Brasil inteiro (sem recorte de região) e 100%, sem suprimento: o baralho não repete estado, então 27 rodadas são os 27 estados (o corte
+  // "Todas · 27" da Mesa grava o limite de 50, não "todas", por isso o limite não entra na conta)
+  const perfectMap = sessions.some((s) => s.variant === "br-mapa" && s.complete && s.rounds.length >= BRASIL_STATES &&
+    s.correct === s.rounds.length && !s.assistedCount && (s.regions?.length ? s.regions : [s.region]).includes("brasil"));
+  const ways = new Map<string, Set<string>>();
+  for (const s of sessions) {
+    const way = BRASIL_WAY[s.variant];
+    if (!way) continue;
+    for (const r of s.rounds) {
+      if (!r.correct || r.assisted) continue;
+      const set = ways.get(r.targetId) ?? new Set<string>();
+      set.add(way);
+      ways.set(r.targetId, set);
+    }
+  }
+  return { perfectMap, byHeart: [...ways.values()].filter((set) => set.size === 4).length };
+}
+
+export function achievementContext(progress: ProgressSnapshot, allSessions: SurfaceSession[], catalog: Record<string, any> = {}): AchievementContext {
+  // A família Brasil tem conquistas próprias (os estados não são países do atlas): as outras contam só as partidas do mapa-múndi. A primeira partida
+  // concluída vale em qualquer família.
+  const sessions = allSessions.filter(s => s.family !== "brasil");
+  const brasil = brasilProgress(allSessions.filter(s => s.family === "brasil"));
   const completed = sessions.filter(s => s.complete);
   const modes = new Set(sessions.map(s => s.mode));
   const regions = new Set(completed.flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));
@@ -224,14 +260,14 @@ export function achievementContext(progress: ProgressSnapshot, sessions: Surface
   const zonesMapa = zonesFor(perfectRegionsMapa);
   const zonesCapitais = zonesFor(perfectRegionsCapitais);
   const zonesBandeiras = zonesFor(perfectRegionsBandeiras);
-  return {progress,sessions,completed,modes,regions,capitalRegions,bestStreak,perfect20,perfect40,precise,worldComplete,
+  return {progress,sessions,completed:allSessions.filter(s => s.complete),modes,regions,capitalRegions,bestStreak,perfect20,perfect40,precise,worldComplete,
     dominated: mastered.length, flags: flagsSet.size, capitals: capSet.size, micro, continents, wholeContinent,
     masteryIndex,fit,evolved,titles,cosmo,byWater,lightning,confines,
     perfectRegionsMapa,perfectRegionsCapitais,perfectRegionsBandeiras,perfectRegionsIdiomas,
     zonesMapa,zonesCapitais,zonesBandeiras,
     silhouettes: silhouettesSet, historicalEntities: historicalSet, languagesKnown: languagesSet,
     demonymsKnown: demonymsSet, currenciesKnown: currenciesSet,
-    travelRoutes, writtenCorrect};
+    travelRoutes, writtenCorrect, brasilPerfectMap: brasil.perfectMap, brasilByHeart: brasil.byHeart};
 }
 
 // Registros salvos: `{ id: "current:seq10", achievementId: "seq10" }` (perfil atual) ou `{ id: "seq10" }` (perfil clássico migrado).

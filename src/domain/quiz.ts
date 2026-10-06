@@ -1,4 +1,4 @@
-import type { Family, Legacy, QuizVariant, RegionSelection } from "./types";
+import type { Family, Legacy, RegionSelection } from "./types";
 import { inRegion } from "./regions";
 import { t } from "./i18n/index.js";
 
@@ -56,21 +56,4 @@ export function quizPool(
       return Boolean(usableCapital(meta) && !meta.soBandeira);
     })
     .map(([id]) => id);
-}
-
-export function variantLabel(variant: QuizVariant) {
-  return {
-    "bandeira-nome": "Bandeira → nome",
-    "nome-bandeira": "Nome → bandeira",
-    "capital-pais": "Capital → país",
-    "pais-capital": "País → capital",
-    mapa: "Localizar no mapa",
-    silhueta: "Silhueta",
-    "silhueta-opcoes": "Silhueta · alternativas",
-    travel: "Travel",
-    "gentilico-pais": "Gentílico → país",
-    "pais-gentilico": "País → gentílico",
-    "moeda-pais": "Moeda → país",
-    "pais-moeda": "País → moeda",
-  }[variant];
 }

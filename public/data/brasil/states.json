@@ -1,0 +1,785 @@
+{
+ "source": "IBGE, malha estadual 2024 (BR_UF_2024); capitais conferidas em 06/10/2026",
+ "regions": {
+  "norte": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "nordeste": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Nordeste"
+  },
+  "centro-oeste": {
+   "pt": "Centro-Oeste",
+   "en": "Central-West",
+   "es": "Centro-Oeste"
+  },
+  "sudeste": {
+   "pt": "Sudeste",
+   "en": "Southeast",
+   "es": "Sudeste"
+  },
+  "sul": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  }
+ },
+ "states": {
+  "br-ac": {
+   "sigla": "AC",
+   "code": "12",
+   "name": {
+    "pt": "Acre",
+    "en": "Acre",
+    "es": "Acre"
+   },
+   "capital": "Rio Branco",
+   "region": "norte",
+   "area": 164083,
+   "ll": [
+    -9.834,
+    -69.4286
+   ],
+   "bbox": [
+    -73.983,
+    -11.148,
+    -66.624,
+    -7.112
+   ],
+   "borders": [
+    "br-am",
+    "br-ro"
+   ]
+  },
+  "br-al": {
+   "sigla": "AL",
+   "code": "27",
+   "name": {
+    "pt": "Alagoas",
+    "en": "Alagoas",
+    "es": "Alagoas"
+   },
+   "capital": "Maceió",
+   "region": "nordeste",
+   "area": 27831,
+   "ll": [
+    -9.8055,
+    -36.4717
+   ],
+   "bbox": [
+    -38.238,
+    -10.499,
+    -35.152,
+    -8.813
+   ],
+   "borders": [
+    "br-ba",
+    "br-pe",
+    "br-se"
+   ]
+  },
+  "br-am": {
+   "sigla": "AM",
+   "code": "13",
+   "name": {
+    "pt": "Amazonas",
+    "en": "Amazonas",
+    "es": "Amazonas"
+   },
+   "capital": "Manaus",
+   "region": "norte",
+   "area": 1558706,
+   "ll": [
+    -3.9988,
+    -65.43
+   ],
+   "bbox": [
+    -73.798,
+    -9.818,
+    -56.094,
+    2.235
+   ],
+   "borders": [
+    "br-ac",
+    "br-mt",
+    "br-pa",
+    "br-ro",
+    "br-rr"
+   ]
+  },
+  "br-ap": {
+   "sigla": "AP",
+   "code": "16",
+   "name": {
+    "pt": "Amapá",
+    "en": "Amapá",
+    "es": "Amapá"
+   },
+   "capital": "Macapá",
+   "region": "norte",
+   "area": 142254,
+   "ll": [
+    1.2224,
+    -51.7874
+   ],
+   "bbox": [
+    -54.876,
+    -1.236,
+    -49.879,
+    4.459
+   ],
+   "borders": [
+    "br-pa"
+   ]
+  },
+  "br-ba": {
+   "sigla": "BA",
+   "code": "29",
+   "name": {
+    "pt": "Bahia",
+    "en": "Bahia",
+    "es": "Bahía"
+   },
+   "capital": "Salvador",
+   "region": "nordeste",
+   "area": 564760,
+   "ll": [
+    -12.5731,
+    -41.4468
+   ],
+   "bbox": [
+    -46.577,
+    -18.349,
+    -37.351,
+    -8.533
+   ],
+   "borders": [
+    "br-al",
+    "br-es",
+    "br-go",
+    "br-mg",
+    "br-pe",
+    "br-pi",
+    "br-se",
+    "br-to"
+   ]
+  },
+  "br-ce": {
+   "sigla": "CE",
+   "code": "23",
+   "name": {
+    "pt": "Ceará",
+    "en": "Ceará",
+    "es": "Ceará"
+   },
+   "capital": "Fortaleza",
+   "region": "nordeste",
+   "area": 148894,
+   "ll": [
+    -4.9543,
+    -39.4471
+   ],
+   "bbox": [
+    -41.424,
+    -7.858,
+    -37.253,
+    -2.784
+   ],
+   "borders": [
+    "br-pb",
+    "br-pe",
+    "br-pi",
+    "br-rn"
+   ]
+  },
+  "br-df": {
+   "sigla": "DF",
+   "code": "53",
+   "name": {
+    "pt": "Distrito Federal",
+    "en": "Federal District",
+    "es": "Distrito Federal"
+   },
+   "capital": "Brasília",
+   "region": "centro-oeste",
+   "area": 5761,
+   "ll": [
+    -15.7759,
+    -47.7968
+   ],
+   "bbox": [
+    -48.286,
+    -16.05,
+    -47.308,
+    -15.502
+   ],
+   "borders": [
+    "br-go",
+    "br-mg"
+   ]
+  },
+  "br-es": {
+   "sigla": "ES",
+   "code": "32",
+   "name": {
+    "pt": "Espírito Santo",
+    "en": "Espírito Santo",
+    "es": "Espírito Santo"
+   },
+   "capital": "Vitória",
+   "region": "sudeste",
+   "area": 46074,
+   "ll": [
+    -19.0178,
+    -40.3404
+   ],
+   "bbox": [
+    -41.88,
+    -21.302,
+    -39.666,
+    -17.892
+   ],
+   "borders": [
+    "br-ba",
+    "br-mg",
+    "br-rj"
+   ]
+  },
+  "br-go": {
+   "sigla": "GO",
+   "code": "52",
+   "name": {
+    "pt": "Goiás",
+    "en": "Goiás",
+    "es": "Goiás"
+   },
+   "capital": "Goiânia",
+   "region": "centro-oeste",
+   "area": 340243,
+   "ll": [
+    -16.5057,
+    -50.1064
+   ],
+   "bbox": [
+    -53.249,
+    -19.498,
+    -45.907,
+    -12.395
+   ],
+   "borders": [
+    "br-ba",
+    "br-df",
+    "br-mg",
+    "br-ms",
+    "br-mt",
+    "br-to"
+   ]
+  },
+  "br-ma": {
+   "sigla": "MA",
+   "code": "21",
+   "name": {
+    "pt": "Maranhão",
+    "en": "Maranhão",
+    "es": "Maranhão"
+   },
+   "capital": "São Luís",
+   "capAl": [
+    "São Luiz"
+   ],
+   "region": "nordeste",
+   "area": 329651,
+   "ll": [
+    -5.0591,
+    -45.3294
+   ],
+   "bbox": [
+    -48.755,
+    -10.262,
+    -41.796,
+    -1.107
+   ],
+   "borders": [
+    "br-pa",
+    "br-pi",
+    "br-to"
+   ]
+  },
+  "br-mg": {
+   "sigla": "MG",
+   "code": "31",
+   "name": {
+    "pt": "Minas Gerais",
+    "en": "Minas Gerais",
+    "es": "Minas Gerais"
+   },
+   "capital": "Belo Horizonte",
+   "region": "sudeste",
+   "area": 586514,
+   "ll": [
+    -17.205,
+    -43.2018
+   ],
+   "bbox": [
+    -51.046,
+    -22.923,
+    -39.857,
+    -14.233
+   ],
+   "borders": [
+    "br-ba",
+    "br-df",
+    "br-es",
+    "br-go",
+    "br-ms",
+    "br-rj",
+    "br-sp"
+   ]
+  },
+  "br-ms": {
+   "sigla": "MS",
+   "code": "50",
+   "name": {
+    "pt": "Mato Grosso do Sul",
+    "en": "Mato Grosso do Sul",
+    "es": "Mato Grosso del Sur"
+   },
+   "capital": "Campo Grande",
+   "region": "centro-oeste",
+   "area": 357142,
+   "ll": [
+    -20.0337,
+    -55.0706
+   ],
+   "bbox": [
+    -58.17,
+    -24.061,
+    -50.923,
+    -17.166
+   ],
+   "borders": [
+    "br-go",
+    "br-mg",
+    "br-mt",
+    "br-pr",
+    "br-sp"
+   ]
+  },
+  "br-mt": {
+   "sigla": "MT",
+   "code": "51",
+   "name": {
+    "pt": "Mato Grosso",
+    "en": "Mato Grosso",
+    "es": "Mato Grosso"
+   },
+   "capital": "Cuiabá",
+   "region": "centro-oeste",
+   "area": 903208,
+   "ll": [
+    -13.3626,
+    -55.2606
+   ],
+   "bbox": [
+    -61.633,
+    -18.042,
+    -50.225,
+    -7.349
+   ],
+   "borders": [
+    "br-am",
+    "br-go",
+    "br-ms",
+    "br-pa",
+    "br-ro",
+    "br-to"
+   ]
+  },
+  "br-pa": {
+   "sigla": "PA",
+   "code": "15",
+   "name": {
+    "pt": "Pará",
+    "en": "Pará",
+    "es": "Pará"
+   },
+   "capital": "Belém",
+   "region": "norte",
+   "area": 1245829,
+   "ll": [
+    -5.656,
+    -53.6108
+   ],
+   "bbox": [
+    -58.898,
+    -9.841,
+    -46.07,
+    2.591
+   ],
+   "borders": [
+    "br-am",
+    "br-ap",
+    "br-ma",
+    "br-mt",
+    "br-rr",
+    "br-to"
+   ]
+  },
+  "br-pb": {
+   "sigla": "PB",
+   "code": "25",
+   "name": {
+    "pt": "Paraíba",
+    "en": "Paraíba",
+    "es": "Paraíba"
+   },
+   "capital": "João Pessoa",
+   "region": "nordeste",
+   "area": 56467,
+   "ll": [
+    -7.1027,
+    -35.9724
+   ],
+   "bbox": [
+    -38.766,
+    -8.303,
+    -34.793,
+    -6.026
+   ],
+   "borders": [
+    "br-ce",
+    "br-pe",
+    "br-rn"
+   ]
+  },
+  "br-pe": {
+   "sigla": "PE",
+   "code": "26",
+   "name": {
+    "pt": "Pernambuco",
+    "en": "Pernambuco",
+    "es": "Pernambuco"
+   },
+   "capital": "Recife",
+   "region": "nordeste",
+   "area": 98068,
+   "ll": [
+    -8.0585,
+    -39.9123
+   ],
+   "bbox": [
+    -41.358,
+    -9.483,
+    -34.806,
+    -7.273
+   ],
+   "borders": [
+    "br-al",
+    "br-ba",
+    "br-ce",
+    "br-pb",
+    "br-pi"
+   ]
+  },
+  "br-pi": {
+   "sigla": "PI",
+   "code": "22",
+   "name": {
+    "pt": "Piauí",
+    "en": "Piauí",
+    "es": "Piauí"
+   },
+   "capital": "Teresina",
+   "region": "nordeste",
+   "area": 251755,
+   "ll": [
+    -8.0639,
+    -42.7673
+   ],
+   "bbox": [
+    -46.028,
+    -10.929,
+    -40.371,
+    -2.734
+   ],
+   "borders": [
+    "br-ba",
+    "br-ce",
+    "br-ma",
+    "br-pe",
+    "br-to"
+   ]
+  },
+  "br-pr": {
+   "sigla": "PR",
+   "code": "41",
+   "name": {
+    "pt": "Paraná",
+    "en": "Paraná",
+    "es": "Paraná"
+   },
+   "capital": "Curitiba",
+   "region": "sul",
+   "area": 199299,
+   "ll": [
+    -24.5401,
+    -52.2446
+   ],
+   "bbox": [
+    -54.62,
+    -26.717,
+    -48.082,
+    -22.516
+   ],
+   "borders": [
+    "br-ms",
+    "br-sc",
+    "br-sp"
+   ]
+  },
+  "br-rj": {
+   "sigla": "RJ",
+   "code": "33",
+   "name": {
+    "pt": "Rio de Janeiro",
+    "en": "Rio de Janeiro",
+    "es": "Río de Janeiro"
+   },
+   "capital": "Rio de Janeiro",
+   "region": "sudeste",
+   "area": 43750,
+   "ll": [
+    -22.3657,
+    -42.485
+   ],
+   "bbox": [
+    -44.889,
+    -23.369,
+    -40.956,
+    -20.763
+   ],
+   "borders": [
+    "br-es",
+    "br-mg",
+    "br-sp"
+   ]
+  },
+  "br-rn": {
+   "sigla": "RN",
+   "code": "24",
+   "name": {
+    "pt": "Rio Grande do Norte",
+    "en": "Rio Grande do Norte",
+    "es": "Río Grande del Norte"
+   },
+   "capital": "Natal",
+   "region": "nordeste",
+   "area": 52810,
+   "ll": [
+    -5.7433,
+    -35.9073
+   ],
+   "bbox": [
+    -38.582,
+    -6.983,
+    -34.969,
+    -4.8
+   ],
+   "borders": [
+    "br-ce",
+    "br-pb"
+   ]
+  },
+  "br-ro": {
+   "sigla": "RO",
+   "code": "11",
+   "name": {
+    "pt": "Rondônia",
+    "en": "Rondônia",
+    "es": "Rondonia"
+   },
+   "capital": "Porto Velho",
+   "region": "norte",
+   "area": 237754,
+   "ll": [
+    -10.6276,
+    -63.3885
+   ],
+   "bbox": [
+    -66.81,
+    -13.692,
+    -59.774,
+    -7.976
+   ],
+   "borders": [
+    "br-ac",
+    "br-am",
+    "br-mt"
+   ]
+  },
+  "br-rr": {
+   "sigla": "RR",
+   "code": "14",
+   "name": {
+    "pt": "Roraima",
+    "en": "Roraima",
+    "es": "Roraima"
+   },
+   "capital": "Boa Vista",
+   "region": "norte",
+   "area": 223505,
+   "ll": [
+    2.7277,
+    -61.4549
+   ],
+   "bbox": [
+    -64.827,
+    -1.581,
+    -58.886,
+    5.27
+   ],
+   "borders": [
+    "br-am",
+    "br-pa"
+   ]
+  },
+  "br-rs": {
+   "sigla": "RS",
+   "code": "43",
+   "name": {
+    "pt": "Rio Grande do Sul",
+    "en": "Rio Grande do Sul",
+    "es": "Río Grande del Sur"
+   },
+   "capital": "Porto Alegre",
+   "region": "sul",
+   "area": 281707,
+   "ll": [
+    -29.5308,
+    -53.4683
+   ],
+   "bbox": [
+    -57.649,
+    -33.751,
+    -49.691,
+    -27.082
+   ],
+   "borders": [
+    "br-sc"
+   ]
+  },
+  "br-sc": {
+   "sigla": "SC",
+   "code": "42",
+   "name": {
+    "pt": "Santa Catarina",
+    "en": "Santa Catarina",
+    "es": "Santa Catarina"
+   },
+   "capital": "Florianópolis",
+   "region": "sul",
+   "area": 95731,
+   "ll": [
+    -27.2988,
+    -49.9965
+   ],
+   "bbox": [
+    -53.837,
+    -29.355,
+    -48.359,
+    -25.956
+   ],
+   "borders": [
+    "br-pr",
+    "br-rs"
+   ]
+  },
+  "br-se": {
+   "sigla": "SE",
+   "code": "28",
+   "name": {
+    "pt": "Sergipe",
+    "en": "Sergipe",
+    "es": "Sergipe"
+   },
+   "capital": "Aracaju",
+   "region": "nordeste",
+   "area": 21938,
+   "ll": [
+    -10.4816,
+    -37.275
+   ],
+   "bbox": [
+    -38.245,
+    -11.569,
+    -36.393,
+    -9.515
+   ],
+   "borders": [
+    "br-al",
+    "br-ba"
+   ]
+  },
+  "br-sp": {
+   "sigla": "SP",
+   "code": "35",
+   "name": {
+    "pt": "São Paulo",
+    "en": "São Paulo",
+    "es": "São Paulo"
+   },
+   "capital": "São Paulo",
+   "region": "sudeste",
+   "area": 248219,
+   "ll": [
+    -22.2881,
+    -47.9187
+   ],
+   "bbox": [
+    -53.11,
+    -25.251,
+    -44.161,
+    -19.78
+   ],
+   "borders": [
+    "br-mg",
+    "br-ms",
+    "br-pr",
+    "br-rj"
+   ]
+  },
+  "br-to": {
+   "sigla": "TO",
+   "code": "17",
+   "name": {
+    "pt": "Tocantins",
+    "en": "Tocantins",
+    "es": "Tocantins"
+   },
+   "capital": "Palmas",
+   "region": "norte",
+   "area": 277424,
+   "ll": [
+    -10.8583,
+    -48.4964
+   ],
+   "bbox": [
+    -50.742,
+    -13.468,
+    -45.699,
+    -5.168
+   ],
+   "borders": [
+    "br-ba",
+    "br-go",
+    "br-ma",
+    "br-mt",
+    "br-pa",
+    "br-pi"
+   ]
+  }
+ }
+}

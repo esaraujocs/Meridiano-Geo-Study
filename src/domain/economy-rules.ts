@@ -22,6 +22,7 @@ export type Policy = {
 const canonicalVariant = (family: Family, variant: AnyQuizVariant) => {
   if (family === "bandeiras" && (variant === "bandeira-nome" || variant === "nome-bandeira")) return "bandeira-nome";
   if (family === "historicas" && (variant === "historica-nome" || variant === "nome-historica")) return "historica-nome";
+  if (family === "brasil" && (variant === "br-bandeira-nome" || variant === "br-nome-bandeira")) return "br-bandeira-nome";
   return variant;
 };
 
@@ -30,16 +31,26 @@ const makePolicy = (family: Family, variant: AnyQuizVariant, cost: number): Poli
   family, variant, cost, coverageCount: 0, sessions: 0, qualifyingSessions: 0,
   label: `${family} · ${variant}`,
 });
+// Em ordem de preço (test:policies confere a escada: cada degrau custa de 1,1 a 2,2 vezes o anterior). Os modos do Brasil entram nos degraus
+// mais baixos (27 estados, o estado do mapa é grátis para todo mundo poder provar a família).
 const BASE_POLICIES: Policy[] = [
   makePolicy("mapa", "mapa", 0),
   makePolicy("bandeiras", "bandeira-nome", 0),
   makePolicy("capitais", "capital-pais", 0),
   makePolicy("capitais", "pais-capital", 0),
+  makePolicy("brasil", "br-mapa", 0),
+  makePolicy("brasil", "br-bandeira-nome", 2000),
+  makePolicy("brasil", "br-capital-mapa", 3000),
+  makePolicy("brasil", "br-estado-capital", 4000),
   makePolicy("escrita", "escrita-pais", 5000),
+  makePolicy("brasil", "br-silhueta-opcoes", 6000),
   makePolicy("gentilicos", "gentilico-pais", 8000),
+  makePolicy("brasil", "br-escrita-estado", 9000),
   makePolicy("silhueta", "silhueta-opcoes", 11000),
+  makePolicy("brasil", "br-escrita-capital", 13000),
   makePolicy("escrita", "escrita-capital", 15000),
   makePolicy("gentilicos", "pais-gentilico", 18000),
+  makePolicy("brasil", "br-silhueta", 20000),
   makePolicy("moedas", "pais-moeda", 22000),
   makePolicy("silhueta", "silhueta", 27000),
   makePolicy("moedas", "moeda-pais", 30000),
@@ -58,6 +69,9 @@ export function unlockAliases(family: Family, variant: AnyQuizVariant, region: R
   }
   if (family === "historicas" && (variant === "historica-nome" || variant === "nome-historica")) {
     return [canonical, `${family}:historica-nome`, `${family}:nome-historica` as Policy["key"]];
+  }
+  if (family === "brasil" && (variant === "br-bandeira-nome" || variant === "br-nome-bandeira")) {
+    return [canonical, "brasil:br-bandeira-nome", "brasil:br-nome-bandeira"];
   }
   return [canonical];
 }

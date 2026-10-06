@@ -5,6 +5,12 @@ export const MAP_BYTES = 95_216_013;
 export const MAP_VERSION =
   "6ff43c179555c6cd94e19f645a63dcf3b05daa7370633354228e28ef486ad183";
 const OPFS_FILE = `meridiano-hd-${MAP_VERSION}.pmtiles`;
+/** Os estados da família Brasil (scripts/brasil): 2,3 MB, guardado inteiro no cache do service worker na primeira partida (ver sw.js), então
+ *  não entra no "Baixar mapa". Tamanho e hash precisam bater com o arquivo e com o sw.js (test:manifest confere). */
+export const BRASIL_MAP_URL = "/maps/brasil-hd.pmtiles";
+export const BRASIL_MAP_BYTES = 2_334_441;
+export const BRASIL_MAP_VERSION =
+  "02f271f5edb459bf1bf41ea105a8de5bd757fb4a53c882e74cb6aa926608da7e";
 
 export type OfflineMapStatus =
   | "checking"

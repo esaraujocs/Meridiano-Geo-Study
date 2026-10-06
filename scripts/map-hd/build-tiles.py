@@ -12,6 +12,7 @@ preservada, numa fração de pixel (TOLERANCE, em unidades do tile: 8 unidades =
 anéis menores que MIN_AREA saem do zoom.
 """
 import gzip
+import json
 import math
 import os
 import pickle
@@ -24,7 +25,9 @@ import pyarrow.parquet as pq
 import shapely
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BUILD = os.path.join(HERE, "..", "..", "build", "map-hd")
+BUILD = os.environ.get("MAP_BUILD") or os.path.join(HERE, "..", "..", "build", "map-hd")
+# outro mapa com o mesmo pipeline (o dos estados do Brasil): a pasta traz um map-profile.json com nome, atribuição e fontes
+PROFILE = json.load(open(os.path.join(BUILD, "map-profile.json"), encoding="utf8")) if os.path.exists(os.path.join(BUILD, "map-profile.json")) else {}
 R = 6378137.0
 ORIGIN = math.pi * R
 WORLD = 2 * ORIGIN
@@ -490,8 +493,8 @@ def write_pmtiles(path, tile_files):
         writer.finalize(
             {"tile_type": TileType.MVT, "tile_compression": Compression.GZIP, "min_lon_e7": -1800000000, "min_lat_e7": -850511287,
              "max_lon_e7": 1800000000, "max_lat_e7": 850511287, "center_zoom": 2, "center_lon_e7": 0, "center_lat_e7": 0},
-            {"name": "Meridiano", "format": "pbf", "type": "overlay", "generator": "scripts/map-hd/build-tiles.py",
-             "attribution": "© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries",
+            {"name": PROFILE.get("title", "Meridiano"), "format": "pbf", "type": "overlay", "generator": "scripts/map-hd/build-tiles.py",
+             "attribution": PROFILE.get("attribution", "© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries"),
              "vector_layers": [{"id": "countries", "fields": {"carta_id": "String"}, "minzoom": 0, "maxzoom": ZMAX}]},
         )
     for handle in handles.values():
@@ -566,7 +569,7 @@ def write_manifest(output, stats, count):
     data = open(output, "rb").read()
     entities = sorted(cid for cid in stats if cid)
     manifest = {
-        "name": "meridiano-hd",
+        "name": PROFILE.get("name", "meridiano-hd"),
         "generator": "scripts/map-hd (fetch-overture.py, fetch-lakes.py, build-pieces.py, build-tiles.py)",
         "zoom": {"min": 0, "max": ZMAX},
         "bytes": len(data),
@@ -578,7 +581,7 @@ def write_manifest(output, stats, count):
         "entities": entities,
         "neutralVertices": stats.get("", 0),
         "vertices": {cid: stats[cid] for cid in entities},
-        "sources": [
+        "sources": PROFILE.get("sources") or [
             {"name": "OpenStreetMap land polygons (split, EPSG:3857)", "url": "https://osmdata.openstreetmap.de/data/land-polygons.html",
              "date": "2026-10-05", "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors", "use": "costa e ilhas em detalhe total"},
             {"name": "Overture Maps divisions/division_area", "release": "2026-09-23.1", "url": "https://docs.overturemaps.org/guides/divisions/",

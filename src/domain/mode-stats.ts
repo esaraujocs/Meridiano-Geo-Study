@@ -35,7 +35,9 @@ export const TREND_LENGTH = 12;
 export const RECENT_LENGTH = 4;
 const MIN_ROUNDS = 5;
 
-export const sessionInMode = (session: StatSession, mode: StatMode) => session.family === mode.family && (mode.flag !== undefined || session.variant === mode.variant);
+// Bandeiras: os dois sentidos são o mesmo modo. Na família Brasil todos os modos dividem a família do motor, então lá o sentido também tem de ser de bandeira.
+export const sessionInMode = (session: StatSession, mode: StatMode) => session.family === mode.family &&
+  (mode.flag !== undefined ? mode.flag !== "brasil" || session.variant === "br-nome-bandeira" || session.variant === "br-bandeira-nome" : session.variant === mode.variant);
 
 const pctOf = (correct: number, rounds: number) => (rounds > 0 ? Math.round((correct / rounds) * 100) : 0);
 

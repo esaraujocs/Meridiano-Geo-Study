@@ -26,6 +26,8 @@ import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
 import { loadPeoples } from "../domain/peoples-data";
 import { isPeoplesFamily, isPeoplesVariant, optionText, peoplesDeckPool, peoplesOptions, peoplesPool, promptText as peoplesPrompt, type Peoples } from "../domain/peoples";
+import { baseVariant } from "../domain/brasil";
+import { loadBrasilFlags } from "../domain/brasil-data";
 
 type Question = { target: string; options: string[] };
 
@@ -40,7 +42,7 @@ export function QuizGame({
   onEnd,
 }: {
   data: Legacy;
-  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas">;
+  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas" | "brasil">;
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
   options?: SessionOptions;
@@ -50,6 +52,10 @@ export function QuizGame({
 }) {
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
+  // Família Brasil: as bandeiras e as capitais dos estados, com as regras do modo equivalente do mapa-múndi (`rule`).
+  const brasil = family === "brasil";
+  const rule = baseVariant(variant);
+  const flagQuiz = family === "bandeiras" || (brasil && rule !== "pais-capital");
   // Suprimentos de expedição: só na Partida solo (nunca no Treino nem em duelo/PvP).
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
@@ -85,7 +91,7 @@ export function QuizGame({
 
   const openSession = () => {
     // Gentílicos e Moedas não mexem na coleção (as colunas das cartas são mapa, bandeiras, capitais e escrita), como Idiomas.
-    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(peoplesMode ? { persistProgress: false } : {}) });
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(peoplesMode || brasil ? { persistProgress: false } : {}) });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {
@@ -152,8 +158,8 @@ export function QuizGame({
   }, []);
 
   useEffect(() => {
-    if (family === "bandeiras") {
-      loadFlags().then(setFlags).catch((loadError: Error) => setError(loadError.message));
+    if (flagQuiz) {
+      (brasil ? loadBrasilFlags() : loadFlags()).then(setFlags).catch((loadError: Error) => setError(loadError.message));
     } else if (peoplesMode) {
       setFlags({});
       loadPeoples().then(setPeoples).catch((loadError: Error) => setError(loadError.message));
@@ -166,7 +172,7 @@ export function QuizGame({
   }, [family]);
 
   const pool = useMemo(() => {
-    if (!peoplesMode) return quizPool(data, family, region, flags ?? undefined);
+    if (!peoplesMode) return quizPool(data, flagQuiz ? "bandeiras" : "capitais", region, flags ?? undefined);
     if (!peoples) return [];
     const ids = Object.entries(data.meta).filter(([id, meta]) => !meta.absorvido && !meta.soBandeira && inRegion(id, region, data)).map(([id]) => id);
     return peoplesPool(ids, peoples, peoplesMode === "gentilico-pais" || peoplesMode === "pais-gentilico" ? "gentilicos" : "moedas");
@@ -292,12 +298,12 @@ export function QuizGame({
   useGameKeys({ exit, choose: (index) => { const id = visibleOptions[index]; if (id && !feedback && !triedWrong.has(id)) answer(id); } });
 
   const targetMeta = data.meta[target];
-  const isFlagPrompt = variant === "bandeira-nome";
+  const isFlagPrompt = rule === "bandeira-nome";
   const titleFor = (id: string) => data.meta[id]?.pt ?? id;
   const valueFor = (id: string) =>
-    variant === "pais-capital" ? data.meta[id]?.cap ?? "" : peoplesMode && peoples ? optionText(peoples, peoplesMode, id) ?? titleFor(id) : titleFor(id);
+    rule === "pais-capital" ? data.meta[id]?.cap ?? "" : peoplesMode && peoples ? optionText(peoples, peoplesMode, id) ?? titleFor(id) : titleFor(id);
   const correctAnswer =
-    variant === "pais-capital" || peoplesMode
+    rule === "pais-capital" || peoplesMode
       ? valueFor(question?.target ?? target)
       : titleFor(question?.target ?? target);
   // A linha visível é curta e calma; a alternativa certa fica destacada nas opções e a frase completa vai para leitores de tela.
@@ -326,20 +332,22 @@ export function QuizGame({
         <main className="content">
           <button className="back" onClick={() => void leaveSession()}>{t.common.exitGame}</button>
           <div className="eyebrow" style={{ marginTop: 32 }}>{t.quiz.preparing}</div>
-          <h1 style={{ marginTop: 18 }}>{family === "bandeiras" ? t.quiz.loadingFlags : peoplesMode ? t.quiz.loadingPeoples : t.quiz.loadingCapitals}</h1>
+          <h1 style={{ marginTop: 18 }}>{brasil ? t.brasil.loading : family === "bandeiras" ? t.quiz.loadingFlags : peoplesMode ? t.quiz.loadingPeoples : t.quiz.loadingCapitals}</h1>
           <p className="lede">{t.quiz.buildingDeck}</p>
         </main>
       </div>
     );
   }
 
-  const flagOptions = variant === "nome-bandeira";
-  const promptText = variant === "capital-pais" ? targetMeta?.cap : peoplesMode && peoples ? peoplesPrompt(peoples, peoplesMode, target) ?? titleFor(target) : titleFor(target);
+  const flagOptions = rule === "nome-bandeira";
+  const promptText = rule === "capital-pais" ? targetMeta?.cap : peoplesMode && peoples ? peoplesPrompt(peoples, peoplesMode, target) ?? titleFor(target) : titleFor(target);
   const promptFlag = isFlagPrompt && targetMeta?.fl ? flags?.[targetMeta.fl.toLowerCase()] : undefined;
   const PEOPLES_KICKER = { "gentilico-pais": t.quiz.whichCountryDemonym, "pais-gentilico": t.quiz.whichDemonym, "moeda-pais": t.quiz.whichCountryCurrency, "pais-moeda": t.quiz.whichCurrency } as const;
   // "país" ou "território" conforme o alvo (Ossétia do Sul é território; ver domain/sovereignty.ts)
   const territory = !isCountry(target, targetMeta);
-  const kicker = peoplesMode ? PEOPLES_KICKER[peoplesMode](territory) : isFlagPrompt ? t.quiz.whichCountryFlag(territory) : variant === "nome-bandeira" ? t.quiz.pickFlag : variant === "capital-pais" ? t.quiz.whichCountryCapital(territory) : t.quiz.whichCapital(territory);
+  const kicker = brasil
+    ? (isFlagPrompt ? t.brasil.flagState : flagOptions ? t.brasil.pickFlag : t.brasil.whichCapital)
+    : peoplesMode ? PEOPLES_KICKER[peoplesMode](territory) : isFlagPrompt ? t.quiz.whichCountryFlag(territory) : rule === "nome-bandeira" ? t.quiz.pickFlag : rule === "capital-pais" ? t.quiz.whichCountryCapital(territory) : t.quiz.whichCapital(territory);
   return (
     <div className="app-shell gs-app">
       {leaveGuard.dialog}
@@ -347,7 +355,7 @@ export function QuizGame({
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
           <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!feedback && !leaveGuard.asking} resetKey={serial} onExpire={() => resolveRound(null)} />
         </GameTopBar>
-        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={variant} counts={supply.counts} usedThisRound={supply.usedThisRound} armed={supply.armed} tonicLeft={supply.tonicLeft} onArm={supply.toggleArm} blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
+        {suppliesEnabled && <SupplyTray timed={pace === "timed"} variant={rule} counts={supply.counts} usedThisRound={supply.usedThisRound} armed={supply.armed} tonicLeft={supply.tonicLeft} onArm={supply.toggleArm} blocked={deckRef.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined} disabled={Boolean(feedback)} onUse={useSupplyItem} />}
         <div className="gs-body">
           <main className="gs-stage" data-target-id={import.meta.env.DEV ? question.target : undefined}>
             <div className="gs-kicker">{kicker}</div>

@@ -23,13 +23,18 @@ import { TypedAnswerInput } from "./typed-answer-input";
 import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
+import { baseVariant } from "../domain/brasil";
+import { loadBrasilFlags } from "../domain/brasil-data";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void; supplies?: SupplyCounts };
 type Choice = { id: string; label: string; flag?: string };
 type WritingTarget = { id: string; pt?: string; en?: string; al?: string | string[]; cap?: string; fl?: string };
 
-export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, supplies = emptySupplyCounts() }: Props & { onEnd?: (result: SessionResult | null) => void }) {
+export function SpecialQuiz({ family, variant, region, data, options, onBack, onEnd, supplies = emptySupplyCounts() }: Props & { onEnd?: (result: SessionResult | null) => void }) {
   const settings = sessionSettings(options, variant);
+  // Família Brasil: a escrita do nome do estado (pela bandeira) e da capital, com as regras da escrita do mapa-múndi (`rule`).
+  const brasil = family === "brasil";
+  const rule = baseVariant(variant);
   const { pace, roundLimit, timerSeconds } = settings;
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
   const suppliesEnabled = !settings.duel && !settings.pvp;
@@ -70,7 +75,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const deck = useRef<ReturnType<typeof createFiniteDeck<any>> | null>(null);
   const deckKey = useRef("");
   const historicalMode = variant === "historica-nome" || variant === "nome-historica";
-  const writing = variant === "escrita-pais" || variant === "escrita-capital";
+  const writing = rule === "escrita-pais" || rule === "escrita-capital";
   const languageName = variant === "idioma-nome";
   // Idiomas: o retorno traz um cartão de aprendizado (significado, onde é falado, quantos falam), então o prazo é maior.
   const richMode = !writing && !historicalMode;
@@ -78,7 +83,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   useEffect(() => {
     Promise.all([
       loadSpecialData(),
-      historicalMode || writing ? loadFlags() : Promise.resolve({}),
+      brasil ? loadBrasilFlags() : historicalMode || writing ? loadFlags() : Promise.resolve({}),
     ]).then(([special, loadedFlags]) => {
       setHistorical(special.historical); setLanguages(special.languages); setFlags(loadedFlags);
       setHistoricalFlags(special.historicalFlags);
@@ -90,10 +95,11 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
     if (!historical.length && !languages.length) return;
     strictUsers.current += 1;
     const handle = startLearningSession({
-      family: writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
-      variant, region, persistProgress: writing,
-      mode: writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
-      subject: writing ? (variant === "escrita-capital" ? "capital" : "pais") : "",
+      // os estados do Brasil não são cartas da coleção
+      family: brasil ? "brasil" : writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
+      variant, region, persistProgress: writing && !brasil,
+      mode: brasil ? variant : writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
+      subject: writing ? (rule === "escrita-capital" ? "capital" : "pais") : "",
       pace, roundLimit, timerSeconds,
       coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor,
     });
@@ -121,7 +127,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const pool = useMemo(() => {
     if (writing) {
       return Object.entries(data.meta)
-        .filter(([id, meta]) => !meta.absorvido && inRegion(id, region, data) && (variant === "escrita-pais" ? Boolean(meta.fl) : Boolean(meta.cap)))
+        .filter(([id, meta]) => !meta.absorvido && inRegion(id, region, data) && (rule === "escrita-pais" ? Boolean(meta.fl) : Boolean(meta.cap)))
         .map(([id, meta]) => ({ id, ...meta }));
     }
     return historicalMode ? historicalPool(historical, region) : languagePool(languages, region);
@@ -166,7 +172,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   };
   // Texto da resposta certa: a capital na escrita de capitais, senão o nome (ou os países do idioma).
   const expectedLabel = (item: HistoricalEntity | LanguageEntry | WritingTarget) =>
-    variant === "escrita-capital" ? ("cap" in item ? item.cap : "") : "pt" in item ? item.pt : "idioma" in item && languageName ? item.idioma : "paises" in item ? item.paises : item.id;
+    rule === "escrita-capital" ? ("cap" in item ? item.cap : "") : "pt" in item ? item.pt : "idioma" in item && languageName ? item.idioma : "paises" in item ? item.paises : item.id;
   const answer = (id: string, value: string, forcedCorrect?: boolean, timedOut = false) => {
     if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
@@ -204,7 +210,7 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   };
   const submitWriting = (value = typed) => {
     if (!target || locked) return;
-    const expected = variant === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
+    const expected = rule === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
     const normalized = answerKey(value);
     if (!normalized) return;
     const correct = expected.some((item) => answerKey(item) === normalized);
@@ -289,27 +295,29 @@ export function SpecialQuiz({ variant, region, data, options, onBack, onEnd, sup
   const totalRounds = deck.current?.size ?? pool.length;
   const exit = () => leaveGuard.ask({ onLeave: () => void finish(), onRestart: () => void restart(), coins: log.pending, xp: totalRounds });
   const stimulusText = "script" in target ? target.script : "pt" in target ? target.pt : "";
-  const stimulus = writing && variant === "escrita-capital"
+  const stimulus = writing && rule === "escrita-capital"
     ? <div className={bigClass(data.meta[target.id]?.pt)}>{data.meta[target.id]?.pt}</div>
     : writing
       ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.flagStimulus} /></div>
       : historicalMode && variant === "historica-nome"
         ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.historicalFlagStimulus} /></div>
         : <div className={"script" in target ? `gs-big script${(stimulusText?.length ?? 0) > 110 ? " xlong" : (stimulusText?.length ?? 0) > 60 ? " long" : ""}` : bigClass(stimulusText)}>{stimulusText}</div>;
-  const kicker = writing
-    ? (variant === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)(!isCountry(target.id, data.meta[target.id]))
+  const kicker = brasil
+    ? (rule === "escrita-capital" ? t.brasil.whichCapital : t.brasil.stateName)
+    : writing
+    ? (rule === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)(!isCountry(target.id, data.meta[target.id]))
     : historicalMode
       ? (variant === "historica-nome" ? t.quiz.whichEntityFlag : t.quiz.pickFlag)
       : languageName ? t.quiz.whichLanguage : t.quiz.whichCountriesLanguage;
   const flagOptions = variant === "nome-historica";
-  const writingAnswers = variant === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
+  const writingAnswers = rule === "escrita-capital" ? acceptedCapitalAnswers(data.meta[target.id] ?? {}) : acceptedWritingAnswers(data.meta[target.id] ?? {});
   return <div className="app-shell gs-app">{leaveGuard.dialog}
     <div className="gs">
       <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(variant)} · ${regionLabel(region)}`}>
         <RoundTimer pausable={!settings.duel} seconds={timerSeconds} bonusSeconds={supply.bonusSeconds} running={!locked && !leaveGuard.asking} resetKey={serial} onExpire={timeUp} />
         {suppliesEnabled && (
           <SupplyTray timed={pace === "timed"}
-            variant={variant}
+            variant={rule}
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
             armed={supply.armed} tonicLeft={supply.tonicLeft}

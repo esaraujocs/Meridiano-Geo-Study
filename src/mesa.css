@@ -74,6 +74,24 @@
   .mz-reward b{font-size:19px}
 }
 
+/* família Brasil: 8 modos em 4 colunas (2 em tela menor), compactos: ícone e nome no cartão, a dica do modo escolhido logo abaixo da grade */
+.mz-ways.is-dense{gap:10px}
+.mz-ways.is-dense .mz-way{flex-direction:column;align-items:flex-start;gap:7px;padding:11px 13px}
+.mz-ways.is-dense .mz-way-ic{width:34px;height:34px;border-radius:10px}
+.mz-ways.is-dense .mz-way-t b{font-size:14.5px;line-height:1.25}
+.mz-ways.is-dense .mz-way-t small{display:none}
+.mz-ways.is-dense .mz-way-check,.mz-ways.is-dense .mz-way em{position:absolute;top:11px;right:11px;margin:0}
+.mz-ways.is-dense~.mz-way-hint{margin-top:10px}
+@media (max-width:1180px){.mz-ways.is-dense{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .mz-ways.is-dense{gap:8px}
+  .mz-ways.is-dense .mz-way{flex-direction:row;align-items:center;gap:10px;padding:10px 11px}
+  .mz-ways.is-dense .mz-way-ic{width:32px;height:32px}
+  .mz-ways.is-dense .mz-way-t b{font-size:13.5px}
+  .mz-ways.is-dense .mz-way-check{position:static;margin-left:auto;width:22px;height:22px}
+  .mz-ways.is-dense .mz-way em{top:auto;bottom:5px;right:8px;font-size:11px}
+}
+
 /* rodapé do cartão: filtro da ONU à esquerda e as Favoritas (compactas) à direita */
 .mz-card{display:flex;flex-direction:column}
 .mz-foot{display:flex;align-items:center;gap:18px 22px;flex-wrap:wrap;margin-top:auto;padding-top:14px}

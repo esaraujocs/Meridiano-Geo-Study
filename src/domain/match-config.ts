@@ -3,10 +3,12 @@ import type { AnyQuizVariant, Family } from "./types";
 import { timerSecondsFor } from "./pace.js";
 import { hitRange, type Pace } from "./spoils.js";
 import { t } from "./i18n/index.js";
+import { BRASIL_VARIANTS, baseVariant, isBrasilVariant } from "./brasil.js";
+import { flagCategoryHas, type FlagCategory } from "./flag-configuration.js";
 
-export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas" | "gentilicos" | "moedas";
-export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language" | "people" | "coins";
-export type FlagKind = "current" | "writing" | "historical";
+export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas" | "gentilicos" | "moedas" | "brasil";
+export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language" | "people" | "coins" | "capital";
+export type FlagKind = FlagCategory;
 
 export type ModeOption = {
   key: string;
@@ -55,6 +57,17 @@ const MODE_SEEDS: Record<TopFamily, ModeSeed[]> = {
     { key: "pais-moeda", icon: "coins", family: "moedas", variant: "pais-moeda" },
     { key: "moeda-pais", icon: "coins", family: "moedas", variant: "moeda-pais" },
   ],
+  // os 27 estados: estados e capitais no mapa, silhueta, bandeiras (os dois sentidos e a escrita) e capitais
+  brasil: [
+    { key: "br-mapa", icon: "map", family: "brasil", variant: "br-mapa" },
+    { key: "br-capital-mapa", icon: "capital", family: "brasil", variant: "br-capital-mapa" },
+    { key: "br-silhueta-opcoes", icon: "eye", family: "brasil", variant: "br-silhueta-opcoes" },
+    { key: "br-silhueta", icon: "type", family: "brasil", variant: "br-silhueta" },
+    { key: "br-bandeiras", icon: "flag", family: "brasil", variant: "br-nome-bandeira", flag: "brasil", direction: true },
+    { key: "br-escrita-estado", icon: "type", family: "brasil", variant: "br-escrita-estado" },
+    { key: "br-estado-capital", icon: "layers", family: "brasil", variant: "br-estado-capital" },
+    { key: "br-escrita-capital", icon: "type", family: "brasil", variant: "br-escrita-capital" },
+  ],
 };
 
 const MODES = Object.fromEntries(Object.entries(MODE_SEEDS).map(([top, list]) => [top, list.map(withText)])) as Record<TopFamily, ModeOption[]>;
@@ -68,6 +81,7 @@ export function variantContextFor(topFamily: TopFamily, saved: string): { family
     idiomas: [["idioma-nome", "idiomas"], ["idioma-pais", "idiomas"]],
     gentilicos: [["gentilico-pais", "gentilicos"], ["pais-gentilico", "gentilicos"]],
     moedas: [["pais-moeda", "moedas"], ["moeda-pais", "moedas"]],
+    brasil: BRASIL_VARIANTS.map((variant): [string, Family] => [variant, "brasil"]),
   };
   const match = table[topFamily].find(([variant]) => variant === saved);
   return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;
@@ -78,7 +92,8 @@ export const modesFor = (top: TopFamily) => MODES[top];
 /** Modo que corresponde ao estado atual (família + variante do motor). */
 export function selectedMode(top: TopFamily, family: Family, variant: AnyQuizVariant): ModeOption {
   const modes = MODES[top];
-  const match = modes.find((mode) => mode.family === family && (mode.flag ? true : mode.variant === variant));
+  // um modo de bandeira vale para os dois sentidos dele (na família Brasil todos os modos dividem a família do motor)
+  const match = modes.find((mode) => mode.family === family && (mode.flag ? flagCategoryHas(mode.flag, variant) : mode.variant === variant));
   return match ?? modes[0];
 }
 
@@ -92,8 +107,9 @@ export function formatSeconds(seconds: number, variant: AnyQuizVariant) {
 
 export function paceHint(pace: Pace, variant: AnyQuizVariant) {
   if (pace === "training") {
-    // Só nos modos que clicam no mapa (mapa/capital-pais) o Treino também marca o país perguntado.
-    const marking = variant === "mapa" || variant === "capital-pais" ? t.config.trainingMarks : "";
+    // Só nos modos que clicam no mapa (mapa/capital-pais) o Treino também marca o país (ou o estado) perguntado.
+    const base = baseVariant(variant);
+    const marking = base === "mapa" || base === "capital-pais" ? (isBrasilVariant(variant) ? t.config.trainingMarksBrasil : t.config.trainingMarks) : "";
     return `${t.config.trainingHint}${marking}`;
   }
   const time = formatSeconds(timerSecondsFor(variant), variant);

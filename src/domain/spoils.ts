@@ -30,6 +30,14 @@ const BASE_BY_VARIANT: Partial<Record<AnyQuizVariant, number>> = {
   "escrita-pais": 80,
   silhueta: 88,
   "escrita-capital": 96,
+  // Brasil: 3/4 do modo equivalente do mapa-múndi (27 estados se aprendem bem mais depressa que 250 países)
+  "br-nome-bandeira": 24, "br-bandeira-nome": 24,
+  "br-estado-capital": 30,
+  "br-mapa": 36,
+  "br-capital-mapa": 42, "br-silhueta-opcoes": 42,
+  "br-escrita-estado": 60,
+  "br-silhueta": 66,
+  "br-escrita-capital": 72,
 };
 export const baseCoins = (variant: AnyQuizVariant) => BASE_BY_VARIANT[variant] ?? 32;
 export const hitCoins = (variant: AnyQuizVariant, tier: Tier = 1) => Math.round(baseCoins(variant) * TIER_FACTOR[tier]);
@@ -40,10 +48,12 @@ export const hitRange = (variant: AnyQuizVariant, pace: Pace): [number, number] 
 };
 
 // Dificuldade do país: menos populoso e menor = mais difícil de reconhecer ou achar no mapa.
+// Catálogo sem população (os estados do Brasil): a ordem sai só da área, do maior para o menor.
 const tierCache = new WeakMap<object, Map<string, Tier>>();
 function buildTiers(meta: Record<string, Meta>) {
   const tiers = new Map<string, Tier>();
-  const ranked = Object.entries(meta).filter(([, item]) => !item.absorvido && typeof item.pop === "number" && item.pop > 0).sort((a, b) => (b[1].pop ?? 0) - (a[1].pop ?? 0));
+  const byPop = Object.entries(meta).filter(([, item]) => !item.absorvido && typeof item.pop === "number" && item.pop > 0).sort((a, b) => (b[1].pop ?? 0) - (a[1].pop ?? 0));
+  const ranked = byPop.length ? byPop : Object.entries(meta).filter(([, item]) => !item.absorvido && typeof item.area === "number" && item.area > 0).sort((a, b) => (b[1].area ?? 0) - (a[1].area ?? 0));
   const third = Math.max(1, Math.ceil(ranked.length / 3));
   ranked.forEach(([id], index) => tiers.set(id, index < third ? 1 : index < third * 2 ? 2 : 3));
   for (const [id, item] of Object.entries(meta)) {

@@ -4,14 +4,16 @@ import type { AnyQuizVariant, Family, Region, RegionSelection } from "./types";
 import { isPace, isRoundTier, roundLimitFor, type RoundTier } from "./pace.js";
 import type { Pace } from "./spoils.js";
 import { selectedMode, variantContextFor, type TopFamily } from "./match-config.js";
-import { normalizeRegionSelection, REGION_ITEMS } from "./regions.js";
+import { BR_REGION_ITEMS, normalizeRegionSelection, REGION_ITEMS } from "./regions.js";
 import { MESSAGES, t, type Messages } from "./i18n/index.js";
 
 export const MAX_PRESETS_PER_FAMILY = 5;
 export const MAX_PRESET_NAME = 40;
 export const PRESET_ID_PREFIX = "preset:";
 export const PRESET_SOURCE = "preset-v1";
-export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas"];
+export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas", "brasil"];
+/** Os recortes que uma configuração guardada pode ter: os do mapa-múndi e, na família Brasil, os do Brasil. */
+const regionsOf = (top: TopFamily) => new Set((top === "brasil" ? BR_REGION_ITEMS : REGION_ITEMS).map(([key]) => key));
 
 /** O que a tela "Configure a partida" decide (região já normalizada). */
 export type PresetConfig = {
@@ -70,7 +72,7 @@ export function parsePreset(value: unknown): Preset | null {
   if (typeof row.variant !== "string" || !variantContextFor(row.topFamily as TopFamily, row.variant)) return null;
   if (!isPace(row.pace) || !isRoundTier(row.roundTier)) return null;
   if (!Array.isArray(row.region) || row.region.length === 0) return null;
-  const knownRegions = new Set(REGION_ITEMS.map(([key]) => key));
+  const knownRegions = regionsOf(row.topFamily as TopFamily);
   if (!row.region.every((item) => knownRegions.has(item as Region))) return null;
   const config = configOf({ topFamily: row.topFamily as TopFamily, variant: row.variant as AnyQuizVariant, pace: row.pace, roundTier: row.roundTier, region: row.region as Region[], onlyUn: Boolean(row.onlyUn) });
   const name = cleanName(typeof row.name === "string" ? row.name : "") || defaultPresetName(config);
@@ -90,7 +92,7 @@ export function parseLastConfig(raw: unknown, topFamily: TopFamily): PresetConfi
   if (typeof row.variant !== "string" || !variantContextFor(topFamily, row.variant)) return null;
   if (!isPace(row.pace) || !isRoundTier(row.roundTier)) return null;
   if (!Array.isArray(row.region) || row.region.length === 0) return null;
-  const knownRegions = new Set(REGION_ITEMS.map(([key]) => key));
+  const knownRegions = regionsOf(topFamily);
   if (!row.region.every((item) => knownRegions.has(item as Region))) return null;
   return configOf({ topFamily, variant: row.variant as AnyQuizVariant, pace: row.pace, roundTier: row.roundTier, region: row.region as Region[], onlyUn: Boolean(row.onlyUn) });
 }

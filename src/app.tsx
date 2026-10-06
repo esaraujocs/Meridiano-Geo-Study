@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Game } from "./components/map-game";
+import { Game, type MapBoard } from "./components/map-game";
 import { Header, Hub, OptionsScreen, type TopFamily } from "./components/screens";
 import { useAccountSync } from "./components/use-account-sync";
 import { AccountNudge } from "./components/account-nudge";
@@ -21,11 +21,13 @@ import {
 import { QuizGame } from "./components/quiz-game";
 import { SpecialQuiz } from "./components/special-quiz";
 import { GeometryGame } from "./components/geometry-games";
-import { inRegion, normalizeRegionSelection, REGION_ITEMS, regionLabel } from "./domain/regions";
+import { BR_REGION_ITEMS, inRegion, normalizeRegionSelection, REGION_ITEMS, regionLabel } from "./domain/regions";
 import { inSilhouetteDeck } from "./domain/silhouette";
 import type { AnyQuizVariant, Family, Legacy, QuizVariant, Region, RegionSelection, RegionCounts, Screen } from "./domain/types";
 import { loadSpecialData, specialInRegion } from "./domain/special-data";
 import {
+  BRASIL_MAP_URL,
+  MAP_URL,
   downloadOfflineMap,
   hasOfflineMap,
   removeOfflineMap,
@@ -91,6 +93,8 @@ import { MecenatoReturnToast } from "./components/mecenato-toast";
 import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
 import { isCountry } from "./domain/sovereignty";
 import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
+import { baseVariant, brasilBounds, brasilIdsIn, type Brasil } from "./domain/brasil";
+import { cachedBrasil, loadBrasil } from "./domain/brasil-data";
 import "./mecenato.css";
 
 // O filtro "Só países" (antes "Só membros da ONU"): o mesmo critério de país × território das perguntas.
@@ -259,6 +263,10 @@ export function App() {
   const [peoples, setPeoples] = useState<Peoples | null>(cachedPeoples());
   const ensurePeoples = () => loadPeoples().then((value) => { setPeoples(value); return value; }).catch(() => null);
   useEffect(() => { void ensurePeoples(); }, []);
+  // Família Brasil: o catálogo dos estados chega ao abrir a família (as bandeiras e as silhuetas, só nos modos que as usam).
+  const [brasil, setBrasil] = useState<Brasil | null>(cachedBrasil());
+  const ensureBrasil = () => loadBrasil().then((value) => { setBrasil(value); return value; }).catch(() => null);
+  useEffect(() => { if (family === "brasil" && !brasil) void ensureBrasil(); }, [family, brasil]);
   // Rodadas compradas valem para todos os modos; se a opção escolhida ainda não foi liberada, volta para 10.
   const arenaCards = useMemo(() => ladderCards(ladderEntries, economy.unlocked), [ladderEntries, economy.unlocked]);
   const arenaNext = useMemo(() => nextMilestones(ladderEntries), [ladderEntries]);
@@ -1089,10 +1097,13 @@ export function App() {
        travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
       gentilicos: peoplesCounts("gentilicos", "gentilico-pais"),
       moedas: peoplesCounts("moedas", variant === "moeda-pais" ? "moeda-pais" : "pais-moeda"),
+      // Brasil: os 27 estados têm mapa, silhueta, bandeira e capital, então todo modo conta o mesmo
+      brasil: Object.fromEntries(BR_REGION_ITEMS.map(([key]) => [key, brasil ? brasilIdsIn(brasil, key).length : 0])) as RegionCounts,
     } as Record<Family, RegionCounts>;
-  }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts, peoples]);
+  }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts, peoples, brasil]);
   const selectedCount = useMemo(() => {
     if (!data) return 0;
+    if (family === "brasil") return brasil ? brasilIdsIn(brasil, region).length : 0;
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
       if (
         meta.absorvido ||
@@ -1117,7 +1128,7 @@ export function App() {
       return peoplesDeckSize(pool, peoples, variant === "moeda-pais" ? "moeda-pais" : family === "gentilicos" ? "gentilico-pais" : "pais-moeda");
     }
     return ids.length;
-  }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant, peoples]);
+  }, [data, family, features, onlyUn, region, specialEntries, travelIds, variant, peoples, brasil]);
 
   // Contagens e entradas de Históricas e Idiomas (a configuração e a partida dependem delas).
   const loadSpecial = () => loadSpecialData().then((special) => {
@@ -1170,14 +1181,16 @@ export function App() {
   const selectFamily = async (selected: Family) => {
             setTrainOnce(false);
             setFamily(selected);
-            setRegion("mundo");
-             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" ? selected : "idiomas";
+            // a família Brasil tem recortes próprios: o país inteiro e as 5 regiões
+            setRegion(selected === "brasil" ? "brasil" : "mundo");
+             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" || selected === "brasil" ? selected : "idiomas";
              setTopFamily(selectedTopFamily);
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecial();
             }
             if (isPeoplesFamily(selected)) await ensurePeoples();
-              const defaultVariant = selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "gentilicos" ? "gentilico-pais" : selected === "moedas" ? "pais-moeda" : selected === "silhueta" ? "silhueta" : "travel";
+            if (selected === "brasil") await ensureBrasil();
+              const defaultVariant = selected === "brasil" ? "br-mapa" : selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "gentilicos" ? "gentilico-pais" : selected === "moedas" ? "pais-moeda" : selected === "silhueta" ? "silhueta" : "travel";
               const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
               const restored =
                 variantContextFor(selectedTopFamily, savedVariant ?? "") ??
@@ -1315,6 +1328,24 @@ export function App() {
   }
 
   if (screen === "game") {
+    // Família Brasil: o catálogo dos estados no lugar do acervo dos países e, nos modos de mapa, o tabuleiro dos estados com o mapa-múndi de fundo
+    if (family === "brasil") {
+      // o catálogo ainda chegando (nunca cai nos motores do mapa-múndi com a família Brasil)
+      if (!brasil) return <div className="app-shell"><main className="content"><h1 style={{ marginTop: 32 }}>{t.brasil.loading}</h1></main></div>;
+      const rule = baseVariant(variant);
+      if (rule === "mapa" || rule === "capital-pais") {
+        const ids = brasilIdsIn(brasil, region);
+        const board: MapBoard = { url: BRASIL_MAP_URL, attribution: "© OpenStreetMap contributors · Overture Maps Foundation · IBGE", bounds: brasilBounds(brasil, ids), backdrop: { url: MAP_URL, hide: "76" } };
+        return <Game data={brasil.data} features={ids.map((id) => ({ id }))} region={region} family="brasil" variant={variant} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} board={board} />;
+      }
+      if (rule === "silhueta" || rule === "silhueta-opcoes") {
+        return <GeometryGame family="brasil" variant={variant} data={brasil.data} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+      }
+      if (rule === "escrita-pais" || rule === "escrita-capital") {
+        return <SpecialQuiz data={brasil.data} family="brasil" variant={variant} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+      }
+      return <QuizGame data={brasil.data} family="brasil" variant={variant as Exclude<QuizVariant, "mapa">} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+    }
     if (family === "capitais" && variant === "capital-pais") {
        return <Game data={playableData ?? data} features={gameFeatures} region={region} family={family} variant={variant} onlyUn={onlyUn} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
     }

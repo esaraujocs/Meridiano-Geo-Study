@@ -4,7 +4,7 @@ import { ScreenBar } from "./screen-bar";
 import { ModePanels } from "./mode-panels";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
-import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
+import { BR_REGION_ITEMS, normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { unlockContent } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
@@ -16,7 +16,7 @@ import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selec
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
-const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins" };
+const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins", brasil: "brazil" };
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -69,10 +69,13 @@ export function Recorte({
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
 }) {
   const familyLabel = t.families[topFamily];
+  // Família Brasil: os recortes são o Brasil inteiro e as 5 regiões
+  const regionItems = topFamily === "brasil" ? BR_REGION_ITEMS : REGION_ITEMS;
+  const allKey = regionItems[0][0];
   const selectedRegions = normalizeRegionSelection(region);
   const policyRegion = selectedRegions.length === 1 ? selectedRegions[0] : "mundo";
-  const selectedCount = selectedCountProp ?? (selectedRegions.length === 1 && selectedRegions[0] === "mundo"
-    ? counts.mundo
+  const selectedCount = selectedCountProp ?? (selectedRegions.length === 1 && selectedRegions[0] === allKey
+    ? counts[allKey]
     : selectedRegions.reduce((total, item) => total + (counts[item] ?? 0), 0));
   const [flagDirection, setFlagDirection] = useState<FlagDirection>(() =>
     flagDirectionFromVariant(variant) ??
@@ -83,8 +86,8 @@ export function Recorte({
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (selectedCount > 0) return;
-    setRegion("mundo");
-  }, [selectedCount, setRegion]);
+    setRegion(allKey);
+  }, [selectedCount, setRegion, allKey]);
 
   const balance = economy?.balance ?? 0;
   const owned = (targetFamily: Family, targetVariant: AnyQuizVariant) => {
@@ -115,13 +118,13 @@ export function Recorte({
     if (mode.flag) applyFlag(mode.flag, direction);
   };
   const toggleRegion = (key: (typeof REGION_ITEMS)[number][0]) => {
-    if (key === "mundo") return setRegion("mundo");
-    const next = selectedRegions.includes("mundo")
+    if (key === allKey) return setRegion(allKey);
+    const next = selectedRegions.includes(allKey)
       ? [key]
       : selectedRegions.includes(key)
         ? selectedRegions.filter((item) => item !== key)
         : [...selectedRegions, key];
-    setRegion(next.length ? normalizeRegionSelection(next) : "mundo");
+    setRegion(next.length ? normalizeRegionSelection(next) : allKey);
   };
 
   const modes = modesFor(topFamily);
@@ -132,9 +135,10 @@ export function Recorte({
   const canBuyActive = !activeOwned && activePolicy ? canUnlock(activePolicy, balance, economy?.sessions ?? 0, 0) : false;
   const roundCap = roundLimitFor(roundTier, family);
   const deckCount = roundCap === null ? selectedCount : Math.min(selectedCount, roundCap);
-  const regionText = selectedRegions.length === 1 ? REGION_ITEMS.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : t.regions.many(selectedRegions.length);
+  const regionText = selectedRegions.length === 1 ? regionItems.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : t.regions.many(selectedRegions.length);
   const summary = configSummary({ mode: active, direction: flagDirection, variant, pace, rounds: deckCount, regionText, count: selectedCount });
-  const showFilter = family !== "historicas" && family !== "idiomas";
+  // o filtro "Só países" não vale para Históricas, Idiomas nem os estados do Brasil
+  const showFilter = family !== "historicas" && family !== "idiomas" && family !== "brasil";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
 
   const start = async () => {
@@ -204,7 +208,7 @@ export function Recorte({
             </header>
             <div className="mz-block">
               <span className="cv-k">{t.config.mode}</span>
-              <div className="mz-ways" role="group" aria-label={t.config.mode} style={{ ["--cols" as string]: modes.length === 4 ? 2 : modes.length }}>
+              <div className={`mz-ways${modes.length > 4 ? " is-dense" : ""}`} role="group" aria-label={t.config.mode} style={{ ["--cols" as string]: modes.length === 4 ? 2 : Math.min(modes.length, 4) }}>
                 {modes.map((mode) => {
                   const modeOwned = owned(mode.family, mode.variant);
                   const cost = priceOf(mode.family, mode.variant);
@@ -218,6 +222,8 @@ export function Recorte({
               {active.direction && <div className="cv-chips cv-sub" role="group" aria-label={t.config.direction}>
                 {(["name-to-flag", "flag-to-name"] as const).map((direction) => <button type="button" key={direction} className="cv-chip" aria-pressed={flagDirection === direction} onClick={() => pickDirection(direction)}><span className="cv-l"><span>{directionLabel(direction)}</span></span></button>)}
               </div>}
+              {/* 8 modos (Brasil): os cartões só mostram o nome; a dica do escolhido vem aqui */}
+              {modes.length > 4 && <p className="cv-hint mz-way-hint">{active.hint}</p>}
               {!activeOwned && <p className="cv-hint" role="status">{modeHint}</p>}
             </div>
             <div className="mz-trio">
@@ -247,7 +253,7 @@ export function Recorte({
               </>)}
               {trio(t.config.region, <>
                 <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
-                  {REGION_ITEMS.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={counts[key] === 0} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key]}</em></span></button>)}
+                  {regionItems.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={!counts[key]} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key] ?? 0}</em></span></button>)}
                 </div>
                 {selectedCount === 0 && <p className="cv-hint">{t.config.noCards}</p>}
               </>, "mz-region")}

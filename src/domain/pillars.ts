@@ -47,11 +47,12 @@ export function pillarStatus(score: number | null, seen: number) {
   return score >= 0.75 ? "forte" : score >= 0.55 ? "em desenvolvimento" : "revisar";
 }
 
-// Que pilar uma partida alimenta. Históricas e Idiomas não entram (não têm país do atlas), nem Gentílicos e Moedas (não são mapa, bandeira nem capital).
+// Que pilar uma partida alimenta. Históricas e Idiomas não entram (não têm país do atlas), nem Gentílicos e Moedas (não são mapa, bandeira nem capital),
+// nem o Brasil (os estados não são países do atlas).
 export function pillarOfSession(session: PillarSession): PillarKey | null {
   if (session.column && (PILLAR_KEYS as readonly string[]).includes(session.column)) return session.column as PillarKey;
   const family = session.family ?? "";
-  if (family === "historicas" || family === "idiomas" || family === "gentilicos" || family === "moedas") return null;
+  if (family === "historicas" || family === "idiomas" || family === "gentilicos" || family === "moedas" || family === "brasil") return null;
   if (family === "mapa" || family === "silhueta" || family === "travel") return "mapa";
   if (family === "escrita") return "escrita";
   if (family === "capitais") return "capitais";
