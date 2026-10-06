@@ -71,3 +71,6 @@
 :root[data-scheme="dark"] .gs .gs-opt.wrong{background:color-mix(in srgb,var(--bad-ink) 22%,var(--panel-2))}
 :root[data-scheme="dark"] .gs-field input{background:var(--panel-2);color:var(--ink)}
 :root[data-scheme="dark"] .gs-continue{background:var(--green);color:var(--dark)}
+/* o retorno da escrita ("Certo"/"Resposta certa" e "você digitou") tinha o verde-escuro fixo do tema claro: 2,1:1 sobre o escuro (achado com a escrita do Brasil, 06/10) */
+:root[data-scheme="dark"] :is(.reveal small,.reveal em,.reveal-skip){color:var(--muted)}
+:root[data-scheme="dark"] .reveal-ok small{color:var(--ok-ink)}
