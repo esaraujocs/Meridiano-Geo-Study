@@ -178,7 +178,7 @@ export function Recorte({
 
   return (
     <main className="content cv-page mz-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
-      <ScreenBar onBack={onBack} eyebrow={t.config.table} title={familyLabel} balance={balance} badge={<span className="mz-badge" data-fam={topFamily} aria-hidden="true"><Icon type={FAMILY_ICON[topFamily]} size={22} /></span>} />
+      <ScreenBar brand={false} onBack={onBack} eyebrow={t.config.table} title={familyLabel} balance={balance} badge={<span className="mz-badge" data-fam={topFamily} aria-hidden="true"><Icon type={FAMILY_ICON[topFamily]} size={22} /></span>} />
       <div className="cv mz" data-fam={topFamily}>
         <div className="mz-main">
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>

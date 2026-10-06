@@ -115,7 +115,7 @@
   .content.cv-page.mz-page{min-height:100dvh;display:flex;flex-direction:column;padding-top:clamp(18px,2.4vw,32px);padding-bottom:18px}
   .mz{flex:1;align-items:stretch}
   /* sem a coluna das estatísticas, o cartão mantém a largura que tinha ao lado dela e fica no centro */
-  .mz{width:calc(100% - clamp(300px,26vw,420px) - clamp(20px,2.4vw,40px));margin-inline:auto}
+  .mz,.mz-page>.st-bar{width:calc(100% - clamp(300px,26vw,420px) - clamp(20px,2.4vw,40px));margin-inline:auto}
   .mz-card{flex:1}
   .mz .cv-bar{position:static}
 }

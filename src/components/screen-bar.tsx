@@ -3,9 +3,10 @@ import type { ReactNode } from "react";
 import { BrandLogo } from "./brand-logo";
 import { formatNumber as money, t } from "../domain/i18n";
 
-export function ScreenBar({ onBack, eyebrow, title, balance, badge }: { onBack: () => void; eyebrow: string; title: string; balance: number; badge?: ReactNode }) {
+/** brand: a marca à esquerda (a Mesa de jogo não usa, pedido do Enzo em 06/10). */
+export function ScreenBar({ onBack, eyebrow, title, balance, badge, brand = true }: { onBack: () => void; eyebrow: string; title: string; balance: number; badge?: ReactNode; brand?: boolean }) {
   return <header className="st-bar">
-    <div className="st-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>
+    {brand && <div className="st-brand" aria-hidden="true"><BrandLogo /><span>MERIDIANO</span></div>}
     <button type="button" className="st-back" onClick={onBack}>{t.common.backHub}</button>
     {badge}
     <div className="st-crumb"><small>{eyebrow}</small><h1>{title}</h1></div>
