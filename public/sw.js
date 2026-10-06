@@ -1,7 +1,7 @@
 const CACHE = "carta-cega-shell-v2";
 const MAP_URL = "/maps/meridiano-hd.pmtiles";
-const MAP_BYTES = 84287096;
-const MAP_FILE = "meridiano-hd-a2647c393cc0b98fad9bc93bb780a478e1f15d05afb2fd6d2bc8069a2c30a078.pmtiles";
+const MAP_BYTES = 95216013;
+const MAP_FILE = "meridiano-hd-6ff43c179555c6cd94e19f645a63dcf3b05daa7370633354228e28ef486ad183.pmtiles";
 const CORE = /*__CARTA_PRECACHE__*/[];
 
 self.addEventListener("install", (event) => {

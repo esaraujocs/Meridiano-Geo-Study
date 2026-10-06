@@ -100,6 +100,23 @@ const probes = [
   ["Lago Vitória (água)", 33.0, -1.0, null],
   ["Lago Baikal (água)", 108.0, 53.2, null],
   ["Lago Titicaca (água)", -69.4, -15.8, null],
+  // lagos do Natural Earth acima de 1.000 km² e os menores de lakes.json (fetch-lakes.py): o Manitoba antes pegava o Winnipeg
+  ["Lago Manitoba (água)", -98.3036, 50.4131, null],
+  ["IJsselmeer (água)", 5.4818, 52.7312, null],
+  ["Sobradinho (água)", -42.1913, -9.8993, null],
+  ["Lagoa Mirim (água)", -52.8247, -32.6371, null],
+  ["Lago Saint Clair (água)", -82.7486, 42.422, null],
+  ["Itaipu (água)", -54.4598, -25.2104, null],
+  ["Lago de Garda (água)", 10.6683, 45.5145, null],
+  ["Represa de Kuibyshev/Samara (água)", 49.5634, 55.2768, null],
+  ["Smallwood (água)", -64.0183, 54.1516, null],
+  // lagunas que o OSM deixa fora da linha de costa (sem elas, terra)
+  ["Lagoa dos Patos (água)", -50.9851, -30.6642, null],
+  ["Kara-Bogaz-Gol (água)", 53.4453, 41.4655, null],
+  ["Laguna de Veneza (água)", 12.2847, 45.3407, null],
+  ["Lago Enriquillo (água)", -71.5917, 18.4566, null],
+  ["Lough Neagh (água, Irlanda do Norte em volta)", -6.4117, 54.6109, null],
+  ["Lago de Como (água)", 9.2611, 46.0117, null],
   ["Mar Cáspio (água)", 50.5, 42.0, null],
   ["Atlântico (água)", -30.0, 0.0, null],
 ];

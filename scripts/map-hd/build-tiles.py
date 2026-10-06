@@ -585,7 +585,9 @@ def write_manifest(output, stats, count):
              "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors, Overture Maps Foundation, geoBoundaries",
              "use": "fronteiras terrestres e marítimas (quem é dono de cada pedaço de terra)"},
             {"name": "Overture Maps base/water", "release": "2026-09-23.1", "url": "https://docs.overturemaps.org/guides/base/",
-             "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors, Overture Maps Foundation", "use": "lagos grandes recortados da terra"},
+             "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors, Overture Maps Foundation", "use": "lagos recortados da terra"},
+            {"name": "Natural Earth 10m lakes", "version": "5.0.0", "url": "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-lakes/",
+             "license": "domínio público", "use": "só o índice de quais lagos entram (nome, área, Wikidata, pontos); o contorno é do OSM"},
         ],
     }
     with open(output[: -len(".pmtiles")] + ".manifest.json", "w", encoding="utf8") as handle:

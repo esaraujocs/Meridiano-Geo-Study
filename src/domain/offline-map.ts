@@ -1,9 +1,9 @@
 import { t } from "./i18n/index.js";
 
 export const MAP_URL = "/maps/meridiano-hd.pmtiles";
-export const MAP_BYTES = 84_287_096;
+export const MAP_BYTES = 95_216_013;
 export const MAP_VERSION =
-  "a2647c393cc0b98fad9bc93bb780a478e1f15d05afb2fd6d2bc8069a2c30a078";
+  "6ff43c179555c6cd94e19f645a63dcf3b05daa7370633354228e28ef486ad183";
 const OPFS_FILE = `meridiano-hd-${MAP_VERSION}.pmtiles`;
 
 export type OfflineMapStatus =
