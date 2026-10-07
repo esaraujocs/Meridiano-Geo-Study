@@ -52,7 +52,7 @@ export function pillarStatus(score: number | null, seen: number) {
 export function pillarOfSession(session: PillarSession): PillarKey | null {
   if (session.column && (PILLAR_KEYS as readonly string[]).includes(session.column)) return session.column as PillarKey;
   const family = session.family ?? "";
-  if (family === "historicas" || family === "idiomas" || family === "gentilicos" || family === "moedas" || family === "divisoes" || family === "brasil") return null;
+  if (family === "historicas" || family === "idiomas" || family === "gentilicos" || family === "moedas" || family === "divisoes" || family === "epocas" || family === "brasil") return null;
   if (family === "mapa" || family === "silhueta" || family === "travel") return "mapa";
   if (family === "escrita") return "escrita";
   if (family === "capitais") return "capitais";

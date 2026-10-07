@@ -49,7 +49,7 @@ export type DivisionRegion = `dv:${string}`;
 /** Os recortes do mapa-múndi (os 7 e o Mundo). */
 export type WorldRegion = Exclude<Region, DivisionRegion>;
 export type RegionSelection = Region | Region[];
-export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel" | "gentilicos" | "moedas" | "divisoes";
+export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel" | "gentilicos" | "moedas" | "divisoes" | "epocas";
 export type QuizVariant =
   | "mapa"
   | "bandeira-nome"

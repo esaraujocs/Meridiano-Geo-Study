@@ -66,6 +66,7 @@ export const en: Messages = {
     moedas: "Currencies",
     povos: "Languages, peoples & currencies",
     divisoes: "States & provinces",
+    epocas: "Historical maps",
   },
   hub: {
     profileAria: "Activity profile",
@@ -99,6 +100,7 @@ export const en: Messages = {
       moedas: "The money of every country.",
       povos: "Each country's language, people and money.",
       divisoes: "Each country from the inside: states, capitals and outlines.",
+      epocas: "The world as it was: countries, empires and colonies of other eras.",
     },
     soon: "Coming soon",
     yourProgress: "Your progress",
@@ -1114,6 +1116,9 @@ export const en: Messages = {
     country: "Country",
     picker: {
       change: "change country",
+      changeEra: "change era",
+      titleEra: "Choose the era",
+      searchEra: "Search era…",
       title: "Choose the country",
       search: "Search country…",
       all: "All",
@@ -1211,7 +1216,7 @@ export const en: Messages = {
     threeTitles: "3 titles",
   },
   sessions: {
-    groups: { bandeiras: "Flags", mapa: "Map", capitais: "Capitals", historicas: "Historical", idiomas: "Languages", gentilicos: "Demonyms", moedas: "Currencies", divisoes: "States & provinces" },
+    groups: { bandeiras: "Flags", mapa: "Map", capitais: "Capitals", historicas: "Historical", idiomas: "Languages", gentilicos: "Demonyms", moedas: "Currencies", divisoes: "States & provinces", epocas: "Historical maps" },
     variants: {
       mapa: "Click the map",
       silhueta: "Silhouette + typing",

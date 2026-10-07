@@ -9,6 +9,7 @@ capital, enquadramento e o mapa (tamanho e hash).
 REUSE_PIECES=1 reaproveita a divisão já feita (o catálogo e as silhuetas são refeitos); TILES_ONLY=1 pula o build-division.py (o catálogo, as silhuetas e
 os pedaços já gerados valem); INDEX_ONLY=1 só refaz o índice. Tempo: o Brasil leva ~2 min; os EUA ~40 min só no build-division.py (o Alasca pesa).
 Para um país novo: countries/<país>.json (lista curada) + fetch.py + este script + incluir o país em COUNTRIES (a ordem é a da Mesa).
+As épocas dos Mapas históricos (kind "era", fonte "ohm": 1914) entram na mesma lista; a config da época sai de eras/make-<época>.py.
 """
 import json
 import os
@@ -18,7 +19,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-COUNTRIES = ["br", "us", "cn"]
+COUNTRIES = ["br", "us", "cn", "1914"]
 INDEX = os.path.join(ROOT, "src", "domain", "divisions-index.ts")
 
 
@@ -39,7 +40,9 @@ def build(country):
     profile = {"name": f"divisions-{country}", "title": f"Meridiano · {config['name']['pt']}", "attribution": config["attribution"], "sources": config["sources"]}
     json.dump(profile, open(os.path.join(build_dir, "map-profile.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
     target = os.path.join(build_dir, f"divisions-{country}.pmtiles")
-    run(sys.executable, os.path.join(ROOT, "scripts", "map-hd", "build-tiles.py"), target, env={**os.environ, "MAP_BUILD": build_dir})
+    # zmax da config: os Mapas históricos (o mundo inteiro) param no zoom 7, ~1 km de precisão (o MapLibre amplia daí)
+    env = {**os.environ, "MAP_BUILD": build_dir, **({"ZMAX": str(config["zmax"])} if config.get("zmax") else {})}
+    run(sys.executable, os.path.join(ROOT, "scripts", "map-hd", "build-tiles.py"), target, env=env)
     run(sys.executable, os.path.join(ROOT, "scripts", "map-hd", "mvt_check.py"), target)
     for suffix in (".pmtiles", ".manifest.json"):
         shutil.copy(os.path.join(build_dir, f"divisions-{country}{suffix}"), os.path.join(ROOT, "public", "maps", f"divisions-{country}{suffix}"))
@@ -57,8 +60,11 @@ def entry(country):
     capitals = {key: sum(1 for unit in units.values() if unit["region"] == key and unit.get("capital")) for key in config["regions"]}
     boxes = [unit["bbox"] for unit in units.values()]
     frame = config.get("frame") or [min(box[0] for box in boxes), min(box[1] for box in boxes), max(box[2] for box in boxes), max(box[3] for box in boxes)]
+    era = config.get("kind") == "era"
     return {
-        "id": country, "carta": config["carta"], "name": config["name"], "unit": config["unit"],
+        "id": country, **({"kind": "era", "subtitle": config["subtitle"]} if era else {}),
+        # a época cobre o mundo inteiro: não esconde nenhuma entidade do mapa-múndi (nem há mapa-múndi de fundo)
+        "carta": "" if config["carta"] == "*" else config["carta"], "name": config["name"], "unit": config["unit"],
         "regions": [{"key": key, "name": names, "count": counts[key], "capitals": capitals[key]} for key, names in config["regions"].items()],
         "count": len(units), "flags": os.path.exists(os.path.join(public, "flags.json")), "capitals": sum(capitals.values()),
         "frame": frame, "attribution": config["attribution"],

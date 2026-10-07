@@ -92,7 +92,7 @@ import { MecenatoReturnToast } from "./components/mecenato-toast";
 import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
 import { isCountry } from "./domain/sovereignty";
 import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
-import { DIVISION_COUNTRIES, baseVariant, divisionBounds, divisionCounts, divisionCountry, divisionCountryOf, divisionIdsIn, divisionRegion, divisionSelectedCount, unitWord, type DivisionPack } from "./domain/divisions";
+import { DIVISION_COUNTRIES, divisionsOfKind, baseVariant, divisionBounds, divisionCounts, divisionCountry, divisionCountryOf, divisionIdsIn, divisionRegion, divisionSelectedCount, unitWord, type DivisionPack } from "./domain/divisions";
 import { cachedDivision, loadDivision } from "./domain/divisions-data";
 import "./mecenato.css";
 
@@ -264,7 +264,8 @@ export function App() {
   useEffect(() => { void ensurePeoples(); }, []);
   // Estados e províncias: a Mesa conta pelo índice (divisions-index.ts), sem carregar nada; o catálogo do país do recorte chega ao abrir a família ou ao
   // trocar de país (as bandeiras e as silhuetas, só nos modos que as usam).
-  const divisionId = family === "divisoes" ? divisionCountryOf(regionPref) : null;
+  // (Mapas históricos, família "epocas": o pacote é a época, com a mesma máquina)
+  const divisionId = family === "divisoes" || family === "epocas" ? divisionCountryOf(regionPref) : null;
   const [divisionPack, setDivisionPack] = useState<DivisionPack | null>(null);
   const ensureDivision = (country: string) => loadDivision(country).then((pack) => { setDivisionPack(pack); return pack; }).catch(() => null);
   useEffect(() => {
@@ -1105,11 +1106,12 @@ export function App() {
       moedas: peoplesCounts("moedas", variant === "moeda-pais" ? "moeda-pais" : "pais-moeda"),
       // Estados e províncias: as contagens de cada recorte de cada país vêm do índice (nos modos de capital, só as unidades com capital)
       divisoes: divisionCounts(variant) as RegionCounts,
+      epocas: divisionCounts(variant) as RegionCounts,
     } as Record<Family, RegionCounts>;
   }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts, peoples]);
   const selectedCount = useMemo(() => {
     if (!data) return 0;
-    if (family === "divisoes") return divisionSelectedCount(region, variant);
+    if (family === "divisoes" || family === "epocas") return divisionSelectedCount(region, variant);
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
       if (
         meta.absorvido ||
@@ -1188,8 +1190,8 @@ export function App() {
             setTrainOnce(false);
             setFamily(selected);
             // Estados e províncias tem recortes próprios: o país inteiro e as regiões dele (abre no primeiro país; a última partida, abaixo, troca)
-            setRegion(selected === "divisoes" ? divisionRegion(DIVISION_COUNTRIES[0]?.id ?? "br") : "mundo");
-             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" || selected === "divisoes" ? selected : "idiomas";
+            setRegion(selected === "divisoes" ? divisionRegion(divisionsOfKind("country")[0]?.id ?? "br") : selected === "epocas" ? divisionRegion(divisionsOfKind("era")[0]?.id ?? "1914") : "mundo");
+             const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" || selected === "divisoes" || selected === "epocas" ? selected : "idiomas";
              setTopFamily(selectedTopFamily);
             // Idiomas, povos e moedas: o cartão do Hub abre no último tema jogado
             if (isPeoplesTopic(selectedTopFamily)) { try { localStorage.setItem(PEOPLES_LAST_KEY, selectedTopFamily); } catch { /* sem armazenamento */ } }
@@ -1197,7 +1199,7 @@ export function App() {
               await loadSpecial();
             }
             if (isPeoplesFamily(selected)) await ensurePeoples();
-              const defaultVariant = selected === "divisoes" ? "dv-mapa" : selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "gentilicos" ? "gentilico-pais" : selected === "moedas" ? "pais-moeda" : selected === "silhueta" ? "silhueta" : "travel";
+              const defaultVariant = selected === "divisoes" || selected === "epocas" ? "dv-mapa" : selected === "mapa" ? "mapa" : selected === "bandeiras" ? "nome-bandeira" : selected === "capitais" ? "capital-pais" : selected === "escrita" ? "escrita-pais" : selected === "historicas" ? "nome-historica" : selected === "idiomas" ? "idioma-nome" : selected === "gentilicos" ? "gentilico-pais" : selected === "moedas" ? "pais-moeda" : selected === "silhueta" ? "silhueta" : "travel";
               const savedVariant = localStorage.getItem(`carta-last-variant:${selectedTopFamily}`);
               const restored =
                 variantContextFor(selectedTopFamily, savedVariant ?? "") ??
@@ -1336,7 +1338,7 @@ export function App() {
 
   if (screen === "game") {
     // Estados e províncias: o catálogo do país no lugar do acervo dos países e, nos modos de mapa, o tabuleiro do país com o mapa-múndi de fundo
-    if (family === "divisoes") {
+    if (family === "divisoes" || family === "epocas") {
       const country = divisionCountry(divisionId);
       const pack = divisionPack?.country === divisionId ? divisionPack : null;
       // o catálogo ainda chegando (nunca cai nos motores do mapa-múndi com este modo)
@@ -1344,16 +1346,17 @@ export function App() {
       const rule = baseVariant(variant);
       if (rule === "mapa" || rule === "capital-pais") {
         const ids = divisionIdsIn(pack, region, variant);
-        const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), backdrop: { url: MAP_URL, hide: country.carta } };
-        return <Game key={country.id} data={pack.data} features={ids.map((id) => ({ id }))} region={region} family="divisoes" variant={variant} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} board={board} />;
+        // a época cobre o mundo inteiro: sem o mapa-múndi de fundo
+        const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: country.carta } } : {}) };
+        return <Game key={country.id} data={pack.data} features={ids.map((id) => ({ id }))} region={region} family={family} variant={variant} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} board={board} />;
       }
       if (rule === "silhueta" || rule === "silhueta-opcoes") {
-        return <GeometryGame key={country.id} family="divisoes" variant={variant} data={pack.data} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+        return <GeometryGame key={country.id} family={family} variant={variant} data={pack.data} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
       }
       if (rule === "escrita-pais" || rule === "escrita-capital") {
-        return <SpecialQuiz key={country.id} data={pack.data} family="divisoes" variant={variant} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+        return <SpecialQuiz key={country.id} data={pack.data} family={family} variant={variant} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
       }
-      return <QuizGame key={country.id} data={pack.data} family="divisoes" variant={variant as Exclude<QuizVariant, "mapa">} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
+      return <QuizGame key={country.id} data={pack.data} family={family} variant={variant as Exclude<QuizVariant, "mapa">} region={region} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;
     }
     if (family === "capitais" && variant === "capital-pais") {
        return <Game data={playableData ?? data} features={gameFeatures} region={region} family={family} variant={variant} onlyUn={onlyUn} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} />;

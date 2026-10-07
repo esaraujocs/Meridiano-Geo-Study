@@ -59,7 +59,10 @@ async function mapReader(file) {
 }
 
 // ---- cada país do índice: o pacote inteiro, sem nada próprio dele
-assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn"], "o índice traz o Brasil, os EUA e a China, na ordem da Mesa");
+// a época de 1914 entra no índice quando o pacote dela é gerado (até lá o cartão de Mapas históricos fica escondido no Hub)
+const HAS_1914 = DIVISION_INDEX.some((country) => country.id === "1914");
+assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn", ...(HAS_1914 ? ["1914"] : [])], "o índice traz o Brasil, os EUA, a China (e a época de 1914), na ordem da Mesa");
+assert.deepEqual(DIVISION_INDEX.map((country) => country.kind ?? "country"), ["country", "country", "country", ...(HAS_1914 ? ["era"] : [])]);
 const files = {};
 let points = 0;
 for (const country of DIVISION_INDEX) {
@@ -74,7 +77,8 @@ for (const country of DIVISION_INDEX) {
 
   // índice × config × pacote
   assert.equal(units.country, cc);
-  assert.equal(country.carta, config.carta, `${cc}: entidade do mapa-múndi`);
+  assert.equal(country.carta, config.carta === "*" ? "" : config.carta, `${cc}: entidade do mapa-múndi (a época: nenhuma)`);
+  if (config.kind === "era") assert.deepEqual(country.subtitle, config.subtitle, `${cc}: legenda da época`);
   assert.deepEqual(country.name, config.name);
   assert.deepEqual(country.unit, config.unit);
   for (const locale of ["pt", "en", "es"]) assert.ok(country.unit[locale].one && country.unit[locale].many, `${cc}: palavra da unidade em ${locale}`);
@@ -96,7 +100,11 @@ for (const country of DIVISION_INDEX) {
   for (const [id, row] of rows) {
     assert.equal(id, `${cc}-${row.code.toLowerCase()}`, `${id}: id = <país>-<código>`);
     for (const locale of ["pt", "en", "es"]) assert.ok(row.name[locale]?.trim(), `${id}: nome em ${locale}`);
-    if ("capital" in row) assert.ok(row.capital.trim(), `${id}: capital`);
+    if ("capital" in row) {
+      // um nome só, ou um por idioma (as capitais de 1914)
+      const names = typeof row.capital === "string" ? [row.capital] : ["pt", "en", "es"].map((locale) => row.capital[locale]);
+      assert.ok(names.every((name) => name?.trim()), `${id}: capital`);
+    }
     assert.ok(row.area > 0, `${id}: área`);
     assert.ok(config.regions[row.region], `${id}: região ${row.region}`);
     const [west, south, east, north] = row.bbox;
@@ -119,7 +127,10 @@ for (const country of DIVISION_INDEX) {
   assert.deepEqual(Object.keys(shapes).sort(), [...ids].sort(), `${cc}: uma silhueta por unidade`);
   for (const id of ids) {
     assert.ok(["Polygon", "MultiPolygon"].includes(shapes[id].type), `${id}: silhueta poligonal`);
-    boxOf(shapes[id]).forEach((value, index) => assert.ok(Math.abs(value - units.units[id].bbox[index]) < 0.05, `${id}: silhueta e caixa da unidade batem (${boxOf(shapes[id])} × ${units.units[id].bbox})`));
+    // a silhueta é simplificada em 1/700 do tamanho: nos impérios de 1914 (a Rússia, de lado a lado do mundo) isso passa de 0,05°
+    const [bw, bs, be, bn] = units.units[id].bbox;
+    const slack = Math.max(0.05, Math.max(be - bw, bn - bs) / 300);
+    boxOf(shapes[id]).forEach((value, index) => assert.ok(Math.abs(value - units.units[id].bbox[index]) < slack, `${id}: silhueta e caixa da unidade batem (${boxOf(shapes[id])} × ${units.units[id].bbox})`));
   }
 
   // bandeiras (só se o país tem): todas, em domínio público, no formato do acervo do mapa-múndi
@@ -221,6 +232,38 @@ for (const country of DIVISION_INDEX) {
   const borders = (code) => [...row(code).borders].sort();
   assert.deepEqual(borders("bj"), ["cn-he", "cn-tj"]); assert.deepEqual(borders("sh"), ["cn-js", "cn-zj"]); assert.equal(borders("nm").length, 8); assert.equal(borders("he").length, 7);
   assert.ok(Object.entries(units.units).every(([id, value]) => value.borders.length > 0 || id === "cn-hi"), "as outras 30 têm vizinho");
+}
+
+// ---- Mapas históricos, 1914 (véspera da Primeira Guerra): Estados, colônias e protetorados como alvos próprios; fronteiras do OpenHistoricalMap com a
+// costa do mapa HD; as capitais de 1914 por idioma; as miudezas e as disputas da época (o Chaco, o Labrador) neutras
+if (HAS_1914) {
+  const { units, pairs, flags } = files["1914"];
+  const row = (code) => units.units[`1914-${code}`];
+  assert.equal(Object.keys(units.units).length, 146);
+  assert.equal(flags, null, "sem bandeiras por enquanto");
+  assert.equal(DIVISION_INDEX[3].kind, "era"); assert.equal(DIVISION_INDEX[3].carta, ""); assert.deepEqual(DIVISION_INDEX[3].frame, [-170, -56, 190, 78]);
+  assert.equal(DIVISION_INDEX[3].subtitle.pt, "Véspera da Primeira Guerra");
+  assert.equal(DIVISION_INDEX[3].capitals, 142, "sem capital: Groenlândia, Estados da Trégua, Estados Malaios Não Federados e Saguia el-Hamra");
+  for (const code of ["grl", "tru", "ums", "sgh"]) assert.equal(row(code).capital, undefined, `${code}: sem capital única`);
+  assert.deepEqual(row("auh").capital, { pt: "Viena", en: "Vienna", es: "Viena" });
+  assert.deepEqual(row("rus").capital, { pt: "São Petersburgo", en: "Saint Petersburg", es: "San Petersburgo" }); assert.ok(row("rus").capAl.includes("Petrogrado"));
+  assert.equal(row("ott").capital.pt, "Constantinopla"); assert.ok(row("ott").capAl.includes("Istambul"));
+  assert.equal(row("nor").capital.pt, "Kristiania"); assert.ok(row("nor").capAl.includes("Oslo"));
+  assert.equal(row("kam").capital.pt, "Buea"); assert.equal(row("btn").capital.pt, "Punakha"); assert.equal(row("fji").capital.pt, "Suva"); assert.equal(row("gil").capital.pt, "Banaba");
+  assert.equal(row("ind").capital.pt, "Délhi"); assert.equal(row("aus").capital.pt, "Melbourne"); assert.equal(row("bra").capital.pt, "Rio de Janeiro");
+  assert.equal(row("auh").name.pt, "Áustria-Hungria"); assert.equal(row("gea").name.en, "German East Africa"); assert.equal(row("dei").name.es, "Indias Orientales Neerlandesas");
+  // colônias recortadas das metrópoles pela terra de hoje, e o Egito, que o OHM não tem
+  for (const code of ["alg", "isl", "grl", "sur", "egy"]) assert.ok(row(code).area > 50000, `${code}: ${row(code).area} km²`);
+  assert.ok(row("fra").area < 600000, `a França sem a Argélia (${row("fra").area} km²)`); assert.ok(row("dnk").area < 60000, `a Dinamarca sem a Groenlândia e a Islândia (${row("dnk").area} km²)`);
+  assert.ok(row("arg").area > 2500000 && row("chl").area > 600000, "a Argentina e o Chile inteiros (o OHM os tem quebrados)");
+  // vizinhos pela terra
+  const borders = (code) => row(code).borders;
+  for (const [code, near] of [["auh", ["ger", "rus", "ita", "srb", "mne", "rou", "che"]], ["ger", ["fra", "bel", "nld", "lux", "che", "auh", "rus", "dnk"]], ["esp", ["por", "fra"]],
+    ["egy", ["sdn"]], ["bra", ["arg", "ury", "pry", "bol", "pru", "col", "ven", "guy", "sur", "guf"]], ["usa", ["can", "mex"]], ["chn", ["rus", "ind", "tib"]]]) {
+    for (const other of near) assert.ok(borders(code).includes(`1914-${other}`), `${code} faz divisa com ${other} (${borders(code)})`);
+  }
+  assert.deepEqual(borders("aus"), [], "a Austrália é ilha"); assert.deepEqual(borders("isl"), []);
+  assert.ok(pairs > 250, `${pairs} pares de vizinhos`);
 }
 
 // ---- regras
@@ -369,7 +412,7 @@ assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", r
 
 // seletor de países da Mesa: continente pelo mapa-múndi, precisão e últimos jogados pelas sessões, busca sem acento nos três idiomas
 const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" } };
-assert.deepEqual(DIVISION_INDEX.map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia"]);
+assert.deepEqual(D.divisionsOfKind("country").map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia"]);
 assert.equal(D.divisionContinent(D.divisionCountry("br"), {}), null);
 const plays = D.divisionCountryPlays([
   { family: "divisoes", variant: "dv-mapa", region: "dv:us", complete: true, roundCount: 10, correct: 7, startedAt: 300 },
@@ -381,11 +424,42 @@ const plays = D.divisionCountryPlays([
 assert.deepEqual(plays, { us: { last: 500, matches: 2, accuracy: 80 }, br: { last: 100, matches: 1, accuracy: 100 } }, "partida incompleta e do mapa-múndi não contam; a família brasil conta no Brasil");
 assert.deepEqual(D.recentDivisionCountries(plays), ["us", "br"]); assert.deepEqual(D.recentDivisionCountries(plays, 1), ["us"]);
 assert.deepEqual(D.recentDivisionCountries({ xx: { last: 999, matches: 1, accuracy: 1 }, ...plays }), ["us", "br"], "país que saiu do índice some");
-const search = (query, extra) => DIVISION_INDEX.filter((country) => D.divisionCountryMatches(country, query, extra?.[country.id])).map((country) => country.id);
+const search = (query, extra) => D.divisionsOfKind("country").filter((country) => D.divisionCountryMatches(country, query, extra?.[country.id])).map((country) => country.id);
 assert.deepEqual(search(""), ["br", "us", "cn"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
 assert.deepEqual(search("brazil"), ["br"], "o nome em inglês vale"); assert.deepEqual(search("estados unidos"), [], "sem o nome do mapa-múndi, não");
 assert.deepEqual(search("estados unidos", { us: ["Estados Unidos", "United States"] }), ["us"], "com o nome do mapa-múndi, sim");
 assert.deepEqual(search("ee. uu"), ["us"], "o nome em espanhol"); assert.deepEqual(search("xyz"), []);
+
+// Mapas históricos: as épocas são pacotes do índice do tipo "era", com a família "epocas", os mesmos modos (sem bandeiras) e as mesmas compras
+assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]);
+assert.ok(matchConfig.modesFor("epocas").every((mode) => mode.family === "epocas"));
+assert.equal(economy.policyFor("epocas", "dv-silhueta", "dv:1914").key, "divisoes:dv-silhueta", "a compra vale para países e épocas");
+assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equal(pillars.pillarOfSession({ family: "epocas", variant: "dv-mapa", mode: "dv-mapa" }), null);
+assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
+assert.equal(D.isDivisionFamily("epocas"), true);
+if (HAS_1914) {
+assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); assert.deepEqual(D.divisionsOfKind("country").map((country) => country.id), ["br", "us", "cn"]);
+assert.equal(D.kindOf(D.divisionCountry("1914")), "era"); assert.equal(D.kindOf(D.divisionCountry("br")), "country");
+assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
+assert.equal(D.isDivisionFamily("epocas"), true);
+assert.deepEqual(D.DIVISION_VARIANTS.filter((variant) => D.variantPlayable(D.divisionCountry("1914"), variant)), usPlayable, "1914: os 6 modos sem bandeira");
+assert.equal(D.divisionRegionLabel("dv:1914"), "1914"); assert.equal(D.divisionRegionLabel("dv:1914:europe"), "1914 · Europa", "a região da época diz o ano");
+assert.equal(D.divisionRegionLabel("1914:africa", "en"), "1914 · Africa");
+assert.equal(D.divisionCounts("dv-capital")["dv:1914"], 142); assert.equal(D.divisionCounts()["dv:1914"], 146);
+const era = D.divisionCatalog(files["1914"].units, "pt");
+const eraEn = D.divisionCatalog(files["1914"].units, "en");
+assert.equal(era.data.meta["1914-auh"].cap, "Viena"); assert.equal(eraEn.data.meta["1914-auh"].cap, "Vienna");
+assert.ok(era.data.meta["1914-auh"].capAl.includes("Vienna") && era.data.meta["1914-auh"].capAl.includes("Wien"), "a capital nos outros idiomas vale na escrita");
+assert.equal(era.data.meta["1914-auh"].reg, "1914:europe");
+assert.equal(D.divisionIdsIn(era, "dv:1914", "dv-capital").length, 142); assert.equal(D.divisionIdsIn(era, "dv:1914:europe").length, files["1914"].units && Object.values(files["1914"].units.units).filter((unit) => unit.region === "europe").length);
+assert.deepEqual(D.divisionBounds(era, D.divisionIdsIn(era, "dv:1914"), "dv:1914"), [-170, -56, 190, 78], "a época inteira: o mundo");
+assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]);
+assert.ok(matchConfig.modesFor("epocas").every((mode) => mode.family === "epocas"));
+assert.equal(economy.policyFor("epocas", "dv-silhueta", "dv:1914").key, "divisoes:dv-silhueta", "a compra vale para países e épocas");
+assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equal(pillars.pillarOfSession({ family: "epocas", variant: "dv-mapa", mode: "dv-mapa" }), null);
+assert.equal(modeStats.sessionInMode({ family: "epocas", variant: "dv-mapa", region: "dv:1914" }, { family: "epocas", variant: "dv-mapa", country: "1914" }), true);
+assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", region: "dv:br" }, { family: "epocas", variant: "dv-mapa", country: "1914" }), false);
+}
 
 // fora do domínio e dos pilares
 for (const family of ["divisoes", "brasil"]) {

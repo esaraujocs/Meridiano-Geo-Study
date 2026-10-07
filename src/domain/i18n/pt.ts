@@ -66,6 +66,7 @@ export const pt = {
     moedas: "Moedas",
     povos: "Idiomas, povos e moedas",
     divisoes: "Estados e províncias",
+    epocas: "Mapas históricos",
   },
   hub: {
     profileAria: "Perfil de atividade",
@@ -100,6 +101,7 @@ export const pt = {
       moedas: "O dinheiro de cada país.",
       povos: "O idioma, o nome do povo e o dinheiro de cada país.",
       divisoes: "Cada país por dentro: estados, capitais e contornos.",
+      epocas: "O mundo como ele era: países, impérios e colônias de outras épocas.",
     },
     soon: "Em breve",
     yourProgress: "Seu progresso",
@@ -1117,6 +1119,9 @@ export const pt = {
     country: "País",
     picker: {
       change: "trocar país",
+      changeEra: "trocar época",
+      titleEra: "Escolha a época",
+      searchEra: "Buscar época…",
       title: "Escolha o país",
       search: "Buscar país…",
       all: "Todos",
@@ -1277,7 +1282,7 @@ export const pt = {
     threeTitles: "3 títulos",
   },
   sessions: {
-    groups: { bandeiras: "Bandeiras", mapa: "Mapa", capitais: "Capitais", historicas: "Históricas", idiomas: "Idiomas", gentilicos: "Gentílicos", moedas: "Moedas", divisoes: "Estados e províncias" },
+    groups: { bandeiras: "Bandeiras", mapa: "Mapa", capitais: "Capitais", historicas: "Históricas", idiomas: "Idiomas", gentilicos: "Gentílicos", moedas: "Moedas", divisoes: "Estados e províncias", epocas: "Mapas históricos" },
     variants: {
       mapa: "Clicar no mapa",
       silhueta: "Silhueta + escrita",

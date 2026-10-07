@@ -33,7 +33,7 @@ type WritingTarget = { id: string; pt?: string; en?: string; al?: string | strin
 export function SpecialQuiz({ family, variant, region, data, options, onBack, onEnd, supplies = emptySupplyCounts() }: Props & { onEnd?: (result: SessionResult | null) => void }) {
   const settings = sessionSettings(options, variant);
   // Estados e províncias: a escrita do nome da unidade (pela bandeira) e da capital, com as regras da escrita do mapa-múndi (`rule`).
-  const division = family === "divisoes" ? divisionCountryOf(region) : null;
+  const division = family === "divisoes" || family === "epocas" ? divisionCountryOf(region) : null;
   const unit = unitWord(divisionCountry(division));
   const rule = baseVariant(variant);
   const { pace, roundLimit, timerSeconds } = settings;
@@ -97,7 +97,7 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
     strictUsers.current += 1;
     const handle = startLearningSession({
       // as unidades de Estados e províncias não são cartas da coleção
-      family: division ? "divisoes" : writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
+      family: division ? (family === "epocas" ? "epocas" : "divisoes") : writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
       variant, region, persistProgress: writing && !division,
       mode: division ? variant : writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
       subject: writing ? (rule === "escrita-capital" ? "capital" : "pais") : "",

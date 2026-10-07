@@ -9,7 +9,7 @@ export type EconomyRound = { targetId: string; correct: boolean; column: string;
 
 /** Gentílicos e Moedas perguntam sobre países, mas não são prova de reconhecimento no mapa, na bandeira ou na capital: ficam fora do domínio e do XP de
  *  domínio. Estados e províncias ("divisoes"; "brasil" nas sessões de antes dele) pergunta sobre as unidades de um país, que não são cartas do atlas. */
-export const OUTSIDE_DOMAIN_FAMILIES: ReadonlySet<string> = new Set(["gentilicos", "moedas", "divisoes", "brasil"]);
+export const OUTSIDE_DOMAIN_FAMILIES: ReadonlySet<string> = new Set(["gentilicos", "moedas", "divisoes", "epocas", "brasil"]);
 
 function sessionRounds(value: any, sessionIndex: number): EconomyRound[] {
   if (OUTSIDE_DOMAIN_FAMILIES.has(String(value?.family ?? ""))) return [];

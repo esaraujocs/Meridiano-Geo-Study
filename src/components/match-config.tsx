@@ -6,7 +6,7 @@ import { CountryPicker } from "./country-picker";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
-import { DIVISION_COUNTRIES, divisionCountry, divisionCountryOf, divisionRegion, divisionRegionItems, unitWord, variantPlayable } from "../domain/divisions";
+import { divisionCountry, divisionCountryOf, divisionRegion, divisionRegionItems, divisionsOfKind, kindOf, unitWord, variantPlayable } from "../domain/divisions";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { unlockContent } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
@@ -19,7 +19,7 @@ import { querySessions } from "../domain/progress-surfaces";
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
-const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins", divisoes: "divisions" };
+const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins", divisoes: "divisions", epocas: "history" };
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -82,7 +82,10 @@ export function Recorte({
   const paintFam = grouped ? "idiomas" : topFamily;
   // Estados e províncias: o país escolhido (o do recorte) decide os recortes (o país inteiro e as regiões dele), os modos que existem (sem bandeiras no
   // pacote, sem os de bandeira) e a palavra dos textos (estado, província…)
-  const divCountry = topFamily === "divisoes" ? divisionCountry(divisionCountryOf(region)) ?? DIVISION_COUNTRIES[0] ?? null : null;
+  // (Mapas históricos: a época, com a mesma máquina)
+  const divKind = topFamily === "divisoes" ? "country" : topFamily === "epocas" ? "era" : null;
+  const regionCountry = divisionCountry(divisionCountryOf(region));
+  const divCountry = divKind ? (regionCountry && kindOf(regionCountry) === divKind ? regionCountry : divisionsOfKind(divKind)[0] ?? null) : null;
   const unit = divCountry ? unitWord(divCountry) : undefined;
   const regionItems = divCountry ? divisionRegionItems(divCountry.id) : REGION_ITEMS;
   const allKey = regionItems[0][0];
@@ -163,7 +166,7 @@ export function Recorte({
   const regionText = selectedRegions.length === 1 ? regionItems.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : t.regions.many(selectedRegions.length);
   const summary = configSummary({ mode: active, direction: flagDirection, variant, pace, rounds: deckCount, regionText, count: selectedCount });
   // o filtro "Só países" não vale para Históricas, Idiomas nem Estados e províncias
-  const showFilter = family !== "historicas" && family !== "idiomas" && family !== "divisoes";
+  const showFilter = family !== "historicas" && family !== "idiomas" && family !== "divisoes" && family !== "epocas";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
 
   const start = async () => {

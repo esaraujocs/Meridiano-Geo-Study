@@ -178,6 +178,7 @@ button.hub-coin:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 :root[data-treat="atlas"] .family[data-fam="gentilicos"] .family-visual::before{content:"Prancha V";content:"Prancha V" / ""}
 :root[data-treat="atlas"] .family[data-fam="moedas"] .family-visual::before{content:"Prancha VI";content:"Prancha VI" / ""}
 :root[data-treat="atlas"] .family[data-fam="divisoes"] .family-visual::before{content:"Prancha VII";content:"Prancha VII" / ""}
+:root[data-treat="atlas"] .family[data-fam="epocas"] .family-visual::before{content:"Prancha VIII";content:"Prancha VIII" / ""}
 :root[data-treat="atlas"] .hub-bar{background:#F5ECD6;border:1px solid #8A7C5A;border-radius:6px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.13)}
 :root[data-treat="atlas"] .hub-progress-grid button{background:#F5ECD6;border:1px solid #8A7C5A;border-left:8px solid var(--h);border-radius:4px;box-shadow:3px 4px 0 -1px rgba(36,59,58,.12)}
 :root[data-treat="atlas"] .hub-progress-icon{background:color-mix(in srgb,var(--h) 20%,transparent);color:color-mix(in srgb,var(--h) 85%,#1a2b29);border-radius:6px}

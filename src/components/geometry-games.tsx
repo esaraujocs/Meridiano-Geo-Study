@@ -45,7 +45,7 @@ function useSession(family: Family, variant: AnyQuizVariant, region: RegionSelec
   useEffect(() => {
     let alive = true;
     // as unidades de Estados e províncias não são cartas da coleção
-    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(family === "divisoes" ? { persistProgress: false } : {}) });
+    pending.current = startLearningSession({ family, variant, region, pace: settings.pace, roundLimit: settings.roundLimit, timerSeconds: settings.timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(family === "divisoes" || family === "epocas" ? { persistProgress: false } : {}) });
     pending.current.then((handle) => {
       if (alive) {
         ref.current = handle;
@@ -85,17 +85,17 @@ function useSession(family: Family, variant: AnyQuizVariant, region: RegionSelec
 export function GeometryGame({ family, variant, data, region, options, onBack, onEnd, supplies }: Props) {
   const [runKey, setRunKey] = useState(0);
   const restart = () => setRunKey((value) => value + 1);
-  return family === "silhueta" || family === "divisoes"
-    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} country={family === "divisoes" ? divisionCountryOf(region) : null} />
+  return family === "silhueta" || family === "divisoes" || family === "epocas"
+    ? <SilhouetteGame key={runKey} data={data} region={region} variant={variant} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} country={family === "divisoes" || family === "epocas" ? divisionCountryOf(region) : null} engineFamily={family} />
     : <TravelGame key={runKey} data={data} region={region} options={options} onBack={onBack} onEnd={onEnd} onRestart={restart} supplies={supplies} />;
 }
 
-function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts(), country = null }: Omit<Props, "family"> & { onRestart: () => void; country?: string | null }) {
+function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts(), country = null, engineFamily }: Omit<Props, "family"> & { onRestart: () => void; country?: string | null; engineFamily?: Props["family"] }) {
   // a regra (alternativas ou escrita); em Estados e províncias a sessão grava a variante do modo, com os contornos das unidades do país
   const engineVariant = baseVariant((variant ?? "silhueta") as AnyQuizVariant) === "silhueta-opcoes" ? "silhueta-opcoes" : "silhueta";
   const sessionVariant = (country ? variant : engineVariant) as AnyQuizVariant;
   const settings = sessionSettings(options, engineVariant);
-  const session = useSession(country ? "divisoes" : "silhueta", sessionVariant, region, settings);
+  const session = useSession(country ? (engineFamily === "epocas" ? "epocas" : "divisoes") : "silhueta", sessionVariant, region, settings);
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog(settings.coinVariant ?? sessionVariant, settings.pace);
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts). Lupa só na Silhueta · alternativas.

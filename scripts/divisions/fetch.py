@@ -4,6 +4,7 @@ Uso: python scripts/divisions/fetch.py [países...]   (sem argumento: todos de b
 - fonte "ibge" (Brasil): build/divisions/br/BR_UF_2024/ ← BR_UF_2024.zip do IBGE (geoftp.ibge.gov.br, 14,7 MB): as divisas dos 27 estados, com
   código, sigla, nome, região e área. Dados públicos do IBGE (citar "Fonte: IBGE").
 - fonte "overture": as divisões de primeiro nível do Overture Maps (fetch-overture-regions.py; os EUA leem ~234 MB do S3 público).
+- fonte "ohm" (Mapas históricos): as fronteiras de país do OpenHistoricalMap na data da época (fetch-ohm.py; 1914: ~165 MB do Overpass).
 - bandeiras: build/divisions/<país>/flags/<CÓDIGO>.svg ← os arquivos do Wikimedia Commons listados em "flagFile"; só entram os de domínio
   público (a licença de cada um é conferida na hora e gravada em flags/licenses.json).
 """
@@ -73,6 +74,9 @@ def main():
         os.makedirs(build, exist_ok=True)
         if config["source"] == "ibge":
             fetch_ibge(build)
+        elif config["source"] == "ohm":
+            # Mapas históricos: as fronteiras do OpenHistoricalMap na data da época
+            subprocess.run([sys.executable, os.path.join(HERE, "fetch-ohm.py"), country], cwd=ROOT, check=True)
         else:
             subprocess.run([sys.executable, os.path.join(HERE, "fetch-overture-regions.py"), country], cwd=ROOT, check=True)
         if any(unit.get("flagFile") for unit in config["units"]):

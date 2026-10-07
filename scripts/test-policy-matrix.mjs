@@ -57,6 +57,12 @@ assert.equal(rules.policyFor("divisoes", "dv-mapa", "mundo").cost, 0);
 assert.equal(rules.policyFor("divisoes", "dv-nome-bandeira", "mundo").key, "divisoes:dv-bandeira-nome");
 assert.deepEqual(rules.unlockAliases("divisoes", "dv-nome-bandeira", "mundo"), ["divisoes:dv-bandeira-nome", "divisoes:dv-bandeira-nome", "divisoes:dv-nome-bandeira"]);
 for (const region of ["dv:br", "dv:br:sul", "dv:us", "dv:us:west"]) assert.equal(rules.policyFor("divisoes", "dv-silhueta", region).key, "divisoes:dv-silhueta", `${region}: o mesmo modo`);
+// Mapas históricos ("epocas") usa os modos e as compras de Estados e províncias: um modo comprado vale para países e épocas
+for (const variant of ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]) {
+  assert.equal(rules.policyFor("epocas", variant, "dv:1914").key, rules.policyFor("divisoes", variant, "dv:br").key, `${variant}: a mesma compra`);
+  assert.equal(rules.policyFor("epocas", variant, "dv:1914").cost, rules.policyFor("divisoes", variant, "dv:br").cost);
+}
+assert.deepEqual(rules.unlockAliases("epocas", "dv-silhueta", "dv:1914"), ["divisoes:dv-silhueta"]);
 // Economia v2: só moedas (sem cobertura nem partidas) e preços em ordem crescente.
 assert.deepEqual(
   Object.fromEntries(rules.POLICIES.map((policy) => [policy.key, [policy.cost, policy.coverage, policy.coverageCount, policy.sessions]])),

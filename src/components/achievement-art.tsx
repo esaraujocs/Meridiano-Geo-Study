@@ -32,6 +32,8 @@ export const PATHS: Record<string, string> = {
   building: "M3 21l18 0 M9 8l1 0 M9 12l1 0 M9 16l1 0 M14 8l1 0 M14 12l1 0 M14 16l1 0 M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16",
   // contorno do Brasil (simplificado das silhuetas de public/data/divisions/br/shapes.json)
   // Estados e províncias (o grupo no histórico): um território com as divisas por dentro
+  // Mapas históricos (o grupo no histórico): o relógio com a seta voltando
+  history: "M3.6 12.6A8.4 8.4 0 1 0 6 6.1 M2.8 3.6v3.6h3.6 M12 7.6V12l3.1 2",
   divisions: "M3.5 7.5 8.5 4l4.5 1.6L18 3.8l2.6 3.6-1.2 4.6 1.6 4.4-3.8 3.4-4.6-1.4-4.4 2.4L3.6 17l1-4.8z M8.5 4l1.8 6.2-5.7 2M10.3 10.2l4.6 1.2 4.5-3.8M14.9 11.4l-2.2 7.6",
   brazil: "M2.3 8.6 2.8 7.3 4.3 6.6 4.3 3.8 5.5 3.6 6.6 4.2 7.2 3.6 6.8 2.5 9.1 2.0 9.7 4.0 12.7 3.5 13.4 2.4 14.3 4.4 15.3 5.0 15.4 6.1 16.3 5.3 17.1 5.9 19.1 6.1 21.4 7.3 21.7 8.4 19.7 11.6 19.6 13.8 18.6 16.0 15.3 17.5 14.8 19.3 12.5 22.0 12.3 21.1 10.4 20.2 12.3 18.1 11.3 16.2 10.2 16.0 10.4 13.9 9.1 13.0 8.9 11.8 6.7 10.9 6.3 9.8 3.9 10.4Z",
 };

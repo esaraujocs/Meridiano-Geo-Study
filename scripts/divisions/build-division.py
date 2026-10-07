@@ -18,6 +18,7 @@ import math
 import os
 import struct
 import sys
+import time
 
 import numpy as np
 import pyarrow as pa
@@ -96,6 +97,12 @@ def km2(geom_lonlat):
     return float(shapely.area(projected))
 
 
+def km2_many(geoms_lonlat):
+    """Área em km² de vários polígonos de uma vez (vetorizado: a costa traz dezenas de milhares de ilhotas por unidade no mundo de 1914)."""
+    projected = shapely.transform(np.array(geoms_lonlat, dtype=object), lambda c: np.column_stack((np.radians(c[:, 0]) * 6371.0088, np.sin(np.radians(c[:, 1])) * 6371.0088)))
+    return shapely.area(projected)
+
+
 def unit_id(country, code):
     return f"{country}-{code.lower()}"
 
@@ -167,10 +174,63 @@ def zones_overture(country, config, build):
     return zones
 
 
+def zones_ohm(country, config, build):
+    """Mapas históricos: as relações de país do OpenHistoricalMap na data da época (fetch-ohm.py), unidas por unidade da config (`ohm`). Na ordem da
+    config, cada unidade fica com a sua terra menos a de quem veio antes (as colônias antes das metrópoles que as englobam no OHM); `carveBox`
+    leva para a unidade o que a mãe tem dentro de uma caixa. A terra neutra vem primeiro: as relações de `neutral.relations` (miudezas) e a
+    sobreposição entre os pares de `neutral.overlaps` (as disputas da época)."""
+    table = pq.read_table(os.path.join(build, "ohm.parquet")).to_pylist()
+    geoms = {row["id"]: shapely.make_valid(shapely.from_wkb(row["wkb"])) for row in table}
+    neutral_cfg = config.get("neutral", {})
+    units = config["units"]
+    missing = [rel for unit in units for rel in unit.get("ohm", []) if rel not in geoms]
+    unused = sorted(set(geoms) - {rel for unit in units for rel in unit.get("ohm", [])} - set(neutral_cfg.get("relations", [])) - set(neutral_cfg.get("drop", [])))
+    if missing or unused:
+        sys.exit(f"a config não confere com o OHM: relações que faltam {missing}; relações sem destino {unused}")
+
+    # simplificadas a ~100 m: a divisão da terra usa a costa do mapa HD, e o detalhe das fronteiras do OHM passa muito do que o mapa mostra. As
+    # operações correm numa grade de 1e-6 grau (< 10 cm): sem ela o GEOS desiste de algumas sobreposições ("Unable to determine overlay result")
+    grid = 1e-6
+
+    def clean(geom):
+        return polygonal(shapely.make_valid(geom)) or shapely.Polygon()
+
+    def raw(ids):
+        parts = [clean(shapely.set_precision(shapely.simplify(geoms[rel], 0.001, preserve_topology=True), grid)) for rel in ids]
+        return clean(shapely.union_all(np.array(parts, dtype=object), grid_size=grid)) if parts else shapely.Polygon()
+    raws = {unit["code"]: raw(unit.get("ohm", [])) for unit in units}
+    for unit in units:
+        for rule in unit.get("carveBox", []):
+            raws[unit["code"]] = clean(shapely.union(raws[unit["code"]], clean(shapely.intersection(raws[rule["from"]], shapely.box(*rule["box"]), grid_size=grid)), grid_size=grid))
+    neutral = raw(neutral_cfg.get("relations", []))
+    for a, b in neutral_cfg.get("overlaps", []):
+        neutral = clean(shapely.union(neutral, clean(shapely.intersection(raws[a], raws[b], grid_size=grid)), grid_size=grid))
+    taken = neutral
+    zones = {}
+    for unit in units:
+        zone = clean(shapely.difference(raws[unit["code"]], taken, grid_size=grid))
+        taken = clean(shapely.union(taken, zone, grid_size=grid))
+        zones[unit["code"]] = {"geom": zone, "zone": zone, "area": None, "ref": unit["code"], "neutral": False}
+    zones["_NEUTRAL"] = {"geom": neutral, "zone": shapely.make_valid(neutral), "area": None, "ref": "", "neutral": True}
+    return zones
+
+
 # ---- 2. a terra do país dividida entre as zonas
 def split_land(country, config, zones, out_dir, land_by_unit):
-    order = sorted(zones)
+    order = sorted(code for code in zones if not shapely.is_empty(zones[code]["zone"]))
     merc = {code: to_merc(zones[code]["zone"]) for code in order}
+    # Mapas históricos: a terra de hoje decide onde a fonte falha (pelo carta_id do pedaço no mapa HD). `override`: o país de hoje inteiro vai para a
+    # unidade; `carve`: só o que caiu na unidade-mãe; `fill`: o que nenhuma zona cobriu vai para a unidade mais perto da lista
+    override = {carta: unit["code"] for unit in config["units"] for carta in unit.get("override", [])}
+    carve = {(rule["from"], rule["carta"]): unit["code"] for unit in config["units"] for rule in unit.get("carve", [])}
+    # cada `fill` é um carta_id ou {"carta", "box": [oeste, sul, leste, norte]} (só a terra dentro da caixa: as ilhas russas de 1914 sem a
+    # Terra de Francisco José e a Wrangel, terra de ninguém na época)
+    fill = {}
+    for unit in config["units"]:
+        for rule in unit.get("fill", []):
+            rule = rule if isinstance(rule, dict) else {"carta": rule}
+            fill.setdefault(rule["carta"], []).append((unit["code"], rule.get("box")))
+    tolerance = config.get("landTolerance")
     tree = shapely.STRtree([merc[code] for code in order])
     for old in glob.glob(os.path.join(out_dir, "*.parquet")):
         os.remove(old)
@@ -178,14 +238,25 @@ def split_land(country, config, zones, out_dir, land_by_unit):
     total_pieces = leftovers = neutral = 0
     for path in sorted(glob.glob(os.path.join(WORLD, "pieces", "*.parquet"))):
         table = pq.read_table(path)
-        table = table.filter(pc.equal(table.column("carta_id"), config["carta"]))
+        if config["carta"] != "*":  # "*": o mundo inteiro (Mapas históricos)
+            table = table.filter(pc.equal(table.column("carta_id"), config["carta"]))
         if table.num_rows == 0:
             continue
         cy = int(os.path.basename(path)[:3])
         out = {"carta_id": [], "cx": [], "cy": [], "geometry": []}
-        for cx, blob in zip(table.column("cx").to_pylist(), table.column("geometry").to_pylist()):
+        for cx, carta, blob in zip(table.column("cx").to_pylist(), table.column("carta_id").to_pylist(), table.column("geometry").to_pylist()):
             piece = shapely.from_wkb(blob)
+            if tolerance:
+                piece = polygonal(shapely.make_valid(shapely.simplify(piece, tolerance, preserve_topology=True)))
+                if piece is None:
+                    continue
             x0, y0, x1, y1 = cell_rect(cx, cy)
+            if carta in override:
+                code = override[carta]
+                out["carta_id"].append(unit_id(country, code)); out["cx"].append(cx); out["cy"].append(cy); out["geometry"].append(shapely.to_wkb(piece))
+                land_by_unit[code].append(piece)
+                total_pieces += 1
+                continue
             margin = 60000.0  # as divisas recortadas com folga: as sobras da célula quase sempre encostam numa delas
             near = [order[i] for i in tree.query(shapely.box(x0 - margin, y0 - margin, x1 + margin, y1 + margin))]
             clipped = {code: shapely.clip_by_rect(merc[code], x0 - margin, y0 - margin, x1 + margin, y1 + margin) for code in near}
@@ -200,6 +271,24 @@ def split_land(country, config, zones, out_dir, land_by_unit):
                 if inter is not None:
                     parts.setdefault(code, []).append(inter)
                     rest = polygonal(shapely.difference(rest, inside)) if rest is not None else None
+            for code in [code for code in parts if (code, carta) in carve]:
+                parts.setdefault(carve[(code, carta)], []).extend(parts.pop(code))
+            # sobras: a terra sem divisa vai para a unidade mais perto (diferença de costa, ilhas), até o limite da config; com `fill`, para a unidade
+            # mais perto da lista do país de hoje, sem limite
+            if rest is not None and carta in fill:
+                kept = []
+                for bit in shapely.get_parts(rest):
+                    if shapely.area(bit) < 1.0:
+                        continue
+                    point = to_lonlat(shapely.point_on_surface(bit))
+                    targets = [code for code, box in fill[carta] if box is None or (box[0] <= point.x <= box[2] and box[1] <= point.y <= box[3])]
+                    if not targets:
+                        kept.append(bit)
+                        continue
+                    best = min(targets, key=lambda code: shapely.distance(bit, merc[code]) if code in merc else math.inf)
+                    parts.setdefault(best, []).append(bit)
+                    leftovers += 1
+                rest = polygonal(shapely.union_all(kept)) if kept else None
             # sobras: a terra sem divisa vai para a unidade mais perto (diferença de costa, ilhas), até o limite da config
             if rest is not None:
                 lat = math.degrees(2 * math.atan(math.exp(((y0 + y1) / 2) / R)) - math.pi / 2)
@@ -215,7 +304,7 @@ def split_land(country, config, zones, out_dir, land_by_unit):
                 merged = polygonal(shapely.union_all(np.array(geoms, dtype=object)))
                 if merged is None:
                     continue
-                is_neutral = code is None or zones[code].get("neutral")
+                is_neutral = code is None or zones.get(code, {}).get("neutral")
                 out["carta_id"].append("" if is_neutral else unit_id(country, code))
                 out["cx"].append(cx); out["cy"].append(cy); out["geometry"].append(shapely.to_wkb(merged))
                 if is_neutral:
@@ -234,21 +323,28 @@ def split_land(country, config, zones, out_dir, land_by_unit):
     print(f"pedaços: {total_pieces} (sobras atribuídas ao mais perto: {leftovers}; terra neutra: {neutral})", flush=True)
 
 
-def island_group(parts, main_part, hop=2.3):
+def island_group(parts, main_part, hop=2.3, areas=None):
     """A silhueta: o pedaço principal e as ilhas ligadas a ele por saltos de até `hop` graus (um arquipélago inteiro, como o Havaí, entra; uma ilha
     oceânica isolada, como Trindade ou Noronha, não), sem os pedaços minúsculos."""
-    candidates = [part for part in parts if km2(part) >= 0.0015 * km2(main_part)]
-    kept = [main_part]
-    pending = [part for part in candidates if part is not main_part]
+    areas = km2_many(parts) if areas is None else areas
+    candidates = [part for part, area in zip(parts, areas) if area >= 0.0015 * km2(main_part)]
+    # as distâncias medidas nas partes simplificadas (~5 km): o salto é de graus, e as ilhas do Ártico canadense têm centenas de milhares de
+    # vértices (com a geometria inteira, o Canadá de 1914 levava mais de 10 minutos)
+    rough = [shapely.simplify(part, 0.05) for part in candidates]
+    main_rough = shapely.simplify(main_part, 0.05)
+    kept = [main_rough]
+    chosen = [main_part]
+    pending = [index for index, part in enumerate(candidates) if part is not main_part]
     grown = True
     while grown and pending:
         grown = False
-        for part in list(pending):
-            if any(shapely.distance(part, other) < hop for other in kept):
-                kept.append(part)
-                pending.remove(part)
+        for index in list(pending):
+            if any(shapely.distance(rough[index], other) < hop for other in kept):
+                kept.append(rough[index])
+                chosen.append(candidates[index])
+                pending.remove(index)
                 grown = True
-    return kept
+    return chosen
 
 
 # ---- 3. catálogo e silhuetas
@@ -256,31 +352,57 @@ def write_outputs(country, config, zones, land_by_unit, public):
     os.makedirs(public, exist_ok=True)
     units = {unit["code"]: unit for unit in config["units"]}
     order = sorted(units)
-    # vizinhos pelas divisas da fonte, simplificadas (~100 m) e com a folga calculada uma vez por unidade
-    simple = {code: shapely.simplify(zones[code]["geom"], 0.001, preserve_topology=True) for code in order}
-    grown = {code: shapely.buffer(simple[code], 0.002) for code in order}
-    edges = {code: shapely.boundary(simple[code]) for code in order}
-    neighbors_of = {code: [] for code in order}
-    for i, a in enumerate(order):
-        for b in order[i + 1:]:
-            if not shapely.intersects(shapely.envelope(grown[a]), shapely.envelope(grown[b])):
-                continue
-            # encostar num ponto só (quatro unidades num canto) dá ~0; a divisa real mais curta do Brasil é a do DF com Minas, ~2,6 km (0,024°)
-            if shapely.length(shapely.intersection(edges[a], grown[b])) > 0.01:
-                neighbors_of[a].append(unit_id(country, b))
-                neighbors_of[b].append(unit_id(country, a))
     # os pedaços vêm cortados pela grade do mapa HD e as bordas de células vizinhas diferem em ~1e-9 m (a armadilha 1 do CLAUDE.md, 3.7):
     # sem levar à grade de 1 m antes da união, eles não se fundem e a silhueta mostra a emenda como uma linha por dentro da unidade
-    full = {code: to_lonlat(polygonal(shapely.union_all(shapely.set_precision(np.array(land_by_unit[code], dtype=object), 1.0)))) for code in order}
+    started = time.time()
+    # a terra unida de cada unidade fica em cache (build/divisions/<país>/full.parquet): REUSE_FULL=1 a reaproveita ao refazer só o catálogo
+    cache = os.path.join(ROOT, "build", "divisions", country, "full.parquet")
+    if os.environ.get("REUSE_FULL") and os.path.exists(cache):
+        full = {row["code"]: shapely.from_wkb(row["wkb"]) for row in pq.read_table(cache).to_pylist()}
+    else:
+        full = {code: to_lonlat(polygonal(shapely.union_all(shapely.set_precision(np.array(land_by_unit[code], dtype=object), 1.0)))) for code in order}
+        pq.write_table(pa.table({"code": list(full), "wkb": [shapely.to_wkb(geom) for geom in full.values()]}), cache)
+    print(f"  terra unida por unidade · {time.time() - started:.0f} s", flush=True)
+    # vizinhos pelas divisas da fonte, simplificadas (~100 m) e com a folga calculada uma vez por unidade; nos Mapas históricos, pela terra (as zonas
+    # do OHM avançam sobre o mar e algumas unidades não têm zona, só a terra de hoje), simplificada a ~2 km e com os pares achados por um índice
+    # espacial (o retângulo da Rússia, que cruza o antimeridiano, cobre o hemisfério norte inteiro: o teste de todos os pares levava horas)
+    era = config.get("kind") == "era"
+    if era:
+        # só as partes com mais de ~0,05 grau² (~600 km² no equador): as ilhotas não têm divisa e deixavam o buffer caríssimo (o arquipélago
+        # ártico do Canadá, as Índias Orientais); as ilhas divididas de 1914 (Bornéu, Timor, Nova Guiné, Hispaniola, Terra do Fogo) são grandes
+        def big_parts(geom):
+            parts = [part for part in shapely.get_parts(geom) if shapely.area(part) > 0.05]
+            return shapely.multipolygons(parts) if parts else geom
+        simple = {code: shapely.simplify(big_parts(full[code]), 0.02, preserve_topology=True) for code in order}
+    else:
+        simple = {code: shapely.simplify(zones[code]["geom"], 0.001, preserve_topology=True) for code in order}
+    # cada unidade é simplificada sozinha, então a divisa de duas pode se abrir até o dobro da tolerância: nas épocas, folga de 0,045°
+    grown = {code: shapely.buffer(simple[code], 0.045 if era else 0.002) for code in order}
+    edges = {code: shapely.boundary(simple[code]) for code in order}
+    neighbors_of = {code: [] for code in order}
+    tree = shapely.STRtree([grown[code] for code in order]) if era else None
+    for i, a in enumerate(order):
+        candidates = [order[j] for j in tree.query(simple[a], predicate="intersects") if j > i] if era else order[i + 1:]
+        for b in candidates:
+            if not era and not shapely.intersects(shapely.envelope(grown[a]), shapely.envelope(grown[b])):
+                continue
+            # encostar num ponto só (quatro unidades num canto) dá ~0; a divisa real mais curta do Brasil é a do DF com Minas, ~2,6 km (0,024°)
+            if shapely.length(shapely.intersection(edges[a], grown[b])) > (0.05 if era else 0.01):
+                neighbors_of[a].append(unit_id(country, b))
+                neighbors_of[b].append(unit_id(country, a))
+    print(f"  vizinhos · {time.time() - started:.0f} s", flush=True)
     catalog, shapes = {}, {}
     for code in order:
         unit = units[code]
-        parts = sorted(shapely.get_parts(full[code]), key=lambda part: -km2(part))
+        parts = list(shapely.get_parts(full[code]))
+        areas = km2_many(parts)
+        ranking = np.argsort(-areas)
+        parts, areas = [parts[index] for index in ranking], areas[ranking]
         main_part = parts[0]
         # ponto do rótulo: o centro do maior círculo dentro do pedaço principal
         bx0, by0, bx1, by1 = shapely.bounds(main_part)
         center = shapely.get_point(shapely.maximum_inscribed_circle(shapely.simplify(main_part, max(bx1 - bx0, by1 - by0) / 400), max(bx1 - bx0, by1 - by0) / 300), 0)
-        keep = island_group(parts, main_part)
+        keep = island_group(parts, main_part, areas=areas)
         minx, miny, maxx, maxy = shapely.bounds(shapely.multipolygons(keep))
         silhouette = shapely.simplify(shapely.multipolygons(keep), max(maxx - minx, maxy - miny) / 700, preserve_topology=True)
         uid = unit_id(country, code)
@@ -319,7 +441,7 @@ def main():
     config = json.load(open(os.path.join(HERE, "countries", f"{country}.json"), encoding="utf8"))
     build = os.path.join(ROOT, "build", "divisions", country)
     public = os.path.join(ROOT, "public", "data", "divisions", country)
-    source = {"ibge": zones_ibge, "overture": zones_overture}[config["source"]]
+    source = {"ibge": zones_ibge, "overture": zones_overture, "ohm": zones_ohm}[config["source"]]
     zones = source(country, config, build)
     print(f"{config['source']} confere: {len(config['units'])} unidades", flush=True)
     out_dir = os.path.join(build, "pieces")

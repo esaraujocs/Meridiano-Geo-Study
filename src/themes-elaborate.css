@@ -66,6 +66,7 @@
 :root[data-treat="noturno"] .family[data-fam="gentilicos"] .family-visual::before{content:"Carta V"}
 :root[data-treat="noturno"] .family[data-fam="moedas"] .family-visual::before{content:"Carta VI"}
 :root[data-treat="noturno"] .family[data-fam="divisoes"] .family-visual::before{content:"Carta VII"}
+:root[data-treat="noturno"] .family[data-fam="epocas"] .family-visual::before{content:"Carta VIII"}
 :root[data-treat="noturno"] .hub-content .family.locked{filter:saturate(.5) brightness(.85)}
 :root[data-treat="noturno"] .hub-progress-grid button{border-left:5px solid var(--h)}
 :root[data-treat="noturno"] .hub-progress-icon{background:radial-gradient(circle at 34% 28%,#1D4468,#0B1E33 70%);color:var(--h2);box-shadow:0 0 0 2px #0B1E33,0 0 0 3px var(--h),0 0 18px color-mix(in srgb,var(--h) 45%,transparent)}

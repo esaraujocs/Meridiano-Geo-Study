@@ -6,7 +6,7 @@ import { t } from "./i18n/index.js";
 import { DIVISION_VARIANTS, baseVariant, isDivisionVariant, type UnitWord } from "./divisions.js";
 import { flagCategoryHas, type FlagCategory } from "./flag-configuration.js";
 
-export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas" | "gentilicos" | "moedas" | "divisoes";
+export type TopFamily = "mapa" | "bandeiras" | "capitais" | "idiomas" | "gentilicos" | "moedas" | "divisoes" | "epocas";
 export type ConfigIcon = "map" | "eye" | "type" | "route" | "flag" | "layers" | "language" | "people" | "coins" | "capital";
 export type FlagKind = FlagCategory;
 
@@ -69,6 +69,15 @@ const MODE_SEEDS: Record<TopFamily, ModeSeed[]> = {
     { key: "dv-capital", icon: "layers", family: "divisoes", variant: "dv-capital" },
     { key: "dv-escrita-capital", icon: "type", family: "divisoes", variant: "dv-escrita-capital" },
   ],
+  // Mapas históricos: os mesmos modos sobre o mundo de uma época (sem bandeiras por enquanto: `variantPlayable` os tira)
+  epocas: [
+    { key: "dv-mapa", icon: "map", family: "epocas", variant: "dv-mapa" },
+    { key: "dv-capital-mapa", icon: "capital", family: "epocas", variant: "dv-capital-mapa" },
+    { key: "dv-silhueta-opcoes", icon: "eye", family: "epocas", variant: "dv-silhueta-opcoes" },
+    { key: "dv-silhueta", icon: "type", family: "epocas", variant: "dv-silhueta" },
+    { key: "dv-capital", icon: "layers", family: "epocas", variant: "dv-capital" },
+    { key: "dv-escrita-capital", icon: "type", family: "epocas", variant: "dv-escrita-capital" },
+  ],
 };
 
 const MODES = Object.fromEntries(Object.entries(MODE_SEEDS).map(([top, list]) => [top, list.map(withText)])) as Record<TopFamily, ModeOption[]>;
@@ -83,6 +92,7 @@ export function variantContextFor(topFamily: TopFamily, saved: string): { family
     gentilicos: [["gentilico-pais", "gentilicos"], ["pais-gentilico", "gentilicos"]],
     moedas: [["pais-moeda", "moedas"], ["moeda-pais", "moedas"]],
     divisoes: DIVISION_VARIANTS.map((variant): [string, Family] => [variant, "divisoes"]),
+    epocas: DIVISION_VARIANTS.map((variant): [string, Family] => [variant, "epocas"]),
   };
   const match = table[topFamily].find(([variant]) => variant === saved);
   return match ? { family: match[1], variant: match[0] as AnyQuizVariant } : null;

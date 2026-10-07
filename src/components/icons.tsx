@@ -35,7 +35,8 @@ export type IconType =
   | "close"
   | "people"
   | "coins"
-  | "divisions";
+  | "divisions"
+  | "history";
 
 export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
   return (
@@ -76,6 +77,8 @@ export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
       {type === "people" && <><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.4 2.7-6 6-6s6 2.6 6 6" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.2c3 .1 5 2.3 5 5.8" /></>}
       {type === "coins" && <><ellipse cx="12" cy="7" rx="7" ry="3" /><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7" /><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" /></>}
       {/* Estados e províncias: um território com as divisas por dentro */}
+      {/* Mapas históricos: o relógio com a seta voltando (voltar no tempo) */}
+      {type === "history" && <path d="M3.6 12.6A8.4 8.4 0 1 0 6 6.1 M2.8 3.6v3.6h3.6 M12 7.6V12l3.1 2" strokeLinecap="round" strokeLinejoin="round" />}
       {type === "divisions" && <><path d="M3.5 7.5 8.5 4l4.5 1.6L18 3.8l2.6 3.6-1.2 4.6 1.6 4.4-3.8 3.4-4.6-1.4-4.4 2.4L3.6 17l1-4.8z" strokeLinejoin="round" /><path d="M8.5 4l1.8 6.2-5.7 2M10.3 10.2l4.6 1.2 4.5-3.8M14.9 11.4l-2.2 7.6" strokeWidth="1.1" strokeLinecap="round" /></>}
       {type === "close" && <path d="M6 6l12 12M18 6L6 18" />}
       {type === "settings" && <><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37 1 .608 2.296.07 2.572-1.065Z" /><circle cx="12" cy="12" r="3" /></>}

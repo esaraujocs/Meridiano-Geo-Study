@@ -5,6 +5,8 @@
 // As unidades viram um catálogo no formato do acervo do mapa-múndi (`Legacy`), então os motores de partida jogam com elas como com os países;
 // cada modo segue as regras de uma variante do mapa-múndi (DIVISION_BASE: motor, cronômetro, suprimentos). As sessões ficam com a família
 // "divisoes": fora da coleção, do domínio, dos pilares e do duelo. Um modo comprado vale para todos os países.
+// "Mapas históricos" (família "epocas") usa a mesma máquina: cada época (1914…) é um pacote do índice com `kind: "era"`, o mundo daquela data
+// dividido em Estados, colônias e protetorados; os modos e as compras são os mesmos (um modo comprado vale para países e épocas).
 import type { AnyQuizVariant, DivisionRegion, Legacy, Meta, Region, RegionSelection } from "./types.js";
 import { DIVISION_INDEX } from "./divisions-index.js";
 import { locale as uiLocale } from "./i18n/locale.js";
@@ -15,6 +17,10 @@ type Locale = keyof Names;
 export type UnitWord = { one: string; many: string; g?: "m" | "f" };
 export type DivisionCountry = {
   id: string;
+  /** "country": as divisões de um país (Estados e províncias); "era": o mundo numa data (Mapas históricos). */
+  kind?: "country" | "era";
+  /** Época: a legenda do ano ("Véspera da Primeira Guerra"). */
+  subtitle?: Names;
   /** A entidade do mapa-múndi que o pacote detalha (o mapa de fundo a esconde). */
   carta: string;
   name: Names;
@@ -32,6 +38,13 @@ export type DivisionCountry = {
 };
 
 export const DIVISION_COUNTRIES: readonly DivisionCountry[] = DIVISION_INDEX;
+export type DivisionKind = "country" | "era";
+export const kindOf = (country: DivisionCountry | null | undefined): DivisionKind => (country?.kind === "era" ? "era" : "country");
+/** Os pacotes de um tipo, na ordem do índice: os países de Estados e províncias ou as épocas dos Mapas históricos. */
+export const divisionsOfKind = (kind: DivisionKind) => DIVISION_COUNTRIES.filter((country) => kindOf(country) === kind);
+/** A família das sessões de um pacote. */
+export const familyOfKind = (kind: DivisionKind) => (kind === "era" ? "epocas" : "divisoes");
+export const kindOfFamily = (family: string | undefined): DivisionKind | null => (family === "epocas" ? "era" : family === "divisoes" || family === "brasil" ? "country" : null);
 export const divisionCountry = (id: string | null | undefined): DivisionCountry | null => DIVISION_COUNTRIES.find((country) => country.id === id) ?? null;
 export const unitWord = (country: DivisionCountry | null, locale: Locale = uiLocale): UnitWord => country?.unit[locale] ?? { one: "estado", many: "estados", g: "m" };
 
@@ -88,7 +101,8 @@ export function asDivisionSession<S extends { family?: string; variant?: string;
   const map = (key: string) => LEGACY_REGION[key] ?? key;
   return { ...session, family: "divisoes", variant, mode: variant, region: map(session.region ?? "brasil"), ...(session.regions ? { regions: session.regions.map(map) } : {}) };
 }
-export const isDivisionFamily = (family: string | undefined) => family === "divisoes" || family === LEGACY_FAMILY;
+/** As famílias jogadas sobre um pacote do índice: Estados e províncias ("brasil" é o nome antigo), Mapas históricos ("epocas"). */
+export const isDivisionFamily = (family: string | undefined) => family === "divisoes" || family === "epocas" || family === LEGACY_FAMILY;
 
 // ---- recortes: "dv:<país>" é o país inteiro e "dv:<país>:<região>" uma região dele
 export const divisionRegion = (country: string, region?: string): DivisionRegion => (region ? `dv:${country}:${region}` : `dv:${country}`);
@@ -123,7 +137,9 @@ export function divisionRegionLabel(key: string, locale: Locale = uiLocale): str
   const country = divisionCountry(parsed?.country);
   if (!parsed || !country) return key;
   if (!parsed.region) return country.name[locale];
-  return country.regions.find((region) => region.key === parsed.region)?.name[locale] ?? parsed.region;
+  const name = country.regions.find((region) => region.key === parsed.region)?.name[locale] ?? parsed.region;
+  // a região de uma época diz o ano junto ("1914 · Europa"), para não se confundir com o recorte do mapa-múndi
+  return kindOf(country) === "era" ? `${country.name[locale]} · ${name}` : name;
 }
 /** Os recortes de um país para a Mesa: o país inteiro e as regiões, como os do mapa-múndi ([chave, nome, descrição]). */
 export function divisionRegionItems(countryId: string, locale: Locale = uiLocale): [Region, string, string][] {
@@ -152,7 +168,8 @@ export type DivisionUnitRow = {
   ref: string;
   name: Names;
   alias?: string[];
-  capital?: string;
+  /** A capital: um nome só (Brasil, EUA, China) ou um por idioma (as capitais de 1914: Viena, Vienna…). */
+  capital?: string | Names;
   capAl?: string[];
   region: string;
   area: number;
@@ -183,12 +200,16 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
   for (const [id, row] of Object.entries(file.units)) {
     const shown = row.name[locale] ?? row.name.pt;
     const others = [...new Set([row.name.pt, row.name.es, row.name.en, ...(row.alias ?? [])])].filter((name) => name !== shown && name !== row.name.en);
+    // capital por idioma: a do idioma da interface aparece; as dos outros idiomas valem na escrita
+    const capital = typeof row.capital === "string" ? row.capital : row.capital?.[locale] ?? row.capital?.pt;
+    const capitalOthers = typeof row.capital === "object" ? Object.values(row.capital).filter((name) => name !== capital) : [];
+    const capAl = [...new Set([...capitalOthers, ...(row.capAl ?? [])])];
     meta[id] = {
       pt: shown,
       en: row.name.en,
       ...(others.length ? { al: others } : {}),
-      ...(row.capital ? { cap: row.capital } : {}),
-      ...(row.capAl?.length ? { capAl: [...row.capAl] } : {}),
+      ...(capital ? { cap: capital } : {}),
+      ...(capAl.length ? { capAl } : {}),
       fl: id,
       reg: `${file.country}:${row.region}`,
       ll: row.ll,

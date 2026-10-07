@@ -42,7 +42,7 @@ export function QuizGame({
   onEnd,
 }: {
   data: Legacy;
-  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas" | "divisoes">;
+  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas" | "divisoes" | "epocas">;
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
   options?: SessionOptions;
@@ -53,7 +53,7 @@ export function QuizGame({
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
   // Estados e províncias: as bandeiras e as capitais das unidades do país do recorte, com as regras do modo equivalente do mapa-múndi (`rule`).
-  const division = family === "divisoes" ? divisionCountryOf(region) : null;
+  const division = family === "divisoes" || family === "epocas" ? divisionCountryOf(region) : null;
   const unit = unitWord(divisionCountry(division));
   const rule = baseVariant(variant);
   const flagQuiz = family === "bandeiras" || (division !== null && rule !== "pais-capital");

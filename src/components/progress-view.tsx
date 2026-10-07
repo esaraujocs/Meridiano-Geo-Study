@@ -31,7 +31,7 @@ type Props = {
 type FlagOf = (code?: string) => string | undefined;
 
 const LEVEL_COLORS = ["rgba(199,182,143,.7)", "#857b5f", "var(--rar-2, #2F6F6A)", "var(--rar-3, #AB7A1A)", "var(--rar-4, #B65F47)", "#C49345"];
-const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", divisoes: "divisions" };
+const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", divisoes: "divisions", epocas: "history" };
 const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0");
 
 // ---------- linhas de partida (o duelo é uma linha só: adversário, placar e troféus) ----------

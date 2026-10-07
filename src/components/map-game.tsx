@@ -184,7 +184,7 @@ export function Game({
       coinFactor: settings.coinFactor,
       cardParents,
       // as unidades de Estados e províncias não são cartas da coleção (como Gentílicos e Moedas)
-      ...(engineFamily === "divisoes" ? { persistProgress: false } : {}),
+      ...(engineFamily === "divisoes" || engineFamily === "epocas" ? { persistProgress: false } : {}),
     });
     pendingSessionRef.current = pending;
     pending

@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "./icons";
 import {
-  DIVISION_CONTINENTS, DIVISION_COUNTRIES, divisionContinent, divisionCountry, divisionCountryMatches, divisionCountryPlays, divisionRegion, divisionRegionLabel,
-  recentDivisionCountries, unitWord, type DivisionCountry, type DivisionCountryPlay,
+  DIVISION_CONTINENTS, divisionContinent, divisionCountry, divisionCountryMatches, divisionCountryPlays, divisionRegion, divisionRegionLabel,
+  divisionsOfKind, kindOf, recentDivisionCountries, unitWord, type DivisionCountry, type DivisionCountryPlay,
 } from "../domain/divisions";
+import { locale } from "../domain/i18n/locale";
 import type { Legacy } from "../domain/types";
 import { flagSource, loadFlags, type FlagCatalog } from "../domain/quiz";
 import { querySessions } from "../domain/progress-surfaces";
@@ -11,8 +12,11 @@ import { t } from "../domain/i18n";
 
 /** O seletor de país de "Estados e províncias" na Mesa (07/10/2026, opção A do mock, pensado para ~20 países): um botão com a bandeira e o país
  *  abre um painel com busca, filtro por continente, os jogados por último e a lista por continente, cada país com a palavra da unidade e a precisão
- *  (ou "novo"). No desktop é um painel sob o botão; no celular, uma folha de baixo. Esc, clique fora e escolher um país fecham. */
+ *  (ou "novo"). No desktop é um painel sob o botão; no celular, uma folha de baixo. Esc, clique fora e escolher um país fecham.
+ *  Nos Mapas históricos o mesmo seletor escolhe a época: o ano no lugar da bandeira e a legenda ("Véspera da Primeira Guerra") no lugar do nome. */
 export function CountryPicker({ current, data, onPick }: { current: DivisionCountry; data: Legacy; onPick: (id: string) => void }) {
+  const era = kindOf(current) === "era";
+  const COUNTRIES = divisionsOfKind(kindOf(current));
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [continent, setContinent] = useState<string | null>(null);
@@ -38,7 +42,7 @@ export function CountryPicker({ current, data, onPick }: { current: DivisionCoun
 
   const close = () => { setOpen(false); setQuery(""); setContinent(null); buttonRef.current?.focus(); };
   const pick = (id: string) => { onPick(id); close(); };
-  const nameOf = (country: DivisionCountry) => divisionRegionLabel(divisionRegion(country.id));
+  const nameOf = (country: DivisionCountry) => (era ? country.subtitle?.[locale] ?? country.name[locale] : divisionRegionLabel(divisionRegion(country.id)));
   const flagOf = (country: DivisionCountry) => {
     const code = data.meta[country.carta]?.fl;
     const value = code ? flags[code.toLowerCase()] : undefined;
@@ -46,15 +50,17 @@ export function CountryPicker({ current, data, onPick }: { current: DivisionCoun
   };
   const unitsOf = (country: DivisionCountry) => t.divisions.picker.units(country.count, unitWord(country));
   const continentOf = (country: DivisionCountry) => divisionContinent(country, data.meta);
-  const continents = DIVISION_CONTINENTS.filter((key) => DIVISION_COUNTRIES.some((country) => continentOf(country) === key));
-  const visible = DIVISION_COUNTRIES.filter((country) =>
-    divisionCountryMatches(country, query, [data.meta[country.carta]?.pt, data.meta[country.carta]?.en]) && (!continent || continentOf(country) === continent));
-  const recent = !query && !continent && plays ? recentDivisionCountries(plays).map((id) => divisionCountry(id)).filter((country): country is DivisionCountry => Boolean(country)) : [];
+  const continents = DIVISION_CONTINENTS.filter((key) => COUNTRIES.some((country) => continentOf(country) === key));
+  const visible = COUNTRIES.filter((country) =>
+    divisionCountryMatches(country, query, [data.meta[country.carta]?.pt, data.meta[country.carta]?.en, ...Object.values(country.subtitle ?? {})]) && (!continent || continentOf(country) === continent));
+  const recent = !query && !continent && plays ? recentDivisionCountries(plays).map((id) => divisionCountry(id)).filter((country): country is DivisionCountry => Boolean(country) && kindOf(country) === kindOf(current)) : [];
   const groups = [...continents, null]
     .map((key) => ({ key, countries: visible.filter((country) => continentOf(country) === key && !recent.includes(country)) }))
     .filter((group) => group.countries.length > 0);
 
   const flag = (country: DivisionCountry) => {
+    // o ano faz parte do nome da época para o leitor de tela ("1914 Véspera da Primeira Guerra")
+    if (era) return <span className="cp-flag cp-year">{country.name[locale]}</span>;
     const src = flagOf(country);
     return src ? <img className="cp-flag" src={src} alt="" /> : <span className="cp-flag" aria-hidden="true" />;
   };
@@ -73,24 +79,24 @@ export function CountryPicker({ current, data, onPick }: { current: DivisionCoun
     <div className={`mz-country cp${open ? " is-open" : ""}`} ref={wrapRef}>
       <button ref={buttonRef} type="button" className="cp-btn" aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? panelId : undefined} onClick={() => (open ? close() : setOpen(true))}>
         {flag(current)}
-        <span className="cp-btn-t"><b>{nameOf(current)}</b><small>{unitsOf(current)}<span className="cp-change"> · {t.divisions.picker.change}</span></small></span>
+        <span className="cp-btn-t"><b>{nameOf(current)}</b><small>{unitsOf(current)}<span className="cp-change"> · {era ? t.divisions.picker.changeEra : t.divisions.picker.change}</span></small></span>
         <i aria-hidden="true"><Icon type="chevron" size={14} /></i>
       </button>
       {open && <>
         <div className="cp-shade" aria-hidden="true" onClick={close} />
         <div id={panelId} className="cp-panel" role="dialog" aria-labelledby={titleId}>
           <div className="cp-top">
-            <h2 id={titleId}>{t.divisions.picker.title}</h2>
+            <h2 id={titleId}>{era ? t.divisions.picker.titleEra : t.divisions.picker.title}</h2>
             <button type="button" className="cp-close" aria-label={t.divisions.picker.close} onClick={close}><Icon type="close" size={18} /></button>
           </div>
           <label className="cp-search">
             <Icon type="search" size={16} />
-            <input ref={searchRef} type="search" value={query} placeholder={t.divisions.picker.search} aria-label={t.divisions.picker.search} autoComplete="off" spellCheck={false} onChange={(event) => setQuery(event.target.value)} />
+            <input ref={searchRef} type="search" value={query} placeholder={era ? t.divisions.picker.searchEra : t.divisions.picker.search} aria-label={era ? t.divisions.picker.searchEra : t.divisions.picker.search} autoComplete="off" spellCheck={false} onChange={(event) => setQuery(event.target.value)} />
           </label>
           {continents.length > 1 && <div className="cp-tabs" role="group" aria-label={t.divisions.country}>
-            <button type="button" className="cv-chip" aria-pressed={continent === null} onClick={() => setContinent(null)}>{t.divisions.picker.all} <em>{DIVISION_COUNTRIES.length}</em></button>
+            <button type="button" className="cv-chip" aria-pressed={continent === null} onClick={() => setContinent(null)}>{t.divisions.picker.all} <em>{COUNTRIES.length}</em></button>
             {continents.map((key) => <button type="button" key={key} className="cv-chip" aria-pressed={continent === key} onClick={() => setContinent(continent === key ? null : key)}>
-              {t.divisions.picker.continents[key] ?? key} <em>{DIVISION_COUNTRIES.filter((country) => continentOf(country) === key).length}</em>
+              {t.divisions.picker.continents[key] ?? key} <em>{COUNTRIES.filter((country) => continentOf(country) === key).length}</em>
             </button>)}
           </div>}
           <div className="cp-list">

@@ -3,9 +3,9 @@ import type { PillarSession } from "./pillars.js";
 import { intlLocale, t } from "./i18n/index.js";
 import { asDivisionSession, divisionRegionLabel, isDivisionFamily, isDivisionRegion } from "./divisions.js";
 
-export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "divisoes";
+export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "divisoes" | "epocas";
 export const SESSION_GROUPS: ReadonlyArray<{ key: SessionGroup; label: string }> =
-  (["bandeiras", "mapa", "capitais", "historicas", "idiomas", "gentilicos", "moedas", "divisoes"] as const).map((key) => ({ key, label: t.sessions.groups[key] }));
+  (["bandeiras", "mapa", "capitais", "historicas", "idiomas", "gentilicos", "moedas", "divisoes", "epocas"] as const).map((key) => ({ key, label: t.sessions.groups[key] }));
 
 type LabelInput = PillarSession & { family?: string; variant?: string; mode?: string; subject?: string };
 
@@ -21,6 +21,7 @@ export function sessionLabel(session: LabelInput): { group: SessionGroup; family
   if (family === "historicas" || mode === "bnhist" || mode === "nbhist") group = "historicas";
   else if (family === "idiomas" || mode === "idioma") group = "idiomas";
   else if (family === "gentilicos" || family === "moedas") group = family;
+  else if (family === "epocas") group = "epocas";
   else if (isDivisionFamily(family)) group = "divisoes";
   else if (family === "capitais" || capital) group = "capitais";
   else if (family === "mapa" || family === "silhueta" || family === "travel" || mode === "mapa" || mode === "silhueta" || mode === "travel") group = "mapa";

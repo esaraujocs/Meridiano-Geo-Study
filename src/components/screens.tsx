@@ -10,6 +10,7 @@ import { EMPTY_ACHIEVEMENT_SUMMARY, hubProfile, ratioPercent, type AchievementSu
 import { MAP_BYTES, type OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
+import { divisionsOfKind } from "../domain/divisions";
 import { PEOPLES_GROUP, PEOPLES_LAST_KEY, peoplesEntry, type PeoplesTopic, type TopFamily } from "../domain/match-config";
 
 const lastPeoplesTopic = () => { try { return localStorage.getItem(PEOPLES_LAST_KEY); } catch { return null; } };
@@ -253,6 +254,7 @@ export function Hub({
     { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", pillar: "capitais" },
     { family: "idiomas", variant: "idioma-nome", label: t.families.povos, description: t.hub.familyDescriptions.povos, icon: "language", group: true },
     { family: "divisoes", variant: "dv-mapa", label: t.families.divisoes, description: t.hub.familyDescriptions.divisoes, icon: "divisions" },
+    { family: "epocas", variant: "dv-mapa", label: t.families.epocas, description: t.hub.familyDescriptions.epocas, icon: "history" },
   ];
   // Famílias sem modo grátis: o cartão abre com qualquer um dos dois sentidos comprado.
   const BOTH_WAYS: Partial<Record<Family, [AnyQuizVariant, AnyQuizVariant]>> = { idiomas: ["idioma-nome", "idioma-pais"], gentilicos: ["gentilico-pais", "pais-gentilico"], moedas: ["pais-moeda", "moeda-pais"] };
@@ -324,7 +326,7 @@ export function Hub({
       <div className="hx-grid">
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">
           <div className="section-label"><h2 id="hx-modes-title">{t.hub.modesTitle}</h2></div>
-          <HubCarousel label={t.hub.modesRegion}>{familyItems.map(modeCard)}</HubCarousel>
+          <HubCarousel label={t.hub.modesRegion}>{familyItems.filter((item) => item.family !== "epocas" || divisionsOfKind("era").length > 0).map(modeCard)}</HubCarousel>
         </section>
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
@@ -377,6 +379,7 @@ export function Variant({
     gentilicos: [["gentilicos", "gentilico-pais", t.modes["gentilico-pais"][0], t.modes["gentilico-pais"][1]], ["gentilicos", "pais-gentilico", t.modes["pais-gentilico"][0], t.modes["pais-gentilico"][1]]],
     moedas: [["moedas", "pais-moeda", t.modes["pais-moeda"][0], t.modes["pais-moeda"][1]], ["moedas", "moeda-pais", t.modes["moeda-pais"][0], t.modes["moeda-pais"][1]]],
     divisoes: [["divisoes", "dv-mapa", t.modes["dv-mapa"][0], t.modes["dv-mapa"][1]]],
+    epocas: [["epocas", "dv-mapa", t.modes["dv-mapa"][0], t.modes["dv-mapa"][1]]],
   };
   const familyLabel = topFamily === "mapa" ? "Mapa" : topFamily === "bandeiras" ? "Bandeiras" : topFamily === "capitais" ? "Capitais" : "Idiomas";
   const continueWith = (engine: Family, key: AnyQuizVariant) => {

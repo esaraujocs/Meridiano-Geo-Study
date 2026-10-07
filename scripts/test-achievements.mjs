@@ -421,4 +421,9 @@ const mixedWays = [brSession("br-mapa", BR_IDS.slice(0, 5)), ...dvWays.slice(1)]
 assert.equal(achievementContext(realisticProgress, mixedWays, {}).brasilByHeart, 4, "as antigas e as novas somam");
 const usWays = ["dv-mapa", "dv-silhueta", "dv-capital", "dv-escrita-capital"].map((variant) => dvSession(variant, US_IDS, "dv:us"));
 assert.equal(achievementContext(realisticProgress, usWays, {}).brasilByHeart, 0, "os EUA não contam no Brasil de cor");
+// Mapas históricos ("epocas", 07/10): as partidas de 1914 não contam nas conquistas do mapa-múndi nem nas do Brasil
+const eraIds = Array.from({ length: 30 }, (_, index) => `1914-u${index}`);
+const eraCtx = achievementContext(realisticProgress, [{ ...brSession("dv-mapa", eraIds), id: "ep-1", family: "epocas", region: "dv:1914", regions: ["dv:1914"] }], {});
+assert.equal(eraCtx.perfect20, false); assert.equal(eraCtx.bestStreak, 0); assert.equal(eraCtx.regions.size, 0); assert.equal(eraCtx.brasilPerfectMap, false);
+assert.equal(evaluateAchievementDefinitions(eraCtx).find((item) => item.id === "primeira")?.unlocked, true, "a primeira partida concluída vale também numa época");
 console.log("achievements: 53 canonical rules pass");

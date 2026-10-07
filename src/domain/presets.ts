@@ -12,9 +12,9 @@ export const MAX_PRESETS_PER_FAMILY = 5;
 export const MAX_PRESET_NAME = 40;
 export const PRESET_ID_PREFIX = "preset:";
 export const PRESET_SOURCE = "preset-v1";
-export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas", "divisoes"];
+export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas", "divisoes", "epocas"];
 /** Os recortes que uma configuração guardada pode ter: os do mapa-múndi e, em Estados e províncias, os dos países. */
-const regionsOf = (top: TopFamily) => new Set((top === "divisoes" ? DIVISION_COUNTRIES.flatMap((country) => divisionRegionItems(country.id)) : REGION_ITEMS).map(([key]) => key));
+const regionsOf = (top: TopFamily) => new Set((top === "divisoes" || top === "epocas" ? DIVISION_COUNTRIES.flatMap((country) => divisionRegionItems(country.id)) : REGION_ITEMS).map(([key]) => key));
 
 /** O que a tela "Configure a partida" decide (região já normalizada). */
 export type PresetConfig = {

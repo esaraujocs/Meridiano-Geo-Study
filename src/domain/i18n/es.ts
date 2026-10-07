@@ -67,6 +67,7 @@ export const es: Messages = {
     moedas: "Monedas",
     povos: "Idiomas, pueblos y monedas",
     divisoes: "Estados y provincias",
+    epocas: "Mapas históricos",
   },
   hub: {
     profileAria: "Perfil de actividad",
@@ -100,6 +101,7 @@ export const es: Messages = {
       moedas: "El dinero de cada país.",
       povos: "El idioma, el nombre del pueblo y el dinero de cada país.",
       divisoes: "Cada país por dentro: estados, capitales y contornos.",
+      epocas: "El mundo como era: países, imperios y colonias de otras épocas.",
     },
     soon: "Próximamente",
     yourProgress: "Tu progreso",
@@ -1115,6 +1117,9 @@ export const es: Messages = {
     country: "País",
     picker: {
       change: "cambiar país",
+      changeEra: "cambiar época",
+      titleEra: "Elige la época",
+      searchEra: "Buscar época…",
       title: "Elige el país",
       search: "Buscar país…",
       all: "Todos",
@@ -1212,7 +1217,7 @@ export const es: Messages = {
     threeTitles: "3 títulos",
   },
   sessions: {
-    groups: { bandeiras: "Banderas", mapa: "Mapa", capitais: "Capitales", historicas: "Históricas", idiomas: "Idiomas", gentilicos: "Gentilicios", moedas: "Monedas", divisoes: "Estados y provincias" },
+    groups: { bandeiras: "Banderas", mapa: "Mapa", capitais: "Capitales", historicas: "Históricas", idiomas: "Idiomas", gentilicos: "Gentilicios", moedas: "Monedas", divisoes: "Estados y provincias", epocas: "Mapas históricos" },
     variants: {
       mapa: "Clic en el mapa",
       silhueta: "Silueta + escritura",

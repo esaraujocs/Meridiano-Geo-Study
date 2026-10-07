@@ -19,6 +19,8 @@ export type Policy = {
   label: string;
 };
 
+/** Mapas históricos ("epocas") usa os modos de Estados e províncias e as mesmas compras: um modo comprado vale para países e épocas. */
+const priceFamily = (family: Family): Family => (family === "epocas" ? "divisoes" : family);
 const canonicalVariant = (family: Family, variant: AnyQuizVariant) => {
   if (family === "bandeiras" && (variant === "bandeira-nome" || variant === "nome-bandeira")) return "bandeira-nome";
   if (family === "historicas" && (variant === "historica-nome" || variant === "nome-historica")) return "historica-nome";
@@ -60,9 +62,11 @@ const BASE_POLICIES: Policy[] = [
   makePolicy("travel", "travel", 64000),
 ];
 export function canonicalUnlockKey(family: Family, variant: AnyQuizVariant, region: Region): Policy["key"] {
+  family = priceFamily(family);
   return `${family}:${canonicalVariant(family, variant)}` as Policy["key"];
 }
 export function unlockAliases(family: Family, variant: AnyQuizVariant, region: Region): Array<Policy["key"]> {
+  family = priceFamily(family);
   const canonical = canonicalUnlockKey(family, variant, region);
   if (family === "bandeiras" && (variant === "bandeira-nome" || variant === "nome-bandeira")) {
     return [canonical, `${family}:bandeira-nome`, `${family}:nome-bandeira` as Policy["key"]];
@@ -78,6 +82,7 @@ export function unlockAliases(family: Family, variant: AnyQuizVariant, region: R
 export const POLICIES: Policy[] = BASE_POLICIES;
 
 export function policyFor(family: Family, variant: AnyQuizVariant, region: Region) {
+  family = priceFamily(family);
   return POLICIES.find((item) => item.family === family && item.variant === canonicalVariant(family, variant));
 }
 
