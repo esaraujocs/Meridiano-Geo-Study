@@ -404,4 +404,21 @@ const assistedFlag = [...fourWays.slice(0, 2), { ...brSession("br-nome-bandeira"
 assert.equal(achievementContext(realisticProgress, assistedFlag, {}).brasilByHeart, 0, "acerto com suprimento não prova que sabe");
 const allFour = ["br-mapa", "br-silhueta-opcoes", "br-escrita-estado", "br-estado-capital"].map((variant) => brSession(variant, BR_IDS));
 assert.equal(evaluateAchievementDefinitions(achievementContext(realisticProgress, allFour, {})).find((item) => item.id === "brDeCor")?.unlocked, true, "os 27 nos quatro jeitos: Brasil de cor");
+// Estados e províncias (07/10): as sessões novas (família divisoes, recorte dv:br) valem como as da família brasil acima (que seguem valendo), e as
+// dos EUA não contam nas conquistas do Brasil nem nas do mapa-múndi
+const dvSession = (variant, ids, region = "dv:br", extra = {}) => ({ ...brSession(variant, ids, extra), id: `dv-${variant}-${region}-${ids.length}`, family: "divisoes", region, regions: [region] });
+const US_IDS = Array.from({ length: 50 }, (_, index) => `us-${String.fromCharCode(97 + Math.floor(index / 26))}${String.fromCharCode(97 + (index % 26))}`);
+assert.equal(achievementContext(realisticProgress, [dvSession("dv-mapa", BR_IDS)], {}).brasilPerfectMap, true, "Do Oiapoque ao Chuí com a sessão nova");
+assert.equal(achievementContext(realisticProgress, [dvSession("dv-mapa", BR_IDS, "dv:br:sul")], {}).brasilPerfectMap, false, "um recorte de região não é o Brasil inteiro");
+const usPerfect = achievementContext(realisticProgress, [dvSession("dv-mapa", US_IDS, "dv:us")], {});
+assert.equal(usPerfect.brasilPerfectMap, false, "os 50 estados dos EUA não são o Brasil");
+assert.equal(usPerfect.perfect20, false, "nem a Partida limpa do mapa-múndi");
+assert.equal(usPerfect.bestStreak, 0); assert.equal(usPerfect.regions.size, 0, "nem os recortes");
+assert.equal(evaluateAchievementDefinitions(usPerfect).find((item) => item.id === "primeira")?.unlocked, true, "a primeira partida concluída vale também nos EUA");
+const dvWays = ["dv-mapa", "dv-silhueta", "dv-bandeira-nome", "dv-escrita-capital"].map((variant, index) => dvSession(variant, BR_IDS.slice(0, index === 2 ? 4 : 5)));
+assert.equal(achievementContext(realisticProgress, dvWays, {}).brasilByHeart, 4, "Brasil de cor com as sessões novas");
+const mixedWays = [brSession("br-mapa", BR_IDS.slice(0, 5)), ...dvWays.slice(1)];
+assert.equal(achievementContext(realisticProgress, mixedWays, {}).brasilByHeart, 4, "as antigas e as novas somam");
+const usWays = ["dv-mapa", "dv-silhueta", "dv-capital", "dv-escrita-capital"].map((variant) => dvSession(variant, US_IDS, "dv:us"));
+assert.equal(achievementContext(realisticProgress, usWays, {}).brasilByHeart, 0, "os EUA não contam no Brasil de cor");
 console.log("achievements: 53 canonical rules pass");

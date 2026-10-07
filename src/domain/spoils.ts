@@ -30,14 +30,14 @@ const BASE_BY_VARIANT: Partial<Record<AnyQuizVariant, number>> = {
   "escrita-pais": 80,
   silhueta: 88,
   "escrita-capital": 96,
-  // Brasil: 3/4 do modo equivalente do mapa-múndi (27 estados se aprendem bem mais depressa que 250 países)
-  "br-nome-bandeira": 24, "br-bandeira-nome": 24,
-  "br-estado-capital": 30,
-  "br-mapa": 36,
-  "br-capital-mapa": 42, "br-silhueta-opcoes": 42,
-  "br-escrita-estado": 60,
-  "br-silhueta": 66,
-  "br-escrita-capital": 72,
+  // Estados e províncias: 3/4 do modo equivalente do mapa-múndi (os 27 estados do Brasil ou os 50 dos EUA se aprendem bem mais depressa que 250 países)
+  "dv-nome-bandeira": 24, "dv-bandeira-nome": 24,
+  "dv-capital": 30,
+  "dv-mapa": 36,
+  "dv-capital-mapa": 42, "dv-silhueta-opcoes": 42,
+  "dv-escrita-nome": 60,
+  "dv-silhueta": 66,
+  "dv-escrita-capital": 72,
 };
 export const baseCoins = (variant: AnyQuizVariant) => BASE_BY_VARIANT[variant] ?? 32;
 export const hitCoins = (variant: AnyQuizVariant, tier: Tier = 1) => Math.round(baseCoins(variant) * TIER_FACTOR[tier]);
@@ -48,7 +48,7 @@ export const hitRange = (variant: AnyQuizVariant, pace: Pace): [number, number] 
 };
 
 // Dificuldade do país: menos populoso e menor = mais difícil de reconhecer ou achar no mapa.
-// Catálogo sem população (os estados do Brasil): a ordem sai só da área, do maior para o menor.
+// Catálogo sem população (as unidades de Estados e províncias): a ordem sai só da área, do maior para o menor.
 const tierCache = new WeakMap<object, Map<string, Tier>>();
 function buildTiers(meta: Record<string, Meta>) {
   const tiers = new Map<string, Tier>();

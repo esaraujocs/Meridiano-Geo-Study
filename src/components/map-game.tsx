@@ -3,9 +3,9 @@ import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
-import { inRegion, isBrRegion, normalizeRegionSelection, REGION_CAMERA, regionLabel } from "../domain/regions";
+import { cameraFor, inRegion, normalizeRegionSelection, regionLabel } from "../domain/regions";
 import { coastBands, graticuleLines, mixHex, rhumbLines } from "../domain/map-palette";
-import { baseVariant } from "../domain/brasil";
+import { baseVariant, divisionRegionLabel, type UnitWord } from "../domain/divisions";
 import { mapPaletteFor } from "../domain/themes";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
 import { MAP_URL } from "../domain/offline-map";
@@ -53,11 +53,15 @@ const HIT_FEEDBACK_MS = 700;
 const BUSSOLA_COLOR = "#e6b04a";
 /** Cor do vizinho revelado pela Pista de vizinhos: azul, que não se confunde com o âmbar da Bússola, o verde do acerto nem o vermelho do erro. */
 const VIZINHO_COLOR = "#5d8fd6";
-const compassLabel = (group: string | null) => (group === "america-do-sul" || group === "america-do-norte-central" || isBrRegion(group) ? t.regions[group][0] : continentLabel(group ?? undefined));
-/** Outro tabuleiro no lugar do mapa-múndi (a família Brasil): os tiles do jogo, o enquadramento do recorte e o mapa-múndi por baixo, de contexto. */
+// a região que a Bússola mostra: o continente, as duas Américas ou, em Estados e províncias, a região do país ("br:nordeste")
+const compassLabel = (group: string | null) => (group?.includes(":") ? divisionRegionLabel(group) : group === "america-do-sul" || group === "america-do-norte-central" ? t.regions[group][0] : continentLabel(group ?? undefined));
+/** Outro tabuleiro no lugar do mapa-múndi (um país de Estados e províncias): os tiles do jogo, o enquadramento do recorte e o mapa-múndi por baixo,
+ *  de contexto. */
 export type MapBoard = {
   url: string;
   attribution: string;
+  /** A palavra da unidade do país (estado, província…), para os textos. */
+  unit: UnitWord;
   /** [oeste, sul, leste, norte] do recorte: a câmera enquadra por ela (no lugar de REGION_CAMERA). */
   bounds: [number, number, number, number];
   /** O mapa-múndi de fundo: sem a entidade que o tabuleiro detalha (`hide`, o carta_id dela) e sem responder ao clique. */
@@ -95,12 +99,12 @@ export function Game({
   variant?: AnyQuizVariant;
   onlyUn?: boolean;
   supplies?: SupplyCounts;
-  /** Tabuleiro próprio (família Brasil); sem ele, o mapa-múndi de sempre. */
+  /** Tabuleiro próprio (um país de Estados e províncias); sem ele, o mapa-múndi de sempre. */
   board?: MapBoard;
 }) {
   const engineFamily = family ?? "mapa";
   const engineVariant = variant ?? "mapa";
-  // a regra do modo (no Brasil, a do modo equivalente do mapa-múndi): cronômetro, suprimentos, capital ou estado
+  // a regra do modo (em Estados e províncias, a do modo equivalente do mapa-múndi): cronômetro, suprimentos, capital ou unidade
   const ruleVariant = baseVariant(engineVariant);
   const settings = sessionSettings(options, engineVariant);
   const { pace, roundLimit, timerSeconds } = settings;
@@ -144,7 +148,7 @@ export function Game({
   const featureSignature = mapDeckSignature(features.map((item) => item.id));
   // Territórios absorvidos (Guadalupe, Martinica...) nunca são alvo, mas aparecem com o recorte;
   // seguem a mesma regra do "Só ONU" das demais entidades pequenas (não são membros).
-  // No tabuleiro do Brasil não há marcadores (nenhum estado é pequeno demais para o clique).
+  // No tabuleiro de um país não há marcadores (os do mapa-múndi são de países; uma unidade minúscula, como o DC, não entra no pacote).
   const absorbedMarkerIds = onlyUn || board ? [] : ABSORBED_MARKER_IDS.filter((id) => inRegion(id, region, data));
   const markerIds = board ? [] : [...features.map((feature) => feature.id), ...absorbedMarkerIds];
   const markerSignature = markerIds.join("|");
@@ -179,8 +183,8 @@ export function Game({
       onRound: settings.onRound,
       coinFactor: settings.coinFactor,
       cardParents,
-      // os estados do Brasil não são cartas da coleção (como Gentílicos e Moedas)
-      ...(engineFamily === "brasil" ? { persistProgress: false } : {}),
+      // as unidades de Estados e províncias não são cartas da coleção (como Gentílicos e Moedas)
+      ...(engineFamily === "divisoes" ? { persistProgress: false } : {}),
     });
     pendingSessionRef.current = pending;
     pending
@@ -270,7 +274,7 @@ export function Game({
   const flyOptions = () => (document.documentElement.dataset.reducedMotion === "true" ? { duration: 0 } : { duration: 900 });
   const resetCamera = () => {
     if (board) { mapRef.current?.fitBounds(board.bounds, { padding: boardPadding(mapEl.current), ...flyOptions() }); return; }
-    const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
+    const camera = cameraFor(normalizeRegionSelection(region)[0] ?? "mundo");
     mapRef.current?.flyTo({ center: camera.center, zoom: camera.zoom, ...flyOptions() });
   };
   // Lanterna: a câmera voa até o alvo e fecha numa janela de ~1.200 km (lanternZoom), ainda dá para mexer no mapa.
@@ -421,7 +425,7 @@ export function Game({
   useEffect(() => {
     if (!mapEl.current) return;
     if (!board) assertMarkerBound(data.mapEntityIds.length);
-    const camera = REGION_CAMERA[normalizeRegionSelection(region)[0] ?? "mundo"];
+    const camera = cameraFor(normalizeRegionSelection(region)[0] ?? "mundo");
     const activeFilter = markerFilter(markerIds);
     setMapReady(false);
     let map: maplibregl.Map;
@@ -462,7 +466,7 @@ export function Game({
               layout: { "line-join": "round" },
               paint: { "line-color": band.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, band.w1, 5, band.w5], "line-blur": band.blur },
             }) as maplibregl.LayerSpecification),
-            // tabuleiro do Brasil: os vizinhos do mapa-múndi em tom apagado, opacos (cobrem a sombra da costa na fronteira) e fora do clique
+            // tabuleiro de um país: os vizinhos do mapa-múndi em tom apagado, opacos (cobrem a sombra da costa na fronteira) e fora do clique
             ...(board?.backdrop ? [{
               id: "backdrop-land",
               type: "fill" as const,
@@ -793,7 +797,7 @@ export function Game({
         <GameTopBar results={log.results} total={totalRounds} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel(engineVariant)} · ${regionLabel(region)}`} />
         <main className="map-wrap" aria-label={t.map.wrapAria}>
           <div className={`map-target-overlay ${feedback ? (wrong ? "is-wrong" : "is-correct") : ""}`} data-target-id={import.meta.env.DEV ? target : undefined}>
-            <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (capitalMode ? (board ? t.brasil.capitalFind : t.map.capitalCountry) : t.map.find)}</span>
+            <span>{feedback ? (wrong ? (timedOut ? t.map.timeUpShort : t.map.notYet) : t.map.hitShort) : (capitalMode ? (board ? t.divisions.capitalFind(board.unit) : t.map.capitalCountry) : t.map.find)}</span>
             <strong>{feedback && !wrong ? `✓ ${targetName}` : targetName}</strong>
             {bussolaUsed && !feedback && <em className="map-bussola-hint">{compassLabel(compassGroup(data.meta[target]))}</em>}
             {clue && !feedback && <em className="map-bussola-hint is-neighbor is-note">{clue.text}</em>}

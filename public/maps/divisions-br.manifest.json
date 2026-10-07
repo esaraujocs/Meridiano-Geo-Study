@@ -1,5 +1,5 @@
 {
-  "name": "brasil-hd",
+  "name": "divisions-br",
   "generator": "scripts/map-hd (fetch-overture.py, fetch-lakes.py, build-pieces.py, build-tiles.py)",
   "zoom": {
     "min": 0,

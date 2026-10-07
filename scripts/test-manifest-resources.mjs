@@ -32,19 +32,22 @@ assert.equal(swBytes, appBytes, "MAP_BYTES do sw.js diverge de offline-map.ts");
 assert.equal(appBytes, pmtiles.size, "MAP_BYTES não bate com o tamanho real do .pmtiles");
 assert.equal(appVersion, mapManifest.sha256, "MAP_VERSION não bate com o hash do manifesto do mapa");
 assert.equal(swFile, `meridiano-hd-${appVersion}.pmtiles`, "MAP_FILE do sw.js diverge do arquivo que o app grava no OPFS");
-// O mapa dos estados (família Brasil) vai inteiro para o cache do service worker com o hash na chave: o hash e o tamanho precisam bater com o arquivo.
-const [brasilFile, brasilManifest] = await Promise.all([
-  stat("public/maps/brasil-hd.pmtiles"),
-  readFile("public/maps/brasil-hd.manifest.json", "utf8").then(JSON.parse),
-]);
-const appBrasilBytes = Number(/export const BRASIL_MAP_BYTES =\s*([\d_]+);/.exec(offlineMap)?.[1]?.replaceAll("_", ""));
-const appBrasilVersion = /export const BRASIL_MAP_VERSION =\s*"([^"]+)";/.exec(offlineMap)?.[1];
-const swBrasilVersion = /const BRASIL_MAP_VERSION = "([^"]+)";/.exec(sw)?.[1];
-assert.equal(appBrasilBytes, brasilFile.size, "BRASIL_MAP_BYTES não bate com o tamanho real do brasil-hd.pmtiles");
-assert.equal(appBrasilVersion, brasilManifest.sha256, "BRASIL_MAP_VERSION não bate com o hash do manifesto do mapa do Brasil");
-assert.equal(swBrasilVersion, appBrasilVersion, "BRASIL_MAP_VERSION do sw.js diverge de offline-map.ts");
+// Os mapas dos países de Estados e províncias vão inteiros para o cache do service worker, com o hash na chave: o índice (divisions-index.ts) tem de
+// bater com os arquivos, e o build injeta no sw.js a lista caminho → hash.
+const indexSource = await readFile("src/domain/divisions-index.ts", "utf8");
+const divisionIndex = JSON.parse(/DIVISION_INDEX: readonly DivisionCountry\[\] = ([\s\S]*);\s*$/.exec(indexSource)[1]);
+const builtSw = await readFile(join(dist, "sw.js"), "utf8");
+const injected = JSON.parse(/\/\*__CARTA_DIVISION_MAPS__\*\/(\{[^}]*\})/.exec(builtSw)?.[1] ?? "null");
+assert.ok(divisionIndex.length > 0, "índice de Estados e províncias vazio");
+for (const country of divisionIndex) {
+  const file = await stat(join("public", country.map.url.slice(1)));
+  const manifestFile = JSON.parse(await readFile(join("public", country.map.url.slice(1).replace(/\.pmtiles$/, ".manifest.json")), "utf8"));
+  assert.equal(country.map.bytes, file.size, `${country.id}: tamanho do mapa no índice diverge do arquivo`);
+  assert.equal(country.map.sha256, manifestFile.sha256, `${country.id}: hash do mapa no índice diverge do manifesto`);
+  assert.equal(injected?.[country.map.url], country.map.sha256, `${country.id}: o sw.js do build não tem o mapa do país`);
+}
 for (const worker of ["maplibre-gl-worker.mjs", "maplibre-gl-shared.mjs"]) {
   await access(join(dist, "assets", worker));
 }
 
-console.log(`manifest resources: ${(manifest.icons ?? []).length} icon(s) verified; offline map constants (world and Brazil) and MapLibre worker verified`);
+console.log(`manifest resources: ${(manifest.icons ?? []).length} icon(s) verified; offline map constants, country maps and MapLibre worker verified`);

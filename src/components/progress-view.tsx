@@ -11,7 +11,8 @@ import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup
 import { clockOf } from "../domain/duel-view";
 import { loadFlags, flagSource, type FlagCatalog } from "../domain/quiz";
 import { loadSpecialData, type HistoricalEntity } from "../domain/special-data";
-import { loadBrasil, loadBrasilFlags } from "../domain/brasil-data";
+import { loadDivision, loadDivisionFlags } from "../domain/divisions-data";
+import { asDivisionSession, divisionCountry, divisionCountryOf, isDivisionFamily } from "../domain/divisions";
 import { Glyph } from "./achievement-art";
 import { Icon } from "./icons";
 import { ProgressHero } from "./progress-hero";
@@ -30,7 +31,7 @@ type Props = {
 type FlagOf = (code?: string) => string | undefined;
 
 const LEVEL_COLORS = ["rgba(199,182,143,.7)", "#857b5f", "var(--rar-2, #2F6F6A)", "var(--rar-3, #AB7A1A)", "var(--rar-4, #B65F47)", "#C49345"];
-const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", brasil: "brazil" };
+const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", divisoes: "divisions" };
 const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0");
 
 // ---------- linhas de partida (o duelo é uma linha só: adversário, placar e troféus) ----------
@@ -433,19 +434,24 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     loadFlags().then(setFlags).catch(() => undefined);
     loadSpecialData().then((value) => { setHistoricalFlags(value.historicalFlags); setHistorical(value.historical); }).catch(() => undefined);
   }, []);
-  // Os estados do Brasil também ficam fora de `meta`: o histórico de uma partida da família Brasil nomeia e ilustra o que errou com o catálogo deles.
-  const [brasilMeta, setBrasilMeta] = useState<Record<string, Meta>>({});
-  const [brasilFlags, setBrasilFlags] = useState<FlagCatalog>({});
-  const playedBrasil = state.sessions.some((session) => session.family === "brasil");
+  // As unidades de Estados e províncias também ficam fora de `meta`: o histórico de uma partida desse modo nomeia e ilustra o que errou com o catálogo
+  // do país dela (os países jogados, pelo recorte das sessões; "brasil" é o nome antigo da família).
+  const [divisionMeta, setDivisionMeta] = useState<Record<string, Meta>>({});
+  const [divisionFlags, setDivisionFlags] = useState<FlagCatalog>({});
+  const playedCountries = [...new Set(state.sessions.filter((session) => isDivisionFamily(session.family)).map((session) => {
+    const normalized = asDivisionSession(session);
+    return divisionCountryOf(normalized.regions?.length ? normalized.regions : normalized.region);
+  }).filter((country): country is string => Boolean(country)))].sort().join(",");
   useEffect(() => {
-    if (!playedBrasil) return;
-    loadBrasil().then((value) => setBrasilMeta(value.data.meta)).catch(() => undefined);
-    loadBrasilFlags().then(setBrasilFlags).catch(() => undefined);
-  }, [playedBrasil]);
+    for (const country of playedCountries ? playedCountries.split(",") : []) {
+      loadDivision(country).then((pack) => setDivisionMeta((current) => ({ ...current, ...pack.data.meta }))).catch(() => undefined);
+      if (divisionCountry(country)?.flags) loadDivisionFlags(country).then((flags) => setDivisionFlags((current) => ({ ...current, ...flags }))).catch(() => undefined);
+    }
+  }, [playedCountries]);
   const now = useMemo(() => Date.now(), [state]);
   // Nome e bandeira das entidades históricas, para o "Você errou" de um tempo de Históricas no histórico (mesma ideia da Coleção): sem isto,
   // o id cru (ex.: "anhalt-ducado") aparecia no lugar do nome, porque o Históricas fica fora de `meta` de propósito (decisão 1 do CLAUDE.md).
-  const historicalMeta = useMemo(() => ({ ...Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), ...brasilMeta }), [historical, brasilMeta]);
+  const historicalMeta = useMemo(() => ({ ...Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), ...divisionMeta }), [historical, divisionMeta]);
   const dashboard = useMemo(() => buildProgressDashboard({
     now,
     sessions: state.sessions,
@@ -461,7 +467,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     album: { discovered: state.progress.discovered, total: state.progress.total, distribution: state.progress.distribution },
     economy,
   }), [now, state, data, historicalMeta, economy]);
-  const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()] ?? brasilFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
+  const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()] ?? divisionFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
   const { hero } = dashboard;
   const openCollection = () => onOpenCollection("mundo");
 

@@ -2,6 +2,7 @@ import type { ProgressSnapshot, SurfaceSession } from "./progress-surfaces";
 import { MAP_ERROR_GOAL_KM, MAP_ERROR_MIN_ROUNDS, meanMapErrorKm } from "./map-error.js";
 import { FIT_SCORE, TITLE_DOMAIN_PCT } from "./pillars.js";
 import { t } from "./i18n/index.js";
+import { asDivisionSession, divisionCountryOf, isDivisionFamily } from "./divisions.js";
 
 export type AchievementCategory = "hab" | "exp" | "conh" | "evo" | "dom" | "desc";
 export type AchievementDefinition = {
@@ -38,7 +39,7 @@ export type AchievementContext = {
   /** Países com o gentílico e com a moeda já acertados (modos Gentílicos e Moedas, os dois sentidos). */
   demonymsKnown: Set<string>; currenciesKnown: Set<string>;
   travelRoutes: number; writtenCorrect: number;
-  /** Família Brasil: o Brasil inteiro no mapa sem errar numa partida só, e os estados acertados nos quatro jeitos (mapa, silhueta, bandeira e capital). */
+  /** Estados e províncias, no Brasil: o país inteiro no mapa sem errar numa partida só, e os estados acertados nos quatro jeitos (mapa, silhueta, bandeira e capital). */
   brasilPerfectMap: boolean; brasilByHeart: number;
 };
 const one = (f: (c: AchievementContext) => boolean) => ({ target: () => 1, progress: (c: AchievementContext) => f(c) ? 1 : 0 });
@@ -117,7 +118,8 @@ const ACHIEVEMENT_SEEDS: AchievementSeed[] = [
   { id:"idiomas40",category:"conh",rarity:3,target:()=>40,progress:c=>c.languagesKnown.size},
   { id:"gentilicos100",category:"conh",rarity:3,target:()=>100,progress:c=>c.demonymsKnown.size},
   { id:"moedas80",category:"conh",rarity:3,target:()=>80,progress:c=>c.currenciesKnown.size},
-  // Família Brasil: uma de domínio (o mapa inteiro sem falhas, como os "recortes sem falhas") e uma de conhecimento (cada estado nos quatro jeitos).
+  // Brasil, em Estados e províncias: uma de domínio (o mapa inteiro sem falhas, como os "recortes sem falhas") e uma de conhecimento (cada estado nos
+  // quatro jeitos). Os outros países do modo não têm conquista própria.
   { id:"brOiapoque",category:"dom",rarity:3,...one(c=>c.brasilPerfectMap) },
   { id:"brDeCor",category:"conh",rarity:4,target:()=>BRASIL_STATES,progress:c=>c.brasilByHeart},
   { id:"gExplorador",category:"evo",rarity:1,...one(c=>c.masteryIndex>=2) },
@@ -160,17 +162,17 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = ACHIEVEMENT_SEED
 
 /** Os 26 estados e o Distrito Federal. */
 const BRASIL_STATES = 27;
-/** Os quatro jeitos de acertar um estado (a conquista Brasil de cor): a variante da família Brasil → o jeito. */
+/** Os quatro jeitos de acertar um estado (a conquista Brasil de cor): a variante de Estados e províncias → o jeito. */
 const BRASIL_WAY: Record<string, string> = {
-  "br-mapa": "mapa", "br-silhueta-opcoes": "silhueta", "br-silhueta": "silhueta",
-  "br-nome-bandeira": "bandeira", "br-bandeira-nome": "bandeira", "br-escrita-estado": "bandeira",
-  "br-capital-mapa": "capital", "br-estado-capital": "capital", "br-escrita-capital": "capital",
+  "dv-mapa": "mapa", "dv-silhueta-opcoes": "silhueta", "dv-silhueta": "silhueta",
+  "dv-nome-bandeira": "bandeira", "dv-bandeira-nome": "bandeira", "dv-escrita-nome": "bandeira",
+  "dv-capital-mapa": "capital", "dv-capital": "capital", "dv-escrita-capital": "capital",
 };
 function brasilProgress(sessions: readonly SurfaceSession[]) {
   // o Brasil inteiro (sem recorte de região) e 100%, sem suprimento: o baralho não repete estado, então 27 rodadas são os 27 estados (o corte
   // "Todas · 27" da Mesa grava o limite de 50, não "todas", por isso o limite não entra na conta)
-  const perfectMap = sessions.some((s) => s.variant === "br-mapa" && s.complete && s.rounds.length >= BRASIL_STATES &&
-    s.correct === s.rounds.length && !s.assistedCount && (s.regions?.length ? s.regions : [s.region]).includes("brasil"));
+  const perfectMap = sessions.some((s) => s.variant === "dv-mapa" && s.complete && s.rounds.length >= BRASIL_STATES &&
+    s.correct === s.rounds.length && !s.assistedCount && (s.regions?.length ? s.regions : [s.region]).includes("dv:br"));
   const ways = new Map<string, Set<string>>();
   for (const s of sessions) {
     const way = BRASIL_WAY[s.variant];
@@ -186,10 +188,12 @@ function brasilProgress(sessions: readonly SurfaceSession[]) {
 }
 
 export function achievementContext(progress: ProgressSnapshot, allSessions: SurfaceSession[], catalog: Record<string, any> = {}): AchievementContext {
-  // A família Brasil tem conquistas próprias (os estados não são países do atlas): as outras contam só as partidas do mapa-múndi. A primeira partida
+  // Estados e províncias tem conquistas próprias, só do Brasil (as unidades não são países do atlas): as outras contam só as partidas do mapa-múndi
+  // ("brasil" é o nome antigo da família, das partidas de antes do modo, que contam como as do Brasil daqui). A primeira partida
   // concluída vale em qualquer família.
-  const sessions = allSessions.filter(s => s.family !== "brasil");
-  const brasil = brasilProgress(allSessions.filter(s => s.family === "brasil"));
+  const sessions = allSessions.filter(s => !isDivisionFamily(s.family));
+  const brasil = brasilProgress(allSessions.filter(s => isDivisionFamily(s.family)).map(asDivisionSession)
+    .filter(s => divisionCountryOf(s.regions?.length ? s.regions : s.region) === "br"));
   const completed = sessions.filter(s => s.complete);
   const modes = new Set(sessions.map(s => s.mode));
   const regions = new Set(completed.flatMap(s => s.regions?.length ? s.regions : [s.region]).filter(Boolean));

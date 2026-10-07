@@ -8,8 +8,8 @@
 export type EconomyRound = { targetId: string; correct: boolean; column: string; at: number; /** rodada de Escrita (digitada): na regra antiga ela caía em "capitais"/"escrita"; o domínio novo a trata à parte */ written: boolean; /** variante e assunto da partida (distingue escrita da capital de escrita do país) */ sub: string };
 
 /** Gentílicos e Moedas perguntam sobre países, mas não são prova de reconhecimento no mapa, na bandeira ou na capital: ficam fora do domínio e do XP de
- *  domínio. A família Brasil pergunta sobre os estados, que não são cartas do atlas. */
-export const OUTSIDE_DOMAIN_FAMILIES: ReadonlySet<string> = new Set(["gentilicos", "moedas", "brasil"]);
+ *  domínio. Estados e províncias ("divisoes"; "brasil" nas sessões de antes dele) pergunta sobre as unidades de um país, que não são cartas do atlas. */
+export const OUTSIDE_DOMAIN_FAMILIES: ReadonlySet<string> = new Set(["gentilicos", "moedas", "divisoes", "brasil"]);
 
 function sessionRounds(value: any, sessionIndex: number): EconomyRound[] {
   if (OUTSIDE_DOMAIN_FAMILIES.has(String(value?.family ?? ""))) return [];

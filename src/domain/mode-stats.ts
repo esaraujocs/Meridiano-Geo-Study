@@ -1,5 +1,6 @@
 // Estatísticas de UM modo de jogo, para a lateral da Mesa de jogo: precisão, recordes, evolução e partidas recentes. Lógica pura, sem React nem banco.
 // Um "modo" é o que a Mesa oferece: família do motor + variante (nas bandeiras a variante não conta, porque os dois sentidos são o mesmo modo).
+import { asDivisionSession, divisionCountryOf } from "./divisions.js";
 
 /** O mínimo de uma sessão que a conta precisa (o `SurfaceSession` do Progresso serve). */
 export type StatSession = {
@@ -10,9 +11,12 @@ export type StatSession = {
   roundCount: number;
   correct: number;
   duelId?: string;
+  region?: string;
+  regions?: string[];
   rounds: ReadonlyArray<{ correct: boolean; responseTimeMs: number | null; assisted?: boolean }>;
 };
-export type StatMode = { family: string; variant: string; flag?: string };
+/** O modo da Mesa; em Estados e províncias, também o país (`country`) cujas sessões contam. */
+export type StatMode = { family: string; variant: string; flag?: string; country?: string };
 
 export type ModeRecent = { at: number; correct: number; rounds: number; pct: number; avgMs: number | null; duel: boolean };
 export type ModeStats = {
@@ -35,9 +39,15 @@ export const TREND_LENGTH = 12;
 export const RECENT_LENGTH = 4;
 const MIN_ROUNDS = 5;
 
-// Bandeiras: os dois sentidos são o mesmo modo. Na família Brasil todos os modos dividem a família do motor, então lá o sentido também tem de ser de bandeira.
-export const sessionInMode = (session: StatSession, mode: StatMode) => session.family === mode.family &&
-  (mode.flag !== undefined ? mode.flag !== "brasil" || session.variant === "br-nome-bandeira" || session.variant === "br-bandeira-nome" : session.variant === mode.variant);
+// Bandeiras: os dois sentidos são o mesmo modo. Em Estados e províncias todos os modos dividem a família do motor, então lá o sentido também tem de
+// ser de bandeira, e o modo é de um país só (`country`): a sessão é do país do recorte dela. As sessões da família "brasil" (antes deste modo) contam
+// como as do país br.
+export const sessionInMode = (raw: StatSession, mode: StatMode) => {
+  const session = asDivisionSession(raw);
+  if (session.family !== mode.family) return false;
+  if (mode.country && divisionCountryOf(session.regions?.length ? session.regions : session.region) !== mode.country) return false;
+  return mode.flag !== undefined ? mode.flag !== "divisoes" || session.variant === "dv-nome-bandeira" || session.variant === "dv-bandeira-nome" : session.variant === mode.variant;
+};
 
 const pctOf = (correct: number, rounds: number) => (rounds > 0 ? Math.round((correct / rounds) * 100) : 0);
 

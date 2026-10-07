@@ -1,9 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { pvpPlugin } from "./server/pvp-plugin.mjs";
+// Os países de Estados e províncias: o índice gerado por scripts/divisions/build.py é TypeScript do app (outro projeto do tsc), então é lido como texto.
+const DIVISION_INDEX: { id: string; flags: boolean; map: { url: string; sha256: string } }[] = JSON.parse(
+  /DIVISION_INDEX: readonly DivisionCountry\[\] = ([\s\S]*);\s*$/.exec(readFileSync(new URL("./src/domain/divisions-index.ts", import.meta.url), "utf8"))![1],
+);
 
 // O MapLibre resolve o worker como ./maplibre-gl-worker.mjs relativo ao bundle, e esse worker
 // importa ./maplibre-gl-shared.mjs. O Vite não emite nenhum dos dois, então no build de
@@ -40,10 +45,9 @@ const injectPrecacheManifest = () => {
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
       "/data/peoples.json",
-      // família Brasil (scripts/brasil): o catálogo, as silhuetas e as bandeiras dos estados; o mapa dos estados vai para o cache na primeira partida (sw.js)
-      "/data/brasil/states.json",
-      "/data/brasil/shapes.json",
-      "/data/brasil/flags.json",
+      // Estados e províncias (scripts/divisions): o catálogo, as silhuetas e as bandeiras de cada país; o mapa do país vai para o cache na primeira
+      // partida (sw.js)
+      ...DIVISION_INDEX.flatMap((country) => ["units", "shapes", ...(country.flags ? ["flags"] : [])].map((file) => `/data/divisions/${country.id}/${file}.json`)),
       // Peças locais do museu: adquiridas continuam visíveis sem conexão.
       ...(await readdir(new URL("./public/museum/", import.meta.url)))
         .filter((file) => /\.(jpg|png|webp|svg)$/.test(file))
@@ -55,12 +59,14 @@ const injectPrecacheManifest = () => {
     const serviceWorker = new URL("sw.js", dist);
     const source = await readFile(serviceWorker, "utf8");
     const marker = "/*__CARTA_PRECACHE__*/[]";
-    if (!source.includes(marker)) {
-      throw new Error(`Marcador de precache não encontrado em ${outDir}/sw.js.`);
+    const mapsMarker = "/*__CARTA_DIVISION_MAPS__*/{}";
+    if (!source.includes(marker) || !source.includes(mapsMarker)) {
+      throw new Error(`Marcador de precache ou dos mapas de país não encontrado em ${outDir}/sw.js.`);
     }
+    const maps = Object.fromEntries(DIVISION_INDEX.map((country) => [country.map.url, country.map.sha256]));
     await writeFile(
       serviceWorker,
-      source.replace(marker, `/*__CARTA_PRECACHE__*/${JSON.stringify(precache)}`),
+      source.replace(marker, `/*__CARTA_PRECACHE__*/${JSON.stringify(precache)}`).replace(mapsMarker, `/*__CARTA_DIVISION_MAPS__*/${JSON.stringify(maps)}`),
     );
   },
   };

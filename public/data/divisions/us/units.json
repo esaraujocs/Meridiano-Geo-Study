@@ -1,0 +1,1443 @@
+{
+ "source": "Estados Unidos: os 50 estados (o Distrito de Colúmbia fica de fora: some no mapa e não é estado; a terra dele vira terra neutra). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1, fetch-overture-regions.py), que build-division.py confere contra esta lista (código e nome); nomes em pt/es e capitais do Wikidata (P300, P36, rótulos pt-br/es; 06/10/2026; Juneau e 'Nova York' conferidos na Wikipédia); regiões do US Census Bureau (Census Regions and Divisions, via Wikipédia 'List of regions of the United States'). Sem bandeiras por enquanto (MVP).",
+ "country": "us",
+ "regions": {
+  "northeast": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Noreste"
+  },
+  "midwest": {
+   "pt": "Meio-Oeste",
+   "en": "Midwest",
+   "es": "Medio Oeste"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  },
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  }
+ },
+ "units": {
+  "us-ak": {
+   "code": "AK",
+   "ref": "US-AK",
+   "name": {
+    "pt": "Alasca",
+    "en": "Alaska",
+    "es": "Alaska"
+   },
+   "capital": "Juneau",
+   "region": "west",
+   "area": 1494739,
+   "ll": [
+    65.24,
+    -154.9428
+   ],
+   "bbox": [
+    -168.125,
+    53.239,
+    -129.994,
+    71.387
+   ],
+   "borders": []
+  },
+  "us-al": {
+   "code": "AL",
+   "ref": "US-AL",
+   "name": {
+    "pt": "Alabama",
+    "en": "Alabama",
+    "es": "Alabama"
+   },
+   "capital": "Montgomery",
+   "region": "south",
+   "area": 133865,
+   "ll": [
+    32.5986,
+    -86.7638
+   ],
+   "bbox": [
+    -88.473,
+    30.279,
+    -84.888,
+    35.008
+   ],
+   "borders": [
+    "us-fl",
+    "us-ga",
+    "us-ms",
+    "us-tn"
+   ]
+  },
+  "us-ar": {
+   "code": "AR",
+   "ref": "US-AR",
+   "name": {
+    "pt": "Arkansas",
+    "en": "Arkansas",
+    "es": "Arkansas"
+   },
+   "capital": "Little Rock",
+   "region": "south",
+   "area": 137726,
+   "ll": [
+    34.7616,
+    -92.7043
+   ],
+   "bbox": [
+    -94.618,
+    33.004,
+    -89.643,
+    36.5
+   ],
+   "borders": [
+    "us-la",
+    "us-mo",
+    "us-ms",
+    "us-ok",
+    "us-tn",
+    "us-tx"
+   ]
+  },
+  "us-az": {
+   "code": "AZ",
+   "ref": "US-AZ",
+   "name": {
+    "pt": "Arizona",
+    "en": "Arizona",
+    "es": "Arizona"
+   },
+   "capital": "Phoenix",
+   "region": "west",
+   "area": 295175,
+   "ll": [
+    34.1895,
+    -111.5935
+   ],
+   "bbox": [
+    -114.818,
+    31.332,
+    -109.045,
+    37.004
+   ],
+   "borders": [
+    "us-ca",
+    "us-nm",
+    "us-nv",
+    "us-ut"
+   ]
+  },
+  "us-ca": {
+   "code": "CA",
+   "ref": "US-CA",
+   "name": {
+    "pt": "Califórnia",
+    "en": "California",
+    "es": "California"
+   },
+   "capital": "Sacramento",
+   "region": "west",
+   "area": 408058,
+   "ll": [
+    40.0768,
+    -121.9195
+   ],
+   "bbox": [
+    -124.41,
+    32.534,
+    -114.131,
+    42.009
+   ],
+   "borders": [
+    "us-az",
+    "us-nv",
+    "us-or"
+   ]
+  },
+  "us-co": {
+   "code": "CO",
+   "ref": "US-CO",
+   "name": {
+    "pt": "Colorado",
+    "en": "Colorado",
+    "es": "Colorado"
+   },
+   "capital": "Denver",
+   "region": "west",
+   "area": 269380,
+   "ll": [
+    38.9998,
+    -105.5472
+   ],
+   "bbox": [
+    -109.06,
+    36.993,
+    -102.042,
+    41.003
+   ],
+   "borders": [
+    "us-ks",
+    "us-ne",
+    "us-nm",
+    "us-ok",
+    "us-ut",
+    "us-wy"
+   ]
+  },
+  "us-ct": {
+   "code": "CT",
+   "ref": "US-CT",
+   "name": {
+    "pt": "Connecticut",
+    "en": "Connecticut",
+    "es": "Connecticut"
+   },
+   "capital": "Hartford",
+   "region": "northeast",
+   "area": 12862,
+   "ll": [
+    41.6394,
+    -73.1214
+   ],
+   "bbox": [
+    -73.728,
+    40.987,
+    -71.787,
+    42.051
+   ],
+   "borders": [
+    "us-ma",
+    "us-ny",
+    "us-ri"
+   ]
+  },
+  "us-de": {
+   "code": "DE",
+   "ref": "US-DE",
+   "name": {
+    "pt": "Delaware",
+    "en": "Delaware",
+    "es": "Delaware"
+   },
+   "capital": "Dover",
+   "region": "south",
+   "area": 5116,
+   "ll": [
+    38.744,
+    -75.4732
+   ],
+   "bbox": [
+    -75.789,
+    38.451,
+    -75.049,
+    39.84
+   ],
+   "borders": [
+    "us-md",
+    "us-nj",
+    "us-pa"
+   ]
+  },
+  "us-fl": {
+   "code": "FL",
+   "ref": "US-FL",
+   "name": {
+    "pt": "Flórida",
+    "en": "Florida",
+    "es": "Florida"
+   },
+   "capital": "Tallahassee",
+   "region": "south",
+   "area": 146152,
+   "ll": [
+    28.3258,
+    -81.5446
+   ],
+   "bbox": [
+    -87.635,
+    25.116,
+    -80.031,
+    31.001
+   ],
+   "borders": [
+    "us-al",
+    "us-ga"
+   ]
+  },
+  "us-ga": {
+   "code": "GA",
+   "ref": "US-GA",
+   "name": {
+    "pt": "Geórgia",
+    "en": "Georgia",
+    "es": "Georgia"
+   },
+   "capital": "Atlanta",
+   "region": "south",
+   "area": 152628,
+   "ll": [
+    32.2948,
+    -83.2329
+   ],
+   "bbox": [
+    -85.605,
+    30.356,
+    -80.84,
+    35.001
+   ],
+   "borders": [
+    "us-al",
+    "us-fl",
+    "us-nc",
+    "us-sc",
+    "us-tn"
+   ]
+  },
+  "us-hi": {
+   "code": "HI",
+   "ref": "US-HI",
+   "name": {
+    "pt": "Havaí",
+    "en": "Hawaii",
+    "es": "Hawái"
+   },
+   "capital": "Honolulu",
+   "region": "west",
+   "area": 16712,
+   "ll": [
+    19.6401,
+    -155.5165
+   ],
+   "bbox": [
+    -160.247,
+    18.911,
+    -154.807,
+    22.233
+   ],
+   "borders": []
+  },
+  "us-ia": {
+   "code": "IA",
+   "ref": "US-IA",
+   "name": {
+    "pt": "Iowa",
+    "en": "Iowa",
+    "es": "Iowa"
+   },
+   "capital": "Des Moines",
+   "region": "midwest",
+   "area": 145521,
+   "ll": [
+    42.0408,
+    -93.8977
+   ],
+   "bbox": [
+    -96.64,
+    40.376,
+    -90.14,
+    43.501
+   ],
+   "borders": [
+    "us-il",
+    "us-mn",
+    "us-mo",
+    "us-ne",
+    "us-sd",
+    "us-wi"
+   ]
+  },
+  "us-id": {
+   "code": "ID",
+   "ref": "US-ID",
+   "name": {
+    "pt": "Idaho",
+    "en": "Idaho",
+    "es": "Idaho"
+   },
+   "capital": "Boise",
+   "region": "west",
+   "area": 215996,
+   "ll": [
+    43.8188,
+    -115.1155
+   ],
+   "bbox": [
+    -117.243,
+    41.989,
+    -111.044,
+    49.001
+   ],
+   "borders": [
+    "us-mt",
+    "us-nv",
+    "us-or",
+    "us-ut",
+    "us-wa",
+    "us-wy"
+   ]
+  },
+  "us-il": {
+   "code": "IL",
+   "ref": "US-IL",
+   "name": {
+    "pt": "Illinois",
+    "en": "Illinois",
+    "es": "Illinois"
+   },
+   "capital": "Springfield",
+   "region": "midwest",
+   "area": 145768,
+   "ll": [
+    40.3141,
+    -89.2341
+   ],
+   "bbox": [
+    -91.513,
+    36.97,
+    -87.495,
+    42.508
+   ],
+   "borders": [
+    "us-ia",
+    "us-in",
+    "us-ky",
+    "us-mi",
+    "us-mo",
+    "us-wi"
+   ]
+  },
+  "us-in": {
+   "code": "IN",
+   "ref": "US-IN",
+   "name": {
+    "pt": "Indiana",
+    "en": "Indiana",
+    "es": "Indiana"
+   },
+   "capital": "Indianapolis",
+   "region": "midwest",
+   "area": 93634,
+   "ll": [
+    40.0238,
+    -86.1687
+   ],
+   "bbox": [
+    -88.097,
+    37.772,
+    -84.785,
+    41.761
+   ],
+   "borders": [
+    "us-il",
+    "us-ky",
+    "us-mi",
+    "us-oh"
+   ]
+  },
+  "us-ks": {
+   "code": "KS",
+   "ref": "US-KS",
+   "name": {
+    "pt": "Kansas",
+    "en": "Kansas",
+    "es": "Kansas"
+   },
+   "capital": "Topeka",
+   "region": "midwest",
+   "area": 212943,
+   "ll": [
+    38.4982,
+    -98.3204
+   ],
+   "bbox": [
+    -102.052,
+    36.993,
+    -94.588,
+    40.003
+   ],
+   "borders": [
+    "us-co",
+    "us-mo",
+    "us-ne",
+    "us-ok"
+   ]
+  },
+  "us-ky": {
+   "code": "KY",
+   "ref": "US-KY",
+   "name": {
+    "pt": "Kentucky",
+    "en": "Kentucky",
+    "es": "Kentucky"
+   },
+   "capital": "Frankfort",
+   "region": "south",
+   "area": 104585,
+   "ll": [
+    37.7204,
+    -84.4831
+   ],
+   "bbox": [
+    -89.418,
+    36.497,
+    -81.965,
+    39.148
+   ],
+   "borders": [
+    "us-il",
+    "us-in",
+    "us-mo",
+    "us-oh",
+    "us-tn",
+    "us-va",
+    "us-wv"
+   ]
+  },
+  "us-la": {
+   "code": "LA",
+   "ref": "US-LA",
+   "name": {
+    "pt": "Luisiana",
+    "en": "Louisiana",
+    "es": "Luisiana"
+   },
+   "capital": "Baton Rouge",
+   "region": "south",
+   "area": 117865,
+   "ll": [
+    31.9193,
+    -92.5716
+   ],
+   "bbox": [
+    -94.043,
+    28.929,
+    -89.054,
+    33.02
+   ],
+   "borders": [
+    "us-ar",
+    "us-ms",
+    "us-tx"
+   ]
+  },
+  "us-ma": {
+   "code": "MA",
+   "ref": "US-MA",
+   "name": {
+    "pt": "Massachusetts",
+    "en": "Massachusetts",
+    "es": "Massachusetts"
+   },
+   "capital": "Boston",
+   "region": "northeast",
+   "area": 20980,
+   "ll": [
+    42.3785,
+    -72.6192
+   ],
+   "bbox": [
+    -73.508,
+    41.239,
+    -69.929,
+    42.887
+   ],
+   "borders": [
+    "us-ct",
+    "us-nh",
+    "us-ny",
+    "us-ri",
+    "us-vt"
+   ]
+  },
+  "us-md": {
+   "code": "MD",
+   "ref": "US-MD",
+   "name": {
+    "pt": "Maryland",
+    "en": "Maryland",
+    "es": "Maryland"
+   },
+   "capital": "Annapolis",
+   "region": "south",
+   "area": 25854,
+   "ll": [
+    39.3606,
+    -77.0081
+   ],
+   "bbox": [
+    -79.487,
+    37.924,
+    -75.049,
+    39.723
+   ],
+   "borders": [
+    "us-de",
+    "us-pa",
+    "us-va",
+    "us-wv"
+   ]
+  },
+  "us-me": {
+   "code": "ME",
+   "ref": "US-ME",
+   "name": {
+    "pt": "Maine",
+    "en": "Maine",
+    "es": "Maine"
+   },
+   "capital": "Augusta",
+   "region": "northeast",
+   "area": 84015,
+   "ll": [
+    45.6948,
+    -69.0432
+   ],
+   "bbox": [
+    -71.084,
+    43.052,
+    -66.95,
+    47.46
+   ],
+   "borders": [
+    "us-nh"
+   ]
+  },
+  "us-mi": {
+   "code": "MI",
+   "ref": "US-MI",
+   "name": {
+    "pt": "Michigan",
+    "en": "Michigan",
+    "es": "Míchigan"
+   },
+   "capital": "Lansing",
+   "region": "midwest",
+   "area": 150737,
+   "ll": [
+    43.0103,
+    -84.9726
+   ],
+   "bbox": [
+    -90.419,
+    41.696,
+    -82.413,
+    48.191
+   ],
+   "borders": [
+    "us-il",
+    "us-in",
+    "us-mn",
+    "us-oh",
+    "us-wi"
+   ]
+  },
+  "us-mn": {
+   "code": "MN",
+   "ref": "US-MN",
+   "name": {
+    "pt": "Minnesota",
+    "en": "Minnesota",
+    "es": "Minnesota"
+   },
+   "capital": "Saint Paul",
+   "region": "midwest",
+   "area": 215360,
+   "ll": [
+    45.9321,
+    -94.7086
+   ],
+   "bbox": [
+    -97.239,
+    43.499,
+    -89.492,
+    49.0
+   ],
+   "borders": [
+    "us-ia",
+    "us-mi",
+    "us-nd",
+    "us-sd",
+    "us-wi"
+   ]
+  },
+  "us-mo": {
+   "code": "MO",
+   "ref": "US-MO",
+   "name": {
+    "pt": "Missouri",
+    "en": "Missouri",
+    "es": "Misuri"
+   },
+   "capital": "Jefferson City",
+   "region": "midwest",
+   "area": 180426,
+   "ll": [
+    38.3959,
+    -92.7075
+   ],
+   "bbox": [
+    -95.774,
+    35.996,
+    -89.099,
+    40.614
+   ],
+   "borders": [
+    "us-ar",
+    "us-ia",
+    "us-il",
+    "us-ks",
+    "us-ky",
+    "us-ne",
+    "us-ok",
+    "us-tn"
+   ]
+  },
+  "us-ms": {
+   "code": "MS",
+   "ref": "US-MS",
+   "name": {
+    "pt": "Mississippi",
+    "en": "Mississippi",
+    "es": "Misisipi"
+   },
+   "capital": "Jackson",
+   "region": "south",
+   "area": 123513,
+   "ll": [
+    33.3666,
+    -89.6782
+   ],
+   "bbox": [
+    -91.655,
+    30.174,
+    -88.098,
+    34.996
+   ],
+   "borders": [
+    "us-al",
+    "us-ar",
+    "us-la",
+    "us-tn"
+   ]
+  },
+  "us-mt": {
+   "code": "MT",
+   "ref": "US-MT",
+   "name": {
+    "pt": "Montana",
+    "en": "Montana",
+    "es": "Montana"
+   },
+   "capital": "Helena",
+   "region": "west",
+   "area": 378982,
+   "ll": [
+    46.867,
+    -112.1086
+   ],
+   "bbox": [
+    -116.049,
+    44.358,
+    -104.04,
+    49.001
+   ],
+   "borders": [
+    "us-id",
+    "us-nd",
+    "us-sd",
+    "us-wy"
+   ]
+  },
+  "us-nc": {
+   "code": "NC",
+   "ref": "US-NC",
+   "name": {
+    "pt": "Carolina do Norte",
+    "en": "North Carolina",
+    "es": "Carolina del Norte"
+   },
+   "capital": "Raleigh",
+   "region": "south",
+   "area": 129085,
+   "ll": [
+    35.3356,
+    -78.4709
+   ],
+   "bbox": [
+    -84.322,
+    33.843,
+    -75.535,
+    36.588
+   ],
+   "borders": [
+    "us-ga",
+    "us-sc",
+    "us-tn",
+    "us-va"
+   ]
+  },
+  "us-nd": {
+   "code": "ND",
+   "ref": "US-ND",
+   "name": {
+    "pt": "Dakota do Norte",
+    "en": "North Dakota",
+    "es": "Dakota del Norte"
+   },
+   "capital": "Bismarck",
+   "region": "midwest",
+   "area": 181048,
+   "ll": [
+    47.4825,
+    -98.5304
+   ],
+   "bbox": [
+    -104.049,
+    45.935,
+    -96.554,
+    49.001
+   ],
+   "borders": [
+    "us-mn",
+    "us-mt",
+    "us-sd"
+   ]
+  },
+  "us-ne": {
+   "code": "NE",
+   "ref": "US-NE",
+   "name": {
+    "pt": "Nebraska",
+    "en": "Nebraska",
+    "es": "Nebraska"
+   },
+   "capital": "Lincoln",
+   "region": "midwest",
+   "area": 200054,
+   "ll": [
+    41.5006,
+    -99.6806
+   ],
+   "bbox": [
+    -104.053,
+    40.0,
+    -95.308,
+    43.001
+   ],
+   "borders": [
+    "us-co",
+    "us-ia",
+    "us-ks",
+    "us-mo",
+    "us-sd",
+    "us-wy"
+   ]
+  },
+  "us-nh": {
+   "code": "NH",
+   "ref": "US-NH",
+   "name": {
+    "pt": "New Hampshire",
+    "en": "New Hampshire",
+    "es": "Nuevo Hampshire"
+   },
+   "capital": "Concord",
+   "region": "northeast",
+   "area": 23998,
+   "ll": [
+    43.3799,
+    -71.6609
+   ],
+   "bbox": [
+    -72.557,
+    42.697,
+    -70.702,
+    45.306
+   ],
+   "borders": [
+    "us-ma",
+    "us-me",
+    "us-vt"
+   ]
+  },
+  "us-nj": {
+   "code": "NJ",
+   "ref": "US-NJ",
+   "name": {
+    "pt": "Nova Jérsei",
+    "en": "New Jersey",
+    "es": "Nueva Jersey"
+   },
+   "capital": "Trenton",
+   "region": "northeast",
+   "area": 19501,
+   "ll": [
+    40.8268,
+    -74.6094
+   ],
+   "bbox": [
+    -75.56,
+    38.953,
+    -73.894,
+    41.357
+   ],
+   "borders": [
+    "us-de",
+    "us-ny",
+    "us-pa"
+   ]
+  },
+  "us-nm": {
+   "code": "NM",
+   "ref": "US-NM",
+   "name": {
+    "pt": "Novo México",
+    "en": "New Mexico",
+    "es": "Nuevo México"
+   },
+   "capital": "Santa Fe",
+   "region": "west",
+   "area": 314990,
+   "ll": [
+    34.497,
+    -105.601
+   ],
+   "bbox": [
+    -109.05,
+    31.332,
+    -103.002,
+    37.0
+   ],
+   "borders": [
+    "us-az",
+    "us-co",
+    "us-ok",
+    "us-tx"
+   ]
+  },
+  "us-nv": {
+   "code": "NV",
+   "ref": "US-NV",
+   "name": {
+    "pt": "Nevada",
+    "en": "Nevada",
+    "es": "Nevada"
+   },
+   "capital": "Carson City",
+   "region": "west",
+   "area": 285712,
+   "ll": [
+    39.5228,
+    -116.4909
+   ],
+   "bbox": [
+    -120.006,
+    35.002,
+    -114.04,
+    42.0
+   ],
+   "borders": [
+    "us-az",
+    "us-ca",
+    "us-id",
+    "us-or",
+    "us-ut"
+   ]
+  },
+  "us-ny": {
+   "code": "NY",
+   "ref": "US-NY",
+   "name": {
+    "pt": "Nova York",
+    "en": "New York",
+    "es": "Nueva York"
+   },
+   "alias": [
+    "Nova Iorque"
+   ],
+   "capital": "Albany",
+   "region": "northeast",
+   "area": 125494,
+   "ll": [
+    43.2913,
+    -74.795
+   ],
+   "bbox": [
+    -79.762,
+    40.542,
+    -71.856,
+    45.016
+   ],
+   "borders": [
+    "us-ct",
+    "us-ma",
+    "us-nj",
+    "us-pa",
+    "us-vt"
+   ]
+  },
+  "us-oh": {
+   "code": "OH",
+   "ref": "US-OH",
+   "name": {
+    "pt": "Ohio",
+    "en": "Ohio",
+    "es": "Ohio"
+   },
+   "capital": "Columbus",
+   "region": "midwest",
+   "area": 106735,
+   "ll": [
+    40.098,
+    -83.4171
+   ],
+   "bbox": [
+    -84.82,
+    38.403,
+    -80.519,
+    41.977
+   ],
+   "borders": [
+    "us-in",
+    "us-ky",
+    "us-mi",
+    "us-pa",
+    "us-wv"
+   ]
+  },
+  "us-ok": {
+   "code": "OK",
+   "ref": "US-OK",
+   "name": {
+    "pt": "Oklahoma",
+    "en": "Oklahoma",
+    "es": "Oklahoma"
+   },
+   "capital": "Oklahoma City",
+   "region": "south",
+   "area": 181016,
+   "ll": [
+    35.4269,
+    -96.2225
+   ],
+   "bbox": [
+    -103.002,
+    33.619,
+    -94.431,
+    37.002
+   ],
+   "borders": [
+    "us-ar",
+    "us-co",
+    "us-ks",
+    "us-mo",
+    "us-nm",
+    "us-tx"
+   ]
+  },
+  "us-or": {
+   "code": "OR",
+   "ref": "US-OR",
+   "name": {
+    "pt": "Oregon",
+    "en": "Oregon",
+    "es": "Oregón"
+   },
+   "capital": "Salem",
+   "region": "west",
+   "area": 250723,
+   "ll": [
+    43.959,
+    -119.1539
+   ],
+   "bbox": [
+    -124.566,
+    41.993,
+    -116.463,
+    46.237
+   ],
+   "borders": [
+    "us-ca",
+    "us-id",
+    "us-nv",
+    "us-wa"
+   ]
+  },
+  "us-pa": {
+   "code": "PA",
+   "ref": "US-PA",
+   "name": {
+    "pt": "Pensilvânia",
+    "en": "Pennsylvania",
+    "es": "Pensilvania"
+   },
+   "capital": "Harrisburg",
+   "region": "northeast",
+   "area": 117169,
+   "ll": [
+    40.8587,
+    -79.3809
+   ],
+   "bbox": [
+    -80.52,
+    39.72,
+    -74.69,
+    42.269
+   ],
+   "borders": [
+    "us-de",
+    "us-md",
+    "us-nj",
+    "us-ny",
+    "us-oh",
+    "us-wv"
+   ]
+  },
+  "us-ri": {
+   "code": "RI",
+   "ref": "US-RI",
+   "name": {
+    "pt": "Rhode Island",
+    "en": "Rhode Island",
+    "es": "Rhode Island"
+   },
+   "capital": "Providence",
+   "region": "northeast",
+   "area": 2781,
+   "ll": [
+    41.8219,
+    -71.6027
+   ],
+   "bbox": [
+    -71.887,
+    41.147,
+    -71.12,
+    42.019
+   ],
+   "borders": [
+    "us-ct",
+    "us-ma"
+   ]
+  },
+  "us-sc": {
+   "code": "SC",
+   "ref": "US-SC",
+   "name": {
+    "pt": "Carolina do Sul",
+    "en": "South Carolina",
+    "es": "Carolina del Sur"
+   },
+   "capital": "Columbia",
+   "region": "south",
+   "area": 80610,
+   "ll": [
+    33.6907,
+    -80.6185
+   ],
+   "bbox": [
+    -83.354,
+    32.034,
+    -78.542,
+    35.215
+   ],
+   "borders": [
+    "us-ga",
+    "us-nc"
+   ]
+  },
+  "us-sd": {
+   "code": "SD",
+   "ref": "US-SD",
+   "name": {
+    "pt": "Dakota do Sul",
+    "en": "South Dakota",
+    "es": "Dakota del Sur"
+   },
+   "capital": "Pierre",
+   "region": "midwest",
+   "area": 198227,
+   "ll": [
+    44.411,
+    -97.9686
+   ],
+   "bbox": [
+    -104.058,
+    42.48,
+    -96.436,
+    45.945
+   ],
+   "borders": [
+    "us-ia",
+    "us-mn",
+    "us-mt",
+    "us-nd",
+    "us-ne",
+    "us-wy"
+   ]
+  },
+  "us-tn": {
+   "code": "TN",
+   "ref": "US-TN",
+   "name": {
+    "pt": "Tennessee",
+    "en": "Tennessee",
+    "es": "Tennessee"
+   },
+   "capital": "Nashville",
+   "region": "south",
+   "area": 109139,
+   "ll": [
+    35.8164,
+    -86.0295
+   ],
+   "bbox": [
+    -90.31,
+    34.983,
+    -81.647,
+    36.678
+   ],
+   "borders": [
+    "us-al",
+    "us-ar",
+    "us-ga",
+    "us-ky",
+    "us-mo",
+    "us-ms",
+    "us-nc",
+    "us-va"
+   ]
+  },
+  "us-tx": {
+   "code": "TX",
+   "ref": "US-TX",
+   "name": {
+    "pt": "Texas",
+    "en": "Texas",
+    "es": "Texas"
+   },
+   "capital": "Austin",
+   "region": "south",
+   "area": 688811,
+   "ll": [
+    31.0152,
+    -98.4821
+   ],
+   "bbox": [
+    -106.646,
+    25.837,
+    -93.508,
+    36.5
+   ],
+   "borders": [
+    "us-ar",
+    "us-la",
+    "us-nm",
+    "us-ok"
+   ]
+  },
+  "us-ut": {
+   "code": "UT",
+   "ref": "US-UT",
+   "name": {
+    "pt": "Utah",
+    "en": "Utah",
+    "es": "Utah"
+   },
+   "capital": "Salt Lake City",
+   "region": "west",
+   "area": 216652,
+   "ll": [
+    38.845,
+    -112.1625
+   ],
+   "bbox": [
+    -114.053,
+    36.998,
+    -109.042,
+    42.002
+   ],
+   "borders": [
+    "us-az",
+    "us-co",
+    "us-id",
+    "us-nv",
+    "us-wy"
+   ]
+  },
+  "us-va": {
+   "code": "VA",
+   "ref": "US-VA",
+   "name": {
+    "pt": "Virgínia",
+    "en": "Virginia",
+    "es": "Virginia"
+   },
+   "capital": "Richmond",
+   "region": "south",
+   "area": 104855,
+   "ll": [
+    37.7457,
+    -78.2919
+   ],
+   "bbox": [
+    -83.675,
+    36.541,
+    -75.377,
+    39.466
+   ],
+   "borders": [
+    "us-ky",
+    "us-md",
+    "us-nc",
+    "us-tn",
+    "us-wv"
+   ]
+  },
+  "us-vt": {
+   "code": "VT",
+   "ref": "US-VT",
+   "name": {
+    "pt": "Vermont",
+    "en": "Vermont",
+    "es": "Vermont"
+   },
+   "capital": "Montpelier",
+   "region": "northeast",
+   "area": 24160,
+   "ll": [
+    44.2336,
+    -72.6565
+   ],
+   "bbox": [
+    -73.431,
+    42.727,
+    -71.465,
+    45.017
+   ],
+   "borders": [
+    "us-ma",
+    "us-nh",
+    "us-ny"
+   ]
+  },
+  "us-wa": {
+   "code": "WA",
+   "ref": "US-WA",
+   "name": {
+    "pt": "Washington",
+    "en": "Washington",
+    "es": "Washington"
+   },
+   "capital": "Olympia",
+   "region": "west",
+   "area": 174469,
+   "ll": [
+    47.3646,
+    -120.4888
+   ],
+   "bbox": [
+    -124.733,
+    45.544,
+    -116.916,
+    49.002
+   ],
+   "borders": [
+    "us-id",
+    "us-or"
+   ]
+  },
+  "us-wi": {
+   "code": "WI",
+   "ref": "US-WI",
+   "name": {
+    "pt": "Wisconsin",
+    "en": "Wisconsin",
+    "es": "Wisconsin"
+   },
+   "capital": "Madison",
+   "region": "midwest",
+   "area": 144493,
+   "ll": [
+    44.6951,
+    -89.957
+   ],
+   "bbox": [
+    -92.889,
+    42.492,
+    -86.97,
+    46.963
+   ],
+   "borders": [
+    "us-ia",
+    "us-il",
+    "us-mi",
+    "us-mn"
+   ]
+  },
+  "us-wv": {
+   "code": "WV",
+   "ref": "US-WV",
+   "name": {
+    "pt": "Virgínia Ocidental",
+    "en": "West Virginia",
+    "es": "Virginia Occidental"
+   },
+   "capital": "Charleston",
+   "region": "south",
+   "area": 62709,
+   "ll": [
+    38.4679,
+    -80.9227
+   ],
+   "bbox": [
+    -82.645,
+    37.201,
+    -77.719,
+    40.639
+   ],
+   "borders": [
+    "us-ky",
+    "us-md",
+    "us-oh",
+    "us-pa",
+    "us-va"
+   ]
+  },
+  "us-wy": {
+   "code": "WY",
+   "ref": "US-WY",
+   "name": {
+    "pt": "Wyoming",
+    "en": "Wyoming",
+    "es": "Wyoming"
+   },
+   "capital": "Cheyenne",
+   "region": "west",
+   "area": 252884,
+   "ll": [
+    42.9994,
+    -107.5539
+   ],
+   "bbox": [
+    -111.055,
+    40.995,
+    -104.052,
+    45.006
+   ],
+   "borders": [
+    "us-co",
+    "us-id",
+    "us-mt",
+    "us-ne",
+    "us-sd",
+    "us-ut"
+   ]
+  }
+ }
+}

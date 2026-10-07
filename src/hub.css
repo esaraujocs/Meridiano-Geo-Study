@@ -123,8 +123,8 @@ html[data-reduced-motion=true] .hx .family.hx-mode:has(.hx-hit:hover){transform:
 /* Gentílicos e Moedas: cor própria derivada da paleta de cada tema (então muda com ele); os temas só pintam as quatro famílias originais */
 [data-fam=gentilicos]{--h:color-mix(in srgb,var(--h-mapa,#2f8f83) 48%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
 [data-fam=moedas]{--h:color-mix(in srgb,var(--h-band,#c0553f) 52%,var(--h-cap,#c0902f));--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
-/* Brasil: o verde da bandeira puxado pela cor do Mapa do tema */
-[data-fam=brasil]{--h:color-mix(in srgb,var(--h-mapa,#2f8f83) 35%,#178a3e);--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
+/* Estados e províncias: um verde puxado pela cor do Mapa do tema */
+[data-fam=divisoes]{--h:color-mix(in srgb,var(--h-mapa,#2f8f83) 35%,#178a3e);--hb:color-mix(in srgb,var(--h) 80%,#000);--hg:var(--h);--h2:color-mix(in srgb,var(--h) 78%,#fff);--on:#fff4df}
 
 /* ───────── Duelo ─────────
    Tom claro (05/10/2026): o mesmo papel dos cartões de modo, com o vinho só nos detalhes. Os últimos resultados seguem as cores de sempre

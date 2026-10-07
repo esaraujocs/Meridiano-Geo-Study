@@ -37,7 +37,7 @@ export function ModePanels({ mode, label }: { mode: StatMode; label: string }) {
     void querySessions().then((rows) => { if (alive) setSessions(rows); }).catch(() => { if (alive) setSessions([]); });
     return () => { alive = false; };
   }, []);
-  const stats = useMemo(() => modeStats(sessions ?? [], mode), [sessions, mode.family, mode.variant, mode.flag]);
+  const stats = useMemo(() => modeStats(sessions ?? [], mode), [sessions, mode.family, mode.variant, mode.flag, mode.country]);
   const accuracy = stats.accuracy;
   const average = stats.trend.length ? Math.round(stats.trend.reduce((sum, point) => sum + point.pct, 0) / stats.trend.length) : null;
   return <>

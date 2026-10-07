@@ -23,8 +23,8 @@ import { TypedAnswerInput } from "./typed-answer-input";
 import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
-import { baseVariant } from "../domain/brasil";
-import { loadBrasilFlags } from "../domain/brasil-data";
+import { baseVariant, divisionCountry, divisionCountryOf, unitWord } from "../domain/divisions";
+import { loadDivisionFlags } from "../domain/divisions-data";
 
 type Props = { family: Family; variant: AnyQuizVariant; region: RegionSelection; data: Legacy; options?: SessionOptions; onBack: () => void; supplies?: SupplyCounts };
 type Choice = { id: string; label: string; flag?: string };
@@ -32,8 +32,9 @@ type WritingTarget = { id: string; pt?: string; en?: string; al?: string | strin
 
 export function SpecialQuiz({ family, variant, region, data, options, onBack, onEnd, supplies = emptySupplyCounts() }: Props & { onEnd?: (result: SessionResult | null) => void }) {
   const settings = sessionSettings(options, variant);
-  // Família Brasil: a escrita do nome do estado (pela bandeira) e da capital, com as regras da escrita do mapa-múndi (`rule`).
-  const brasil = family === "brasil";
+  // Estados e províncias: a escrita do nome da unidade (pela bandeira) e da capital, com as regras da escrita do mapa-múndi (`rule`).
+  const division = family === "divisoes" ? divisionCountryOf(region) : null;
+  const unit = unitWord(divisionCountry(division));
   const rule = baseVariant(variant);
   const { pace, roundLimit, timerSeconds } = settings;
   // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP, ver domain/supplies.ts).
@@ -83,7 +84,7 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
   useEffect(() => {
     Promise.all([
       loadSpecialData(),
-      brasil ? loadBrasilFlags() : historicalMode || writing ? loadFlags() : Promise.resolve({}),
+      division ? loadDivisionFlags(division) : historicalMode || writing ? loadFlags() : Promise.resolve({}),
     ]).then(([special, loadedFlags]) => {
       setHistorical(special.historical); setLanguages(special.languages); setFlags(loadedFlags);
       setHistoricalFlags(special.historicalFlags);
@@ -95,10 +96,10 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
     if (!historical.length && !languages.length) return;
     strictUsers.current += 1;
     const handle = startLearningSession({
-      // os estados do Brasil não são cartas da coleção
-      family: brasil ? "brasil" : writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
-      variant, region, persistProgress: writing && !brasil,
-      mode: brasil ? variant : writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
+      // as unidades de Estados e províncias não são cartas da coleção
+      family: division ? "divisoes" : writing ? "escrita" : historicalMode ? "historicas" : "idiomas",
+      variant, region, persistProgress: writing && !division,
+      mode: division ? variant : writing ? "escr" : historicalMode ? (variant === "historica-nome" ? "bnhist" : "nbhist") : "idioma",
       subject: writing ? (rule === "escrita-capital" ? "capital" : "pais") : "",
       pace, roundLimit, timerSeconds,
       coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor,
@@ -302,8 +303,8 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
       : historicalMode && variant === "historica-nome"
         ? <div className="gs-flag"><img src={targetFlag ? flagSource(targetFlag) : undefined} alt={t.common.historicalFlagStimulus} /></div>
         : <div className={"script" in target ? `gs-big script${(stimulusText?.length ?? 0) > 110 ? " xlong" : (stimulusText?.length ?? 0) > 60 ? " long" : ""}` : bigClass(stimulusText)}>{stimulusText}</div>;
-  const kicker = brasil
-    ? (rule === "escrita-capital" ? t.brasil.whichCapital : t.brasil.stateName)
+  const kicker = division
+    ? (rule === "escrita-capital" ? t.divisions.whichCapital(unit) : t.divisions.unitName(unit))
     : writing
     ? (rule === "escrita-capital" ? t.quiz.whichCapital : t.quiz.whichCountryName)(!isCountry(target.id, data.meta[target.id]))
     : historicalMode

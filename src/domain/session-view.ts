@@ -1,10 +1,11 @@
 // Rótulos e datas das partidas, para as telas de Progresso e Histórico. Lógica pura.
 import type { PillarSession } from "./pillars.js";
 import { intlLocale, t } from "./i18n/index.js";
+import { asDivisionSession, divisionRegionLabel, isDivisionFamily, isDivisionRegion } from "./divisions.js";
 
-export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "brasil";
+export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "divisoes";
 export const SESSION_GROUPS: ReadonlyArray<{ key: SessionGroup; label: string }> =
-  (["bandeiras", "mapa", "capitais", "historicas", "idiomas", "gentilicos", "moedas", "brasil"] as const).map((key) => ({ key, label: t.sessions.groups[key] }));
+  (["bandeiras", "mapa", "capitais", "historicas", "idiomas", "gentilicos", "moedas", "divisoes"] as const).map((key) => ({ key, label: t.sessions.groups[key] }));
 
 type LabelInput = PillarSession & { family?: string; variant?: string; mode?: string; subject?: string };
 
@@ -19,7 +20,8 @@ export function sessionLabel(session: LabelInput): { group: SessionGroup; family
   let group: SessionGroup;
   if (family === "historicas" || mode === "bnhist" || mode === "nbhist") group = "historicas";
   else if (family === "idiomas" || mode === "idioma") group = "idiomas";
-  else if (family === "gentilicos" || family === "moedas" || family === "brasil") group = family;
+  else if (family === "gentilicos" || family === "moedas") group = family;
+  else if (isDivisionFamily(family)) group = "divisoes";
   else if (family === "capitais" || capital) group = "capitais";
   else if (family === "mapa" || family === "silhueta" || family === "travel" || mode === "mapa" || mode === "silhueta" || mode === "travel") group = "mapa";
   else group = "bandeiras";
@@ -32,10 +34,11 @@ const LEGACY_REGIONS: Record<string, string> = {
   mundo: t.regions.mundo[0], caribe: t.regions.caribe[0], pacifico: t.regions.pacifico[0], oceania: t.regions.pacifico[0], europa: t.regions.europa[0], africa: t.regions.africa[0], asia: t.regions.asia[0],
   "america-do-sul": t.regions["america-do-sul"][0], "america-sul": t.regions["america-do-sul"][0],
   "america-do-norte-central": t.regions["america-do-norte-central"][0], "america-norte": t.regions["america-do-norte-central"][0],
-  brasil: t.regions.brasil[0], norte: t.regions.norte[0], nordeste: t.regions.nordeste[0], "centro-oeste": t.regions["centro-oeste"][0], sudeste: t.regions.sudeste[0], sul: t.regions.sul[0],
 };
-export const regionKeyLabel = (key: string) => LEGACY_REGIONS[key] ?? (key ? key.charAt(0).toUpperCase() + key.slice(1) : t.regions.mundo[0]);
-export function sessionRegionLabel(session: { region?: string; regions?: string[] }) {
+export const regionKeyLabel = (key: string) => (isDivisionRegion(key) ? divisionRegionLabel(key) : LEGACY_REGIONS[key] ?? (key ? key.charAt(0).toUpperCase() + key.slice(1) : t.regions.mundo[0]));
+export function sessionRegionLabel(raw: { family?: string; region?: string; regions?: string[] }) {
+  // as sessões da família "brasil" (antes de Estados e províncias) gravaram "brasil", "norte"…
+  const session = asDivisionSession(raw);
   const regions = (session.regions ?? []).filter(Boolean);
   if (regions.length > 1 && !regions.includes("mundo")) return t.regions.many(regions.length);
   return regionKeyLabel(regions[0] ?? session.region ?? "mundo");

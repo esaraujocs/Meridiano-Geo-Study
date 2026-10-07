@@ -4,16 +4,17 @@ import type { AnyQuizVariant, Family, Region, RegionSelection } from "./types";
 import { isPace, isRoundTier, roundLimitFor, type RoundTier } from "./pace.js";
 import type { Pace } from "./spoils.js";
 import { selectedMode, variantContextFor, type TopFamily } from "./match-config.js";
-import { BR_REGION_ITEMS, normalizeRegionSelection, REGION_ITEMS } from "./regions.js";
+import { normalizeRegionSelection, REGION_ITEMS } from "./regions.js";
+import { DIVISION_COUNTRIES, divisionRegionItems, divisionRegionLabel, isDivisionRegion } from "./divisions.js";
 import { MESSAGES, t, type Messages } from "./i18n/index.js";
 
 export const MAX_PRESETS_PER_FAMILY = 5;
 export const MAX_PRESET_NAME = 40;
 export const PRESET_ID_PREFIX = "preset:";
 export const PRESET_SOURCE = "preset-v1";
-export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas", "brasil"];
-/** Os recortes que uma configuração guardada pode ter: os do mapa-múndi e, na família Brasil, os do Brasil. */
-const regionsOf = (top: TopFamily) => new Set((top === "brasil" ? BR_REGION_ITEMS : REGION_ITEMS).map(([key]) => key));
+export const TOP_FAMILIES: readonly TopFamily[] = ["mapa", "bandeiras", "capitais", "idiomas", "gentilicos", "moedas", "divisoes"];
+/** Os recortes que uma configuração guardada pode ter: os do mapa-múndi e, em Estados e províncias, os dos países. */
+const regionsOf = (top: TopFamily) => new Set((top === "divisoes" ? DIVISION_COUNTRIES.flatMap((country) => divisionRegionItems(country.id)) : REGION_ITEMS).map(([key]) => key));
 
 /** O que a tela "Configure a partida" decide (região já normalizada). */
 export type PresetConfig = {
@@ -48,7 +49,9 @@ const familyOf = (config: PresetConfig): Family => variantContextFor(config.topF
 export function defaultPresetName(config: PresetConfig, messages: Messages = t) {
   const family = familyOf(config);
   const mode = selectedMode(config.topFamily, family, config.variant);
-  const regionLabels = config.region.map((key) => messages.regions[key]?.[0] ?? key);
+  // o recorte de um país (Estados e províncias) vem do índice, no idioma das mensagens pedidas
+  const locale = (Object.entries(MESSAGES).find(([, item]) => item === messages)?.[0] ?? "pt") as "pt" | "en" | "es";
+  const regionLabels = config.region.map((key) => (isDivisionRegion(key) ? divisionRegionLabel(key, locale) : messages.regions[key]?.[0] ?? key));
   const regionText = regionLabels.length > 2 ? messages.regions.many(regionLabels.length) : regionLabels.join(" + ");
   const limit = roundLimitFor(config.roundTier, family);
   const parts = [messages.modes[mode.key as keyof Messages["modes"]]?.[0] ?? mode.label, regionText, limit === null ? messages.presets.all : String(limit)];

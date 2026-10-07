@@ -3,7 +3,7 @@ import type { AnyQuizVariant, Family } from "./types";
 import type { Pace } from "./spoils.js";
 import type { LearningRound } from "./learning-store.js";
 import { t } from "./i18n/index.js";
-import { baseVariant } from "./brasil.js";
+import { baseVariant } from "./divisions.js";
 
 /** Tamanho da partida: 10 grátis; 20, 50, 100 e todas (baralho completo) são compradas. */
 export type RoundTier = "short" | "long" | "fifty" | "hundred" | "all";
@@ -76,7 +76,7 @@ export const isRoundTierUnlocked = (tier: RoundTier, unlocked: readonly string[]
 // - 30 s — digitar o nome completo, com acentuação.
 // - 120 s — Travel, várias etapas e vários países pra digitar numa rota só.
 export function timerSecondsFor(variant: AnyQuizVariant): number {
-  // os modos do Brasil têm o tempo do modo equivalente do mapa-múndi
+  // os modos de Estados e províncias têm o tempo do modo equivalente do mapa-múndi
   switch (baseVariant(variant)) {
     case "mapa": case "historica-nome": case "nome-historica": case "silhueta-opcoes": case "idioma-pais": case "pais-moeda": case "moeda-pais":
       return 20;

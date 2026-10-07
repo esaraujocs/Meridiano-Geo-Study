@@ -1,5 +1,6 @@
 {
- "source": "IBGE, malha estadual 2024 (BR_UF_2024); capitais conferidas em 06/10/2026",
+ "source": "Brasil: os 26 estados e o Distrito Federal. Divisas da malha estadual do IBGE (BR_UF_2024, fetch-ibge-br.py), que build-division.py confere contra esta lista (sigla, nome, região) e para se algo divergir; capitais conferidas na Wikipédia (Unidades federativas do Brasil, 06/10/2026). 'names' = nome em inglês e espanhol quando difere do português (títulos das Wikipédias en/es pelos links entre idiomas, 06/10/2026; a escrita aceita qualquer um); 'capAl' = outras grafias aceitas da capital; 'flagFile' = arquivo no Wikimedia Commons (domínio público).",
+ "country": "br",
  "regions": {
   "norte": {
    "pt": "Norte",
@@ -27,10 +28,10 @@
    "es": "Sur"
   }
  },
- "states": {
+ "units": {
   "br-ac": {
-   "sigla": "AC",
-   "code": "12",
+   "code": "AC",
+   "ref": "12",
    "name": {
     "pt": "Acre",
     "en": "Acre",
@@ -55,8 +56,8 @@
    ]
   },
   "br-al": {
-   "sigla": "AL",
-   "code": "27",
+   "code": "AL",
+   "ref": "27",
    "name": {
     "pt": "Alagoas",
     "en": "Alagoas",
@@ -82,8 +83,8 @@
    ]
   },
   "br-am": {
-   "sigla": "AM",
-   "code": "13",
+   "code": "AM",
+   "ref": "13",
    "name": {
     "pt": "Amazonas",
     "en": "Amazonas",
@@ -111,8 +112,8 @@
    ]
   },
   "br-ap": {
-   "sigla": "AP",
-   "code": "16",
+   "code": "AP",
+   "ref": "16",
    "name": {
     "pt": "Amapá",
     "en": "Amapá",
@@ -136,8 +137,8 @@
    ]
   },
   "br-ba": {
-   "sigla": "BA",
-   "code": "29",
+   "code": "BA",
+   "ref": "29",
    "name": {
     "pt": "Bahia",
     "en": "Bahia",
@@ -168,8 +169,8 @@
    ]
   },
   "br-ce": {
-   "sigla": "CE",
-   "code": "23",
+   "code": "CE",
+   "ref": "23",
    "name": {
     "pt": "Ceará",
     "en": "Ceará",
@@ -196,8 +197,8 @@
    ]
   },
   "br-df": {
-   "sigla": "DF",
-   "code": "53",
+   "code": "DF",
+   "ref": "53",
    "name": {
     "pt": "Distrito Federal",
     "en": "Federal District",
@@ -222,8 +223,8 @@
    ]
   },
   "br-es": {
-   "sigla": "ES",
-   "code": "32",
+   "code": "ES",
+   "ref": "32",
    "name": {
     "pt": "Espírito Santo",
     "en": "Espírito Santo",
@@ -249,8 +250,8 @@
    ]
   },
   "br-go": {
-   "sigla": "GO",
-   "code": "52",
+   "code": "GO",
+   "ref": "52",
    "name": {
     "pt": "Goiás",
     "en": "Goiás",
@@ -279,8 +280,8 @@
    ]
   },
   "br-ma": {
-   "sigla": "MA",
-   "code": "21",
+   "code": "MA",
+   "ref": "21",
    "name": {
     "pt": "Maranhão",
     "en": "Maranhão",
@@ -309,8 +310,8 @@
    ]
   },
   "br-mg": {
-   "sigla": "MG",
-   "code": "31",
+   "code": "MG",
+   "ref": "31",
    "name": {
     "pt": "Minas Gerais",
     "en": "Minas Gerais",
@@ -340,8 +341,8 @@
    ]
   },
   "br-ms": {
-   "sigla": "MS",
-   "code": "50",
+   "code": "MS",
+   "ref": "50",
    "name": {
     "pt": "Mato Grosso do Sul",
     "en": "Mato Grosso do Sul",
@@ -369,8 +370,8 @@
    ]
   },
   "br-mt": {
-   "sigla": "MT",
-   "code": "51",
+   "code": "MT",
+   "ref": "51",
    "name": {
     "pt": "Mato Grosso",
     "en": "Mato Grosso",
@@ -399,8 +400,8 @@
    ]
   },
   "br-pa": {
-   "sigla": "PA",
-   "code": "15",
+   "code": "PA",
+   "ref": "15",
    "name": {
     "pt": "Pará",
     "en": "Pará",
@@ -429,8 +430,8 @@
    ]
   },
   "br-pb": {
-   "sigla": "PB",
-   "code": "25",
+   "code": "PB",
+   "ref": "25",
    "name": {
     "pt": "Paraíba",
     "en": "Paraíba",
@@ -456,8 +457,8 @@
    ]
   },
   "br-pe": {
-   "sigla": "PE",
-   "code": "26",
+   "code": "PE",
+   "ref": "26",
    "name": {
     "pt": "Pernambuco",
     "en": "Pernambuco",
@@ -485,8 +486,8 @@
    ]
   },
   "br-pi": {
-   "sigla": "PI",
-   "code": "22",
+   "code": "PI",
+   "ref": "22",
    "name": {
     "pt": "Piauí",
     "en": "Piauí",
@@ -514,8 +515,8 @@
    ]
   },
   "br-pr": {
-   "sigla": "PR",
-   "code": "41",
+   "code": "PR",
+   "ref": "41",
    "name": {
     "pt": "Paraná",
     "en": "Paraná",
@@ -541,8 +542,8 @@
    ]
   },
   "br-rj": {
-   "sigla": "RJ",
-   "code": "33",
+   "code": "RJ",
+   "ref": "33",
    "name": {
     "pt": "Rio de Janeiro",
     "en": "Rio de Janeiro",
@@ -568,8 +569,8 @@
    ]
   },
   "br-rn": {
-   "sigla": "RN",
-   "code": "24",
+   "code": "RN",
+   "ref": "24",
    "name": {
     "pt": "Rio Grande do Norte",
     "en": "Rio Grande do Norte",
@@ -594,8 +595,8 @@
    ]
   },
   "br-ro": {
-   "sigla": "RO",
-   "code": "11",
+   "code": "RO",
+   "ref": "11",
    "name": {
     "pt": "Rondônia",
     "en": "Rondônia",
@@ -621,8 +622,8 @@
    ]
   },
   "br-rr": {
-   "sigla": "RR",
-   "code": "14",
+   "code": "RR",
+   "ref": "14",
    "name": {
     "pt": "Roraima",
     "en": "Roraima",
@@ -647,8 +648,8 @@
    ]
   },
   "br-rs": {
-   "sigla": "RS",
-   "code": "43",
+   "code": "RS",
+   "ref": "43",
    "name": {
     "pt": "Rio Grande do Sul",
     "en": "Rio Grande do Sul",
@@ -672,8 +673,8 @@
    ]
   },
   "br-sc": {
-   "sigla": "SC",
-   "code": "42",
+   "code": "SC",
+   "ref": "42",
    "name": {
     "pt": "Santa Catarina",
     "en": "Santa Catarina",
@@ -698,8 +699,8 @@
    ]
   },
   "br-se": {
-   "sigla": "SE",
-   "code": "28",
+   "code": "SE",
+   "ref": "28",
    "name": {
     "pt": "Sergipe",
     "en": "Sergipe",
@@ -724,8 +725,8 @@
    ]
   },
   "br-sp": {
-   "sigla": "SP",
-   "code": "35",
+   "code": "SP",
+   "ref": "35",
    "name": {
     "pt": "São Paulo",
     "en": "São Paulo",
@@ -752,8 +753,8 @@
    ]
   },
   "br-to": {
-   "sigla": "TO",
-   "code": "17",
+   "code": "TO",
+   "ref": "17",
    "name": {
     "pt": "Tocantins",
     "en": "Tocantins",

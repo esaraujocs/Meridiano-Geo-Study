@@ -1,21 +1,23 @@
-// Bandeiras dos 27 estados para a família Brasil: build/brasil/flags/<SIGLA>.svg (baixadas do Wikimedia Commons por fetch-brasil.py,
-// todas em domínio público) → public/data/brasil/flags.json, no mesmo formato do acervo do mapa-múndi (public/data/legacy/flags.json):
-// "svg:<svg…>" para as leves e uma imagem de 512 px para as pesadas (brasões com milhares de curvas: Rio de Janeiro, Alagoas, Rio Grande
-// do Sul…), como o clássico fazia com as bandeiras pesadas dos países.
-// Uso: node scripts/brasil/flags.mjs  (precisa do Chrome; CHROME_PATH troca o caminho)
+// Bandeiras das unidades de um país do modo "Estados e províncias": build/divisions/<país>/flags/<CÓDIGO>.svg (baixadas do Wikimedia Commons
+// por fetch-flags.py, todas em domínio público, licença conferida no download) → public/data/divisions/<país>/flags.json, no mesmo formato do
+// acervo do mapa-múndi (public/data/legacy/flags.json): "svg:<svg…>" para as leves e uma imagem de 512 px para as pesadas (brasões com milhares
+// de curvas: Rio de Janeiro, Alagoas, Rio Grande do Sul…), como o clássico fazia com as bandeiras pesadas dos países.
+// Uso: node scripts/divisions/flags.mjs <país>  (precisa do Chrome; CHROME_PATH troca o caminho)
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import puppeteer from "puppeteer-core";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const SOURCE = join(ROOT, "build", "brasil", "flags");
-const TARGET = join(ROOT, "public", "data", "brasil", "flags.json");
+const COUNTRY = (process.argv[2] ?? "").toLowerCase();
+if (!COUNTRY) throw new Error("uso: node scripts/divisions/flags.mjs <país>");
+const SOURCE = join(ROOT, "build", "divisions", COUNTRY, "flags");
+const TARGET = join(ROOT, "public", "data", "divisions", COUNTRY, "flags.json");
 const CHROME = process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
 /** Acima disto o SVG vira imagem: o maior SVG leve tem ~18 kB; os brasões passam de 70 kB. */
 const HEAVY_BYTES = 20_000;
 const RASTER_WIDTH = 512;
 
-const { states } = JSON.parse(await readFile(join(import.meta.dirname, "states.json"), "utf8"));
+const states = JSON.parse(await readFile(join(import.meta.dirname, "countries", `${COUNTRY}.json`), "utf8")).units.filter((unit) => unit.flagFile);
 const licenses = JSON.parse(await readFile(join(SOURCE, "licenses.json"), "utf8"));
 
 /** Tira o que não desenha (prólogo, comentários, metadados RDF do Inkscape) e garante largura e altura na raiz: sem elas a bandeira
@@ -67,8 +69,8 @@ const flags = {};
 const ratios = {};
 const sources = {};
 for (const state of states) {
-  const sigla = state.sigla;
-  const id = `br-${sigla.toLowerCase()}`;
+  const sigla = state.code;
+  const id = `${COUNTRY}-${sigla.toLowerCase()}`;
   const raw = await readFile(join(SOURCE, `${sigla}.svg`), "utf8");
   const { svg, ratio } = cleanSvg(raw);
   const heavy = Buffer.byteLength(svg) > HEAVY_BYTES;
@@ -82,7 +84,7 @@ for (const state of states) {
 await browser.close();
 
 const document = {
-  source: "Wikimedia Commons (bandeiras oficiais dos estados, domínio público); scripts/brasil/flags.mjs",
+  source: "Wikimedia Commons (bandeiras oficiais, domínio público); scripts/divisions/flags.mjs",
   flags, ratio: ratios, sources,
 };
 await writeFile(TARGET, JSON.stringify(document));

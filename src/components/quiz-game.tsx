@@ -26,8 +26,8 @@ import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
 import { loadPeoples } from "../domain/peoples-data";
 import { isPeoplesFamily, isPeoplesVariant, optionText, peoplesDeckPool, peoplesOptions, peoplesPool, promptText as peoplesPrompt, type Peoples } from "../domain/peoples";
-import { baseVariant } from "../domain/brasil";
-import { loadBrasilFlags } from "../domain/brasil-data";
+import { baseVariant, divisionCountry, divisionCountryOf, unitWord } from "../domain/divisions";
+import { loadDivisionFlags } from "../domain/divisions-data";
 
 type Question = { target: string; options: string[] };
 
@@ -42,7 +42,7 @@ export function QuizGame({
   onEnd,
 }: {
   data: Legacy;
-  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas" | "brasil">;
+  family: Extract<Family, "bandeiras" | "capitais" | "gentilicos" | "moedas" | "divisoes">;
   variant: Exclude<QuizVariant, "mapa">;
   region: RegionSelection;
   options?: SessionOptions;
@@ -52,10 +52,11 @@ export function QuizGame({
 }) {
   const settings = sessionSettings(options, variant);
   const { pace, roundLimit, timerSeconds } = settings;
-  // Família Brasil: as bandeiras e as capitais dos estados, com as regras do modo equivalente do mapa-múndi (`rule`).
-  const brasil = family === "brasil";
+  // Estados e províncias: as bandeiras e as capitais das unidades do país do recorte, com as regras do modo equivalente do mapa-múndi (`rule`).
+  const division = family === "divisoes" ? divisionCountryOf(region) : null;
+  const unit = unitWord(divisionCountry(division));
   const rule = baseVariant(variant);
-  const flagQuiz = family === "bandeiras" || (brasil && rule !== "pais-capital");
+  const flagQuiz = family === "bandeiras" || (division !== null && rule !== "pais-capital");
   // Suprimentos de expedição: só na Partida solo (nunca no Treino nem em duelo/PvP).
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
@@ -91,7 +92,7 @@ export function QuizGame({
 
   const openSession = () => {
     // Gentílicos e Moedas não mexem na coleção (as colunas das cartas são mapa, bandeiras, capitais e escrita), como Idiomas.
-    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(peoplesMode || brasil ? { persistProgress: false } : {}) });
+    const pending = startLearningSession({ family, variant, region, pace, roundLimit, timerSeconds, coinVariant: settings.coinVariant, duel: settings.duel, onRound: settings.onRound, coinFactor: settings.coinFactor, ...(peoplesMode || division ? { persistProgress: false } : {}) });
     pendingSessionRef.current = pending;
     pending
       .then((handle) => {
@@ -159,7 +160,7 @@ export function QuizGame({
 
   useEffect(() => {
     if (flagQuiz) {
-      (brasil ? loadBrasilFlags() : loadFlags()).then(setFlags).catch((loadError: Error) => setError(loadError.message));
+      (division ? loadDivisionFlags(division) : loadFlags()).then(setFlags).catch((loadError: Error) => setError(loadError.message));
     } else if (peoplesMode) {
       setFlags({});
       loadPeoples().then(setPeoples).catch((loadError: Error) => setError(loadError.message));
@@ -332,7 +333,7 @@ export function QuizGame({
         <main className="content">
           <button className="back" onClick={() => void leaveSession()}>{t.common.exitGame}</button>
           <div className="eyebrow" style={{ marginTop: 32 }}>{t.quiz.preparing}</div>
-          <h1 style={{ marginTop: 18 }}>{brasil ? t.brasil.loading : family === "bandeiras" ? t.quiz.loadingFlags : peoplesMode ? t.quiz.loadingPeoples : t.quiz.loadingCapitals}</h1>
+          <h1 style={{ marginTop: 18 }}>{division ? t.divisions.loading : family === "bandeiras" ? t.quiz.loadingFlags : peoplesMode ? t.quiz.loadingPeoples : t.quiz.loadingCapitals}</h1>
           <p className="lede">{t.quiz.buildingDeck}</p>
         </main>
       </div>
@@ -345,8 +346,8 @@ export function QuizGame({
   const PEOPLES_KICKER = { "gentilico-pais": t.quiz.whichCountryDemonym, "pais-gentilico": t.quiz.whichDemonym, "moeda-pais": t.quiz.whichCountryCurrency, "pais-moeda": t.quiz.whichCurrency } as const;
   // "país" ou "território" conforme o alvo (Ossétia do Sul é território; ver domain/sovereignty.ts)
   const territory = !isCountry(target, targetMeta);
-  const kicker = brasil
-    ? (isFlagPrompt ? t.brasil.flagState : flagOptions ? t.brasil.pickFlag : t.brasil.whichCapital)
+  const kicker = division
+    ? (isFlagPrompt ? t.divisions.flagUnit(unit) : flagOptions ? t.divisions.pickFlag(unit) : t.divisions.whichCapital(unit))
     : peoplesMode ? PEOPLES_KICKER[peoplesMode](territory) : isFlagPrompt ? t.quiz.whichCountryFlag(territory) : rule === "nome-bandeira" ? t.quiz.pickFlag : rule === "capital-pais" ? t.quiz.whichCountryCapital(territory) : t.quiz.whichCapital(territory);
   return (
     <div className="app-shell gs-app">

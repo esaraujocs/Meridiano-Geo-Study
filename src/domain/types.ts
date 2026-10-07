@@ -43,15 +43,13 @@ export type Region =
   | "asia"
   | "america-do-sul"
   | "america-do-norte-central"
-  // Família Brasil: o país inteiro e as 5 regiões do IBGE (ver domain/brasil.ts)
-  | "brasil"
-  | "norte"
-  | "nordeste"
-  | "centro-oeste"
-  | "sudeste"
-  | "sul";
+  // Estados e províncias (domain/divisions.ts): "dv:<país>" é o país inteiro, "dv:<país>:<região>" uma região dele
+  | DivisionRegion;
+export type DivisionRegion = `dv:${string}`;
+/** Os recortes do mapa-múndi (os 7 e o Mundo). */
+export type WorldRegion = Exclude<Region, DivisionRegion>;
 export type RegionSelection = Region | Region[];
-export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel" | "gentilicos" | "moedas" | "brasil";
+export type Family = "mapa" | "bandeiras" | "capitais" | "escrita" | "historicas" | "idiomas" | "silhueta" | "travel" | "gentilicos" | "moedas" | "divisoes";
 export type QuizVariant =
   | "mapa"
   | "bandeira-nome"
@@ -65,14 +63,14 @@ export type QuizVariant =
   | "pais-gentilico"
   | "moeda-pais"
   | "pais-moeda"
-  // Família Brasil (os 27 estados): cada variante joga com as regras de uma do mapa-múndi (BRASIL_BASE em domain/brasil.ts)
-  | "br-mapa"
-  | "br-capital-mapa"
-  | "br-silhueta-opcoes"
-  | "br-silhueta"
-  | "br-nome-bandeira"
-  | "br-bandeira-nome"
-  | "br-estado-capital";
+  // Estados e províncias: cada variante joga com as regras de uma do mapa-múndi (DIVISION_BASE em domain/divisions.ts)
+  | "dv-mapa"
+  | "dv-capital-mapa"
+  | "dv-silhueta-opcoes"
+  | "dv-silhueta"
+  | "dv-nome-bandeira"
+  | "dv-bandeira-nome"
+  | "dv-capital";
   // Non-map families retain explicit variant identifiers for session history.
 export type SpecialVariant =
   | "escrita-pais"
@@ -81,8 +79,8 @@ export type SpecialVariant =
   | "nome-historica"
   | "idioma-nome"
   | "idioma-pais"
-  | "br-escrita-estado"
-  | "br-escrita-capital";
+  | "dv-escrita-nome"
+  | "dv-escrita-capital";
 export type AnyQuizVariant = QuizVariant | SpecialVariant;
 export type Screen =
   | "hub"

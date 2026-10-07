@@ -64,9 +64,9 @@
     "test:i18n": "node scripts/test-i18n.mjs",
     "test:mecenato": "node scripts/test-mecenato.mjs",
     "test:peoples": "node scripts/test-peoples.mjs",
-    "test:brasil": "node scripts/test-brasil.mjs",
-    "fetch:brasil": "python scripts/brasil/fetch-brasil.py",
-    "build:brasil": "python scripts/brasil/build-all.py && node scripts/brasil/flags.mjs",
+    "test:divisions": "node scripts/test-divisions.mjs",
+    "fetch:divisions": "python scripts/divisions/fetch.py",
+    "build:divisions": "python scripts/divisions/build.py",
     "build:peoples": "node scripts/data/build-peoples.mjs",
     "build:i18n": "node scripts/i18n/build-i18n.mjs"
   },

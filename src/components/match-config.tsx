@@ -4,7 +4,8 @@ import { ScreenBar } from "./screen-bar";
 import { ModePanels } from "./mode-panels";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
-import { BR_REGION_ITEMS, normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
+import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
+import { DIVISION_COUNTRIES, divisionCountry, divisionCountryOf, divisionRegion, divisionRegionItems, divisionRegionLabel, unitWord, variantPlayable } from "../domain/divisions";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { unlockContent } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
@@ -16,7 +17,7 @@ import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selec
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
-const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins", brasil: "brazil" };
+const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag", capitais: "capital", idiomas: "language", gentilicos: "people", moedas: "coins", divisoes: "divisions" };
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
@@ -69,8 +70,11 @@ export function Recorte({
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
 }) {
   const familyLabel = t.families[topFamily];
-  // Família Brasil: os recortes são o Brasil inteiro e as 5 regiões
-  const regionItems = topFamily === "brasil" ? BR_REGION_ITEMS : REGION_ITEMS;
+  // Estados e províncias: o país escolhido (o do recorte) decide os recortes (o país inteiro e as regiões dele), os modos que existem (sem bandeiras no
+  // pacote, sem os de bandeira) e a palavra dos textos (estado, província…)
+  const divCountry = topFamily === "divisoes" ? divisionCountry(divisionCountryOf(region)) ?? DIVISION_COUNTRIES[0] ?? null : null;
+  const unit = divCountry ? unitWord(divCountry) : undefined;
+  const regionItems = divCountry ? divisionRegionItems(divCountry.id) : REGION_ITEMS;
   const allKey = regionItems[0][0];
   const selectedRegions = normalizeRegionSelection(region);
   const policyRegion = selectedRegions.length === 1 ? selectedRegions[0] : "mundo";
@@ -127,8 +131,19 @@ export function Recorte({
     setRegion(next.length ? normalizeRegionSelection(next) : allKey);
   };
 
-  const modes = modesFor(topFamily);
-  const active = selectedMode(topFamily, family, variant);
+  const withUnitText = (mode: ModeOption): ModeOption => {
+    const text = unit ? t.divisions.modes[mode.key]?.(unit) : undefined;
+    return text ? { ...mode, label: text[0], hint: text[1] } : mode;
+  };
+  const modes = modesFor(topFamily).filter((mode) => !divCountry || variantPlayable(divCountry, mode.variant)).map(withUnitText);
+  const active = withUnitText(selectedMode(topFamily, family, variant));
+  // o modo guardado não existe no país (as bandeiras dos EUA ainda não entraram): volta ao primeiro que existe
+  const activeMissing = Boolean(divCountry && !variantPlayable(divCountry, variant));
+  useEffect(() => { if (activeMissing && modes[0]) pickMode(modes[0]); }, [activeMissing]);
+  const pickCountry = (id: string) => {
+    setPendingTier(null);
+    setRegion(divisionRegion(id));
+  };
   const activeOwned = owned(family, variant);
   const activeCost = priceOf(family, variant);
   const activePolicy = policyFor(family, variant, policyRegion);
@@ -137,8 +152,8 @@ export function Recorte({
   const deckCount = roundCap === null ? selectedCount : Math.min(selectedCount, roundCap);
   const regionText = selectedRegions.length === 1 ? regionItems.find(([key]) => key === selectedRegions[0])?.[1] ?? "" : t.regions.many(selectedRegions.length);
   const summary = configSummary({ mode: active, direction: flagDirection, variant, pace, rounds: deckCount, regionText, count: selectedCount });
-  // o filtro "Só países" não vale para Históricas, Idiomas nem os estados do Brasil
-  const showFilter = family !== "historicas" && family !== "idiomas" && family !== "brasil";
+  // o filtro "Só países" não vale para Históricas, Idiomas nem Estados e províncias
+  const showFilter = family !== "historicas" && family !== "idiomas" && family !== "divisoes";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
 
   const start = async () => {
@@ -188,12 +203,18 @@ export function Recorte({
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
             <header className="cv-head mz-head">
               <div><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></div>
+              {divCountry && <div className="mz-country">
+                <span className="cv-k" id="mz-country-k">{t.divisions.country}</span>
+                <div className="cv-chips" role="group" aria-labelledby="mz-country-k">
+                  {DIVISION_COUNTRIES.map((country) => <button type="button" key={country.id} className="cv-chip" aria-pressed={country.id === divCountry.id} onClick={() => pickCountry(country.id)}><span className="cv-l"><span>{divisionRegionLabel(divisionRegion(country.id))}</span><em>{country.count}</em></span></button>)}
+                </div>
+              </div>}
               <div className="mz-stats" ref={statsRef}>
                 <button type="button" className="mz-stats-toggle" aria-expanded={statsOpen} aria-controls="mz-stats" onClick={() => setStatsOpen((open) => !open)}>
                   <Icon type="trend" size={16} /><span>{t.config.stats}</span><i aria-hidden="true"><Icon type="chevron" size={14} /></i>
                 </button>
                 <aside id="mz-stats" className="mz-side" aria-label={t.config.stats} hidden={!statsOpen}>
-                  <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
+                  <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag, ...(divCountry ? { country: divCountry.id } : {}) }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
                   <section className="mz-panel">
                     <h2>{t.config.reward}</h2>
                     <div className="mz-reward">
@@ -232,7 +253,7 @@ export function Recorte({
                   <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
                   <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
                 </div>
-                <p className="cv-hint">{paceHint(pace, variant)}</p>
+                <p className="cv-hint">{paceHint(pace, variant, unit)}</p>
               </>)}
               {trio(t.config.rounds, <>
                 <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>

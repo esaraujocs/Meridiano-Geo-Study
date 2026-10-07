@@ -7,7 +7,7 @@ import { SupplyArt } from "./supply-art";
 import type { AnyQuizVariant } from "../domain/types";
 import { Icon, type IconType } from "./icons";
 import { formatNumber as money, t } from "../domain/i18n";
-import { isBrasilId } from "../domain/brasil";
+import { divisionCountry, unitWord } from "../domain/divisions";
 
 /** Uma rodada já respondida, como o topo do jogo precisa dela (certa/errada) e como o espólio pendente é calculado. */
 export type RoundResult = { correct: boolean; tier?: Tier; weight?: number; shielded?: boolean };
@@ -125,13 +125,18 @@ export function SupplyTray({ variant, timed = true, counts, usedThisRound, armed
   );
 }
 
-/** Pista de vizinhos: a frase ("Faz fronteira com X" / "País mais próximo, por mar: X"; entre estados, "Faz divisa com X") e o id do vizinho (o mapa o
+/** Pista de vizinhos: a frase ("Faz fronteira com X" / "País mais próximo, por mar: X"; entre unidades de um país, "Faz divisa com X") e o id do vizinho (o mapa o
  *  pinta). Nulo sem pista possível. */
 export function neighborClue(meta: Record<string, Meta>, targetId: string): { id: string; text: string } | null {
   const hint = neighborHint(meta, targetId);
   if (!hint) return null;
   const name = meta[hint.id]?.pt ?? hint.id;
-  if (isBrasilId(targetId) && !hint.sea) return { id: hint.id, text: t.brasil.neighbor(name) };
+  // unidade de Estados e províncias (região "<país>:<região>"): "Faz divisa com X", ou o estado/a província mais perto por mar
+  const region = meta[targetId]?.reg ?? "";
+  if (region.includes(":")) {
+    const unit = unitWord(divisionCountry(region.split(":")[0]));
+    return { id: hint.id, text: hint.sea ? t.divisions.neighborSea(unit, name) : t.divisions.neighbor(name) };
+  }
   return { id: hint.id, text: hint.sea ? t.supplies.neighborSea(name) : t.supplies.neighborBorder(name) };
 }
 export function NeighborChip({ meta, targetId }: { meta: Record<string, Meta>; targetId: string }) {

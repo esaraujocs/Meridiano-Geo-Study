@@ -1,6 +1,7 @@
 import type { AnyQuizVariant, Family, Region } from "./types";
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
 import { POLICIES, canUnlock, policyFor, unlockAliases, type Policy, type UnlockKey } from "./economy-rules";
+import { LEGACY_VARIANT } from "./divisions.js";
 import { playerStatsFromSessions } from "./player-stats.js";
 import { XP_ADJUST_ID } from "./debug-rules.js";
 import { levelForXp, xpForLevel, xpFrom } from "./player-level.js";
@@ -122,7 +123,10 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const spent = ledger.filter((e) => e.kind === "debit").reduce((n, e) => n + e.amount, 0);
   const unlocked = [...new Set(unlocks.flatMap((u) => {
     const value = String(u.key);
-    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel|gentilicos|moedas|brasil):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-nome|idioma-pais|silhueta|silhueta-opcoes|travel|gentilico-pais|pais-gentilico|moeda-pais|pais-moeda|br-[a-z-]+)(?::.*)?$/);
+    // compra da família "brasil" (06/10/2026, antes de Estados e províncias): vale o modo equivalente daqui, para todos os países
+    const legacy = value.match(/^brasil:(br-[a-z-]+)$/);
+    if (legacy) return LEGACY_VARIANT[legacy[1]] ? [policyFor("divisoes", LEGACY_VARIANT[legacy[1]], "mundo")?.key ?? u.key] : [u.key];
+    const match = value.match(/^(mapa|bandeiras|capitais|escrita|historicas|idiomas|silhueta|travel|gentilicos|moedas|divisoes):(mapa|bandeira-nome|nome-bandeira|capital-pais|pais-capital|escrita-pais|escrita-capital|historica-nome|nome-historica|idioma-nome|idioma-pais|silhueta|silhueta-opcoes|travel|gentilico-pais|pais-gentilico|moeda-pais|pais-moeda|dv-[a-z-]+)(?::.*)?$/);
     if (!match) return [u.key];
     const family = match[1] as Family;
     const variant = match[2] as AnyQuizVariant;
