@@ -71,4 +71,12 @@ const travel = config.configSummary({ mode: config.modesFor("mapa")[3], variant:
 assert.equal(travel.sub, "Partida 2 min · 5 rodadas · Mundo (150)");
 assert.equal(travel.earnUnit, "moedas por país da rota");
 
-console.log("match config: modos, modo escolhido, ritmo e resumo verificados");
+// Idiomas, povos e moedas: um cartão só para os três temas; abre no último jogado, senão no primeiro com modo liberado, senão em Idiomas
+assert.deepEqual([...config.PEOPLES_GROUP], ["idiomas", "gentilicos", "moedas"]);
+assert.equal(config.isPeoplesTopic("moedas"), true); assert.equal(config.isPeoplesTopic("mapa"), false); assert.equal(config.isPeoplesTopic("divisoes"), false);
+assert.equal(config.peoplesEntry("moedas", () => false), "moedas", "o último jogado, mesmo bloqueado depois");
+assert.equal(config.peoplesEntry(null, (topic) => topic === "gentilicos"), "gentilicos", "sem histórico, o primeiro com modo liberado");
+assert.equal(config.peoplesEntry("mapa", (topic) => topic === "moedas"), "moedas", "um valor estranho guardado é ignorado");
+assert.equal(config.peoplesEntry(null, () => false), "idiomas", "nada liberado: Idiomas");
+for (const topic of config.PEOPLES_GROUP) assert.equal(config.modesFor(topic).length, 2, `${topic}: os 2 sentidos`);
+console.log("match config: modos, modo escolhido, ritmo, resumo e o grupo Idiomas, povos e moedas verificados");

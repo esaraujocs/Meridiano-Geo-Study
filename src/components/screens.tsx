@@ -10,7 +10,9 @@ import { EMPTY_ACHIEVEMENT_SUMMARY, hubProfile, ratioPercent, type AchievementSu
 import { MAP_BYTES, type OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
-import type { TopFamily } from "../domain/match-config";
+import { PEOPLES_GROUP, PEOPLES_LAST_KEY, peoplesEntry, type PeoplesTopic, type TopFamily } from "../domain/match-config";
+
+const lastPeoplesTopic = () => { try { return localStorage.getItem(PEOPLES_LAST_KEY); } catch { return null; } };
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
@@ -244,18 +246,19 @@ export function Hub({
       Boolean(economy?.unlocked.includes(policy.key as UnlockKey))
     );
   };
-  const familyItems: Array<{ family: Family; variant: AnyQuizVariant; label: string; description: string; icon: Parameters<typeof Icon>[0]["type"]; pillar?: "mapa" | "bandeiras" | "capitais" }> = [
+  // "Idiomas, povos e moedas" (07/10): um cartão só para Idiomas, Gentílicos e Moedas (no lugar e na cor de Idiomas); abre no último tema jogado
+  const familyItems: Array<{ family: Family; variant: AnyQuizVariant; label: string; description: string; icon: Parameters<typeof Icon>[0]["type"]; pillar?: "mapa" | "bandeiras" | "capitais"; group?: true }> = [
     { family: "mapa", variant: "mapa", label: t.families.mapa, description: t.hub.familyDescriptions.mapa, icon: "map", pillar: "mapa" },
     { family: "bandeiras", variant: "bandeira-nome", label: t.families.bandeiras, description: t.hub.familyDescriptions.bandeiras, icon: "flag", pillar: "bandeiras" },
     { family: "capitais", variant: "capital-pais", label: t.families.capitais, description: t.hub.familyDescriptions.capitais, icon: "capital", pillar: "capitais" },
-    { family: "idiomas", variant: "idioma-nome", label: t.families.idiomas, description: t.hub.familyDescriptions.idiomas, icon: "language" },
-    { family: "gentilicos", variant: "gentilico-pais", label: t.families.gentilicos, description: t.hub.familyDescriptions.gentilicos, icon: "people" },
-    { family: "moedas", variant: "pais-moeda", label: t.families.moedas, description: t.hub.familyDescriptions.moedas, icon: "coins" },
+    { family: "idiomas", variant: "idioma-nome", label: t.families.povos, description: t.hub.familyDescriptions.povos, icon: "language", group: true },
     { family: "divisoes", variant: "dv-mapa", label: t.families.divisoes, description: t.hub.familyDescriptions.divisoes, icon: "divisions" },
   ];
   // Famílias sem modo grátis: o cartão abre com qualquer um dos dois sentidos comprado.
   const BOTH_WAYS: Partial<Record<Family, [AnyQuizVariant, AnyQuizVariant]>> = { idiomas: ["idioma-nome", "idioma-pais"], gentilicos: ["gentilico-pais", "pais-gentilico"], moedas: ["pais-moeda", "moeda-pais"] };
+  const topicOpen = (topic: PeoplesTopic) => (BOTH_WAYS[topic] ?? []).some((way) => unlocked(topic, way));
   const isFamilyUnlocked = (item: (typeof familyItems)[number]) => {
+    if (item.group) return PEOPLES_GROUP.some(topicOpen);
     const ways = BOTH_WAYS[item.family];
     return ways ? ways.some((way) => unlocked(item.family, way)) : unlocked(item.family, item.variant);
   };
@@ -283,7 +286,7 @@ export function Hub({
       className={`family hx-mode ${economy && !open ? "locked" : ""}`}
     >
       {/* o cartão inteiro abre a Mesa (sem botão "Jogar": repetia em todos os cartões; a Mesa já vem com a última partida montada) */}
-      <button type="button" className="hx-hit" onClick={() => onSelect(item.family)} aria-label={`${t.hub.play}: ${item.label}`} />
+      <button type="button" className="hx-hit" onClick={() => onSelect(item.group ? peoplesEntry(lastPeoplesTopic(), topicOpen) : item.family)} aria-label={`${t.hub.play}: ${item.label}`} />
       <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
       <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
       <div className="family-footer">{economy && !open && <span className="hx-stat"><small>{t.hub.locked}</small></span>}</div>

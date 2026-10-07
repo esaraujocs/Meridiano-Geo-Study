@@ -6,7 +6,7 @@ import { AccountNudge } from "./components/account-nudge";
 import { StoreView, TrialBar, type StoreTab } from "./components/store-view";
 import { ThemeWash } from "./components/theme-decor";
 import { Recorte } from "./components/match-config";
-import { variantContextFor } from "./domain/match-config";
+import { PEOPLES_LAST_KEY, isPeoplesTopic, variantContextFor } from "./domain/match-config";
 import { LAST_CONFIG_PREFIX, TOP_FAMILIES, configOf, createPreset, diffPresets, parseLastConfig, removePreset, renamePreset, setFavorite, updatePreset, type Preset, type PresetConfig, type PresetDraft, type PresetResult } from "./domain/presets";
 import { listPresets, savePresets } from "./domain/presets-store";
 import {
@@ -1191,6 +1191,8 @@ export function App() {
             setRegion(selected === "divisoes" ? divisionRegion(DIVISION_COUNTRIES[0]?.id ?? "br") : "mundo");
              const selectedTopFamily: TopFamily = selected === "mapa" || selected === "silhueta" || selected === "travel" ? "mapa" : selected === "bandeiras" || selected === "escrita" || selected === "historicas" ? "bandeiras" : selected === "capitais" ? "capitais" : selected === "gentilicos" || selected === "moedas" || selected === "divisoes" ? selected : "idiomas";
              setTopFamily(selectedTopFamily);
+            // Idiomas, povos e moedas: o cartão do Hub abre no último tema jogado
+            if (isPeoplesTopic(selectedTopFamily)) { try { localStorage.setItem(PEOPLES_LAST_KEY, selectedTopFamily); } catch { /* sem armazenamento */ } }
             if (selected === "bandeiras" || selected === "historicas" || selected === "idiomas" || selected === "escrita") {
               await loadSpecial();
             }
@@ -1437,6 +1439,7 @@ export function App() {
            pillarPct={pillarPct}
             setVariant={setVariant}
             topFamily={topFamily}
+            onTopicChange={(topic) => void selectFamily(topic)}
             onFamilyChange={(nextFamily, nextVariant) => {
               setFamily(nextFamily);
               setVariant(nextVariant);

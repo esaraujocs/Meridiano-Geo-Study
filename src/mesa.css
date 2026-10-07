@@ -8,6 +8,7 @@
 .mz-card .cv-head .eyebrow{color:color-mix(in srgb,var(--h,var(--green)) 30%,var(--ink))}
 .mz-block{padding:18px 0 6px}
 .mz-block+.mz-block,.mz-trio{border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.mz-topics-block+.mz-block{border-top:0;padding-top:4px}
 .mz .cv-k{display:block;margin:0 0 10px;padding:0}
 
 /* como responder */
@@ -25,6 +26,17 @@
 .mz-way[aria-pressed=true] .mz-way-check{opacity:1;transform:none}
 .mz-way[aria-pressed=true] .mz-way-ic{background:var(--h,var(--green));color:#fff}
 .mz-way.is-locked{border-style:dashed}
+/* Idiomas, povos e moedas (07/10): o Tema (Idiomas, Gentílicos, Moedas) em blocos acima dos modos, como os mocks antigos da Mesa (hub-v10/n6) */
+.mz-topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mz-topic{display:flex;align-items:center;gap:12px;min-width:0;min-height:68px;padding:10px 14px;border:1.5px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--paper) 72%,transparent);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.mz-topic:hover{border-color:var(--h,var(--green))}
+.mz-topic b{flex:1;min-width:0;font:700 16px 'Plus Jakarta Sans',sans-serif}
+.mz-topic-ic{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--h,var(--green)) 18%,transparent);color:color-mix(in srgb,var(--h,var(--green)) 70%,var(--ink))}
+.mz-topic[aria-pressed=true]{border-color:var(--h,var(--green));background:color-mix(in srgb,var(--h,var(--green)) 12%,var(--paper));box-shadow:0 0 0 3px color-mix(in srgb,var(--h,var(--green)) 22%,transparent)}
+.mz-topic[aria-pressed=true] .mz-topic-ic{background:var(--h,var(--green));color:#fff}
+.mz-topic-stat{flex:none;font:600 13px 'DM Mono',monospace;color:var(--muted)}
+.mz-topic-stat.is-new{padding:2px 8px;border:1px solid var(--brass);border-radius:99px;font-weight:400;font-size:11px;color:color-mix(in srgb,var(--brass) 22%,var(--ink))}
+.mz-topic-stat.is-locked{display:grid;place-items:center;color:color-mix(in srgb,var(--brass) 45%,var(--ink))}
 
 /* ritmo, rodadas e recorte */
 .mz-trio{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.35fr) minmax(0,1.5fr);gap:20px 28px;margin-top:14px;padding-top:18px}
@@ -100,6 +112,10 @@
   .mz-card{padding:16px 16px 18px}
   .mz-ways{grid-template-columns:1fr;gap:8px}
   .mz-way{padding:11px 12px;gap:12px}
+  .mz-topics{gap:8px}
+  .mz-topic{flex-direction:column;justify-content:center;gap:6px;padding:10px 6px;text-align:center}
+  .mz-topic b{flex:none;font-size:14.5px}
+  .mz-topic-ic{width:38px;height:38px}
   .mz-way-ic{width:40px;height:40px}
   .mz-trio{grid-template-columns:1fr;gap:16px}
   .mz-side{position:fixed;inset:auto 12px 12px;width:auto;max-height:78dvh;grid-template-columns:1fr}

@@ -64,6 +64,7 @@ export const en: Messages = {
     idiomas: "Languages",
     gentilicos: "Demonyms",
     moedas: "Currencies",
+    povos: "Languages, peoples & currencies",
     divisoes: "States & provinces",
   },
   hub: {
@@ -96,6 +97,7 @@ export const en: Messages = {
       idiomas: "Recognize languages by their script and countries.",
       gentilicos: "Who comes from where? People and places.",
       moedas: "The money of every country.",
+      povos: "Each country's language, people and money.",
       divisoes: "Each country from the inside: states, capitals and outlines.",
     },
     soon: "Coming soon",
@@ -771,6 +773,7 @@ export const en: Messages = {
   },
   config: {
     newMatch: (family: string) => `${family} · new match`,
+    topic: "Topic",
     title: "Set up your match",
     table: "Game table",
     stats: "Stats",

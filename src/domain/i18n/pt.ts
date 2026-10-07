@@ -64,6 +64,7 @@ export const pt = {
     idiomas: "Idiomas",
     gentilicos: "Gentílicos",
     moedas: "Moedas",
+    povos: "Idiomas, povos e moedas",
     divisoes: "Estados e províncias",
   },
   hub: {
@@ -97,6 +98,7 @@ export const pt = {
       idiomas: "Reconhecer idiomas pela escrita e pelos países.",
       gentilicos: "Quem nasce onde? O povo e o país.",
       moedas: "O dinheiro de cada país.",
+      povos: "O idioma, o nome do povo e o dinheiro de cada país.",
       divisoes: "Cada país por dentro: estados, capitais e contornos.",
     },
     soon: "Em breve",
@@ -774,6 +776,7 @@ export const pt = {
   },
   config: {
     newMatch: (family: string) => `${family} · nova partida`,
+    topic: "Tema",
     title: "Monte sua partida",
     table: "Mesa de jogo",
     stats: "Estatísticas",

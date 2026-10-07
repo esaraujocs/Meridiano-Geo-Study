@@ -90,6 +90,19 @@ export function variantContextFor(topFamily: TopFamily, saved: string): { family
 
 export const modesFor = (top: TopFamily) => MODES[top];
 
+/** "Idiomas, povos e moedas" (07/10/2026): Idiomas, Gentílicos e Moedas num cartão só do Hub, com a escolha entre os três na Mesa ("Tema").
+ *  Por dentro seguem três famílias (compras, favoritas, última partida e estatísticas de cada uma não mudam). */
+export const PEOPLES_GROUP = ["idiomas", "gentilicos", "moedas"] as const;
+export type PeoplesTopic = (typeof PEOPLES_GROUP)[number];
+/** O último tema jogado (localStorage), que o cartão do Hub abre. */
+export const PEOPLES_LAST_KEY = "carta-last-topic:povos";
+export const isPeoplesTopic = (top: string): top is PeoplesTopic => (PEOPLES_GROUP as readonly string[]).includes(top);
+/** O tema que o cartão do Hub abre: o último jogado; sem ele, o primeiro com algum modo liberado; sem nenhum, Idiomas. */
+export function peoplesEntry(last: string | null, open: (topic: PeoplesTopic) => boolean): PeoplesTopic {
+  if (last && isPeoplesTopic(last)) return last;
+  return PEOPLES_GROUP.find(open) ?? "idiomas";
+}
+
 /** Modo que corresponde ao estado atual (família + variante do motor). */
 export function selectedMode(top: TopFamily, family: Family, variant: AnyQuizVariant): ModeOption {
   const modes = MODES[top];

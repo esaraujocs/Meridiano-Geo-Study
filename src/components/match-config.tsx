@@ -14,7 +14,8 @@ import { displayTier, isRoundTierUnlocked, roundChips, roundLimitFor, roundUnloc
 import type { Pace } from "../domain/spoils";
 import { flagDirectionFromVariant, flagSelection, type FlagCategory, type FlagDirection } from "../domain/flag-configuration";
 import { PresetBar, type PresetApi } from "./preset-bar";
-import { configSummary, directionLabel, formatSeconds, modesFor, paceHint, selectedMode, type ModeOption, type TopFamily } from "../domain/match-config";
+import { PEOPLES_GROUP, configSummary, directionLabel, formatSeconds, isPeoplesTopic, modesFor, paceHint, selectedMode, type ModeOption, type PeoplesTopic, type TopFamily } from "../domain/match-config";
+import { querySessions } from "../domain/progress-surfaces";
 import { formatNumber as money, t } from "../domain/i18n";
 
 /** O ícone de cada família do Hub (a Mesa mostra só os modos da família que foi aberta). */
@@ -38,6 +39,7 @@ export function Recorte({
   setVariant,
   topFamily,
   onFamilyChange,
+  onTopicChange,
   pace,
   setPace,
   roundTier,
@@ -62,6 +64,8 @@ export function Recorte({
   setVariant: (variant: AnyQuizVariant) => void;
   topFamily: TopFamily;
   onFamilyChange: (family: Family, variant: AnyQuizVariant) => void;
+  /** Idiomas, povos e moedas: troca de tema (Idiomas, Gentílicos, Moedas) sem sair da Mesa. */
+  onTopicChange?: (topic: PeoplesTopic) => void;
   pace: Pace;
   setPace: (value: Pace) => void;
   roundTier: RoundTier;
@@ -71,7 +75,11 @@ export function Recorte({
   /** Precisão de cada pilar (0 a 100) para mostrar nas famílias e no histórico. */
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
 }) {
-  const familyLabel = t.families[topFamily];
+  // Idiomas, povos e moedas: o título é o do grupo e a cor a de Idiomas; o tema escolhido (Idiomas, Gentílicos, Moedas) é a família de sempre
+  const grouped = isPeoplesTopic(topFamily);
+  const familyLabel = grouped ? t.families.povos : t.families[topFamily];
+  const topicLabel = t.families[topFamily];
+  const paintFam = grouped ? "idiomas" : topFamily;
   // Estados e províncias: o país escolhido (o do recorte) decide os recortes (o país inteiro e as regiões dele), os modos que existem (sem bandeiras no
   // pacote, sem os de bandeira) e a palavra dos textos (estado, província…)
   const divCountry = topFamily === "divisoes" ? divisionCountry(divisionCountryOf(region)) ?? DIVISION_COUNTRIES[0] ?? null : null;
@@ -193,14 +201,31 @@ export function Recorte({
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
   }, [statsOpen]);
 
+  // a precisão de cada tema (as partidas completas dele), para os blocos do Tema
+  const [topicStats, setTopicStats] = useState<Partial<Record<PeoplesTopic, number | null>> | null>(null);
+  useEffect(() => {
+    if (!grouped) return;
+    let alive = true;
+    void querySessions().then((sessions) => {
+      if (!alive) return;
+      setTopicStats(Object.fromEntries(PEOPLES_GROUP.map((topic) => {
+        const mine = sessions.filter((session) => session.family === topic && session.complete && session.roundCount > 0);
+        const rounds = mine.reduce((total, session) => total + session.roundCount, 0);
+        return [topic, rounds ? Math.round((mine.reduce((total, session) => total + session.correct, 0) / rounds) * 100) : null];
+      })));
+    }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [grouped]);
+  const TOPIC_ICON: Record<PeoplesTopic, IconType> = { idiomas: "language", gentilicos: "people", moedas: "coins" };
+
   const trio = (label: string, children: ReactNode, extra = "") => <div className={`mz-group ${extra}`}><span className="cv-k">{label}</span><div className="cv-ctl">{children}</div></div>;
   const accuracy = topFamily === "mapa" || topFamily === "bandeiras" || topFamily === "capitais" ? pillarPct[topFamily] ?? null : null;
   const hitFirst = summary.earn.split(/[^\d]/)[0];
 
   return (
     <main className="content cv-page mz-page" data-top-family={topFamily} data-family={family} data-variant={variant}>
-      <ScreenBar brand={false} onBack={onBack} eyebrow={t.config.table} title={familyLabel} balance={balance} badge={<span className="mz-badge" data-fam={topFamily} aria-hidden="true"><Icon type={FAMILY_ICON[topFamily]} size={22} /></span>} />
-      <div className="cv mz" data-fam={topFamily}>
+      <ScreenBar brand={false} onBack={onBack} eyebrow={t.config.table} title={familyLabel} balance={balance} badge={<span className="mz-badge" data-fam={paintFam} aria-hidden="true"><Icon type={grouped ? "language" : FAMILY_ICON[topFamily]} size={22} /></span>} />
+      <div className="cv mz" data-fam={paintFam}>
         <div className="mz-main">
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
             <header className="cv-head mz-head">
@@ -211,7 +236,7 @@ export function Recorte({
                   <Icon type="trend" size={16} /><span>{t.config.stats}</span><i aria-hidden="true"><Icon type="chevron" size={14} /></i>
                 </button>
                 <aside id="mz-stats" className="mz-side" aria-label={t.config.stats} hidden={!statsOpen}>
-                  <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag, ...(divCountry ? { country: divCountry.id } : {}) }} label={active.label.toLowerCase().includes(familyLabel.toLowerCase()) ? active.label : `${familyLabel} · ${active.label}`} />
+                  <ModePanels mode={{ family: active.family, variant: active.variant, flag: active.flag, ...(divCountry ? { country: divCountry.id } : {}) }} label={active.label.toLowerCase().includes(topicLabel.toLowerCase()) ? active.label : `${topicLabel} · ${active.label}`} />
                   <section className="mz-panel">
                     <h2>{t.config.reward}</h2>
                     <div className="mz-reward">
@@ -224,6 +249,21 @@ export function Recorte({
                 </aside>
               </div>
             </header>
+            {grouped && <div className="mz-block mz-topics-block">
+              <span className="cv-k" id="mz-topic-k">{t.config.topic}</span>
+              <div className="mz-topics" role="group" aria-labelledby="mz-topic-k">
+                {PEOPLES_GROUP.map((topic) => {
+                  const open = modesFor(topic).some((mode) => owned(mode.family, mode.variant));
+                  const pct = topicStats?.[topic];
+                  return <button type="button" key={topic} className="mz-topic" aria-pressed={topic === topFamily} onClick={() => { if (topic !== topFamily) onTopicChange?.(topic); }}>
+                    <span className="mz-topic-ic" aria-hidden="true"><Icon type={TOPIC_ICON[topic]} size={22} /></span>
+                    <b>{t.families[topic]}</b>
+                    {!open ? <span className="mz-topic-stat is-locked" aria-label={t.hub.locked}><Icon type="lock" size={13} /></span>
+                      : topicStats && (pct == null ? <span className="mz-topic-stat is-new">{t.divisions.picker.fresh}</span> : <span className="mz-topic-stat" aria-label={t.divisions.picker.accuracy(pct)}>{pct}%</span>)}
+                  </button>;
+                })}
+              </div>
+            </div>}
             <div className="mz-block">
               <span className="cv-k">{t.config.mode}</span>
               <div className={`mz-ways${modes.length > 4 ? " is-dense" : ""}`} role="group" aria-label={t.config.mode} style={{ ["--cols" as string]: modes.length === 4 ? 2 : Math.min(modes.length, 4) }}>
