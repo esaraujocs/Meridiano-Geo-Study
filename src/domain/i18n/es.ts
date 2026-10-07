@@ -1110,6 +1110,19 @@ export const es: Messages = {
   // Estados y provincias: las frases llevan la palabra de la unidad del país (estado, provincia…) y su género (`g`)
   divisions: {
     country: "País",
+    picker: {
+      change: "cambiar país",
+      title: "Elige el país",
+      search: "Buscar país…",
+      all: "Todos",
+      recent: "Jugados recientemente",
+      fresh: "nuevo",
+      accuracy: (pct: number) => `precisión del ${pct}%`,
+      empty: "Ningún país con ese nombre.",
+      units: (n: number, u: Unit) => `${n} ${n === 1 ? u.one : u.many}`,
+      continents: { Americas: "Américas", Europe: "Europa", Asia: "Asia", Africa: "África", Oceania: "Oceanía" } as Record<string, string>,
+      close: "Cerrar",
+    },
     loading: "Cargando el mapa del país.",
     flagUnit: (u: Unit) => `¿Qué ${u.one} usa esta bandera?`,
     pickFlag: (u: Unit) => `Elige la bandera ${fem(u) ? "de la" : "del"} ${u.one}`,

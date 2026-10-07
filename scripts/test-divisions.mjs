@@ -367,6 +367,26 @@ assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", r
 assert.equal(modeStats.sessionInMode({ family: "brasil", variant: "br-mapa" }, mapMode), false);
 assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", regions: ["dv:us:west", "dv:us:south"] }, mapMode), true);
 
+// seletor de países da Mesa: continente pelo mapa-múndi, precisão e últimos jogados pelas sessões, busca sem acento nos três idiomas
+const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" } };
+assert.deepEqual(DIVISION_INDEX.map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia"]);
+assert.equal(D.divisionContinent(D.divisionCountry("br"), {}), null);
+const plays = D.divisionCountryPlays([
+  { family: "divisoes", variant: "dv-mapa", region: "dv:us", complete: true, roundCount: 10, correct: 7, startedAt: 300 },
+  { family: "divisoes", variant: "dv-capital", regions: ["dv:us:west"], complete: true, roundCount: 10, correct: 9, startedAt: 500 },
+  { family: "brasil", variant: "br-mapa", region: "sul", complete: true, roundCount: 4, correct: 4, startedAt: 100 },
+  { family: "divisoes", variant: "dv-mapa", region: "dv:cn", complete: false, roundCount: 3, correct: 3, startedAt: 900 },
+  { family: "mapa", variant: "mapa", region: "mundo", complete: true, roundCount: 10, correct: 10, startedAt: 999 },
+]);
+assert.deepEqual(plays, { us: { last: 500, matches: 2, accuracy: 80 }, br: { last: 100, matches: 1, accuracy: 100 } }, "partida incompleta e do mapa-múndi não contam; a família brasil conta no Brasil");
+assert.deepEqual(D.recentDivisionCountries(plays), ["us", "br"]); assert.deepEqual(D.recentDivisionCountries(plays, 1), ["us"]);
+assert.deepEqual(D.recentDivisionCountries({ xx: { last: 999, matches: 1, accuracy: 1 }, ...plays }), ["us", "br"], "país que saiu do índice some");
+const search = (query, extra) => DIVISION_INDEX.filter((country) => D.divisionCountryMatches(country, query, extra?.[country.id])).map((country) => country.id);
+assert.deepEqual(search(""), ["br", "us", "cn"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
+assert.deepEqual(search("brazil"), ["br"], "o nome em inglês vale"); assert.deepEqual(search("estados unidos"), [], "sem o nome do mapa-múndi, não");
+assert.deepEqual(search("estados unidos", { us: ["Estados Unidos", "United States"] }), ["us"], "com o nome do mapa-múndi, sim");
+assert.deepEqual(search("ee. uu"), ["us"], "o nome em espanhol"); assert.deepEqual(search("xyz"), []);
+
 // fora do domínio e dos pilares
 for (const family of ["divisoes", "brasil"]) {
   assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has(family), true, `${family}: fora do domínio`);

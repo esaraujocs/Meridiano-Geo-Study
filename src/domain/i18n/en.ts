@@ -1109,6 +1109,19 @@ export const en: Messages = {
   // States & provinces: the sentences take the country's unit word (state, province…)
   divisions: {
     country: "Country",
+    picker: {
+      change: "change country",
+      title: "Choose the country",
+      search: "Search country…",
+      all: "All",
+      recent: "Played recently",
+      fresh: "new",
+      accuracy: (pct: number) => `${pct}% accuracy`,
+      empty: "No country with that name.",
+      units: (n: number, u: Unit) => `${n} ${n === 1 ? u.one : u.many}`,
+      continents: { Americas: "Americas", Europe: "Europe", Asia: "Asia", Africa: "Africa", Oceania: "Oceania" } as Record<string, string>,
+      close: "Close",
+    },
     loading: "Loading the country's map.",
     flagUnit: (u: Unit) => `Which ${u.one} uses this flag?`,
     pickFlag: (u: Unit) => `Pick the ${u.one}'s flag`,

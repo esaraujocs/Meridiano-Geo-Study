@@ -1112,6 +1112,19 @@ export const pt = {
   // Estados e províncias: as frases levam a palavra da unidade do país (estado, província…) e o gênero dela (`g`, artigos e concordância)
   divisions: {
     country: "País",
+    picker: {
+      change: "trocar país",
+      title: "Escolha o país",
+      search: "Buscar país…",
+      all: "Todos",
+      recent: "Jogados por último",
+      fresh: "novo",
+      accuracy: (pct: number) => `precisão de ${pct}%`,
+      empty: "Nenhum país com esse nome.",
+      units: (n: number, u: Unit) => `${n} ${n === 1 ? u.one : u.many}`,
+      continents: { Americas: "Américas", Europe: "Europa", Asia: "Ásia", Africa: "África", Oceania: "Oceania" } as Record<string, string>,
+      close: "Fechar",
+    },
     loading: "Carregando o mapa do país.",
     flagUnit: (u: Unit) => `De qual ${u.one} é esta bandeira?`,
     pickFlag: (u: Unit) => `Escolha a bandeira ${fem(u) ? "da" : "do"} ${u.one}`,

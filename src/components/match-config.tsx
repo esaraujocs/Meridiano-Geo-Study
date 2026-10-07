@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetSta
 import { Icon, type IconType } from "./icons";
 import { ScreenBar } from "./screen-bar";
 import { ModePanels } from "./mode-panels";
+import { CountryPicker } from "./country-picker";
 import { STREAK_CAP, completionPerRound } from "../domain/spoils";
 import type { AnyQuizVariant, Family, Legacy, RegionCounts, RegionSelection } from "../domain/types";
 import { normalizeRegionSelection, REGION_ITEMS } from "../domain/regions";
-import { DIVISION_COUNTRIES, divisionCountry, divisionCountryOf, divisionRegion, divisionRegionItems, divisionRegionLabel, unitWord, variantPlayable } from "../domain/divisions";
+import { DIVISION_COUNTRIES, divisionCountry, divisionCountryOf, divisionRegion, divisionRegionItems, unitWord, variantPlayable } from "../domain/divisions";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { unlockContent } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
@@ -21,6 +22,7 @@ const FAMILY_ICON: Record<TopFamily, IconType> = { mapa: "map", bandeiras: "flag
 
 // Mesa de jogo (antes "Configure a partida"): Modo, Ritmo, Rodadas, Recorte e Filtro numa fileira cada, com a barra de resumo e o botão sempre à vista.
 export function Recorte({
+  data,
   family,
   counts,
   selectedCount: selectedCountProp,
@@ -203,12 +205,7 @@ export function Recorte({
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
             <header className="cv-head mz-head">
               <div><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></div>
-              {divCountry && <div className="mz-country">
-                <span className="cv-k" id="mz-country-k">{t.divisions.country}</span>
-                <div className="cv-chips" role="group" aria-labelledby="mz-country-k">
-                  {DIVISION_COUNTRIES.map((country) => <button type="button" key={country.id} className="cv-chip" aria-pressed={country.id === divCountry.id} onClick={() => pickCountry(country.id)}><span className="cv-l"><span>{divisionRegionLabel(divisionRegion(country.id))}</span><em>{country.count}</em></span></button>)}
-                </div>
-              </div>}
+              {divCountry && <CountryPicker current={divCountry} data={data} onPick={pickCountry} />}
               <div className="mz-stats" ref={statsRef}>
                 <button type="button" className="mz-stats-toggle" aria-expanded={statsOpen} aria-controls="mz-stats" onClick={() => setStatsOpen((open) => !open)}>
                   <Icon type="trend" size={16} /><span>{t.config.stats}</span><i aria-hidden="true"><Icon type="chevron" size={14} /></i>

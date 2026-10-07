@@ -223,3 +223,41 @@ export function divisionBounds(pack: DivisionPack, ids: readonly string[], selec
     Math.max(...boxes.map((box) => box[2])), Math.max(...boxes.map((box) => box[3])),
   ];
 }
+
+// ---- seletor de países da Mesa (07/10/2026, opção A do mock): o continente vem do mapa-múndi (o `reg` da entidade `carta`), os países jogados por
+// último e a precisão de cada um saem das sessões, e a busca ignora acento e caixa nos três idiomas
+export const DIVISION_CONTINENTS = ["Americas", "Europe", "Asia", "Africa", "Oceania"] as const;
+export type DivisionContinent = (typeof DIVISION_CONTINENTS)[number];
+export function divisionContinent(country: DivisionCountry, worldMeta: Readonly<Record<string, { reg?: string } | undefined>>): DivisionContinent | null {
+  const reg = worldMeta[country.carta]?.reg;
+  return (DIVISION_CONTINENTS as readonly string[]).includes(reg ?? "") ? (reg as DivisionContinent) : null;
+}
+export type DivisionCountryPlay = { last: number; matches: number; accuracy: number };
+type PlaySession = { family?: string; variant?: string; region?: string; regions?: string[]; complete?: boolean; roundCount?: number; correct?: number; startedAt?: number | null };
+/** Por país: as partidas completas, a precisão de todas as rodadas delas (0 a 100) e quando foi a última (as da família "brasil" contam no Brasil). */
+export function divisionCountryPlays(sessions: readonly PlaySession[]): Record<string, DivisionCountryPlay> {
+  const plays: Record<string, { last: number; matches: number; rounds: number; correct: number }> = {};
+  for (const raw of sessions) {
+    if (!isDivisionFamily(raw.family) || !raw.complete || !raw.roundCount) continue;
+    const session = asDivisionSession(raw);
+    const country = divisionCountryOf(session.regions?.length ? session.regions : session.region);
+    if (!country) continue;
+    const entry = plays[country] ??= { last: 0, matches: 0, rounds: 0, correct: 0 };
+    entry.last = Math.max(entry.last, session.startedAt ?? 0);
+    entry.matches += 1;
+    entry.rounds += session.roundCount ?? 0;
+    entry.correct += session.correct ?? 0;
+  }
+  return Object.fromEntries(Object.entries(plays).map(([country, entry]) => [country, { last: entry.last, matches: entry.matches, accuracy: Math.round((entry.correct / entry.rounds) * 100) }]));
+}
+/** Os países jogados por último, do mais recente (até `limit`). */
+export function recentDivisionCountries(plays: Readonly<Record<string, DivisionCountryPlay>>, limit = 3): string[] {
+  return Object.entries(plays).filter(([country]) => divisionCountry(country)).sort((a, b) => b[1].last - a[1].last).slice(0, limit).map(([country]) => country);
+}
+const fold = (value: string) => value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+/** O país casa com a busca pelo nome em qualquer um dos três idiomas, ou por outros nomes dele (`extra`: os do mapa-múndi, "Estados Unidos"),
+ *  sem acento nem caixa. */
+export function divisionCountryMatches(country: DivisionCountry, query: string, extra: readonly (string | undefined)[] = []): boolean {
+  const wanted = fold(query);
+  return !wanted || [...Object.values(country.name), ...extra].some((name) => Boolean(name) && fold(name as string).includes(wanted));
+}
