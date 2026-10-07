@@ -1103,13 +1103,13 @@ export function App() {
        travel: travelCounts ?? Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
       gentilicos: peoplesCounts("gentilicos", "gentilico-pais"),
       moedas: peoplesCounts("moedas", variant === "moeda-pais" ? "moeda-pais" : "pais-moeda"),
-      // Estados e províncias: as contagens de cada recorte de cada país vêm do índice (todo modo que o país tem conta o mesmo)
-      divisoes: divisionCounts() as RegionCounts,
+      // Estados e províncias: as contagens de cada recorte de cada país vêm do índice (nos modos de capital, só as unidades com capital)
+      divisoes: divisionCounts(variant) as RegionCounts,
     } as Record<Family, RegionCounts>;
   }, [data, features, specialCounts, travelCounts, onlyUn, variant, silhouetteCounts, peoples]);
   const selectedCount = useMemo(() => {
     if (!data) return 0;
-    if (family === "divisoes") return divisionSelectedCount(region);
+    if (family === "divisoes") return divisionSelectedCount(region, variant);
     const ids = Object.entries(data.meta).filter(([id, meta]) => {
       if (
         meta.absorvido ||
@@ -1341,7 +1341,7 @@ export function App() {
       if (!country || !pack) return <div className="app-shell"><main className="content"><h1 style={{ marginTop: 32 }}>{t.divisions.loading}</h1></main></div>;
       const rule = baseVariant(variant);
       if (rule === "mapa" || rule === "capital-pais") {
-        const ids = divisionIdsIn(pack, region);
+        const ids = divisionIdsIn(pack, region, variant);
         const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), backdrop: { url: MAP_URL, hide: country.carta } };
         return <Game key={country.id} data={pack.data} features={ids.map((id) => ({ id }))} region={region} family="divisoes" variant={variant} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} board={board} />;
       }

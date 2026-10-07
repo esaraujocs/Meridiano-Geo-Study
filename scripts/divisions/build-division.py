@@ -134,6 +134,11 @@ def zones_overture(country, config, build):
     table = pq.read_table(os.path.join(build, "overture-regions.parquet"))
     land, sea, names = {}, {}, {}
     for row in table.to_pylist():
+        # linha sem código de região (na China, Aksai Chin, área disputada): fica fora das zonas; se o mapa HD deu essa terra ao país, ela vai
+        # para a unidade mais perto, como as outras sobras
+        if not row["region"]:
+            print(f"aviso: linha do Overture sem região ({row['name']}), fora das zonas", flush=True)
+            continue
         code = row["region"].split("-", 1)[1]
         geom = shapely.make_valid(shapely.from_wkb(row["geometry"]))
         target = land if row["class"] == "land" or row["is_land"] else sea
@@ -145,7 +150,9 @@ def zones_overture(country, config, build):
     excluded = set(config.get("exclude", []))
     problems = [f"{code} está no Overture e não na config" for code in sorted(set(land) - set(units) - excluded)]
     problems += [f"{code} está na config e não no Overture" for code in sorted(set(units) - set(land))]
-    problems += [f"{code}: nome {names[code]!r} no Overture, {units[code]['name']!r} na config" for code in units if code in names and names[code] != units[code]["name"]]
+    # o nome confere com o `sourceName` da unidade, quando o Overture usa outra língua (na China, o chinês), ou com o `name`
+    problems += [f"{code}: nome {names[code]!r} no Overture, {units[code].get('sourceName', units[code]['name'])!r} na config"
+                 for code in units if code in names and names[code] != units[code].get("sourceName", units[code]["name"])]
     if problems:
         sys.exit("a config não confere com o Overture:\n" + "\n".join(problems))
     taken = shapely.union_all(np.array(list(land.values()), dtype=object))

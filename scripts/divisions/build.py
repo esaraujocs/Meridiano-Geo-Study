@@ -4,7 +4,8 @@ Uso: python scripts/divisions/build.py [países...]   (sem argumento: todos de C
 Para cada país: build-division.py (catálogo, silhuetas e a terra dividida), os tiles (o mesmo build-tiles.py do mapa HD, com
 MAP_BUILD=build/divisions/<país> e um perfil montado da config), mvt_check.py, a cópia de divisions-<país>.pmtiles e do manifesto para
 public/maps/ e as bandeiras (flags.mjs, se a config lista arquivos do Commons; precisa do Chrome). No fim refaz src/domain/divisions-index.ts com
-todos os países já gerados: nome, palavra da unidade, regiões com as contagens, se há bandeiras e capitais, enquadramento e o mapa (tamanho e hash).
+todos os países já gerados: nome, palavra da unidade, regiões com as contagens (de unidades e de capitais), se há bandeiras, quantas unidades têm
+capital, enquadramento e o mapa (tamanho e hash).
 REUSE_PIECES=1 reaproveita a divisão já feita (o catálogo e as silhuetas são refeitos); TILES_ONLY=1 pula o build-division.py (o catálogo, as silhuetas e
 os pedaços já gerados valem); INDEX_ONLY=1 só refaz o índice. Tempo: o Brasil leva ~2 min; os EUA ~40 min só no build-division.py (o Alasca pesa).
 Para um país novo: countries/<país>.json (lista curada) + fetch.py + este script + incluir o país em COUNTRIES (a ordem é a da Mesa).
@@ -17,7 +18,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-COUNTRIES = ["br", "us"]
+COUNTRIES = ["br", "us", "cn"]
 INDEX = os.path.join(ROOT, "src", "domain", "divisions-index.ts")
 
 
@@ -52,12 +53,14 @@ def entry(country):
     units = json.load(open(os.path.join(public, "units.json"), encoding="utf8"))["units"]
     manifest = json.load(open(os.path.join(ROOT, "public", "maps", f"divisions-{country}.manifest.json"), encoding="utf8"))
     counts = {key: sum(1 for unit in units.values() if unit["region"] == key) for key in config["regions"]}
+    # as unidades com capital (na China, as 4 municipalidades não têm: ficam fora dos modos de capital)
+    capitals = {key: sum(1 for unit in units.values() if unit["region"] == key and unit.get("capital")) for key in config["regions"]}
     boxes = [unit["bbox"] for unit in units.values()]
     frame = config.get("frame") or [min(box[0] for box in boxes), min(box[1] for box in boxes), max(box[2] for box in boxes), max(box[3] for box in boxes)]
     return {
         "id": country, "carta": config["carta"], "name": config["name"], "unit": config["unit"],
-        "regions": [{"key": key, "name": names, "count": counts[key]} for key, names in config["regions"].items()],
-        "count": len(units), "flags": os.path.exists(os.path.join(public, "flags.json")), "capitals": all(unit.get("capital") for unit in units.values()),
+        "regions": [{"key": key, "name": names, "count": counts[key], "capitals": capitals[key]} for key, names in config["regions"].items()],
+        "count": len(units), "flags": os.path.exists(os.path.join(public, "flags.json")), "capitals": sum(capitals.values()),
         "frame": frame, "attribution": config["attribution"],
         "map": {"url": f"/maps/divisions-{country}.pmtiles", "bytes": manifest["bytes"], "sha256": manifest["sha256"]},
     }

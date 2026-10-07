@@ -1,0 +1,937 @@
+{
+ "source": "China: as 31 divisões de primeiro nível da China continental (22 províncias, 5 regiões autônomas e 4 municipalidades). Hong Kong, Macau e Taiwan ficam de fora, como no mapa-múndi do jogo, onde são entidades próprias. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1, fetch-overture-regions.py), que build-division.py confere contra esta lista (código ISO 3166-2 e o nome chinês, sourceName); a linha sem código (Aksai Chin) fica fora das zonas e a terra que o mapa HD dá à China ali vai para a unidade mais perto. Nomes em pt/es e capitais do Wikidata (P300, P36; 07/10/2026); em pt, Guangdong em vez de Cantão (que também é o nome da capital), com Cantão aceito na escrita; capitais em pinyin, com as grafias tradicionais aceitas (Nanquim, Xian, Lassa). As 4 municipalidades não têm capital (o Wikidata dá um distrito): ficam fora dos modos de capital. Regiões: as 6 regiões tradicionais (Wikipédia, 'List of regions of China'). Sem bandeiras (as províncias não têm bandeira oficial).",
+ "country": "cn",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "northeast": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Noreste"
+  },
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "south-central": {
+   "pt": "Centro-Sul",
+   "en": "South Central",
+   "es": "Centro-Sur"
+  },
+  "southwest": {
+   "pt": "Sudoeste",
+   "en": "Southwest",
+   "es": "Suroeste"
+  },
+  "northwest": {
+   "pt": "Noroeste",
+   "en": "Northwest",
+   "es": "Noroeste"
+  }
+ },
+ "units": {
+  "cn-ah": {
+   "code": "AH",
+   "ref": "CN-AH",
+   "name": {
+    "pt": "Anhui",
+    "en": "Anhui",
+    "es": "Anhui"
+   },
+   "capital": "Hefei",
+   "region": "east",
+   "area": 139394,
+   "ll": [
+    32.7529,
+    116.9799
+   ],
+   "bbox": [
+    114.876,
+    29.395,
+    119.645,
+    34.653
+   ],
+   "borders": [
+    "cn-ha",
+    "cn-hb",
+    "cn-js",
+    "cn-jx",
+    "cn-sd",
+    "cn-zj"
+   ]
+  },
+  "cn-bj": {
+   "code": "BJ",
+   "ref": "CN-BJ",
+   "name": {
+    "pt": "Pequim",
+    "en": "Beijing",
+    "es": "Pekín"
+   },
+   "region": "north",
+   "area": 16498,
+   "ll": [
+    40.2946,
+    116.41
+   ],
+   "bbox": [
+    115.417,
+    39.171,
+    117.737,
+    41.059
+   ],
+   "borders": [
+    "cn-he",
+    "cn-tj"
+   ]
+  },
+  "cn-cq": {
+   "code": "CQ",
+   "ref": "CN-CQ",
+   "name": {
+    "pt": "Chongqing",
+    "en": "Chongqing",
+    "es": "Chongqing"
+   },
+   "region": "southwest",
+   "area": 82467,
+   "ll": [
+    29.5501,
+    106.3028
+   ],
+   "bbox": [
+    105.287,
+    28.162,
+    110.194,
+    32.204
+   ],
+   "borders": [
+    "cn-gz",
+    "cn-hb",
+    "cn-hn",
+    "cn-sc",
+    "cn-sn"
+   ]
+  },
+  "cn-fj": {
+   "code": "FJ",
+   "ref": "CN-FJ",
+   "name": {
+    "pt": "Fujian",
+    "en": "Fujian",
+    "es": "Fujian"
+   },
+   "capital": "Fuzhou",
+   "region": "east",
+   "area": 122642,
+   "ll": [
+    26.3756,
+    118.154
+   ],
+   "bbox": [
+    115.847,
+    23.567,
+    120.44,
+    28.321
+   ],
+   "borders": [
+    "cn-gd",
+    "cn-jx",
+    "cn-zj"
+   ]
+  },
+  "cn-gd": {
+   "code": "GD",
+   "ref": "CN-GD",
+   "name": {
+    "pt": "Guangdong",
+    "en": "Guangdong",
+    "es": "Cantón"
+   },
+   "alias": [
+    "Cantão"
+   ],
+   "capital": "Guangzhou",
+   "capAl": [
+    "Cantão",
+    "Cantón"
+   ],
+   "region": "south-central",
+   "area": 178750,
+   "ll": [
+    23.7672,
+    113.0596
+   ],
+   "bbox": [
+    109.665,
+    20.221,
+    117.189,
+    25.52
+   ],
+   "borders": [
+    "cn-fj",
+    "cn-gx",
+    "cn-hn",
+    "cn-jx"
+   ]
+  },
+  "cn-gs": {
+   "code": "GS",
+   "ref": "CN-GS",
+   "name": {
+    "pt": "Gansu",
+    "en": "Gansu",
+    "es": "Gansu"
+   },
+   "capital": "Lanzhou",
+   "region": "northwest",
+   "area": 425631,
+   "ll": [
+    39.9702,
+    95.4406
+   ],
+   "bbox": [
+    92.339,
+    32.599,
+    108.711,
+    42.795
+   ],
+   "borders": [
+    "cn-nm",
+    "cn-nx",
+    "cn-qh",
+    "cn-sc",
+    "cn-sn",
+    "cn-xj"
+   ]
+  },
+  "cn-gx": {
+   "code": "GX",
+   "ref": "CN-GX",
+   "name": {
+    "pt": "Guangxi",
+    "en": "Guangxi",
+    "es": "Guangxi"
+   },
+   "capital": "Nanning",
+   "region": "south-central",
+   "area": 237204,
+   "ll": [
+    23.6125,
+    109.2169
+   ],
+   "bbox": [
+    104.448,
+    21.402,
+    112.056,
+    26.388
+   ],
+   "borders": [
+    "cn-gd",
+    "cn-gz",
+    "cn-hn",
+    "cn-yn"
+   ]
+  },
+  "cn-gz": {
+   "code": "GZ",
+   "ref": "CN-GZ",
+   "name": {
+    "pt": "Guizhou",
+    "en": "Guizhou",
+    "es": "Guizhou"
+   },
+   "capital": "Guiyang",
+   "region": "southwest",
+   "area": 176379,
+   "ll": [
+    26.9575,
+    107.4278
+   ],
+   "bbox": [
+    103.6,
+    24.621,
+    109.557,
+    29.224
+   ],
+   "borders": [
+    "cn-cq",
+    "cn-gx",
+    "cn-hn",
+    "cn-sc",
+    "cn-yn"
+   ]
+  },
+  "cn-ha": {
+   "code": "HA",
+   "ref": "CN-HA",
+   "name": {
+    "pt": "Henan",
+    "en": "Henan",
+    "es": "Henan"
+   },
+   "capital": "Zhengzhou",
+   "region": "south-central",
+   "area": 165239,
+   "ll": [
+    33.9143,
+    113.6113
+   ],
+   "bbox": [
+    110.355,
+    31.384,
+    116.646,
+    36.367
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-hb",
+    "cn-he",
+    "cn-sd",
+    "cn-sn",
+    "cn-sx"
+   ]
+  },
+  "cn-hb": {
+   "code": "HB",
+   "ref": "CN-HB",
+   "name": {
+    "pt": "Hubei",
+    "en": "Hubei",
+    "es": "Hubei"
+   },
+   "capital": "Wuhan",
+   "region": "south-central",
+   "area": 185736,
+   "ll": [
+    31.0461,
+    112.5351
+   ],
+   "bbox": [
+    108.362,
+    29.032,
+    116.132,
+    33.273
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-cq",
+    "cn-ha",
+    "cn-hn",
+    "cn-jx",
+    "cn-sn"
+   ]
+  },
+  "cn-he": {
+   "code": "HE",
+   "ref": "CN-HE",
+   "name": {
+    "pt": "Hebei",
+    "en": "Hebei",
+    "es": "Hebei"
+   },
+   "capital": "Shijiazhuang",
+   "region": "north",
+   "area": 187983,
+   "ll": [
+    38.3704,
+    115.3396
+   ],
+   "bbox": [
+    113.456,
+    36.048,
+    119.866,
+    42.618
+   ],
+   "borders": [
+    "cn-bj",
+    "cn-ha",
+    "cn-ln",
+    "cn-nm",
+    "cn-sd",
+    "cn-sx",
+    "cn-tj"
+   ]
+  },
+  "cn-hi": {
+   "code": "HI",
+   "ref": "CN-HI",
+   "name": {
+    "pt": "Hainan",
+    "en": "Hainan",
+    "es": "Hainan"
+   },
+   "capital": "Haikou",
+   "region": "south-central",
+   "area": 34198,
+   "ll": [
+    19.0987,
+    109.6709
+   ],
+   "bbox": [
+    108.613,
+    18.159,
+    111.042,
+    20.162
+   ],
+   "borders": []
+  },
+  "cn-hl": {
+   "code": "HL",
+   "ref": "CN-HL",
+   "name": {
+    "pt": "Heilongjiang",
+    "en": "Heilongjiang",
+    "es": "Heilongjiang"
+   },
+   "capital": "Harbin",
+   "region": "northeast",
+   "area": 469528,
+   "ll": [
+    47.0327,
+    128.4292
+   ],
+   "bbox": [
+    121.184,
+    43.423,
+    134.775,
+    53.561
+   ],
+   "borders": [
+    "cn-jl",
+    "cn-nm"
+   ]
+  },
+  "cn-hn": {
+   "code": "HN",
+   "ref": "CN-HN",
+   "name": {
+    "pt": "Hunan",
+    "en": "Hunan",
+    "es": "Hunán"
+   },
+   "capital": "Changsha",
+   "region": "south-central",
+   "area": 211122,
+   "ll": [
+    27.8452,
+    110.9101
+   ],
+   "bbox": [
+    108.786,
+    24.64,
+    114.256,
+    30.128
+   ],
+   "borders": [
+    "cn-cq",
+    "cn-gd",
+    "cn-gx",
+    "cn-gz",
+    "cn-hb",
+    "cn-jx"
+   ]
+  },
+  "cn-jl": {
+   "code": "JL",
+   "ref": "CN-JL",
+   "name": {
+    "pt": "Jilin",
+    "en": "Jilin",
+    "es": "Jilin"
+   },
+   "capital": "Changchun",
+   "region": "northeast",
+   "area": 189630,
+   "ll": [
+    43.2233,
+    126.4546
+   ],
+   "bbox": [
+    121.636,
+    40.862,
+    131.311,
+    46.303
+   ],
+   "borders": [
+    "cn-hl",
+    "cn-ln",
+    "cn-nm"
+   ]
+  },
+  "cn-js": {
+   "code": "JS",
+   "ref": "CN-JS",
+   "name": {
+    "pt": "Jiangsu",
+    "en": "Jiangsu",
+    "es": "Jiangsu"
+   },
+   "capital": "Nanjing",
+   "capAl": [
+    "Nanquim",
+    "Nankín"
+   ],
+   "region": "east",
+   "area": 98242,
+   "ll": [
+    32.364,
+    120.1517
+   ],
+   "bbox": [
+    116.355,
+    30.76,
+    121.959,
+    35.127
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-sd",
+    "cn-sh",
+    "cn-zj"
+   ]
+  },
+  "cn-jx": {
+   "code": "JX",
+   "ref": "CN-JX",
+   "name": {
+    "pt": "Jiangxi",
+    "en": "Jiangxi",
+    "es": "Jiangxi"
+   },
+   "capital": "Nanchang",
+   "region": "east",
+   "area": 164452,
+   "ll": [
+    27.3604,
+    115.251
+   ],
+   "bbox": [
+    113.575,
+    24.489,
+    118.482,
+    30.08
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-fj",
+    "cn-gd",
+    "cn-hb",
+    "cn-hn",
+    "cn-zj"
+   ]
+  },
+  "cn-ln": {
+   "code": "LN",
+   "ref": "CN-LN",
+   "name": {
+    "pt": "Liaoning",
+    "en": "Liaoning",
+    "es": "Liaoning"
+   },
+   "capital": "Shenyang",
+   "region": "northeast",
+   "area": 146922,
+   "ll": [
+    41.3503,
+    123.5338
+   ],
+   "bbox": [
+    118.84,
+    38.721,
+    125.785,
+    43.489
+   ],
+   "borders": [
+    "cn-he",
+    "cn-jl",
+    "cn-nm"
+   ]
+  },
+  "cn-nm": {
+   "code": "NM",
+   "ref": "CN-NM",
+   "name": {
+    "pt": "Mongólia Interior",
+    "en": "Inner Mongolia",
+    "es": "Mongolia Interior"
+   },
+   "capital": "Hohhot",
+   "region": "north",
+   "area": 1122768,
+   "ll": [
+    49.4947,
+    121.5329
+   ],
+   "bbox": [
+    97.172,
+    37.407,
+    125.327,
+    53.334
+   ],
+   "borders": [
+    "cn-gs",
+    "cn-he",
+    "cn-hl",
+    "cn-jl",
+    "cn-ln",
+    "cn-nx",
+    "cn-sn",
+    "cn-sx"
+   ]
+  },
+  "cn-nx": {
+   "code": "NX",
+   "ref": "CN-NX",
+   "name": {
+    "pt": "Ningxia",
+    "en": "Ningxia",
+    "es": "Ningxia"
+   },
+   "capital": "Yinchuan",
+   "region": "northwest",
+   "area": 51915,
+   "ll": [
+    37.1161,
+    105.9028
+   ],
+   "bbox": [
+    104.282,
+    35.239,
+    107.653,
+    39.382
+   ],
+   "borders": [
+    "cn-gs",
+    "cn-nm",
+    "cn-sn"
+   ]
+  },
+  "cn-qh": {
+   "code": "QH",
+   "ref": "CN-QH",
+   "name": {
+    "pt": "Qinghai",
+    "en": "Qinghai",
+    "es": "Qinghai"
+   },
+   "capital": "Xining",
+   "region": "northwest",
+   "area": 631987,
+   "ll": [
+    35.857,
+    94.7224
+   ],
+   "bbox": [
+    89.402,
+    31.602,
+    103.069,
+    39.212
+   ],
+   "borders": [
+    "cn-gs",
+    "cn-sc",
+    "cn-xj",
+    "cn-xz"
+   ]
+  },
+  "cn-sc": {
+   "code": "SC",
+   "ref": "CN-SC",
+   "name": {
+    "pt": "Sichuan",
+    "en": "Sichuan",
+    "es": "Sichuan"
+   },
+   "capital": "Chengdu",
+   "region": "southwest",
+   "area": 486593,
+   "ll": [
+    30.2239,
+    101.8519
+   ],
+   "bbox": [
+    97.347,
+    26.048,
+    108.543,
+    34.315
+   ],
+   "borders": [
+    "cn-cq",
+    "cn-gs",
+    "cn-gz",
+    "cn-qh",
+    "cn-sn",
+    "cn-xz",
+    "cn-yn"
+   ]
+  },
+  "cn-sd": {
+   "code": "SD",
+   "ref": "CN-SD",
+   "name": {
+    "pt": "Shandong",
+    "en": "Shandong",
+    "es": "Shandong"
+   },
+   "capital": "Jinan",
+   "region": "east",
+   "area": 156522,
+   "ll": [
+    36.2865,
+    117.7148
+   ],
+   "bbox": [
+    114.817,
+    34.379,
+    122.706,
+    38.318
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-ha",
+    "cn-he",
+    "cn-js"
+   ]
+  },
+  "cn-sh": {
+   "code": "SH",
+   "ref": "CN-SH",
+   "name": {
+    "pt": "Xangai",
+    "en": "Shanghai",
+    "es": "Shanghái"
+   },
+   "region": "east",
+   "area": 7433,
+   "ll": [
+    31.1079,
+    121.4027
+   ],
+   "bbox": [
+    120.851,
+    30.691,
+    122.113,
+    31.872
+   ],
+   "borders": [
+    "cn-js",
+    "cn-zj"
+   ]
+  },
+  "cn-sn": {
+   "code": "SN",
+   "ref": "CN-SN",
+   "name": {
+    "pt": "Shaanxi",
+    "en": "Shaanxi",
+    "es": "Shaanxi"
+   },
+   "capital": "Xi'an",
+   "capAl": [
+    "Xian"
+   ],
+   "region": "northwest",
+   "area": 205546,
+   "ll": [
+    33.6656,
+    108.1657
+   ],
+   "bbox": [
+    105.487,
+    31.707,
+    111.242,
+    39.585
+   ],
+   "borders": [
+    "cn-cq",
+    "cn-gs",
+    "cn-ha",
+    "cn-hb",
+    "cn-nm",
+    "cn-nx",
+    "cn-sc",
+    "cn-sx"
+   ]
+  },
+  "cn-sx": {
+   "code": "SX",
+   "ref": "CN-SX",
+   "name": {
+    "pt": "Shanxi",
+    "en": "Shanxi",
+    "es": "Shanxi"
+   },
+   "capital": "Taiyuan",
+   "region": "north",
+   "area": 156689,
+   "ll": [
+    37.5562,
+    112.2594
+   ],
+   "bbox": [
+    110.22,
+    34.584,
+    114.563,
+    40.745
+   ],
+   "borders": [
+    "cn-ha",
+    "cn-he",
+    "cn-nm",
+    "cn-sn"
+   ]
+  },
+  "cn-tj": {
+   "code": "TJ",
+   "ref": "CN-TJ",
+   "name": {
+    "pt": "Tianjin",
+    "en": "Tianjin",
+    "es": "Tianjin"
+   },
+   "region": "north",
+   "area": 11643,
+   "ll": [
+    38.9858,
+    117.241
+   ],
+   "bbox": [
+    116.702,
+    38.555,
+    118.059,
+    40.252
+   ],
+   "borders": [
+    "cn-bj",
+    "cn-he"
+   ]
+  },
+  "cn-xj": {
+   "code": "XJ",
+   "ref": "CN-XJ",
+   "name": {
+    "pt": "Xinjiang",
+    "en": "Xinjiang",
+    "es": "Sinkiang"
+   },
+   "capital": "Ürümqi",
+   "capAl": [
+    "Urumchi"
+   ],
+   "region": "northwest",
+   "area": 1626877,
+   "ll": [
+    39.6513,
+    83.379
+   ],
+   "bbox": [
+    73.5,
+    34.334,
+    96.387,
+    49.178
+   ],
+   "borders": [
+    "cn-gs",
+    "cn-qh",
+    "cn-xz"
+   ]
+  },
+  "cn-xz": {
+   "code": "XZ",
+   "ref": "CN-XZ",
+   "name": {
+    "pt": "Tibete",
+    "en": "Tibet",
+    "es": "Tíbet"
+   },
+   "alias": [
+    "Tibet Autonomous Region",
+    "Região Autônoma do Tibete"
+   ],
+   "capital": "Lhasa",
+   "capAl": [
+    "Lassa"
+   ],
+   "region": "southwest",
+   "area": 1182613,
+   "ll": [
+    33.7097,
+    87.0543
+   ],
+   "bbox": [
+    78.392,
+    27.213,
+    99.116,
+    36.484
+   ],
+   "borders": [
+    "cn-qh",
+    "cn-sc",
+    "cn-xj",
+    "cn-yn"
+   ]
+  },
+  "cn-yn": {
+   "code": "YN",
+   "ref": "CN-YN",
+   "name": {
+    "pt": "Yunnan",
+    "en": "Yunnan",
+    "es": "Yunnan"
+   },
+   "capital": "Kunming",
+   "region": "southwest",
+   "area": 384004,
+   "ll": [
+    24.2861,
+    101.0325
+   ],
+   "bbox": [
+    97.527,
+    21.142,
+    106.197,
+    29.226
+   ],
+   "borders": [
+    "cn-gx",
+    "cn-gz",
+    "cn-sc",
+    "cn-xz"
+   ]
+  },
+  "cn-zj": {
+   "code": "ZJ",
+   "ref": "CN-ZJ",
+   "name": {
+    "pt": "Zhejiang",
+    "en": "Zhejiang",
+    "es": "Zhejiang"
+   },
+   "capital": "Hangzhou",
+   "region": "east",
+   "area": 104022,
+   "ll": [
+    29.1664,
+    120.3295
+   ],
+   "bbox": [
+    118.022,
+    27.166,
+    122.342,
+    31.183
+   ],
+   "borders": [
+    "cn-ah",
+    "cn-fj",
+    "cn-js",
+    "cn-jx",
+    "cn-sh"
+   ]
+  }
+ }
+}

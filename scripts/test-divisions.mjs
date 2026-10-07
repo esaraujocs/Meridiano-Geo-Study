@@ -1,4 +1,4 @@
-// Modo "Estados e províncias" (as divisões de primeiro nível de cada país, hoje o Brasil e os EUA): para cada país do índice gerado
+// Modo "Estados e províncias" (as divisões de primeiro nível de cada país, hoje o Brasil, os EUA e a China): para cada país do índice gerado
 // (src/domain/divisions-index.ts), os dados de public/data/divisions/<país>/ (catálogo, divisas, silhuetas e bandeiras, se houver), o mapa
 // public/maps/divisions-<país>.pmtiles (tamanho e hash do índice, quem responde pelos pontos conhecidos da config e pelo rótulo de cada unidade) e o
 // que é próprio de cada país; depois as regras (variantes, modos jogáveis por país, recortes, legado da família "brasil", câmera, preço, moedas,
@@ -59,7 +59,7 @@ async function mapReader(file) {
 }
 
 // ---- cada país do índice: o pacote inteiro, sem nada próprio dele
-assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us"], "o índice traz o Brasil e os EUA, na ordem da Mesa");
+assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn"], "o índice traz o Brasil, os EUA e a China, na ordem da Mesa");
 const files = {};
 let points = 0;
 for (const country of DIVISION_INDEX) {
@@ -86,7 +86,8 @@ for (const country of DIVISION_INDEX) {
   for (const region of country.regions) assert.equal(region.count, rows.filter(([, row]) => row.region === region.key).length, `${cc}:${region.key}: contagem do índice`);
   assert.equal(country.regions.reduce((total, region) => total + region.count, 0), ids.length, `${cc}: toda unidade numa região`);
   assert.equal(country.flags, Boolean(config.units.some((unit) => unit.flagFile)), `${cc}: bandeiras se a config lista os arquivos`);
-  assert.equal(country.capitals, rows.every(([, row]) => row.capital), `${cc}: capitais`);
+  assert.equal(country.capitals, rows.filter(([, row]) => row.capital).length, `${cc}: unidades com capital`);
+  for (const region of country.regions) assert.equal(region.capitals, rows.filter(([, row]) => row.region === region.key && row.capital).length, `${cc}:${region.key}: capitais do índice`);
   if (config.frame) assert.deepEqual(country.frame, config.frame, `${cc}: enquadramento da config`);
   const [fw, fs, fe, fn] = country.frame;
   assert.ok(fw < fe && fs < fn, `${cc}: enquadramento válido`);
@@ -95,7 +96,7 @@ for (const country of DIVISION_INDEX) {
   for (const [id, row] of rows) {
     assert.equal(id, `${cc}-${row.code.toLowerCase()}`, `${id}: id = <país>-<código>`);
     for (const locale of ["pt", "en", "es"]) assert.ok(row.name[locale]?.trim(), `${id}: nome em ${locale}`);
-    if (country.capitals) assert.ok(row.capital.trim(), `${id}: capital`);
+    if ("capital" in row) assert.ok(row.capital.trim(), `${id}: capital`);
     assert.ok(row.area > 0, `${id}: área`);
     assert.ok(config.regions[row.region], `${id}: região ${row.region}`);
     const [west, south, east, north] = row.bbox;
@@ -200,6 +201,28 @@ for (const country of DIVISION_INDEX) {
   assert.ok(row("ak").bbox[0] > -180 && row("ak").bbox[0] < -160, "a caixa do Alasca não atravessa o antimeridiano (Attu fica no mapa, fora da caixa)");
 }
 
+// ---- China: as 31 da China continental (22 províncias, 5 regiões autônomas, 4 municipalidades), nas 6 regiões tradicionais; sem bandeiras; as
+// municipalidades sem capital (fora dos modos de capital); Hong Kong, Macau e Taiwan são entidades próprias do mapa-múndi
+{
+  const { units, pairs, flags } = files.cn;
+  const row = (code) => units.units[`cn-${code}`];
+  const count = (region) => Object.values(units.units).filter((value) => value.region === region).length;
+  assert.equal(Object.keys(units.units).length, 31);
+  for (const code of ["hk", "mo", "tw"]) assert.equal(row(code), undefined, `${code} fica de fora`);
+  assert.equal(flags, null, "sem bandeiras");
+  assert.deepEqual(["north", "northeast", "east", "south-central", "southwest", "northwest"].map(count), [5, 3, 7, 6, 5, 5]);
+  assert.deepEqual(["bj", "sh", "tj", "cq"].map((code) => row(code).capital), [undefined, undefined, undefined, undefined], "as municipalidades não têm capital");
+  assert.equal(DIVISION_INDEX[2].capitals, 27);
+  assert.equal(row("bj").name.pt, "Pequim"); assert.equal(row("sh").name.pt, "Xangai"); assert.equal(row("nm").name.pt, "Mongólia Interior"); assert.equal(row("xz").name.pt, "Tibete");
+  assert.equal(row("gd").name.pt, "Guangdong"); assert.deepEqual(row("gd").alias, ["Cantão"]); assert.deepEqual(row("js").capAl, ["Nanquim", "Nankín"]);
+  assert.equal(row("sn").name.en, "Shaanxi"); assert.equal(row("sx").name.en, "Shanxi"); assert.equal(row("sn").capital, "Xi'an"); assert.equal(row("sx").capital, "Taiyuan");
+  assert.equal(pairs, 68, "68 pares de vizinhos");
+  assert.deepEqual(row("hi").borders, [], "Hainan é ilha");
+  const borders = (code) => [...row(code).borders].sort();
+  assert.deepEqual(borders("bj"), ["cn-he", "cn-tj"]); assert.deepEqual(borders("sh"), ["cn-js", "cn-zj"]); assert.equal(borders("nm").length, 8); assert.equal(borders("he").length, 7);
+  assert.ok(Object.entries(units.units).every(([id, value]) => value.borders.length > 0 || id === "cn-hi"), "as outras 30 têm vizinho");
+}
+
 // ---- regras
 const D = divisions;
 const br = D.divisionCatalog(files.br.units, "pt");
@@ -207,6 +230,7 @@ const brEs = D.divisionCatalog(files.br.units, "es");
 const brEn = D.divisionCatalog(files.br.units, "en");
 const us = D.divisionCatalog(files.us.units, "pt");
 const usEs = D.divisionCatalog(files.us.units, "es");
+const cn = D.divisionCatalog(files.cn.units, "pt");
 
 // catálogo no formato do acervo: nome no idioma da interface, código como cca3, divisas como códigos, região "<país>:<região>"
 assert.equal(br.country, "br"); assert.deepEqual(br.data.mapEntityIds.sort(), Object.keys(files.br.units.units).sort());
@@ -240,6 +264,15 @@ for (const variant of D.DIVISION_VARIANTS) {
 // os EUA, sem bandeiras: os 6 modos sem bandeira
 const usPlayable = D.DIVISION_VARIANTS.filter((variant) => D.variantPlayable(D.divisionCountry("us"), variant));
 assert.deepEqual(usPlayable, ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]);
+assert.deepEqual(D.DIVISION_VARIANTS.filter((variant) => D.variantPlayable(D.divisionCountry("cn"), variant)), usPlayable, "a China, sem bandeiras: os mesmos 6");
+assert.equal(D.variantPlayable({ ...D.divisionCountry("cn"), capitals: 3 }, "dv-capital"), false, "menos de 4 capitais não dá alternativas");
+// modos de capital: só as unidades com capital (as municipalidades da China ficam de fora), na contagem da Mesa e no baralho
+assert.equal(D.isCapitalVariant("dv-escrita-capital"), true); assert.equal(D.isCapitalVariant("dv-mapa"), false);
+assert.equal(D.divisionCounts()["dv:cn"], 31); assert.equal(D.divisionCounts("dv-capital")["dv:cn"], 27); assert.equal(D.divisionCounts("dv-capital-mapa")["dv:cn:north"], 3);
+assert.equal(D.divisionCounts("dv-capital")["dv:br"], 27, "no Brasil todas têm capital");
+assert.equal(D.divisionSelectedCount(["dv:cn:north", "dv:cn:east"], "dv-escrita-capital"), 9); assert.equal(D.divisionSelectedCount(["dv:cn:north", "dv:cn:east"]), 12);
+assert.equal(D.divisionIdsIn(cn, "dv:cn", "dv-capital").length, 27); assert.ok(!D.divisionIdsIn(cn, "dv:cn", "dv-capital-mapa").includes("cn-bj"));
+assert.equal(D.divisionIdsIn(cn, "dv:cn", "dv-mapa").length, 31); assert.equal(D.divisionIdsIn(cn, "dv:cn").length, 31);
 assert.equal(D.variantPlayable(null, "dv-mapa"), false); assert.equal(D.variantPlayable(D.divisionCountry("br"), "mapa"), false);
 
 // recortes: "dv:<país>" e "dv:<país>:<região>", um país só por vez, à parte dos do mapa-múndi
@@ -293,10 +326,12 @@ assert.equal(D.isDivisionFamily("brasil"), true); assert.equal(D.isDivisionFamil
 // dificuldade: sem população, pela área (os grandes rendem menos, os pequenos mais), um terço em cada faixa
 assert.equal(spoils.entityTier(br.data.meta, "br-am"), 1); assert.equal(spoils.entityTier(br.data.meta, "br-df"), 3); assert.equal(spoils.entityTier(br.data.meta, "br-se"), 3);
 assert.equal(spoils.entityTier(us.data.meta, "us-ak"), 1); assert.equal(spoils.entityTier(us.data.meta, "us-tx"), 1); assert.equal(spoils.entityTier(us.data.meta, "us-ri"), 3); assert.equal(spoils.entityTier(us.data.meta, "us-de"), 3);
-for (const pack of [br, us]) {
+assert.equal(spoils.entityTier(cn.data.meta, "cn-xj"), 1); assert.equal(spoils.entityTier(cn.data.meta, "cn-sh"), 3);
+for (const pack of [br, us, cn]) {
   const ids = Object.keys(pack.data.meta);
   const tiers = [1, 2, 3].map((tier) => ids.filter((id) => spoils.entityTier(pack.data.meta, id) === tier).length);
-  assert.ok(tiers.every((value) => Math.abs(value - ids.length / 3) <= 1), `${pack.country}: um terço em cada faixa (${tiers})`);
+  const third = Math.ceil(ids.length / 3);
+  assert.deepEqual(tiers, [third, third, ids.length - 2 * third], `${pack.country}: um terço em cada faixa, arredondado para cima (${tiers})`);
 }
 
 // preço: o mapa das unidades é grátis, as bandeiras são um modo só nos dois sentidos, e um modo comprado vale para todos os países
@@ -347,5 +382,8 @@ const hawaii = supplies.neighborHint(us.data.meta, "us-hi");
 assert.ok(hawaii?.sea && hawaii.id === "us-ca", `o Havaí: a Califórnia, por mar (${JSON.stringify(hawaii)})`);
 const alaska = supplies.neighborHint(us.data.meta, "us-ak");
 assert.ok(alaska?.sea && alaska.id === "us-wa", `o Alasca: Washington, por mar (${JSON.stringify(alaska)})`);
+const hainan = supplies.neighborHint(cn.data.meta, "cn-hi");
+assert.ok(hainan?.sea && ["cn-gd", "cn-gx"].includes(hainan.id), `Hainan: Guangdong ou Guangxi, por mar (${JSON.stringify(hainan)})`);
+assert.equal(regions.regionLabel("dv:cn:south-central"), "Centro-Sul"); assert.equal(D.divisionRegionLabel("cn:east", "es"), "Este");
 
 console.log(`divisions: ${DIVISION_INDEX.map((country) => `${country.id} ${country.count} unidades/${files[country.id].pairs} divisas`).join(", ")}; ${Math.round(files.br.flagBytes / 1000)} kB de bandeiras do Brasil, silhuetas inteiras, regras e ${points} pontos dos mapas conferidos`);

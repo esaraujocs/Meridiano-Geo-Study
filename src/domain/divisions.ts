@@ -19,10 +19,12 @@ export type DivisionCountry = {
   carta: string;
   name: Names;
   unit: Record<Locale, UnitWord>;
-  regions: { key: string; name: Names; count: number }[];
+  /** Cada região com as contagens de unidades e de unidades com capital. */
+  regions: { key: string; name: Names; count: number; capitals: number }[];
   count: number;
   flags: boolean;
-  capitals: boolean;
+  /** Quantas unidades têm capital (na China, as 4 municipalidades não têm: os modos de capital jogam com as outras 27). */
+  capitals: number;
   /** [oeste, sul, leste, norte] do país inteiro na câmera (nos EUA, os 48 estados contíguos; o Alasca e o Havaí ficam a um zoom de distância). */
   frame: [number, number, number, number];
   attribution: string;
@@ -58,11 +60,13 @@ export function baseVariant<V extends AnyQuizVariant>(variant: V): Exclude<V, Di
 }
 const FLAG_VARIANTS: readonly DivisionVariant[] = ["dv-nome-bandeira", "dv-bandeira-nome", "dv-escrita-nome"];
 const CAPITAL_VARIANTS: readonly DivisionVariant[] = ["dv-capital-mapa", "dv-capital", "dv-escrita-capital"];
-/** O modo dá para jogar com o país? Os de bandeira pedem as bandeiras do pacote; os de capital, a capital de todas as unidades. */
+/** Modo que pergunta pela capital: joga só com as unidades que têm uma. */
+export const isCapitalVariant = (variant: string | undefined) => (CAPITAL_VARIANTS as readonly string[]).includes(variant ?? "");
+/** O modo dá para jogar com o país? Os de bandeira pedem as bandeiras do pacote; os de capital, ao menos 4 unidades com capital (as alternativas). */
 export function variantPlayable(country: DivisionCountry | null, variant: string): boolean {
   if (!country || !isDivisionVariant(variant)) return false;
   if (FLAG_VARIANTS.includes(variant)) return country.flags;
-  if (CAPITAL_VARIANTS.includes(variant)) return country.capitals;
+  if (CAPITAL_VARIANTS.includes(variant)) return country.capitals >= 4;
   return true;
 }
 
@@ -127,17 +131,18 @@ export function divisionRegionItems(countryId: string, locale: Locale = uiLocale
   if (!country) return [];
   return [[divisionRegion(country.id), country.name[locale], ""], ...country.regions.map((region): [Region, string, string] => [divisionRegion(country.id, region.key), region.name[locale], ""])];
 }
-/** Quantas unidades cada recorte de cada país tem (a Mesa conta sem carregar o pacote). */
-export function divisionCounts(): Record<string, number> {
+/** Quantas unidades cada recorte de cada país tem no modo (a Mesa conta sem carregar o pacote; nos modos de capital, só as que têm capital). */
+export function divisionCounts(variant?: string): Record<string, number> {
+  const capital = isCapitalVariant(variant);
   const counts: Record<string, number> = {};
   for (const country of DIVISION_COUNTRIES) {
-    counts[divisionRegion(country.id)] = country.count;
-    for (const region of country.regions) counts[divisionRegion(country.id, region.key)] = region.count;
+    counts[divisionRegion(country.id)] = capital ? country.capitals : country.count;
+    for (const region of country.regions) counts[divisionRegion(country.id, region.key)] = capital ? region.capitals : region.count;
   }
   return counts;
 }
-export function divisionSelectedCount(selection: RegionSelection): number {
-  const counts = divisionCounts();
+export function divisionSelectedCount(selection: RegionSelection, variant?: string): number {
+  const counts = divisionCounts(variant);
   return normalizeDivisionSelection(Array.isArray(selection) ? selection : [selection]).reduce((total, key) => total + (counts[key] ?? 0), 0);
 }
 
@@ -197,12 +202,13 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
   return { country: file.country, data: { sourceVersion: `divisions-${file.country}`, sourceHash: file.source, meta, mapEntityIds: Object.keys(meta) }, bbox };
 }
 
-/** As unidades do recorte (o país inteiro ou as regiões escolhidas). */
-export function divisionIdsIn(pack: DivisionPack, selection: RegionSelection): string[] {
+/** As unidades do recorte (o país inteiro ou as regiões escolhidas); nos modos de capital, só as que têm capital. */
+export function divisionIdsIn(pack: DivisionPack, selection: RegionSelection, variant?: string): string[] {
+  const capital = isCapitalVariant(variant);
   const keys = normalizeDivisionSelection(Array.isArray(selection) ? selection : [selection]);
   const whole = keys.length === 0 || keys.includes(divisionRegion(pack.country));
   const regions = new Set(keys.map((key) => parseDivisionRegion(key)?.region).filter(Boolean).map((region) => `${pack.country}:${region}`));
-  return Object.entries(pack.data.meta).filter(([, meta]) => whole || regions.has(meta.reg ?? "")).map(([id]) => id);
+  return Object.entries(pack.data.meta).filter(([, meta]) => (whole || regions.has(meta.reg ?? "")) && (!capital || Boolean(meta.cap))).map(([id]) => id);
 }
 
 /** Caixa [oeste, sul, leste, norte] do enquadramento da câmera: o quadro do país inteiro, ou a caixa das unidades do recorte. */
