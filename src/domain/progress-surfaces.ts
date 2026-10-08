@@ -270,7 +270,7 @@ export async function querySessions(): Promise<SurfaceSession[]> {
   return rows.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
 }
 
-/** O contador da Coleção (tile do Hub): as cartas de país e as bandeiras históricas juntas (255 + 200 = 455). */
+/** O contador da Coleção (tile do Hub): as cartas de país e as bandeiras históricas juntas (255 + 225 = 480 desde as de 1914). */
 export async function queryCollectionSummary(data: Legacy, historicalIds: readonly string[] = []) {
   const db = await openDb();
   const [progress, historical] = await Promise.all([

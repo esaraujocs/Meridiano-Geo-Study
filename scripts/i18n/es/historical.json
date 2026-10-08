@@ -763,5 +763,155 @@
  },
  "napoles-napoleonico": {
   "name": "Reino de Nápoles (napoleónico)"
+ },
+ "reino-grecia": {
+  "name": "Reino de Grecia",
+  "cap": "Atenas",
+  "sucessor": "Grecia",
+  "fato": "Monarquía creada en 1832 tras la guerra de independencia contra los otomanos; con una pausa republicana entre 1924 y 1935, duró hasta la abolición de la monarquía en 1973."
+ },
+ "reino-montenegro": {
+  "name": "Reino de Montenegro",
+  "cap": "Cetinje",
+  "sucessor": "Reino de los Serbios, Croatas y Eslovenos",
+  "fato": "El principado se convirtió en reino en 1910; ocupado en la Primera Guerra Mundial, fue unido a Serbia en noviembre de 1918, con su gobierno todavía en el exilio."
+ },
+ "malta-britanica": {
+  "name": "Malta británica",
+  "cap": "La Valeta",
+  "sucessor": "Malta",
+  "fato": "El protectorado británico pasó a ser colonia de la Corona en 1813, lo que el Tratado de París confirmó en 1814; se independizó en 1964."
+ },
+ "chipre-britanico": {
+  "name": "Chipre británica",
+  "cap": "Nicosia",
+  "sucessor": "Chipre",
+  "fato": "Administrada por el Reino Unido desde 1878 como protectorado, fue anexionada en 1914, se convirtió en colonia de la Corona en 1925 y se independizó en 1960."
+ },
+ "afeganistao-emirado": {
+  "name": "Emirato de Afganistán",
+  "cap": "Kabul",
+  "sucessor": "Reino de Afganistán",
+  "fato": "Emirato de Asia Central que abarcaba el Afganistán actual y partes de Irán, Pakistán, Turkmenistán y Tayikistán; en 1926 se convirtió en el Reino de Afganistán."
+ },
+ "estados-malaios-federados": {
+  "name": "Estados Malayos Federados",
+  "cap": "Kuala Lumpur",
+  "sucessor": "Unión Malaya",
+  "fato": "Federación de cuatro protectorados británicos en la península malaya (Selangor, Perak, Negeri Sembilan y Pahang); en 1946 se integró en la Unión Malaya."
+ },
+ "estabelecimentos-estreitos": {
+  "name": "Colonias del Estrecho",
+  "cap": "Singapur",
+  "sucessor": "Unión Malaya y Singapur",
+  "fato": "Territorios británicos del Sudeste Asiático, entre ellos Singapur, Penang y Malaca, creados en 1826 por la Compañía de las Indias Orientales y colonia de la Corona desde 1867; disueltos en 1946, tras la ocupación japonesa."
+ },
+ "hong-kong-britanico": {
+  "name": "Hong Kong británico",
+  "cap": "Victoria",
+  "sucessor": "Hong Kong (China)",
+  "fato": "Colonia de la Corona británica desde la ocupación de la isla de Hong Kong en 1841, con la ocupación japonesa de 1941 a 1945 en medio; volvió a China en julio de 1997."
+ },
+ "quedivato-egito": {
+  "name": "Jedivato de Egipto",
+  "cap": "El Cairo",
+  "sucessor": "Sultanato de Egipto",
+  "fato": "Estado autónomo y tributario del Imperio otomano, gobernado por la dinastía de Muhammad Ali; el sultán otorgó el título de jedive a Ismail Pachá en 1867, y en 1914 el país pasó a ser un sultanato bajo protectorado británico."
+ },
+ "africa-oriental-britanica": {
+  "name": "África Oriental Británica",
+  "cap": "Nairobi",
+  "sucessor": "Colonia de Kenia",
+  "fato": "Protectorado británico en la región de los Grandes Lagos africanos, más o menos la Kenia actual, del océano Índico a la frontera con Uganda; en 1920 pasó a ser la Colonia de Kenia."
+ },
+ "protetorado-uganda": {
+  "name": "Protectorado de Uganda",
+  "cap": "Entebbe",
+  "sucessor": "Uganda",
+  "fato": "Protectorado británico creado en 1894 a partir del Reino de Buganda y ampliado hasta un territorio parecido al de Uganda; se independizó en 1962. La bandera lleva una grulla coronada."
+ },
+ "niassalandia": {
+  "name": "Nyasalandia",
+  "cap": "Zomba",
+  "sucessor": "Malaui",
+  "fato": "Nombre dado en 1907 al Protectorado de África Central Británica; formó parte de la Federación de Rodesia y Nyasalandia de 1953 a 1963 y se independizó en 1964 como Malaui."
+ },
+ "uniao-sul-africana": {
+  "name": "Unión Sudafricana",
+  "cap": "Pretoria",
+  "sucessor": "Sudáfrica",
+  "fato": "Dominio británico creado en 1910 con la unión de las colonias del Cabo, Natal, Transvaal y el río Orange; antecesor de la actual República de Sudáfrica, proclamada en 1961."
+ },
+ "costa-do-ouro": {
+  "name": "Costa de Oro",
+  "cap": "Acra",
+  "sucessor": "Ghana",
+  "fato": "Colonia británica en el golfo de Guinea, con el nombre tomado del oro de la región; se independizó en 1957 como Ghana."
+ },
+ "mauricio-britanico": {
+  "name": "Mauricio británico",
+  "cap": "Port Louis",
+  "sucessor": "Mauricio",
+  "fato": "La antigua Isla de Francia, tomada a Francia en 1810 y confirmada como británica por el Tratado de París; se independizó en 1968."
+ },
+ "seychelles-britanicas": {
+  "name": "Seychelles británicas",
+  "cap": "Victoria",
+  "sucessor": "Seychelles",
+  "fato": "Colonia de la Corona británica de 1903 hasta la independencia, en 1976; James Mancham fue elegido primer presidente."
+ },
+ "terra-nova-dominio": {
+  "name": "Dominio de Terranova",
+  "cap": "St. John's",
+  "sucessor": "Terranova y Labrador (Canadá)",
+  "fato": "Dominio británico que reunía la isla de Terranova y el Labrador, en el continente; en 1949 se integró en Canadá, donde es la provincia de Terranova y Labrador."
+ },
+ "honduras-britanicas": {
+  "name": "Honduras Británica",
+  "cap": "Ciudad de Belice",
+  "sucessor": "Belice",
+  "fato": "La última colonia británica en el continente americano, en el extremo sur de la península de Yucatán; pasó a llamarse Belice en 1973 y se independizó en 1981."
+ },
+ "jamaica-colonial": {
+  "name": "Colonia de Jamaica",
+  "cap": "Kingston",
+  "sucessor": "Jamaica",
+  "fato": "Tomada a España por los ingleses en 1655, vivió de la exportación de azúcar de las plantaciones trabajadas por africanos esclavizados; se independizó en 1962."
+ },
+ "bahamas-britanicas": {
+  "name": "Bahamas británicas",
+  "cap": "Nasáu",
+  "sucessor": "Bahamas",
+  "fato": "Colonia británica desde que el gobernador Woodes Rogers llegó a Nasáu, en 1718; el emblema de la bandera, un barco británico persiguiendo piratas, recuerda su expulsión. Independiente en 1973."
+ },
+ "trinidad-tobago-colonial": {
+  "name": "Colonia de Trinidad y Tobago",
+  "cap": "Puerto España",
+  "sucessor": "Trinidad y Tobago",
+  "fato": "Las dos islas se reunieron en una sola colonia británica en 1889; se independizaron en 1962 y pasaron a ser república en 1976."
+ },
+ "barbados-colonial": {
+  "name": "Colonia de Barbados",
+  "cap": "Bridgetown",
+  "sucessor": "Barbados",
+  "fato": "Colonia inglesa y después británica, con el primer asentamiento en 1627, cerca de la actual Holetown; se independizó en 1966."
+ },
+ "barlavento-britanicas": {
+  "name": "Islas de Barlovento Británicas",
+  "cap": "St. George's",
+  "sucessor": "Granada, Santa Lucía y San Vicente y las Granadinas",
+  "fato": "Agrupación administrativa de colonias británicas en el Caribe; en 1914 reunía Granada, Santa Lucía y San Vicente y las Granadinas (Barbados salió en 1885 y Tobago en 1889). Duró hasta 1958."
+ },
+ "guiana-britanica": {
+  "name": "Guayana Británica",
+  "cap": "Georgetown",
+  "sucessor": "Guyana",
+  "fato": "Colonias neerlandesas cedidas al Reino Unido en 1814 y unidas en 1831 como Guayana Británica; se independizó en 1966 como Guyana."
+ },
+ "salomao-britanicas": {
+  "name": "Islas Salomón británicas",
+  "cap": "Tulagi",
+  "sucessor": "Islas Salomón",
+  "fato": "Protectorado británico declarado en 1893 en las Salomón del sur y ampliado después a la mayor parte del país actual; se independizó en 1978."
  }
 }

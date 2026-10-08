@@ -269,6 +269,11 @@ T = {
  "napoles-napoleonico": {"en": ["Kingdom of Naples (Napoleonic)"], "es": ["Reino de Nápoles (napoleónico)"]},
 }
 
+# as históricas acrescentadas depois do clássico (scripts/data/historical-*.json, juntadas por scripts/merge-historical.mjs) trazem as traduções junto
+for path in sorted((ROOT / "scripts/data").glob("historical-*.json")):
+    for entry in json.loads(path.read_text(encoding="utf8")):
+        T[entry["id"]] = {"en": entry["en"], "es": entry["es"]}
+
 missing = [e["id"] for e in entities if e["id"] not in T]
 if missing:
     raise SystemExit(f"sem tradução: {missing}")
