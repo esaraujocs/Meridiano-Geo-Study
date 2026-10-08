@@ -324,14 +324,43 @@ export function HubMecenato({ onOpen, onBack }: { onOpen: () => void; onBack?: (
 /** Os Desafios (06–08/10/2026, mocks hub-v20 a v24): o terceiro pilar, listas contra o relógio para quem já domina os modos. No Hub só a porta de
  *  entrada, no lugar da Vitrine e abaixo do Duelo (hierarquia: modos > Duelo > Desafios): fachada de arcos, título em inscrição e "Desafiar"
  *  (sem desafio em destaque, pedido do Enzo). A tela própria ainda não existe: o cartão diz "em breve" e o botão fica desativado. */
-export function HubChallenges() {
-  return <section className="hx-duel hx-chal" aria-label={t.hub.challengesAria}>
+/** Desenho do Hub no desktop. "faixa" (08/10/2026, mock hub-v29 L2): os modos na largura toda e embaixo Duelo | Desafios | Mecenato · Vitrine.
+ *  "coluna" é o de antes (modos | Duelo + Desafios; progresso | Mecenato · Vitrine), guardado para voltar rápido: trocar o padrão aqui, ou abrir
+ *  o app com ?hub=coluna (fica gravado neste navegador; ?hub=faixa volta). O celular é o mesmo nos dois. */
+export type HubLayout = "faixa" | "coluna";
+const HUB_LAYOUT_DEFAULT: HubLayout = "faixa";
+const isLayout = (value: string | null): value is HubLayout => value === "faixa" || value === "coluna";
+function readHubLayout(): HubLayout {
+  try {
+    const asked = new URLSearchParams(window.location.search).get("hub");
+    if (isLayout(asked)) localStorage.setItem("carta-hub-layout", asked);
+    const saved = localStorage.getItem("carta-hub-layout");
+    return isLayout(saved) ? saved : HUB_LAYOUT_DEFAULT;
+  } catch { return HUB_LAYOUT_DEFAULT; }
+}
+export const HUB_LAYOUT: HubLayout = typeof window === "undefined" ? HUB_LAYOUT_DEFAULT : readHubLayout();
+
+/** Desafios. Na faixa o cartão tem a estrutura do Duelo (o desafio do dia e os botões), para não ficar vazio ao lado dele; a tela dos Desafios
+ *  ainda não existe, então o desafio do dia é uma prévia e os botões ficam desativados. */
+export function HubChallenges({ full = false }: { full?: boolean }) {
+  const go = <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>;
+  return <section className={`hx-duel hx-chal${full ? " is-full" : ""}`} aria-label={t.hub.challengesAria}>
     <div className="hx-duel-top">
       <span className="hx-duel-ic" aria-hidden="true"><Icon type="arches" size={24} /></span>
       <div className="hx-duel-name"><h3>{t.hub.challenges}</h3></div>
       <span className="hx-pill">{t.hub.challengesSoon}</span>
     </div>
-    <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>
+    {full ? <>
+      <div className="hx-chal-daily">
+        <small>{t.hub.challengesDaily} · {t.hub.challengesSampleInfo}</small>
+        <b>{t.hub.challengesSample}</b>
+        <em aria-label={`${t.hub.challengesRecord}: —`}>—<small aria-hidden="true">{t.hub.challengesRecord}</small></em>
+      </div>
+      <div className="hx-duel-foot">
+        {go}
+        <div className="hx-duel-acts"><button type="button" disabled>{t.hub.challengesAll}</button><button type="button" disabled>{t.hub.challengesRecords}</button></div>
+      </div>
+    </> : go}
   </section>;
 }
 

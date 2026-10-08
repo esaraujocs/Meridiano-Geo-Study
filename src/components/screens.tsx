@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
+import { HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -309,7 +309,7 @@ export function Hub({
     </div>;
   };
   return (
-    <main className="content hub-content hx">
+    <main className="content hub-content hx" data-layout={HUB_LAYOUT}>
       <h1 className="sr-only">Meridiano</h1>
       <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
         <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
@@ -345,7 +345,7 @@ export function Hub({
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} />}
-          <HubChallenges />
+          <HubChallenges full={HUB_LAYOUT === "faixa"} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
