@@ -1,6 +1,6 @@
 // Peças do Hub novo: carrossel dos modos, cartão do Duelo (a fila mora nele), Vitrine da Loja e Mecenato do Museu.
 // Cada peça só recebe dados e devolve eventos; o Hub (screens.tsx) monta a grade.
-import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { Children, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
 import type { PvpQueueView } from "../domain/pvp";
@@ -239,19 +239,26 @@ let showcaseIndex = 0;
  * Vitrine da Loja: só consumíveis (os temas ficam na Loja). Alterna os 3 conjuntos de `SUPPLY_SETS` em laço, trocando a cada SHOWCASE_INTERVAL_MS.
  * Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam).
  */
-export function HubShowcase({ onOpenStore }: { onOpenStore: () => void }) {
+export function HubShowcase({ onOpenStore, turn }: { onOpenStore: () => void; turn?: number }) {
   const [index, setIndex] = useState(() => showcaseIndex);
   const [paused, setPaused] = useState(false);
   const count = SUPPLY_SETS.length;
   const at = index % count;
   useEffect(() => { showcaseIndex = at; }, [at]);
+  // no revezamento com o Mecenato quem troca o conjunto é a vez da Vitrine (`turn` sobe a cada vez dela), não o relógio daqui
+  const first = useRef(true);
   useEffect(() => {
-    if (paused || reducedMotion()) return;
+    if (turn === undefined) return;
+    if (first.current) { first.current = false; return; }
+    setIndex((value) => (value + 1) % count);
+  }, [turn, count]);
+  useEffect(() => {
+    if (turn !== undefined || paused || reducedMotion()) return;
     const timer = window.setInterval(() => { if (!document.hidden) setIndex((value) => (value + 1) % count); }, SHOWCASE_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [count, paused]);
+  }, [count, paused, turn]);
   const supplies = SUPPLY_SETS[at] as readonly SupplyId[];
-  return <section className="hx-showcase" aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+  return <section className={`hx-showcase${turn !== undefined ? " is-turn" : ""}`} aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
     <header><h3>{t.hub.showcase}</h3>
       <span className="hx-showcase-dots">{SUPPLY_SETS.map((_, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>
     </header>
@@ -272,12 +279,13 @@ export function HubShowcase({ onOpenStore }: { onOpenStore: () => void }) {
 /** O Mecenato (v2): o que está acontecendo no porto — a expedição que voltou, a que está no mar ou a próxima etapa da rota aberta. Abre o Mecenato.
  *  No mar, o cartão mostra uma faixa de viagem (o navio anda na barra até o porto, com o tempo que falta, atualizado sozinho); de volta, a faixa vira
  *  "Voltou!" e o cartão pulsa até desembarcar. */
-export function HubMecenato({ onOpen }: { onOpen: () => void }) {
+export function HubMecenato({ onOpen, onBack }: { onOpen: () => void; onBack?: (back: boolean) => void }) {
   const view = useMecenato();
   const [now, setNow] = useState(Date.now());
   const active = view ? activeExpeditions(view) : [];
   const backRecord = view ? active.find((record) => isBack(record, view.progress[record.id] ?? emptyProgress(), now)) : undefined;
   const sailingRecord = active.find((record) => record !== backRecord);
+  useEffect(() => { onBack?.(Boolean(backRecord)); }, [backRecord, onBack]);
   // no mar o relógio anda a cada 15 s (no último minuto, a cada segundo); parado no porto, a cada minuto
   const left = sailingRecord && view ? remainingMs(sailingRecord, view.progress[sailingRecord.id] ?? emptyProgress(), now) : null;
   const tick = left === null ? 60_000 : left < 60_000 ? 1000 : 15_000;
@@ -311,4 +319,52 @@ export function HubMecenato({ onOpen }: { onOpen: () => void }) {
       <span className="hx-btn is-light">{backRecord ? t.mecenato.land : shownRecord ? t.hub.museumVisit : next !== null ? t.mecenato.go : t.hub.museumVisit} <Icon type="arrow" size={14} /></span>
     </span>
   </button>;
+}
+
+/** Os Desafios (06–08/10/2026, mocks hub-v20 a v24): o terceiro pilar, listas contra o relógio para quem já domina os modos. No Hub só a porta de
+ *  entrada, no lugar da Vitrine e abaixo do Duelo (hierarquia: modos > Duelo > Desafios): fachada de arcos, título em inscrição, um desafio em
+ *  destaque e "Desafiar". A tela própria ainda não existe: o cartão diz "em breve" e o botão fica desativado. */
+export function HubChallenges() {
+  return <section className="hx-duel hx-chal" aria-label={t.hub.challengesAria}>
+    <div className="hx-duel-top">
+      <span className="hx-duel-ic" aria-hidden="true"><Icon type="arches" size={24} /></span>
+      <div className="hx-duel-name"><h3>{t.hub.challenges}</h3></div>
+      <span className="hx-pill">{t.hub.challengesSoon}</span>
+    </div>
+    <div className="hx-chal-row">
+      <span className="hx-chal-feat"><b>{t.hub.challengesFeatured}</b><small>{t.hub.challengesTime}</small></span>
+      <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>
+    </div>
+  </section>;
+}
+
+/** Em que vez o revezamento parou: voltar ao Hub continua dela. */
+let turnIndex = 0;
+/** Mecenato e Vitrine no mesmo lugar (o do Mecenato), revezando a cada SHOWCASE_INTERVAL_MS, com o nome de cada um no rótulo para escolher.
+ *  Para com o mouse ou o foco, com a aba escondida e com movimento reduzido; com uma expedição de volta fica no Mecenato até desembarcar. Cada vez
+ *  da Vitrine mostra o conjunto seguinte de suprimentos. */
+export function HubTurns({ onOpenMuseum, onOpenStore }: { onOpenMuseum: () => void; onOpenStore: () => void }) {
+  const [turn, setTurn] = useState(() => turnIndex);
+  const [paused, setPaused] = useState(false);
+  const [back, setBack] = useState(false);
+  const ids = useId();
+  useEffect(() => { turnIndex = turn; }, [turn]);
+  useEffect(() => {
+    if (paused || back || reducedMotion()) return;
+    const timer = window.setInterval(() => { if (!document.hidden) setTurn((value) => value + 1); }, SHOWCASE_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, [paused, back]);
+  const showcase = !back && turn % 2 === 1;
+  const pick = (wantShowcase: boolean) => { if (wantShowcase !== showcase) setTurn((value) => value + 1); };
+  const tab = (isShowcase: boolean, label: string) => <button type="button" role="tab" id={`${ids}-${isShowcase ? "s" : "m"}`} className="hx-turn-tab"
+    aria-selected={isShowcase === showcase} aria-controls={`${ids}-panel`} tabIndex={isShowcase === showcase ? 0 : -1} onClick={() => pick(isShowcase)}
+    onKeyDown={(event) => { if (event.key === "ArrowRight" || event.key === "ArrowLeft") { pick(!isShowcase); (event.currentTarget.parentElement?.querySelector(`#${CSS.escape(`${ids}-${isShowcase ? "m" : "s"}`)}`) as HTMLElement | null)?.focus(); } }}>{label}</button>;
+  return <section className="hx-cell hx-mecenato hx-turns" aria-label={t.hub.turnsAria} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+    onFocus={() => setPaused(true)} onBlur={() => setPaused(false)} onPointerDown={() => setPaused(true)}>
+    <div className="section-label" role="tablist" aria-label={t.hub.turnsAria}>{tab(false, t.hub.mecenato)}{tab(true, t.hub.showcase)}</div>
+    <div className="hx-turn-panel" id={`${ids}-panel`} role="tabpanel" aria-labelledby={`${ids}-${showcase ? "s" : "m"}`}>
+      <div className="hx-turn" hidden={showcase}><HubMecenato onOpen={onOpenMuseum} onBack={setBack} /></div>
+      <div className="hx-turn" hidden={!showcase}><HubShowcase onOpenStore={onOpenStore} turn={Math.floor(turn / 2)} /></div>
+    </div>
+  </section>;
 }

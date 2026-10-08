@@ -227,6 +227,43 @@ html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
 
 /* ───────── Mecenato ───────── */
 .hx-mecenato .section-label{margin-top:22px}
+/* Mecenato e Vitrine em revezamento (08/10/2026): o rótulo vira as duas abas, no tom dos rótulos de seção; a da vez em tinta cheia */
+.hx-turns .section-label{justify-content:flex-start;gap:18px}
+.hx-turn-tab{padding:0;border:0;background:none;font:700 21px/normal 'Fraunces',Georgia,serif;letter-spacing:-.03em;color:var(--muted);cursor:pointer}
+.hx-turn-tab[aria-selected=true]{color:var(--ink);box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--brass) 80%,transparent)}
+.hx-turn-tab:hover{color:var(--ink)}
+.hx-turn-tab:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}
+.hx-turn-panel{flex:1;display:flex;flex-direction:column;min-height:0}
+.hx-turn{flex:1;display:flex;flex-direction:column;min-height:0;animation:hx-fade .6s ease both}
+.hx-turn[hidden]{display:none}
+/* a Vitrine no lugar do Mecenato: a mesma altura (150 px), sem o cabeçalho (o rótulo é a aba) e com os suprimentos menores */
+.hx-showcase.is-turn{min-height:150px;padding:10px 12px}
+.hx-showcase.is-turn>header{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hx-showcase.is-turn .hx-supplies button{padding:8px 4px;gap:1px}
+.hx-showcase.is-turn .hx-supply-art{width:48px;height:48px}
+.hx-showcase.is-turn .hx-supply-art svg{width:38px;height:38px}
+.hx-showcase.is-turn .hx-supplies b{margin-top:3px;font-size:13.5px}
+.hx-showcase.is-turn .hx-supplies .hx-price{margin-top:2px;font-size:13.5px}
+@media (prefers-reduced-motion:reduce){.hx-turn{animation:none}}
+html[data-reduced-motion=true] .hx-turn{animation:none}
+
+/* Desafios (08/10/2026, estilo dos mocks hub-v23/v24): a linha do Duelo em azul-noite, título em inscrição, arcos de coliseu discretos no canto
+   de cima e um desafio em destaque com "Desafiar". Fica no lugar da Vitrine, com a mesma altura dela */
+/* a altura mínima é a que a Vitrine tinha pelo conteúdo (228 px): era ela que dava a altura da linha de cima em telas de até ~1440 px, e o
+   Hub fica com as mesmas proporções */
+.hx-chal{--duel-a:#3a669a;--duel-b:#244870;--duel-ink:#244870;flex:1;min-height:228px;gap:12px;align-content:space-between;background:color-mix(in srgb,var(--duel-a) 7%,var(--paper));border-color:color-mix(in srgb,var(--duel-a) 26%,var(--line))}
+:root[data-scheme=dark] .hx-chal{--duel-ink:#b9cdf2}
+.hx-chal::before{display:none}
+/* a fachada de arcos ocupa os dois terços de cima (o cartão tem a altura da Vitrine, mais alto que o do mock) */
+.hx-chal::after{content:"";position:absolute;right:0;top:0;width:80%;height:148px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22240%22%20height%3D%2280%22%20viewBox%3D%220%200%20240%2080%22%20fill%3D%22none%22%20stroke%3D%22%23244870%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M0%204h240M0%209h240M0%2044h240M0%2048h240%22%2F%3E%3Cpath%20d%3D%22M4%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M4%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M0%2012v30M0%2050v30%22%2F%3E%3Cpath%20d%3D%22M28%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M28%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M24%2012v30M24%2050v30%22%2F%3E%3Cpath%20d%3D%22M52%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M52%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M48%2012v30M48%2050v30%22%2F%3E%3Cpath%20d%3D%22M76%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M76%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M72%2012v30M72%2050v30%22%2F%3E%3Cpath%20d%3D%22M100%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M100%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M96%2012v30M96%2050v30%22%2F%3E%3Cpath%20d%3D%22M124%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M124%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M120%2012v30M120%2050v30%22%2F%3E%3Cpath%20d%3D%22M148%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M148%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M144%2012v30M144%2050v30%22%2F%3E%3Cpath%20d%3D%22M172%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M172%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M168%2012v30M168%2050v30%22%2F%3E%3Cpath%20d%3D%22M196%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M196%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M192%2012v30M192%2050v30%22%2F%3E%3Cpath%20d%3D%22M220%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M220%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M216%2012v30M216%2050v30%22%2F%3E%3C%2Fsvg%3E") repeat-x right top/auto 100%;opacity:.12;pointer-events:none;-webkit-mask:linear-gradient(90deg,transparent,#000 55%);mask:linear-gradient(90deg,transparent,#000 55%)}
+:root[data-scheme=dark] .hx-chal::after{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22240%22%20height%3D%2280%22%20viewBox%3D%220%200%20240%2080%22%20fill%3D%22none%22%20stroke%3D%22%23b9cdf2%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M0%204h240M0%209h240M0%2044h240M0%2048h240%22%2F%3E%3Cpath%20d%3D%22M4%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M4%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M0%2012v30M0%2050v30%22%2F%3E%3Cpath%20d%3D%22M28%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M28%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M24%2012v30M24%2050v30%22%2F%3E%3Cpath%20d%3D%22M52%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M52%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M48%2012v30M48%2050v30%22%2F%3E%3Cpath%20d%3D%22M76%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M76%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M72%2012v30M72%2050v30%22%2F%3E%3Cpath%20d%3D%22M100%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M100%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M96%2012v30M96%2050v30%22%2F%3E%3Cpath%20d%3D%22M124%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M124%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M120%2012v30M120%2050v30%22%2F%3E%3Cpath%20d%3D%22M148%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M148%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M144%2012v30M144%2050v30%22%2F%3E%3Cpath%20d%3D%22M172%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M172%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M168%2012v30M168%2050v30%22%2F%3E%3Cpath%20d%3D%22M196%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M196%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M192%2012v30M192%2050v30%22%2F%3E%3Cpath%20d%3D%22M220%2042V24a8%208%200%200%201%2016%200v18%22%2F%3E%3Cpath%20d%3D%22M220%2080V64a8%208%200%200%201%2016%200v16%22%2F%3E%3Cpath%20d%3D%22M216%2012v30M216%2050v30%22%2F%3E%3C%2Fsvg%3E")}
+.hx-chal>*{z-index:1}
+.hx-chal .hx-duel-name h3{text-transform:uppercase;letter-spacing:.16em;font-size:19px}
+.hx-chal .hx-pill{text-transform:uppercase;letter-spacing:.08em;font-size:9.5px}
+.hx-chal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
+.hx-chal-feat{display:flex;align-items:baseline;gap:8px;min-width:0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--duel-a) 10%,transparent)}
+.hx-chal-feat b{font:700 15px 'Fraunces',Georgia,serif;color:var(--duel-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hx-chal-feat small{flex:none;font:600 11px 'DM Mono',monospace;color:color-mix(in srgb,var(--duel-ink) 72%,var(--muted))}
 .hx-museum{position:relative;flex:1;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;min-height:150px;padding:18px 20px;border:1px solid #6b4423;border-radius:18px;overflow:hidden;color:#fff4df;text-align:left;box-shadow:0 16px 28px -18px #3a2610}
 .hx-museum-img{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
 .hx-museum::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(40,26,12,.9) 0%,rgba(40,26,12,.6) 52%,rgba(40,26,12,.1) 100%)}
@@ -300,13 +337,27 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   /* a última linha (Vitrine e Mecenato) tem altura garantida: com overflow:hidden a grade podia espremê-la até cortar o conteúdo em tela baixa
      (Safari com as barras); quem cede é o carrossel */
   .hx-grid{grid-template-columns:1fr 1fr;grid-template-rows:minmax(160px,1fr) auto minmax(112px,auto);gap:10px;margin-top:8px;min-height:0}
-  .hx-showcase,.hx-mecenato{min-height:112px}
+  .hx-chal,.hx-mecenato{min-height:112px}
   .hx-modes{grid-column:1/-1;grid-row:1;min-height:0}
   .hx-arena{display:contents}
   .hx-duel{grid-column:1/-1;grid-row:2}
   .hx-progress{display:none}
-  .hx-showcase{grid-column:1;grid-row:3}
+  .hx-chal{grid-column:1;grid-row:3}
   .hx-mecenato{grid-column:2;grid-row:3}
+  /* o rótulo com as abas fica fora no celular (como os outros rótulos): o revezamento segue sozinho e para ao toque */
+  .hx-turns .section-label{display:none}
+  .hx-showcase.is-turn{min-height:0;padding:8px 6px}
+  /* Desafios em meia largura: o ícone, o título e o botão; o destaque sai */
+  .hx-chal{height:112px;padding:10px 12px;gap:8px;border-radius:14px;align-content:space-between}
+  .hx-chal .hx-duel-top{gap:8px}
+  .hx-chal .hx-duel-ic{width:32px;height:32px;box-shadow:0 0 0 3px color-mix(in srgb,var(--duel-a) 14%,transparent)}
+  .hx-chal .hx-duel-ic svg{width:18px;height:18px}
+  .hx-chal .hx-duel-name h3{font-size:13px;letter-spacing:.12em}
+  .hx-chal .hx-pill{display:none}
+  .hx-chal-row{grid-template-columns:1fr}
+  .hx-chal-feat{display:none}
+  .hx-chal .hx-go{padding:8px 10px;font-size:12px}
+  .hx-chal::after{width:100%;height:56px}
   /* modos: um cartão grande por vez, os vizinhos espiando */
   .hx-car{--per:1;--gap:10px;--peek:calc(var(--gap) + 16px)}
   .hx-track{padding-block:4px}

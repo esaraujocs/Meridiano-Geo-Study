@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HubCarousel, HubDuel, HubMecenato, HubShowcase } from "./hub-parts";
+import { HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -345,7 +345,7 @@ export function Hub({
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} />}
-          <HubShowcase onOpenStore={() => onNavigate?.("store")} />
+          <HubChallenges />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
@@ -357,10 +357,7 @@ export function Hub({
             </button>)}
           </div>
         </section>
-        <section className="hx-cell hx-mecenato" aria-labelledby="hx-mec-title">
-          <div className="section-label"><h2 id="hx-mec-title">{t.hub.mecenato}</h2></div>
-          <HubMecenato onOpen={() => onOpenMuseum?.()} />
-        </section>
+        <HubTurns onOpenMuseum={() => onOpenMuseum?.()} onOpenStore={() => onNavigate?.("store")} />
       </div>
     </main>
   );

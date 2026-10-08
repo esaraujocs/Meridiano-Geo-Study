@@ -36,7 +36,8 @@ export type IconType =
   | "people"
   | "coins"
   | "divisions"
-  | "history";
+  | "history"
+  | "arches";
 
 export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
   return (
@@ -78,6 +79,7 @@ export function Icon({ type, size = 18 }: { type: IconType; size?: number }) {
       {type === "coins" && <><ellipse cx="12" cy="7" rx="7" ry="3" /><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7" /><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" /></>}
       {/* Estados e províncias: um território com as divisas por dentro */}
       {/* Mapas históricos: o relógio com a seta voltando (voltar no tempo) */}
+      {type === "arches" && <path d="M2.5 21h19M3.5 7.5h17M4 4.5h16M5.5 21v-6a2.5 2.5 0 0 1 5 0v6M13.5 21v-6a2.5 2.5 0 0 1 5 0v6M5.5 11.5v-1a2.5 2.5 0 0 1 5 0v1M13.5 11.5v-1a2.5 2.5 0 0 1 5 0v1" strokeLinecap="round" strokeLinejoin="round" />}
       {type === "history" && <path d="M3.6 12.6A8.4 8.4 0 1 0 6 6.1 M2.8 3.6v3.6h3.6 M12 7.6V12l3.1 2" strokeLinecap="round" strokeLinejoin="round" />}
       {type === "divisions" && <><path d="M3.5 7.5 8.5 4l4.5 1.6L18 3.8l2.6 3.6-1.2 4.6 1.6 4.4-3.8 3.4-4.6-1.4-4.4 2.4L3.6 17l1-4.8z" strokeLinejoin="round" /><path d="M8.5 4l1.8 6.2-5.7 2M10.3 10.2l4.6 1.2 4.5-3.8M14.9 11.4l-2.2 7.6" strokeWidth="1.1" strokeLinecap="round" /></>}
       {type === "close" && <path d="M6 6l12 12M18 6L6 18" />}
