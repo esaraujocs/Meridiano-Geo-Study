@@ -10,7 +10,7 @@ Uso: python scripts/divisions/build-division.py <país>   (depois do build:map-h
    → build/divisions/<país>/pieces/NNN.parquet (o formato de build/map-hd/pieces), que build-tiles.py transforma em tiles.
 3. Grava public/data/divisions/<país>/units.json (o catálogo: nome nos 3 idiomas, código, capital, região, área, ponto do rótulo dentro da
    unidade, caixa sem as ilhas distantes, vizinhos pelas divisas) e shapes.json (as silhuetas).
-REUSE_PIECES=1 reaproveita a divisão já feita.
+REUSE_PIECES=1 reaproveita a divisão já feita; ROWS=51-59 (com REUSE_FULL=1) refaz só essas linhas da grade e a terra unida das unidades delas.
 """
 import glob
 import json
@@ -101,6 +101,18 @@ def km2_many(geoms_lonlat):
     """Área em km² de vários polígonos de uma vez (vetorizado: a costa traz dezenas de milhares de ilhotas por unidade no mundo de 1914)."""
     projected = shapely.transform(np.array(geoms_lonlat, dtype=object), lambda c: np.column_stack((np.radians(c[:, 0]) * 6371.0088, np.sin(np.radians(c[:, 1])) * 6371.0088)))
     return shapely.area(projected)
+
+
+def without_small_holes(geom, min_area):
+    """O polígono sem os anéis internos menores que `min_area` (na unidade da geometria). Nas silhuetas de 1914: a grade de 250 m deixa milhares
+    de furos de uma casa dela onde a divisa ou a costa serpenteia, invisíveis no desenho e que enchiam o shapes.json (7,5 MB)."""
+    polys = []
+    for poly in shapely.get_parts(geom):
+        if shapely.get_type_id(poly) != 3:
+            continue
+        rings = [ring for ring in poly.interiors if shapely.area(shapely.Polygon(ring)) >= min_area]
+        polys.append(poly if len(rings) == len(poly.interiors) else shapely.Polygon(poly.exterior, rings))
+    return shapely.multipolygons(polys) if len(polys) > 1 else polys[0] if polys else geom
 
 
 def unit_id(country, code):
@@ -230,10 +242,19 @@ def split_land(country, config, zones, out_dir, land_by_unit):
         for rule in unit.get("fill", []):
             rule = rule if isinstance(rule, dict) else {"carta": rule}
             fill.setdefault(rule["carta"], []).append((unit["code"], rule.get("box")))
-    tolerance = config.get("landTolerance")
+    # Mapas históricos: a terra do mundo inteiro arredondada a uma grade (`landGrid`, em metros de Mercator). Grade, não simplificação: pedaços
+    # vizinhos têm as mesmas coordenadas na divisa e são arredondados igual; simplificados um a um, uma faixa estreita de um país de hoje (a
+    # Mongólia na divisa com a China) sumia, a fresta virava um buraco colado na borda da célula e o clip_by_rect dos tiles devolvia só o
+    # buraco (quadrados vazios no mapa de 1914)
+    grid = config.get("landGrid")
+    neutral_rest = set(config.get("neutralRest", []))
+    # ROWS="51-59": refaz só essas linhas da grade e mantém as outras (o resto do pipeline relê todos os pedaços)
+    rows = os.environ.get("ROWS")
+    rows = set(range(int(rows.split("-")[0]), int(rows.split("-")[-1]) + 1)) if rows else None
     tree = shapely.STRtree([merc[code] for code in order])
     for old in glob.glob(os.path.join(out_dir, "*.parquet")):
-        os.remove(old)
+        if rows is None or int(os.path.basename(old)[:3]) in rows:
+            os.remove(old)
     limit = config.get("leftoverKm")
     total_pieces = leftovers = neutral = 0
     for path in sorted(glob.glob(os.path.join(WORLD, "pieces", "*.parquet"))):
@@ -243,11 +264,13 @@ def split_land(country, config, zones, out_dir, land_by_unit):
         if table.num_rows == 0:
             continue
         cy = int(os.path.basename(path)[:3])
+        if rows is not None and cy not in rows:
+            continue
         out = {"carta_id": [], "cx": [], "cy": [], "geometry": []}
         for cx, carta, blob in zip(table.column("cx").to_pylist(), table.column("carta_id").to_pylist(), table.column("geometry").to_pylist()):
             piece = shapely.from_wkb(blob)
-            if tolerance:
-                piece = polygonal(shapely.make_valid(shapely.simplify(piece, tolerance, preserve_topology=True)))
+            if grid:
+                piece = polygonal(shapely.set_precision(piece, float(grid)))
                 if piece is None:
                     continue
             x0, y0, x1, y1 = cell_rect(cx, cy)
@@ -289,6 +312,15 @@ def split_land(country, config, zones, out_dir, land_by_unit):
                     parts.setdefault(best, []).append(bit)
                     leftovers += 1
                 rest = polygonal(shapely.union_all(kept)) if kept else None
+            # `neutralRest`: a sobra grande (mais de ~1.000 km²) da terra desses países de hoje é neutra inteira, sem degraus de célula; as lascas
+            # de costa seguem para a unidade mais perto
+            if rest is not None and carta in neutral_rest:
+                bits = list(shapely.get_parts(rest))
+                big = [bit for bit in bits if shapely.area(bit) >= 1e9]
+                if big:
+                    parts.setdefault(None, []).extend(big)
+                    small = [bit for bit in bits if shapely.area(bit) < 1e9]
+                    rest = polygonal(shapely.union_all(small)) if small else None
             # sobras: a terra sem divisa vai para a unidade mais perto (diferença de costa, ilhas), até o limite da config
             if rest is not None:
                 lat = math.degrees(2 * math.atan(math.exp(((y0 + y1) / 2) / R)) - math.pi / 2)
@@ -318,7 +350,7 @@ def split_land(country, config, zones, out_dir, land_by_unit):
                                      "cy": pa.array(out["cy"], pa.int16()), "geometry": pa.array(out["geometry"], pa.binary())}),
                            os.path.join(out_dir, f"{cy:03d}.parquet"))
     empty = [code for code in land_by_unit if not land_by_unit[code]]
-    if empty:
+    if empty and rows is None:
         sys.exit(f"unidades sem terra no mapa: {empty}")
     print(f"pedaços: {total_pieces} (sobras atribuídas ao mais perto: {leftovers}; terra neutra: {neutral})", flush=True)
 
@@ -327,11 +359,12 @@ def island_group(parts, main_part, hop=2.3, areas=None):
     """A silhueta: o pedaço principal e as ilhas ligadas a ele por saltos de até `hop` graus (um arquipélago inteiro, como o Havaí, entra; uma ilha
     oceânica isolada, como Trindade ou Noronha, não), sem os pedaços minúsculos."""
     areas = km2_many(parts) if areas is None else areas
-    candidates = [part for part, area in zip(parts, areas) if area >= 0.0015 * km2(main_part)]
-    # as distâncias medidas nas partes simplificadas (~5 km): o salto é de graus, e as ilhas do Ártico canadense têm centenas de milhares de
+    threshold = 0.0015 * km2(main_part)  # uma vez só: dentro da lista, era recalculado para cada pedaço (220 mil no Canadá de 1914)
+    candidates = [part for part, area in zip(parts, areas) if area >= threshold]
+    # as distâncias medidas nas partes simplificadas a 0,25° (a distância do GEOS compara vértice com vértice): o salto é de graus, e as ilhas do Ártico canadense têm centenas de milhares de
     # vértices (com a geometria inteira, o Canadá de 1914 levava mais de 10 minutos)
-    rough = [shapely.simplify(part, 0.05) for part in candidates]
-    main_rough = shapely.simplify(main_part, 0.05)
+    rough = [shapely.simplify(part, 0.25) for part in candidates]
+    main_rough = shapely.simplify(main_part, 0.25)
     kept = [main_rough]
     chosen = [main_part]
     pending = [index for index, part in enumerate(candidates) if part is not main_part]
@@ -348,7 +381,7 @@ def island_group(parts, main_part, hop=2.3, areas=None):
 
 
 # ---- 3. catálogo e silhuetas
-def write_outputs(country, config, zones, land_by_unit, public):
+def write_outputs(country, config, zones, land_by_unit, public, refresh=()):
     os.makedirs(public, exist_ok=True)
     units = {unit["code"]: unit for unit in config["units"]}
     order = sorted(units)
@@ -359,6 +392,11 @@ def write_outputs(country, config, zones, land_by_unit, public):
     cache = os.path.join(ROOT, "build", "divisions", country, "full.parquet")
     if os.environ.get("REUSE_FULL") and os.path.exists(cache):
         full = {row["code"]: shapely.from_wkb(row["wkb"]) for row in pq.read_table(cache).to_pylist()}
+        # com ROWS, as unidades que tinham pedaços nas linhas refeitas
+        for code in refresh:
+            full[code] = to_lonlat(polygonal(shapely.union_all(shapely.set_precision(np.array(land_by_unit[code], dtype=object), 1.0))))
+        if refresh:
+            pq.write_table(pa.table({"code": list(full), "wkb": [shapely.to_wkb(geom) for geom in full.values()]}), cache)
     else:
         full = {code: to_lonlat(polygonal(shapely.union_all(shapely.set_precision(np.array(land_by_unit[code], dtype=object), 1.0)))) for code in order}
         pq.write_table(pa.table({"code": list(full), "wkb": [shapely.to_wkb(geom) for geom in full.values()]}), cache)
@@ -404,9 +442,11 @@ def write_outputs(country, config, zones, land_by_unit, public):
         center = shapely.get_point(shapely.maximum_inscribed_circle(shapely.simplify(main_part, max(bx1 - bx0, by1 - by0) / 400), max(bx1 - bx0, by1 - by0) / 300), 0)
         keep = island_group(parts, main_part, areas=areas)
         minx, miny, maxx, maxy = shapely.bounds(shapely.multipolygons(keep))
-        silhouette = shapely.simplify(shapely.multipolygons(keep), max(maxx - minx, maxy - miny) / 700, preserve_topology=True)
+        tolerance = max(maxx - minx, maxy - miny) / 700
+        silhouette = shapely.simplify(without_small_holes(shapely.multipolygons(keep), (3 * tolerance) ** 2), tolerance, preserve_topology=True)
         uid = unit_id(country, code)
-        shapes[uid] = json.loads(shapely.to_geojson(shapely.set_precision(silhouette, 0.0001)))
+        silhouette = shapely.set_precision(silhouette, 0.0001)
+        shapes[uid] = json.loads(shapely.to_geojson(silhouette))
         base = config.get("nameLocale", "pt")
         names = {locale: unit.get("names", {}).get(locale, unit["name"]) for locale in LOCALES}
         names[base] = unit.get("names", {}).get(base, unit["name"])
@@ -421,7 +461,9 @@ def write_outputs(country, config, zones, land_by_unit, public):
         entry.update({
             "region": unit["region"], "area": round(area), "ll": [round(center.y, 4), round(center.x, 4)],
             # caixa da unidade sem as ilhas distantes, [oeste, sul, leste, norte]: o enquadramento da câmera do mapa por região
-            "bbox": [round(minx, 3), round(miny, 3), round(maxx, 3), round(maxy, 3)],
+            # a caixa é a da silhueta: em 1914 a grade de 250 m não casa com as células de 313.086 m e deixa faixas sem largura nas bordas
+            # delas, que esticavam a caixa (El Salvador ia até 16,6°N pelo meridiano de 90°O) e somem no arredondamento da silhueta
+            "bbox": [round(value, 3) for value in shapely.bounds(silhouette)],
             "borders": sorted(neighbors_of[code]),
         })
         catalog[uid] = entry
@@ -447,16 +489,27 @@ def main():
     out_dir = os.path.join(build, "pieces")
     os.makedirs(out_dir, exist_ok=True)
     land_by_unit = {unit["code"]: [] for unit in config["units"]}
-    if os.environ.get("REUSE_PIECES") and glob.glob(os.path.join(out_dir, "*.parquet")):
+
+    def load_pieces():
         for path in sorted(glob.glob(os.path.join(out_dir, "*.parquet"))):
             table = pq.read_table(path)
             for carta, blob in zip(table.column("carta_id").to_pylist(), table.column("geometry").to_pylist()):
                 if carta:
                     land_by_unit[carta[len(country) + 1:].upper()].append(shapely.from_wkb(blob))
+    refresh = ()
+    if os.environ.get("REUSE_PIECES") and glob.glob(os.path.join(out_dir, "*.parquet")):
+        load_pieces()
         print("pedaços reaproveitados de", out_dir, flush=True)
     else:
         split_land(country, config, zones, out_dir, land_by_unit)
-    write_outputs(country, config, zones, land_by_unit, public)
+        if os.environ.get("ROWS"):
+            # só algumas linhas refeitas: relê todos os pedaços; a terra unida (REUSE_FULL) é refeita só para as unidades dessas linhas
+            refresh = sorted(code for code, geoms in land_by_unit.items() if geoms)
+            for code in land_by_unit:
+                land_by_unit[code] = []
+            load_pieces()
+            print(f"linhas {os.environ['ROWS']} refeitas · terra unida refeita para {len(refresh)} unidades", flush=True)
+    write_outputs(country, config, zones, land_by_unit, public, refresh)
 
 
 if __name__ == "__main__":

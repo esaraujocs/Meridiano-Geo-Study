@@ -277,5 +277,103 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
       "bytes": 3075857,
       "sha256": "be61fceee7abc5c36b62fa695f664f13dbe4382d37c49f5cb72991eaed43c69f"
     }
+  },
+  {
+    "id": "1914",
+    "kind": "era",
+    "subtitle": {
+      "pt": "Véspera da Primeira Guerra",
+      "en": "Eve of the First World War",
+      "es": "Víspera de la Primera Guerra Mundial"
+    },
+    "carta": "",
+    "name": {
+      "pt": "1914",
+      "en": "1914",
+      "es": "1914"
+    },
+    "unit": {
+      "pt": {
+        "one": "território",
+        "many": "territórios",
+        "g": "m"
+      },
+      "en": {
+        "one": "territory",
+        "many": "territories"
+      },
+      "es": {
+        "one": "territorio",
+        "many": "territorios",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "europe",
+        "name": {
+          "pt": "Europa",
+          "en": "Europe",
+          "es": "Europa"
+        },
+        "count": 25,
+        "capitals": 25
+      },
+      {
+        "key": "asia",
+        "name": {
+          "pt": "Ásia",
+          "en": "Asia",
+          "es": "Asia"
+        },
+        "count": 29,
+        "capitals": 27
+      },
+      {
+        "key": "africa",
+        "name": {
+          "pt": "África",
+          "en": "Africa",
+          "es": "África"
+        },
+        "count": 47,
+        "capitals": 46
+      },
+      {
+        "key": "americas",
+        "name": {
+          "pt": "Américas",
+          "en": "Americas",
+          "es": "Américas"
+        },
+        "count": 34,
+        "capitals": 33
+      },
+      {
+        "key": "oceania",
+        "name": {
+          "pt": "Oceania",
+          "en": "Oceania",
+          "es": "Oceanía"
+        },
+        "count": 11,
+        "capitals": 11
+      }
+    ],
+    "count": 146,
+    "flags": false,
+    "capitals": 142,
+    "frame": [
+      -170.0,
+      -56.0,
+      190.0,
+      78.0
+    ],
+    "attribution": "© OpenHistoricalMap · © OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-1914.pmtiles",
+      "bytes": 17345383,
+      "sha256": "689f35ab17fe489c4e245bafade69551847650cd982648b4b682392e3978d168"
+    }
   }
 ];

@@ -57,7 +57,7 @@
 .cp-btn i{display:grid;place-items:center;margin-left:4px;transition:transform .15s}
 .cp.is-open .cp-btn i{transform:rotate(180deg)}
 .cp-flag{display:block;flex:none;width:36px;height:24px;border-radius:4px;object-fit:cover;background:var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 16%,transparent)}
-.cp-year{display:grid;place-items:center;font:700 13px 'Fraunces',Georgia,serif;color:var(--h,var(--green));background:color-mix(in srgb,var(--h,var(--green)) 12%,var(--paper));box-shadow:0 0 0 1px color-mix(in srgb,var(--h,var(--green)) 35%,transparent)}
+.cp-year{display:grid;place-items:center;font:700 13px 'Fraunces',Georgia,serif;color:color-mix(in srgb,var(--h,var(--green)) 45%,var(--ink));background:color-mix(in srgb,var(--h,var(--green)) 12%,var(--paper));box-shadow:0 0 0 1px color-mix(in srgb,var(--h,var(--green)) 35%,transparent)}
 .cp-btn .cp-year{width:48px;height:32px;font-size:16px}
 .cp-shade{position:fixed;inset:0;z-index:40;background:transparent}
 .cp-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:41;width:min(560px,calc(100vw - 40px));max-height:min(560px,72vh);display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 18px 50px color-mix(in srgb,var(--ink) 24%,transparent)}

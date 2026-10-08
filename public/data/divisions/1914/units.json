@@ -1,0 +1,4931 @@
+{
+ "source": "O mundo em 1º de julho de 1914, véspera da Primeira Guerra: Estados, colônias e protetorados como alvos próprios. Fronteiras do OpenHistoricalMap (CC0; relações de país válidas na data, fetch-ohm.py), com a costa do mapa HD; onde o OHM falha, a terra de hoje pelo carta_id do mapa HD (Egito, Argentina, Chile, sul do Marrocos, interior de Omã, da Somália e da Líbia; a Argélia, a Islândia, a Groenlândia e o Suriname recortados das metrópoles). Nomes e capitais de 1914 do Wikidata e das Wikipédias pt/en/es (07/10/2026); Kamerun: Buea, sede do governo de 1901 a 1915 (de.wikipedia). Miudezas e as disputas do Chaco e do Labrador ficam neutras. Gerado por scripts/divisions/eras/make-1914.py: edite lá.",
+ "country": "1914",
+ "regions": {
+  "europe": {
+   "pt": "Europa",
+   "en": "Europe",
+   "es": "Europa"
+  },
+  "asia": {
+   "pt": "Ásia",
+   "en": "Asia",
+   "es": "Asia"
+  },
+  "africa": {
+   "pt": "África",
+   "en": "Africa",
+   "es": "África"
+  },
+  "americas": {
+   "pt": "Américas",
+   "en": "Americas",
+   "es": "Américas"
+  },
+  "oceania": {
+   "pt": "Oceania",
+   "en": "Oceania",
+   "es": "Oceanía"
+  }
+ },
+ "units": {
+  "1914-adn": {
+   "code": "ADN",
+   "ref": "ADN",
+   "name": {
+    "pt": "Protetorado de Áden",
+    "en": "Aden Protectorate",
+    "es": "Protectorado de Adén"
+   },
+   "capital": {
+    "pt": "Áden",
+    "en": "Aden",
+    "es": "Adén"
+   },
+   "capAl": [
+    "Aden"
+   ],
+   "region": "asia",
+   "area": 246657,
+   "ll": [
+    16.6543,
+    49.6584
+   ],
+   "bbox": [
+    43.523,
+    12.593,
+    53.108,
+    19.0
+   ],
+   "borders": [
+    "1914-msc",
+    "1914-ott"
+   ]
+  },
+  "1914-aef": {
+   "code": "AEF",
+   "ref": "AEF",
+   "name": {
+    "pt": "África Equatorial Francesa",
+    "en": "French Equatorial Africa",
+    "es": "África Ecuatorial Francesa"
+   },
+   "capital": {
+    "pt": "Brazzaville",
+    "en": "Brazzaville",
+    "es": "Brazzaville"
+   },
+   "capAl": [
+    "Brazavile"
+   ],
+   "region": "africa",
+   "area": 2176713,
+   "ll": [
+    17.3867,
+    19.4674
+   ],
+   "bbox": [
+    8.698,
+    -5.038,
+    27.455,
+    23.452
+   ],
+   "borders": [
+    "1914-ang",
+    "1914-aof",
+    "1914-bcg",
+    "1914-kam",
+    "1914-nig",
+    "1914-sdn",
+    "1914-spg",
+    "1914-trp"
+   ]
+  },
+  "1914-afg": {
+   "code": "AFG",
+   "ref": "AFG",
+   "name": {
+    "pt": "Afeganistão",
+    "en": "Afghanistan",
+    "es": "Afganistán"
+   },
+   "alias": [
+    "Emirado do Afeganistão"
+   ],
+   "capital": {
+    "pt": "Cabul",
+    "en": "Kabul",
+    "es": "Kabul"
+   },
+   "region": "asia",
+   "area": 641969,
+   "ll": [
+    34.2427,
+    66.5545
+   ],
+   "bbox": [
+    60.522,
+    29.377,
+    74.888,
+    38.491
+   ],
+   "borders": [
+    "1914-chn",
+    "1914-ind",
+    "1914-per",
+    "1914-rus"
+   ]
+  },
+  "1914-alb": {
+   "code": "ALB",
+   "ref": "ALB",
+   "name": {
+    "pt": "Albânia",
+    "en": "Albania",
+    "es": "Albania"
+   },
+   "alias": [
+    "Principado da Albânia"
+   ],
+   "capital": {
+    "pt": "Durrës",
+    "en": "Durrës",
+    "es": "Durrës"
+   },
+   "capAl": [
+    "Durazzo",
+    "Durres"
+   ],
+   "region": "europe",
+   "area": 28933,
+   "ll": [
+    40.6245,
+    20.091
+   ],
+   "bbox": [
+    19.289,
+    39.645,
+    21.058,
+    42.661
+   ],
+   "borders": [
+    "1914-grc",
+    "1914-mne",
+    "1914-srb"
+   ]
+  },
+  "1914-alg": {
+   "code": "ALG",
+   "ref": "ALG",
+   "name": {
+    "pt": "Argélia",
+    "en": "Algeria",
+    "es": "Argelia"
+   },
+   "capital": {
+    "pt": "Argel",
+    "en": "Algiers",
+    "es": "Argel"
+   },
+   "region": "africa",
+   "area": 2306308,
+   "ll": [
+    27.2644,
+    2.5925
+   ],
+   "bbox": [
+    -8.669,
+    18.977,
+    11.997,
+    37.085
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-mar",
+    "1914-sgh",
+    "1914-smo",
+    "1914-trp",
+    "1914-tun"
+   ]
+  },
+  "1914-ang": {
+   "code": "ANG",
+   "ref": "ANG",
+   "name": {
+    "pt": "Angola",
+    "en": "Angola",
+    "es": "Angola"
+   },
+   "alias": [
+    "África Ocidental Portuguesa",
+    "Portuguese West Africa",
+    "África Occidental Portuguesa"
+   ],
+   "capital": {
+    "pt": "Luanda",
+    "en": "Luanda",
+    "es": "Luanda"
+   },
+   "capAl": [
+    "Loanda"
+   ],
+   "region": "africa",
+   "area": 1022824,
+   "ll": [
+    -13.9695,
+    16.5826
+   ],
+   "bbox": [
+    11.732,
+    -17.91,
+    22.33,
+    -4.348
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-bcg",
+    "1914-gsw",
+    "1914-nrh"
+   ]
+  },
+  "1914-aof": {
+   "code": "AOF",
+   "ref": "AOF",
+   "name": {
+    "pt": "África Ocidental Francesa",
+    "en": "French West Africa",
+    "es": "África Occidental Francesa"
+   },
+   "capital": {
+    "pt": "Dacar",
+    "en": "Dakar",
+    "es": "Dakar"
+   },
+   "capAl": [
+    "Dakar"
+   ],
+   "region": "africa",
+   "area": 4635029,
+   "ll": [
+    17.8689,
+    -6.7252
+   ],
+   "bbox": [
+    -17.531,
+    4.362,
+    15.999,
+    27.316
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-alg",
+    "1914-gld",
+    "1914-gmb",
+    "1914-kam",
+    "1914-lbr",
+    "1914-nig",
+    "1914-pgu",
+    "1914-rdo",
+    "1914-sgh",
+    "1914-sle",
+    "1914-tog",
+    "1914-trp"
+   ]
+  },
+  "1914-arg": {
+   "code": "ARG",
+   "ref": "ARG",
+   "name": {
+    "pt": "Argentina",
+    "en": "Argentina",
+    "es": "Argentina"
+   },
+   "capital": {
+    "pt": "Buenos Aires",
+    "en": "Buenos Aires",
+    "es": "Buenos Aires"
+   },
+   "region": "americas",
+   "area": 2780623,
+   "ll": [
+    -34.9399,
+    -65.2749
+   ],
+   "bbox": [
+    -73.561,
+    -55.056,
+    -53.641,
+    -21.787
+   ],
+   "borders": [
+    "1914-bol",
+    "1914-bra",
+    "1914-chl",
+    "1914-pry",
+    "1914-ury"
+   ]
+  },
+  "1914-auh": {
+   "code": "AUH",
+   "ref": "AUH",
+   "name": {
+    "pt": "Áustria-Hungria",
+    "en": "Austria-Hungary",
+    "es": "Austria-Hungría"
+   },
+   "alias": [
+    "Império Austro-Húngaro",
+    "Austro-Hungarian Empire",
+    "Imperio austrohúngaro"
+   ],
+   "capital": {
+    "pt": "Viena",
+    "en": "Vienna",
+    "es": "Viena"
+   },
+   "capAl": [
+    "Wien"
+   ],
+   "region": "europe",
+   "area": 673955,
+   "ll": [
+    47.7064,
+    21.1152
+   ],
+   "bbox": [
+    9.531,
+    42.106,
+    28.124,
+    51.055
+   ],
+   "borders": [
+    "1914-che",
+    "1914-ger",
+    "1914-ita",
+    "1914-mne",
+    "1914-rou",
+    "1914-rus",
+    "1914-srb"
+   ]
+  },
+  "1914-aus": {
+   "code": "AUS",
+   "ref": "AUS",
+   "name": {
+    "pt": "Austrália",
+    "en": "Australia",
+    "es": "Australia"
+   },
+   "capital": {
+    "pt": "Melbourne",
+    "en": "Melbourne",
+    "es": "Melbourne"
+   },
+   "region": "oceania",
+   "area": 7926713,
+   "ll": [
+    -23.5655,
+    133.4766
+   ],
+   "bbox": [
+    113.156,
+    -43.639,
+    153.639,
+    -3.42
+   ],
+   "borders": [
+    "1914-dei",
+    "1914-gng"
+   ]
+  },
+  "1914-bas": {
+   "code": "BAS",
+   "ref": "BAS",
+   "name": {
+    "pt": "Basutolândia",
+    "en": "Basutoland",
+    "es": "Basutolandia"
+   },
+   "alias": [
+    "Lesoto",
+    "Lesotho"
+   ],
+   "capital": {
+    "pt": "Maseru",
+    "en": "Maseru",
+    "es": "Maseru"
+   },
+   "region": "africa",
+   "area": 30657,
+   "ll": [
+    -29.4269,
+    28.4615
+   ],
+   "bbox": [
+    27.012,
+    -30.676,
+    30.938,
+    -27.058
+   ],
+   "borders": [
+    "1914-zaf"
+   ]
+  },
+  "1914-bcg": {
+   "code": "BCG",
+   "ref": "BCG",
+   "name": {
+    "pt": "Congo Belga",
+    "en": "Belgian Congo",
+    "es": "Congo Belga"
+   },
+   "capital": {
+    "pt": "Boma",
+    "en": "Boma",
+    "es": "Boma"
+   },
+   "region": "africa",
+   "area": 2311115,
+   "ll": [
+    -0.6754,
+    23.6071
+   ],
+   "bbox": [
+    11.543,
+    -13.449,
+    31.277,
+    5.392
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-ang",
+    "1914-gea",
+    "1914-kam",
+    "1914-nrh",
+    "1914-sdn",
+    "1914-uga"
+   ]
+  },
+  "1914-bea": {
+   "code": "BEA",
+   "ref": "BEA",
+   "name": {
+    "pt": "África Oriental Britânica",
+    "en": "British East Africa",
+    "es": "África Oriental británica"
+   },
+   "alias": [
+    "Quênia",
+    "Kenya",
+    "Kenia"
+   ],
+   "capital": {
+    "pt": "Nairóbi",
+    "en": "Nairobi",
+    "es": "Nairobi"
+   },
+   "region": "africa",
+   "area": 621743,
+   "ll": [
+    0.454,
+    39.1738
+   ],
+   "bbox": [
+    33.945,
+    -4.679,
+    42.78,
+    4.454
+   ],
+   "borders": [
+    "1914-eth",
+    "1914-gea",
+    "1914-iso",
+    "1914-uga"
+   ]
+  },
+  "1914-bec": {
+   "code": "BEC",
+   "ref": "BEC",
+   "name": {
+    "pt": "Bechuanalândia",
+    "en": "Bechuanaland",
+    "es": "Bechuanalandia"
+   },
+   "alias": [
+    "Botsuana",
+    "Botswana"
+   ],
+   "capital": {
+    "pt": "Mafeking",
+    "en": "Mafeking",
+    "es": "Mafeking"
+   },
+   "capAl": [
+    "Mafikeng",
+    "Mahikeng"
+   ],
+   "region": "africa",
+   "area": 579680,
+   "ll": [
+    -21.8763,
+    24.1211
+   ],
+   "bbox": [
+    19.999,
+    -26.906,
+    29.379,
+    -17.784
+   ],
+   "borders": [
+    "1914-gsw",
+    "1914-nrh",
+    "1914-srh",
+    "1914-zaf"
+   ]
+  },
+  "1914-bel": {
+   "code": "BEL",
+   "ref": "BEL",
+   "name": {
+    "pt": "Bélgica",
+    "en": "Belgium",
+    "es": "Bélgica"
+   },
+   "capital": {
+    "pt": "Bruxelas",
+    "en": "Brussels",
+    "es": "Bruselas"
+   },
+   "region": "europe",
+   "area": 29492,
+   "ll": [
+    50.3407,
+    5.2305
+   ],
+   "bbox": [
+    2.546,
+    49.498,
+    6.14,
+    51.505
+   ],
+   "borders": [
+    "1914-fra",
+    "1914-ger",
+    "1914-lux",
+    "1914-nld"
+   ]
+  },
+  "1914-bgr": {
+   "code": "BGR",
+   "ref": "BGR",
+   "name": {
+    "pt": "Bulgária",
+    "en": "Bulgaria",
+    "es": "Bulgaria"
+   },
+   "alias": [
+    "Reino da Bulgária",
+    "Czarado da Bulgária"
+   ],
+   "capital": {
+    "pt": "Sófia",
+    "en": "Sofia",
+    "es": "Sofía"
+   },
+   "region": "europe",
+   "area": 113676,
+   "ll": [
+    42.4961,
+    25.1797
+   ],
+   "bbox": [
+    21.149,
+    40.729,
+    28.075,
+    44.217
+   ],
+   "borders": [
+    "1914-grc",
+    "1914-ott",
+    "1914-rou",
+    "1914-srb"
+   ]
+  },
+  "1914-bho": {
+   "code": "BHO",
+   "ref": "BHO",
+   "name": {
+    "pt": "Honduras Britânicas",
+    "en": "British Honduras",
+    "es": "Honduras Británica"
+   },
+   "alias": [
+    "Belize",
+    "Belice"
+   ],
+   "capital": {
+    "pt": "Belize",
+    "en": "Belize",
+    "es": "Belize"
+   },
+   "capAl": [
+    "Belize City",
+    "Cidade de Belize"
+   ],
+   "region": "americas",
+   "area": 22372,
+   "ll": [
+    17.4306,
+    -88.7119
+   ],
+   "bbox": [
+    -89.228,
+    15.886,
+    -87.761,
+    18.496
+   ],
+   "borders": [
+    "1914-gtm",
+    "1914-mex"
+   ]
+  },
+  "1914-bhr": {
+   "code": "BHR",
+   "ref": "BHR",
+   "name": {
+    "pt": "Bahrein",
+    "en": "Bahrain",
+    "es": "Baréin"
+   },
+   "alias": [
+    "Barein",
+    "Bahrain"
+   ],
+   "capital": {
+    "pt": "Manama",
+    "en": "Manama",
+    "es": "Manama"
+   },
+   "region": "asia",
+   "area": 793,
+   "ll": [
+    25.978,
+    50.5406
+   ],
+   "bbox": [
+    50.378,
+    25.579,
+    50.822,
+    26.338
+   ],
+   "borders": []
+  },
+  "1914-bhs": {
+   "code": "BHS",
+   "ref": "BHS",
+   "name": {
+    "pt": "Bahamas",
+    "en": "Bahamas",
+    "es": "Bahamas"
+   },
+   "capital": {
+    "pt": "Nassau",
+    "en": "Nassau",
+    "es": "Nassau"
+   },
+   "region": "americas",
+   "area": 12137,
+   "ll": [
+    24.8033,
+    -78.0718
+   ],
+   "bbox": [
+    -79.306,
+    20.913,
+    -72.728,
+    27.032
+   ],
+   "borders": []
+  },
+  "1914-bol": {
+   "code": "BOL",
+   "ref": "BOL",
+   "name": {
+    "pt": "Bolívia",
+    "en": "Bolivia",
+    "es": "Bolivia"
+   },
+   "capital": {
+    "pt": "Sucre",
+    "en": "Sucre",
+    "es": "Sucre"
+   },
+   "capAl": [
+    "La Paz"
+   ],
+   "region": "americas",
+   "area": 1004651,
+   "ll": [
+    -16.1341,
+    -64.9309
+   ],
+   "bbox": [
+    -70.313,
+    -22.899,
+    -57.454,
+    -8.407
+   ],
+   "borders": [
+    "1914-arg",
+    "1914-bra",
+    "1914-chl",
+    "1914-pru"
+   ]
+  },
+  "1914-bra": {
+   "code": "BRA",
+   "ref": "BRA",
+   "name": {
+    "pt": "Brasil",
+    "en": "Brazil",
+    "es": "Brasil"
+   },
+   "capital": {
+    "pt": "Rio de Janeiro",
+    "en": "Rio de Janeiro",
+    "es": "Río de Janeiro"
+   },
+   "region": "americas",
+   "area": 8510716,
+   "ll": [
+    -11.4745,
+    -52.7081
+   ],
+   "bbox": [
+    -73.991,
+    -32.546,
+    -34.794,
+    5.617
+   ],
+   "borders": [
+    "1914-arg",
+    "1914-bol",
+    "1914-col",
+    "1914-ecu",
+    "1914-guf",
+    "1914-guy",
+    "1914-pru",
+    "1914-pry",
+    "1914-sur",
+    "1914-ury",
+    "1914-ven"
+   ]
+  },
+  "1914-brb": {
+   "code": "BRB",
+   "ref": "BRB",
+   "name": {
+    "pt": "Barbados",
+    "en": "Barbados",
+    "es": "Barbados"
+   },
+   "capital": {
+    "pt": "Bridgetown",
+    "en": "Bridgetown",
+    "es": "Bridgetown"
+   },
+   "region": "americas",
+   "area": 435,
+   "ll": [
+    13.1422,
+    -59.5523
+   ],
+   "bbox": [
+    -59.65,
+    13.044,
+    -59.421,
+    13.335
+   ],
+   "borders": []
+  },
+  "1914-brn": {
+   "code": "BRN",
+   "ref": "BRN",
+   "name": {
+    "pt": "Brunei",
+    "en": "Brunei",
+    "es": "Brunéi"
+   },
+   "capital": {
+    "pt": "Cidade de Brunei",
+    "en": "Brunei Town",
+    "es": "Ciudad de Brunéi"
+   },
+   "capAl": [
+    "Bandar Seri Begawan",
+    "Brunei"
+   ],
+   "region": "asia",
+   "area": 5887,
+   "ll": [
+    4.4731,
+    114.5818
+   ],
+   "bbox": [
+    114.076,
+    4.004,
+    115.364,
+    5.044
+   ],
+   "borders": [
+    "1914-sar"
+   ]
+  },
+  "1914-bso": {
+   "code": "BSO",
+   "ref": "BSO",
+   "name": {
+    "pt": "Somalilândia Britânica",
+    "en": "British Somaliland",
+    "es": "Somalilandia británica"
+   },
+   "capital": {
+    "pt": "Berbera",
+    "en": "Berbera",
+    "es": "Berbera"
+   },
+   "region": "africa",
+   "area": 171112,
+   "ll": [
+    9.5617,
+    46.1542
+   ],
+   "bbox": [
+    42.67,
+    8.0,
+    49.084,
+    11.462
+   ],
+   "borders": [
+    "1914-eth",
+    "1914-fso",
+    "1914-iso"
+   ]
+  },
+  "1914-btn": {
+   "code": "BTN",
+   "ref": "BTN",
+   "name": {
+    "pt": "Butão",
+    "en": "Bhutan",
+    "es": "Bután"
+   },
+   "capital": {
+    "pt": "Punakha",
+    "en": "Punakha",
+    "es": "Punakha"
+   },
+   "region": "asia",
+   "area": 39260,
+   "ll": [
+    27.5138,
+    89.9853
+   ],
+   "bbox": [
+    88.747,
+    26.699,
+    92.812,
+    29.536
+   ],
+   "borders": [
+    "1914-ind",
+    "1914-tib"
+   ]
+  },
+  "1914-can": {
+   "code": "CAN",
+   "ref": "CAN",
+   "name": {
+    "pt": "Canadá",
+    "en": "Canada",
+    "es": "Canadá"
+   },
+   "alias": [
+    "Domínio do Canadá"
+   ],
+   "capital": {
+    "pt": "Ottawa",
+    "en": "Ottawa",
+    "es": "Ottawa"
+   },
+   "region": "americas",
+   "area": 9257659,
+   "ll": [
+    61.5413,
+    -128.5488
+   ],
+   "bbox": [
+    -141.002,
+    41.907,
+    -57.108,
+    83.111
+   ],
+   "borders": [
+    "1914-nfl",
+    "1914-usa"
+   ]
+  },
+  "1914-cey": {
+   "code": "CEY",
+   "ref": "CEY",
+   "name": {
+    "pt": "Ceilão",
+    "en": "Ceylon",
+    "es": "Ceilán"
+   },
+   "alias": [
+    "Sri Lanka"
+   ],
+   "capital": {
+    "pt": "Colombo",
+    "en": "Colombo",
+    "es": "Colombo"
+   },
+   "region": "asia",
+   "area": 66425,
+   "ll": [
+    7.1555,
+    80.8619
+   ],
+   "bbox": [
+    79.692,
+    5.918,
+    81.879,
+    9.835
+   ],
+   "borders": []
+  },
+  "1914-che": {
+   "code": "CHE",
+   "ref": "CHE",
+   "name": {
+    "pt": "Suíça",
+    "en": "Switzerland",
+    "es": "Suiza"
+   },
+   "capital": {
+    "pt": "Berna",
+    "en": "Bern",
+    "es": "Berna"
+   },
+   "region": "europe",
+   "area": 40145,
+   "ll": [
+    46.8286,
+    9.0451
+   ],
+   "bbox": [
+    5.957,
+    45.823,
+    10.492,
+    47.808
+   ],
+   "borders": [
+    "1914-auh",
+    "1914-fra",
+    "1914-ger",
+    "1914-ita"
+   ]
+  },
+  "1914-chl": {
+   "code": "CHL",
+   "ref": "CHL",
+   "name": {
+    "pt": "Chile",
+    "en": "Chile",
+    "es": "Chile"
+   },
+   "capital": {
+    "pt": "Santiago",
+    "en": "Santiago",
+    "es": "Santiago"
+   },
+   "capAl": [
+    "Santiago de Chile"
+   ],
+   "region": "americas",
+   "area": 749332,
+   "ll": [
+    -23.3994,
+    -69.1158
+   ],
+   "bbox": [
+    -75.649,
+    -55.699,
+    -66.99,
+    -17.499
+   ],
+   "borders": [
+    "1914-arg",
+    "1914-bol",
+    "1914-pru"
+   ]
+  },
+  "1914-chn": {
+   "code": "CHN",
+   "ref": "CHN",
+   "name": {
+    "pt": "China",
+    "en": "China",
+    "es": "China"
+   },
+   "alias": [
+    "República da China",
+    "Republic of China",
+    "República de China"
+   ],
+   "capital": {
+    "pt": "Pequim",
+    "en": "Peking",
+    "es": "Pekín"
+   },
+   "capAl": [
+    "Beijing",
+    "Peking",
+    "Pekim"
+   ],
+   "region": "asia",
+   "area": 9137837,
+   "ll": [
+    40.9743,
+    108.8151
+   ],
+   "bbox": [
+    73.5,
+    18.16,
+    135.001,
+    53.557
+   ],
+   "borders": [
+    "1914-afg",
+    "1914-hkg",
+    "1914-idc",
+    "1914-ind",
+    "1914-jpn",
+    "1914-rus",
+    "1914-sia",
+    "1914-tib"
+   ]
+  },
+  "1914-col": {
+   "code": "COL",
+   "ref": "COL",
+   "name": {
+    "pt": "Colômbia",
+    "en": "Colombia",
+    "es": "Colombia"
+   },
+   "capital": {
+    "pt": "Bogotá",
+    "en": "Bogotá",
+    "es": "Bogotá"
+   },
+   "region": "americas",
+   "area": 1047425,
+   "ll": [
+    3.6293,
+    -73.274
+   ],
+   "bbox": [
+    -78.71,
+    -1.581,
+    -66.85,
+    12.459
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-ecu",
+    "1914-pan",
+    "1914-ven"
+   ]
+  },
+  "1914-cpv": {
+   "code": "CPV",
+   "ref": "CPV",
+   "name": {
+    "pt": "Cabo Verde",
+    "en": "Cape Verde",
+    "es": "Cabo Verde"
+   },
+   "capital": {
+    "pt": "Praia",
+    "en": "Praia",
+    "es": "Praia"
+   },
+   "region": "africa",
+   "area": 4074,
+   "ll": [
+    15.039,
+    -23.6001
+   ],
+   "bbox": [
+    -25.362,
+    14.803,
+    -22.664,
+    17.205
+   ],
+   "borders": []
+  },
+  "1914-cri": {
+   "code": "CRI",
+   "ref": "CRI",
+   "name": {
+    "pt": "Costa Rica",
+    "en": "Costa Rica",
+    "es": "Costa Rica"
+   },
+   "capital": {
+    "pt": "San José",
+    "en": "San José",
+    "es": "San José"
+   },
+   "region": "americas",
+   "area": 53036,
+   "ll": [
+    10.0719,
+    -83.9696
+   ],
+   "bbox": [
+    -85.942,
+    8.04,
+    -82.565,
+    11.22
+   ],
+   "borders": [
+    "1914-nic",
+    "1914-pan"
+   ]
+  },
+  "1914-cub": {
+   "code": "CUB",
+   "ref": "CUB",
+   "name": {
+    "pt": "Cuba",
+    "en": "Cuba",
+    "es": "Cuba"
+   },
+   "capital": {
+    "pt": "Havana",
+    "en": "Havana",
+    "es": "La Habana"
+   },
+   "region": "americas",
+   "area": 110758,
+   "ll": [
+    20.5736,
+    -76.4726
+   ],
+   "bbox": [
+    -84.951,
+    19.827,
+    -74.131,
+    23.204
+   ],
+   "borders": []
+  },
+  "1914-cyp": {
+   "code": "CYP",
+   "ref": "CYP",
+   "name": {
+    "pt": "Chipre",
+    "en": "Cyprus",
+    "es": "Chipre"
+   },
+   "capital": {
+    "pt": "Nicósia",
+    "en": "Nicosia",
+    "es": "Nicosia"
+   },
+   "region": "europe",
+   "area": 9249,
+   "ll": [
+    35.0289,
+    33.1841
+   ],
+   "bbox": [
+    32.27,
+    34.562,
+    34.587,
+    35.695
+   ],
+   "borders": []
+  },
+  "1914-cyr": {
+   "code": "CYR",
+   "ref": "CYR",
+   "name": {
+    "pt": "Cirenaica Italiana",
+    "en": "Italian Cyrenaica",
+    "es": "Cirenaica italiana"
+   },
+   "alias": [
+    "Cirenaica",
+    "Cyrenaica"
+   ],
+   "capital": {
+    "pt": "Bengasi",
+    "en": "Benghazi",
+    "es": "Bengasi"
+   },
+   "region": "africa",
+   "area": 660339,
+   "ll": [
+    28.5795,
+    22.0798
+   ],
+   "bbox": [
+    18.501,
+    22.0,
+    25.146,
+    32.941
+   ],
+   "borders": [
+    "1914-egy",
+    "1914-sdn",
+    "1914-trp"
+   ]
+  },
+  "1914-dei": {
+   "code": "DEI",
+   "ref": "DEI",
+   "name": {
+    "pt": "Índias Orientais Holandesas",
+    "en": "Dutch East Indies",
+    "es": "Indias Orientales Neerlandesas"
+   },
+   "alias": [
+    "Índias Orientais Neerlandesas"
+   ],
+   "capital": {
+    "pt": "Batávia",
+    "en": "Batavia",
+    "es": "Batavia"
+   },
+   "capAl": [
+    "Jacarta",
+    "Jakarta",
+    "Yakarta"
+   ],
+   "region": "asia",
+   "area": 1897360,
+   "ll": [
+    -0.975,
+    114.0937
+   ],
+   "bbox": [
+    95.215,
+    -10.915,
+    141.588,
+    5.628
+   ],
+   "borders": [
+    "1914-aus",
+    "1914-gng",
+    "1914-nbo",
+    "1914-sar",
+    "1914-tls"
+   ]
+  },
+  "1914-dnk": {
+   "code": "DNK",
+   "ref": "DNK",
+   "name": {
+    "pt": "Dinamarca",
+    "en": "Denmark",
+    "es": "Dinamarca"
+   },
+   "capital": {
+    "pt": "Copenhague",
+    "en": "Copenhagen",
+    "es": "Copenhague"
+   },
+   "capAl": [
+    "Copenhaga"
+   ],
+   "region": "europe",
+   "area": 40661,
+   "ll": [
+    55.999,
+    9.0262
+   ],
+   "bbox": [
+    8.074,
+    54.559,
+    15.157,
+    57.748
+   ],
+   "borders": [
+    "1914-ger"
+   ]
+  },
+  "1914-dod": {
+   "code": "DOD",
+   "ref": "DOD",
+   "name": {
+    "pt": "Ilhas Italianas do Egeu",
+    "en": "Italian Aegean Islands",
+    "es": "Islas italianas del Egeo"
+   },
+   "alias": [
+    "Dodecaneso",
+    "Dodecanese",
+    "Dodecaneso"
+   ],
+   "capital": {
+    "pt": "Rodes",
+    "en": "Rhodes",
+    "es": "Rodas"
+   },
+   "capAl": [
+    "Rodos"
+   ],
+   "region": "europe",
+   "area": 2680,
+   "ll": [
+    36.1953,
+    27.9501
+   ],
+   "bbox": [
+    26.26,
+    35.34,
+    28.245,
+    37.477
+   ],
+   "borders": []
+  },
+  "1914-dom": {
+   "code": "DOM",
+   "ref": "DOM",
+   "name": {
+    "pt": "República Dominicana",
+    "en": "Dominican Republic",
+    "es": "República Dominicana"
+   },
+   "capital": {
+    "pt": "Santo Domingo",
+    "en": "Santo Domingo",
+    "es": "Santo Domingo"
+   },
+   "capAl": [
+    "São Domingos"
+   ],
+   "region": "americas",
+   "area": 47992,
+   "ll": [
+    19.1063,
+    -70.9065
+   ],
+   "bbox": [
+    -72.007,
+    17.604,
+    -68.324,
+    19.932
+   ],
+   "borders": [
+    "1914-hti"
+   ]
+  },
+  "1914-ecu": {
+   "code": "ECU",
+   "ref": "ECU",
+   "name": {
+    "pt": "Equador",
+    "en": "Ecuador",
+    "es": "Ecuador"
+   },
+   "capital": {
+    "pt": "Quito",
+    "en": "Quito",
+    "es": "Quito"
+   },
+   "region": "americas",
+   "area": 601606,
+   "ll": [
+    -2.4486,
+    -76.0566
+   ],
+   "bbox": [
+    -81.01,
+    -6.324,
+    -69.43,
+    1.834
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-col",
+    "1914-pru"
+   ]
+  },
+  "1914-egy": {
+   "code": "EGY",
+   "ref": "EGY",
+   "name": {
+    "pt": "Egito",
+    "en": "Egypt",
+    "es": "Egipto"
+   },
+   "alias": [
+    "Quedivato do Egito"
+   ],
+   "capital": {
+    "pt": "Cairo",
+    "en": "Cairo",
+    "es": "El Cairo"
+   },
+   "region": "africa",
+   "area": 996145,
+   "ll": [
+    25.9029,
+    28.8826
+   ],
+   "bbox": [
+    24.65,
+    21.994,
+    36.894,
+    31.671
+   ],
+   "borders": [
+    "1914-cyr",
+    "1914-ott",
+    "1914-sdn"
+   ]
+  },
+  "1914-eri": {
+   "code": "ERI",
+   "ref": "ERI",
+   "name": {
+    "pt": "Eritreia Italiana",
+    "en": "Italian Eritrea",
+    "es": "Eritrea italiana"
+   },
+   "alias": [
+    "Eritreia",
+    "Eritrea"
+   ],
+   "capital": {
+    "pt": "Asmara",
+    "en": "Asmara",
+    "es": "Asmara"
+   },
+   "region": "africa",
+   "area": 121335,
+   "ll": [
+    16.0277,
+    38.0759
+   ],
+   "bbox": [
+    36.433,
+    12.355,
+    43.126,
+    18.006
+   ],
+   "borders": [
+    "1914-eth",
+    "1914-fso",
+    "1914-sdn"
+   ]
+  },
+  "1914-esp": {
+   "code": "ESP",
+   "ref": "ESP",
+   "name": {
+    "pt": "Espanha",
+    "en": "Spain",
+    "es": "España"
+   },
+   "capital": {
+    "pt": "Madri",
+    "en": "Madrid",
+    "es": "Madrid"
+   },
+   "capAl": [
+    "Madrid"
+   ],
+   "region": "europe",
+   "area": 505400,
+   "ll": [
+    39.9689,
+    -3.4575
+   ],
+   "bbox": [
+    -9.3,
+    36.0,
+    3.479,
+    43.79
+   ],
+   "borders": [
+    "1914-fra",
+    "1914-por"
+   ]
+  },
+  "1914-eth": {
+   "code": "ETH",
+   "ref": "ETH",
+   "name": {
+    "pt": "Etiópia",
+    "en": "Ethiopia",
+    "es": "Etiopía"
+   },
+   "alias": [
+    "Abissínia",
+    "Abyssinia",
+    "Abisinia",
+    "Império Etíope"
+   ],
+   "capital": {
+    "pt": "Adis Abeba",
+    "en": "Addis Ababa",
+    "es": "Adís Abeba"
+   },
+   "region": "africa",
+   "area": 1106166,
+   "ll": [
+    7.3775,
+    41.0713
+   ],
+   "bbox": [
+    32.998,
+    3.405,
+    47.921,
+    15.839
+   ],
+   "borders": [
+    "1914-bea",
+    "1914-bso",
+    "1914-eri",
+    "1914-fso",
+    "1914-iso",
+    "1914-sdn",
+    "1914-uga"
+   ]
+  },
+  "1914-fji": {
+   "code": "FJI",
+   "ref": "FJI",
+   "name": {
+    "pt": "Fiji",
+    "en": "Fiji",
+    "es": "Fiyi"
+   },
+   "capital": {
+    "pt": "Suva",
+    "en": "Suva",
+    "es": "Suva"
+   },
+   "region": "oceania",
+   "area": 18767,
+   "ll": [
+    -17.8409,
+    177.9431
+   ],
+   "bbox": [
+    177.098,
+    -19.194,
+    180.0,
+    -16.143
+   ],
+   "borders": []
+  },
+  "1914-fms": {
+   "code": "FMS",
+   "ref": "FMS",
+   "name": {
+    "pt": "Estados Malaios Federados",
+    "en": "Federated Malay States",
+    "es": "Estados Malayos Federados"
+   },
+   "alias": [
+    "Estados Federados Malaios"
+   ],
+   "capital": {
+    "pt": "Kuala Lumpur",
+    "en": "Kuala Lumpur",
+    "es": "Kuala Lumpur"
+   },
+   "region": "asia",
+   "area": 71517,
+   "ll": [
+    3.6933,
+    102.1365
+   ],
+   "bbox": [
+    100.362,
+    2.391,
+    104.222,
+    6.905
+   ],
+   "borders": [
+    "1914-sia",
+    "1914-sts",
+    "1914-ums"
+   ]
+  },
+  "1914-fra": {
+   "code": "FRA",
+   "ref": "FRA",
+   "name": {
+    "pt": "França",
+    "en": "France",
+    "es": "Francia"
+   },
+   "alias": [
+    "República Francesa",
+    "French Republic",
+    "República Francesa"
+   ],
+   "capital": {
+    "pt": "Paris",
+    "en": "Paris",
+    "es": "París"
+   },
+   "region": "europe",
+   "area": 536432,
+   "ll": [
+    46.684,
+    2.4595
+   ],
+   "bbox": [
+    -4.795,
+    41.366,
+    9.556,
+    51.189
+   ],
+   "borders": [
+    "1914-bel",
+    "1914-che",
+    "1914-esp",
+    "1914-ger",
+    "1914-ita",
+    "1914-lux",
+    "1914-nld"
+   ]
+  },
+  "1914-fso": {
+   "code": "FSO",
+   "ref": "FSO",
+   "name": {
+    "pt": "Somalilândia Francesa",
+    "en": "French Somaliland",
+    "es": "Somalilandia francesa"
+   },
+   "capital": {
+    "pt": "Djibuti",
+    "en": "Djibouti",
+    "es": "Yibuti"
+   },
+   "region": "africa",
+   "area": 21753,
+   "ll": [
+    12.0268,
+    42.5478
+   ],
+   "bbox": [
+    41.772,
+    10.915,
+    43.418,
+    12.713
+   ],
+   "borders": [
+    "1914-bso",
+    "1914-eri",
+    "1914-eth"
+   ]
+  },
+  "1914-gbr": {
+   "code": "GBR",
+   "ref": "GBR",
+   "name": {
+    "pt": "Reino Unido",
+    "en": "United Kingdom",
+    "es": "Reino Unido"
+   },
+   "alias": [
+    "Reino Unido da Grã-Bretanha e Irlanda",
+    "Grã-Bretanha",
+    "Great Britain",
+    "Gran Bretaña"
+   ],
+   "capital": {
+    "pt": "Londres",
+    "en": "London",
+    "es": "Londres"
+   },
+   "region": "europe",
+   "area": 312695,
+   "ll": [
+    52.5989,
+    -1.4328
+   ],
+   "bbox": [
+    -10.479,
+    49.962,
+    1.763,
+    60.632
+   ],
+   "borders": []
+  },
+  "1914-gea": {
+   "code": "GEA",
+   "ref": "GEA",
+   "name": {
+    "pt": "África Oriental Alemã",
+    "en": "German East Africa",
+    "es": "África Oriental Alemana"
+   },
+   "alias": [
+    "Tanganica",
+    "Tanganyika"
+   ],
+   "capital": {
+    "pt": "Dar es Salaam",
+    "en": "Dar es Salaam",
+    "es": "Dar es Salaam"
+   },
+   "capAl": [
+    "Dar-es-Salaam"
+   ],
+   "region": "africa",
+   "area": 935652,
+   "ll": [
+    -6.8127,
+    35.725
+   ],
+   "bbox": [
+    28.124,
+    -11.711,
+    40.638,
+    -0.985
+   ],
+   "borders": [
+    "1914-bcg",
+    "1914-bea",
+    "1914-moz",
+    "1914-nrh",
+    "1914-nya",
+    "1914-uga"
+   ]
+  },
+  "1914-ger": {
+   "code": "GER",
+   "ref": "GER",
+   "name": {
+    "pt": "Império Alemão",
+    "en": "German Empire",
+    "es": "Imperio alemán"
+   },
+   "alias": [
+    "Alemanha",
+    "Germany",
+    "Alemania"
+   ],
+   "capital": {
+    "pt": "Berlim",
+    "en": "Berlin",
+    "es": "Berlín"
+   },
+   "region": "europe",
+   "area": 540670,
+   "ll": [
+    50.4233,
+    9.0645
+   ],
+   "bbox": [
+    5.866,
+    47.27,
+    23.475,
+    56.396
+   ],
+   "borders": [
+    "1914-auh",
+    "1914-bel",
+    "1914-che",
+    "1914-dnk",
+    "1914-fra",
+    "1914-lux",
+    "1914-nld",
+    "1914-rus"
+   ]
+  },
+  "1914-gil": {
+   "code": "GIL",
+   "ref": "GIL",
+   "name": {
+    "pt": "Ilhas Gilbert e Ellice",
+    "en": "Gilbert and Ellice Islands",
+    "es": "Islas Gilbert y Ellice"
+   },
+   "capital": {
+    "pt": "Banaba",
+    "en": "Banaba",
+    "es": "Banaba"
+   },
+   "capAl": [
+    "Ilha Oceano",
+    "Ocean Island"
+   ],
+   "region": "oceania",
+   "area": 416,
+   "ll": [
+    -1.8968,
+    175.5781
+   ],
+   "bbox": [
+    172.685,
+    -2.672,
+    176.847,
+    3.394
+   ],
+   "borders": []
+  },
+  "1914-gld": {
+   "code": "GLD",
+   "ref": "GLD",
+   "name": {
+    "pt": "Costa do Ouro",
+    "en": "Gold Coast",
+    "es": "Costa de Oro"
+   },
+   "capital": {
+    "pt": "Acra",
+    "en": "Accra",
+    "es": "Acra"
+   },
+   "capAl": [
+    "Accra"
+   ],
+   "region": "africa",
+   "area": 204137,
+   "ll": [
+    6.4767,
+    -1.9577
+   ],
+   "bbox": [
+    -3.255,
+    4.742,
+    1.2,
+    11.178
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-tog"
+   ]
+  },
+  "1914-glp": {
+   "code": "GLP",
+   "ref": "GLP",
+   "name": {
+    "pt": "Guadalupe",
+    "en": "Guadeloupe",
+    "es": "Guadalupe"
+   },
+   "capital": {
+    "pt": "Basse-Terre",
+    "en": "Basse-Terre",
+    "es": "Basse-Terre"
+   },
+   "region": "americas",
+   "area": 1711,
+   "ll": [
+    16.086,
+    -61.6658
+   ],
+   "bbox": [
+    -63.154,
+    15.84,
+    -61.002,
+    18.123
+   ],
+   "borders": []
+  },
+  "1914-gmb": {
+   "code": "GMB",
+   "ref": "GMB",
+   "name": {
+    "pt": "Gâmbia",
+    "en": "Gambia",
+    "es": "Gambia"
+   },
+   "capital": {
+    "pt": "Bathurst",
+    "en": "Bathurst",
+    "es": "Bathurst"
+   },
+   "capAl": [
+    "Banjul"
+   ],
+   "region": "africa",
+   "area": 11176,
+   "ll": [
+    13.376,
+    -16.3208
+   ],
+   "bbox": [
+    -16.814,
+    13.072,
+    -13.818,
+    13.82
+   ],
+   "borders": [
+    "1914-aof"
+   ]
+  },
+  "1914-gng": {
+   "code": "GNG",
+   "ref": "GNG",
+   "name": {
+    "pt": "Nova Guiné Alemã",
+    "en": "German New Guinea",
+    "es": "Nueva Guinea Alemana"
+   },
+   "capital": {
+    "pt": "Rabaul",
+    "en": "Rabaul",
+    "es": "Rabaul"
+   },
+   "region": "oceania",
+   "area": 240031,
+   "ll": [
+    -5.1468,
+    144.4355
+   ],
+   "bbox": [
+    141.0,
+    -8.0,
+    155.968,
+    -1.316
+   ],
+   "borders": [
+    "1914-aus",
+    "1914-dei"
+   ]
+  },
+  "1914-goa": {
+   "code": "GOA",
+   "ref": "GOA",
+   "name": {
+    "pt": "Índia Portuguesa",
+    "en": "Portuguese India",
+    "es": "India portuguesa"
+   },
+   "alias": [
+    "Goa"
+   ],
+   "capital": {
+    "pt": "Nova Goa",
+    "en": "Nova Goa",
+    "es": "Nova Goa"
+   },
+   "capAl": [
+    "Pangim",
+    "Panaji",
+    "Goa"
+   ],
+   "region": "asia",
+   "area": 4251,
+   "ll": [
+    15.3612,
+    74.0868
+   ],
+   "bbox": [
+    73.675,
+    14.901,
+    74.336,
+    15.801
+   ],
+   "borders": [
+    "1914-ind"
+   ]
+  },
+  "1914-grc": {
+   "code": "GRC",
+   "ref": "GRC",
+   "name": {
+    "pt": "Grécia",
+    "en": "Greece",
+    "es": "Grecia"
+   },
+   "alias": [
+    "Reino da Grécia"
+   ],
+   "capital": {
+    "pt": "Atenas",
+    "en": "Athens",
+    "es": "Atenas"
+   },
+   "region": "europe",
+   "area": 121409,
+   "ll": [
+    39.8208,
+    21.6598
+   ],
+   "bbox": [
+    19.63,
+    34.922,
+    27.071,
+    41.573
+   ],
+   "borders": [
+    "1914-alb",
+    "1914-bgr",
+    "1914-srb"
+   ]
+  },
+  "1914-grl": {
+   "code": "GRL",
+   "ref": "GRL",
+   "name": {
+    "pt": "Groenlândia",
+    "en": "Greenland",
+    "es": "Groenlandia"
+   },
+   "region": "americas",
+   "area": 2146020,
+   "ll": [
+    74.3475,
+    -40.0155
+   ],
+   "bbox": [
+    -73.026,
+    60.24,
+    -11.35,
+    83.649
+   ],
+   "borders": []
+  },
+  "1914-gsw": {
+   "code": "GSW",
+   "ref": "GSW",
+   "name": {
+    "pt": "Sudoeste Africano Alemão",
+    "en": "German South West Africa",
+    "es": "África del Sudoeste Alemana"
+   },
+   "alias": [
+    "Namíbia",
+    "Namibia"
+   ],
+   "capital": {
+    "pt": "Windhoek",
+    "en": "Windhoek",
+    "es": "Windhoek"
+   },
+   "capAl": [
+    "Windhuk"
+   ],
+   "region": "africa",
+   "area": 824826,
+   "ll": [
+    -20.5836,
+    17.1257
+   ],
+   "bbox": [
+    11.736,
+    -28.969,
+    25.262,
+    -16.636
+   ],
+   "borders": [
+    "1914-ang",
+    "1914-bec",
+    "1914-nrh",
+    "1914-zaf"
+   ]
+  },
+  "1914-gtm": {
+   "code": "GTM",
+   "ref": "GTM",
+   "name": {
+    "pt": "Guatemala",
+    "en": "Guatemala",
+    "es": "Guatemala"
+   },
+   "capital": {
+    "pt": "Cidade da Guatemala",
+    "en": "Guatemala City",
+    "es": "Ciudad de Guatemala"
+   },
+   "capAl": [
+    "Guatemala"
+   ],
+   "region": "americas",
+   "area": 108481,
+   "ll": [
+    15.3394,
+    -90.7442
+   ],
+   "bbox": [
+    -92.812,
+    13.74,
+    -88.229,
+    17.816
+   ],
+   "borders": [
+    "1914-bho",
+    "1914-hnd",
+    "1914-mex",
+    "1914-slv"
+   ]
+  },
+  "1914-guf": {
+   "code": "GUF",
+   "ref": "GUF",
+   "name": {
+    "pt": "Guiana Francesa",
+    "en": "French Guiana",
+    "es": "Guayana Francesa"
+   },
+   "capital": {
+    "pt": "Caiena",
+    "en": "Cayenne",
+    "es": "Cayena"
+   },
+   "region": "americas",
+   "area": 84078,
+   "ll": [
+    4.1106,
+    -52.6502
+   ],
+   "bbox": [
+    -56.25,
+    2.112,
+    -51.615,
+    5.778
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-sur"
+   ]
+  },
+  "1914-guy": {
+   "code": "GUY",
+   "ref": "GUY",
+   "name": {
+    "pt": "Guiana Britânica",
+    "en": "British Guiana",
+    "es": "Guayana Británica"
+   },
+   "capital": {
+    "pt": "Georgetown",
+    "en": "Georgetown",
+    "es": "Georgetown"
+   },
+   "region": "americas",
+   "area": 212284,
+   "ll": [
+    6.6435,
+    -59.3759
+   ],
+   "bbox": [
+    -61.876,
+    1.17,
+    -56.47,
+    9.82
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-sur",
+    "1914-ven"
+   ]
+  },
+  "1914-hkg": {
+   "code": "HKG",
+   "ref": "HKG",
+   "name": {
+    "pt": "Hong Kong",
+    "en": "Hong Kong",
+    "es": "Hong Kong"
+   },
+   "capital": {
+    "pt": "Victoria",
+    "en": "Victoria",
+    "es": "Victoria"
+   },
+   "capAl": [
+    "Cidade de Victoria"
+   ],
+   "region": "asia",
+   "area": 1165,
+   "ll": [
+    22.4491,
+    114.0997
+   ],
+   "bbox": [
+    113.839,
+    22.156,
+    114.405,
+    22.588
+   ],
+   "borders": [
+    "1914-chn"
+   ]
+  },
+  "1914-hnd": {
+   "code": "HND",
+   "ref": "HND",
+   "name": {
+    "pt": "Honduras",
+    "en": "Honduras",
+    "es": "Honduras"
+   },
+   "capital": {
+    "pt": "Tegucigalpa",
+    "en": "Tegucigalpa",
+    "es": "Tegucigalpa"
+   },
+   "region": "americas",
+   "area": 112446,
+   "ll": [
+    14.8568,
+    -87.3378
+   ],
+   "bbox": [
+    -89.356,
+    12.983,
+    -83.13,
+    16.028
+   ],
+   "borders": [
+    "1914-gtm",
+    "1914-nic",
+    "1914-slv"
+   ]
+  },
+  "1914-hti": {
+   "code": "HTI",
+   "ref": "HTI",
+   "name": {
+    "pt": "Haiti",
+    "en": "Haiti",
+    "es": "Haití"
+   },
+   "capital": {
+    "pt": "Porto Príncipe",
+    "en": "Port-au-Prince",
+    "es": "Puerto Príncipe"
+   },
+   "region": "americas",
+   "area": 27034,
+   "ll": [
+    19.2504,
+    -72.2423
+   ],
+   "bbox": [
+    -74.479,
+    18.023,
+    -71.623,
+    20.09
+   ],
+   "borders": [
+    "1914-dom"
+   ]
+  },
+  "1914-idc": {
+   "code": "IDC",
+   "ref": "IDC",
+   "name": {
+    "pt": "Indochina Francesa",
+    "en": "French Indochina",
+    "es": "Indochina francesa"
+   },
+   "alias": [
+    "União Indochinesa"
+   ],
+   "capital": {
+    "pt": "Hanói",
+    "en": "Hanoi",
+    "es": "Hanói"
+   },
+   "region": "asia",
+   "area": 739668,
+   "ll": [
+    20.8724,
+    104.5159
+   ],
+   "bbox": [
+    100.085,
+    8.563,
+    109.46,
+    23.392
+   ],
+   "borders": [
+    "1914-chn",
+    "1914-ind",
+    "1914-sia"
+   ]
+  },
+  "1914-ind": {
+   "code": "IND",
+   "ref": "IND",
+   "name": {
+    "pt": "Índia Britânica",
+    "en": "British India",
+    "es": "India británica"
+   },
+   "alias": [
+    "Raj Britânico",
+    "British Raj",
+    "Raj británico",
+    "Índia",
+    "India"
+   ],
+   "capital": {
+    "pt": "Délhi",
+    "en": "Delhi",
+    "es": "Delhi"
+   },
+   "capAl": [
+    "Deli",
+    "Nova Délhi",
+    "New Delhi"
+   ],
+   "region": "asia",
+   "area": 4830934,
+   "ll": [
+    23.606,
+    78.3017
+   ],
+   "bbox": [
+    60.874,
+    8.078,
+    101.249,
+    37.084
+   ],
+   "borders": [
+    "1914-afg",
+    "1914-btn",
+    "1914-chn",
+    "1914-goa",
+    "1914-idc",
+    "1914-npl",
+    "1914-per",
+    "1914-sia",
+    "1914-tib"
+   ]
+  },
+  "1914-isl": {
+   "code": "ISL",
+   "ref": "ISL",
+   "name": {
+    "pt": "Islândia",
+    "en": "Iceland",
+    "es": "Islandia"
+   },
+   "capital": {
+    "pt": "Reykjavík",
+    "en": "Reykjavík",
+    "es": "Reykjavík"
+   },
+   "capAl": [
+    "Reykjavik"
+   ],
+   "region": "europe",
+   "area": 102068,
+   "ll": [
+    64.5919,
+    -18.5114
+   ],
+   "bbox": [
+    -24.533,
+    63.395,
+    -13.495,
+    66.513
+   ],
+   "borders": []
+  },
+  "1914-iso": {
+   "code": "ISO",
+   "ref": "ISO",
+   "name": {
+    "pt": "Somália Italiana",
+    "en": "Italian Somaliland",
+    "es": "Somalia italiana"
+   },
+   "capital": {
+    "pt": "Mogadíscio",
+    "en": "Mogadishu",
+    "es": "Mogadiscio"
+   },
+   "capAl": [
+    "Mogadixo"
+   ],
+   "region": "africa",
+   "area": 399522,
+   "ll": [
+    3.3008,
+    44.2691
+   ],
+   "bbox": [
+    42.124,
+    -0.793,
+    51.406,
+    11.987
+   ],
+   "borders": [
+    "1914-bea",
+    "1914-bso",
+    "1914-eth"
+   ]
+  },
+  "1914-ita": {
+   "code": "ITA",
+   "ref": "ITA",
+   "name": {
+    "pt": "Itália",
+    "en": "Italy",
+    "es": "Italia"
+   },
+   "alias": [
+    "Reino da Itália",
+    "Kingdom of Italy",
+    "Reino de Italia"
+   ],
+   "capital": {
+    "pt": "Roma",
+    "en": "Rome",
+    "es": "Roma"
+   },
+   "region": "europe",
+   "area": 284987,
+   "ll": [
+    44.0164,
+    11.2955
+   ],
+   "bbox": [
+    6.549,
+    36.649,
+    18.521,
+    46.975
+   ],
+   "borders": [
+    "1914-auh",
+    "1914-che",
+    "1914-fra"
+   ]
+  },
+  "1914-jam": {
+   "code": "JAM",
+   "ref": "JAM",
+   "name": {
+    "pt": "Jamaica",
+    "en": "Jamaica",
+    "es": "Jamaica"
+   },
+   "capital": {
+    "pt": "Kingston",
+    "en": "Kingston",
+    "es": "Kingston"
+   },
+   "region": "americas",
+   "area": 11931,
+   "ll": [
+    18.1784,
+    -77.5624
+   ],
+   "bbox": [
+    -78.369,
+    17.705,
+    -76.184,
+    18.524
+   ],
+   "borders": []
+  },
+  "1914-jpn": {
+   "code": "JPN",
+   "ref": "JPN",
+   "name": {
+    "pt": "Império do Japão",
+    "en": "Empire of Japan",
+    "es": "Imperio del Japón"
+   },
+   "alias": [
+    "Japão",
+    "Japan",
+    "Japón"
+   ],
+   "capital": {
+    "pt": "Tóquio",
+    "en": "Tokyo",
+    "es": "Tokio"
+   },
+   "region": "asia",
+   "area": 679899,
+   "ll": [
+    36.7666,
+    139.5089
+   ],
+   "bbox": [
+    121.093,
+    26.074,
+    150.571,
+    50.736
+   ],
+   "borders": [
+    "1914-chn",
+    "1914-rus"
+   ]
+  },
+  "1914-kam": {
+   "code": "KAM",
+   "ref": "KAM",
+   "name": {
+    "pt": "Kamerun",
+    "en": "Kamerun",
+    "es": "Kamerun"
+   },
+   "alias": [
+    "Camarões Alemães",
+    "German Cameroon",
+    "Camerún alemán"
+   ],
+   "capital": {
+    "pt": "Buea",
+    "en": "Buea",
+    "es": "Buea"
+   },
+   "region": "africa",
+   "area": 837763,
+   "ll": [
+    5.244,
+    13.9467
+   ],
+   "bbox": [
+    8.498,
+    -1.235,
+    18.539,
+    13.378
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-aof",
+    "1914-bcg",
+    "1914-nig",
+    "1914-spg"
+   ]
+  },
+  "1914-kwt": {
+   "code": "KWT",
+   "ref": "KWT",
+   "name": {
+    "pt": "Kuwait",
+    "en": "Kuwait",
+    "es": "Kuwait"
+   },
+   "alias": [
+    "Kuweit"
+   ],
+   "capital": {
+    "pt": "Kuwait",
+    "en": "Kuwait City",
+    "es": "Kuwait"
+   },
+   "capAl": [
+    "Cidade do Kuwait",
+    "Ciudad de Kuwait"
+   ],
+   "region": "asia",
+   "area": 19661,
+   "ll": [
+    28.5807,
+    48.0403
+   ],
+   "bbox": [
+    46.553,
+    28.24,
+    48.594,
+    30.105
+   ],
+   "borders": [
+    "1914-ott"
+   ]
+  },
+  "1914-lbr": {
+   "code": "LBR",
+   "ref": "LBR",
+   "name": {
+    "pt": "Libéria",
+    "en": "Liberia",
+    "es": "Liberia"
+   },
+   "capital": {
+    "pt": "Monróvia",
+    "en": "Monrovia",
+    "es": "Monrovia"
+   },
+   "region": "africa",
+   "area": 97420,
+   "ll": [
+    6.9688,
+    -10.2048
+   ],
+   "bbox": [
+    -11.493,
+    4.355,
+    -7.37,
+    11.07
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-sle"
+   ]
+  },
+  "1914-lux": {
+   "code": "LUX",
+   "ref": "LUX",
+   "name": {
+    "pt": "Luxemburgo",
+    "en": "Luxembourg",
+    "es": "Luxemburgo"
+   },
+   "capital": {
+    "pt": "Luxemburgo",
+    "en": "Luxembourg",
+    "es": "Luxemburgo"
+   },
+   "region": "europe",
+   "area": 2584,
+   "ll": [
+    49.7191,
+    6.118
+   ],
+   "bbox": [
+    5.736,
+    49.448,
+    6.531,
+    50.183
+   ],
+   "borders": [
+    "1914-bel",
+    "1914-fra",
+    "1914-ger"
+   ]
+  },
+  "1914-mar": {
+   "code": "MAR",
+   "ref": "MAR",
+   "name": {
+    "pt": "Marrocos",
+    "en": "Morocco",
+    "es": "Marruecos"
+   },
+   "alias": [
+    "Protetorado Francês de Marrocos",
+    "French Morocco",
+    "Marruecos francés"
+   ],
+   "capital": {
+    "pt": "Rabat",
+    "en": "Rabat",
+    "es": "Rabat"
+   },
+   "region": "africa",
+   "area": 363918,
+   "ll": [
+    31.7512,
+    -6.4425
+   ],
+   "bbox": [
+    -11.122,
+    28.179,
+    -1.032,
+    35.835
+   ],
+   "borders": [
+    "1914-alg",
+    "1914-smo"
+   ]
+  },
+  "1914-mdg": {
+   "code": "MDG",
+   "ref": "MDG",
+   "name": {
+    "pt": "Madagascar",
+    "en": "Madagascar",
+    "es": "Madagascar"
+   },
+   "capital": {
+    "pt": "Tananarive",
+    "en": "Tananarive",
+    "es": "Tananarive"
+   },
+   "capAl": [
+    "Antananarivo"
+   ],
+   "region": "africa",
+   "area": 595445,
+   "ll": [
+    -18.4062,
+    46.686
+   ],
+   "bbox": [
+    43.22,
+    -25.607,
+    50.472,
+    -11.954
+   ],
+   "borders": []
+  },
+  "1914-mdv": {
+   "code": "MDV",
+   "ref": "MDV",
+   "name": {
+    "pt": "Maldivas",
+    "en": "Maldives",
+    "es": "Maldivas"
+   },
+   "capital": {
+    "pt": "Malé",
+    "en": "Malé",
+    "es": "Malé"
+   },
+   "region": "asia",
+   "area": 290,
+   "ll": [
+    0.2217,
+    73.2704
+   ],
+   "bbox": [
+    72.638,
+    -0.698,
+    73.765,
+    7.105
+   ],
+   "borders": []
+  },
+  "1914-mex": {
+   "code": "MEX",
+   "ref": "MEX",
+   "name": {
+    "pt": "México",
+    "en": "Mexico",
+    "es": "México"
+   },
+   "capital": {
+    "pt": "Cidade do México",
+    "en": "Mexico City",
+    "es": "Ciudad de México"
+   },
+   "capAl": [
+    "México"
+   ],
+   "region": "americas",
+   "area": 1954500,
+   "ll": [
+    25.7942,
+    -104.2709
+   ],
+   "bbox": [
+    -117.125,
+    14.532,
+    -86.741,
+    32.718
+   ],
+   "borders": [
+    "1914-bho",
+    "1914-gtm",
+    "1914-usa"
+   ]
+  },
+  "1914-mlt": {
+   "code": "MLT",
+   "ref": "MLT",
+   "name": {
+    "pt": "Malta",
+    "en": "Malta",
+    "es": "Malta"
+   },
+   "capital": {
+    "pt": "Valeta",
+    "en": "Valletta",
+    "es": "La Valeta"
+   },
+   "capAl": [
+    "Valletta"
+   ],
+   "region": "europe",
+   "area": 316,
+   "ll": [
+    35.8877,
+    14.4322
+   ],
+   "bbox": [
+    14.184,
+    35.806,
+    14.575,
+    36.081
+   ],
+   "borders": []
+  },
+  "1914-mne": {
+   "code": "MNE",
+   "ref": "MNE",
+   "name": {
+    "pt": "Montenegro",
+    "en": "Montenegro",
+    "es": "Montenegro"
+   },
+   "alias": [
+    "Reino de Montenegro"
+   ],
+   "capital": {
+    "pt": "Cetinje",
+    "en": "Cetinje",
+    "es": "Cetiña"
+   },
+   "region": "europe",
+   "area": 15325,
+   "ll": [
+    42.798,
+    19.1751
+   ],
+   "bbox": [
+    18.448,
+    41.848,
+    20.76,
+    43.558
+   ],
+   "borders": [
+    "1914-alb",
+    "1914-auh",
+    "1914-srb"
+   ]
+  },
+  "1914-moz": {
+   "code": "MOZ",
+   "ref": "MOZ",
+   "name": {
+    "pt": "Moçambique",
+    "en": "Mozambique",
+    "es": "Mozambique"
+   },
+   "alias": [
+    "África Oriental Portuguesa",
+    "Portuguese East Africa",
+    "África Oriental Portuguesa"
+   ],
+   "capital": {
+    "pt": "Lourenço Marques",
+    "en": "Lourenço Marques",
+    "es": "Lourenço Marques"
+   },
+   "capAl": [
+    "Maputo"
+   ],
+   "region": "africa",
+   "area": 780086,
+   "ll": [
+    -13.925,
+    38.1487
+   ],
+   "bbox": [
+    30.213,
+    -26.864,
+    40.837,
+    -10.666
+   ],
+   "borders": [
+    "1914-gea",
+    "1914-nrh",
+    "1914-nya",
+    "1914-srh",
+    "1914-swz",
+    "1914-zaf"
+   ]
+  },
+  "1914-msc": {
+   "code": "MSC",
+   "ref": "MSC",
+   "name": {
+    "pt": "Mascate e Omã",
+    "en": "Muscat and Oman",
+    "es": "Mascate y Omán"
+   },
+   "alias": [
+    "Omã",
+    "Oman",
+    "Omán"
+   ],
+   "capital": {
+    "pt": "Mascate",
+    "en": "Muscat",
+    "es": "Mascate"
+   },
+   "region": "asia",
+   "area": 309203,
+   "ll": [
+    22.1176,
+    57.3398
+   ],
+   "bbox": [
+    52.001,
+    16.651,
+    59.839,
+    26.376
+   ],
+   "borders": [
+    "1914-adn",
+    "1914-tru"
+   ]
+  },
+  "1914-mus": {
+   "code": "MUS",
+   "ref": "MUS",
+   "name": {
+    "pt": "Maurício",
+    "en": "Mauritius",
+    "es": "Mauricio"
+   },
+   "alias": [
+    "Ilha Maurício",
+    "Maurícia"
+   ],
+   "capital": {
+    "pt": "Port Louis",
+    "en": "Port Louis",
+    "es": "Port Louis"
+   },
+   "region": "africa",
+   "area": 2071,
+   "ll": [
+    -20.3223,
+    57.5436
+   ],
+   "bbox": [
+    57.308,
+    -20.524,
+    57.807,
+    -19.983
+   ],
+   "borders": []
+  },
+  "1914-nbo": {
+   "code": "NBO",
+   "ref": "NBO",
+   "name": {
+    "pt": "Bornéu do Norte",
+    "en": "North Borneo",
+    "es": "Borneo del Norte"
+   },
+   "capital": {
+    "pt": "Sandakan",
+    "en": "Sandakan",
+    "es": "Sandakan"
+   },
+   "region": "asia",
+   "area": 74448,
+   "ll": [
+    5.3365,
+    116.8491
+   ],
+   "bbox": [
+    115.337,
+    4.115,
+    119.267,
+    7.362
+   ],
+   "borders": [
+    "1914-dei",
+    "1914-sar"
+   ]
+  },
+  "1914-ncl": {
+   "code": "NCL",
+   "ref": "NCL",
+   "name": {
+    "pt": "Nova Caledônia",
+    "en": "New Caledonia",
+    "es": "Nueva Caledonia"
+   },
+   "alias": [
+    "Nova Caledónia"
+   ],
+   "capital": {
+    "pt": "Nouméa",
+    "en": "Nouméa",
+    "es": "Nouméa"
+   },
+   "capAl": [
+    "Noumea",
+    "Numea"
+   ],
+   "region": "oceania",
+   "area": 18739,
+   "ll": [
+    -21.0877,
+    165.1286
+   ],
+   "bbox": [
+    163.621,
+    -22.675,
+    168.133,
+    -19.622
+   ],
+   "borders": []
+  },
+  "1914-nfl": {
+   "code": "NFL",
+   "ref": "NFL",
+   "name": {
+    "pt": "Terra Nova",
+    "en": "Newfoundland",
+    "es": "Terranova"
+   },
+   "alias": [
+    "Domínio de Terra Nova"
+   ],
+   "capital": {
+    "pt": "St. John's",
+    "en": "St. John's",
+    "es": "St. John's"
+   },
+   "capAl": [
+    "Saint John's",
+    "São João da Terra Nova"
+   ],
+   "region": "americas",
+   "area": 166973,
+   "ll": [
+    48.6168,
+    -56.8382
+   ],
+   "bbox": [
+    -64.922,
+    46.611,
+    -52.619,
+    60.328
+   ],
+   "borders": [
+    "1914-can"
+   ]
+  },
+  "1914-nhb": {
+   "code": "NHB",
+   "ref": "NHB",
+   "name": {
+    "pt": "Novas Hébridas",
+    "en": "New Hebrides",
+    "es": "Nuevas Hébridas"
+   },
+   "alias": [
+    "Vanuatu"
+   ],
+   "capital": {
+    "pt": "Porto Vila",
+    "en": "Port Vila",
+    "es": "Port Vila"
+   },
+   "capAl": [
+    "Port Vila",
+    "Vila"
+   ],
+   "region": "oceania",
+   "area": 12250,
+   "ll": [
+    -15.3793,
+    166.8982
+   ],
+   "bbox": [
+    166.543,
+    -20.253,
+    170.238,
+    -13.072
+   ],
+   "borders": []
+  },
+  "1914-nic": {
+   "code": "NIC",
+   "ref": "NIC",
+   "name": {
+    "pt": "Nicarágua",
+    "en": "Nicaragua",
+    "es": "Nicaragua"
+   },
+   "capital": {
+    "pt": "Manágua",
+    "en": "Managua",
+    "es": "Managua"
+   },
+   "region": "americas",
+   "area": 120713,
+   "ll": [
+    13.0202,
+    -84.8073
+   ],
+   "bbox": [
+    -87.689,
+    10.708,
+    -83.121,
+    15.03
+   ],
+   "borders": [
+    "1914-cri",
+    "1914-hnd",
+    "1914-slv"
+   ]
+  },
+  "1914-nig": {
+   "code": "NIG",
+   "ref": "NIG",
+   "name": {
+    "pt": "Nigéria",
+    "en": "Nigeria",
+    "es": "Nigeria"
+   },
+   "capital": {
+    "pt": "Lagos",
+    "en": "Lagos",
+    "es": "Lagos"
+   },
+   "region": "africa",
+   "area": 870699,
+   "ll": [
+    9.5683,
+    7.9369
+   ],
+   "bbox": [
+    2.671,
+    4.27,
+    14.062,
+    13.924
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-aof",
+    "1914-kam"
+   ]
+  },
+  "1914-nld": {
+   "code": "NLD",
+   "ref": "NLD",
+   "name": {
+    "pt": "Países Baixos",
+    "en": "Netherlands",
+    "es": "Países Bajos"
+   },
+   "alias": [
+    "Holanda",
+    "Holland",
+    "Holanda"
+   ],
+   "capital": {
+    "pt": "Amsterdã",
+    "en": "Amsterdam",
+    "es": "Ámsterdam"
+   },
+   "capAl": [
+    "Amsterdam",
+    "Amesterdão"
+   ],
+   "region": "europe",
+   "area": 37211,
+   "ll": [
+    51.9025,
+    5.3938
+   ],
+   "bbox": [
+    3.198,
+    50.736,
+    7.228,
+    53.473
+   ],
+   "borders": [
+    "1914-bel",
+    "1914-fra",
+    "1914-ger"
+   ]
+  },
+  "1914-nor": {
+   "code": "NOR",
+   "ref": "NOR",
+   "name": {
+    "pt": "Noruega",
+    "en": "Norway",
+    "es": "Noruega"
+   },
+   "capital": {
+    "pt": "Kristiania",
+    "en": "Kristiania",
+    "es": "Cristianía"
+   },
+   "capAl": [
+    "Christiania",
+    "Oslo"
+   ],
+   "region": "europe",
+   "area": 321740,
+   "ll": [
+    61.5447,
+    9.9937
+   ],
+   "bbox": [
+    4.945,
+    57.974,
+    31.055,
+    71.133
+   ],
+   "borders": [
+    "1914-rus",
+    "1914-swe"
+   ]
+  },
+  "1914-npl": {
+   "code": "NPL",
+   "ref": "NPL",
+   "name": {
+    "pt": "Nepal",
+    "en": "Nepal",
+    "es": "Nepal"
+   },
+   "capital": {
+    "pt": "Catmandu",
+    "en": "Kathmandu",
+    "es": "Katmandú"
+   },
+   "region": "asia",
+   "area": 147761,
+   "ll": [
+    28.9531,
+    82.0769
+   ],
+   "bbox": [
+    80.059,
+    26.348,
+    88.203,
+    30.446
+   ],
+   "borders": [
+    "1914-ind",
+    "1914-tib"
+   ]
+  },
+  "1914-nrh": {
+   "code": "NRH",
+   "ref": "NRH",
+   "name": {
+    "pt": "Rodésia do Norte",
+    "en": "Northern Rhodesia",
+    "es": "Rodesia del Norte"
+   },
+   "alias": [
+    "Zâmbia",
+    "Zambia"
+   ],
+   "capital": {
+    "pt": "Livingstone",
+    "en": "Livingstone",
+    "es": "Livingstone"
+   },
+   "region": "africa",
+   "area": 977676,
+   "ll": [
+    -14.4362,
+    23.2398
+   ],
+   "bbox": [
+    20.0,
+    -18.076,
+    33.709,
+    -8.279
+   ],
+   "borders": [
+    "1914-ang",
+    "1914-bcg",
+    "1914-bec",
+    "1914-gea",
+    "1914-gsw",
+    "1914-moz",
+    "1914-nya",
+    "1914-srh"
+   ]
+  },
+  "1914-nya": {
+   "code": "NYA",
+   "ref": "NYA",
+   "name": {
+    "pt": "Niassalândia",
+    "en": "Nyasaland",
+    "es": "Nyasalandia"
+   },
+   "alias": [
+    "Malawi",
+    "Malaui"
+   ],
+   "capital": {
+    "pt": "Zomba",
+    "en": "Zomba",
+    "es": "Zomba"
+   },
+   "region": "africa",
+   "area": 96122,
+   "ll": [
+    -13.4428,
+    33.6438
+   ],
+   "bbox": [
+    32.672,
+    -17.13,
+    35.919,
+    -9.368
+   ],
+   "borders": [
+    "1914-gea",
+    "1914-moz",
+    "1914-nrh"
+   ]
+  },
+  "1914-nzl": {
+   "code": "NZL",
+   "ref": "NZL",
+   "name": {
+    "pt": "Nova Zelândia",
+    "en": "New Zealand",
+    "es": "Nueva Zelanda"
+   },
+   "alias": [
+    "Domínio da Nova Zelândia"
+   ],
+   "capital": {
+    "pt": "Wellington",
+    "en": "Wellington",
+    "es": "Wellington"
+   },
+   "region": "oceania",
+   "area": 267475,
+   "ll": [
+    -44.711,
+    169.8324
+   ],
+   "bbox": [
+    166.431,
+    -47.29,
+    178.551,
+    -34.406
+   ],
+   "borders": []
+  },
+  "1914-ott": {
+   "code": "OTT",
+   "ref": "OTT",
+   "name": {
+    "pt": "Império Otomano",
+    "en": "Ottoman Empire",
+    "es": "Imperio otomano"
+   },
+   "alias": [
+    "Turquia",
+    "Turkey",
+    "Turquía"
+   ],
+   "capital": {
+    "pt": "Constantinopla",
+    "en": "Constantinople",
+    "es": "Constantinopla"
+   },
+   "capAl": [
+    "Istambul",
+    "Istanbul",
+    "Estambul"
+   ],
+   "region": "asia",
+   "area": 1877945,
+   "ll": [
+    34.4638,
+    40.606
+   ],
+   "bbox": [
+    26.06,
+    12.676,
+    51.655,
+    42.097
+   ],
+   "borders": [
+    "1914-adn",
+    "1914-bgr",
+    "1914-egy",
+    "1914-kwt",
+    "1914-per",
+    "1914-rus"
+   ]
+  },
+  "1914-pan": {
+   "code": "PAN",
+   "ref": "PAN",
+   "name": {
+    "pt": "Panamá",
+    "en": "Panama",
+    "es": "Panamá"
+   },
+   "capital": {
+    "pt": "Cidade do Panamá",
+    "en": "Panama City",
+    "es": "Ciudad de Panamá"
+   },
+   "capAl": [
+    "Panamá"
+   ],
+   "region": "americas",
+   "area": 72546,
+   "ll": [
+    8.3682,
+    -80.9277
+   ],
+   "bbox": [
+    -82.955,
+    7.203,
+    -77.159,
+    9.634
+   ],
+   "borders": [
+    "1914-col",
+    "1914-cri",
+    "1914-usa"
+   ]
+  },
+  "1914-per": {
+   "code": "PER",
+   "ref": "PER",
+   "name": {
+    "pt": "Pérsia",
+    "en": "Persia",
+    "es": "Persia"
+   },
+   "alias": [
+    "Irã",
+    "Iran",
+    "Irán",
+    "Pérsia Qajar"
+   ],
+   "capital": {
+    "pt": "Teerã",
+    "en": "Tehran",
+    "es": "Teherán"
+   },
+   "capAl": [
+    "Teerão",
+    "Teheran"
+   ],
+   "region": "asia",
+   "area": 1620737,
+   "ll": [
+    32.081,
+    55.5303
+   ],
+   "bbox": [
+    44.033,
+    25.059,
+    63.333,
+    39.782
+   ],
+   "borders": [
+    "1914-afg",
+    "1914-ind",
+    "1914-ott",
+    "1914-rus"
+   ]
+  },
+  "1914-pgu": {
+   "code": "PGU",
+   "ref": "PGU",
+   "name": {
+    "pt": "Guiné Portuguesa",
+    "en": "Portuguese Guinea",
+    "es": "Guinea Portuguesa"
+   },
+   "capital": {
+    "pt": "Bolama",
+    "en": "Bolama",
+    "es": "Bolama"
+   },
+   "region": "africa",
+   "area": 34305,
+   "ll": [
+    12.1531,
+    -14.5068
+   ],
+   "bbox": [
+    -16.718,
+    10.922,
+    -11.249,
+    12.679
+   ],
+   "borders": [
+    "1914-aof"
+   ]
+  },
+  "1914-phl": {
+   "code": "PHL",
+   "ref": "PHL",
+   "name": {
+    "pt": "Filipinas",
+    "en": "Philippines",
+    "es": "Filipinas"
+   },
+   "alias": [
+    "Ilhas Filipinas",
+    "Philippine Islands",
+    "Islas Filipinas"
+   ],
+   "capital": {
+    "pt": "Manila",
+    "en": "Manila",
+    "es": "Manila"
+   },
+   "region": "asia",
+   "area": 294855,
+   "ll": [
+    16.9437,
+    121.389
+   ],
+   "bbox": [
+    116.929,
+    5.046,
+    126.604,
+    19.391
+   ],
+   "borders": []
+  },
+  "1914-por": {
+   "code": "POR",
+   "ref": "POR",
+   "name": {
+    "pt": "Portugal",
+    "en": "Portugal",
+    "es": "Portugal"
+   },
+   "capital": {
+    "pt": "Lisboa",
+    "en": "Lisbon",
+    "es": "Lisboa"
+   },
+   "region": "europe",
+   "area": 91760,
+   "ll": [
+    40.4463,
+    -7.8142
+   ],
+   "bbox": [
+    -9.5,
+    36.981,
+    -6.189,
+    42.154
+   ],
+   "borders": [
+    "1914-esp"
+   ]
+  },
+  "1914-pru": {
+   "code": "PRU",
+   "ref": "PRU",
+   "name": {
+    "pt": "Peru",
+    "en": "Peru",
+    "es": "Perú"
+   },
+   "capital": {
+    "pt": "Lima",
+    "en": "Lima",
+    "es": "Lima"
+   },
+   "region": "americas",
+   "area": 1035307,
+   "ll": [
+    -12.9777,
+    -73.0179
+   ],
+   "bbox": [
+    -81.329,
+    -18.35,
+    -68.652,
+    -2.811
+   ],
+   "borders": [
+    "1914-bol",
+    "1914-bra",
+    "1914-chl",
+    "1914-ecu"
+   ]
+  },
+  "1914-pry": {
+   "code": "PRY",
+   "ref": "PRY",
+   "name": {
+    "pt": "Paraguai",
+    "en": "Paraguay",
+    "es": "Paraguay"
+   },
+   "capital": {
+    "pt": "Assunção",
+    "en": "Asunción",
+    "es": "Asunción"
+   },
+   "region": "americas",
+   "area": 158988,
+   "ll": [
+    -25.7699,
+    -55.9946
+   ],
+   "bbox": [
+    -59.062,
+    -27.607,
+    -54.267,
+    -22.074
+   ],
+   "borders": [
+    "1914-arg",
+    "1914-bra"
+   ]
+  },
+  "1914-pyf": {
+   "code": "PYF",
+   "ref": "PYF",
+   "name": {
+    "pt": "Oceania Francesa",
+    "en": "French Oceania",
+    "es": "Oceanía Francesa"
+   },
+   "alias": [
+    "Estabelecimentos Franceses da Oceania",
+    "Polinésia Francesa",
+    "French Polynesia"
+   ],
+   "capital": {
+    "pt": "Papeete",
+    "en": "Papeete",
+    "es": "Papeete"
+   },
+   "region": "oceania",
+   "area": 3785,
+   "ll": [
+    -17.6418,
+    -149.4554
+   ],
+   "bbox": [
+    -154.638,
+    -23.196,
+    -134.911,
+    -14.092
+   ],
+   "borders": []
+  },
+  "1914-rdo": {
+   "code": "RDO",
+   "ref": "RDO",
+   "name": {
+    "pt": "Rio do Ouro",
+    "en": "Río de Oro",
+    "es": "Río de Oro"
+   },
+   "alias": [
+    "Rio de Oro"
+   ],
+   "capital": {
+    "pt": "Villa Cisneros",
+    "en": "Villa Cisneros",
+    "es": "Villa Cisneros"
+   },
+   "capAl": [
+    "Dakhla"
+   ],
+   "region": "africa",
+   "area": 176303,
+   "ll": [
+    22.808,
+    -14.6328
+   ],
+   "bbox": [
+    -17.104,
+    20.776,
+    -11.999,
+    25.998
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-sgh"
+   ]
+  },
+  "1914-reu": {
+   "code": "REU",
+   "ref": "REU",
+   "name": {
+    "pt": "Reunião",
+    "en": "Réunion",
+    "es": "Reunión"
+   },
+   "capital": {
+    "pt": "Saint-Denis",
+    "en": "Saint-Denis",
+    "es": "Saint-Denis"
+   },
+   "region": "africa",
+   "area": 2512,
+   "ll": [
+    -21.1079,
+    55.5053
+   ],
+   "bbox": [
+    55.217,
+    -21.388,
+    55.837,
+    -20.871
+   ],
+   "borders": []
+  },
+  "1914-rou": {
+   "code": "ROU",
+   "ref": "ROU",
+   "name": {
+    "pt": "Romênia",
+    "en": "Romania",
+    "es": "Rumania"
+   },
+   "alias": [
+    "Roménia",
+    "Reino da Romênia"
+   ],
+   "capital": {
+    "pt": "Bucareste",
+    "en": "Bucharest",
+    "es": "Bucarest"
+   },
+   "region": "europe",
+   "area": 138242,
+   "ll": [
+    44.874,
+    27.2359
+   ],
+   "bbox": [
+    22.422,
+    43.352,
+    29.779,
+    48.265
+   ],
+   "borders": [
+    "1914-auh",
+    "1914-bgr",
+    "1914-rus",
+    "1914-srb"
+   ]
+  },
+  "1914-rus": {
+   "code": "RUS",
+   "ref": "RUS",
+   "name": {
+    "pt": "Império Russo",
+    "en": "Russian Empire",
+    "es": "Imperio ruso"
+   },
+   "alias": [
+    "Rússia",
+    "Russia",
+    "Rusia"
+   ],
+   "capital": {
+    "pt": "São Petersburgo",
+    "en": "Saint Petersburg",
+    "es": "San Petersburgo"
+   },
+   "capAl": [
+    "Petrogrado",
+    "Petrograd",
+    "Sankt-Peterburg",
+    "St. Petersburg"
+   ],
+   "region": "europe",
+   "area": 22188541,
+   "ll": [
+    63.0854,
+    122.6042
+   ],
+   "bbox": [
+    17.643,
+    35.13,
+    180.0,
+    77.723
+   ],
+   "borders": [
+    "1914-afg",
+    "1914-auh",
+    "1914-chn",
+    "1914-ger",
+    "1914-jpn",
+    "1914-nor",
+    "1914-ott",
+    "1914-per",
+    "1914-rou",
+    "1914-swe"
+   ]
+  },
+  "1914-sam": {
+   "code": "SAM",
+   "ref": "SAM",
+   "name": {
+    "pt": "Samoa Alemã",
+    "en": "German Samoa",
+    "es": "Samoa Alemana"
+   },
+   "capital": {
+    "pt": "Apia",
+    "en": "Apia",
+    "es": "Apia"
+   },
+   "region": "oceania",
+   "area": 2845,
+   "ll": [
+    -13.628,
+    -172.4605
+   ],
+   "bbox": [
+    -172.804,
+    -14.048,
+    -171.423,
+    -13.44
+   ],
+   "borders": []
+  },
+  "1914-sar": {
+   "code": "SAR",
+   "ref": "SAR",
+   "name": {
+    "pt": "Sarawak",
+    "en": "Sarawak",
+    "es": "Sarawak"
+   },
+   "capital": {
+    "pt": "Kuching",
+    "en": "Kuching",
+    "es": "Kuching"
+   },
+   "region": "asia",
+   "area": 124401,
+   "ll": [
+    2.4774,
+    113.7823
+   ],
+   "bbox": [
+    109.538,
+    0.854,
+    115.678,
+    4.99
+   ],
+   "borders": [
+    "1914-brn",
+    "1914-dei",
+    "1914-nbo"
+   ]
+  },
+  "1914-sdn": {
+   "code": "SDN",
+   "ref": "SDN",
+   "name": {
+    "pt": "Sudão Anglo-Egípcio",
+    "en": "Anglo-Egyptian Sudan",
+    "es": "Sudán anglo-egipcio"
+   },
+   "alias": [
+    "Sudão",
+    "Sudan",
+    "Sudán"
+   ],
+   "capital": {
+    "pt": "Cartum",
+    "en": "Khartoum",
+    "es": "Jartum"
+   },
+   "region": "africa",
+   "area": 2584484,
+   "ll": [
+    15.9159,
+    30.0132
+   ],
+   "bbox": [
+    19.082,
+    3.504,
+    38.583,
+    22.0
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-bcg",
+    "1914-cyr",
+    "1914-egy",
+    "1914-eri",
+    "1914-eth",
+    "1914-trp",
+    "1914-uga"
+   ]
+  },
+  "1914-sgh": {
+   "code": "SGH",
+   "ref": "SGH",
+   "name": {
+    "pt": "Saguia el-Hamra",
+    "en": "Saguia el-Hamra",
+    "es": "Saguía el Hamra"
+   },
+   "alias": [
+    "Saguia el Hamra"
+   ],
+   "region": "africa",
+   "area": 91868,
+   "ll": [
+    26.8344,
+    -9.4991
+   ],
+   "bbox": [
+    -14.508,
+    25.973,
+    -8.666,
+    27.67
+   ],
+   "borders": [
+    "1914-alg",
+    "1914-aof",
+    "1914-rdo",
+    "1914-smo"
+   ]
+  },
+  "1914-sia": {
+   "code": "SIA",
+   "ref": "SIA",
+   "name": {
+    "pt": "Sião",
+    "en": "Siam",
+    "es": "Siam"
+   },
+   "alias": [
+    "Tailândia",
+    "Thailand",
+    "Tailandia"
+   ],
+   "capital": {
+    "pt": "Bangcoc",
+    "en": "Bangkok",
+    "es": "Bangkok"
+   },
+   "capAl": [
+    "Banguecoque"
+   ],
+   "region": "asia",
+   "area": 518322,
+   "ll": [
+    15.446,
+    101.3297
+   ],
+   "bbox": [
+    95.626,
+    5.612,
+    105.633,
+    21.2
+   ],
+   "borders": [
+    "1914-chn",
+    "1914-fms",
+    "1914-idc",
+    "1914-ind",
+    "1914-ums"
+   ]
+  },
+  "1914-slb": {
+   "code": "SLB",
+   "ref": "SLB",
+   "name": {
+    "pt": "Ilhas Salomão Britânicas",
+    "en": "British Solomon Islands",
+    "es": "Islas Salomón Británicas"
+   },
+   "alias": [
+    "Ilhas Salomão",
+    "Solomon Islands"
+   ],
+   "capital": {
+    "pt": "Tulagi",
+    "en": "Tulagi",
+    "es": "Tulagi"
+   },
+   "region": "oceania",
+   "area": 28260,
+   "ll": [
+    -9.6211,
+    160.1735
+   ],
+   "bbox": [
+    155.512,
+    -11.882,
+    162.487,
+    -6.588
+   ],
+   "borders": []
+  },
+  "1914-sle": {
+   "code": "SLE",
+   "ref": "SLE",
+   "name": {
+    "pt": "Serra Leoa",
+    "en": "Sierra Leone",
+    "es": "Sierra Leona"
+   },
+   "capital": {
+    "pt": "Freetown",
+    "en": "Freetown",
+    "es": "Freetown"
+   },
+   "region": "africa",
+   "area": 71904,
+   "ll": [
+    8.6598,
+    -12.1297
+   ],
+   "bbox": [
+    -13.301,
+    6.921,
+    -10.465,
+    10.001
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-lbr"
+   ]
+  },
+  "1914-slv": {
+   "code": "SLV",
+   "ref": "SLV",
+   "name": {
+    "pt": "El Salvador",
+    "en": "El Salvador",
+    "es": "El Salvador"
+   },
+   "capital": {
+    "pt": "San Salvador",
+    "en": "San Salvador",
+    "es": "San Salvador"
+   },
+   "region": "americas",
+   "area": 20820,
+   "ll": [
+    13.8965,
+    -89.2393
+   ],
+   "bbox": [
+    -90.135,
+    13.156,
+    -87.188,
+    14.451
+   ],
+   "borders": [
+    "1914-gtm",
+    "1914-hnd",
+    "1914-nic"
+   ]
+  },
+  "1914-smo": {
+   "code": "SMO",
+   "ref": "SMO",
+   "name": {
+    "pt": "Marrocos Espanhol",
+    "en": "Spanish Morocco",
+    "es": "Marruecos Español"
+   },
+   "alias": [
+    "Protetorado Espanhol de Marrocos"
+   ],
+   "capital": {
+    "pt": "Tetuão",
+    "en": "Tétouan",
+    "es": "Tetuán"
+   },
+   "capAl": [
+    "Tetouan",
+    "Tetuan"
+   ],
+   "region": "africa",
+   "area": 48885,
+   "ll": [
+    28.0334,
+    -10.851
+   ],
+   "bbox": [
+    -13.198,
+    27.612,
+    -8.669,
+    28.682
+   ],
+   "borders": [
+    "1914-alg",
+    "1914-mar",
+    "1914-sgh"
+   ]
+  },
+  "1914-spg": {
+   "code": "SPG",
+   "ref": "SPG",
+   "name": {
+    "pt": "Guiné Espanhola",
+    "en": "Spanish Guinea",
+    "es": "Guinea Española"
+   },
+   "capital": {
+    "pt": "Santa Isabel",
+    "en": "Santa Isabel",
+    "es": "Santa Isabel"
+   },
+   "capAl": [
+    "Malabo"
+   ],
+   "region": "africa",
+   "area": 27163,
+   "ll": [
+    1.5837,
+    10.302
+   ],
+   "bbox": [
+    8.415,
+    0.923,
+    11.409,
+    3.788
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-kam"
+   ]
+  },
+  "1914-srb": {
+   "code": "SRB",
+   "ref": "SRB",
+   "name": {
+    "pt": "Sérvia",
+    "en": "Serbia",
+    "es": "Serbia"
+   },
+   "alias": [
+    "Reino da Sérvia"
+   ],
+   "capital": {
+    "pt": "Belgrado",
+    "en": "Belgrade",
+    "es": "Belgrado"
+   },
+   "region": "europe",
+   "area": 85383,
+   "ll": [
+    43.8953,
+    21.3178
+   ],
+   "bbox": [
+    19.103,
+    40.854,
+    23.034,
+    44.984
+   ],
+   "borders": [
+    "1914-alb",
+    "1914-auh",
+    "1914-bgr",
+    "1914-grc",
+    "1914-mne",
+    "1914-rou"
+   ]
+  },
+  "1914-srh": {
+   "code": "SRH",
+   "ref": "SRH",
+   "name": {
+    "pt": "Rodésia do Sul",
+    "en": "Southern Rhodesia",
+    "es": "Rodesia del Sur"
+   },
+   "alias": [
+    "Rodésia",
+    "Rhodesia",
+    "Rodesia"
+   ],
+   "capital": {
+    "pt": "Salisbury",
+    "en": "Salisbury",
+    "es": "Salisbury"
+   },
+   "capAl": [
+    "Harare"
+   ],
+   "region": "africa",
+   "area": 388953,
+   "ll": [
+    -19.1981,
+    30.042
+   ],
+   "bbox": [
+    25.312,
+    -22.424,
+    33.75,
+    -15.61
+   ],
+   "borders": [
+    "1914-bec",
+    "1914-moz",
+    "1914-nrh",
+    "1914-zaf"
+   ]
+  },
+  "1914-stp": {
+   "code": "STP",
+   "ref": "STP",
+   "name": {
+    "pt": "São Tomé e Príncipe",
+    "en": "São Tomé and Príncipe",
+    "es": "Santo Tomé y Príncipe"
+   },
+   "capital": {
+    "pt": "São Tomé",
+    "en": "São Tomé",
+    "es": "Santo Tomé"
+   },
+   "region": "africa",
+   "area": 995,
+   "ll": [
+    0.2405,
+    6.5898
+   ],
+   "bbox": [
+    6.461,
+    -0.014,
+    7.463,
+    1.693
+   ],
+   "borders": []
+  },
+  "1914-sts": {
+   "code": "STS",
+   "ref": "STS",
+   "name": {
+    "pt": "Estabelecimentos dos Estreitos",
+    "en": "Straits Settlements",
+    "es": "Establecimientos de los Estrechos"
+   },
+   "capital": {
+    "pt": "Singapura",
+    "en": "Singapore",
+    "es": "Singapur"
+   },
+   "region": "asia",
+   "area": 4262,
+   "ll": [
+    2.319,
+    102.348
+   ],
+   "bbox": [
+    100.176,
+    1.19,
+    104.088,
+    5.583
+   ],
+   "borders": [
+    "1914-fms",
+    "1914-ums"
+   ]
+  },
+  "1914-sur": {
+   "code": "SUR",
+   "ref": "SUR",
+   "name": {
+    "pt": "Guiana Holandesa",
+    "en": "Dutch Guiana",
+    "es": "Guayana Neerlandesa"
+   },
+   "alias": [
+    "Suriname",
+    "Surinam"
+   ],
+   "capital": {
+    "pt": "Paramaribo",
+    "en": "Paramaribo",
+    "es": "Paramaribo"
+   },
+   "region": "americas",
+   "area": 144324,
+   "ll": [
+    4.2076,
+    -57.0887
+   ],
+   "bbox": [
+    -58.067,
+    1.832,
+    -53.976,
+    6.01
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-guf",
+    "1914-guy"
+   ]
+  },
+  "1914-swe": {
+   "code": "SWE",
+   "ref": "SWE",
+   "name": {
+    "pt": "Suécia",
+    "en": "Sweden",
+    "es": "Suecia"
+   },
+   "capital": {
+    "pt": "Estocolmo",
+    "en": "Stockholm",
+    "es": "Estocolmo"
+   },
+   "region": "europe",
+   "area": 438256,
+   "ll": [
+    65.6561,
+    18.3517
+   ],
+   "bbox": [
+    11.101,
+    55.337,
+    24.155,
+    69.06
+   ],
+   "borders": [
+    "1914-nor",
+    "1914-rus"
+   ]
+  },
+  "1914-swz": {
+   "code": "SWZ",
+   "ref": "SWZ",
+   "name": {
+    "pt": "Suazilândia",
+    "en": "Swaziland",
+    "es": "Suazilandia"
+   },
+   "alias": [
+    "Essuatíni",
+    "Eswatini"
+   ],
+   "capital": {
+    "pt": "Mbabane",
+    "en": "Mbabane",
+    "es": "Mbabane"
+   },
+   "region": "africa",
+   "area": 17403,
+   "ll": [
+    -26.5713,
+    31.4666
+   ],
+   "bbox": [
+    30.792,
+    -27.318,
+    32.135,
+    -25.718
+   ],
+   "borders": [
+    "1914-moz",
+    "1914-zaf"
+   ]
+  },
+  "1914-syc": {
+   "code": "SYC",
+   "ref": "SYC",
+   "name": {
+    "pt": "Seicheles",
+    "en": "Seychelles",
+    "es": "Seychelles"
+   },
+   "capital": {
+    "pt": "Victoria",
+    "en": "Victoria",
+    "es": "Victoria"
+   },
+   "region": "africa",
+   "area": 464,
+   "ll": [
+    -4.6417,
+    55.4326
+   ],
+   "bbox": [
+    52.722,
+    -7.172,
+    56.293,
+    -3.71
+   ],
+   "borders": []
+  },
+  "1914-tib": {
+   "code": "TIB",
+   "ref": "TIB",
+   "name": {
+    "pt": "Tibete",
+    "en": "Tibet",
+    "es": "Tíbet"
+   },
+   "capital": {
+    "pt": "Lhasa",
+    "en": "Lhasa",
+    "es": "Lhasa"
+   },
+   "capAl": [
+    "Lassa"
+   ],
+   "region": "asia",
+   "area": 1768695,
+   "ll": [
+    32.9682,
+    94.0045
+   ],
+   "bbox": [
+    78.702,
+    27.212,
+    101.678,
+    38.994
+   ],
+   "borders": [
+    "1914-btn",
+    "1914-chn",
+    "1914-ind",
+    "1914-npl"
+   ]
+  },
+  "1914-tls": {
+   "code": "TLS",
+   "ref": "TLS",
+   "name": {
+    "pt": "Timor Português",
+    "en": "Portuguese Timor",
+    "es": "Timor Portugués"
+   },
+   "capital": {
+    "pt": "Díli",
+    "en": "Dili",
+    "es": "Dili"
+   },
+   "region": "asia",
+   "area": 14951,
+   "ll": [
+    -8.8691,
+    125.6121
+   ],
+   "bbox": [
+    124.042,
+    -9.503,
+    127.3,
+    -8.127
+   ],
+   "borders": [
+    "1914-dei"
+   ]
+  },
+  "1914-tog": {
+   "code": "TOG",
+   "ref": "TOG",
+   "name": {
+    "pt": "Togolândia",
+    "en": "Togoland",
+    "es": "Togolandia"
+   },
+   "alias": [
+    "Togo"
+   ],
+   "capital": {
+    "pt": "Lomé",
+    "en": "Lomé",
+    "es": "Lomé"
+   },
+   "region": "africa",
+   "area": 86109,
+   "ll": [
+    9.0081,
+    0.694
+   ],
+   "bbox": [
+    -0.479,
+    6.113,
+    1.808,
+    11.138
+   ],
+   "borders": [
+    "1914-aof",
+    "1914-gld"
+   ]
+  },
+  "1914-ton": {
+   "code": "TON",
+   "ref": "TON",
+   "name": {
+    "pt": "Tonga",
+    "en": "Tonga",
+    "es": "Tonga"
+   },
+   "capital": {
+    "pt": "Nucualofa",
+    "en": "Nukuʻalofa",
+    "es": "Nukualofa"
+   },
+   "capAl": [
+    "Nukualofa",
+    "Nuku'alofa"
+   ],
+   "region": "oceania",
+   "area": 710,
+   "ll": [
+    -21.2314,
+    -175.139
+   ],
+   "bbox": [
+    -176.214,
+    -22.349,
+    -173.736,
+    -15.566
+   ],
+   "borders": []
+  },
+  "1914-trp": {
+   "code": "TRP",
+   "ref": "TRP",
+   "name": {
+    "pt": "Tripolitânia Italiana",
+    "en": "Italian Tripolitania",
+    "es": "Tripolitania italiana"
+   },
+   "alias": [
+    "Tripolitânia",
+    "Tripolitania"
+   ],
+   "capital": {
+    "pt": "Trípoli",
+    "en": "Tripoli",
+    "es": "Trípoli"
+   },
+   "region": "africa",
+   "area": 867279,
+   "ll": [
+    27.3615,
+    14.4418
+   ],
+   "bbox": [
+    8.437,
+    22.0,
+    19.177,
+    33.205
+   ],
+   "borders": [
+    "1914-aef",
+    "1914-alg",
+    "1914-aof",
+    "1914-cyr",
+    "1914-sdn",
+    "1914-tun"
+   ]
+  },
+  "1914-tru": {
+   "code": "TRU",
+   "ref": "TRU",
+   "name": {
+    "pt": "Estados da Trégua",
+    "en": "Trucial States",
+    "es": "Estados de la Tregua"
+   },
+   "region": "asia",
+   "area": 71334,
+   "ll": [
+    23.4886,
+    54.5467
+   ],
+   "bbox": [
+    51.581,
+    22.631,
+    56.38,
+    26.067
+   ],
+   "borders": [
+    "1914-msc"
+   ]
+  },
+  "1914-tto": {
+   "code": "TTO",
+   "ref": "TTO",
+   "name": {
+    "pt": "Trinidad e Tobago",
+    "en": "Trinidad and Tobago",
+    "es": "Trinidad y Tobago"
+   },
+   "capital": {
+    "pt": "Port of Spain",
+    "en": "Port of Spain",
+    "es": "Port of Spain"
+   },
+   "region": "americas",
+   "area": 5157,
+   "ll": [
+    10.3132,
+    -61.2313
+   ],
+   "bbox": [
+    -61.93,
+    10.043,
+    -60.517,
+    11.347
+   ],
+   "borders": []
+  },
+  "1914-tun": {
+   "code": "TUN",
+   "ref": "TUN",
+   "name": {
+    "pt": "Tunísia",
+    "en": "Tunisia",
+    "es": "Túnez"
+   },
+   "capital": {
+    "pt": "Túnis",
+    "en": "Tunis",
+    "es": "Túnez"
+   },
+   "region": "africa",
+   "area": 157574,
+   "ll": [
+    35.3446,
+    9.5664
+   ],
+   "bbox": [
+    5.626,
+    30.229,
+    11.599,
+    37.346
+   ],
+   "borders": [
+    "1914-alg",
+    "1914-trp"
+   ]
+  },
+  "1914-uga": {
+   "code": "UGA",
+   "ref": "UGA",
+   "name": {
+    "pt": "Protetorado de Uganda",
+    "en": "Uganda Protectorate",
+    "es": "Protectorado de Uganda"
+   },
+   "alias": [
+    "Uganda"
+   ],
+   "capital": {
+    "pt": "Entebbe",
+    "en": "Entebbe",
+    "es": "Entebbe"
+   },
+   "region": "africa",
+   "area": 251109,
+   "ll": [
+    0.0627,
+    30.9246
+   ],
+   "bbox": [
+    29.575,
+    -1.487,
+    36.155,
+    5.031
+   ],
+   "borders": [
+    "1914-bcg",
+    "1914-bea",
+    "1914-eth",
+    "1914-gea",
+    "1914-sdn"
+   ]
+  },
+  "1914-ums": {
+   "code": "UMS",
+   "ref": "UMS",
+   "name": {
+    "pt": "Estados Malaios Não Federados",
+    "en": "Unfederated Malay States",
+    "es": "Estados Malayos No Federados"
+   },
+   "region": "asia",
+   "area": 57661,
+   "ll": [
+    5.2882,
+    102.3079
+   ],
+   "bbox": [
+    99.641,
+    1.266,
+    104.294,
+    6.726
+   ],
+   "borders": [
+    "1914-fms",
+    "1914-sia",
+    "1914-sts"
+   ]
+  },
+  "1914-ury": {
+   "code": "URY",
+   "ref": "URY",
+   "name": {
+    "pt": "Uruguai",
+    "en": "Uruguay",
+    "es": "Uruguay"
+   },
+   "capital": {
+    "pt": "Montevidéu",
+    "en": "Montevideo",
+    "es": "Montevideo"
+   },
+   "region": "americas",
+   "area": 176234,
+   "ll": [
+    -33.5767,
+    -54.8595
+   ],
+   "bbox": [
+    -58.495,
+    -34.973,
+    -52.185,
+    -30.085
+   ],
+   "borders": [
+    "1914-arg",
+    "1914-bra"
+   ]
+  },
+  "1914-usa": {
+   "code": "USA",
+   "ref": "USA",
+   "name": {
+    "pt": "Estados Unidos",
+    "en": "United States",
+    "es": "Estados Unidos"
+   },
+   "alias": [
+    "EUA",
+    "USA"
+   ],
+   "capital": {
+    "pt": "Washington",
+    "en": "Washington",
+    "es": "Washington"
+   },
+   "capAl": [
+    "Washington DC",
+    "Washington D.C."
+   ],
+   "region": "americas",
+   "area": 9295182,
+   "ll": [
+    37.0673,
+    -99.5606
+   ],
+   "bbox": [
+    -124.724,
+    24.527,
+    -66.949,
+    50.736
+   ],
+   "borders": [
+    "1914-can",
+    "1914-mex",
+    "1914-pan"
+   ]
+  },
+  "1914-ven": {
+   "code": "VEN",
+   "ref": "VEN",
+   "name": {
+    "pt": "Venezuela",
+    "en": "Venezuela",
+    "es": "Venezuela"
+   },
+   "capital": {
+    "pt": "Caracas",
+    "en": "Caracas",
+    "es": "Caracas"
+   },
+   "region": "americas",
+   "area": 914285,
+   "ll": [
+    7.799,
+    -65.7164
+   ],
+   "bbox": [
+    -73.125,
+    0.647,
+    -59.816,
+    12.196
+   ],
+   "borders": [
+    "1914-bra",
+    "1914-col",
+    "1914-guy"
+   ]
+  },
+  "1914-win": {
+   "code": "WIN",
+   "ref": "WIN",
+   "name": {
+    "pt": "Ilhas de Barlavento Britânicas",
+    "en": "British Windward Islands",
+    "es": "Islas de Barlovento Británicas"
+   },
+   "capital": {
+    "pt": "St. George's",
+    "en": "St. George's",
+    "es": "St. George's"
+   },
+   "capAl": [
+    "Saint George's"
+   ],
+   "region": "americas",
+   "area": 2448,
+   "ll": [
+    14.7228,
+    -61.0761
+   ],
+   "bbox": [
+    -61.802,
+    11.987,
+    -60.812,
+    14.879
+   ],
+   "borders": []
+  },
+  "1914-zaf": {
+   "code": "ZAF",
+   "ref": "ZAF",
+   "name": {
+    "pt": "União Sul-Africana",
+    "en": "Union of South Africa",
+    "es": "Unión Sudafricana"
+   },
+   "alias": [
+    "África do Sul",
+    "South Africa",
+    "Sudáfrica"
+   ],
+   "capital": {
+    "pt": "Pretória",
+    "en": "Pretoria",
+    "es": "Pretoria"
+   },
+   "capAl": [
+    "Cidade do Cabo",
+    "Cape Town",
+    "Ciudad del Cabo"
+   ],
+   "region": "africa",
+   "area": 1222427,
+   "ll": [
+    -30.2696,
+    23.2424
+   ],
+   "bbox": [
+    16.452,
+    -34.833,
+    33.75,
+    -22.125
+   ],
+   "borders": [
+    "1914-bas",
+    "1914-bec",
+    "1914-gsw",
+    "1914-moz",
+    "1914-srh",
+    "1914-swz"
+   ]
+  },
+  "1914-zan": {
+   "code": "ZAN",
+   "ref": "ZAN",
+   "name": {
+    "pt": "Zanzibar",
+    "en": "Zanzibar",
+    "es": "Zanzíbar"
+   },
+   "capital": {
+    "pt": "Zanzibar",
+    "en": "Zanzibar Town",
+    "es": "Zanzíbar"
+   },
+   "region": "africa",
+   "area": 2608,
+   "ll": [
+    -6.1091,
+    39.3189
+   ],
+   "bbox": [
+    39.184,
+    -6.479,
+    39.876,
+    -4.865
+   ],
+   "borders": []
+  }
+ }
+}

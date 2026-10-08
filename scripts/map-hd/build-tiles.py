@@ -78,6 +78,11 @@ SNAP = 1e-3  # m de Mercator: o que está a menos disso de uma borda de célula 
 # Na borda do mundo os land polygons do OSM param em ±20037508,34, 2,8 mm antes de ±ORIGIN: as duas metades de Chukotka e da
 # Antártida ficavam a 5,6 mm uma da outra depois de deslocar o mundo, a união não fundia e o contorno desenhava o antimeridiano
 SNAP_WORLD = 1e-2
+# Mapas históricos (CELL_SNAP, em m): a terra vem arredondada a uma grade de 250 m que não casa com as células (313.086 m), e as bordas delas
+# ficam até ~125 m fora do lugar, paralelas ao retângulo; aí o corte rápido do GEOS (clip_by_rect) erra sem dar polígono inválido (de uma
+# célula inteira de gelo da Groenlândia devolvia uma lasca, e o zoom 3 mostrava um quadrado vazio). Coladas de volta nas bordas, cortam como no mapa HD
+if os.environ.get("CELL_SNAP"):
+    SNAP = SNAP_WORLD = float(os.environ["CELL_SNAP"])
 
 
 def snap_to_cell(geom, vx, vy):
@@ -122,9 +127,15 @@ def ring_area(coords):
 def clip(geom, rect):
     """Corte rápido no retângulo; se o GEOS reclamar de um anel degenerado, conserta e corta por interseção."""
     try:
-        return polygonal(shapely.clip_by_rect(geom, *rect))
+        out = shapely.clip_by_rect(geom, *rect)
+        # o corte rápido do GEOS erra com um buraco colado na borda do retângulo (devolve só o buraco, inválido) e com lascas rentes a ela
+        # (devolve o retângulo inteiro, válido: 98 mil km² da França no Saara de 1914, que ali tinha 12): cortar nunca ganha área. Nos dois
+        # casos corta por interseção
+        if shapely.is_valid(out) and shapely.area(out) <= shapely.area(geom) * (1 + 1e-9) + 1.0:
+            return polygonal(out)
     except shapely.errors.GEOSException:
-        return polygonal(shapely.intersection(shapely.make_valid(geom), shapely.box(*rect)))
+        pass
+    return polygonal(shapely.intersection(shapely.make_valid(geom), shapely.box(*rect)))
 
 
 def union(parts):
@@ -449,9 +460,16 @@ def process_entity(task):
     tiles. Simplificar tile por tile mexia na borda de um lado e não do outro, e as duas metades de uma ilha deixavam de se
     encaixar (uma emenda desenhada no mapa, como em Vanua Levu, Fiji)."""
     cid, blobs = task
+    parts = [shapely.from_wkb(blob) for blob in blobs]
+    if os.environ.get("LOW_DROP_SPECKS"):
+        # Mapas históricos: as ilhotas que o zoom 6 tiraria de qualquer jeito saem antes de unir a entidade (o Canadá de 1914 tem 220 mil;
+        # unidas e cortadas em quadtree, uma entidade só levava mais de 15 minutos)
+        floor = MIN_AREA[CELL_ZOOM - 1] * unit(CELL_ZOOM - 1) ** 2
+        parts = [polygonal(shapely.multipolygons(bits[shapely.area(bits) >= floor])) for part in parts for bits in [shapely.get_parts(part)]]
+        parts = [part for part in parts if part is not None] or [shapely.from_wkb(blobs[0])]
     # a faixa do outro lado do antimeridiano entra ANTES de simplificar (com a margem do zoom 0, a maior): simplificada depois,
     # a borda em ±180° mudava de um lado e não do outro e deixava uma emenda (Chukotka)
-    geom = with_wrap(union([shapely.from_wkb(blob) for blob in blobs]), buffer_m(0))
+    geom = with_wrap(union(parts), buffer_m(0))
     out = []
     for z in range(CELL_ZOOM - 1, -1, -1):
         geom = simplify(geom, z)

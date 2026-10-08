@@ -203,7 +203,7 @@ PROBES = [
     ["Paramaribo", -55.2, 5.85, "1914-sur"], ["Buenos Aires", -58.38, -34.6, "1914-arg"], ["Santiago", -70.65, -33.45, "1914-chl"], ["Ushuaia", -68.3, -54.8, "1914-arg"],
     ["Rio de Janeiro", -43.2, -22.9, "1914-bra"], ["Washington", -77.04, 38.9, "1914-usa"], ["Anchorage (Alasca)", -149.9, 61.22, "1914-usa"], ["Ottawa", -75.7, 45.42, "1914-can"],
     ["St. John's", -52.71, 47.56, "1914-nfl"], ["Melbourne", 144.96, -37.81, "1914-aus"], ["Rabaul", 152.2, -4.2, "1914-gng"], ["Tetuão", -5.37, 35.57, "1914-smo"],
-    ["Rabat", -6.84, 34.02, "1914-mar"], ["Mônaco, terra neutra", 7.42, 43.74, ""], ["Atlântico", -30.0, 30.0, None], ["Pacífico", -140.0, 0.0, None],
+    ["Rabat", -6.84, 34.02, "1914-mar"], ["Chaco Boreal, disputa neutra", -60.5, -21.5, ""], ["Interior do Labrador, disputa neutra", -63.0, 53.5, ""], ["Atlântico", -30.0, 30.0, None], ["Pacífico", -140.0, 0.0, None],
 ]
 
 
@@ -254,7 +254,10 @@ def main():
     }
     config["frame"] = [-170.0, -56.0, 190.0, 78.0]
     config["leftoverKm"] = 60
-    config["landTolerance"] = 300
+    config["landGrid"] = 250
+    # a Arábia central não tem dono em 1914 (nem o OHM nem o CShapes a traçam): a sobra grande da terra da Arábia Saudita e do Iêmen de hoje fica
+    # neutra inteira. Pela regra das sobras (a unidade mais perto, até 60 km, pedaço por célula) a divisa saía em degraus de 2,8°
+    config["neutralRest"] = ["682", "887"]
     config["zmax"] = 7
     config["neutral"] = NEUTRAL
     config["attribution"] = "© OpenHistoricalMap · © OpenStreetMap contributors · Overture Maps Foundation"

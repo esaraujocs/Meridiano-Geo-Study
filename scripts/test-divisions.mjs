@@ -262,8 +262,9 @@ if (HAS_1914) {
     ["egy", ["sdn"]], ["bra", ["arg", "ury", "pry", "bol", "pru", "col", "ven", "guy", "sur", "guf"]], ["usa", ["can", "mex"]], ["chn", ["rus", "ind", "tib"]]]) {
     for (const other of near) assert.ok(borders(code).includes(`1914-${other}`), `${code} faz divisa com ${other} (${borders(code)})`);
   }
-  assert.deepEqual(borders("aus"), [], "a Austrália é ilha"); assert.deepEqual(borders("isl"), []);
-  assert.ok(pairs > 250, `${pairs} pares de vizinhos`);
+  // a Austrália administrava o Território de Papua: divisa com as Índias Holandesas e a Nova Guiné Alemã, na ilha da Nova Guiné
+  assert.deepEqual([...borders("aus")].sort(), ["1914-dei", "1914-gng"]); assert.deepEqual(borders("isl"), [], "a Islândia é ilha");
+  assert.equal(pairs, 202, "202 pares de vizinhos");
 }
 
 // ---- regras

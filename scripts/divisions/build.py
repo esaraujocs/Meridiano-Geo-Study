@@ -41,7 +41,9 @@ def build(country):
     json.dump(profile, open(os.path.join(build_dir, "map-profile.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
     target = os.path.join(build_dir, f"divisions-{country}.pmtiles")
     # zmax da config: os Mapas históricos (o mundo inteiro) param no zoom 7, ~1 km de precisão (o MapLibre amplia daí)
-    env = {**os.environ, "MAP_BUILD": build_dir, **({"ZMAX": str(config["zmax"])} if config.get("zmax") else {})}
+    env = {**os.environ, "MAP_BUILD": build_dir, **({"ZMAX": str(config["zmax"])} if config.get("zmax") else {}),
+           **({"LOW_DROP_SPECKS": "1"} if config.get("kind") == "era" else {}),
+           **({"CELL_SNAP": str(0.6 * config["landGrid"])} if config.get("landGrid") else {})}
     run(sys.executable, os.path.join(ROOT, "scripts", "map-hd", "build-tiles.py"), target, env=env)
     run(sys.executable, os.path.join(ROOT, "scripts", "map-hd", "mvt_check.py"), target)
     for suffix in (".pmtiles", ".manifest.json"):

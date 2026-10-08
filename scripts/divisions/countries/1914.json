@@ -12,7 +12,8 @@
   "regions": {"europe": {"pt": "Europa", "en": "Europe", "es": "Europa"}, "asia": {"pt": "Ásia", "en": "Asia", "es": "Asia"}, "africa": {"pt": "África", "en": "Africa", "es": "África"}, "americas": {"pt": "Américas", "en": "Americas", "es": "Américas"}, "oceania": {"pt": "Oceania", "en": "Oceania", "es": "Oceanía"}},
   "frame": [-170.0, -56.0, 190.0, 78.0],
   "leftoverKm": 60,
-  "landTolerance": 300,
+  "landGrid": 250,
+  "neutralRest": ["682", "887"],
   "zmax": 7,
   "neutral": {"relations": [2739874, 2746467, 2853735, 2693418, 2692855, 2828299, 2828270, 2693293, 2901231, 2901240, 2901238, 2961754, 2962839, 2889899, 2848211, 2889933, 2694462, 2805384, 2848195, 2846172, 2831185, 2846264, 2831312, 2831964, 2831970, 2696415, 2832972, 2961649], "overlaps": [["BOL", "PRY"], ["NFL", "CAN"]], "drop": [2846233]},
   "attribution": "© OpenHistoricalMap · © OpenStreetMap contributors · Overture Maps Foundation",
@@ -217,7 +218,8 @@
     ["Rabaul", 152.2, -4.2, "1914-gng"],
     ["Tetuão", -5.37, 35.57, "1914-smo"],
     ["Rabat", -6.84, 34.02, "1914-mar"],
-    ["Mônaco, terra neutra", 7.42, 43.74, ""],
+    ["Chaco Boreal, disputa neutra", -60.5, -21.5, ""],
+    ["Interior do Labrador, disputa neutra", -63.0, 53.5, ""],
     ["Atlântico", -30.0, 30.0, null],
     ["Pacífico", -140.0, 0.0, null]
   ]
