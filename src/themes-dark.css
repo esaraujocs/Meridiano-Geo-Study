@@ -70,6 +70,9 @@
 :root[data-scheme="dark"] .gs .gs-opt.correct{background:color-mix(in srgb,var(--ok-ink) 22%,var(--panel-2))}
 :root[data-scheme="dark"] .gs .gs-opt.wrong{background:color-mix(in srgb,var(--bad-ink) 22%,var(--panel-2))}
 :root[data-scheme="dark"] .gs-field input{background:var(--panel-2);color:var(--ink)}
+/* o cartão da pergunta (só abaixo de 1024 px; no desktop ele não tem fundo) era o branco translúcido do tema claro, cinza sobre o marinho, com o enunciado a 2,3:1 */
+@media (max-width:1023px){:root[data-scheme="dark"] .gs-stage{background:var(--panel-2);border-color:var(--line)}}
+:root[data-scheme="dark"] .gs-x{background:var(--panel-2)}
 :root[data-scheme="dark"] .gs-continue{background:var(--green);color:var(--dark)}
 /* o retorno da escrita ("Certo"/"Resposta certa" e "você digitou") tinha o verde-escuro fixo do tema claro: 2,1:1 sobre o escuro (achado com a escrita do Brasil, 06/10) */
 :root[data-scheme="dark"] :is(.reveal small,.reveal em,.reveal-skip){color:var(--muted)}

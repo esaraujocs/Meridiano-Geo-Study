@@ -910,6 +910,7 @@ export const es: Messages = {
   },
   shell: {
     exit: "Salir de la partida",
+    exitShort: "Salir",
     progressAria: (question: number, total: number, hits: number) => `Pregunta ${question} de ${total}, ${hits} ${plural(hits, "acierto", "aciertos")}`,
     streakTitle: "Aciertos seguidos",
     streakAria: (n: number) => `Racha: ${n}`,

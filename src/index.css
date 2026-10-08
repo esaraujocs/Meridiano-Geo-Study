@@ -1308,7 +1308,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 @media (min-width:1024px){
   .gs-top{height:68px;padding:0 40px;gap:14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.22)}
   .gs-x{width:auto;height:40px;padding:0 16px 0 12px;border-radius:99px;gap:8px;display:flex;align-items:center}
-  .gs-x::after{content:"Sair";font:700 14px 'Plus Jakarta Sans',sans-serif}
+  .gs-x::after{content:attr(data-label);font:700 14px 'Plus Jakarta Sans',sans-serif}
   .gs-progress{flex:none;width:250px;margin-left:auto}
   .gs-progress>i{height:9px}
   .gs-meta{position:absolute;top:0;left:50%;transform:translateX(-50%);height:68px;display:flex;align-items:center;margin:0;font-size:12px;letter-spacing:.16em}

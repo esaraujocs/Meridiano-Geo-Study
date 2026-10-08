@@ -50,7 +50,7 @@ export function GameTopBar({ results, total, streak, pending, onExit, meta, chil
   const segmented = total > 0 && total <= MAX_SEGMENTS;
   return <header className="gs-head">
     <div className="gs-top">
-    <button type="button" className="gs-x" aria-label={t.shell.exit} onClick={onExit}>
+    <button type="button" className="gs-x" aria-label={t.shell.exit} data-label={t.shell.exitShort} onClick={onExit}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" /></svg>
     </button>
     <div className="gs-progress" role="img" aria-label={t.shell.progressAria(Math.min(done + 1, total), total, hits)}>

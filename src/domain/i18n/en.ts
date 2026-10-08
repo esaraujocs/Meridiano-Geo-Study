@@ -909,6 +909,7 @@ export const en: Messages = {
   },
   shell: {
     exit: "Leave match",
+    exitShort: "Leave",
     progressAria: (question: number, total: number, hits: number) => `Question ${question} of ${total}, ${hits} correct`,
     streakTitle: "Correct in a row",
     streakAria: (n: number) => `Streak: ${n}`,

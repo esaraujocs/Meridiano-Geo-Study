@@ -912,6 +912,7 @@ export const pt = {
   },
   shell: {
     exit: "Sair da partida",
+    exitShort: "Sair",
     progressAria: (question: number, total: number, hits: number) => `Pergunta ${question} de ${total}, ${hits} ${plural(hits, "acerto", "acertos")}`,
     streakTitle: "Acertos seguidos",
     streakAria: (n: number) => `Sequência: ${n}`,
