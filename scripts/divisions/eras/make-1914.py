@@ -207,6 +207,57 @@ PROBES = [
 ]
 
 
+# Bandeiras em uso em 1º de julho de 1914 (levantamento de 07/10/2026: Wikidata P41 com as datas, a caixa de informação da Wikipédia em inglês de
+# cada entidade e os artigos "Flag of …"; arquivos do Wikimedia Commons, de preferência em domínio público ou CC0, e em CC BY-SA, com crédito nas
+# Opções, só quando não há outro do desenho da época). Ficam de fora dos modos de bandeira os territórios sem bandeira própria (as colônias que
+# usavam a da metrópole: francesas, portuguesas, holandesas, italianas, alemãs, cujas bandeiras coloniais de 1914 nunca foram adotadas, e
+# Islândia, cuja bandeira é de 1915, Groenlândia, Filipinas, Bechuanalândia, Basutolândia, as Rodésias da Companhia Britânica da África do Sul),
+# os que repetiriam outra (Mascate, Zanzibar e Marrocos: a vermelha lisa; Kuwait: a otomana até a guerra) e os sem desenho seguro para a data
+# (Etiópia, que inverteu as cores em 1914; Tibete, 1916; Maldivas; Estados da Trégua; Sudão Anglo-Egípcio; Novas Hébridas; Gilbert e Ellice).
+FLAGS = {
+    # Europa e Mediterrâneo
+    "RUS": "Flag of Russia.svg",  # o tricolor branco-azul-vermelho, a única bandeira nacional desde 1896
+    "GER": "Flag of Germany (1867–1918).svg", "AUH": "Flag of Austria-Hungary 1869-1918.svg",  # sem bandeira comum: a civil de 1869–1918
+    "GBR": "Flag of the United Kingdom (1-2).svg", "FRA": "Flag of France.svg", "ITA": "Flag of Italy (1861–1946).svg",
+    "ESP": "Flag of Spain (1785–1873, 1875–1931).svg",  # CC BY-SA: o arquivo em domínio público tem o brasão de hoje
+    "POR": "Flag of Portugal (official).svg", "NLD": "Flag of the Netherlands.svg", "BEL": "Flag of Belgium (civil).svg", "LUX": "Flag of Luxembourg.svg",
+    "CHE": "Flag of Switzerland (Pantone).svg", "DNK": "Flag of Denmark.svg", "NOR": "Flag of Norway.svg", "SWE": "Flag of Sweden.svg",
+    "ROU": "Flag of Romania.svg", "BGR": "Flag of Bulgaria.svg", "SRB": "Civil flag of Serbia.svg",  # a civil, sem o brasão (domínio público)
+    "MNE": "Flag of Montenegro (1905–1918).svg", "ALB": "Flag of the Principality of Albania (1914).svg",
+    "GRC": "State Flag of Greece (1863-1924 and 1935-1973).svg", "MLT": "Flag of Malta (1898–1923).svg", "CYP": "Flag of Cyprus (1881–1922).svg",
+    "OTT": "Flag of the Ottoman Empire (1844–1922).svg",
+    # Ásia
+    "PER": "State flag of Persia (1907–1933).svg", "AFG": "Flag of Afghanistan (1901–1919).svg", "IND": "British Raj Red Ensign.svg",
+    "CEY": "Flag of Ceylon (1875–1948).svg", "NPL": "Flag of Nepal.svg", "CHN": "Flag of China (1912–1928).svg", "JPN": "Flag of Japan (1870–1999).svg",
+    "SIA": "Flag of Siam (1855).svg",  # o elefante branco no vermelho, até 1916
+    "FMS": "Flag of the Federated Malay States (1895 - 1946).svg", "STS": "Flag of the British Straits Settlements (1904–1925).svg",
+    "SAR": "Flag of Sarawak (1870–1946, 1963–1973).svg", "NBO": "Flag of North Borneo (1902–1946).svg", "BRN": "Flag of Brunei 1906-1959.svg",
+    "HKG": "Flag of Hong Kong (1876–1955).svg", "BHR": "Flag of Bahrain (1820–1932).svg",  # a faixa branca reta, antes do serrilhado de 1932
+    # África
+    "EGY": "Flag of Egypt (1882–1922).svg",  # os três crescentes da dinastia de Muhammad Ali
+    "BSO": "Flag of British Somaliland (1903–1950).svg", "BEA": "Flag of Kenya (1895–1921).svg",
+    "UGA": "Flag of the Uganda Protectorate.svg", "NYA": "Flag of Nyasaland (1914–1919).svg",  # as duas datadas de 1914 (sem o mês)
+    "ZAF": "Red Ensign of South Africa (1912–1951).svg", "BCG": "Flag of the Congo Free State.svg", "NIG": "Flag of Nigeria (1914–1952).svg",
+    "GLD": "Flag of the Gold Coast (1877–1957).svg", "SLE": "Flag of Sierra Leone (1889–1916).svg", "GMB": "Flag of The Gambia (1889–1965).svg",
+    "LBR": "Flag of Liberia.svg", "TUN": "Flag of the Beylik of Tunis (1831–1881) and Tunisia (1881–1959).svg",
+    "MUS": "Flag of Mauritius (1906–1923).svg", "SYC": "Flag of Seychelles (1903–1961).svg",
+    # Américas
+    "USA": "Flag of the United States (1912-1959).svg", "CAN": "Flag of Canada (1868–1921).svg", "NFL": "Flag of Newfoundland (1904–1949).svg",
+    "MEX": "Flag of Mexico (1893-1916).svg", "GTM": "Flag of Guatemala.svg", "BHO": "Flag of British Honduras (1870–1919).svg",
+    "HND": "Flag of Honduras (1866–1949).svg", "SLV": "Flag of El Salvador.svg", "NIC": "Flag of Nicaragua (1908–1971).svg",
+    "CRI": "State flag of Costa Rica (1906–1964).svg", "PAN": "Flag of Panama.svg", "CUB": "Flag of Cuba.svg", "HTI": "Flag of Haiti (1820–1849, 1859–1964).svg",
+    "DOM": "Flag of the Dominican Republic.svg", "JAM": "Flag of Jamaica (1906–1957).svg", "BHS": "Flag of the Bahamas (1904–1923).svg",
+    "TTO": "Flag of Trinidad and Tobago (1889–1958).svg", "BRB": "Flag of Barbados (1870–1966).svg", "WIN": "Flag of the British Windward Islands (1903–1953).svg",
+    "GUY": "Flag of British Guiana (1906–1919).svg", "VEN": "Flag of Venezuela (1905–1930).svg", "COL": "Flag of Colombia.svg",
+    "ECU": "Flag of Ecuador (1900–2009).svg", "PRU": "Flag of Peru (1884–1950).svg", "BOL": "Bandera de Bolivia (Estado).svg",
+    "BRA": "Flag of Brazil (1889–1960).svg", "PRY": "Flag of Paraguay (1842–1954).svg", "URY": "Flag of Uruguay.svg", "ARG": "Flag of Argentina.svg",
+    "CHL": "Flag of Chile.svg",
+    # Oceania
+    "AUS": "Flag of Australia (converted).svg", "NZL": "Flag of New Zealand.svg", "FJI": "Flag of Fiji (1908–1924).svg",
+    "SLB": "Flag of the Solomon Islands (1906–1947).svg", "TON": "Flag of Tonga.svg",
+}
+
+
 def main():
     units = []
     for code, region, ohm, (pt, en, es), capital, cap_al, extra in UNITS:
@@ -225,9 +276,13 @@ def main():
         for key in ("override", "carve", "carveBox", "fill"):
             if extra.get(key):
                 unit[key] = extra[key]
+        if code in FLAGS:
+            unit["flagFile"] = FLAGS[code]
         units.append(unit)
     codes = [unit["code"] for unit in units]
     assert len(codes) == len(set(codes)), "código repetido"
+    assert not set(FLAGS) - set(codes), f"bandeira de território que não existe: {set(FLAGS) - set(codes)}"
+    assert len(set(FLAGS.values())) == len(FLAGS), "a mesma bandeira em dois territórios"
     used = [rel for unit in units for rel in unit["ohm"]]
     assert len(used) == len(set(used)), "relação usada duas vezes"
     assert not set(used) & set(NEUTRAL["relations"] + NEUTRAL["drop"]), "relação neutra e usada"
@@ -259,6 +314,8 @@ def main():
     # neutra inteira. Pela regra das sobras (a unidade mais perto, até 60 km, pedaço por célula) a divisa saía em degraus de 2,8°
     config["neutralRest"] = ["682", "887"]
     config["zmax"] = 7
+    # bandeiras em CC BY-SA aceitas, com o autor e a licença nos créditos das Opções
+    config["flagCredit"] = True
     config["neutral"] = NEUTRAL
     config["attribution"] = "© OpenHistoricalMap · © OpenStreetMap contributors · Overture Maps Foundation"
     config["sources"] = [

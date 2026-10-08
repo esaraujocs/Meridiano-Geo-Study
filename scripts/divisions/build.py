@@ -35,6 +35,10 @@ def config_of(country):
 def build(country):
     config = config_of(country)
     build_dir = os.path.join(ROOT, "build", "divisions", country)
+    if os.environ.get("FLAGS_ONLY"):
+        # só as bandeiras (o catálogo e o mapa já gerados valem)
+        run("node", os.path.join(HERE, "flags.mjs"), country)
+        return
     if not os.environ.get("TILES_ONLY"):
         run(sys.executable, os.path.join(HERE, "build-division.py"), country)
     profile = {"name": f"divisions-{country}", "title": f"Meridiano · {config['name']['pt']}", "attribution": config["attribution"], "sources": config["sources"]}
@@ -60,6 +64,14 @@ def entry(country):
     counts = {key: sum(1 for unit in units.values() if unit["region"] == key) for key in config["regions"]}
     # as unidades com capital (na China, as 4 municipalidades não têm: ficam fora dos modos de capital)
     capitals = {key: sum(1 for unit in units.values() if unit["region"] == key and unit.get("capital")) for key in config["regions"]}
+    # as unidades com bandeira (em 1914 nem todas; nos pacotes antigos, sem o campo, todas se há flags.json)
+    flags_path = os.path.join(public, "flags.json")
+    has_flags = os.path.exists(flags_path)
+    flagged = {key: sum(1 for unit in units.values() if unit["region"] == key and has_flags and unit.get("flag", True)) for key in config["regions"]}
+    # os créditos das bandeiras que pedem atribuição (CC BY, CC BY-SA): aparecem nas Opções
+    sources = json.load(open(flags_path, encoding="utf8"))["sources"] if has_flags else {}
+    credits = sorted(({"file": item["file"].removeprefix("File:"), "url": item["url"], "license": item["license"], "artist": item["artist"]}
+                      for item in sources.values() if item.get("artist")), key=lambda item: item["file"])
     boxes = [unit["bbox"] for unit in units.values()]
     frame = config.get("frame") or [min(box[0] for box in boxes), min(box[1] for box in boxes), max(box[2] for box in boxes), max(box[3] for box in boxes)]
     era = config.get("kind") == "era"
@@ -67,8 +79,8 @@ def entry(country):
         "id": country, **({"kind": "era", "subtitle": config["subtitle"]} if era else {}),
         # a época cobre o mundo inteiro: não esconde nenhuma entidade do mapa-múndi (nem há mapa-múndi de fundo)
         "carta": "" if config["carta"] == "*" else config["carta"], "name": config["name"], "unit": config["unit"],
-        "regions": [{"key": key, "name": names, "count": counts[key], "capitals": capitals[key]} for key, names in config["regions"].items()],
-        "count": len(units), "flags": os.path.exists(os.path.join(public, "flags.json")), "capitals": sum(capitals.values()),
+        "regions": [{"key": key, "name": names, "count": counts[key], "capitals": capitals[key], "flags": flagged[key]} for key, names in config["regions"].items()],
+        "count": len(units), "flags": has_flags, "flagCount": sum(flagged.values()), **({"flagCredits": credits} if credits else {}), "capitals": sum(capitals.values()),
         "frame": frame, "attribution": config["attribution"],
         "map": {"url": f"/maps/divisions-{country}.pmtiles", "bytes": manifest["bytes"], "sha256": manifest["sha256"]},
     }

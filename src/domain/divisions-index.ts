@@ -35,7 +35,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Norte"
         },
         "count": 7,
-        "capitals": 7
+        "capitals": 7,
+        "flags": 7
       },
       {
         "key": "nordeste",
@@ -45,7 +46,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Nordeste"
         },
         "count": 9,
-        "capitals": 9
+        "capitals": 9,
+        "flags": 9
       },
       {
         "key": "centro-oeste",
@@ -55,7 +57,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Centro-Oeste"
         },
         "count": 4,
-        "capitals": 4
+        "capitals": 4,
+        "flags": 4
       },
       {
         "key": "sudeste",
@@ -65,7 +68,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Sudeste"
         },
         "count": 4,
-        "capitals": 4
+        "capitals": 4,
+        "flags": 4
       },
       {
         "key": "sul",
@@ -75,11 +79,13 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Sur"
         },
         "count": 3,
-        "capitals": 3
+        "capitals": 3,
+        "flags": 3
       }
     ],
     "count": 27,
     "flags": true,
+    "flagCount": 27,
     "capitals": 27,
     "frame": [
       -73.983,
@@ -127,7 +133,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Noreste"
         },
         "count": 9,
-        "capitals": 9
+        "capitals": 9,
+        "flags": 0
       },
       {
         "key": "midwest",
@@ -137,7 +144,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Medio Oeste"
         },
         "count": 12,
-        "capitals": 12
+        "capitals": 12,
+        "flags": 0
       },
       {
         "key": "south",
@@ -147,7 +155,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Sur"
         },
         "count": 16,
-        "capitals": 16
+        "capitals": 16,
+        "flags": 0
       },
       {
         "key": "west",
@@ -157,11 +166,13 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Oeste"
         },
         "count": 13,
-        "capitals": 13
+        "capitals": 13,
+        "flags": 0
       }
     ],
     "count": 50,
     "flags": false,
+    "flagCount": 0,
     "capitals": 50,
     "frame": [
       -125.0,
@@ -209,7 +220,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Norte"
         },
         "count": 5,
-        "capitals": 3
+        "capitals": 3,
+        "flags": 0
       },
       {
         "key": "northeast",
@@ -219,7 +231,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Noreste"
         },
         "count": 3,
-        "capitals": 3
+        "capitals": 3,
+        "flags": 0
       },
       {
         "key": "east",
@@ -229,7 +242,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Este"
         },
         "count": 7,
-        "capitals": 6
+        "capitals": 6,
+        "flags": 0
       },
       {
         "key": "south-central",
@@ -239,7 +253,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Centro-Sur"
         },
         "count": 6,
-        "capitals": 6
+        "capitals": 6,
+        "flags": 0
       },
       {
         "key": "southwest",
@@ -249,7 +264,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Suroeste"
         },
         "count": 5,
-        "capitals": 4
+        "capitals": 4,
+        "flags": 0
       },
       {
         "key": "northwest",
@@ -259,11 +275,13 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Noroeste"
         },
         "count": 5,
-        "capitals": 5
+        "capitals": 5,
+        "flags": 0
       }
     ],
     "count": 31,
     "flags": false,
+    "flagCount": 0,
     "capitals": 27,
     "frame": [
       73.5,
@@ -317,7 +335,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Europa"
         },
         "count": 25,
-        "capitals": 25
+        "capitals": 25,
+        "flags": 23
       },
       {
         "key": "asia",
@@ -327,7 +346,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Asia"
         },
         "count": 29,
-        "capitals": 27
+        "capitals": 27,
+        "flags": 16
       },
       {
         "key": "africa",
@@ -337,7 +357,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "África"
         },
         "count": 47,
-        "capitals": 46
+        "capitals": 46,
+        "flags": 15
       },
       {
         "key": "americas",
@@ -347,7 +368,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Américas"
         },
         "count": 34,
-        "capitals": 33
+        "capitals": 33,
+        "flags": 30
       },
       {
         "key": "oceania",
@@ -357,11 +379,87 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
           "es": "Oceanía"
         },
         "count": 11,
-        "capitals": 11
+        "capitals": 11,
+        "flags": 5
       }
     ],
     "count": 146,
-    "flags": false,
+    "flags": true,
+    "flagCount": 89,
+    "flagCredits": [
+      {
+        "file": "Flag of Barbados (1870–1966).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Barbados_(1870%E2%80%931966).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Flag of British Guiana (1906–1919).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_British_Guiana_(1906%E2%80%931919).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Flag of British Honduras (1870–1919).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_British_Honduras_(1870%E2%80%931919).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Auguel"
+      },
+      {
+        "file": "Flag of British Somaliland (1903–1950).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_British_Somaliland_(1903%E2%80%931950).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Flag of Fiji (1908–1924).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Fiji_(1908%E2%80%931924).svg",
+        "license": "CC BY-SA 3.0",
+        "artist": "Suzuki Auto"
+      },
+      {
+        "file": "Flag of Hong Kong (1876–1955).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Hong_Kong_(1876%E2%80%931955).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Flag of Nigeria (1914–1952).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Nigeria_(1914%E2%80%931952).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Benchill (original)"
+      },
+      {
+        "file": "Flag of Spain (1785–1873, 1875–1931).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Spain_(1785%E2%80%931873,_1875%E2%80%931931).svg",
+        "license": "CC BY-SA 3.0",
+        "artist": "previous version User:Ignaciogavira ; current version HansenBCN , designs from SanchoPanzaXXI"
+      },
+      {
+        "file": "Flag of Trinidad and Tobago (1889–1958).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_Trinidad_and_Tobago_(1889%E2%80%931958).svg",
+        "license": "CC BY-SA 4.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Flag of the Bahamas (1904–1923).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Bahamas_(1904%E2%80%931923).svg",
+        "license": "CC BY-SA 3.0",
+        "artist": "malarz pl"
+      },
+      {
+        "file": "Flag of the Uganda Protectorate.svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Uganda_Protectorate.svg",
+        "license": "CC BY-SA 3.0",
+        "artist": "Sodacan"
+      },
+      {
+        "file": "Red Ensign of South Africa (1912–1951).svg",
+        "url": "https://commons.wikimedia.org/wiki/File:Red_Ensign_of_South_Africa_(1912%E2%80%931951).svg",
+        "license": "CC BY-SA 3.0",
+        "artist": "Fornax"
+      }
+    ],
     "capitals": 142,
     "frame": [
       -170.0,

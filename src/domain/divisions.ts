@@ -25,10 +25,15 @@ export type DivisionCountry = {
   carta: string;
   name: Names;
   unit: Record<Locale, UnitWord>;
-  /** Cada região com as contagens de unidades e de unidades com capital. */
-  regions: { key: string; name: Names; count: number; capitals: number }[];
+  /** Cada região com as contagens de unidades, de unidades com capital e de unidades com bandeira. */
+  regions: { key: string; name: Names; count: number; capitals: number; flags?: number }[];
   count: number;
+  /** O pacote tem bandeiras (flags.json). */
   flags: boolean;
+  /** Quantas unidades têm bandeira (em 1914, 89 de 146: as colônias com a bandeira da metrópole ficam fora dos modos de bandeira). */
+  flagCount?: number;
+  /** As bandeiras que pedem crédito (CC BY, CC BY-SA), mostradas nas Opções. */
+  flagCredits?: FlagCredit[];
   /** Quantas unidades têm capital (na China, as 4 municipalidades não têm: os modos de capital jogam com as outras 27). */
   capitals: number;
   /** [oeste, sul, leste, norte] do país inteiro na câmera (nos EUA, os 48 estados contíguos; o Alasca e o Havaí ficam a um zoom de distância). */
@@ -36,6 +41,8 @@ export type DivisionCountry = {
   attribution: string;
   map: { url: string; bytes: number; sha256: string };
 };
+
+export type FlagCredit = { file: string; url: string; license: string; artist: string };
 
 export const DIVISION_COUNTRIES: readonly DivisionCountry[] = DIVISION_INDEX;
 export type DivisionKind = "country" | "era";
@@ -75,10 +82,15 @@ const FLAG_VARIANTS: readonly DivisionVariant[] = ["dv-nome-bandeira", "dv-bande
 const CAPITAL_VARIANTS: readonly DivisionVariant[] = ["dv-capital-mapa", "dv-capital", "dv-escrita-capital"];
 /** Modo que pergunta pela capital: joga só com as unidades que têm uma. */
 export const isCapitalVariant = (variant: string | undefined) => (CAPITAL_VARIANTS as readonly string[]).includes(variant ?? "");
-/** O modo dá para jogar com o país? Os de bandeira pedem as bandeiras do pacote; os de capital, ao menos 4 unidades com capital (as alternativas). */
+/** Modo de bandeira: joga só com as unidades que têm uma (em 1914, as colônias com a bandeira da metrópole ficam fora). */
+export const isFlagVariant = (variant: string | undefined) => (FLAG_VARIANTS as readonly string[]).includes(variant ?? "");
+/** Quantas unidades têm bandeira (os pacotes sem a contagem, como o do Brasil, têm todas). */
+export const flagCountOf = (country: DivisionCountry) => country.flagCount ?? (country.flags ? country.count : 0);
+const regionFlags = (country: DivisionCountry, region: DivisionCountry["regions"][number]) => region.flags ?? (country.flags ? region.count : 0);
+/** O modo dá para jogar com o país? Os de bandeira e os de capital pedem ao menos 4 unidades com bandeira ou com capital (as alternativas). */
 export function variantPlayable(country: DivisionCountry | null, variant: string): boolean {
   if (!country || !isDivisionVariant(variant)) return false;
-  if (FLAG_VARIANTS.includes(variant)) return country.flags;
+  if (FLAG_VARIANTS.includes(variant)) return country.flags && flagCountOf(country) >= 4;
   if (CAPITAL_VARIANTS.includes(variant)) return country.capitals >= 4;
   return true;
 }
@@ -147,13 +159,15 @@ export function divisionRegionItems(countryId: string, locale: Locale = uiLocale
   if (!country) return [];
   return [[divisionRegion(country.id), country.name[locale], ""], ...country.regions.map((region): [Region, string, string] => [divisionRegion(country.id, region.key), region.name[locale], ""])];
 }
-/** Quantas unidades cada recorte de cada país tem no modo (a Mesa conta sem carregar o pacote; nos modos de capital, só as que têm capital). */
+/** Quantas unidades cada recorte de cada país tem no modo (a Mesa conta sem carregar o pacote; nos modos de capital e de bandeira, só as que
+ *  têm capital ou bandeira). */
 export function divisionCounts(variant?: string): Record<string, number> {
   const capital = isCapitalVariant(variant);
+  const flag = isFlagVariant(variant);
   const counts: Record<string, number> = {};
   for (const country of DIVISION_COUNTRIES) {
-    counts[divisionRegion(country.id)] = capital ? country.capitals : country.count;
-    for (const region of country.regions) counts[divisionRegion(country.id, region.key)] = capital ? region.capitals : region.count;
+    counts[divisionRegion(country.id)] = capital ? country.capitals : flag ? flagCountOf(country) : country.count;
+    for (const region of country.regions) counts[divisionRegion(country.id, region.key)] = capital ? region.capitals : flag ? regionFlags(country, region) : region.count;
   }
   return counts;
 }
@@ -179,9 +193,11 @@ export type DivisionUnitRow = {
   bbox: [number, number, number, number];
   /** Vizinhos pelas divisas (ids). */
   borders: string[];
+  /** Tem bandeira? Ausente nos pacotes em que todas têm (ou nenhuma). */
+  flag?: boolean;
 };
 export type DivisionUnitsFile = { source: string; country: string; regions: Record<string, Names>; units: Record<string, DivisionUnitRow> };
-export type DivisionFlagsFile = { source: string; flags: Record<string, string>; ratio: Record<string, number>; sources: Record<string, { file: string; url: string; license: string }> };
+export type DivisionFlagsFile = { source: string; flags: Record<string, string>; ratio: Record<string, number>; sources: Record<string, { file: string; url: string; license: string; artist?: string }> };
 export type DivisionShapesFile = Record<string, { type: string; coordinates: unknown }>;
 export type DivisionPack = {
   country: string;
@@ -193,7 +209,8 @@ export type DivisionPack = {
 
 /** O catálogo das unidades no formato que os motores leem. `pt` traz o nome no idioma da interface (como no acervo traduzido); os nomes nos
  *  outros idiomas e os apelidos valem na escrita (`en` e `al`). O código é o `cca3` e as divisas são os `borders` (a Pista de vizinhos funciona
- *  igual à dos países); a região é "<país>:<região>" (o recorte e a Bússola); a bandeira é o próprio id (`fl`), a chave de flags.json. */
+ *  igual à dos países); a região é "<país>:<região>" (o recorte e a Bússola); a bandeira é o próprio id (`fl`), a chave de flags.json, e falta
+ *  na unidade sem bandeira (as colônias de 1914 com a da metrópole). */
 export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLocale): DivisionPack {
   const meta: Record<string, Meta> = {};
   const bbox: Record<string, readonly [number, number, number, number]> = {};
@@ -210,7 +227,7 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
       ...(others.length ? { al: others } : {}),
       ...(capital ? { cap: capital } : {}),
       ...(capAl.length ? { capAl } : {}),
-      fl: id,
+      ...(row.flag === false ? {} : { fl: id }),
       reg: `${file.country}:${row.region}`,
       ll: row.ll,
       cca3: row.code,
@@ -223,13 +240,14 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
   return { country: file.country, data: { sourceVersion: `divisions-${file.country}`, sourceHash: file.source, meta, mapEntityIds: Object.keys(meta) }, bbox };
 }
 
-/** As unidades do recorte (o país inteiro ou as regiões escolhidas); nos modos de capital, só as que têm capital. */
+/** As unidades do recorte (o país inteiro ou as regiões escolhidas); nos modos de capital e de bandeira, só as que têm capital ou bandeira. */
 export function divisionIdsIn(pack: DivisionPack, selection: RegionSelection, variant?: string): string[] {
   const capital = isCapitalVariant(variant);
+  const flag = isFlagVariant(variant);
   const keys = normalizeDivisionSelection(Array.isArray(selection) ? selection : [selection]);
   const whole = keys.length === 0 || keys.includes(divisionRegion(pack.country));
   const regions = new Set(keys.map((key) => parseDivisionRegion(key)?.region).filter(Boolean).map((region) => `${pack.country}:${region}`));
-  return Object.entries(pack.data.meta).filter(([, meta]) => (whole || regions.has(meta.reg ?? "")) && (!capital || Boolean(meta.cap))).map(([id]) => id);
+  return Object.entries(pack.data.meta).filter(([, meta]) => (whole || regions.has(meta.reg ?? "")) && (!capital || Boolean(meta.cap)) && (!flag || Boolean(meta.fl))).map(([id]) => id);
 }
 
 /** Caixa [oeste, sul, leste, norte] do enquadramento da câmera: o quadro do país inteiro, ou a caixa das unidades do recorte. */

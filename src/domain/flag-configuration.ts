@@ -1,7 +1,8 @@
 import type { AnyQuizVariant, Family } from "./types.js";
 
-/** As categorias de bandeira da Mesa; "divisoes" são as bandeiras das unidades de um país (Estados e províncias). */
-export type FlagCategory = "current" | "writing" | "historical" | "divisoes";
+/** As categorias de bandeira da Mesa; "divisoes" são as bandeiras das unidades de um país (Estados e províncias) e "epocas" as dos territórios
+ *  de uma época (Mapas históricos). */
+export type FlagCategory = "current" | "writing" | "historical" | "divisoes" | "epocas";
 export type FlagDirection = "name-to-flag" | "flag-to-name";
 
 export function flagDirectionFromVariant(
@@ -17,7 +18,7 @@ export function flagSelection(
   direction: FlagDirection = "name-to-flag",
 ): { family: Family; variant: AnyQuizVariant } {
   if (category === "writing") return { family: "escrita", variant: "escrita-pais" };
-  if (category === "divisoes") return { family: "divisoes", variant: direction === "name-to-flag" ? "dv-nome-bandeira" : "dv-bandeira-nome" };
+  if (category === "divisoes" || category === "epocas") return { family: category, variant: direction === "name-to-flag" ? "dv-nome-bandeira" : "dv-bandeira-nome" };
   if (category === "historical") {
     return {
       family: "historicas",

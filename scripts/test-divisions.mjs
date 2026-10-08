@@ -90,6 +90,8 @@ for (const country of DIVISION_INDEX) {
   for (const region of country.regions) assert.equal(region.count, rows.filter(([, row]) => row.region === region.key).length, `${cc}:${region.key}: contagem do índice`);
   assert.equal(country.regions.reduce((total, region) => total + region.count, 0), ids.length, `${cc}: toda unidade numa região`);
   assert.equal(country.flags, Boolean(config.units.some((unit) => unit.flagFile)), `${cc}: bandeiras se a config lista os arquivos`);
+  assert.equal(country.flagCount, config.units.filter((unit) => unit.flagFile).length, `${cc}: quantas unidades têm bandeira`);
+  for (const region of country.regions) assert.equal(region.flags, config.units.filter((unit) => unit.region === region.key && unit.flagFile).length, `${cc}:${region.key}: bandeiras do índice`);
   assert.equal(country.capitals, rows.filter(([, row]) => row.capital).length, `${cc}: unidades com capital`);
   for (const region of country.regions) assert.equal(region.capitals, rows.filter(([, row]) => row.region === region.key && row.capital).length, `${cc}:${region.key}: capitais do índice`);
   if (config.frame) assert.deepEqual(country.frame, config.frame, `${cc}: enquadramento da config`);
@@ -133,16 +135,29 @@ for (const country of DIVISION_INDEX) {
     boxOf(shapes[id]).forEach((value, index) => assert.ok(Math.abs(value - units.units[id].bbox[index]) < slack, `${id}: silhueta e caixa da unidade batem (${boxOf(shapes[id])} × ${units.units[id].bbox})`));
   }
 
-  // bandeiras (só se o país tem): todas, em domínio público, no formato do acervo do mapa-múndi
+  // bandeiras (só se o país tem): as das unidades com `flagFile` (em 1914 nem todas), no formato do acervo do mapa-múndi, em domínio público ou
+  // CC0 e, com `flagCredit` (as épocas), CC BY-SA com o autor, que vai para os créditos do índice
   if (flags) {
-    assert.deepEqual(Object.keys(flags.flags).sort(), [...ids].sort(), `${cc}: uma bandeira por unidade`);
-    for (const id of ids) {
+    const flagged = config.units.filter((unit) => unit.flagFile).map((unit) => `${cc}-${unit.code.toLowerCase()}`);
+    assert.deepEqual(Object.keys(flags.flags).sort(), [...flagged].sort(), `${cc}: uma bandeira por unidade com bandeira`);
+    // o catálogo diz quem tem (o do Brasil, gerado antes do campo, não diz: todas têm)
+    for (const id of ids) assert.equal(units.units[id].flag ?? true, flagged.includes(id), `${id}: o catálogo diz se tem bandeira`);
+    for (const id of flagged) {
       const value = flags.flags[id];
       assert.ok(value.startsWith("svg:<svg") || /^data:image\/(webp|png);base64,/.test(value), `${id}: bandeira em formato conhecido`);
-      if (value.startsWith("svg:")) assert.match(/<svg\b[^>]*>/.exec(value)[0], /\swidth="[\d.e+]+"[\s\S]*\sheight="[\d.e+]+"|\sheight="[\d.e+]+"[\s\S]*\swidth="[\d.e+]+"/, `${id}: o SVG tem largura e altura na raiz`);
-      assert.match(flags.sources[id].license, /public domain/i, `${id}: licença`);
-      assert.ok(flags.ratio[id] > 0.4 && flags.ratio[id] < 0.8, `${id}: proporção ${flags.ratio[id]}`);
+      if (value.startsWith("svg:")) assert.match(/<svg\b[^>]*>/.exec(value)[0], /\swidth="[\d.e+]+(px)?"[\s\S]*\sheight="[\d.e+]+(px)?"|\sheight="[\d.e+]+(px)?"[\s\S]*\swidth="[\d.e+]+(px)?"/, `${id}: o SVG tem largura e altura na raiz`);
+      const license = flags.sources[id].license;
+      if (/public domain|^cc0/i.test(license)) assert.equal(flags.sources[id].artist, undefined, `${id}: sem crédito a dar`);
+      else {
+        assert.ok(config.flagCredit && /^cc by(-sa)? \d/i.test(license), `${id}: licença ${license}`);
+        assert.ok(flags.sources[id].artist, `${id}: o autor para o crédito`);
+      }
+      // as das épocas variam mais (o Bahrein e a Pérsia de 1914 são compridas; a Suíça, quadrada; o Nepal, mais alto que largo)
+      const [low, high] = config.kind === "era" ? [0.3, 1.25] : [0.4, 0.8];
+      assert.ok(flags.ratio[id] > low && flags.ratio[id] < high, `${id}: proporção ${flags.ratio[id]}`);
     }
+    const credits = Object.values(flags.sources).filter((item) => item.artist).map((item) => item.file.replace(/^File:/, "")).sort();
+    assert.deepEqual((country.flagCredits ?? []).map((item) => item.file), credits, `${cc}: os créditos do índice são as bandeiras CC BY-SA`);
     files[cc].flagBytes = Object.values(flags.flags).reduce((total, value) => total + value.length, 0);
   }
 
@@ -240,7 +255,7 @@ if (HAS_1914) {
   const { units, pairs, flags } = files["1914"];
   const row = (code) => units.units[`1914-${code}`];
   assert.equal(Object.keys(units.units).length, 146);
-  assert.equal(flags, null, "sem bandeiras por enquanto");
+  assert.equal(Object.keys(flags.flags).length, 89, "as bandeiras de 1914: 89 dos 146");
   assert.equal(DIVISION_INDEX[3].kind, "era"); assert.equal(DIVISION_INDEX[3].carta, ""); assert.deepEqual(DIVISION_INDEX[3].frame, [-170, -56, 190, 78]);
   assert.equal(DIVISION_INDEX[3].subtitle.pt, "Véspera da Primeira Guerra");
   assert.equal(DIVISION_INDEX[3].capitals, 142, "sem capital: Groenlândia, Estados da Trégua, Estados Malaios Não Federados e Saguia el-Hamra");
@@ -432,7 +447,7 @@ assert.deepEqual(search("estados unidos", { us: ["Estados Unidos", "United State
 assert.deepEqual(search("ee. uu"), ["us"], "o nome em espanhol"); assert.deepEqual(search("xyz"), []);
 
 // Mapas históricos: as épocas são pacotes do índice do tipo "era", com a família "epocas", os mesmos modos (sem bandeiras) e as mesmas compras
-assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]);
+assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-nome-bandeira", "dv-escrita-nome", "dv-capital", "dv-escrita-capital"]);
 assert.ok(matchConfig.modesFor("epocas").every((mode) => mode.family === "epocas"));
 assert.equal(economy.policyFor("epocas", "dv-silhueta", "dv:1914").key, "divisoes:dv-silhueta", "a compra vale para países e épocas");
 assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equal(pillars.pillarOfSession({ family: "epocas", variant: "dv-mapa", mode: "dv-mapa" }), null);
@@ -443,7 +458,10 @@ assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); asser
 assert.equal(D.kindOf(D.divisionCountry("1914")), "era"); assert.equal(D.kindOf(D.divisionCountry("br")), "country");
 assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
 assert.equal(D.isDivisionFamily("epocas"), true);
-assert.deepEqual(D.DIVISION_VARIANTS.filter((variant) => D.variantPlayable(D.divisionCountry("1914"), variant)), usPlayable, "1914: os 6 modos sem bandeira");
+assert.deepEqual(D.DIVISION_VARIANTS.filter((variant) => D.variantPlayable(D.divisionCountry("1914"), variant)), [...D.DIVISION_VARIANTS], "1914: os 9 modos (com as bandeiras)");
+assert.equal(D.divisionCounts("dv-nome-bandeira")["dv:1914"], 89, "só os territórios com bandeira própria"); assert.equal(D.divisionCounts("dv-escrita-nome")["dv:1914"], 89);
+assert.equal(D.variantPlayable({ ...D.divisionCountry("1914"), flagCount: 3 }, "dv-bandeira-nome"), false, "menos de 4 bandeiras não dá alternativas");
+assert.equal(D.flagCountOf(D.divisionCountry("br")), 27); assert.equal(D.flagCountOf(D.divisionCountry("us")), 0);
 assert.equal(D.divisionRegionLabel("dv:1914"), "1914"); assert.equal(D.divisionRegionLabel("dv:1914:europe"), "1914 · Europa", "a região da época diz o ano");
 assert.equal(D.divisionRegionLabel("1914:africa", "en"), "1914 · Africa");
 assert.equal(D.divisionCounts("dv-capital")["dv:1914"], 142); assert.equal(D.divisionCounts()["dv:1914"], 146);
@@ -452,9 +470,19 @@ const eraEn = D.divisionCatalog(files["1914"].units, "en");
 assert.equal(era.data.meta["1914-auh"].cap, "Viena"); assert.equal(eraEn.data.meta["1914-auh"].cap, "Vienna");
 assert.ok(era.data.meta["1914-auh"].capAl.includes("Vienna") && era.data.meta["1914-auh"].capAl.includes("Wien"), "a capital nos outros idiomas vale na escrita");
 assert.equal(era.data.meta["1914-auh"].reg, "1914:europe");
-assert.equal(D.divisionIdsIn(era, "dv:1914", "dv-capital").length, 142); assert.equal(D.divisionIdsIn(era, "dv:1914:europe").length, files["1914"].units && Object.values(files["1914"].units.units).filter((unit) => unit.region === "europe").length);
+assert.equal(D.divisionIdsIn(era, "dv:1914", "dv-capital").length, 142);
+// bandeiras: as colônias com a bandeira da metrópole e os territórios sem desenho seguro para a data ficam fora dos modos de bandeira
+const eraFlags = D.divisionIdsIn(era, "dv:1914", "dv-nome-bandeira");
+assert.equal(eraFlags.length, 89); assert.equal(D.divisionIdsIn(era, "dv:1914", "dv-escrita-nome").length, 89);
+for (const id of ["1914-fra", "1914-gbr", "1914-ger", "1914-ott", "1914-che", "1914-npl", "1914-gld", "1914-egy", "1914-sia"]) assert.ok(eraFlags.includes(id), `${id}: tem bandeira`);
+for (const id of ["1914-alg", "1914-aof", "1914-idc", "1914-gea", "1914-ang", "1914-isl", "1914-msc", "1914-mar", "1914-eth", "1914-tib", "1914-kwt"]) {
+  assert.ok(!eraFlags.includes(id), `${id}: sem bandeira própria em 1914`); assert.equal(era.data.meta[id].fl, undefined, `${id}: sem fl no catálogo`);
+}
+assert.equal(D.divisionCatalog(files.br.units, "pt").data.meta["br-sp"].fl, "br-sp", "no Brasil (sem o campo) todas têm");
+assert.equal(D.divisionCountry("1914").flagCredits.length, 12, "as 12 em CC BY-SA, com o autor nas Opções");
+assert.ok(D.divisionCountry("1914").flagCredits.every((item) => item.artist && /^CC BY-SA/.test(item.license) && item.url.startsWith("https://commons.wikimedia.org/"))); assert.equal(D.divisionIdsIn(era, "dv:1914:europe").length, files["1914"].units && Object.values(files["1914"].units.units).filter((unit) => unit.region === "europe").length);
 assert.deepEqual(D.divisionBounds(era, D.divisionIdsIn(era, "dv:1914"), "dv:1914"), [-170, -56, 190, 78], "a época inteira: o mundo");
-assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-capital", "dv-escrita-capital"]);
+assert.deepEqual(matchConfig.modesFor("epocas").map((mode) => mode.variant), ["dv-mapa", "dv-capital-mapa", "dv-silhueta-opcoes", "dv-silhueta", "dv-nome-bandeira", "dv-escrita-nome", "dv-capital", "dv-escrita-capital"]);
 assert.ok(matchConfig.modesFor("epocas").every((mode) => mode.family === "epocas"));
 assert.equal(economy.policyFor("epocas", "dv-silhueta", "dv:1914").key, "divisoes:dv-silhueta", "a compra vale para países e épocas");
 assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equal(pillars.pillarOfSession({ family: "epocas", variant: "dv-mapa", mode: "dv-mapa" }), null);

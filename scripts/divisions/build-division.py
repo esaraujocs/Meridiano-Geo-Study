@@ -458,6 +458,9 @@ def write_outputs(country, config, zones, land_by_unit, public, refresh=()):
             entry["capital"] = unit["capital"]
         if unit.get("capAl"):
             entry["capAl"] = unit["capAl"]
+        if any(other.get("flagFile") for other in config["units"]):
+            # quem tem bandeira (em 1914 nem todos: as colônias com a bandeira da metrópole ficam fora dos modos de bandeira)
+            entry["flag"] = bool(unit.get("flagFile"))
         entry.update({
             "region": unit["region"], "area": round(area), "ll": [round(center.y, 4), round(center.x, 4)],
             # caixa da unidade sem as ilhas distantes, [oeste, sul, leste, norte]: o enquadramento da câmera do mapa por região

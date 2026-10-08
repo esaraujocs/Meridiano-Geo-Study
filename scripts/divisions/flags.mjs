@@ -17,7 +17,10 @@ const CHROME = process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Applic
 const HEAVY_BYTES = 20_000;
 const RASTER_WIDTH = 512;
 
-const states = JSON.parse(await readFile(join(import.meta.dirname, "countries", `${COUNTRY}.json`), "utf8")).units.filter((unit) => unit.flagFile);
+const config = JSON.parse(await readFile(join(import.meta.dirname, "countries", `${COUNTRY}.json`), "utf8"));
+const states = config.units.filter((unit) => unit.flagFile);
+/** Domínio público ou CC0 sempre; CC BY e CC BY-SA só com "flagCredit" na config (as épocas), com o autor nos créditos das Opções. */
+const accepted = (license) => /public domain|^cc0/i.test(license) || (Boolean(config.flagCredit) && /^cc by(-sa)? \d/i.test(license));
 const licenses = JSON.parse(await readFile(join(SOURCE, "licenses.json"), "utf8"));
 
 /** Tira o que não desenha (prólogo, comentários, metadados RDF do Inkscape) e garante largura e altura na raiz: sem elas a bandeira
@@ -77,14 +80,14 @@ for (const state of states) {
   flags[id] = heavy ? await raster(svg, ratio) : `svg:${svg}`;
   ratios[id] = Math.round(ratio * 1000) / 1000;
   const license = licenses[sigla];
-  if (!license || !/public domain/i.test(license.license)) throw new Error(`${sigla}: licença não conferida em licenses.json`);
-  sources[id] = { file: license.file, url: license.url, license: license.license };
+  if (!license || !accepted(license.license)) throw new Error(`${sigla}: licença não conferida em licenses.json`);
+  sources[id] = { file: license.file, url: license.url, license: license.license, ...(license.artist ? { artist: license.artist } : {}) };
   console.log(`${sigla}: ${heavy ? "imagem" : "svg"} · ${Math.round(flags[id].length / 1000)} kB · proporção ${ratios[id]}`);
 }
 await browser.close();
 
 const document = {
-  source: "Wikimedia Commons (bandeiras oficiais, domínio público); scripts/divisions/flags.mjs",
+  source: `Wikimedia Commons (${config.flagCredit ? "domínio público, CC0 e CC BY-SA com o autor em sources" : "bandeiras oficiais, domínio público"}); scripts/divisions/flags.mjs`,
   flags, ratio: ratios, sources,
 };
 await writeFile(TARGET, JSON.stringify(document));

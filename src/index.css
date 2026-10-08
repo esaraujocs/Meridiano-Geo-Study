@@ -1077,6 +1077,11 @@ html[data-reduced-motion=true] .rs-level.is-levelup{animation:none}
 .cv-chip.is-locked[aria-pressed=true]{background:rgba(196,147,69,.14);border-color:var(--brass)}
 .cv-sub .cv-chip{min-height:36px;padding:5px 14px;font-size:13.5px}
 .cv-hint{margin:0;font-size:13px;color:#4a5d58;line-height:1.45}
+.cv-credits{margin-top:8px}
+.cv-credits summary{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.cv-credits ul{margin:6px 0 0;padding-left:18px;font-size:12px}
+.cv-credits li{margin:2px 0;overflow-wrap:anywhere}
+.cv-credits a{color:inherit}
 .cv-confirm b{color:var(--ink)}
 .cv-buy{margin-left:6px;min-height:32px;padding:4px 16px;border:1px solid var(--green);border-radius:999px;background:rgba(47,111,106,.16);color:#1b4a45;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .cv-buy:disabled{opacity:.5;cursor:default}

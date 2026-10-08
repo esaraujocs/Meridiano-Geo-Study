@@ -10,7 +10,10 @@ import { EMPTY_ACHIEVEMENT_SUMMARY, hubProfile, ratioPercent, type AchievementSu
 import { MAP_BYTES, type OfflineMapStatus } from "../domain/offline-map";
 import type { EconomySnapshot } from "../domain/economy-store";
 import { policyFor, type UnlockKey } from "../domain/economy-rules";
-import { divisionsOfKind } from "../domain/divisions";
+import { DIVISION_COUNTRIES, divisionsOfKind } from "../domain/divisions";
+
+/** As bandeiras dos pacotes que pedem crédito (CC BY-SA), para a linha Créditos das Opções. */
+const FLAG_CREDITS = DIVISION_COUNTRIES.flatMap((country) => country.flagCredits ?? []);
 import { PEOPLES_GROUP, PEOPLES_LAST_KEY, peoplesEntry, type PeoplesTopic, type TopFamily } from "../domain/match-config";
 
 const lastPeoplesTopic = () => { try { return localStorage.getItem(PEOPLES_LAST_KEY); } catch { return null; } };
@@ -193,12 +196,23 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
         </div>
         <AccountRow />
         <BackupRow />
-        <div className="cv-row cv-last">
+        <div className="cv-row">
           <span className="cv-k">{t.options.offline}</span>
           <div className="cv-ctl">
             <p className="cv-hint offline-status">{t.options.appData(cacheReport)}</p>
-            <p className="cv-hint offline-status">{t.options.mapStatus(mapLabel)}</p>
+            <p className="cv-hint offline-status">{t.options.mapStatus(mapLabel, formatNumber(Math.round(MAP_BYTES / 1e6)))}</p>
             <div className="cv-chips"><button type="button" className="cv-chip" disabled={mapBusy} onClick={() => void onToggleOfflineMap()}>{offlineMap === "installed" ? t.options.removeMap : t.options.downloadMap(formatNumber(Math.round(MAP_BYTES / 1e6)))}</button></div>
+          </div>
+        </div>
+        {/* As fontes e as bandeiras que pedem crédito (CC BY-SA, nos Mapas históricos): numa lista recolhida, fora da partida */}
+        <div className="cv-row cv-last">
+          <span className="cv-k">{t.options.credits}</span>
+          <div className="cv-ctl">
+            <p className="cv-hint">{t.options.creditsSources}</p>
+            {FLAG_CREDITS.length > 0 && <details className="cv-hint cv-credits">
+              <summary>{t.options.creditsFlags(FLAG_CREDITS.length)}</summary>
+              <ul>{FLAG_CREDITS.map((item) => <li key={item.file}><a href={item.url} target="_blank" rel="noopener noreferrer">{item.file.replace(/\.svg$/i, "")}</a> · {item.artist} · {item.license}</li>)}</ul>
+            </details>}
           </div>
         </div>
       </section>

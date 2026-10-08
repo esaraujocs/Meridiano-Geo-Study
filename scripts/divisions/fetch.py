@@ -6,12 +6,16 @@ Uso: python scripts/divisions/fetch.py [países...]   (sem argumento: todos de b
 - fonte "overture": as divisões de primeiro nível do Overture Maps (fetch-overture-regions.py; os EUA leem ~234 MB do S3 público).
 - fonte "ohm" (Mapas históricos): as fronteiras de país do OpenHistoricalMap na data da época (fetch-ohm.py; 1914: ~165 MB do Overpass).
 - bandeiras: build/divisions/<país>/flags/<CÓDIGO>.svg ← os arquivos do Wikimedia Commons listados em "flagFile"; só entram os de domínio
-  público (a licença de cada um é conferida na hora e gravada em flags/licenses.json).
+  público ou CC0 e, com "flagCredit" na config (as épocas), os CC BY e CC BY-SA, com o autor guardado para os créditos das Opções (a licença
+  de cada um é conferida na hora e gravada em flags/licenses.json). FLAGS_ONLY=1 baixa só as bandeiras (sem as fronteiras).
 """
 import json
 import os
+import re
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
@@ -24,7 +28,14 @@ UA = {"User-Agent": "MeridianoGeoStudy/1.0 (jogo pessoal; pratesbaliza@gmail.com
 
 
 def get(url):
-    return urllib.request.urlopen(urllib.request.Request(url, headers=UA)).read()
+    # o Commons limita a frequência (HTTP 429): espera o que ele pedir e tenta de novo
+    for attempt in range(6):
+        try:
+            return urllib.request.urlopen(urllib.request.Request(url, headers=UA)).read()
+        except urllib.error.HTTPError as error:
+            if error.code != 429 or attempt == 5:
+                raise
+            time.sleep(int(error.headers.get("Retry-After") or 0) or 10 * (attempt + 1))
 
 
 def fetch_ibge(build):
@@ -37,7 +48,7 @@ def fetch_ibge(build):
     print("ok: malha do IBGE", os.path.getsize(target) // 1000, "kB")
 
 
-def fetch_flags(build, units):
+def fetch_flags(build, units, credit=False):
     flags_dir = os.path.join(build, "flags")
     os.makedirs(flags_dir, exist_ok=True)
     titles = {unit["code"]: "File:" + unit["flagFile"] for unit in units if unit.get("flagFile")}
@@ -47,19 +58,30 @@ def fetch_flags(build, units):
         batch = dict(names[start:start + 40])
         query = urllib.parse.urlencode({"action": "query", "titles": "|".join(batch.values()), "prop": "imageinfo", "iiprop": "url|size|extmetadata",
                                         "iiextmetadatafilter": "LicenseShortName|Artist", "format": "json", "redirects": 1})
-        pages = json.loads(get(f"{COMMONS}?{query}"))["query"]["pages"]
+        result = json.loads(get(f"{COMMONS}?{query}"))["query"]
+        pages = result["pages"]
         info = {page["title"]: page["imageinfo"][0] for page in pages.values() if "imageinfo" in page}
+        renamed = {item["from"]: item["to"] for item in result.get("normalized", []) + result.get("redirects", [])}
         for code, title in batch.items():
-            meta = info.get(title.replace("_", " "))
+            title = title.replace("_", " ")
+            meta = info.get(title) or info.get(renamed.get(title, "")) or info.get(renamed.get(renamed.get(title, ""), ""))
             if meta is None:
                 sys.exit(f"bandeira não encontrada no Commons: {title}")
-            license_name = meta.get("extmetadata", {}).get("LicenseShortName", {}).get("value", "")
-            if "public domain" not in license_name.lower():
-                sys.exit(f"{title}: licença {license_name!r}, esperado domínio público")
+            ext = meta.get("extmetadata", {})
+            license_name = ext.get("LicenseShortName", {}).get("value", "")
+            free = "public domain" in license_name.lower() or license_name.lower().startswith("cc0")
+            if not free and not (credit and re.match(r"cc by(-sa)? \d", license_name.lower())):
+                sys.exit(f"{title}: licença {license_name!r}, esperado domínio público ou CC0" + (" (ou CC BY/CC BY-SA)" if credit else ""))
             licenses[code] = {"file": title, "url": meta["descriptionurl"], "license": license_name}
+            if not free:
+                # CC BY e CC BY-SA pedem o crédito: o autor como o Commons o mostra, sem o HTML
+                artist = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", ext.get("Artist", {}).get("value", ""))).strip()
+                licenses[code]["artist"] = artist or "Wikimedia Commons"
             path = os.path.join(flags_dir, f"{code}.svg")
-            if not os.path.exists(path):
-                open(path, "wb").write(get(meta["url"]))
+            if not os.path.exists(path) or os.path.getsize(path) == 0:
+                body = get(meta["url"])  # baixa antes de abrir o arquivo: um download que falha não deixa arquivo vazio para trás
+                open(path, "wb").write(body)
+                time.sleep(1.5)
     json.dump(licenses, open(os.path.join(flags_dir, "licenses.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)
     print(f"ok: {len(licenses)} bandeiras em {flags_dir}")
 
@@ -72,7 +94,9 @@ def main():
         config = json.load(open(os.path.join(HERE, "countries", f"{country}.json"), encoding="utf8"))
         build = os.path.join(ROOT, "build", "divisions", country)
         os.makedirs(build, exist_ok=True)
-        if config["source"] == "ibge":
+        if os.environ.get("FLAGS_ONLY"):
+            pass
+        elif config["source"] == "ibge":
             fetch_ibge(build)
         elif config["source"] == "ohm":
             # Mapas históricos: as fronteiras do OpenHistoricalMap na data da época
@@ -80,7 +104,7 @@ def main():
         else:
             subprocess.run([sys.executable, os.path.join(HERE, "fetch-overture-regions.py"), country], cwd=ROOT, check=True)
         if any(unit.get("flagFile") for unit in config["units"]):
-            fetch_flags(build, config["units"])
+            fetch_flags(build, config["units"], credit=bool(config.get("flagCredit")))
 
 
 if __name__ == "__main__":

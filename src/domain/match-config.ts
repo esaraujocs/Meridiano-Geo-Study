@@ -69,12 +69,15 @@ const MODE_SEEDS: Record<TopFamily, ModeSeed[]> = {
     { key: "dv-capital", icon: "layers", family: "divisoes", variant: "dv-capital" },
     { key: "dv-escrita-capital", icon: "type", family: "divisoes", variant: "dv-escrita-capital" },
   ],
-  // Mapas históricos: os mesmos modos sobre o mundo de uma época (sem bandeiras por enquanto: `variantPlayable` os tira)
+  // Mapas históricos: os mesmos modos sobre o mundo de uma época; os de bandeira jogam só com os territórios que tinham bandeira própria
+  // (em 1914, 89 de 146), e somem da Mesa numa época sem bandeiras (`variantPlayable`)
   epocas: [
     { key: "dv-mapa", icon: "map", family: "epocas", variant: "dv-mapa" },
     { key: "dv-capital-mapa", icon: "capital", family: "epocas", variant: "dv-capital-mapa" },
     { key: "dv-silhueta-opcoes", icon: "eye", family: "epocas", variant: "dv-silhueta-opcoes" },
     { key: "dv-silhueta", icon: "type", family: "epocas", variant: "dv-silhueta" },
+    { key: "dv-bandeiras", icon: "flag", family: "epocas", variant: "dv-nome-bandeira", flag: "epocas", direction: true },
+    { key: "dv-escrita-nome", icon: "type", family: "epocas", variant: "dv-escrita-nome" },
     { key: "dv-capital", icon: "layers", family: "epocas", variant: "dv-capital" },
     { key: "dv-escrita-capital", icon: "type", family: "epocas", variant: "dv-escrita-capital" },
   ],
