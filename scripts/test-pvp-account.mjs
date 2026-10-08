@@ -276,6 +276,21 @@ await login("Ana_1", "senha-da-ana-1", anaPhone.secret);
   const elsewhere = await call("POST", "/account/login", null, { username: "outro-alvo", password: "senha-errada-1", secret: secret(500) }, { "x-forwarded-for": "9.9.9.9, 8.8.8.8" });
   assert.equal(elsewhere.status, 401, "outro IP não é afetado");
 }
+// tentativas simultâneas: o scrypt é assíncrono, então a trava tem de contar a tentativa já na chegada (antes, 60 senhas de uma vez passavam todas)
+{
+  clock += ATTEMPT_WINDOW_MS + 1;
+  const dono = { id: pid(700), secret: secret(700) };
+  assert.equal((await call("POST", "/account/register", dono, { username: "Rajada", password: "senha-da-rajada-1" }, { "x-forwarded-for": "5.5.5.1" })).status, 201);
+  const burst = await Promise.all(Array.from({ length: 40 }, (_, i) => login("Rajada", `chute-${i}-errado`, secret(710 + i), `5.5.${i}.9`)));
+  assert.ok(burst.every((r) => r.status === 401 || r.status === 429));
+  assert.equal(burst.filter((r) => r.status === 401).length, USER_ATTEMPTS, "numa rajada, só o limite de senhas é conferido");
+  const fromIp = await Promise.all(Array.from({ length: IP_ATTEMPTS + 10 }, (_, i) => login(`ninguem${i}`, "chute-errado-1", secret(760 + i), "5.6.7.8")));
+  assert.equal(fromIp.filter((r) => r.status === 401).length, IP_ATTEMPTS, "e só o limite por IP numa rajada de usuários diferentes");
+  // entrar com a senha certa devolve a vaga do IP: muitos logins do mesmo Wi-Fi não travam ninguém
+  clock += ATTEMPT_WINDOW_MS + 1;
+  for (let i = 0; i < IP_ATTEMPTS + 2; i += 1) assert.equal((await login("Rajada", "senha-da-rajada-1", secret(810 + i), "5.9.9.9")).status, 200);
+  assert.equal((await login("Rajada", "chute-errado-2", secret(850), "5.9.9.9")).status, 401, "o IP não travou pelos acertos");
+}
 // criação de contas por IP
 {
   clock += 2 * 60 * 60 * 1000;

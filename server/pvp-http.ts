@@ -261,12 +261,10 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       const ip = clientIp(req);
       const wait = accounts.loginLockedFor(username, ip);
       if (wait > 0) throw new PvpError("too_many", `Muitas tentativas. Tente de novo em ${minutes(wait)} min.`);
+      const succeeded = accounts.beginLoginAttempt(username, ip);
       const playerId = await accounts.login(username, password);
-      if (!playerId || !players.has(playerId)) {
-        accounts.noteLoginFailure(username, ip);
-        throw new PvpError("unauthorized", "Usuário ou senha incorretos.");
-      }
-      accounts.noteLoginSuccess(username);
+      if (!playerId || !players.has(playerId)) throw new PvpError("unauthorized", "Usuário ou senha incorretos.");
+      succeeded();
       players.addDevice(playerId, body.secret as string);
       return json(res, 200, { account: { username: accounts.usernameOf(playerId) }, player: { id: playerId, name: players.nameOf(playerId) } });
     }
@@ -303,11 +301,9 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
       const ip = clientIp(req);
       const wait = accounts.loginLockedFor(username, ip);
       if (wait > 0) throw new PvpError("too_many", `Muitas tentativas. Tente de novo em ${minutes(wait)} min.`);
-      if (current.length > PASSWORD_MAX || !(await accounts.changePassword(playerId, current, next))) {
-        accounts.noteLoginFailure(username, ip);
-        throw new PvpError("unauthorized", "A senha atual não confere.");
-      }
-      accounts.noteLoginSuccess(username);
+      const succeeded = accounts.beginLoginAttempt(username, ip);
+      if (current.length > PASSWORD_MAX || !(await accounts.changePassword(playerId, current, next))) throw new PvpError("unauthorized", "A senha atual não confere.");
+      succeeded();
       players.keepOnly(playerId, header(req, "x-pvp-secret") ?? ""); // trocar a senha derruba os outros aparelhos
       return json(res, 200, { ok: true });
     }

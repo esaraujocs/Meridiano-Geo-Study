@@ -46,11 +46,21 @@ class Window {
     const list = this.fresh(key);
     return list.length >= this.max ? Math.max(1, list[list.length - this.max] + this.windowMs - this.now()) : 0;
   }
-  hit(key: string) {
+  hit(key: string): number {
     const list = this.fresh(key);
-    list.push(this.now());
+    const at = this.now();
+    list.push(at);
     this.hits.set(key, list);
     if (this.hits.size > 5000) for (const other of [...this.hits.keys()].slice(0, 1000)) this.fresh(other); // varre as mais antigas: a memória não cresce sem fim
+    return at;
+  }
+  /** Desfaz uma batida registrada em `at`. */
+  unhit(key: string, at: number) {
+    const list = this.hits.get(key);
+    const index = list ? list.lastIndexOf(at) : -1;
+    if (index < 0 || !list) return;
+    list.splice(index, 1);
+    if (!list.length) this.hits.delete(key);
   }
   clear(key: string) { this.hits.delete(key); }
 }
@@ -103,6 +113,14 @@ export class AccountRegistry {
   }
   noteLoginFailure(username: string, ip: string) { this.failedByUser.hit(usernameKey(username)); this.failedByIp.hit(ip); }
   noteLoginSuccess(username: string) { this.failedByUser.clear(usernameKey(username)); }
+  /** Conta a tentativa como erro já na chegada, antes do scrypt assíncrono (anotada só depois, uma rajada simultânea passava inteira pela trava).
+   *  Devolve o que fazer se a senha conferir: zera o usuário e devolve a vaga do IP. */
+  beginLoginAttempt(username: string, ip: string): () => void {
+    const user = usernameKey(username);
+    this.failedByUser.hit(user);
+    const at = this.failedByIp.hit(ip);
+    return () => { this.failedByUser.clear(user); this.failedByIp.unhit(ip, at); };
+  }
   registerLockedFor(ip: string): number { return this.registered.lockedFor(ip); }
   noteRegister(ip: string) { this.registered.hit(ip); }
 
