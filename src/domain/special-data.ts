@@ -26,8 +26,8 @@ export function loadSpecialData() {
     if (!historical.ok || !flags.ok || !languages.ok) throw new Error(t.app.specialFailed);
     const [h, f, l] = await Promise.all([historical.json(), flags.json(), languages.json()]);
     const historicalFlags = { ...(f.flags ?? {}) };
-    const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
-    const overrides = overrideResponse.ok
+    const overrideResponse = await fetch("/data/flag-overrides/manifest.json").catch(() => null); // opcional: sem rede, segue sem as trocas
+    const overrides = overrideResponse?.ok
       ? await overrideResponse.json() as Record<string, { src: string }>
       : {};
     for (const [id, override] of Object.entries(overrides)) {

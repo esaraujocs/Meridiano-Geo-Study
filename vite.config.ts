@@ -38,6 +38,8 @@ const injectPrecacheManifest = () => {
     const precache = [
       "/",
       "/manifest.webmanifest",
+      "/favicon.svg",
+      "/data/flag-overrides/manifest.json",
       "/data/legacy/catalog.json",
       "/data/legacy-map.json",
       "/data/legacy/flags.json",

@@ -16,6 +16,9 @@ self.addEventListener("install", (event) => {
 
 // O servidor do duelo entre pessoas (/api/pvp/...) responde coisas que mudam a cada instante (fila, sala, ranking): nunca vem do cache.
 const isApi = (url) => url.origin === self.location.origin && url.pathname.startsWith("/api/");
+// O `vite preview` responde com `Vary: Origin` e o index.html pede JS e CSS com `crossorigin`: sem ignoreVary a cópia guardada não casa com o pedido
+// e, sem internet, o app abria em branco.
+const fromCache = (request) => caches.match(request, { ignoreVary: true });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
@@ -54,7 +57,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.origin === self.location.origin && DIVISION_MAPS[url.pathname]) {
-    const cached = caches.open(CACHE).then((cache) => cache.match(divisionKey(url.pathname)));
+    const cached = caches.open(CACHE).then((cache) => cache.match(divisionKey(url.pathname), { ignoreVary: true }));
     event.respondWith(cached.then((hit) => (hit ? (range ? sliceResponse(hit, range) : hit) : fetch(event.request))).catch(() => fetch(event.request)));
     // sem cópia ainda: a rede responde esta partida e o arquivo inteiro vai para o cache sem atrasar nada
     event.waitUntil(cached.then((hit) => (hit ? undefined : fillDivisionMap(url.pathname))).catch(() => undefined));
@@ -70,13 +73,13 @@ self.addEventListener("fetch", (event) => {
           if (response.ok && !url.search) { const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(event.request, copy)); }
           return response;
         })
-        .catch(() => caches.match(event.request).then((cached) => cached ?? caches.match("/"))),
+        .catch(() => fromCache(event.request).then((cached) => cached ?? fromCache("/"))),
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(
+    fromCache(event.request).then(
       (cached) =>
         cached ??
         fetch(event.request).then((response) => {

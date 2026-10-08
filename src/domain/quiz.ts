@@ -23,8 +23,8 @@ export function loadFlags(): Promise<FlagCatalog> {
     const payload = (await response.json()) as { flags?: FlagCatalog };
     if (!payload.flags) throw new Error(t.errors.flagsInvalid);
     const flags = { ...payload.flags };
-    const overrideResponse = await fetch("/data/flag-overrides/manifest.json");
-    const overrides = overrideResponse.ok
+    const overrideResponse = await fetch("/data/flag-overrides/manifest.json").catch(() => null); // opcional: sem rede, segue sem as trocas
+    const overrides = overrideResponse?.ok
       ? await overrideResponse.json() as Record<string, { src: string }>
       : {};
     for (const [id, override] of Object.entries(overrides)) {
