@@ -108,6 +108,7 @@ export const pt = {
     tileCollection: "Coleção · cartas descobertas",
     tileAchievements: "Achievements desbloqueados",
     tileMastery: "Maestria · ver progresso",
+    tileMasteryShort: "Maestria",
     arenaTitle: "Arena",
     ladderAria: "Escada do duelo",
     duelFriendly: "Amistoso",

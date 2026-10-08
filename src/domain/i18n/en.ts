@@ -107,6 +107,7 @@ export const en: Messages = {
     tileCollection: "Collection · cards found",
     tileAchievements: "Achievements unlocked",
     tileMastery: "Mastery · see progress",
+    tileMasteryShort: "Mastery",
     arenaTitle: "Arena",
     ladderAria: "Duel ladder",
     duelFriendly: "Friendly",

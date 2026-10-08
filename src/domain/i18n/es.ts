@@ -108,6 +108,7 @@ export const es: Messages = {
     tileCollection: "Colección · cartas descubiertas",
     tileAchievements: "Logros desbloqueados",
     tileMastery: "Maestría · ver progreso",
+    tileMasteryShort: "Maestría",
     arenaTitle: "Arena",
     ladderAria: "Escalera del duelo",
     duelFriendly: "Amistoso",

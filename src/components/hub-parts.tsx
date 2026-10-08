@@ -324,12 +324,14 @@ export function HubMecenato({ onOpen, onBack }: { onOpen: () => void; onBack?: (
 /** Os Desafios (06–08/10/2026, mocks hub-v20 a v24): o terceiro pilar, listas contra o relógio para quem já domina os modos. No Hub só a porta de
  *  entrada, no lugar da Vitrine e abaixo do Duelo (hierarquia: modos > Duelo > Desafios): fachada de arcos, título em inscrição e "Desafiar"
  *  (sem desafio em destaque, pedido do Enzo). A tela própria ainda não existe: o cartão diz "em breve" e o botão fica desativado. */
-/** Desenho do Hub no desktop. "faixa" (08/10/2026, mock hub-v29 L2): os modos na largura toda e embaixo Duelo | Desafios | Mecenato · Vitrine.
- *  "coluna" é o de antes (modos | Duelo + Desafios; progresso | Mecenato · Vitrine), guardado para voltar rápido: trocar o padrão aqui, ou abrir
- *  o app com ?hub=coluna (fica gravado neste navegador; ?hub=faixa volta). O celular é o mesmo nos dois. */
-export type HubLayout = "faixa" | "coluna";
-const HUB_LAYOUT_DEFAULT: HubLayout = "faixa";
-const isLayout = (value: string | null): value is HubLayout => value === "faixa" || value === "coluna";
+/** Desenho do Hub no desktop (≥ 1100 px). Nos três em faixa (08/10/2026, mock hub-v29 L2) os modos ocupam a largura toda e embaixo vêm
+ *  Duelo | Desafios | Mecenato · Vitrine; o que muda é onde fica o "Seu progresso" (mock hub-v30):
+ *  "cabecalho" (o padrão, P2): fichas na peça do jogador, no lugar de "partidas · rodadas"; "faixa4" (P1): 4ª coluna da faixa;
+ *  "faixa": uma linha embaixo (a página rola). "coluna" é o de antes (modos | Duelo + Desafios; progresso | Mecenato · Vitrine).
+ *  Para trocar: o padrão aqui, ou abrir o app com ?hub=<valor> (fica gravado neste navegador). Celular e tablet são os mesmos em todos. */
+export type HubLayout = "cabecalho" | "faixa4" | "faixa" | "coluna";
+const HUB_LAYOUT_DEFAULT: HubLayout = "cabecalho";
+const isLayout = (value: string | null): value is HubLayout => value === "cabecalho" || value === "faixa4" || value === "faixa" || value === "coluna";
 function readHubLayout(): HubLayout {
   try {
     const asked = new URLSearchParams(window.location.search).get("hub");
@@ -339,6 +341,8 @@ function readHubLayout(): HubLayout {
   } catch { return HUB_LAYOUT_DEFAULT; }
 }
 export const HUB_LAYOUT: HubLayout = typeof window === "undefined" ? HUB_LAYOUT_DEFAULT : readHubLayout();
+/** Os três desenhos em faixa dividem o CSS (`data-layout="faixa"`); o lugar do progresso vai em `data-progress`. */
+export const HUB_BAND = HUB_LAYOUT !== "coluna";
 
 /** Desafios. Na faixa o cartão tem a estrutura do Duelo (o desafio do dia e os botões), para não ficar vazio ao lado dele; a tela dos Desafios
  *  ainda não existe, então o desafio do dia é uma prévia e os botões ficam desativados. */

@@ -433,9 +433,10 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .hx-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.82fr);grid-template-rows:auto auto auto;column-gap:18px}
   .hx[data-layout=faixa] .hx-modes{grid-area:1/1/2/-1}
   .hx[data-layout=faixa] .hx-arena{grid-area:2/1/3/3;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:18px;row-gap:0}
-  .hx[data-layout=faixa] .hx-arena>.section-label{grid-column:1/-1;margin:22px 0 10px}
+  .hx[data-layout=faixa] .hx-modes>.section-label{margin-top:6px}
+  .hx[data-layout=faixa] .hx-arena>.section-label{grid-column:1/-1;margin:10px 0 8px}
   .hx[data-layout=faixa] .hx-mecenato{grid-area:2/3/3/4}
-  .hx[data-layout=faixa] .hx-mecenato .section-label{margin:22px 0 10px}
+  .hx[data-layout=faixa] .hx-mecenato .section-label{margin:10px 0 8px}
   .hx[data-layout=faixa] .hx-progress{grid-area:3/1/4/-1}
   .hx[data-layout=faixa] .hx-chal{min-height:0;gap:9px;align-content:start}
   .hx[data-layout=faixa] .hx-chal .hx-duel-foot{align-self:end}
@@ -444,3 +445,38 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .family.hx-mode{min-height:clamp(380px,46.4vh,520px)}
 }
 @media (max-width:760px){.hx-chal-daily,.hx-chal .hx-duel-acts{display:none}.hx-chal .hx-duel-foot{display:contents}}
+
+/* onde fica o "Seu progresso" no Hub em faixa (mock hub-v30): data-progress="cabecalho" (P2, fichas na peça do jogador), "faixa4" (P1, 4ª
+   coluna da faixa) ou "faixa" (linha embaixo). Com os rótulos de seção mais juntos, P1 e P2 cabem em 1503×920 sem rolar */
+.hx-hstats{display:none}
+@media (min-width:1100px){
+  /* P2: as fichas usam as classes dos tiles (hub-progress-grid, data-tile), então cada tema as pinta como pinta os tiles */
+  .hx[data-progress=cabecalho] .hx-progress,.hx[data-progress=cabecalho] .hub-tally{display:none}
+  .hx[data-progress=cabecalho] .hx-p-player{gap:18px}
+  .hx .hx-hstats.hub-progress-grid{display:flex;flex:none;gap:10px;margin:0}
+  .hx .hx-hstats.hub-progress-grid button{--tile:var(--green);position:relative;display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;gap:0 10px;min-height:0;height:auto;padding:7px 14px 7px 8px;border-radius:16px;text-align:left;overflow:hidden;transition:transform .15s,box-shadow .15s}
+  .hx .hx-hstats.hub-progress-grid button:hover{transform:translateY(-2px);box-shadow:0 12px 20px -16px rgba(36,59,58,.6)}
+  .hx-hstats [data-tile=collection]{--tile:#b98a2e}.hx-hstats [data-tile=achievements]{--tile:#b65f47}.hx-hstats [data-tile=progress]{--tile:#2f8f83}
+  :root[data-scheme=dark] .hx-hstats [data-tile=collection]{--tile:#e8b84a}:root[data-scheme=dark] .hx-hstats [data-tile=achievements]{--tile:#ee7968}:root[data-scheme=dark] .hx-hstats [data-tile=progress]{--tile:#58d6d0}
+  .hx .hx-hstats .hub-progress-icon{position:relative;display:grid;place-items:center;width:34px;height:34px;margin:5px;border-radius:50%}
+  .hx .hx-hstats .hub-progress-icon>svg:not(.hx-ring){width:17px;height:17px}
+  .hx .hx-hstats .hub-progress-icon>svg.hx-ring{position:absolute;inset:-5px;width:calc(100% + 10px);height:calc(100% + 10px);margin:0;transform:rotate(-90deg)}
+  .hx .hx-hstats .hub-progress-text{display:grid;min-width:0}
+  .hx .hx-hstats strong{font-size:19px;line-height:1;white-space:nowrap}
+  .hx .hx-hstats small{margin-top:3px;font-size:10.5px;white-space:nowrap}
+  .hx .hx-hstats .hub-progress-bar,.hx .hx-hstats button>svg{display:none}
+  /* P1: a 4ª coluna, com os três números empilhados */
+  .hx[data-progress=faixa4] .hx-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.82fr) minmax(0,.66fr)}
+  .hx[data-progress=faixa4] .hx-progress{grid-area:2/4/3/5}
+  .hx[data-progress=faixa4] .hx-progress .section-label{margin:10px 0 8px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-grid{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:7px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-grid button{padding:4px 12px;gap:0 12px;border-radius:14px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-icon{width:34px;height:34px;margin:6px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-icon>svg:not(.hx-ring){width:18px;height:18px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-icon>svg.hx-ring{inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px)}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-grid strong{font-size:21px}
+  .hx[data-progress=faixa4] .hx-progress .hub-progress-grid small{margin-top:2px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hx[data-progress=faixa4] .hx-tile-mark{display:none}
+  .hx[data-progress=faixa4] .hx-chal-daily>small{letter-spacing:.08em}
+  .hx[data-progress=faixa4] .hx-turns .hx-museum-text b{font-size:20px}
+}

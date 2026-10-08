@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
+import { HUB_BAND, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -290,10 +290,16 @@ export function Hub({
   const masteryPct = ratioPercent(economy?.dominated ?? 0, totalEntities);
   const profile = hubProfile({ masteryPct, titleIds: achievementSummary.titles });
   const progressTiles = [
-    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: t.hub.tileCollection, pct: ratioPercent(collectionSummary.discovered, collectionSummary.total) },
-    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total) },
-    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, pct: masteryPct },
+    { key: "collection", icon: "collection", target: "collection", big: `${collectionSummary.discovered}/${collectionSummary.total}`, label: t.hub.tileCollection, short: t.nav.collection, pct: ratioPercent(collectionSummary.discovered, collectionSummary.total) },
+    { key: "achievements", icon: "achievements", target: "achievements", big: `${achievementSummary.unlocked}/${achievementSummary.total}`, label: t.hub.tileAchievements, short: t.nav.achievements, pct: ratioPercent(achievementSummary.unlocked, achievementSummary.total) },
+    { key: "progress", icon: "progress", target: "progress", big: `${masteryPct}%`, label: t.hub.tileMastery, short: t.hub.tileMasteryShort, pct: masteryPct },
   ] as const;
+  /** Um tile do "Seu progresso"; `short` é a ficha do cabeçalho (legenda curta, sem a marca d'água). */
+  const progressTile = (tile: (typeof progressTiles)[number], short = false) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}>
+    {!short && <span className="hx-tile-mark" aria-hidden="true"><Icon type={tile.icon} size={150} /></span>}
+    <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" /><circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} /></svg><Icon type={tile.icon} /></span>
+    <span className="hub-progress-text"><strong>{tile.big}</strong><small>{short ? tile.short : tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span></span>
+  </button>;
   const modeCard = (item: (typeof familyItems)[number]) => {
     const open = isFamilyUnlocked(item);
     return <div
@@ -309,7 +315,7 @@ export function Hub({
     </div>;
   };
   return (
-    <main className="content hub-content hx" data-layout={HUB_LAYOUT}>
+    <main className="content hub-content hx" data-layout={HUB_BAND ? "faixa" : "coluna"} data-progress={HUB_LAYOUT}>
       <h1 className="sr-only">Meridiano</h1>
       <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
         <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
@@ -330,7 +336,10 @@ export function Hub({
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
             <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}</span>
           </div>
-        </div></div>
+        </div>
+        {/* o "Seu progresso" em fichas (só no desktop, com o Hub em faixa e o progresso no cabeçalho; o CSS esconde a linha de baixo) */}
+        {HUB_LAYOUT === "cabecalho" && <nav className="hx-hstats hub-progress-grid" aria-label={t.hub.yourProgress}>{progressTiles.map((tile) => progressTile(tile, true))}</nav>}
+        </div>
         <div className="hub-bar hx-piece hx-p-wallet"><div className="hub-stats">
           {arenas?.onFriends && <button type="button" className="hub-friends" aria-label={t.hub.duelFriends} title={t.hub.duelFriends} onClick={arenas.onFriends}><Icon type="people" size={19} /><span>{t.hub.duelFriends}</span></button>}
           <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><span className="hub-coin-store"><Icon type="store" size={15} /> {t.nav.store}</span></button>
@@ -345,16 +354,12 @@ export function Hub({
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} />}
-          <HubChallenges full={HUB_LAYOUT === "faixa"} />
+          <HubChallenges full={HUB_BAND} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>
           <div className="hub-progress-grid">
-            {progressTiles.map((tile) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}>
-              <span className="hx-tile-mark" aria-hidden="true"><Icon type={tile.icon} size={150} /></span>
-              <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" /><circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} /></svg><Icon type={tile.icon} /></span>
-              <span className="hub-progress-text"><strong>{tile.big}</strong><small>{tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span></span>
-            </button>)}
+            {progressTiles.map((tile) => progressTile(tile))}
           </div>
         </section>
         <HubTurns onOpenMuseum={() => onOpenMuseum?.()} onOpenStore={() => onNavigate?.("store")} />
