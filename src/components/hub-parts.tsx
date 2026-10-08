@@ -322,8 +322,8 @@ export function HubMecenato({ onOpen, onBack }: { onOpen: () => void; onBack?: (
 }
 
 /** Os Desafios (06–08/10/2026, mocks hub-v20 a v24): o terceiro pilar, listas contra o relógio para quem já domina os modos. No Hub só a porta de
- *  entrada, no lugar da Vitrine e abaixo do Duelo (hierarquia: modos > Duelo > Desafios): fachada de arcos, título em inscrição, um desafio em
- *  destaque e "Desafiar". A tela própria ainda não existe: o cartão diz "em breve" e o botão fica desativado. */
+ *  entrada, no lugar da Vitrine e abaixo do Duelo (hierarquia: modos > Duelo > Desafios): fachada de arcos, título em inscrição e "Desafiar"
+ *  (sem desafio em destaque, pedido do Enzo). A tela própria ainda não existe: o cartão diz "em breve" e o botão fica desativado. */
 export function HubChallenges() {
   return <section className="hx-duel hx-chal" aria-label={t.hub.challengesAria}>
     <div className="hx-duel-top">
@@ -331,10 +331,7 @@ export function HubChallenges() {
       <div className="hx-duel-name"><h3>{t.hub.challenges}</h3></div>
       <span className="hx-pill">{t.hub.challengesSoon}</span>
     </div>
-    <div className="hx-chal-row">
-      <span className="hx-chal-feat"><b>{t.hub.challengesFeatured}</b><small>{t.hub.challengesTime}</small></span>
-      <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>
-    </div>
+    <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>
   </section>;
 }
 

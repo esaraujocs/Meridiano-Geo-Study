@@ -116,8 +116,6 @@ export const en: Messages = {
     showcase: "Showcase",
     challenges: "Challenges",
     challengesSoon: "soon",
-    challengesFeatured: "Countries of Africa",
-    challengesTime: "6 min",
     challengesGo: "Challenge",
     challengesAria: "Challenges: lists against the clock, coming soon",
     turnsAria: "Patronage and Showcase, taking turns",

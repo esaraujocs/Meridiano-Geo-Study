@@ -117,8 +117,6 @@ export const es: Messages = {
     showcase: "Vitrina",
     challenges: "Desafíos",
     challengesSoon: "pronto",
-    challengesFeatured: "Países de África",
-    challengesTime: "6 min",
     challengesGo: "Desafiar",
     challengesAria: "Desafíos: listas contra el reloj, muy pronto",
     turnsAria: "Mecenazgo y Vitrina, por turnos",

@@ -247,8 +247,8 @@ html[data-reduced-motion=true] .hx-showcase-slide{animation:none}
 @media (prefers-reduced-motion:reduce){.hx-turn{animation:none}}
 html[data-reduced-motion=true] .hx-turn{animation:none}
 
-/* Desafios (08/10/2026, estilo dos mocks hub-v23/v24): a linha do Duelo em azul-noite, título em inscrição, arcos de coliseu discretos no canto
-   de cima e um desafio em destaque com "Desafiar". Fica no lugar da Vitrine, com a mesma altura dela */
+/* Desafios (08/10/2026, estilo dos mocks hub-v23/v24): a linha do Duelo em azul-noite, título em inscrição, arcos de coliseu ao fundo e
+   "Desafiar" na largura toda, como o "Duelar" (sem desafio em destaque). Fica no lugar da Vitrine, com a mesma altura dela */
 /* a altura mínima é a que a Vitrine tinha pelo conteúdo (228 px): era ela que dava a altura da linha de cima em telas de até ~1440 px, e o
    Hub fica com as mesmas proporções */
 .hx-chal{--duel-a:#3a669a;--duel-b:#244870;--duel-ink:#244870;flex:1;min-height:228px;gap:12px;align-content:space-between;background:color-mix(in srgb,var(--duel-a) 7%,var(--paper));border-color:color-mix(in srgb,var(--duel-a) 26%,var(--line))}
@@ -260,10 +260,7 @@ html[data-reduced-motion=true] .hx-turn{animation:none}
 .hx-chal>*{z-index:1}
 .hx-chal .hx-duel-name h3{text-transform:uppercase;letter-spacing:.16em;font-size:19px}
 .hx-chal .hx-pill{text-transform:uppercase;letter-spacing:.08em;font-size:9.5px}
-.hx-chal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
-.hx-chal-feat{display:flex;align-items:baseline;gap:8px;min-width:0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--duel-a) 10%,transparent)}
-.hx-chal-feat b{font:700 15px 'Fraunces',Georgia,serif;color:var(--duel-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hx-chal-feat small{flex:none;font:600 11px 'DM Mono',monospace;color:color-mix(in srgb,var(--duel-ink) 72%,var(--muted))}
+
 .hx-museum{position:relative;flex:1;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;min-height:150px;padding:18px 20px;border:1px solid #6b4423;border-radius:18px;overflow:hidden;color:#fff4df;text-align:left;box-shadow:0 16px 28px -18px #3a2610}
 .hx-museum-img{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
 .hx-museum::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(40,26,12,.9) 0%,rgba(40,26,12,.6) 52%,rgba(40,26,12,.1) 100%)}
@@ -354,8 +351,6 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx-chal .hx-duel-ic svg{width:18px;height:18px}
   .hx-chal .hx-duel-name h3{font-size:13px;letter-spacing:.12em}
   .hx-chal .hx-pill{display:none}
-  .hx-chal-row{grid-template-columns:1fr}
-  .hx-chal-feat{display:none}
   .hx-chal .hx-go{padding:8px 10px;font-size:12px}
   .hx-chal::after{width:100%;height:56px}
   /* modos: um cartão grande por vez, os vizinhos espiando */

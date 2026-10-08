@@ -117,8 +117,6 @@ export const pt = {
     showcase: "Vitrine",
     challenges: "Desafios",
     challengesSoon: "em breve",
-    challengesFeatured: "Países da África",
-    challengesTime: "6 min",
     challengesGo: "Desafiar",
     challengesAria: "Desafios: listas contra o relógio, em breve",
     turnsAria: "Mecenato e Vitrine, em revezamento",
