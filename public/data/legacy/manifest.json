@@ -11,17 +11,17 @@
       "sha256": "2a3eea8fe84c3671f8c1f1826bddbfa1528e2dc887fd995726ae993b3aaad05a"
     },
     "historical.json": {
-      "bytes": 77490,
-      "sha256": "31799f284a4201f5e9d34b5e68b42a1434d00111abfcb45b8ff00a532c9ef731",
-      "entries": 225,
+      "bytes": 78123,
+      "sha256": "70fac545594495c8282e19b1f782c814e85aedc19c0f99b61cc54ef94968fa9a",
+      "entries": 226,
       "additions": [
         "scripts/data/historical-1914.json"
       ]
     },
     "historical-flags.json": {
-      "bytes": 4120466,
-      "sha256": "14e0f6e9d0724b32f049adf3f492d9fd4b2ba0dc3e220365fbdb94d13324b204",
-      "entries": 225,
+      "bytes": 4144561,
+      "sha256": "5dcf3a9aa5d60beb065ad509768ebd667e27662d8ebf2dbf20e5e6a55483a60e",
+      "entries": 226,
       "additions": [
         "scripts/data/historical-1914.json"
       ]

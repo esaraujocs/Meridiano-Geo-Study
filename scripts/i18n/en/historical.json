@@ -913,5 +913,11 @@
   "cap": "Tulagi",
   "sucessor": "Solomon Islands",
   "fato": "A British protectorate declared in 1893 over the southern Solomons and later extended to most of today's country; it became independent in 1978."
+ },
+ "rodesia-companhia": {
+  "name": "Rhodesia (British South Africa Company)",
+  "cap": "Salisbury",
+  "sucessor": "Southern Rhodesia and Northern Rhodesia",
+  "fato": "Land ruled by Cecil Rhodes's British South Africa Company from the Pioneer Column of 1890; officially named Rhodesia in 1895 and bisected by the Zambezi, it passed to the British Crown in 1923 and 1924 as the two Rhodesias."
  }
 }

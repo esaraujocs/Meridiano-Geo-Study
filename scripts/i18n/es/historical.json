@@ -913,5 +913,11 @@
   "cap": "Tulagi",
   "sucessor": "Islas Salomón",
   "fato": "Protectorado británico declarado en 1893 en las Salomón del sur y ampliado después a la mayor parte del país actual; se independizó en 1978."
+ },
+ "rodesia-companhia": {
+  "name": "Rodesia (Compañía Británica de Sudáfrica)",
+  "cap": "Salisbury",
+  "sucessor": "Rodesia del Sur y Rodesia del Norte",
+  "fato": "Territorio gobernado por la Compañía Británica de Sudáfrica, de Cecil Rhodes, desde la columna pionera de 1890; llamado oficialmente Rodesia en 1895 y cortado por el río Zambeze, pasó a la Corona británica entre 1923 y 1924, como las dos Rodesias."
  }
 }
