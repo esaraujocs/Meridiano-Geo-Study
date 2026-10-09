@@ -72,7 +72,7 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
         const pct = navProgress && (key === "collection" || key === "achievements" || key === "progress") ? navProgress[key] : null;
         return <button key={key} data-nav={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}>
           {HUB_BAND
-            ? <span className="nav-ic" aria-hidden="true"><svg className="hx-ring" viewBox="0 0 72 72"><circle className="hx-ring-track" cx="36" cy="36" r="32" />{pct !== null && <circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, pct) / 100} ${2 * Math.PI * 32}`} />}</svg><Icon type={icon} /></span>
+            ? <span className="nav-ic" aria-hidden="true"><svg className="hx-ring" viewBox="0 0 72 72"><circle className="hx-ring-track" cx="36" cy="36" r="32" />{pct !== null && pct > 0 && <circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, pct) / 100} ${2 * Math.PI * 32}`} />}</svg><Icon type={icon} /></span>
             : <Icon type={icon} />}
           <span>{label}</span>
         </button>;
@@ -310,7 +310,7 @@ export function Hub({
   /** Um tile do "Seu progresso"; `short` é a ficha do cabeçalho (legenda curta, sem a marca d'água). */
   const progressTile = (tile: (typeof progressTiles)[number], short = false) => <button type="button" key={tile.key} data-tile={tile.key} onClick={() => onNavigate?.(tile.target)}>
     {!short && <span className="hx-tile-mark" aria-hidden="true"><Icon type={tile.icon} size={150} /></span>}
-    <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" /><circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} /></svg><Icon type={tile.icon} /></span>
+    <span className="hub-progress-icon"><svg className="hx-ring" viewBox="0 0 72 72" aria-hidden="true"><circle className="hx-ring-track" cx="36" cy="36" r="32" />{tile.pct > 0 && <circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, tile.pct) / 100} ${2 * Math.PI * 32}`} />}</svg><Icon type={tile.icon} /></span>
     <span className="hub-progress-text"><strong>{tile.big}</strong><small>{short ? tile.short : tile.label}</small><span className="hub-progress-bar" aria-hidden="true"><i style={{ width: `${tile.pct}%` }} /></span></span>
   </button>;
   const modeCard = (item: (typeof familyItems)[number]) => {

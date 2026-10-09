@@ -81,7 +81,14 @@ const navText = (text) => page.evaluate((t) => { const b = [...document.querySel
 const toHub = async () => { await page.evaluate(() => document.querySelector(".back, .cv-top .back")?.click()); await sleep(700); await navText("Modos"); await sleep(1000); };
 const home = async () => { await page.goto(BASE + "?debug=1", { waitUntil: "load" }); await sleep(3200); await page.addStyleTag({ content: ".ach-toaster{display:none!important}" }); };
 // abre a Mesa de jogo de um modo com clique de verdade (o carrossel do Hub trata clique sem coordenadas como clique no vizinho)
-const openMode = async (fam) => { const handle = await page.evaluateHandle((f) => [...document.querySelectorAll(".hx-slide:not([inert])")].find((el) => el.querySelector(`[data-fam=${f}]`))?.querySelector(".hx-hit"), fam); await handle.asElement()?.click(); await sleep(1500); };
+// o carrossel só deixa interativos os cartões inteiros na janela (09/10/2026): anda com a seta até o modo aparecer
+const openMode = async (fam) => {
+  for (let tries = 0; tries < 8; tries += 1) {
+    const handle = await page.evaluateHandle((f) => [...document.querySelectorAll(".hx-slide:not([inert])")].find((el) => el.querySelector(`[data-fam=${f}]`))?.querySelector(".hx-hit"), fam);
+    if (handle.asElement()) { await handle.asElement().click(); await sleep(1500); return; }
+    await page.click(".hx-arrow.is-next"); await sleep(700);
+  }
+};
 const scenes = {
   async hub() { await audit("hub solo"); },
   async duelo() { await page.evaluate(() => document.querySelector(".hx-duel")?.scrollIntoView()); await sleep(500); await audit("hub duelo"); },

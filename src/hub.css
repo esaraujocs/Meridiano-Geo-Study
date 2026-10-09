@@ -83,9 +83,18 @@
 
 /* carrossel dos modos: 3 cartões inteiros, a borda do vizinho aparecendo dos dois lados, laço sem fim (HubCarousel) */
 .hx-car{--per:3;--gap:18px;--peek:calc(var(--gap) + clamp(32px,3vw,60px));position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
-.hx-track{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));gap:var(--gap);overflow-x:auto;overflow-y:hidden;padding:6px var(--peek);scroll-padding-inline:var(--peek);scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35));mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35))}
+.hx-track{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));gap:var(--gap);overflow:hidden;padding:6px var(--peek);touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35));mask-image:linear-gradient(90deg,rgba(0,0,0,.35),#000 calc(var(--peek) - var(--gap) * .4),#000 calc(100% - var(--peek) + var(--gap) * .4),rgba(0,0,0,.35))}
 .hx-track::-webkit-scrollbar{display:none}
-.hx-slide{display:flex;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.hx-slide{display:flex;min-width:0;will-change:transform}
+/* em movimento (arraste, setas, roda do trackpad): os cartões ficam um pouco translúcidos e menores e a quadrícula de fundo anda em paralaxe
+   (--shift vem do HubCarousel, a parte fracionária da vaga do cartão); parado, tudo volta */
+.hx-track.is-dragging{cursor:grabbing}
+.hx-track.is-moving .family.hx-mode{opacity:.8;scale:.965}
+.hx-slide .family-geo{translate:calc(var(--shift,0) * 26px) 0}
+.hx-track.is-dragging .family.hx-mode,.hx-track.is-moving .family.hx-mode{transform:none}
+@media (prefers-reduced-motion:reduce){.hx-track.is-moving .family.hx-mode{opacity:1;scale:1}.hx-slide .family-geo{translate:none}}
+html[data-reduced-motion=true] .hx-track.is-moving .family.hx-mode{opacity:1;scale:1}
+html[data-reduced-motion=true] .hx-slide .family-geo{translate:none}
 .hx-slide>.family{flex:1}
 .hx .family.hx-mode{height:auto;min-height:clamp(360px,40vh,520px);padding:16px 16px 16px;border-radius:11px;width:auto;max-width:none;min-width:0}
 .hx .hx-mode .family-visual{height:auto;flex:1;min-height:90px}
@@ -101,7 +110,7 @@
 .hx-hit{position:absolute;inset:0;z-index:2;width:100%;height:100%;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer}
 .hx-hit:focus-visible{outline:2px solid var(--green);outline-offset:3px}
 /* sem botão de jogar: o cartão levanta de leve ao passar o mouse para continuar parecendo clicável */
-.hx .family.hx-mode{transition:transform .2s ease,box-shadow .2s ease}
+.hx .family.hx-mode{transition:transform .2s ease,box-shadow .2s ease,opacity .22s ease,scale .22s ease}
 @media (hover:hover){.hx .family.hx-mode:has(.hx-hit:hover){transform:translateY(-3px);box-shadow:0 18px 30px -18px var(--hb,rgba(0,0,0,.4))}}
 @media (prefers-reduced-motion:reduce){.hx .family.hx-mode{transition:none}.hx .family.hx-mode:has(.hx-hit:hover){transform:none}}
 html[data-reduced-motion=true] .hx .family.hx-mode:has(.hx-hit:hover){transform:none}
@@ -453,6 +462,7 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa].hub-content{max-width:clamp(1000px,calc((100vh - 450px) * 2.6),1200px)}
   .hx[data-layout=faixa] .hx-car{--peek:0px}
   .hx[data-layout=faixa] .hx-track{grid-auto-columns:calc((100% - 3 * var(--gap)) / 4);padding-inline:0;-webkit-mask-image:none;mask-image:none}
+  .hx[data-layout=faixa] .hx-track.is-moving{-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
   .hx[data-layout=faixa] .hx-arrow.is-prev{left:-21px}
   .hx[data-layout=faixa] .hx-arrow.is-next{right:-21px}
   .hx[data-layout=faixa] .hx-slide{container-type:inline-size}
@@ -545,12 +555,14 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
    margem); cabeçalho em duas linhas; o cartão de modo nunca mais baixo que largo; Duelo e Desafios lado a lado, iguais e compactos (ícone, nome,
    uma linha e o botão); sem o Mecenato · Vitrine (a Loja está na barra de baixo e o Mecenato abre por ela). A barra de baixo segue as fichas do
    cabeçalho do desktop: círculo na cor do destino e o anel do progresso. Com ?hub=coluna tudo volta ao de antes. */
-.hx-ladder-swap,.hx .hub-xp-short{display:none}
+.hx-ladder-swap,.hx .hub-xp-short,.hx-duel-league{display:none}
 @media (max-width:760px){
   .hx[data-layout=faixa]{--col:20px}
   /* cabeçalho em duas linhas: anel, nome, Amigos e engrenagem; a barra de XP com os números e as moedas */
   .hx[data-layout=faixa] .hx-head{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"ring head friends gear" "xp xp coin coin";align-items:center;column-gap:10px;row-gap:9px;height:auto!important;margin:0 var(--col)!important;padding:12px 14px!important;border-radius:20px!important}
   .hx[data-layout=faixa] .hub-player,.hx[data-layout=faixa] .hub-stats{display:contents!important}
+  /* sem o brilho de latão (a mancha sépia no canto): no celular as peças viram um cartão só e o brilho de cada uma cobria o cabeçalho inteiro */
+  .hx[data-layout=faixa] .hx-head::before,.hx[data-layout=faixa] .hx-head .hub-bar::before{content:none!important}
   .hx[data-layout=faixa] .hub-level{grid-area:ring!important;width:52px!important;height:52px!important}
   .hx[data-layout=faixa] .hub-level strong{font-size:23px!important}
   .hx[data-layout=faixa] .hub-head{grid-area:head!important;align-self:center!important}
@@ -577,20 +589,22 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .hx-mode h3{display:flex;align-items:flex-end;height:calc(2 * 1.05 * 26px);font-size:26px;line-height:1.05}
   .hx[data-layout=faixa] .hx-mode p{min-height:calc(2 * 1.45 * 12.5px);line-height:1.45}
   /* Duelo e Desafios: iguais, lado a lado, compactos: ícone | nome e uma linha (a escada, que troca com um toque · "em breve") | o botão */
-  .hx[data-layout=faixa] .hx-duel{grid-row:2;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic name" "ic sub" "go go";align-items:center;align-content:start;column-gap:9px;row-gap:1px;height:auto;min-height:0;padding:11px 11px 12px;border-radius:16px}
+  .hx[data-layout=faixa] .hx-duel{grid-row:2;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic name" "ic sub" "go go";grid-template-rows:20px 24px auto;align-items:center;align-content:start;column-gap:9px;row-gap:1px;height:auto;min-height:0;padding:11px 11px 12px;border-radius:16px}
   .hx[data-layout=faixa] .hx-duel:not(.hx-chal){grid-column:1}
   .hx[data-layout=faixa] .hx-chal{grid-column:2}
   .hx[data-layout=faixa] .hx-duel .hx-duel-top{display:contents}
   .hx[data-layout=faixa] .hx-duel .hx-duel-ic{grid-area:ic;width:38px;height:38px;box-shadow:0 0 0 4px color-mix(in srgb,var(--duel-a) 14%,transparent)}
   .hx[data-layout=faixa] .hx-duel .hx-duel-ic svg{width:20px;height:20px}
-  /* as linhas com a mesma altura nos dois cartões (nome 20 px, linha de baixo 24 px, botão 38 px): ícone, nome e botão caem no mesmo lugar */
-  .hx[data-layout=faixa] .hx-duel .hx-duel-name{grid-area:name;align-self:end;display:flex;align-items:flex-end;height:20px}
-  .hx[data-layout=faixa] .hx-duel .hx-duel-name h3{font-size:19px;line-height:20px}
-  .hx[data-layout=faixa] .hx-chal .hx-duel-name h3{font-size:13px;letter-spacing:.1em;line-height:20px}
+  /* opção A (09/10): o nome sai (o botão já diz Duelar/Desafiar; o título fica só para o leitor de tela); a linha de cima é a liga no Duelo e
+     "em breve" nos Desafios, a de baixo é a troca da escada (vazia nos Desafios). Linhas com a mesma altura nos dois (20 px, 24 px, botão 38 px):
+     ícone, linhas e botão caem no mesmo lugar */
+  .hx[data-layout=faixa] .hx-duel .hx-duel-name{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .hx[data-layout=faixa] .hx-duel-league{grid-area:name;align-self:end;display:block;height:20px;font:800 14px/20px 'Plus Jakarta Sans',sans-serif;color:var(--duel-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hx[data-layout=faixa] .hx-duel:not(.hx-chal) .hx-pill{display:none}
   .hx[data-layout=faixa] .hx-ladder-swap{grid-area:sub;justify-self:start;align-self:start;display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:0;border:0;background:none;color:var(--duel-ink);font:700 11.5px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
   .hx[data-layout=faixa] .hx-ladder-swap svg{opacity:.75}
-  .hx[data-layout=faixa] .hx-chal .hx-pill{grid-area:sub;justify-self:start;align-self:start;display:inline-flex;min-height:24px;padding:0;background:none;font-size:10px}
+  .hx[data-layout=faixa] .hx-chal .hx-pill{grid-area:name;justify-self:start;align-self:end;display:block;height:20px;padding:0;background:none;font:800 14px/20px 'Plus Jakarta Sans',sans-serif;letter-spacing:0;text-transform:none;color:var(--duel-ink)}
+  .hx[data-layout=faixa] .hx-chal .hx-pill::first-letter{text-transform:uppercase}
   .hx[data-layout=faixa] .hx-duel-mid,.hx[data-layout=faixa] .hx-duel-step,.hx[data-layout=faixa] .hx-chal-daily,.hx[data-layout=faixa] .hx-duel-acts:not(.is-search){display:none}
   .hx[data-layout=faixa] .hx-duel-foot{grid-area:go;display:grid;grid-template-columns:minmax(0,1fr);margin-top:9px}
   .hx[data-layout=faixa] .hx-duel-foot .hx-go{width:100%;height:38px;padding:0 12px;font-size:13px}

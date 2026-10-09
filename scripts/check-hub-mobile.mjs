@@ -134,13 +134,58 @@ for (const theme of THEMES) for (const [w, h] of SIZES) {
   await page.tap(".hx-ladder-swap"); await sleep(400);
   check(scope, "Duelar ativo e Desafiar desativado (em breve)", await page.evaluate(() => !document.querySelector(".hx-duel:not(.hx-chal) .hx-go").disabled && document.querySelector(".hx-chal .hx-go").disabled));
   // a barra de baixo: cada destino abre e fica marcado; os anéis de progresso aparecem
-  const rings = await page.evaluate(() => [...document.querySelectorAll(".mobile-nav .hx-ring-arc")].length);
-  check(scope, "anéis de progresso na barra de baixo (Coleção, Conquistas, Maestria)", rings === 3, String(rings));
+  // os 5 destinos com o círculo; o arco do progresso só nos 3 de progresso (e só com algo feito: em 0% não desenha o ponto)
+  const rings = await page.evaluate(() => ({ track: document.querySelectorAll(".mobile-nav .hx-ring").length, arcs: [...document.querySelectorAll(".mobile-nav .hx-ring-arc")].map((c) => c.closest("[data-nav]").dataset.nav) }));
+  check(scope, "círculos e anéis de progresso na barra de baixo", rings.track === 5 && rings.arcs.every((nav) => ["collection", "achievements", "progress"].includes(nav)), JSON.stringify(rings));
   for (const dest of ["collection", "achievements", "progress", "store", "hub"]) {
     await page.tap(`.mobile-nav [data-nav=${dest}]`); await sleep(1300);
     const current = await page.evaluate(() => document.querySelector(".mobile-nav [aria-current=page]")?.dataset.nav ?? null);
     check(scope, `barra de baixo → ${dest}`, current === dest, String(current));
   }
+  // cliques seguidos na seta: o laço não trava no fim (a versão antiga batia no fim da última cópia e pulava)
+  const beforeRun = await active();
+  for (let i = 0; i < 9; i += 1) { await page.tap(".hx-arrow.is-next"); await sleep(60); }
+  await sleep(1500);
+  check(scope, "9 cliques seguidos na seta andam 9 cartões, sem travar", await active() === (beforeRun + 9) % total, `${beforeRun} → ${await active()}`);
+  check(scope, "cada modo numa vaga só depois do laço", await page.evaluate(() => { const xs = [...document.querySelectorAll(".hx-slide")].map((el) => Math.round(el.getBoundingClientRect().left)); return new Set(xs).size === xs.length; }));
+  await page.close();
+}
+
+// desktop: arrastar com o mouse, o impulso, e o arraste que não abre o cartão
+{
+  const scope = "desktop 1503×920";
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1503, height: 920, deviceScaleFactor: 1 });
+  await page.goto(BASE, { waitUntil: "load" }); await page.waitForSelector(".hx-grid"); await sleep(2200);
+  const active = () => page.evaluate(() => [...document.querySelectorAll(".hx-dots button")].findIndex((b) => b.getAttribute("aria-current") === "true"));
+  const box = await page.evaluate(() => { const r = document.querySelector(".hx-track").getBoundingClientRect(); const card = document.querySelector(".hx-slide .family").getBoundingClientRect(); return { y: r.top + r.height / 2, cx: r.left + r.width / 2, step: card.width }; });
+  const total = await page.evaluate(() => document.querySelectorAll(".hx-dots button").length);
+  const dragBy = async (dx, steps, pause) => {
+    await page.mouse.move(box.cx, box.y); await page.mouse.down();
+    for (let i = 1; i <= steps; i += 1) { await page.mouse.move(box.cx + (dx * i) / steps, box.y); await sleep(pause); }
+    await page.mouse.up(); await sleep(1100);
+  };
+  const start = await active();
+  // arraste lento de pouco mais de um cartão para a esquerda: avança 1
+  await dragBy(-box.step * 1.2, 20, 25);
+  check(scope, "arrastar com o mouse avança um cartão", await active() === (start + 1) % total, `${start} → ${await active()}`);
+  check(scope, "o arraste não abriu a Mesa", await page.evaluate(() => Boolean(document.querySelector(".hx-grid"))));
+  // arraste curto e rápido para a direita (impulso): volta 1
+  await dragBy(box.step * 0.25, 4, 8);
+  check(scope, "arraste curto e rápido volta um cartão (impulso)", await active() === start, `${await active()}`);
+  // arraste lento e curto: volta ao mesmo cartão
+  await dragBy(-box.step * 0.3, 20, 30);
+  check(scope, "arraste lento e curto volta ao mesmo cartão", await active() === start, `${await active()}`);
+  // em movimento os cartões ficam translúcidos; parado, voltam
+  await page.mouse.move(box.cx, box.y); await page.mouse.down(); await page.mouse.move(box.cx - 40, box.y); await page.mouse.move(box.cx - 80, box.y); await sleep(120);
+  const moving = await page.evaluate(() => ({ cls: document.querySelector(".hx-track").classList.contains("is-moving"), opacity: getComputedStyle(document.querySelector(".hx-slide .family")).opacity }));
+  await page.mouse.up(); await sleep(1100);
+  const still = await page.evaluate(() => ({ cls: document.querySelector(".hx-track").classList.contains("is-moving"), opacity: getComputedStyle(document.querySelector(".hx-slide .family")).opacity }));
+  check(scope, "em movimento translúcido, parado opaco", moving.cls && Number(moving.opacity) < 1 && !still.cls && Number(still.opacity) === 1, `${JSON.stringify(moving)} / ${JSON.stringify(still)}`);
+  // um clique sem arraste abre a Mesa
+  const hit = await page.evaluate(() => { const r = [...document.querySelectorAll(".hx-slide:not([inert]) .hx-hit")][0].getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 3]; });
+  await page.mouse.click(hit[0], hit[1]); await sleep(1500);
+  check(scope, "clique sem arraste abre a Mesa", await page.evaluate(() => Boolean(document.querySelector(".mz"))));
   await page.close();
 }
 

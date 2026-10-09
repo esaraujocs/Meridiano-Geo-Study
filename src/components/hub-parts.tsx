@@ -1,6 +1,6 @@
 // Peças do Hub novo: carrossel dos modos, cartão do Duelo (a fila mora nele), Vitrine da Loja e Mecenato do Museu.
 // Cada peça só recebe dados e devolve eventos; o Hub (screens.tsx) monta a grade.
-import { Children, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { Children, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import { Icon } from "./icons";
 import { useElapsed } from "./pvp-offer";
 import type { PvpQueueView } from "../domain/pvp";
@@ -19,118 +19,215 @@ import { formatNumber as money, t } from "../domain/i18n";
 
 const reducedMotion = () => document.documentElement.dataset.reducedMotion === "true" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** Carrossel em laço: a fila de cartões aparece três vezes e, quando o deslize termina, a posição volta em silêncio para a cópia do meio,
- *  então as setas (e o toque) nunca chegam a um fim. Os vizinhos espiam dos dois lados (`--peek` no CSS) e clicar neles avança.
- *  Só a cópia do meio é interativa; as outras duas são `inert`, por isso o leitor de tela e o Tab veem cada cartão uma vez. */
+/** Carrossel em laço (refeito em 09/10/2026, pedido do Enzo: "o loop tá fraco, trava no fim" e "arrastar o cartão também no desktop, com uma
+ *  animaçãozinha"). Cada cartão existe uma vez e é posto no lugar por uma posição contínua (`pos`, em cartões) com aritmética modular, então o
+ *  laço não tem fim para bater nem salto de volta (a versão anterior repetia a fila três vezes numa rolagem nativa e, com cliques seguidos, batia
+ *  no fim da última cópia, parava e pulava). Arrasta com o mouse e com o dedo (com impulso: um arraste rápido avança mesmo curto), roda do trackpad,
+ *  setas, pontos e as teclas ← →. Em movimento os cartões ficam um pouco translúcidos e menores e a quadrícula de fundo anda em paralaxe
+ *  (`is-moving` e `--shift` no CSS). Só os cartões inteiros na janela são interativos (os outros ficam `inert`); tocar num vizinho que espia avança.
+ *  Com movimento reduzido a troca é imediata. */
 /** Onde cada carrossel parou: voltar de outra tela (Loja, Mesa, partida) abre o Hub no mesmo cartão. Vale até recarregar a página. */
 const carouselMemory = new Map<string, number>();
+const mod = (value: number, n: number) => ((value % n) + n) % n;
+const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
+/** Quanto o dedo/mouse anda na horizontal até virar arraste (abaixo disso é toque/clique). */
+const DRAG_START = 6;
+/** Velocidade (cartões por ms) a partir da qual soltar o arraste avança para o próximo cartão mesmo sem ter chegado na metade. */
+const FLICK = 0.0012;
+
 export function HubCarousel({ label, children }: { label: string; children: ReactNode }) {
   const items = Children.toArray(children);
   const count = items.length;
   const loop = count > 1;
   const track = useRef<HTMLDivElement>(null);
-  const remembered = Math.min(carouselMemory.get(label) ?? 0, Math.max(0, count - 1));
+  const slides = useRef<(HTMLDivElement | null)[]>([]);
+  const remembered = count > 0 ? mod(Math.round(carouselMemory.get(label) ?? 0), count) : 0;
+  const pos = useRef(remembered);
+  const geo = useRef({ step: 0, per: 1, peek: 0 });
+  const anim = useRef<{ to: number; frame: number } | null>(null);
+  const drag = useRef<{ id: number; x: number; y: number; from: number; lastX: number; lastT: number; v: number; active: boolean } | null>(null);
+  const dragged = useRef(false);
+  const wheelTimer = useRef<number | undefined>(undefined);
   const [active, setActive] = useState(remembered);
-  /** Índice (entre as cópias) do cartão que está na frente: decide qual das cópias de cada modo é a clicável. */
-  const [lead, setLead] = useState(count + remembered);
-  const activeRef = useRef(remembered);
-  const target = useRef<number | null>(null);
-  const timer = useRef<number | undefined>(undefined);
-  const stepWidth = useCallback(() => {
-    const slides = track.current?.querySelectorAll<HTMLElement>(".hx-slide");
-    // getBoundingClientRect devolve o passo fracionário; offsetLeft arredonda e o erro cresce a cada cartão
-    return slides && slides.length > 1 ? slides[1].getBoundingClientRect().left - slides[0].getBoundingClientRect().left : 0;
-  }, []);
-  const indexAt = useCallback((width: number) => Math.round((track.current?.scrollLeft ?? 0) / width), []);
-  /** Terminado o deslize: volta para a cópia do meio e guarda qual cartão está na frente. Se uma seta mandou rolar para um destino e a animação
-   *  ainda não chegou (quadros lentos), espera mais um pouco em vez de cortá-la. */
-  const settle = useCallback((attempt = 0) => {
+  const [per, setPer] = useState(1);
+  // a posição inteira em que o carrossel parou: decide quais cartões estão inteiros na janela (os interativos)
+  const [rest, setRest] = useState(remembered);
+
+  // a vaga de cada cartão: as vagas começam um pouco à esquerda da janela e dão a volta; o laço é só aritmética
+  const slotOf = useCallback((index: number, at: number, perView: number) => {
+    const min = -Math.max(0.5, (count - perView) / 2 + 0.5);
+    return mod(index - at - min, count) + min;
+  }, [count]);
+
+  const paint = useCallback((moving: boolean) => {
+    const { step, per: perView } = geo.current;
+    if (!step) return;
+    slides.current.forEach((el, index) => {
+      if (!el) return;
+      const slot = slotOf(index, pos.current, perView);
+      el.style.transform = `translate3d(${((slot - index) * step).toFixed(2)}px,0,0)`;
+      el.style.setProperty("--shift", moving ? (slot - Math.round(slot)).toFixed(3) : "0");
+    });
+    track.current?.classList.toggle("is-moving", moving);
+    const now = mod(Math.round(pos.current), count);
+    setActive((prev) => (prev === now ? prev : now));
+  }, [count, slotOf]);
+
+  const measure = useCallback(() => {
     const el = track.current;
-    const width = stepWidth();
-    if (!el || !width || !loop) return;
-    if (target.current !== null && Math.abs(el.scrollLeft - target.current * width) > Math.max(4, width * 0.04) && attempt < 15) {
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => settle(attempt + 1), 100);
-      return;
-    }
-    target.current = null;
-    const wrapped = ((indexAt(width) % count) + count) % count;
-    activeRef.current = wrapped;
-    carouselMemory.set(label, wrapped);
-    setActive(wrapped);
-    const home = (count + wrapped) * width;
-    if (Math.abs(el.scrollLeft - home) > 1) el.scrollLeft = home;
-    setLead(count + wrapped);
-  }, [count, indexAt, label, loop, stepWidth]);
-  useLayoutEffect(() => {
-    const el = track.current;
-    if (!el || !loop) return;
-    // só a LARGURA muda o passo; a altura mudar (barra de endereço do celular, janela baixa) não pode interromper um deslize em andamento
-    let lastWidth = -1;
-    const align = () => {
-      if (el.clientWidth === lastWidth) return;
-      lastWidth = el.clientWidth;
-      const width = stepWidth();
-      if (width) el.scrollLeft = (count + activeRef.current) * width;
+    const first = slides.current[0];
+    if (!el || !first) return;
+    const style = getComputedStyle(el);
+    const gap = parseFloat(style.columnGap) || 0;
+    const peek = parseFloat(style.paddingLeft) || 0;
+    const width = parseFloat(getComputedStyle(first).width) || first.offsetWidth;
+    const step = width + gap;
+    const perView = Math.max(1, Math.min(count, Math.round((el.clientWidth - 2 * peek + gap) / step)));
+    geo.current = { step, per: perView, peek };
+    setPer(perView);
+  }, [count]);
+
+  const settle = useCallback(() => {
+    pos.current = mod(Math.round(pos.current), count);
+    paint(false);
+    carouselMemory.set(label, pos.current);
+    setRest(pos.current);
+  }, [count, label, paint]);
+
+  const stop = () => {
+    if (anim.current) cancelAnimationFrame(anim.current.frame);
+    anim.current = null;
+  };
+
+  const animateTo = useCallback((target: number) => {
+    if (anim.current) cancelAnimationFrame(anim.current.frame);
+    const from = pos.current;
+    if (reducedMotion() || Math.abs(target - from) < 0.001) { anim.current = null; pos.current = target; settle(); return; }
+    const duration = Math.min(560, 280 + 110 * Math.abs(target - from));
+    const start = performance.now();
+    const state = { to: target, frame: 0 };
+    const tick = (now: number) => {
+      const x = Math.min(1, (now - start) / duration);
+      pos.current = from + (target - from) * easeOut(x);
+      paint(true);
+      if (x < 1) state.frame = requestAnimationFrame(tick);
+      else { anim.current = null; settle(); }
     };
-    align();
-    const observer = new ResizeObserver(align);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [count, loop, stepWidth]);
+    state.frame = requestAnimationFrame(tick);
+    anim.current = state;
+  }, [paint, settle]);
+
+  // setas e teclas somam ao destino da animação em curso: cliques seguidos andam vários cartões, sem travar
+  const move = (delta: number) => animateTo((anim.current ? anim.current.to : Math.round(pos.current)) + delta);
+  const goTo = (index: number) => {
+    const base = anim.current ? anim.current.to : Math.round(pos.current);
+    let delta = mod(index - base, count);
+    if (delta > count / 2) delta -= count;
+    if (delta !== 0) animateTo(base + delta);
+  };
+
+  useLayoutEffect(() => {
+    if (!loop) return;
+    measure();
+    paint(false);
+    // só a LARGURA muda o passo; a altura mudar (barra de endereço do celular) não interrompe um movimento em andamento
+    let lastWidth = track.current?.clientWidth ?? 0;
+    const observer = new ResizeObserver(() => {
+      const width = track.current?.clientWidth ?? 0;
+      if (width === lastWidth) return;
+      lastWidth = width;
+      measure();
+      paint(Boolean(anim.current || drag.current?.active));
+    });
+    if (track.current) observer.observe(track.current);
+    return () => { observer.disconnect(); if (anim.current) cancelAnimationFrame(anim.current.frame); window.clearTimeout(wheelTimer.current); };
+  }, [loop, measure, paint]);
+
+  // roda do trackpad (deslize horizontal com dois dedos): a posição acompanha e, parada, assenta no cartão mais perto
   useEffect(() => {
     const el = track.current;
     if (!el || !loop) return;
-    const done = () => settle();
-    el.addEventListener("scrollend", done);
-    return () => { el.removeEventListener("scrollend", done); window.clearTimeout(timer.current); };
-  }, [loop, settle]);
-  const onScroll = () => {
-    const width = stepWidth();
-    if (!loop || !width) return;
-    const at = indexAt(width);
-    setLead(at);
-    setActive(((at % count) + count) % count);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => settle(), 120);
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || !geo.current.step) return;
+      event.preventDefault();
+      if (anim.current) { cancelAnimationFrame(anim.current.frame); anim.current = null; }
+      pos.current += event.deltaX / geo.current.step;
+      paint(true);
+      window.clearTimeout(wheelTimer.current);
+      wheelTimer.current = window.setTimeout(() => animateTo(Math.round(pos.current)), 140);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [loop, paint, animateTo]);
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!loop || (event.pointerType === "mouse" && event.button !== 0)) return;
+    stop();
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, from: pos.current, lastX: event.clientX, lastT: event.timeStamp, v: 0, active: false };
+    dragged.current = false;
   };
-  const move = (delta: number) => {
-    const width = stepWidth();
-    if (!width) return;
-    target.current = (target.current ?? indexAt(width)) + delta;
-    track.current?.scrollTo({ left: target.current * width, behavior: reducedMotion() ? "auto" : "smooth" });
-    // não depende do evento de rolagem (que só vem junto de um quadro desenhado): o assentar também é agendado aqui
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => settle(), 160);
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    const { step } = geo.current;
+    if (!d || d.id !== event.pointerId || !step) return;
+    const dx = event.clientX - d.x;
+    if (!d.active) {
+      if (Math.abs(dx) < DRAG_START || Math.abs(dx) < Math.abs(event.clientY - d.y)) return;
+      d.active = true;
+      dragged.current = true;
+      track.current?.setPointerCapture(event.pointerId);
+      track.current?.classList.add("is-dragging");
+    }
+    const dt = Math.max(1, event.timeStamp - d.lastT);
+    d.v = 0.75 * ((d.lastX - event.clientX) / step / dt) + 0.25 * d.v;
+    d.lastX = event.clientX;
+    d.lastT = event.timeStamp;
+    pos.current = d.from - dx / step;
+    paint(true);
   };
-  const goTo = (index: number) => {
-    let delta = index - active;
-    if (delta > count / 2) delta -= count;
-    if (delta < -count / 2) delta += count;
-    if (delta !== 0) move(delta);
+  const onPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== event.pointerId) return;
+    drag.current = null;
+    track.current?.classList.remove("is-dragging");
+    if (!d.active) {
+      // toque sem arraste: num vizinho que espia, avança; se uma animação foi interrompida no meio, termina
+      const box = track.current?.getBoundingClientRect();
+      const { peek } = geo.current;
+      if (event.type === "pointerup" && box && peek > 0 && event.clientX < box.left + peek) move(-1);
+      else if (event.type === "pointerup" && box && peek > 0 && event.clientX > box.right - peek) move(1);
+      else if (Math.abs(pos.current - Math.round(pos.current)) > 0.001) animateTo(Math.round(pos.current));
+      return;
+    }
+    // soltou: o cartão mais perto, ou o próximo no sentido do arraste se ele foi rápido; nunca mais que uma janela de uma vez
+    const base = Math.round(d.from);
+    let target = Math.abs(d.v) > FLICK ? (d.v > 0 ? Math.ceil(pos.current - 0.15) : Math.floor(pos.current + 0.15)) : Math.round(pos.current);
+    target = Math.max(base - geo.current.per, Math.min(base + geo.current.per, target));
+    animateTo(target);
   };
-  /** Clicar num cartão que só aparece pela metade leva ele para a frente em vez de abri-lo. */
+  // um arraste não abre o cartão em que começou
   const onClickCapture = (event: MouseEvent<HTMLDivElement>) => {
-    const el = track.current;
-    if (!el || !loop) return;
-    const box = el.getBoundingClientRect();
-    const peek = parseFloat(getComputedStyle(el).paddingLeft) || 0;
-    const slide = [...el.querySelectorAll<HTMLElement>(".hx-slide")].find((node) => { const rect = node.getBoundingClientRect(); return event.clientX >= rect.left && event.clientX <= rect.right; });
-    if (!slide) return;
-    const rect = slide.getBoundingClientRect();
-    const toLeft = rect.left < box.left + peek - 3;
-    const toRight = rect.right > box.right - peek + 3;
-    if (!toLeft && !toRight) return;
+    if (!dragged.current) return;
     event.preventDefault();
     event.stopPropagation();
-    move(toLeft ? -1 : 1);
+    dragged.current = false;
   };
-  // Um cartão de cada modo é o clicável: os `count` seguidos a partir do vizinho da esquerda. Atrelar ao "copy do meio" deixava inertes os cartões
-  // que, depois de voltar para a esquerda no começo, caíam na cópia da direita (botões de Jogar sem resposta).
-  const live = (copy: number, index: number) => !loop || (copy * count + index >= lead - 1 && copy * count + index <= lead - 2 + count);
-  return <div className="hx-car" data-loop={loop ? "true" : undefined}>
-    <div className="hx-track" ref={track} onScroll={onScroll} onClickCapture={onClickCapture} onPointerDown={() => { target.current = null; }} onWheel={() => { target.current = null; }} role="region" aria-label={label}>
-      {Array.from({ length: loop ? 3 : 1 }, (_, copy) => items.map((child, index) => <div key={`${copy}-${index}`} className="hx-slide" aria-hidden={live(copy, index) ? undefined : true} inert={!live(copy, index)}>{child}</div>))}
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+    event.preventDefault();
+    move(event.key === "ArrowRight" ? 1 : -1);
+  };
+  const interactive = (index: number) => {
+    if (!loop) return true;
+    const slot = slotOf(index, rest, per);
+    return slot > -0.5 && slot < per - 0.5;
+  };
+  return <div className="hx-car" data-loop={loop ? "true" : undefined} onKeyDown={loop ? onKeyDown : undefined}>
+    <div className="hx-track" ref={track} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={onClickCapture} role="region" aria-label={label}>
+      {items.map((child, index) => {
+        const live = interactive(index);
+        return <div key={index} ref={(el) => { slides.current[index] = el; }} className="hx-slide" aria-hidden={live ? undefined : true} inert={!live}>{child}</div>;
+      })}
     </div>
     {loop && <>
       <button type="button" className="hx-arrow is-prev" aria-label={t.hub.prevMode} onClick={() => move(-1)}><Icon type="chevron" size={20} /></button>
@@ -193,6 +290,7 @@ export function HubDuel({ cards, formatReady, formatCost, search, onLeague }: {
       <span className="hx-duel-ic" aria-hidden="true"><Icon type="swords" size={26} /></span>
       <div className="hx-duel-name"><h3>{t.duel.modeDuel}</h3></div>
       {/* no celular (Hub em faixa) o cartão do Duelo é compacto: a escolha da escada vira esta troca de um toque, no lugar da escada e da pílula */}
+      <span className="hx-duel-league">{label}</span>
       {other && <button type="button" className="hx-ladder-swap" disabled={searching} onClick={() => choose(other.ladder)} aria-label={t.hub.ladderSwap(t.duel.ladders[card.ladder], t.duel.ladders[other.ladder])}>{t.duel.ladders[card.ladder]} <Icon type="repeat" size={13} /></button>}
       <button type="button" className="hx-pill" onClick={onLeague} aria-label={t.duel.chipAria(money(card.trophies), label)}><Icon type="achievements" size={13} /> {label} · {money(card.trophies)}</button>
     </div>
