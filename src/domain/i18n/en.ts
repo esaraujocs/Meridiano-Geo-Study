@@ -121,7 +121,7 @@ export const en: Messages = {
     challengesAria: "Challenges: lists against the clock, coming soon",
     challengesDaily: "Daily challenge",
     challengesSample: "Capitals of Europe",
-    challengesSampleInfo: "List against the clock · 8 min",
+    challengesSampleInfo: "8 min",
     challengesRecord: "your best",
     challengesAll: "All",
     challengesRecords: "Records",

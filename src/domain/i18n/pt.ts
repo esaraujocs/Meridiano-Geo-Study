@@ -122,7 +122,7 @@ export const pt = {
     challengesAria: "Desafios: listas contra o relógio, em breve",
     challengesDaily: "Desafio do dia",
     challengesSample: "Capitais da Europa",
-    challengesSampleInfo: "Lista contra o relógio · 8 min",
+    challengesSampleInfo: "8 min",
     challengesRecord: "seu recorde",
     challengesAll: "Todos",
     challengesRecords: "Recordes",
