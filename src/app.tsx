@@ -35,7 +35,7 @@ import {
 import { initializeEconomy, queryEconomy, unlockContent, unlockRounds, unlockTheme, type EconomySnapshot } from "./domain/economy-store";
 import { emptySupplyCounts, type SupplyCounts, type SupplyId } from "./domain/supplies";
 import { buySupply, supplyCounts } from "./domain/supplies-store";
-import { DEFAULT_THEME, THEME_STORAGE_KEY, isThemeId, resolveTheme, themeAttributes, themeById } from "./domain/themes";
+import { DEFAULT_THEME, THEME_STORAGE_KEY, applyThemeAttributes, isThemeId, resolveTheme, themeById } from "./domain/themes";
 import { ResultScreen } from "./components/result-screen";
 import { buildResultView, type ResultView } from "./domain/result-view";
 import { policyFor, type UnlockKey } from "./domain/economy-rules";
@@ -950,9 +950,7 @@ export function App() {
   }, []);
   // O CSS lê o tema nos atributos do elemento raiz.
   useEffect(() => {
-    const { theme: id, treat, wash, scheme } = themeAttributes(theme);
-    const root = document.documentElement;
-    root.dataset.theme = id; root.dataset.treat = treat; root.dataset.wash = wash; root.dataset.scheme = scheme;
+    applyThemeAttributes(document.documentElement, theme);
   }, [theme]);
   // Tema guardado que não é do jogador (dados limpos, valor antigo) volta ao padrão, mas só depois de a economia carregar de verdade.
   useEffect(() => {

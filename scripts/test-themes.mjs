@@ -20,13 +20,28 @@ import {
   themeAttributes,
   themeById,
   themeUnlockKey,
+  migrateDefaultTheme,
 } from "../.tmp-themes/themes.js";
 
-// Catálogo: ids únicos, um único padrão grátis, o resto com preço.
+// Catálogo: ids únicos, o padrão (Papel) e o Pigmentos (o padrão até 09/10/2026) grátis, o resto com preço.
+const FREE = [DEFAULT_THEME, "pigmentos"];
 assert.equal(new Set(THEMES.map((theme) => theme.id)).size, THEMES.length, "ids únicos");
+assert.equal(DEFAULT_THEME, "papel");
 assert.equal(THEMES[0].id, DEFAULT_THEME, "o padrão vem primeiro");
-assert.deepEqual(SHOP_THEMES.filter((theme) => theme.cost === 0).map((theme) => theme.id), [DEFAULT_THEME], "só o padrão é grátis entre os da Loja");
-assert.ok(SHOP_THEMES.filter((theme) => theme.id !== DEFAULT_THEME).every((theme) => Number.isInteger(theme.cost) && theme.cost >= 1000), "os outros da Loja têm preço inteiro");
+assert.deepEqual(SHOP_THEMES.filter((theme) => theme.cost === 0).map((theme) => theme.id), FREE, "só o Papel e o Pigmentos são grátis entre os da Loja");
+assert.ok(SHOP_THEMES.filter((theme) => !FREE.includes(theme.id)).every((theme) => Number.isInteger(theme.cost) && theme.cost >= 1000), "os outros da Loja têm preço inteiro");
+// o Papel é o Hub sem tratamento (o raiz fica sem data-treat)
+assert.equal(themeAttributes("papel").treat, "base");
+assert.ok(isThemeOwned("pigmentos", []), "o Pigmentos continua de graça");
+// troca única do padrão: quem estava no Pigmentos passa para o Papel uma vez; quem volta a escolher o Pigmentos fica nele
+const fakeStorage = (initial) => { const map = new Map(Object.entries(initial)); return { map, getItem: (k) => map.get(k) ?? null, setItem: (k, v) => map.set(k, String(v)), removeItem: (k) => map.delete(k) }; };
+let store = fakeStorage({ "carta-theme": "pigmentos" });
+migrateDefaultTheme(store);
+assert.equal(store.getItem("carta-theme"), null, "o Pigmentos guardado sai (vale o padrão)");
+store.setItem("carta-theme", "pigmentos"); migrateDefaultTheme(store);
+assert.equal(store.getItem("carta-theme"), "pigmentos", "a troca não se repete");
+store = fakeStorage({ "carta-theme": "noturno" }); migrateDefaultTheme(store);
+assert.equal(store.getItem("carta-theme"), "noturno", "outro tema escolhido fica");
 assert.equal(SHOP_THEMES.length + LEAGUE_THEMES.length, THEMES.length, "cada tema é da Loja ou de liga");
 // faixas: todo tema da Loja tem uma, e o preço cabe nela (simples 0–16 mil, pintados 24–40 mil, elaborados 80–160 mil, prestígio 250–400 mil)
 assert.deepEqual([...THEME_TIERS], ["simple", "painted", "elaborate", "prestige"]);
@@ -80,7 +95,7 @@ assert.equal(missingCoins(6000, 6000), 0);
 // Atributos que o CSS lê.
 assert.deepEqual(themeAttributes("atelie"), { theme: "atelie", treat: "brush-wash", wash: "1", scheme: "light" });
 assert.deepEqual(themeAttributes("listras"), { theme: "listras", treat: "brush-h", wash: "0", scheme: "light" });
-assert.deepEqual(themeAttributes("nao-existe"), { theme: DEFAULT_THEME, treat: "tint", wash: "0", scheme: "light" }, "id inválido usa o padrão");
+assert.deepEqual(themeAttributes("nao-existe"), { theme: DEFAULT_THEME, treat: "base", wash: "0", scheme: "light" }, "id inválido usa o padrão");
 assert.deepEqual(themeAttributes("prata"), { theme: "prata", treat: "prata", wash: "0", scheme: "light" });
 assert.deepEqual(themeAttributes("noturno"), { theme: "noturno", treat: "noturno", wash: "0", scheme: "dark" }, "tema escuro liga o esquema escuro");
 assert.deepEqual(themeAttributes("cartografo"), { theme: "cartografo", treat: "cartografo", wash: "0", scheme: "light" }, "o Cartógrafo é claro");
@@ -129,7 +144,8 @@ assert.ok(lines.features.every((line) => line.geometry.type === "LineString" && 
 // O CSS tem uma paleta por tema e um bloco por tratamento (nada de tema sem estilo).
 const css = ["themes", "themes-league", "themes-dark", "themes-elaborate"].map((name) => readFileSync(new URL(`../src/${name}.css`, import.meta.url), "utf8")).join("\n");
 for (const theme of THEMES) assert.ok(css.includes(`:root[data-theme="${theme.id}"]`), `paleta de ${theme.id} nos CSS dos temas`);
-for (const treat of new Set(THEMES.map((theme) => theme.treat))) assert.ok(css.includes(`[data-treat="${treat}"]`), `tratamento ${treat} nos CSS dos temas`);
+// o "base" (Papel) é justamente o Hub sem tratamento: não tem CSS próprio
+for (const treat of new Set(THEMES.map((theme) => theme.treat).filter((treat) => treat !== "base"))) assert.ok(css.includes(`[data-treat="${treat}"]`), `tratamento ${treat} nos CSS dos temas`);
 for (const id of ["prata", "noturno", "cartografo"]) assert.ok(readFileSync(new URL(`../src/assets/themes/${id}-compass.svg`, import.meta.url), "utf8").includes("<svg"), id + ": rosa dos ventos existe");
 // Cartógrafo: ornamentos e figuras do mar existem (um arquivo por figura, gerados por scripts/build-cartografo-assets.mjs)
 for (const name of ["compass-dark", "paper", "corner-tl", "corner-tr", "corner-bl", "corner-br"]) assert.ok(readFileSync(new URL(`../src/assets/themes/cartografo-${name}.svg`, import.meta.url), "utf8").includes("<svg"), name + ": ornamento existe");

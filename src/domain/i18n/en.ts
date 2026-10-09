@@ -1685,6 +1685,7 @@ export const en: Messages = {
     },
   },
   themes: {
+    papel: ["Paper", "The base palette: cream cards, green icons and no color per mode."],
     pigmentos: ["Pigments", "One color per mode: teal, terracotta, brass and violet."],
     aquarela: ["Watercolor", "Glass cards over blending patches of color."],
     atlas: ["Atlas", "Printed map plates, with contour lines and an elevation ramp."],

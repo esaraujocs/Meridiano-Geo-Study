@@ -7,8 +7,8 @@
 :root{
   --on-mapa:#FFF4DF;--on-band:#FFF4DF;--on-cap:#10201E;--on-idi:#FFF4DF; /* texto dos botões: no latão/âmbar vale o escuro (contraste AA) */
 }
-/* Pigmentos: teal, terracota, latão, violeta */
-:root,:root[data-theme="pigmentos"],:root[data-theme="fusao"],:root[data-theme="listras"]{
+/* Pigmentos: teal, terracota, latão, violeta (o Papel usa as mesmas cores fora do Hub: na Mesa, na Loja; no Hub, sem tratamento, fica tudo em verde) */
+:root,:root[data-theme="pigmentos"],:root[data-theme="papel"],:root[data-theme="fusao"],:root[data-theme="listras"]{
   --h-mapa:#2B8378;--h-band:#C25A42;--h-cap:#BE8A2C;--h-idi:#6F5DA6;
   --hb-mapa:#297B71;--hb-band:#B0543E;--hb-cap:#BE8A2C;--hb-idi:#6F5DA6;
   --h2-mapa:#2C6FA8;--h2-band:#D4553C;--h2-cap:#C9482F;--h2-idi:#9A4C9E;

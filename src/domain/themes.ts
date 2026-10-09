@@ -4,8 +4,9 @@ import { t } from "./i18n/index.js";
 import { LEAGUES, type LeagueKey } from "./league.js";
 import { DEFAULT_MAP_PALETTE, type MapPalette } from "./map-palette.js";
 
-/** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). */
-export type ThemeTreatment = "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata" | "noturno" | "cartografo";
+/** Como o Hub é pintado. O CSS de cada tratamento está em themes.css (`:root[data-treat="…"]`). "base" é o Hub sem tratamento (o raiz fica sem
+ *  `data-treat`): cartões creme iguais entre si, ícone em círculo claro com traço verde, a paleta do Hub antigo (tema Papel). */
+export type ThemeTreatment = "base" | "tint" | "aquarela" | "atlas" | "fusion" | "brush-v" | "brush-h" | "brush-o" | "brush-wash" | "prata" | "noturno" | "cartografo";
 
 export type Theme = {
   id: string;
@@ -28,7 +29,7 @@ export type Theme = {
   map?: Partial<MapPalette>;
 };
 
-export const DEFAULT_THEME = "pigmentos";
+export const DEFAULT_THEME = "papel";
 
 /** Faixas de preço da Loja. Simples (paletas e tratamentos), pintados (pincelada e aquarela), elaborados (também mudam o mapa e o resultado, com ornamentos)
  *  e prestígio (movimento e materiais próprios em todas as telas). Os de liga não têm faixa: não se compram. */
@@ -38,6 +39,7 @@ export const THEME_TIERS: readonly ThemeTier[] = ["simple", "painted", "elaborat
 export const TIER_PRICES: Record<ThemeTier, readonly [number, number]> = { simple: [0, 16000], painted: [24000, 40000], elaborate: [80000, 160000], prestige: [250000, 400000] };
 
 const THEME_SEEDS: readonly Theme[] = [
+  { id: "papel", name: "Papel", tagline: "A paleta base: cartões creme, ícones em verde e nada de cor por modo.", treat: "base", cost: 0, tier: "simple", wash: false, swatches: ["#2F6F6A", "#E7D8BA", "#2F6F6A", "#E7D8BA"] },
   { id: "pigmentos", name: "Pigmentos", tagline: "Uma cor para cada modo: teal, terracota, latão e violeta.", treat: "tint", cost: 0, tier: "simple", wash: false, swatches: ["#2B8378", "#C25A42", "#BE8A2C", "#6F5DA6"] },
   { id: "aquarela", name: "Aquarela", tagline: "Cartões de vidro sobre manchas de cor que se misturam.", treat: "aquarela", cost: 10000, tier: "simple", wash: true, swatches: ["#1F7C74", "#B84E38", "#A87719", "#5D4C99"] },
   { id: "atlas", name: "Atlas", tagline: "Pranchas de mapa impresso, com curvas de nível e rampa de altitude.", treat: "atlas", cost: 12000, tier: "simple", wash: false, swatches: ["#3D7C93", "#AE5238", "#C29A44", "#6C8A58"] },
@@ -118,3 +120,18 @@ export function themeAttributes(id: string): { theme: string; treat: ThemeTreatm
 }
 
 export const THEME_STORAGE_KEY = "carta-theme";
+
+/** Escreve o tema nos atributos do elemento raiz; no tratamento "base" o `data-treat` sai (o CSS de todo tratamento usa `:root[data-treat]`). */
+export function applyThemeAttributes(root: HTMLElement, id: string) {
+  const { theme, treat, wash, scheme } = themeAttributes(id);
+  Object.assign(root.dataset, { theme, wash, scheme });
+  if (treat === "base") delete root.dataset.treat; else root.dataset.treat = treat;
+}
+
+/** O Papel virou o padrão em 09/10/2026 (antes era o Pigmentos). Quem estava no Pigmentos passa uma vez para o Papel (o Pigmentos segue grátis em
+ *  Opções/Loja); a marca impede de repetir quem voltar a escolher o Pigmentos depois. */
+export function migrateDefaultTheme(storage: Pick<Storage, "getItem" | "setItem" | "removeItem">) {
+  if (storage.getItem("carta-theme-papel") === "1") return;
+  if (storage.getItem(THEME_STORAGE_KEY) === "pigmentos") storage.removeItem(THEME_STORAGE_KEY);
+  storage.setItem("carta-theme-papel", "1");
+}

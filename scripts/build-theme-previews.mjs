@@ -59,8 +59,10 @@ for (const theme of THEMES.filter((item) => !only || only.includes(item.id))) {
   await freshWith(theme.id);
   const box = await page.evaluate(() => {
     const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
-    const content = rect(".hub-content"), bar = rect(".hub-bar"), progress = rect(".hx-progress");
-    return { x: content.left, width: content.width, top: bar.top, bottom: progress.bottom };
+    const content = rect(".hub-content"), bar = rect(".hub-bar");
+    // o fim do Hub: a peça mais baixa que está à vista (com o progresso no cabeçalho, a linha do progresso fica escondida)
+    const bottom = Math.max(...[".hx-progress", ".hx-arena", ".hx-mecenato"].map((selector) => document.querySelector(selector)).filter((el) => el && el.offsetParent).map((el) => el.getBoundingClientRect().bottom));
+    return { x: content.left, width: content.width, top: bar.top, bottom };
   });
   // o quadro tem proporção fixa: se o conteúdo for mais alto que ele, a janela de captura alarga (sobra só o fundo do tema dos lados)
   const width = Math.min(1920, Math.max(box.width + 72, (box.bottom - box.top + 32) / FRAME));

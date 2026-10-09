@@ -1751,6 +1751,7 @@ export const pt = {
     },
   },
   themes: {
+    papel: ["Papel", "A paleta base: cartões creme, ícones em verde e nada de cor por modo."],
     pigmentos: ["Pigmentos", "Uma cor para cada modo: teal, terracota, latão e violeta."],
     aquarela: ["Aquarela", "Cartões de vidro sobre manchas de cor que se misturam."],
     atlas: ["Atlas", "Pranchas de mapa impresso, com curvas de nível e rampa de altitude."],

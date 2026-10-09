@@ -95,6 +95,8 @@
 .hx .hx-mode p{max-width:none;min-height:38px;font-size:12.5px}
 .hx .hx-mode .family-footer{align-items:flex-end;gap:6px;font-size:12px}
 .hx .hx-mode .family-play{padding:9px 16px;font-size:12.5px;white-space:nowrap}
+/* o "Jogar" do rodapé só aparece no desktop com o Hub em faixa (no celular e no Hub de coluna o cartão inteiro basta) */
+.hx .hx-mode .family-play{display:none}
 .hx .hx-mode{position:relative}
 .hx-hit{position:absolute;inset:0;z-index:2;width:100%;height:100%;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer}
 .hx-hit:focus-visible{outline:2px solid var(--green);outline-offset:3px}
@@ -441,8 +443,26 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .hx-chal{min-height:0;gap:9px;align-content:start}
   .hx[data-layout=faixa] .hx-chal .hx-duel-foot{align-self:end}
   .hx[data-layout=faixa] .hx-showcase.is-turn{flex:1}
-  .hx[data-layout=faixa] .hx-track{grid-auto-columns:clamp(250px,18.8vw,300px)}
-  .hx[data-layout=faixa] .family.hx-mode{min-height:clamp(380px,46.4vh,520px)}
+  /* os modos (09/10/2026, mock hub-v33 S1): 4 cartões preenchendo a linha, sem os vizinhos espiando, na proporção do Hub antigo (264×398, commit
+     9030efb); o conteúdo é medido em % da largura do cartão (cqw, o slide é o contêiner), então acompanha qualquer largura de janela. O título tem
+     sempre a altura de 2 linhas e a descrição ao menos a de 2 (alinhados por baixo), para o ícone ficar na mesma altura em todos os cartões. Em 1503×920
+     a página rola uns 90 px (o Enzo escolheu os 4 cartões sabendo disso). */
+  .hx[data-layout=faixa] .hx-car{--peek:0px}
+  .hx[data-layout=faixa] .hx-track{grid-auto-columns:calc((100% - 3 * var(--gap)) / 4);padding-inline:0;-webkit-mask-image:none;mask-image:none}
+  .hx[data-layout=faixa] .hx-arrow.is-prev{left:-21px}
+  .hx[data-layout=faixa] .hx-arrow.is-next{right:-21px}
+  .hx[data-layout=faixa] .hx-slide{container-type:inline-size}
+  .hx[data-layout=faixa] .family.hx-mode{min-height:0;aspect-ratio:264/398;padding:6.5cqw 8cqw 7cqw}
+  .hx[data-layout=faixa] .hx-mode .family-visual{flex:1;min-height:0}
+  /* tamanhos com !important: vários temas fixam o ícone e o título em px com seletores mais fortes, e aqui o tamanho segue o cartão em todos */
+  .hx[data-layout=faixa] .hx-mode .family-visual .family-icon{width:36cqw!important;height:36cqw!important}
+  .hx[data-layout=faixa] .hx-mode .family-visual .family-icon svg{width:16cqw!important;height:16cqw!important}
+  /* altura fixa de 2 linhas: um título de 3 linhas ("Languages, peoples and currencies") sobe para cima da caixa, sem empurrar o ícone */
+  .hx[data-layout=faixa] .hx-mode h3{display:flex;align-items:flex-end;height:calc(2 * 1.06 * 11cqw);margin-top:2cqw;font-size:11cqw!important;line-height:1.06!important}
+  .hx[data-layout=faixa] .hx-mode p{min-height:calc(2 * 1.45 * 4.6cqw)!important;margin-top:1.5cqw;font-size:4.6cqw!important;line-height:1.45!important}
+  .hx[data-layout=faixa] .hx-mode .family-footer{justify-content:flex-end;min-height:0;margin-top:4cqw}
+  .hx[data-layout=faixa] .hx-mode .family-play{display:inline-flex;gap:2.4cqw;padding:3.4cqw 7.4cqw;font-size:4.9cqw}
+  .hx[data-layout=faixa] .hx-mode .family-play svg{width:5.8cqw;height:5.8cqw}
 }
 @media (max-width:760px){.hx-chal-daily,.hx-chal .hx-duel-acts{display:none}.hx-chal .hx-duel-foot{display:contents}}
 

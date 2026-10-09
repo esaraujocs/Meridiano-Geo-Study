@@ -1686,6 +1686,7 @@ export const es: Messages = {
     },
   },
   themes: {
+    papel: ["Papel", "La paleta base: tarjetas crema, iconos en verde y sin color por modo."],
     pigmentos: ["Pigmentos", "Un color por modo: verde azulado, terracota, latón y violeta."],
     aquarela: ["Acuarela", "Tarjetas de vidrio sobre manchas de color que se mezclan."],
     atlas: ["Atlas", "Láminas de mapa impreso, con curvas de nivel y rampa de altitud."],

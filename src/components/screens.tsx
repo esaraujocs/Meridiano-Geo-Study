@@ -307,11 +307,11 @@ export function Hub({
       data-fam={item.family}
       className={`family hx-mode ${economy && !open ? "locked" : ""}`}
     >
-      {/* o cartão inteiro abre a Mesa (sem botão "Jogar": repetia em todos os cartões; a Mesa já vem com a última partida montada) */}
+      {/* o cartão inteiro abre a Mesa (a Mesa já vem com a última partida montada); o "Jogar" do rodapé é só o sinal visual (no desktop, Hub em faixa) */}
       <button type="button" className="hx-hit" onClick={() => onSelect(item.group ? peoplesEntry(lastPeoplesTopic(), topicOpen) : item.family)} aria-label={`${t.hub.play}: ${item.label}`} />
       <div className="family-visual"><div className="family-geo" /><div className="family-icon"><Icon type={item.icon} /></div></div>
       <div className="family-copy"><h3>{item.label}</h3><p>{item.description}</p></div>
-      <div className="family-footer">{economy && !open && <span className="hx-stat"><small>{t.hub.locked}</small></span>}</div>
+      <div className="family-footer">{economy && !open ? <span className="hx-stat"><small>{t.hub.locked}</small></span> : <span className="family-play" aria-hidden="true">{t.hub.play} <Icon type="arrow" /></span>}</div>
     </div>;
   };
   return (
