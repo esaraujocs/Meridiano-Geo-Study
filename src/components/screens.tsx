@@ -33,7 +33,11 @@ import { LOCALES, LOCALE_NAMES, LOCALE_RELEASED, changeLocale, formatNumber, loc
 
 export type { TopFamily };
 
-export function Header({ legacy, economy, current = "hub", onNavigate, onSurface }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "store" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void }) {
+/** Quanto falta em cada um dos três destinos de progresso (Coleção, Conquistas, Maestria), em %: a barra de baixo do celular mostra o anel, como as
+ *  fichas do cabeçalho do desktop. */
+export type NavProgress = { collection: number; achievements: number; progress: number };
+
+export function Header({ legacy, economy, current = "hub", onNavigate, onSurface, navProgress }: { legacy?: LegacyProfile | null; economy?: EconomySnapshot | null; current?: "hub" | "progress" | "collection" | "achievements" | "store" | "options"; onNavigate?: (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => void; onSurface?: (surface: "progress" | "collection" | "achievements" | "history") => void; navProgress?: NavProgress }) {
   const items = [
     ["hub", t.nav.modes, "map"], ["collection", t.nav.collection, "collection"],
     ["achievements", t.nav.achievements, "achievements"], ["progress", t.nav.progress, "progress"],
@@ -63,7 +67,16 @@ export function Header({ legacy, economy, current = "hub", onNavigate, onSurface
       <div className="top-actions"><button className="settings-button" aria-label={t.nav.openOptions} aria-current={current === "options" ? "page" : undefined} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button></div>
     </header>
     <nav className="mobile-nav" aria-label={t.nav.main}>
-      {mobileItems.map(([key, label, icon]) => <button key={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}><Icon type={icon} /><span>{label}</span></button>)}
+      {mobileItems.map(([key, label, icon]) => {
+        // no Hub em faixa os ícones seguem as fichas do cabeçalho do desktop: círculo na cor do destino e o anel do progresso (Coleção, Conquistas, Maestria)
+        const pct = navProgress && (key === "collection" || key === "achievements" || key === "progress") ? navProgress[key] : null;
+        return <button key={key} data-nav={key} aria-label={label} title={label} aria-current={current === key ? "page" : undefined} onClick={() => onNavigate?.(key)}>
+          {HUB_BAND
+            ? <span className="nav-ic" aria-hidden="true"><svg className="hx-ring" viewBox="0 0 72 72"><circle className="hx-ring-track" cx="36" cy="36" r="32" />{pct !== null && <circle className="hx-ring-arc" cx="36" cy="36" r="32" strokeDasharray={`${2 * Math.PI * 32 * Math.min(100, pct) / 100} ${2 * Math.PI * 32}`} />}</svg><Icon type={icon} /></span>
+            : <Icon type={icon} />}
+          <span>{label}</span>
+        </button>;
+      })}
     </nav>
     </>
   );
@@ -335,6 +348,7 @@ export function Hub({
           <div className="hub-xp">
             <div className="hub-track" role="progressbar" aria-label={t.hub.xpProgressAria} aria-valuemin={0} aria-valuemax={xpSpan} aria-valuenow={xpInLevel}><i style={{ width: `${ratioPercent(xpInLevel, xpSpan)}%` }} /></div>
             <span className="hub-xp-label">{t.hub.levelLineSpaced(level, xpInLevel, xpSpan)}</span>
+            <span className="hub-xp-short">{t.hub.xpLine(xpInLevel, xpSpan)}</span>
           </div>
         </div>
         {/* o "Seu progresso" em fichas (só no desktop, com o Hub em faixa e o progresso no cabeçalho; o CSS esconde a linha de baixo) */}

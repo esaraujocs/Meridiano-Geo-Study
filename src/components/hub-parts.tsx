@@ -187,10 +187,13 @@ export function HubDuel({ cards, formatReady, formatCost, search, onLeague }: {
   const step = nextStep(status);
   const errorHere = !searching && search.error?.ladder === card.ladder ? search.error.message : null;
   const choose = (next: Ladder) => { setPicked(next); try { localStorage.setItem(LADDER_KEY, next); } catch { /* sem armazenamento */ } };
+  const other = cards.find((item) => item.ladder !== card.ladder);
   return <section className="hx-duel" data-fam="duelo" data-league={status.league} aria-label={t.duel.modeDuel}>
     <div className="hx-duel-top">
       <span className="hx-duel-ic" aria-hidden="true"><Icon type="swords" size={26} /></span>
       <div className="hx-duel-name"><h3>{t.duel.modeDuel}</h3></div>
+      {/* no celular (Hub em faixa) o cartão do Duelo é compacto: a escolha da escada vira esta troca de um toque, no lugar da escada e da pílula */}
+      {other && <button type="button" className="hx-ladder-swap" disabled={searching} onClick={() => choose(other.ladder)} aria-label={t.hub.ladderSwap(t.duel.ladders[card.ladder], t.duel.ladders[other.ladder])}>{t.duel.ladders[card.ladder]} <Icon type="repeat" size={13} /></button>}
       <button type="button" className="hx-pill" onClick={onLeague} aria-label={t.duel.chipAria(money(card.trophies), label)}><Icon type="achievements" size={13} /> {label} · {money(card.trophies)}</button>
     </div>
     <div className="hx-duel-mid">
@@ -343,6 +346,8 @@ function readHubLayout(): HubLayout {
 export const HUB_LAYOUT: HubLayout = typeof window === "undefined" ? HUB_LAYOUT_DEFAULT : readHubLayout();
 /** Os três desenhos em faixa dividem o CSS (`data-layout="faixa"`); o lugar do progresso vai em `data-progress`. */
 export const HUB_BAND = HUB_LAYOUT !== "coluna";
+// a barra de baixo do celular (fora do Hub) também muda com o desenho: o CSS lê `data-hub` no elemento raiz
+if (typeof document !== "undefined") document.documentElement.dataset.hub = HUB_BAND ? "faixa" : "coluna";
 
 /** Desafios. Na faixa o cartão tem a estrutura do Duelo (o desafio do dia e os botões), para não ficar vazio ao lado dele; a tela dos Desafios
  *  ainda não existe, então o desafio do dia é uma prévia e os botões ficam desativados. */

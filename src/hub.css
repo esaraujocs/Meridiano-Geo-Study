@@ -539,3 +539,90 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-progress=faixa4] .hx-chal-daily>small{letter-spacing:.08em}
   .hx[data-progress=faixa4] .hx-turns .hx-museum-text b{font-size:20px}
 }
+
+/* ───────── celular com o Hub em faixa (09/10/2026, mock hub-v34 N3 com os ajustes do Enzo) ─────────
+   uma coluna só com as mesmas bordas (o cabeçalho, o cartão de modo e os dois cartões de baixo começam e terminam na mesma linha, --col além da
+   margem); cabeçalho em duas linhas; o cartão de modo nunca mais baixo que largo; Duelo e Desafios lado a lado, iguais e compactos (ícone, nome,
+   uma linha e o botão); sem o Mecenato · Vitrine (a Loja está na barra de baixo e o Mecenato abre por ela). A barra de baixo segue as fichas do
+   cabeçalho do desktop: círculo na cor do destino e o anel do progresso. Com ?hub=coluna tudo volta ao de antes. */
+.hx-ladder-swap,.hx .hub-xp-short{display:none}
+@media (max-width:760px){
+  .hx[data-layout=faixa]{--col:20px}
+  /* cabeçalho em duas linhas: anel, nome, Amigos e engrenagem; a barra de XP com os números e as moedas */
+  .hx[data-layout=faixa] .hx-head{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"ring head friends gear" "xp xp coin coin";align-items:center;column-gap:10px;row-gap:9px;height:auto!important;margin:0 var(--col)!important;padding:12px 14px!important;border-radius:20px!important}
+  .hx[data-layout=faixa] .hub-player,.hx[data-layout=faixa] .hub-stats{display:contents!important}
+  .hx[data-layout=faixa] .hub-level{grid-area:ring!important;width:52px!important;height:52px!important}
+  .hx[data-layout=faixa] .hub-level strong{font-size:23px!important}
+  .hx[data-layout=faixa] .hub-head{grid-area:head!important;align-self:center!important}
+  .hx[data-layout=faixa] .hub-title{font-size:22px!important;align-self:center!important}
+  .hx[data-layout=faixa] .hub-xp{grid-area:xp!important;display:flex!important;align-items:center;gap:9px;min-width:0;align-self:center!important}
+  .hx[data-layout=faixa] .hub-track{flex:1 1 auto!important;height:8px!important}
+  .hx[data-layout=faixa] .hub-xp-short{display:block;flex:none;font:600 10.5px 'DM Mono',monospace;color:var(--muted)}
+  .hx[data-layout=faixa] .hub-friends{grid-area:friends!important}
+  .hx[data-layout=faixa] .hub-gear{grid-area:gear!important}
+  .hx[data-layout=faixa] .hub-coin{grid-area:coin!important;justify-self:end;padding:3px 11px 3px 4px!important;gap:6px!important}
+  .hx[data-layout=faixa] .hub-coin strong{font-size:15.5px!important}
+  .hx[data-layout=faixa] .hub-coin i{width:23px!important;height:23px!important}
+  .hx[data-layout=faixa] .hub-friends,.hx[data-layout=faixa] .hub-gear{width:36px!important;height:36px!important}
+  .hx[data-layout=faixa] .hub-friends svg,.hx[data-layout=faixa] .hub-gear svg{width:18px!important;height:18px!important}
+  /* a grade: o carrossel na largura toda (os vizinhos espiam na faixa --col) e os dois cartões na coluna */
+  .hx[data-layout=faixa] .hx-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:10px;row-gap:12px;margin-top:12px;padding-inline:var(--col)}
+  .hx[data-layout=faixa] .hx-modes{grid-column:1/-1;grid-row:1;margin-inline:calc(-1 * var(--col))}
+  .hx[data-layout=faixa] .hx-mecenato{display:none}
+  .hx[data-layout=faixa] .hx-car{--peek:var(--col);--gap:8px}
+  .hx[data-layout=faixa] .hx-arrow.is-prev{left:calc(var(--col) - 17px)}
+  .hx[data-layout=faixa] .hx-arrow.is-next{right:calc(var(--col) - 17px)}
+  /* o cartão de modo: ao menos tão alto quanto largo (quadrado a retrato); o ícone na mesma altura em todos (título com 2 linhas, alinhado por baixo) */
+  .hx[data-layout=faixa] .family.hx-mode{min-height:calc(100vw - 2 * var(--col) - 16px)}
+  .hx[data-layout=faixa] .hx-mode h3{display:flex;align-items:flex-end;height:calc(2 * 1.05 * 26px);font-size:26px;line-height:1.05}
+  .hx[data-layout=faixa] .hx-mode p{min-height:calc(2 * 1.45 * 12.5px);line-height:1.45}
+  /* Duelo e Desafios: iguais, lado a lado, compactos: ícone | nome e uma linha (a escada, que troca com um toque · "em breve") | o botão */
+  .hx[data-layout=faixa] .hx-duel{grid-row:2;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic name" "ic sub" "go go";align-items:center;align-content:start;column-gap:9px;row-gap:1px;height:auto;min-height:0;padding:11px 11px 12px;border-radius:16px}
+  .hx[data-layout=faixa] .hx-duel:not(.hx-chal){grid-column:1}
+  .hx[data-layout=faixa] .hx-chal{grid-column:2}
+  .hx[data-layout=faixa] .hx-duel .hx-duel-top{display:contents}
+  .hx[data-layout=faixa] .hx-duel .hx-duel-ic{grid-area:ic;width:38px;height:38px;box-shadow:0 0 0 4px color-mix(in srgb,var(--duel-a) 14%,transparent)}
+  .hx[data-layout=faixa] .hx-duel .hx-duel-ic svg{width:20px;height:20px}
+  /* as linhas com a mesma altura nos dois cartões (nome 20 px, linha de baixo 24 px, botão 38 px): ícone, nome e botão caem no mesmo lugar */
+  .hx[data-layout=faixa] .hx-duel .hx-duel-name{grid-area:name;align-self:end;display:flex;align-items:flex-end;height:20px}
+  .hx[data-layout=faixa] .hx-duel .hx-duel-name h3{font-size:19px;line-height:20px}
+  .hx[data-layout=faixa] .hx-chal .hx-duel-name h3{font-size:13px;letter-spacing:.1em;line-height:20px}
+  .hx[data-layout=faixa] .hx-duel:not(.hx-chal) .hx-pill{display:none}
+  .hx[data-layout=faixa] .hx-ladder-swap{grid-area:sub;justify-self:start;align-self:start;display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:0;border:0;background:none;color:var(--duel-ink);font:700 11.5px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
+  .hx[data-layout=faixa] .hx-ladder-swap svg{opacity:.75}
+  .hx[data-layout=faixa] .hx-chal .hx-pill{grid-area:sub;justify-self:start;align-self:start;display:inline-flex;min-height:24px;padding:0;background:none;font-size:10px}
+  .hx[data-layout=faixa] .hx-duel-mid,.hx[data-layout=faixa] .hx-duel-step,.hx[data-layout=faixa] .hx-chal-daily,.hx[data-layout=faixa] .hx-duel-acts:not(.is-search){display:none}
+  .hx[data-layout=faixa] .hx-duel-foot{grid-area:go;display:grid;grid-template-columns:minmax(0,1fr);margin-top:9px}
+  .hx[data-layout=faixa] .hx-duel-foot .hx-go{width:100%;height:38px;padding:0 12px;font-size:13px}
+  .hx[data-layout=faixa] .hx-duel-foot .hx-go svg{width:16px;height:16px}
+  /* os pontos do carrossel com alvo de toque de 24 px */
+  .hx[data-layout=faixa] .hx-dots button{height:24px}
+  .hx[data-layout=faixa] .hx-dots button::before{top:8px}
+  .hx[data-layout=faixa] .hx-chal::after{width:100%;height:100%}
+}
+/* telefone baixo: o cabeçalho e o cartão de modo cedem um pouco para tudo caber sem rolar */
+@media (max-width:760px) and (max-height:700px){
+  .hx[data-layout=faixa] .hx-head{padding:9px 12px!important;row-gap:7px}
+  .hx[data-layout=faixa] .hub-level{width:44px!important;height:44px!important}
+  .hx[data-layout=faixa] .hub-level strong{font-size:20px!important}
+  .hx[data-layout=faixa] .hub-title{font-size:20px!important}
+  .hx[data-layout=faixa] .hx-grid{margin-top:10px;row-gap:10px}
+  .hx[data-layout=faixa] .family.hx-mode{min-height:calc(100vw - 2 * var(--col) - 46px)}
+  .hx[data-layout=faixa] .hx-mode h3{height:calc(2 * 1.05 * 24px);font-size:24px}
+}
+/* barra de baixo: os ícones como as fichas do cabeçalho do desktop */
+@media (max-width:760px){
+  :root[data-hub=faixa] .mobile-nav button::before{display:none}
+  :root[data-hub=faixa] .mobile-nav button .nav-ic{--tile:var(--green);position:relative;display:grid;place-items:center;width:32px;height:32px;margin-top:4px;overflow:visible;clip:auto;border-radius:50%;background:color-mix(in srgb,var(--tile) 12%,var(--paper));color:var(--tile);transition:background .15s,color .15s}
+  :root[data-hub=faixa] .mobile-nav button .nav-ic>svg:not(.hx-ring){width:17px;height:17px;margin:0}
+  :root[data-hub=faixa] .mobile-nav button .nav-ic>svg.hx-ring{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);margin:0;transform:rotate(-90deg)}
+  :root[data-hub=faixa] .mobile-nav button[aria-current=page] .nav-ic{background:var(--tile);color:#fff}
+  :root[data-hub=faixa] .mobile-nav button[aria-current=page]{background:transparent}
+  :root[data-hub=faixa] .mobile-nav [data-nav=collection] .nav-ic{--tile:#a07425}
+  :root[data-hub=faixa] .mobile-nav [data-nav=achievements] .nav-ic{--tile:#b65f47}
+  :root[data-hub=faixa] .mobile-nav [data-nav=progress] .nav-ic{--tile:#2f8f83}
+  :root[data-hub=faixa][data-scheme=dark] .mobile-nav [data-nav=collection] .nav-ic{--tile:#e8b84a}
+  :root[data-hub=faixa][data-scheme=dark] .mobile-nav [data-nav=achievements] .nav-ic{--tile:#ee7968}
+  :root[data-hub=faixa][data-scheme=dark] .mobile-nav [data-nav=progress] .nav-ic{--tile:#58d6d0}
+  :root[data-hub=faixa][data-scheme=dark] .mobile-nav button[aria-current=page] .nav-ic{color:#0b1e33}
+}
