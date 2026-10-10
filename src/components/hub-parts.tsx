@@ -492,6 +492,21 @@ function readHubLayout(): HubLayout {
 export const HUB_LAYOUT: HubLayout = typeof window === "undefined" ? HUB_LAYOUT_DEFAULT : readHubLayout();
 /** Os três desenhos em faixa dividem o CSS (`data-layout="faixa"`); o lugar do progresso vai em `data-progress`. */
 export const HUB_BAND = HUB_LAYOUT !== "coluna";
+/** As colunas da faixa de baixo no desktop (09/10/2026, mock hub-v37 L2): "iguais" (Duelo, Desafios e Mecenato·Vitrine do mesmo tamanho; o Hub
+ *  alarga para o Duelo manter a largura e o cabeçalho segue as colunas) ou "antigas" (1fr 1fr .82fr, até a tag `hub-colunas-antigas-2026-10-09`).
+ *  Para voltar sem publicar: `?colunas=antigas` (fica salvo neste navegador; `?colunas=iguais` desfaz); para todos: HUB_COLUMNS_DEFAULT. */
+export type HubColumns = "iguais" | "antigas";
+const HUB_COLUMNS_DEFAULT: HubColumns = "iguais";
+const isColumns = (value: string | null): value is HubColumns => value === "iguais" || value === "antigas";
+function readHubColumns(): HubColumns {
+  try {
+    const asked = new URLSearchParams(window.location.search).get("colunas");
+    if (isColumns(asked)) localStorage.setItem("carta-hub-colunas", asked);
+    const saved = localStorage.getItem("carta-hub-colunas");
+    return isColumns(saved) ? saved : HUB_COLUMNS_DEFAULT;
+  } catch { return HUB_COLUMNS_DEFAULT; }
+}
+export const HUB_COLUMNS: HubColumns = typeof window === "undefined" ? HUB_COLUMNS_DEFAULT : readHubColumns();
 // a barra de baixo do celular (fora do Hub) também muda com o desenho: o CSS lê `data-hub` no elemento raiz
 if (typeof document !== "undefined") document.documentElement.dataset.hub = HUB_BAND ? "faixa" : "coluna";
 

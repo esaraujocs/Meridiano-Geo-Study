@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HUB_BAND, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
+import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -328,7 +328,7 @@ export function Hub({
     </div>;
   };
   return (
-    <main className="content hub-content hx" data-layout={HUB_BAND ? "faixa" : "coluna"} data-progress={HUB_LAYOUT}>
+    <main className="content hub-content hx" data-layout={HUB_BAND ? "faixa" : "coluna"} data-progress={HUB_LAYOUT} data-cols={HUB_COLUMNS}>
       <h1 className="sr-only">Meridiano</h1>
       <header className="hub-bar hx-bar hx-head" aria-label={t.hub.profileAria}>
         <div className="hub-bar hx-piece hx-p-player"><div className="hub-player">
