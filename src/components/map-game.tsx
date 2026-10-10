@@ -20,7 +20,7 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
-import { MAP_BASE_CORNERS, MAP_BASE_CREDIT, MAP_BASE_IMAGE, isSatellite, landOpacityPaint, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
@@ -447,7 +447,7 @@ export function Game({
               attribution: board?.attribution ??
                 `© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries${mapBase !== "padrao" ? ` · ${MAP_BASE_CREDIT}` : ""}`,
             },
-            ...(MAP_BASE_IMAGE[mapBase] ? { "map-base": { type: "image" as const, url: MAP_BASE_IMAGE[mapBase] as string, coordinates: MAP_BASE_CORNERS } } : {}),
+            ...(MAP_BASE_TILES[mapBase] ? { "map-base": { type: "raster" as const, tiles: [MAP_BASE_TILES[mapBase] as string], tileSize: 512, maxzoom: MAP_BASE_MAXZOOM } } : {}),
             ...(board?.backdrop ? { backdrop: { type: "vector" as const, url: `pmtiles://${board.backdrop.url}`, promoteId: "carta_id" } } : {}),
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
             ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),

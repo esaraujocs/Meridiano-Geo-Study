@@ -1,7 +1,7 @@
 // O fundo do mapa das partidas (10/10/2026, mock hub-v38; pedido do Enzo: o satélite estático do Huge Quiz, "por enquanto nas configurações, depois
 // pensamos na economia ou até se pode ser o padrão"). A foto é a Blue Marble Next Generation da NASA (agosto de 2004, com relevo e batimetria;
-// domínio público, crédito "NASA Earth Observatory"), reprojetada para o Mercator do mapa, 8192 px, por baixo das nossas fronteiras (que continuam
-// vetoriais e nítidas). Vale só no mapa-múndi (os tabuleiros de país e de época ficam como estão). Lógica pura.
+// domínio público, crédito "NASA Earth Observatory"), reprojetada para o Mercator do mapa, por baixo das nossas fronteiras (que continuam
+// vetoriais e nítidas), em ladrilhos de 512 px (zooms 0–5). Vale só no mapa-múndi (os tabuleiros de país e de época ficam como estão). Lógica pura.
 //   padrao            o mapa de sempre (a paleta do tema ou do estilo de mapa);
 //   satelite          a foto inteira: a terra fica transparente e só os países marcados acendem; as fronteiras viram um traço claro e fino;
 //   satelite-noturno  o mesmo mapa com a interface do Noturno (o app não tem modo escuro à parte: o escuro é o tema Noturno);
@@ -24,17 +24,17 @@ export function readMapBase(storage: Pick<Storage, "getItem"> | undefined = type
 /** O tema da interface que o fundo pede por cima do escolhido (o Satélite + Noturno); sem pedido, vale o do jogador. */
 export const MAP_BASE_THEME: Partial<Record<MapBase, string>> = { "satelite-noturno": "noturno" };
 
-/** As imagens (em public/maps/sat; o service worker guarda na primeira partida e depois vale sem internet). */
-export const MAP_BASE_IMAGE: Partial<Record<MapBase, string>> = {
-  satelite: "/maps/sat/blue-marble-200408-8192.webp",
-  "satelite-noturno": "/maps/sat/blue-marble-200408-8192.webp",
-  relevo: "/maps/sat/blue-marble-200408-terra-8192.webp",
+/** Os ladrilhos da foto (512 px, zooms 0–5 do MapLibre, em public/maps/sat; o service worker guarda cada um na primeira vez e depois valem sem
+ *  internet). Uma imagem só de 8192 px (a 1ª versão) só era nítida até o zoom 4; com os ladrilhos a fonte de 2 km/pixel rende até o zoom ~5,4. */
+export const MAP_BASE_TILES: Partial<Record<MapBase, string>> = {
+  satelite: "/maps/sat/bm/{z}/{x}/{y}.webp",
+  "satelite-noturno": "/maps/sat/bm/{z}/{x}/{y}.webp",
+  relevo: "/maps/sat/bm-terra/{z}/{x}/{y}.webp",
 };
-/** Os cantos da imagem no Mercator (o quadrado do mapa: ±85,0511° de latitude). */
-export const MAP_BASE_CORNERS: [[number, number], [number, number], [number, number], [number, number]] = [[-180, 85.0511], [180, 85.0511], [180, -85.0511], [-180, -85.0511]];
+export const MAP_BASE_MAXZOOM = 5;
 export const MAP_BASE_CREDIT = "Blue Marble: NASA Earth Observatory";
-/** De perto a foto (8192 px ≈ zoom 5) amacia: entre estes zooms ela some aos poucos e a terra da paleta volta. */
-export const MAP_BASE_NEAR: readonly [number, number] = [6, 9];
+/** Além do zoom ~5,4 a foto amacia: entre estes zooms ela some aos poucos e a terra da paleta volta. */
+export const MAP_BASE_NEAR: readonly [number, number] = [6, 8.5];
 
 /** A paleta com o fundo: o satélite apaga a terra (só os marcados acendem), a sombra das costas, a quadrícula, as linhas de rumo e o traço; o relevo
  *  só deixa a terra translúcida por cima da foto. */
