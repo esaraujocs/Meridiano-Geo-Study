@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import type { ArenaSearch } from "./hub-parts";
-import { HUB_BAND, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTurns } from "./hub-parts";
+import { HUB_BAND, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -341,7 +341,7 @@ export function Hub({
             {framed && <span className="lg-pip" title={t.duel.frameAria(leagueLabel)}>{divisionRoman(league.division) || "M"}</span>}
           </div>
           <div className="hub-head">
-            <p className="hub-title">{profile.title}</p>
+            <HubTitle text={profile.title} />
             {profile.earned.length > 0 && <ul className="hub-badges" aria-label={t.hub.badgesAria}>{profile.earned.map((title) => <li key={title.id} className="hub-badge" title={title.label}><Icon type={title.icon} /><span className="hub-badge-label">{title.label}</span></li>)}</ul>}
             {economy && <p className="hub-tally" title={t.hub.tallyTitle}>{t.hub.tally(economy.completedSessions, economy.rounds, formatNumber)}</p>}
           </div>

@@ -19,6 +19,52 @@ import { formatNumber as money, t } from "../domain/i18n";
 
 const reducedMotion = () => document.documentElement.dataset.reducedMotion === "true" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/** O título do jogador no cabeçalho do Hub (09/10/2026, pedido do Enzo: "Cosmógrafo" saía cortado com reticências ao lado das medalhas). A fonte
+ *  encolhe até o título caber inteiro no espaço que sobra; se nem com TITLE_MIN px cabe (título longo, como "Cosmographer", e as três medalhas), as
+ *  medalhas saem do cabeçalho (seguem no Progresso, como na janela baixa) e o título volta a crescer; só no limite TITLE_FLOOR voltam as
+ *  reticências. Mede de novo quando a janela ou a peça mudam de largura e quando as fontes terminam de carregar. */
+const TITLE_MIN = 16;
+const TITLE_FLOOR = 13;
+export function HubTitle({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // "important" porque o cabeçalho do celular fixa o tamanho com !important
+    const set = (size: number) => el.style.setProperty("font-size", `${size}px`, "important");
+    // a largura exata do texto (scrollWidth arredonda: uma fração de pixel a mais já põe as reticências)
+    const range = document.createRange();
+    const textWidth = () => { range.selectNodeContents(el); return range.getBoundingClientRect().width; };
+    const overflows = () => textWidth() > el.getBoundingClientRect().width + 0.01;
+    // o texto cresce em proporção à fonte: uma conta acerta quase sempre, e os passos de meio pixel cobrem o arredondamento
+    const shrink = (floor: number) => {
+      let size = Math.max(floor, Math.floor((parseFloat(getComputedStyle(el).fontSize) * el.getBoundingClientRect().width / textWidth()) * 10) / 10 - 0.1);
+      set(size);
+      for (let i = 0; i < 6 && size > floor && overflows(); i++) { size = Math.max(floor, size - 0.5); set(size); }
+      return size;
+    };
+    const fit = () => {
+      const head = el.parentElement;
+      head?.classList.remove("is-tight");
+      el.style.removeProperty("font-size");
+      if (!overflows()) return;
+      if (shrink(TITLE_MIN) > TITLE_MIN || !overflows() || !head?.querySelector(".hub-badges")) return;
+      head.classList.add("is-tight");
+      el.style.removeProperty("font-size");
+      if (overflows()) shrink(TITLE_FLOOR);
+    };
+    fit();
+    let width = el.parentElement?.clientWidth ?? 0;
+    const observer = new ResizeObserver(() => { const now = el.parentElement?.clientWidth ?? 0; if (now !== width) { width = now; fit(); } });
+    if (el.parentElement) observer.observe(el.parentElement);
+    window.addEventListener("resize", fit);
+    let alive = true;
+    void document.fonts?.ready.then(() => { if (alive) fit(); });
+    return () => { alive = false; observer.disconnect(); window.removeEventListener("resize", fit); };
+  }, [text]);
+  return <p ref={ref} className="hub-title">{text}</p>;
+}
+
 /** Carrossel em laço (refeito em 09/10/2026, pedido do Enzo: "o loop tá fraco, trava no fim" e "arrastar o cartão também no desktop, com uma
  *  animaçãozinha"). Cada cartão existe uma vez e é posto no lugar por uma posição contínua (`pos`, em cartões) com aritmética modular, então o
  *  laço não tem fim para bater nem salto de volta (a versão anterior repetia a fila três vezes numa rolagem nativa e, com cliques seguidos, batia
