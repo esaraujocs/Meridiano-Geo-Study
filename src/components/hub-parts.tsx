@@ -7,10 +7,10 @@ import type { PvpQueueView } from "../domain/pvp";
 import type { LadderCard } from "../domain/duel-view";
 import type { Ladder } from "../domain/duel-modes";
 import { DIVISION_SPAN } from "../domain/league";
-import { SUPPLY_COST, type SupplyId } from "../domain/supplies";
+import { SUPPLY_COST } from "../domain/supplies";
 import { SupplyArt } from "./supply-art";
 import { leagueLabel, nextStep } from "../domain/duel-labels";
-import { SHOWCASE_INTERVAL_MS, SUPPLY_SETS } from "../domain/hub-showcase";
+import { SHOWCASE_INTERVAL_MS, SUPPLY_GRID_SETS, SUPPLY_SETS } from "../domain/hub-showcase";
 import { MUSEUM_PIECES, museumPieceById, museumPieceText } from "../domain/museum";
 import { ROUTES, activeExpeditions, emptyProgress, isBack, nextStage, remainingMs, routeById, stageCost } from "../domain/mecenato";
 import { useMecenato } from "./use-mecenato";
@@ -337,13 +337,15 @@ function Searching({ ladder, search, formatReady, formatCost }: { ladder: Ladder
 /** Onde a Vitrine parou no rodízio: voltar ao Hub continua do mesmo set. */
 let showcaseIndex = 0;
 /**
- * Vitrine da Loja: só consumíveis (os temas ficam na Loja). Alterna os 3 conjuntos de `SUPPLY_SETS` em laço, trocando a cada SHOWCASE_INTERVAL_MS.
- * Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam).
+ * Vitrine da Loja: só consumíveis (os temas ficam na Loja). Alterna os conjuntos de `SUPPLY_SETS` em laço, trocando a cada SHOWCASE_INTERVAL_MS.
+ * Para de trocar com o mouse ou o foco nela, com a aba escondida e com movimento reduzido (aí só os pontos trocam). No Hub em faixa é uma grade de
+ * 2×3 (`SUPPLY_GRID_SETS`) só com o ícone e o nome; o preço fica no rótulo do botão (leitor de tela e a dica do mouse) e na Loja, que o toque abre.
  */
 export function HubShowcase({ onOpenStore, turn }: { onOpenStore: () => void; turn?: number }) {
   const [index, setIndex] = useState(() => showcaseIndex);
   const [paused, setPaused] = useState(false);
-  const count = SUPPLY_SETS.length;
+  const sets = HUB_BAND ? SUPPLY_GRID_SETS : SUPPLY_SETS;
+  const count = sets.length;
   const at = index % count;
   useEffect(() => { showcaseIndex = at; }, [at]);
   // no revezamento com o Mecenato quem troca o conjunto é a vez da Vitrine (`turn` sobe a cada vez dela), não o relógio daqui
@@ -358,18 +360,18 @@ export function HubShowcase({ onOpenStore, turn }: { onOpenStore: () => void; tu
     const timer = window.setInterval(() => { if (!document.hidden) setIndex((value) => (value + 1) % count); }, SHOWCASE_INTERVAL_MS);
     return () => window.clearInterval(timer);
   }, [count, paused, turn]);
-  const supplies = SUPPLY_SETS[at] as readonly SupplyId[];
+  const supplies = sets[at];
   return <section className={`hx-showcase${turn !== undefined ? " is-turn" : ""}`} aria-label={t.hub.showcase} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
     <header><h3>{t.hub.showcase}</h3>
-      <span className="hx-showcase-dots">{SUPPLY_SETS.map((_, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>
+      <span className="hx-showcase-dots">{sets.map((_, dot) => <button key={dot} type="button" aria-current={dot === at} aria-label={t.hub.showcaseSet(dot + 1, count)} onClick={() => setIndex(dot)} />)}</span>
     </header>
     <div key={at} className="hx-showcase-slide">
-      <ul className="hx-supplies">
+      <ul className={`hx-supplies${HUB_BAND ? " is-grid" : ""}`}>
         {supplies.map((id) => <li key={id}>
-          <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`}>
+          <button type="button" onClick={onOpenStore} aria-label={`${t.supplies[id].name} · ${money(SUPPLY_COST[id])}`} title={HUB_BAND ? `${t.supplies[id].name} · ${money(SUPPLY_COST[id])}` : undefined}>
             <span className="hx-supply-art" data-supply={id}><SupplyArt id={id} size={58} /></span>
             <b>{t.supplies[id].name}</b>
-            <span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST[id])}</span>
+            {!HUB_BAND && <span className="hx-price"><i aria-hidden="true">$</i>{money(SUPPLY_COST[id])}</span>}
           </button>
         </li>)}
       </ul>

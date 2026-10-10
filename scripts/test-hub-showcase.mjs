@@ -22,9 +22,15 @@ assert.notEqual(pickShowcaseTheme(10_000_000, owned).id, dearest.id);
 assert.equal(pickShowcaseTheme(10_000_000, forSale.map((theme) => themeUnlockKey(theme.id))), null);
 console.log("hub showcase: escolha do tema em destaque verificada");
 
-// ---- a Vitrine do Hub é só de consumíveis: 3 conjuntos de 3, sem repetir suprimento
-const { SUPPLY_SETS } = await import("../.tmp-hub-showcase/hub-showcase.js");
+// ---- a Vitrine do Hub é só de consumíveis. No Hub antigo (coluna): 3 conjuntos de 3, sem repetir suprimento
+const { SUPPLY_SETS, SUPPLY_GRID_SETS } = await import("../.tmp-hub-showcase/hub-showcase.js");
+const { SUPPLY_IDS } = await import("../.tmp-hub-showcase/supplies.js");
 assert.equal(SUPPLY_SETS.length, 3);
 assert.ok(SUPPLY_SETS.every((ids) => ids.length === 3));
 assert.equal(new Set(SUPPLY_SETS.flat()).size, 9, "os conjuntos não repetem suprimento");
+// no Hub em faixa: grade 2×3, conjuntos de 6 sem repetir dentro do conjunto, e os 10 suprimentos aparecem
+assert.ok(SUPPLY_GRID_SETS.length >= 2);
+assert.ok(SUPPLY_GRID_SETS.every((ids) => ids.length === 6 && new Set(ids).size === 6), "cada conjunto enche a grade 2×3 sem repetir");
+assert.deepEqual([...new Set(SUPPLY_GRID_SETS.flat())].sort(), [...SUPPLY_IDS].sort(), "a grade mostra todos os suprimentos");
+assert.ok([...SUPPLY_SETS.flat(), ...SUPPLY_GRID_SETS.flat()].every((id) => SUPPLY_IDS.includes(id)));
 console.log("hub showcase: conjuntos de suprimentos verificados");
