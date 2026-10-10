@@ -29,6 +29,10 @@ export type MapPalette = {
   ink?: { color: string; width: number; opacity: number } | null;
   /** Espaçamento da quadrícula em graus (padrão 30). */
   graticuleStep?: number;
+  /** Fundo de satélite ou relevo (map-base.ts): a opacidade da terra de perto (a foto amacia e a terra volta) e a dos países marcados (acerto,
+   *  erro, dicas), que acendem por cima da foto. Sem elas, a terra tem sempre `landOpacity`. */
+  landOpacityNear?: number;
+  landMarkedOpacity?: number;
 };
 
 export const DEFAULT_MAP_PALETTE: MapPalette = {

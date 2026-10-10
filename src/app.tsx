@@ -36,6 +36,7 @@ import { initializeEconomy, queryEconomy, unlockContent, unlockRounds, unlockThe
 import { emptySupplyCounts, type SupplyCounts, type SupplyId } from "./domain/supplies";
 import { buySupply, supplyCounts } from "./domain/supplies-store";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, applyThemeAttributes, isThemeId, resolveTheme, themeById } from "./domain/themes";
+import { MAP_BASE_KEY, MAP_BASE_THEME, readMapBase, type MapBase } from "./domain/map-base";
 import { ResultScreen } from "./components/result-screen";
 import { buildResultView, type ResultView } from "./domain/result-view";
 import { policyFor, type UnlockKey } from "./domain/economy-rules";
@@ -145,6 +146,10 @@ export function App() {
     setTrial(null);
     try { const saved = localStorage.getItem(THEME_STORAGE_KEY); setThemeState(isThemeId(saved) ? saved : DEFAULT_THEME); } catch { setThemeState(DEFAULT_THEME); }
   };
+  // O fundo do mapa das partidas (Configurações, em teste): o Satélite + Noturno também põe a interface do Noturno por cima do tema escolhido
+  // (menos durante a prova de um tema da Loja).
+  const [mapBase, setMapBaseState] = useState<MapBase>(() => readMapBase());
+  const setMapBase = (base: MapBase) => { setMapBaseState(base); try { localStorage.setItem(MAP_BASE_KEY, base); } catch { /* sem armazenamento */ } };
   const tryTheme = (id: string) => { setThemeState(id); setTrial({ id, seenResult: false }); setScreen("hub"); };
   // Os troféus vêm do histórico de duelos (como XP e maestria), por escada (Mapas e Bandeiras). O adversário é sorteado entre os
   // 5 bots da liga da pessoa na escada (sem repetir o do duelo anterior). O Hub mostra a melhor das duas escadas.
@@ -955,9 +960,10 @@ export function App() {
       .catch(() => setOfflineMap("unavailable"));
   }, []);
   // O CSS lê o tema nos atributos do elemento raiz.
+  const shownTheme = trial ? theme : MAP_BASE_THEME[mapBase] ?? theme;
   useEffect(() => {
-    applyThemeAttributes(document.documentElement, theme);
-  }, [theme]);
+    applyThemeAttributes(document.documentElement, shownTheme);
+  }, [shownTheme]);
   // Tema guardado que não é do jogador (dados limpos, valor antigo) volta ao padrão, mas só depois de a economia carregar de verdade.
   useEffect(() => {
     if (!economyReady || trial?.id === theme) return;
@@ -1294,7 +1300,7 @@ export function App() {
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
-     return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} /></div>;
+     return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
     return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
@@ -1325,16 +1331,16 @@ export function App() {
       friendship={friendship} onAddFriend={(code) => void friendAdd(code)} onOpenProfile={openPlayer} onRematch={pvpRematch} onHome={pvpGoHome} /></div>;
   }
   if (screen === "league") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
+    return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="hub" onNavigate={navigate} onSurface={openSurface} /><LeagueScreen entries={ladderEntries} duels={duels} pvpMatches={pvpMatches} boards={boards} botRanking={botRanking} initialLadder={leagueLadder} onBack={() => setScreen("hub")} onOpenPlayer={openPlayer} /></div>;
   }
   if (screen === "mecenato") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="collection" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><MecenatoView onBack={() => setScreen("hub")} onEconomyRefresh={refreshEconomy} onSuppliesRefresh={refreshSupplies} /></main></div>;
+    return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="collection" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><MecenatoView onBack={() => setScreen("hub")} onEconomyRefresh={refreshEconomy} onSuppliesRefresh={refreshSupplies} /></main></div>;
   }
   if (screen === "store") {
-    return <div className="app-shell grain">{themeById(theme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store">{trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onEnd={endTrial} />}<StoreView onTry={tryTheme} initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
+    return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store">{trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onEnd={endTrial} />}<StoreView onTry={tryTheme} initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
   }
   if (screen === "options") {
-    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} navProgress={navProgress} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {
+    return <div className="app-shell grain"><Header legacy={legacy} economy={economy} navProgress={navProgress} current="options" onNavigate={navigate} onSurface={openSurface} /><OptionsScreen data={data} theme={theme} ownedUnlocks={economy.unlocked} onTheme={setTheme} mapBase={mapBase} onMapBase={setMapBase} onOpenStore={() => setScreen("store")} offlineMap={offlineMap} onToggleOfflineMap={async () => {
       if (offlineMap === "installed") { await removeOfflineMap(); setOfflineMap("available"); }
       else { setOfflineMap("downloading"); try { await downloadOfflineMap(); setOfflineMap("installed"); } catch { setOfflineMap("error"); } }
     }} onDebugChange={onDebugChange} onBack={() => setScreen("hub")} /></div>;
@@ -1398,7 +1404,7 @@ export function App() {
 
   return (
     <div className={`app-shell grain ${screen === "recorte" ? "focused-flow" : ""}`}>
-        {screen === "hub" && themeById(theme)?.wash && <ThemeWash />}
+        {screen === "hub" && themeById(shownTheme)?.wash && <ThemeWash />}
         {screen === "hub" && <AccountNudge onGo={() => setScreen("options")} />}
         <Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "hub" ? "hub" : undefined} onNavigate={navigate} onSurface={openSurface} />
       {screen === "hub" && trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onBuy={() => setScreen("store")} onEnd={endTrial} />}

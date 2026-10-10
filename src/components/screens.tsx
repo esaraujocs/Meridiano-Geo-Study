@@ -20,6 +20,7 @@ const lastPeoplesTopic = () => { try { return localStorage.getItem(PEOPLES_LAST_
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
+import { MAP_BASES, type MapBase } from "../domain/map-base";
 import type { ArenaSearch } from "./hub-parts";
 import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
@@ -132,11 +133,13 @@ function BackupRow() {
   </div>;
 }
 
-export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore, offlineMap, onToggleOfflineMap, onDebugChange, onBack }: {
+export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, mapBase, onMapBase, onOpenStore, offlineMap, onToggleOfflineMap, onDebugChange, onBack }: {
   data: Legacy;
   theme: string;
   ownedUnlocks: readonly string[];
   onTheme: (id: string) => void;
+  mapBase: MapBase;
+  onMapBase: (base: MapBase) => void;
   onOpenStore: () => void;
   offlineMap: OfflineMapStatus;
   onToggleOfflineMap: () => Promise<void>;
@@ -191,6 +194,16 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, onOpenStore,
               {ownedThemes.map((item) => <button type="button" key={item.id} className="cv-chip" aria-pressed={theme === item.id} onClick={() => onTheme(item.id)}>{item.name}</button>)}
             </div>
             <p className="cv-hint">{toBuy > 0 ? t.options.themesToBuy(toBuy) : t.options.allThemes} <button type="button" className="cv-buy" onClick={onOpenStore}>{t.options.openStore}</button></p>
+          </div>
+        </div>
+        {/* o fundo do mapa das partidas (10/10/2026, em teste: depois entra na economia ou vira o padrão) */}
+        <div className="cv-row">
+          <span className="cv-k">{t.options.mapBase}</span>
+          <div className="cv-ctl">
+            <div className="cv-chips" role="group" aria-label={t.options.mapBase}>
+              {MAP_BASES.map((item) => <button type="button" key={item} className="cv-chip" aria-pressed={mapBase === item} onClick={() => onMapBase(item)}>{t.options.mapBases[item]}</button>)}
+            </div>
+            <p className="cv-hint">{t.options.mapBaseHint}</p>
           </div>
         </div>
         <div className="cv-row">

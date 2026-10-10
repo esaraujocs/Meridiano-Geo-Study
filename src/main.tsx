@@ -4,6 +4,7 @@ import { AchievementToaster } from "./components/achievement-toaster";
 import { applyDebugFlagFromUrl } from "./domain/debug-flag";
 import { ThemeFilters } from "./components/theme-decor";
 import { DEFAULT_THEME, THEME_STORAGE_KEY, applyThemeAttributes, isThemeId, migrateDefaultTheme } from "./domain/themes";
+import { MAP_BASE_THEME, readMapBase } from "./domain/map-base";
 import { intlLocale, t } from "./domain/i18n";
 import "./index.css";
 import "./hub.css";
@@ -25,7 +26,7 @@ try { document.documentElement.dataset.timerReveal = localStorage.getItem("carta
 try {
   migrateDefaultTheme(localStorage);
   const saved = localStorage.getItem(THEME_STORAGE_KEY);
-  applyThemeAttributes(document.documentElement, isThemeId(saved) ? saved : DEFAULT_THEME);
+  applyThemeAttributes(document.documentElement, MAP_BASE_THEME[readMapBase(localStorage)] ?? (isThemeId(saved) ? saved : DEFAULT_THEME));
 } catch { /* sem armazenamento */ }
 createRoot(document.getElementById("root")!).render(<><App /><AchievementToaster /><ThemeFilters /></>);
 

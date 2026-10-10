@@ -20,6 +20,7 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
+import { MAP_BASE_CORNERS, MAP_BASE_CREDIT, MAP_BASE_IMAGE, isSatellite, landOpacityPaint, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
@@ -113,7 +114,10 @@ export function Game({
   const revealNames = pace === "training";
   // Estilo de mapa do Mecenato (item de expedição), lido uma vez por partida: vale por cima da paleta do tema.
   const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
-  const paletteNow = () => withMapStyle(currentPalette(), mapStyleId);
+  // Fundo de satélite ou relevo (Configurações, em teste): só no mapa-múndi; no satélite os ornamentos do estilo e a fauna do tema saem.
+  const mapBase = useMemo(() => (board ? "padrao" : readMapBase()), []);
+  const satellite = isSatellite(mapBase);
+  const paletteNow = () => withMapBase(withMapStyle(currentPalette(), mapStyleId), mapBase);
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const targetRef = useRef("");
@@ -441,8 +445,9 @@ export function Game({
               url: `pmtiles://${board?.url ?? MAP_URL}`,
               promoteId: "carta_id",
               attribution: board?.attribution ??
-                "© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries",
+                `© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries${mapBase !== "padrao" ? ` · ${MAP_BASE_CREDIT}` : ""}`,
             },
+            ...(MAP_BASE_IMAGE[mapBase] ? { "map-base": { type: "image" as const, url: MAP_BASE_IMAGE[mapBase] as string, coordinates: MAP_BASE_CORNERS } } : {}),
             ...(board?.backdrop ? { backdrop: { type: "vector" as const, url: `pmtiles://${board.backdrop.url}`, promoteId: "carta_id" } } : {}),
             "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
             ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
@@ -454,6 +459,7 @@ export function Game({
               type: "background",
               paint: { "background-color": palette.ocean },
             },
+            ...(satellite ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
             ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": palette.graticuleOpacity, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
             ...(palette.rhumb ? [{ id: "rhumb", type: "line" as const, source: "rhumb", paint: { "line-color": palette.rhumb.color, "line-opacity": palette.rhumb.opacity, "line-width": 0.7 } }] : []),
             // sombra junto às costas (três faixas opacas, da mais clara à mais escura), por baixo da terra: só aparece do lado do mar
@@ -475,6 +481,7 @@ export function Game({
               filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!=", ["get", "carta_id"], board.backdrop.hide]] as unknown as maplibregl.FilterSpecification,
               paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, palette.outline, 0.25) },
             }] : []),
+            ...(mapBase === "relevo" ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
             {
               id: "land",
               type: "fill",
@@ -484,9 +491,11 @@ export function Game({
               paint: {
                 "fill-color": palette.land,
                 "fill-outline-color": palette.outline,
-                "fill-opacity": palette.landOpacity,
+                "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number>,
               },
             },
+            // no satélite as costas e fronteiras viram um traço claro e fino por cima da foto (a terra é transparente)
+            ...(satellite ? [{ id: "map-base-borders", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": "#ffffff", "line-opacity": 0.55, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.45, 6, 1.1] as unknown as maplibregl.ExpressionSpecification } }] : []),
             // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
             ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
              ...MARKER_BAND_ZOOMS.map((band) => ({
@@ -540,8 +549,9 @@ export function Game({
 
     const handleLoad = () => setMapReady(true);
     const handleError = (event: any) => {
-      // o mapa-múndi de fundo do tabuleiro é só contexto: sem internet (o mapa offline não baixado) ou com um tile falhando, a partida segue
-      if (event?.sourceId === "backdrop") return;
+      // o mapa-múndi de fundo do tabuleiro e a foto de satélite são só contexto: sem internet (o mapa offline não baixado, a foto ainda não
+      // guardada) ou com um tile falhando, a partida segue
+      if (event?.sourceId === "backdrop" || event?.sourceId === "map-base") return;
       const message =
         event.error instanceof Error
           ? event.error.message
@@ -559,8 +569,8 @@ export function Game({
     map.on("load", exposeActiveMarkerIds);
     map.on("error", handleError);
     // Navios e criaturas do mar do tema (Cartógrafo): ancorados no oceano, acompanham o arrasto e o zoom do mapa.
-    const removeFauna = addMapFauna(map, document.documentElement.dataset.theme);
-    const removeOrnaments = addMapOrnaments(map, mapStyleId);
+    const removeFauna = addMapFauna(map, satellite ? undefined : document.documentElement.dataset.theme);
+    const removeOrnaments = addMapOrnaments(map, satellite ? undefined : mapStyleId);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
@@ -714,6 +724,14 @@ export function Game({
         ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]], answerColor] : []),
         palette.land,
       ] as unknown as maplibregl.ExpressionSpecification);
+      // com fundo de satélite ou relevo a terra é transparente (ou quase): os países marcados acendem por cima da foto
+      if (palette.landMarkedOpacity !== undefined) map.setPaintProperty("land", "fill-opacity", landOpacityPaint(palette, [
+        ["all", settled, ["==", ["get", "carta_id"], target]],
+        ["all", wrong, ["==", ["get", "carta_id"], selectedAnswer]],
+        ...(nbr ? [["in", ["get", "carta_id"], ["literal", nbr]]] : []),
+        ...(tinted ? [["in", ["get", "carta_id"], ["literal", tinted]]] : []),
+        ...(marked ? [["in", ["get", "carta_id"], ["literal", marked]]] : []),
+      ]) as maplibregl.DataDrivenPropertyValueSpecification<number>);
       for (const band of MARKER_BAND_ZOOMS) {
         map.setPaintProperty(markerLayerId(band), "circle-color", [
         "case",
@@ -821,7 +839,7 @@ export function Game({
             {feedback || t.map.currentTarget(targetName)}
           </p>
           <p className="map-keyboard-hint">{t.map.keyboardHint}</p>
-          {isMapStyleId(mapStyleId) && <div className="map-cartouche" data-style={mapStyleId} aria-hidden="true" style={{ "--c-paper": MAP_STYLES[mapStyleId].ornament.paper, "--c-ink": MAP_STYLES[mapStyleId].ornament.ink, "--c-accent": MAP_STYLES[mapStyleId].ornament.accent } as CSSProperties}><b>{MAP_STYLES[mapStyleId].cartouche[0]}</b><small>{MAP_STYLES[mapStyleId].cartouche[1]}</small></div>}
+          {isMapStyleId(mapStyleId) && !satellite && <div className="map-cartouche" data-style={mapStyleId} aria-hidden="true" style={{ "--c-paper": MAP_STYLES[mapStyleId].ornament.paper, "--c-ink": MAP_STYLES[mapStyleId].ornament.ink, "--c-accent": MAP_STYLES[mapStyleId].ornament.accent } as CSSProperties}><b>{MAP_STYLES[mapStyleId].cartouche[0]}</b><small>{MAP_STYLES[mapStyleId].cartouche[1]}</small></div>}
           <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>{t.map.crosshair}</span></div>
           <div className="map-hud">
             <div className="map-note">{t.map.note}</div>
