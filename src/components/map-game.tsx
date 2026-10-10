@@ -20,7 +20,7 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
-import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
@@ -494,8 +494,8 @@ export function Game({
                 "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number>,
               },
             },
-            // no satélite as costas e fronteiras viram um traço claro e fino por cima da foto (a terra é transparente)
-            ...(satellite ? [{ id: "map-base-borders", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": "#ffffff", "line-opacity": 0.55, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.45, 6, 1.1] as unknown as maplibregl.ExpressionSpecification } }] : []),
+            // com a foto, as costas e fronteiras viram um traço claro e fino sobre um contorno escuro (lê no deserto e na floresta)
+            ...mapBaseBorderLayers(mapBase, withMapStyle(currentPalette(), mapStyleId)).map((line) => ({ id: line.id, type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": line.color, "line-opacity": line.opacity, "line-width": ["interpolate", ["linear"], ["zoom"], 1, line.width[0], 6, line.width[1]] as unknown as maplibregl.ExpressionSpecification } })),
             // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
             ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
              ...MARKER_BAND_ZOOMS.map((band) => ({

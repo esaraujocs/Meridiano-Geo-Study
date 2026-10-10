@@ -6,7 +6,7 @@
 //   satelite          a foto inteira: a terra fica transparente e só os países marcados acendem; as fronteiras viram um traço claro e fino;
 //   satelite-noturno  o mesmo mapa com a interface do Noturno (o app não tem modo escuro à parte: o escuro é o tema Noturno);
 //   relevo            só a terra da foto (o mar recortado), apagada e tingida pela terra da paleta; o mar, as costas e o traço continuam os da paleta.
-import type { MapPalette } from "./map-palette.js";
+import { mixHex, type MapPalette } from "./map-palette.js";
 
 export type MapBase = "padrao" | "satelite" | "satelite-noturno" | "relevo";
 export const MAP_BASES: readonly MapBase[] = ["padrao", "satelite", "satelite-noturno", "relevo"];
@@ -19,6 +19,18 @@ export function readMapBase(storage: Pick<Storage, "getItem"> | undefined = type
     const saved = storage?.getItem(MAP_BASE_KEY);
     return isMapBase(saved) ? saved : "padrao";
   } catch { return "padrao"; }
+}
+
+/** As costas e fronteiras sobre a foto (10/10/2026; o Enzo: "a cor das linhas dos países contrastou mal com o Saara"): um contorno escuro largo
+ *  por baixo e um traço claro fino por cima, que se lê tanto no deserto claro quanto na floresta escura. No relevo o traço claro é o contorno
+ *  da paleta, clareado. */
+export function mapBaseBorderLayers(base: MapBase, palette: MapPalette): { id: string; color: string; opacity: number; width: [number, number] }[] {
+  if (base === "padrao") return [];
+  const core = isSatellite(base) ? "#ffffff" : mixHex(palette.outline.startsWith("#") ? palette.outline : "#4c8890", "#ffffff", 0.45);
+  return [
+    { id: "map-base-casing", color: "#06121a", opacity: isSatellite(base) ? 0.5 : 0.55, width: [1.6, 3.2] },
+    { id: "map-base-borders", color: core, opacity: isSatellite(base) ? 0.78 : 0.85, width: [0.5, 1.1] },
+  ];
 }
 
 /** O tema da interface que o fundo pede por cima do escolhido (o Satélite + Noturno); sem pedido, vale o do jogador. */
@@ -40,7 +52,7 @@ export const MAP_BASE_NEAR: readonly [number, number] = [6, 8.5];
  *  só deixa a terra translúcida por cima da foto. */
 export function withMapBase(palette: MapPalette, base: MapBase): MapPalette {
   if (isSatellite(base)) return { ...palette, landOpacity: 0, landOpacityNear: 0.6, landMarkedOpacity: 0.85, outline: "rgba(0,0,0,0)", coast: null, graticule: null, rhumb: null, ink: null };
-  if (base === "relevo") return { ...palette, landOpacity: 0.42, landOpacityNear: palette.landOpacity, landMarkedOpacity: 0.85 };
+  if (base === "relevo") return { ...palette, landOpacity: 0.42, landOpacityNear: palette.landOpacity, landMarkedOpacity: 0.85, outline: "rgba(0,0,0,0)" };
   return palette;
 }
 
