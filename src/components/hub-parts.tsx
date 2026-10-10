@@ -492,12 +492,14 @@ function readHubLayout(): HubLayout {
 export const HUB_LAYOUT: HubLayout = typeof window === "undefined" ? HUB_LAYOUT_DEFAULT : readHubLayout();
 /** Os três desenhos em faixa dividem o CSS (`data-layout="faixa"`); o lugar do progresso vai em `data-progress`. */
 export const HUB_BAND = HUB_LAYOUT !== "coluna";
-/** As colunas da faixa de baixo no desktop (09/10/2026, mock hub-v37 L2): "iguais" (Duelo, Desafios e Mecenato·Vitrine do mesmo tamanho; o Hub
- *  alarga para o Duelo manter a largura e o cabeçalho segue as colunas) ou "antigas" (1fr 1fr .82fr, até a tag `hub-colunas-antigas-2026-10-09`).
- *  Para voltar sem publicar: `?colunas=antigas` (fica salvo neste navegador; `?colunas=iguais` desfaz); para todos: HUB_COLUMNS_DEFAULT. */
-export type HubColumns = "iguais" | "antigas";
+/** As colunas da faixa de baixo no desktop (09/10/2026, mocks hub-v37): "iguais" (L1: Duelo, Desafios e Mecenato·Vitrine do mesmo tamanho na
+ *  largura de antes, e o cabeçalho seguindo as colunas), "largas" (L2: as mesmas colunas iguais, mas o Hub alarga para o Duelo manter a largura
+ *  antiga, até onde a altura deixa; publicado em fbea9bc, o Enzo preferiu o L1) ou "antigas" (1fr 1fr .82fr, até a tag
+ *  `hub-colunas-antigas-2026-10-09`). Para trocar sem publicar: `?colunas=antigas|largas|iguais` (fica salvo neste navegador); para todos:
+ *  HUB_COLUMNS_DEFAULT. */
+export type HubColumns = "iguais" | "largas" | "antigas";
 const HUB_COLUMNS_DEFAULT: HubColumns = "iguais";
-const isColumns = (value: string | null): value is HubColumns => value === "iguais" || value === "antigas";
+const isColumns = (value: string | null): value is HubColumns => value === "iguais" || value === "largas" || value === "antigas";
 function readHubColumns(): HubColumns {
   try {
     const asked = new URLSearchParams(window.location.search).get("colunas");

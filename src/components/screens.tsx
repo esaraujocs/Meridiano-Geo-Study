@@ -358,7 +358,13 @@ export function Hub({
           {arenas?.onFriends && <button type="button" className="hub-friends" aria-label={t.hub.duelFriends} title={t.hub.duelFriends} onClick={arenas.onFriends}><Icon type="people" size={19} /><span>{t.hub.duelFriends}</span></button>}
           <button type="button" className="hub-coin" aria-label={t.hub.coinAria(formatNumber(economy?.balance ?? 0))} title={t.nav.store} onClick={() => onNavigate?.("store")}><i aria-hidden="true">$</i><strong>{formatNumber(economy?.balance ?? 0)}</strong><span className="hub-coin-store"><Icon type="store" size={15} /> {t.nav.store}</span></button>
           <button type="button" className="hub-gear" aria-label={t.nav.openOptions} title={t.nav.options} onClick={() => onNavigate?.("options")}><Icon type="settings" /></button>
-        </div></div>
+        </div>
+        {/* partidas e rodadas, como no Hub antigo (09/10/2026, pedido do Enzo); na linha da barra de XP do jogador, só no cabeçalho do desktop */}
+        {HUB_LAYOUT === "cabecalho" && economy && <p className="hx-tally" title={t.hub.tallyTitle}>
+          <span><b>{formatNumber(economy.completedSessions)}</b> {t.hub.tallySessions(economy.completedSessions)}</span>
+          <span><b>{formatNumber(economy.rounds)}</b> {t.hub.tallyRounds(economy.rounds)}</span>
+        </p>}
+        </div>
       </header>
       <div className="hx-grid">
         <section className="hx-cell hx-modes" aria-labelledby="hx-modes-title">

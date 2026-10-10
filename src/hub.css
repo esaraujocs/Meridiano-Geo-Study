@@ -20,6 +20,9 @@
 .hx .hub-badge{width:24px;height:24px;padding:0;gap:0;border-radius:50%;justify-content:center}
 .hx .hub-badge svg{width:13px;height:13px}
 .hx .hub-badge-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hx-tally{display:none}
+/* as medalhas dos títulos saem do cabeçalho do Hub em faixa (09/10/2026, pedido do Enzo; seguem no Progresso) */
+.hx[data-progress=cabecalho] .hub-badges{display:none}
 .hx .hub-tally{order:3;flex:none;margin:0 0 0 auto;font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--muted)}
 .hx .hub-xp{grid-area:xp;display:flex;flex-wrap:nowrap;align-items:center;gap:10px;margin:0;min-width:0;white-space:nowrap}
 .hx .hub-xp-label{flex:none}
@@ -474,19 +477,25 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
      dá cartões de ~265×400, o tamanho do Hub antigo; em janela mais baixa encolhe com a altura (a página mede ~450 px + 0,38 × a largura), até
      1000 px; abaixo disso (notebook de 768 px de altura ou menos) rola um pouco */
   .hx[data-layout=faixa].hub-content{max-width:clamp(1000px,calc((100vh - 450px) * 2.6),1200px)}
-  /* 3 colunas iguais (09/10/2026, mock hub-v37 L2; pedido do Enzo: "o hub com a largura de 3 cartões do tamanho do duelo/desafio"): Duelo,
-     Desafios e Mecenato·Vitrine do mesmo tamanho, e o cabeçalho segue as colunas (o jogador sobre Duelo e Desafios, a carteira sobre a 3ª).
-     O Hub alarga para o Duelo manter a largura que tinha com a 3ª coluna mais estreita (1fr 1fr .82fr: Duelo = (largura antiga − 2 vãos) / 2,82),
-     mas só até onde a altura da janela deixa sem rolar (a página mede ~472 px + 0,377 × a largura do conteúdo, medido em .tmp-hub/probe-height);
-     nunca fica mais estreito que antes (em janela baixa as colunas iguais dividem a largura antiga). ?colunas=antigas volta ao de antes
-     (HUB_COLUMNS em hub-parts.tsx). */
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais].hub-content{--hub-pad:clamp(24px,2.8vw,56px);--hub-old:clamp(1000px,calc((100vh - 450px) * 2.6),1200px);max-width:max(var(--hub-old),min(calc((var(--hub-old) - 2 * var(--hub-pad) - 36px) * 3 / 2.82 + 36px + 2 * var(--hub-pad)),calc((100vh - 480px) * 2.65 + 2 * var(--hub-pad))))}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:18px}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-p-player{grid-column:1/3}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-p-wallet{grid-column:3}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-p-wallet .hub-stats{flex:1}
-  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=iguais] .hx-p-wallet .hub-coin{margin-right:auto}
+  /* 3 colunas iguais (09/10/2026, mocks hub-v37; pedido do Enzo: "o hub com a largura de 3 cartões do tamanho do duelo/desafio", e depois o L1:
+     "mesmo tamanho do anterior, 3 iguais"): Duelo, Desafios e Mecenato·Vitrine do mesmo tamanho, na largura de antes, e o cabeçalho segue as
+     colunas (o jogador sobre Duelo e Desafios, a carteira sobre a 3ª, com partidas e rodadas na linha da barra de XP). HUB_COLUMNS em
+     hub-parts.tsx: ?colunas=largas é o L2 e ?colunas=antigas volta ao 1fr 1fr .82fr. */
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:18px}
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-p-player{grid-column:1/3}
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-p-wallet{grid-column:3}
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-p-wallet .hub-stats{flex:1}
+  .hx[data-layout=faixa][data-progress=cabecalho]:is([data-cols=iguais],[data-cols=largas]) .hx-p-wallet .hub-coin{margin-right:auto}
+  /* L2 (?colunas=largas): o Hub alarga para o Duelo manter a largura que tinha com a 3ª coluna mais estreita (Duelo = (largura antiga − 2 vãos)
+     / 2,82), só até onde a altura deixa sem rolar (a página mede ~472 px + 0,377 × a largura do conteúdo, medido em .tmp-hub/probe-height) e
+     nunca mais estreito que antes */
+  .hx[data-layout=faixa][data-progress=cabecalho][data-cols=largas].hub-content{--hub-pad:clamp(24px,2.8vw,56px);--hub-old:clamp(1000px,calc((100vh - 450px) * 2.6),1200px);max-width:max(var(--hub-old),min(calc((var(--hub-old) - 2 * var(--hub-pad) - 36px) * 3 / 2.82 + 36px + 2 * var(--hub-pad)),calc((100vh - 480px) * 2.65 + 2 * var(--hub-pad))))}
+  /* a carteira em duas linhas: a moeda e os botões em cima, partidas e rodadas embaixo, na altura da barra de XP do jogador */
+  .hx[data-progress=cabecalho] .hx-p-wallet{flex-direction:column;align-items:stretch;justify-content:center;gap:6px}
+  .hx[data-progress=cabecalho] .hx-p-wallet .hub-stats{flex:none}
+  .hx[data-progress=cabecalho] .hx-tally{display:flex;justify-content:center;gap:18px;margin:0;font:500 10.5px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--muted)}
+  .hx[data-progress=cabecalho] .hx-tally b{margin-right:3px;font:700 16px/1 'Fraunces',Georgia,serif;letter-spacing:-.01em;text-transform:none;color:var(--ink)}
   .hx[data-layout=faixa] .hx-car{--peek:0px}
   .hx[data-layout=faixa] .hx-track{grid-auto-columns:calc((100% - 3 * var(--gap)) / 4);padding-inline:0;-webkit-mask-image:none;mask-image:none}
   .hx[data-layout=faixa] .hx-track.is-moving{-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}

@@ -81,6 +81,8 @@ export const pt = {
     xpProgressAria: "Progresso de XP",
     tally: (sessions: number, rounds: number, fmt: (n: number) => string) => `${fmt(sessions)} ${sessions === 1 ? "partida" : "partidas"} · ${fmt(rounds)} ${rounds === 1 ? "rodada" : "rodadas"}`,
     tallyTitle: "Partidas concluídas e rodadas jogadas",
+    tallySessions: (n: number): string => (n === 1 ? "partida" : "partidas"),
+    tallyRounds: (n: number): string => (n === 1 ? "rodada" : "rodadas"),
     statsAria: "Estatísticas do jogador",
     matches: "Partidas",
     rounds: "Rodadas",
