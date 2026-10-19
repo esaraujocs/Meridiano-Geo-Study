@@ -731,9 +731,15 @@ assert.deepEqual([250, 750, 1250, 1750, 2250, 2750, 3250].map((r) => Math.round(
 assert.deepEqual([250, 750, 1250, 1750, 2250, 2750, 3250].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 3800, 2600, 1700]);
 assert.ok(Math.abs(B.baseAtRating(500).accuracy - 0.64) < 1e-9, "entre duas ligas, interpolado");
 let lastAcc = 0, lastMs = Infinity;
-for (let r = 0; r <= 5000; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= 0.99 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }
+for (let r = 0; r <= 5000; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= B.TOP_ACCURACY + 1e-12 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }
 assert.ok(B.baseAtRating(0).accuracy < 0.6 && B.baseAtRating(0).accuracy >= 0.5, "abaixo do Bronze continua caindo, com piso");
-assert.equal(B.baseAtRating(B.RATING_TOP).accuracy, 0.99, "acima do Grão-Mestre chega a 99%");
+// acima do Grão-Mestre o adversário continua melhorando até RATING_TOP (o limite natural do topo): a base passa de 99% para cobrir o desconto
+// do jeito e do modo, o perfil continua preso em 99% e o tempo cai até TOP_SPEEDUP
+assert.ok(Math.abs(B.baseAtRating(B.RATING_TOP).accuracy - B.TOP_ACCURACY) < 1e-9 && B.baseAtRating(B.RATING_TOP + 500).accuracy === B.baseAtRating(B.RATING_TOP).accuracy, "no topo, a base chega a TOP_ACCURACY e para");
+assert.ok(Math.abs(B.baseAtRating(B.RATING_TOP).avgMs - 1700 * (1 - B.TOP_SPEEDUP)) < 1e-9, "no topo o tempo cai TOP_SPEEDUP");
+const fastTop = B.BOTS.find((b) => b.league === "grao-mestre" && b.style === "rapido");
+assert.equal(B.botProfile(fastTop, { division: null, family: null, rating: B.RATING_TOP }).accuracy, 0.99, "no topo até o rápido acerta 99% (o perfil não passa disso)");
+assert.ok(B.botProfile(fastTop, { division: null, family: null, rating: 3250 }).accuracy < 0.96, "no meio do Grão-Mestre o rápido ainda erra mais");
 assert.equal(B.baseAtRating(NaN).accuracy, B.baseAtRating(0).accuracy);
 const constBot = B.botsOfLeague("prata")[0];
 assert.equal(B.botProfile(constBot, { division: 3, family: null, rating: 1000 }).accuracy, B.baseAtRating(1000).accuracy, "com rating, a divisão não pesa");

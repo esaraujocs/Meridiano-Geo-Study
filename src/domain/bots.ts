@@ -31,9 +31,15 @@ export const LEAGUE_BASE: Record<LeagueKey, { accuracy: number; avgMs: number }>
   "grao-mestre": { accuracy: 0.985, avgMs: 1700 },
 };
 /** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE; o do Grão-Mestre, sem
- *  teto, é 3.250). Abaixo do Bronze segue a mesma inclinação (com piso) e acima do Grão-Mestre o acerto sobe até 99% e o tempo cai 15% em
- *  RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
-export const RATING_TOP = 3600;
+ *  teto, é 3.250). Abaixo do Bronze segue a mesma inclinação (com piso), então o bot acompanha o rating sorteado sem saltos de liga.
+ *  **Acima do Grão-Mestre o adversário continua melhorando até RATING_TOP** (19/10/2026, pedido do Enzo: "o top 1 precisa de outros grão-mestres
+ *  batendo de frente com ele, assim o limite natural surge, precisaria ganhar muitas seguidas para subir"): a base do acerto passa de 99% (até
+ *  TOP_ACCURACY; o perfil continua preso em 99%, então o que sobra cobre o desconto do jeito e do modo: em RATING_TOP até o rápido e o modo difícil
+ *  acertam 99%) e o tempo cai até TOP_SPEEDUP (o piso humano segura). Antes parava em 99% e −20% em 3.600: os jeitos do adversário (o rápido erra
+ *  mais, o preciso é lento) deixavam a vitória de um Grão-Mestre perto de 50% de 3.400 a 4.000, e o MMR do topo passeava sem limite. */
+export const RATING_TOP = 4000;
+export const TOP_ACCURACY = 1.03;
+export const TOP_SPEEDUP = 0.45;
 export function baseAtRating(rating: number): { accuracy: number; avgMs: number } {
   const anchors = LEAGUES.map((league, index) => ({ at: leagueFloor(index) + leagueSpan(index) / 2, ...LEAGUE_BASE[league] }));
   const value = Number.isFinite(rating) ? Math.max(0, rating) : 0;
@@ -46,7 +52,7 @@ export function baseAtRating(rating: number): { accuracy: number; avgMs: number 
   }
   if (value >= last.at) {
     const part = Math.min(1, (value - last.at) / (RATING_TOP - last.at));
-    return { accuracy: Math.min(0.99, last.accuracy + (0.99 - last.accuracy) * part), avgMs: last.avgMs * (1 - 0.2 * part) };
+    return { accuracy: last.accuracy + (TOP_ACCURACY - last.accuracy) * part, avgMs: last.avgMs * (1 - TOP_SPEEDUP * part) };
   }
   const index = anchors.findIndex((anchor) => anchor.at > value);
   const low = anchors[index - 1];

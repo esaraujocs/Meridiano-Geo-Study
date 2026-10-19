@@ -161,8 +161,9 @@ try {
     if (tracked.matches !== initial.bots.mapas["bot-bronze-0"].matches + 3) {
       throw new Error("concurrent transactions or duplicate retries settled a bot duel incorrectly");
     }
-    if (duelCount !== 3 || duplicateSaves.some((state) => state.revision !== 1)
-      || parallelSaves.some((state) => state.revision < 2)) {
+    // a primeira leitura já calibra o estado novo (uma revisão), então o duelo conta a partir da revisão dela
+    if (duelCount !== 3 || duplicateSaves.some((state) => state.revision !== initial.revision + 1)
+      || parallelSaves.some((state) => state.revision < initial.revision + 2)) {
       throw new Error(`duel records and bot settlements must commit once, together (duels=${duelCount}, duplicateRevisions=${duplicateSaves.map((state) => state.revision)}, parallelRevisions=${parallelSaves.map((state) => state.revision)})`);
     }
 
@@ -190,7 +191,7 @@ try {
     // A later-day revision-0 startup seed must not block a populated imported snapshot.
     await deleteDatabase();
     const pristine = await loadBotRanking(now + 10 * dayMs);
-    if (pristine.revision !== 0) throw new Error("fresh seed should have revision zero");
+    if (pristine.revision !== 1 || pristine.calibration === undefined) throw new Error("fresh seed should be calibrated once (revision one)");
     const seededRestore = await importProgress(backup);
     if (seededRestore.writes.preferences[0]?.revision !== caughtUp.revision) {
       throw new Error("a populated snapshot must replace a later-day pristine seed");

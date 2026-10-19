@@ -3,18 +3,18 @@ import {
   BOT_RANKING_CALIBRATION,
   BOT_RANKING_ID,
   MAX_SIMULATION_DAYS,
-  PAIR_JITTER,
   advanceBotRanking,
-  botVersusBot,
+  botDuel,
   calibrateBotRanking,
   createBotRanking,
   needsCalibration,
   parseBotRanking,
   settleBotMatch,
 } from "../.tmp-bot-ranking/bot-ranking.js";
-import { BOTS, hashSeed, mulberry32 } from "../.tmp-bot-ranking/bots.js";
+import { BOTS } from "../.tmp-bot-ranking/bots.js";
 import { LADDERS } from "../.tmp-bot-ranking/duel-modes.js";
-import { expectedScore, mmrChange, SIGMA_MIN, trophyChange } from "../.tmp-bot-ranking/mmr.js";
+import { leagueOf } from "../.tmp-bot-ranking/league.js";
+import { expectedScore, matchmaking, mmrChange, SIGMA_MIN, surprise, trophyChange } from "../.tmp-bot-ranking/mmr.js";
 import { botTrophies, globalLeaderboard, leaderboard } from "../.tmp-bot-ranking/leaderboard.js";
 
 const clone = (value) => structuredClone(value);
@@ -113,68 +113,56 @@ for (let index = 0; index < 3; index += 1) {
 assert.ok(surpriseState.bots.mapas[botId].sigma > 250 * 0.93 ** 2, "surprising results push sigma back up");
 assert.equal(surpriseState.bots.mapas[botId].streak, 3);
 
-// O dia de ranking (desde 19/10/2026): pares de vizinhos de força (MMR com um pouco de sorte) e o resultado de um duelo de verdade bot × bot.
+// O dia de ranking (desde 19/10/2026): cada bot joga o duelo da pessoa, contra o adversário do matchmaking dele (pelo MMR, a incerteza e a
+// surpresa), um bot da liga do rating jogando com a força do rating; o resultado conta contra esse rating.
 const dailyBase = createBotRanking(30_000);
 let varied = clone(dailyBase);
 for (const [index, bot] of BOTS.entries()) {
-  varied.bots.mapas[bot.id].mmr = 700 + index * 22;
-  varied.bots.mapas[bot.id].trophies = 700 + index * 22;
+  varied.bots.mapas[bot.id].mmr = 700 + index * 80;
+  varied.bots.mapas[bot.id].trophies = 650 + index * 80;
 }
 const day = 30_001;
-const pairRandom = mulberry32(hashSeed(`bot-ranking:pairs:mapas:${day}`));
-const ordered = BOTS.map((bot) => ({ id: bot.id, key: varied.bots.mapas[bot.id].mmr + (pairRandom() - 0.5) * PAIR_JITTER }))
-  .sort((a, b) => a.key - b.key || a.id.localeCompare(b.id));
-const expectedPairs = [];
-for (let index = Math.floor(pairRandom() * 2); index + 1 < ordered.length; index += 2) expectedPairs.push([ordered[index].id, ordered[index + 1].id]);
-assert.equal(expectedPairs.length, Math.floor(BOTS.length / 2));
-for (const [first, second] of expectedPairs) {
-  assert.ok(Math.abs(varied.bots.mapas[first].mmr - varied.bots.mapas[second].mmr) <= PAIR_JITTER + 22 * 2, "os pares são vizinhos de força");
-}
-const expectedOpponent = new Map();
-const expectedResult = new Map();
-for (const [first, second] of expectedPairs) {
-  expectedOpponent.set(first, second);
-  expectedOpponent.set(second, first);
-  const result = botVersusBot(BOTS.find((bot) => bot.id === first), BOTS.find((bot) => bot.id === second), "mapas", `bot-ranking:mapas:${day}:${first}:${second}`);
-  expectedResult.set(first, result);
-  expectedResult.set(second, { outcome: result.outcome === "win" ? "loss" : result.outcome === "loss" ? "win" : "draw", margin: -result.margin });
-}
 const daily = advanceBotRanking(deepFreeze(clone(varied)), day);
-assert.equal(daily.revision, varied.revision + 1, "a whole simulated day advances the snapshot once, not once per side");
-// com um número ímpar de bots (35, desde o Grão-Mestre) um deles descansa no dia; o sorteio muda quem
-const resting = BOTS.filter((bot) => !expectedOpponent.has(bot.id));
-assert.equal(resting.length, BOTS.length % 2, "só sobra quem não tem par: nenhum com número par de bots, um com ímpar");
-for (const bot of resting) assert.deepEqual(daily.bots.mapas[bot.id], varied.bots.mapas[bot.id], "quem descansa fica como estava");
+assert.equal(daily.revision, varied.revision + 1, "a whole simulated day advances the snapshot once");
 for (const bot of BOTS) {
   const original = varied.bots.mapas[bot.id];
-  const opponentId = expectedOpponent.get(bot.id);
-  if (!opponentId) continue;
-  const opponent = varied.bots.mapas[opponentId];
-  const { outcome, margin } = expectedResult.get(bot.id);
+  const match = matchmaking(original.trophies, original.mmr, original.sigma, surprise(original.samples));
+  const duel = botDuel(bot, original, "mapas", `bot-ranking:mapas:${day}:${bot.id}`);
+  assert.equal(duel.rating, match.rating, "o rating do adversário é o do matchmaking da pessoa");
+  const opponent = BOTS.find((other) => other.id === duel.opponentId);
+  assert.notEqual(opponent.id, bot.id, "nunca contra si mesmo");
+  assert.equal(opponent.league, leagueOf(match.rating).league, "o adversário é da liga do rating");
   assert.equal(daily.bots.mapas[bot.id].matches, 1, "each bot plays exactly once on each day");
-  assert.equal(daily.bots.mapas[bot.id].samples[0].expected, expectedScore(original.mmr, opponent.mmr));
+  assert.equal(daily.bots.mapas[bot.id].samples[0].expected, expectedScore(original.mmr, duel.rating));
   assert.equal(
     daily.bots.mapas[bot.id].mmr,
-    Math.max(0, original.mmr + mmrChange(original.mmr, opponent.mmr, outcome, margin, original.sigma)),
-    "each side settles against the opponent's pre-match MMR snapshot",
+    Math.max(0, original.mmr + mmrChange(original.mmr, duel.rating, duel.outcome, duel.margin, original.sigma)),
+    "o MMR muda contra o rating do adversário, como o da pessoa",
   );
 }
 
-// O duelo bot × bot usa as estatísticas: o Grão-Mestre bate o Bronze quase sempre; a Lúcia (precisa e lenta) fica parelha com o Ptolomeu
+// O duelo usa as estatísticas e o adversário fica mais forte com o rating: o Grão-Mestre constante vence quem está abaixo dele, fica perto de
+// metade no meio da própria liga e perde muito perto do topo (o limite natural); a Lúcia (precisa e lenta) se vira no meio do Mestre.
 const byId = (id) => BOTS.find((bot) => bot.id === id);
-let gmWins = 0, luciaWins = 0, luciaLosses = 0;
-for (let index = 0; index < 400; index += 1) {
-  if (botVersusBot(byId("bot-grao-mestre-0"), byId("bot-bronze-0"), "bandeiras", `teste:${index}`).outcome === "win") gmWins += 1;
-  const result = botVersusBot(byId("bot-mestre-1"), byId("bot-mestre-0"), "mapas", `teste:${index}`);
-  if (result.outcome === "win") luciaWins += 1; else if (result.outcome === "loss") luciaLosses += 1;
-}
-assert.ok(gmWins >= 390, `o Grão-Mestre vence o Bronze quase sempre (${gmWins}/400)`);
-assert.ok(luciaWins >= 0.4 * (luciaWins + luciaLosses), `ser precisa e lenta não deixa a Lúcia para trás do Ptolomeu (${luciaWins} × ${luciaLosses}): ela ganha no acerto, ele no relógio`);
-assert.deepEqual(botVersusBot(byId("bot-ouro-1"), byId("bot-ouro-2"), "mapas", "x"), botVersusBot(byId("bot-ouro-1"), byId("bot-ouro-2"), "mapas", "x"), "mesma semente, mesmo duelo");
+const winRate = (id, rating, ladder) => {
+  const standing = { trophies: rating, mmr: rating, sigma: SIGMA_MIN, streak: 0, samples: [], matches: 0 };
+  let wins = 0;
+  for (let index = 0; index < 400; index += 1) {
+    const { outcome } = botDuel(byId(id), standing, ladder, `teste:${id}:${rating}:${index}`);
+    wins += outcome === "win" ? 1 : outcome === "draw" ? 0.5 : 0;
+  }
+  return wins / 400;
+};
+const gm = [2750, 3250, 3990].map((rating) => winRate("bot-grao-mestre-0", rating, "bandeiras"));
+assert.ok(gm[0] > 0.7 && gm[1] > 0.4 && gm[1] < 0.65 && gm[2] < 0.3, `o Grão-Mestre constante: vence abaixo, metade no meio, perde no topo (${gm.map((x) => Math.round(x * 100)).join("% · ")}%)`);
+assert.ok(winRate("bot-mestre-1", 2750, "mapas") >= 0.4, "ser precisa e lenta não deixa a Lúcia para trás no meio do Mestre");
+assert.ok(winRate("bot-bronze-0", 1750, "bandeiras") < 0.1, "o Bronze não vence a Platina");
+assert.deepEqual(botDuel(byId("bot-ouro-1"), varied.bots.mapas["bot-ouro-1"], "mapas", "x"), botDuel(byId("bot-ouro-1"), varied.bots.mapas["bot-ouro-1"], "mapas", "x"), "mesma semente, mesmo duelo");
 
-// Recalibração: um estado de antes (sem `calibration`) passa um ano de duelos bot × bot, uma vez, sem mudar o dia
+// Recalibração: um estado de outra versão (ou sem `calibration`) passa um ano de duelos do dia, uma vez, sem mudar o dia
 const raw = createBotRanking(50_000);
 assert.ok(needsCalibration(raw), "estado novo ou de antes pede calibração");
+assert.ok(needsCalibration({ ...raw, calibration: BOT_RANKING_CALIBRATION - 1 }), "estado calibrado pela versão anterior pede de novo");
 const calibrated = calibrateBotRanking(raw);
 assert.equal(calibrated.calibration, BOT_RANKING_CALIBRATION);
 assert.ok(!needsCalibration(calibrated));
@@ -185,7 +173,15 @@ assert.deepEqual(parseBotRanking(clone(calibrated)), calibrated, "a calibração
 const mean = (ids) => ids.reduce((sum, id) => sum + calibrated.bots.bandeiras[id].trophies, 0) / ids.length;
 const leagueIds = (league) => BOTS.filter((bot) => bot.league === league).map((bot) => bot.id);
 assert.ok(mean(leagueIds("grao-mestre")) > mean(leagueIds("mestre")) && mean(leagueIds("mestre")) > mean(leagueIds("diamante")) && mean(leagueIds("ouro")) > mean(leagueIds("bronze")), "depois de calibrar, a média de cada liga segue a ordem das ligas");
-assert.ok(BOTS.every((bot) => calibrated.bots.mapas[bot.id].trophies > 0 || bot.league === "bronze"), "ninguém acima do Bronze afunda a zero (as faixas de 6 faziam isso)");
+assert.ok(BOTS.every((bot) => calibrated.bots.mapas[bot.id].trophies > 0 || bot.league === "bronze"), "ninguém acima do Bronze afunda a zero");
+// o topo tem âncora: de um estado inflado (o Grão-Mestre a 3.900, como ficou com os pares bot × bot) a calibração traz de volta
+for (const ladder of LADDERS) {
+  const inflated = clone(raw);
+  for (const id of leagueIds("grao-mestre")) Object.assign(inflated.bots[ladder][id], { trophies: 3_900, mmr: 3_950 });
+  const settled = calibrateBotRanking(inflated);
+  const top = Math.max(...Object.values(settled.bots[ladder]).map((standing) => standing.trophies));
+  assert.ok(top < 3_650 && top > 3_000, `o 1º do ranking volta para perto do Grão-Mestre (${ladder}: ${top})`);
+}
 
 // Daily simulation is deterministic; catch-up is the same chronological sequence as one-day advances.
 const deterministicDaily = advanceBotRanking(varied, day);

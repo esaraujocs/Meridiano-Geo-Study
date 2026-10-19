@@ -1,10 +1,14 @@
 // Economia persistente e simulação diária dos bots do ranking. Lógica pura.
 //
 // Desde 19/10/2026 (pedido do Enzo: "uma rodada massiva entre os bots, para ver se com essas stats muda a escada; quero que use isso") cada dia é
-// um duelo de verdade bot × bot, com as estatísticas de cada um (acerto, tempo, ajuste do modo, digitação pelo tamanho da resposta, piso humano),
-// no lugar do sorteio "MMR + forma do dia" de antes; os pares são vizinhos de força (com as faixas de 6, o bot no fundo de uma faixa forte perdia
-// quase tudo e afundava). Um estado salvo de antes é recalibrado uma vez com um ano desses duelos (`calibrateBotRanking`).
-import { BOTS, hashSeed, mulberry32, simulateBot, type Bot, type BotContext } from "./bots.js";
+// um duelo de verdade, com as estatísticas de cada bot (acerto, tempo, ajuste do modo, digitação pelo tamanho da resposta, piso humano), no lugar do
+// sorteio "MMR + forma do dia" de antes. Na mesma noite a 1ª versão (bot × bot entre vizinhos de força) foi trocada: um mundo fechado de bots não tem
+// âncora, a média fica onde os troféus iniciais a puseram e a escada se espalha em volta dela (os 5 do Grão-Mestre entraram com ~3.400 e o topo foi
+// a ~3.900). Pedido dele: "só garanta competitividade, o top 1 precisa de outros grão-mestres batendo de frente com ele, assim o limite natural
+// surge". Então cada bot joga o duelo da pessoa: o matchmaking dela (`matchmaking`, pelo MMR, a incerteza e a surpresa do próprio bot) escolhe um bot
+// da liga do rating, com a força desse rating; quanto mais alto, mais forte o adversário, e o bot para onde vence metade, na mesma escala da pessoa.
+// Um estado salvo de outra versão é recalibrado uma vez com um ano desses duelos (`calibrateBotRanking`).
+import { BOTS, hashSeed, mulberry32, pickBot, simulateBot, type Bot, type BotContext } from "./bots.js";
 import { LEAGUES, hasDivisions, leagueFloor } from "./league.js";
 import { LADDERS, drawLegs, groupDef, type Ladder } from "./duel-modes.js";
 import { TYPED_LENGTHS } from "./typed-lengths.js";
@@ -15,9 +19,11 @@ import {
   SIGMA_START,
   expectedScore,
   leadOf,
+  matchmaking,
   mmrChange,
   outcomeScore,
   sigmaNext,
+  surprise,
   trophyChange,
   type SurpriseSample,
 } from "./mmr.js";
@@ -41,7 +47,7 @@ export type BotRankingState = {
   revision: number;
   lastDay: number;
   bots: Record<Ladder, Record<string, BotStanding>>;
-  /** Versão da calibração pelos duelos bot × bot (ausente nos estados de antes, que são recalibrados ao abrir). */
+  /** Versão da calibração pelos duelos do dia (ausente nos estados de antes; de outra versão, recalibrado ao abrir). */
   calibration?: number;
 };
 
@@ -228,35 +234,19 @@ export function settleBotMatch(state: BotRankingState, input: BotMatchInput): Bo
   return { ...settled, revision: state.revision + 1 };
 }
 
-function shuffle<T>(items: T[], random: () => number): T[] {
-  for (let index = items.length - 1; index > 0; index -= 1) {
-    const other = Math.floor(random() * (index + 1));
-    [items[index], items[other]] = [items[other], items[index]];
-  }
-  return items;
-}
-
-/** Quanto a força de cada bot é sacudida antes de parear os vizinhos (para os pares variarem de um dia para o outro). */
-export const PAIR_JITTER = 120;
-
-/** Pares do dia: os bots em ordem de força (MMR com um pouco de sorte), cada um contra o vizinho; com número ímpar, uma ponta descansa. */
-function dailyPairs(state: BotRankingState, ladder: Ladder, day: number) {
-  const random = mulberry32(hashSeed(`bot-ranking:pairs:${ladder}:${day}`));
-  const ordered = BOT_IDS.map((id) => ({ id, key: state.bots[ladder][id].mmr + (random() - 0.5) * PAIR_JITTER }))
-    .sort((a, b) => a.key - b.key || a.id.localeCompare(b.id));
-  const pairs: [string, string][] = [];
-  for (let index = Math.floor(random() * 2); index + 1 < ordered.length; index += 2) pairs.push([ordered[index].id, ordered[index + 1].id]);
-  return pairs;
-}
-
-/** A força própria do bot no duelo bot × bot: a base da liga dele (divisão II nas ligas com divisões), sem o rating do matchmaking. */
+/** A força própria do bot: a base da liga dele (divisão II nas ligas com divisões), sem o rating do matchmaking. */
 const ownDivision = (bot: Bot): 2 | null => (hasDivisions(LEAGUES.indexOf(bot.league)) ? 2 : null);
 const expand = (pairs: readonly (readonly [number, number])[]) => pairs.flatMap(([length, count]) => Array<number>(count).fill(length));
 const LENGTH_POOLS = { nome: expand(TYPED_LENGTHS.nome), capital: expand(TYPED_LENGTHS.capital) };
 
-/** Um duelo de verdade entre dois bots: os 2 tempos sorteados da escada, cada bot jogando com o próprio perfil (nos modos digitados, as mesmas
- *  respostas sorteadas do catálogo para os dois); mais acertos vence, empate no menor tempo total. `margin` é do ponto de vista de `a`. */
-export function botVersusBot(a: Bot, b: Bot, ladder: Ladder, seed: string): { outcome: "win" | "loss" | "draw"; margin: number } {
+export type BotDuel = { outcome: "win" | "loss" | "draw"; margin: number; opponentId: string; rating: number };
+
+/** O duelo do dia de um bot, como o da pessoa: o matchmaking pelo MMR, a incerteza e a surpresa dele escolhe o rating do adversário, um bot da liga
+ *  desse rating (nunca ele mesmo) que joga com a força do rating; os 2 tempos sorteados da escada, cada lado com o próprio perfil (nos modos
+ *  digitados, as mesmas respostas sorteadas do catálogo para os dois); mais acertos vence, empate no menor tempo total. Do ponto de vista do bot. */
+export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: string): BotDuel {
+  const match = matchmaking(standing.trophies, standing.mmr, standing.sigma, surprise(standing.samples));
+  const opponent = pickBot(match.league, seed, bot.id);
   let correctA = 0, correctB = 0, msA = 0, msB = 0;
   drawLegs(ladder, seed).forEach((leg, index) => {
     const def = groupDef(leg.group);
@@ -267,16 +257,18 @@ export function botVersusBot(a: Bot, b: Bot, ladder: Ladder, seed: string): { ou
       const random = mulberry32(hashSeed(`bot-ranking:deck:${seed}:${index}`));
       chars = Array.from({ length: leg.rounds }, () => pool[Math.floor(random() * pool.length)]);
     }
-    const context = (bot: Bot): BotContext => ({
-      division: ownDivision(bot), family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
+    const shared = {
+      family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
-    });
-    const resultA = simulateBot(a, leg.rounds, `${seed}:${index}`, context(a));
-    const resultB = simulateBot(b, leg.rounds, `${seed}:${index}`, context(b));
+    };
+    const own: BotContext = { ...shared, division: ownDivision(bot) };
+    const rival: BotContext = { ...shared, division: match.division, rating: match.rating };
+    const resultA = simulateBot(bot, leg.rounds, `${seed}:${index}`, own);
+    const resultB = simulateBot(opponent, leg.rounds, `${seed}:${index}`, rival);
     correctA += resultA.correct; correctB += resultB.correct; msA += resultA.totalMs; msB += resultB.totalMs;
   });
   const outcome = correctA > correctB ? "win" : correctA < correctB ? "loss" : msA < msB ? "win" : msA > msB ? "loss" : "draw";
-  return { outcome, margin: correctA - correctB };
+  return { outcome, margin: correctA - correctB, opponentId: opponent.id, rating: match.rating };
 }
 
 const botOf = new Map(BOTS.map((bot) => [bot.id, bot]));
@@ -284,30 +276,23 @@ const botOf = new Map(BOTS.map((bot) => [bot.id, bot]));
 function simulateDay(state: BotRankingState, day: number): BotRankingState {
   let next = state;
   for (const ladder of LADDERS) {
-    for (const [firstId, secondId] of dailyPairs(state, ladder, day)) {
-      // Both opponents are rated from the same pre-match snapshot.
-      const first = next.bots[ladder][firstId];
-      const second = next.bots[ladder][secondId];
-      const { outcome: firstOutcome, margin } = botVersusBot(botOf.get(firstId) as Bot, botOf.get(secondId) as Bot, ladder, `bot-ranking:${ladder}:${day}:${firstId}:${secondId}`);
-      const secondOutcome = firstOutcome === "win" ? "loss" : firstOutcome === "loss" ? "win" : "draw";
-      next = settleBotMatchCore(next, {
-        ladder, botId: firstId, opponentMmr: second.mmr, outcome: firstOutcome, margin,
-      });
-      next = settleBotMatchCore(next, {
-        ladder, botId: secondId, opponentMmr: first.mmr, outcome: secondOutcome, margin: -margin,
-      });
+    for (const botId of BOT_IDS) {
+      const standing = state.bots[ladder][botId];
+      const { outcome, margin, rating } = botDuel(botOf.get(botId) as Bot, standing, ladder, `bot-ranking:${ladder}:${day}:${botId}`);
+      next = settleBotMatchCore(next, { ladder, botId, opponentMmr: rating, outcome, margin });
     }
   }
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos bot × bot; subir este número recalibra os estados salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 1;
-/** Quantos dias de duelos bot × bot a recalibração simula (de onde cada bot estava). */
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa); subir este número recalibra os estados
+ *  salvos na próxima abertura. */
+export const BOT_RANKING_CALIBRATION = 2;
+/** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;
 
-/** Recalibra uma vez: um ano de duelos bot × bot a partir de onde cada bot estava, para a escada já refletir as estatísticas; o dia do estado
+/** Recalibra uma vez: um ano de duelos do dia a partir de onde cada bot estava, para a escada já refletir as estatísticas; o dia do estado
  *  não muda (os dias simulados são "de bastidor") e a revisão sobe uma vez. Determinística: o mesmo estado dá o mesmo resultado em qualquer aparelho. */
 export function calibrateBotRanking(state: BotRankingState): BotRankingState {
   let next = state;
