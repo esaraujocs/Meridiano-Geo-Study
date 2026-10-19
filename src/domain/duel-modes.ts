@@ -33,7 +33,18 @@ export type ModeGroupDef = {
   /** O "eixo" do grupo (o assunto: país no mapa, capital, silhueta...). No duelo entre pessoas os 2 tempos caem sempre em eixos diferentes: nunca
    *  Capitais clicar + Capitais escrita, nem Silhueta opções + Silhueta escrita (pedido do Enzo, 28/09). Em Bandeiras cada grupo é o próprio eixo. */
   axis: string;
+  /** Modos digitados: a resposta que o bot "digita" (o nome do país ou a capital) e o tempo dele em frações do tempo-base: pensar e cada tecla
+   *  (ver `typingMs` em bots.ts). Calibrado para o nome médio (9,9 letras; capital 8,1) dar o mesmo tempo que o fator de tempo do modo dava:
+   *  think + 1,4 × letras × key = time. */
+  typing?: { answer: "nome" | "capital"; think: number; key: number };
 };
+
+/** Cada tecla do bot vale isto do tempo-base da liga (Grão-Mestre 170 ms, Mestre 260 ms, Bronze 900 ms). */
+export const TYPING_KEY = 0.1;
+/** Letras que se digitam de uma resposta: sem acento nem pontuação (a escrita aceita sem eles), com os espaços. */
+export function typedChars(text: string | null | undefined) {
+  return (text ?? "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9 ]+/g, " ").replace(/ +/g, " ").trim().length;
+}
 
 /** Peso de cada grupo da Silhueta e de cada grupo de Capitais no sorteio de Mapas (o Clicar no mapa pesa 1). */
 export const SILHOUETTE_WEIGHT = 0.25;
@@ -43,10 +54,10 @@ export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "mapa", axis: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
   { group: "capitais-clique", axis: "capitais", ladder: "mapas", kind: "clique", botFamily: "capitais", variants: [{ family: "capitais", variant: "capital-pais" }], accuracy: -0.1, time: 1.5, weight: CAPITALS_WEIGHT },
   { group: "silhueta-opcoes", axis: "silhueta", ladder: "mapas", kind: "opcoes", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta-opcoes" }], accuracy: -0.06, time: 1.2, weight: SILHOUETTE_WEIGHT },
-  { group: "silhueta-escrita", axis: "silhueta", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.24, time: 1.9, weight: SILHOUETTE_WEIGHT },
-  { group: "capitais-escrita", axis: "capitais", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT },
+  { group: "silhueta-escrita", axis: "silhueta", ladder: "mapas", kind: "escrita", botFamily: "mapa", variants: [{ family: "silhueta", variant: "silhueta" }], accuracy: -0.24, time: 1.9, weight: SILHOUETTE_WEIGHT, typing: { answer: "nome", think: 0.51, key: TYPING_KEY } },
+  { group: "capitais-escrita", axis: "capitais", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT, typing: { answer: "capital", think: 0.77, key: TYPING_KEY } },
   { group: "atuais", axis: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
-  { group: "escrita-pais", axis: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7 },
+  { group: "escrita-pais", axis: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7, typing: { answer: "nome", think: 0.31, key: TYPING_KEY } },
   { group: "historicas", axis: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },
 ];
 export const groupDef = (group: ModeGroup): ModeGroupDef => MODE_GROUPS.find((item) => item.group === group) as ModeGroupDef;

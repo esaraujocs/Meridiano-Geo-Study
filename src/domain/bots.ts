@@ -20,7 +20,7 @@ export type Bot = {
  *  modo; nos modos digitados de Mapas ~80–86% e ~3,7 s). O Diamante e o Mestre ficaram mais rápidos (eram 4,6 e 3,8 s: o Mestre acertava bem,
  *  mas perdia quase todo empate no tempo, 20 das 38 vitórias dele no Mestre foram no desempate) e o Grão-Mestre acerta quase tudo no ritmo dele.
  *  Simulado com os números do Enzo (`.tmp-hub/sim-gm*.mjs`): ele vence ~85% do Mestre e ~56% do Grão-Mestre em Bandeiras (~53% e ~25% em Mapas),
- *  então, com a vitória rendendo pouco e a derrota custando muito no alto, ele se segura perto dos 3.500, a linha do Grão-Mestre. */
+ *  então, com a vitória rendendo pouco e a derrota custando muito no alto, ele se segura perto dos 3.000, a linha do Grão-Mestre. */
 export const LEAGUE_BASE: Record<LeagueKey, { accuracy: number; avgMs: number }> = {
   bronze: { accuracy: 0.6, avgMs: 9000 },
   prata: { accuracy: 0.68, avgMs: 7800 },
@@ -30,10 +30,10 @@ export const LEAGUE_BASE: Record<LeagueKey, { accuracy: number; avgMs: number }>
   mestre: { accuracy: 0.96, avgMs: 2600 },
   "grao-mestre": { accuracy: 0.985, avgMs: 1700 },
 };
-/** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE; o Mestre tem 1.000 troféus,
- *  então o meio dele é 3.000, e o do Grão-Mestre, sem teto, 3.750). Abaixo do Bronze segue a mesma inclinação (com piso) e acima do Grão-Mestre o
- *  acerto sobe até 99% e o tempo cai 15% em RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
-export const RATING_TOP = 4500;
+/** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE; o do Grão-Mestre, sem
+ *  teto, é 3.250). Abaixo do Bronze segue a mesma inclinação (com piso) e acima do Grão-Mestre o acerto sobe até 99% e o tempo cai 15% em
+ *  RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
+export const RATING_TOP = 4000;
 export function baseAtRating(rating: number): { accuracy: number; avgMs: number } {
   const anchors = LEAGUES.map((league, index) => ({ at: leagueFloor(index) + leagueSpan(index) / 2, ...LEAGUE_BASE[league] }));
   const value = Number.isFinite(rating) ? Math.max(0, rating) : 0;
@@ -134,6 +134,9 @@ export type BotContext = {
   neutral?: boolean;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
   tuning?: { accuracy: number; time: number };
+  /** Modos digitados: o tempo de cada rodada sai do tamanho da resposta (ver `typingMs`), não do fator de tempo do modo. `chars` são as letras de
+   *  cada resposta do baralho, na ordem das rodadas. */
+  typing?: { think: number; key: number; chars: readonly number[] };
 };
 /** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa, mas nunca menos que TUNING_MIN: no topo os modos
  *  difíceis ainda dão uma pequena chance de erro (o Grão-Mestre, 98,5% nas alternativas, fica em ~94% na capital escrita e ~96% nas Históricas). */
@@ -153,13 +156,22 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
   if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
   if (context.tuning) {
     accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, TUNING_MIN, 1);
-    avgMs *= context.tuning.time;
+    if (!context.typing?.chars.length) avgMs *= context.tuning.time;
   }
   return { accuracy: clamp(accuracy, 0.05, 0.99), avgMs: Math.round(avgMs), streaky: bot.style === "irregular" };
 }
 
+/** Digitação do bot (19/10/2026, pedido do Enzo: "1,7 s fixo castiga a escrita: cai República Centro-Africana e eu nunca bato o tempo do bot"):
+ *  cada letra da resposta conta de TYPO_MIN a TYPO_MAX teclas (os erros de digitação e as correções: 10 letras viram 13 a 15 teclas) e cada tecla
+ *  leva `key` vezes o tempo-base do bot; antes vem o tempo de pensar (`think` vezes o tempo-base, com a mesma variação das outras respostas). */
+export const TYPO_MIN = 1.3;
+export const TYPO_MAX = 1.5;
+export const typingMs = (avgMs: number, typing: { think: number; key: number }, chars: number, random: () => number) =>
+  Math.round(avgMs * (typing.think * (0.7 + random() * 0.6) + Math.max(1, chars) * (TYPO_MIN + random() * (TYPO_MAX - TYPO_MIN)) * typing.key));
+
 export function simulateBot(bot: Bot, rounds: number, seed: string, context: BotContext = { division: 1, family: null }) {
   const profile = botProfile(bot, context);
+  const typing = context.typing?.chars.length ? context.typing : null;
   const random = mulberry32(hashSeed(`${bot.id}:${seed}`));
   let hot = random() < 0.5;
   let correct = 0;
@@ -170,7 +182,7 @@ export function simulateBot(bot: Bot, rounds: number, seed: string, context: Bot
     const swing = Math.min(STREAKY.swing, profile.accuracy, 1 - profile.accuracy);
     const chance = profile.streaky ? profile.accuracy + (hot ? swing : -swing) : profile.accuracy;
     if (random() < chance) correct += 1;
-    totalMs += Math.round(profile.avgMs * (0.7 + random() * 0.6));
+    totalMs += typing ? typingMs(profile.avgMs, typing, typing.chars[round % typing.chars.length], random) : Math.round(profile.avgMs * (0.7 + random() * 0.6));
   }
   return { correct, totalMs };
 }

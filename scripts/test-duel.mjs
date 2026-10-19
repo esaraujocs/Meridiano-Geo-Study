@@ -34,15 +34,45 @@ s = L.leagueOf(500); assert.deepEqual([s.league, s.division, s.floor], ["prata",
 s = L.leagueOf(1240); assert.deepEqual([s.league, s.division, s.toNextDivision, s.toNextLeague], ["ouro", 2, 94, 260]);
 s = L.leagueOf(2000); assert.deepEqual([s.league, s.division], ["diamante", 1]);
 s = L.leagueOf(2499); assert.deepEqual([s.league, s.division], ["diamante", 3]);
-s = L.leagueOf(2500); assert.deepEqual([s.league, s.division, s.toNextLeague, s.toNextDivision], ["mestre", null, 1000, 1000], "o Mestre vai até o Grão-Mestre, sem divisões");
-s = L.leagueOf(3499); assert.deepEqual([s.league, s.toNextLeague], ["mestre", 1]);
-s = L.leagueOf(3500); assert.deepEqual([s.league, s.division, s.toNextLeague, s.floor], ["grao-mestre", null, null, 3500]);
+s = L.leagueOf(2500); assert.deepEqual([s.league, s.division, s.toNextLeague, s.toNextDivision], ["mestre", null, 500, 500], "o Mestre vai até o Grão-Mestre, sem divisões");
+s = L.leagueOf(2999); assert.deepEqual([s.league, s.toNextLeague], ["mestre", 1]);
+s = L.leagueOf(3000); assert.deepEqual([s.league, s.division, s.toNextLeague, s.floor], ["grao-mestre", null, null, 3000]);
 s = L.leagueOf(99999); assert.equal(s.league, "grao-mestre");
-assert.deepEqual(L.LEAGUES.map((_, i) => L.leagueSpan(i)), [500, 500, 500, 500, 500, 1000, 500]);
+assert.deepEqual(L.LEAGUES.map((_, i) => L.leagueSpan(i)), [500, 500, 500, 500, 500, 500, 500]);
 assert.deepEqual(L.LEAGUES.map((_, i) => L.hasDivisions(i)), [true, true, true, true, true, false, false]);
 s = L.leagueOf(-40); assert.equal(s.trophies, 0);
 s = L.leagueOf(Number.NaN); assert.equal(s.trophies, 0);
 assert.equal(L.divisionRoman(2), "II"); assert.equal(L.divisionRoman(null), "");
+
+// ---- Digitação do bot: o tempo nos modos digitados sai do tamanho da resposta ----
+assert.equal(M.typedChars("República Centro-Africana"), 25, "sem acento nem hífen, com os espaços");
+assert.equal(M.typedChars("Peru"), 4);
+assert.equal(M.typedChars("  Côte d'Ivoire "), 13);
+assert.equal(M.typedChars(undefined), 0);
+for (const group of ["silhueta-escrita", "capitais-escrita", "escrita-pais"]) {
+  const def = M.groupDef(group);
+  assert.ok(def.typing, group + " tem digitação");
+  const mean = group === "capitais-escrita" ? 8.1 : 9.9;
+  assert.ok(Math.abs(def.typing.think + 1.4 * mean * def.typing.key - def.time) < 0.02, group + ": no tamanho médio dá o mesmo tempo que o fator do modo dava");
+}
+for (const group of ["mapa", "atuais", "historicas", "silhueta-opcoes", "capitais-clique"]) assert.equal(M.groupDef(group).typing, undefined, group + " não é digitado");
+{
+  const gm = B.botsOfLeague("grao-mestre")[0];
+  const def = M.groupDef("escrita-pais");
+  const ctx = (chars) => ({ division: null, family: null, tuning: { accuracy: def.accuracy, time: def.time }, typing: { think: def.typing.think, key: def.typing.key, chars } });
+  const avg = (chars) => { let sum = 0; for (let i = 0; i < 400; i += 1) sum += B.simulateBot(gm, 10, "t" + i, ctx(chars)).totalMs / 10; return sum / 400; };
+  const short = avg([4]), long = avg([25]), mid = avg([10]);
+  assert.ok(long > 3 * short, "República Centro-Africana leva bem mais que Peru (" + Math.round(short) + " × " + Math.round(long) + " ms)");
+  // 10 letras: 1.700 × (0,31 + 10 × 1,3–1,5 × 0,1) ≈ 2,7 s (o pensar varia de 0,7 a 1,3)
+  assert.ok(mid > 2400 && mid < 3000, "10 letras no Grão-Mestre ≈ 2,7 s (" + Math.round(mid) + " ms)");
+  const flat = B.simulateBot(gm, 10, "x", { division: null, family: null, tuning: { accuracy: def.accuracy, time: def.time } }).totalMs;
+  assert.ok(flat > 0, "sem as letras (registro antigo), o fator de tempo do modo de sempre");
+  assert.equal(B.simulateBot(gm, 10, "s", ctx([7, 12])).totalMs, B.simulateBot(gm, 10, "s", ctx([7, 12])).totalMs, "mesma semente, mesmo tempo");
+  // as letras entram pelo resolveDuelLegs
+  const leg = (chars) => D.resolveDuelLegs({ trophies: 3100, bot: gm, legs: [{ group: "escrita-pais", rounds: 10, playerCorrect: 10, playerMs: 20000, chars }, { group: "atuais", rounds: 10, playerCorrect: 10, playerMs: 15000 }], seed: "len", division: null, rating: 3250 });
+  assert.ok(leg(Array(10).fill(25)).legs[0].botMs > leg(Array(10).fill(4)).legs[0].botMs * 3, "o tempo do bot no tempo digitado acompanha as respostas");
+  assert.equal(leg(Array(10).fill(25)).legs[1].botMs, leg(Array(10).fill(4)).legs[1].botMs, "o tempo de alternativas não muda");
+}
 
 // ---- Elenco: 5 bots por liga, ids e nomes únicos, um de cada jeito ----
 assert.equal(B.BOTS.length, 35);
@@ -645,8 +675,8 @@ assert.equal(X.matchRating(1091, 1300, 155, 0), 1300 + 95, "sem surpresa mas inc
 assert.equal(X.matchRating(1091, 1091, 250, -3), 1000, "incerto e perdendo: mais fraco, mas nunca abaixo da própria liga");
 assert.equal(X.matchRating(1500, 1700, 250, -3), 1510, "perdendo: desce, ainda dentro da liga");
 assert.equal(X.matchRating(100, 5000), 1499, "no máximo 2 ligas acima");
-assert.equal(X.matchRating(3000, 9000), 4499, "no Mestre, até mil troféus além do começo do Grão-Mestre");
-assert.equal(X.matchRating(4000, 9000), 4499, "no Grão-Mestre, mil troféus além do começo");
+assert.equal(X.matchRating(2600, 9000), 3999, "no Mestre, até mil troféus além do começo do Grão-Mestre");
+assert.equal(X.matchRating(3500, 9000), 3999, "no Grão-Mestre, mil troféus além do começo");
 assert.equal(X.matchRating(1200, 100), 1000, "nunca abaixo da própria liga, mesmo com o MMR lá embaixo");
 assert.equal(X.matchRating(0, NaN), 0, "MMR inválido não quebra");
 const mmkRes = X.matchmaking(1091, 1091, 250, 3);
@@ -661,8 +691,8 @@ assert.ok(X.mmrChange(1000, 1000, "win", 8, 155) > X.mmrChange(1000, 1000, "win"
 assert.equal(X.mmrChange(1000, 1000, "loss", -8, 250), -80);
 assert.equal(X.mmrChange(1000, 1000, "draw", 0, 250), 0);
 // força contínua do bot pelo rating: passa pelos meios das ligas e sobe sem degraus
-assert.deepEqual([250, 750, 1250, 1750, 2250, 3000, 3750].map((r) => Math.round(B.baseAtRating(r).accuracy * 1000) / 10), [60, 68, 76, 84, 91, 96, 98.5], "no meio de cada liga vale a base da liga (o meio do Mestre é 3.000, o do Grão-Mestre 3.750)");
-assert.deepEqual([250, 750, 1250, 1750, 2250, 3000, 3750].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 3800, 2600, 1700]);
+assert.deepEqual([250, 750, 1250, 1750, 2250, 2750, 3250].map((r) => Math.round(B.baseAtRating(r).accuracy * 1000) / 10), [60, 68, 76, 84, 91, 96, 98.5], "no meio de cada liga vale a base da liga (o do Grão-Mestre, sem teto, é 3.250)");
+assert.deepEqual([250, 750, 1250, 1750, 2250, 2750, 3250].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 3800, 2600, 1700]);
 assert.ok(Math.abs(B.baseAtRating(500).accuracy - 0.64) < 1e-9, "entre duas ligas, interpolado");
 let lastAcc = 0, lastMs = Infinity;
 for (let r = 0; r <= 5000; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= 0.99 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }

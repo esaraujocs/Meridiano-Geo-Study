@@ -59,7 +59,7 @@ import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
 import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
 import { pvpLadderEntries, settlePvpTrophies, type LadderEntry } from "./domain/pvp-trophies";
 import { pickBot } from "./domain/bots";
-import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, type Ladder, type ModeGroup } from "./domain/duel-modes";
+import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, typedChars, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
@@ -894,7 +894,10 @@ export function App() {
     const rounds = result.session.rounds;
     const leg = run.legs[run.index];
     legResults.current[run.index] = result;
-    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds) });
+    // nos modos digitados o bot "digita" as mesmas respostas: o tempo dele sai do tamanho de cada uma (ver typingMs em bots.ts)
+    const typing = groupDef(leg.group).typing;
+    const chars = typing && data ? rounds.map((round) => { const meta = data.meta[round.targetId]; return typedChars(typing.answer === "capital" ? meta?.cap : meta?.pt); }) : undefined;
+    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds), ...(chars ? { chars } : {}) });
     setDuelRun(next);
     if (run.index === 0) { void refreshEconomy(); setScreen("duel-interlude"); return; }
     await concludeDuel(next);

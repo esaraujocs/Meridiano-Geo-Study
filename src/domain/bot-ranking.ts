@@ -49,8 +49,7 @@ const BOT_IDS = BOTS.map((bot) => bot.id);
 const BOT_ID_SET = new Set(BOT_IDS);
 const LADDER_SET = new Set<string>(LADDERS);
 const OFFSETS = [70, 170, 260, 350, 440] as const;
-/** O Mestre (1.000 troféus, de 2.500 a 3.499) espalha os bots pela faixa toda; o Grão-Mestre, sem teto, começa um pouco acima de 3.500. */
-const MASTER_OFFSETS = [80, 280, 480, 680, 880] as const;
+/** O Grão-Mestre, sem teto, espalha os bots um pouco mais (de 3.060 a 3.700); o Mestre, desde 19/10/2026 com 500 troféus, é uma liga comum. */
 const GRAND_OFFSETS = [60, 220, 380, 540, 700] as const;
 const DAILY_SWING = 30;
 
@@ -62,7 +61,7 @@ const DAILY_SWING = 30;
 function initialBotTrophies(bot: Bot, ladder: Ladder, day: number) {
   const index = LEAGUES.indexOf(bot.league);
   const slot = Math.max(0, Number(bot.id.split("-").pop()) || 0);
-  const offset = (bot.league === "grao-mestre" ? GRAND_OFFSETS : bot.league === "mestre" ? MASTER_OFFSETS : OFFSETS)[Math.min(slot, OFFSETS.length - 1)];
+  const offset = (bot.league === "grao-mestre" ? GRAND_OFFSETS : OFFSETS)[Math.min(slot, OFFSETS.length - 1)];
   const swing = (mulberry32(hashSeed(`rank:${bot.id}:${ladder}:${day}`))() - 0.5) * 2 * DAILY_SWING;
   return Math.max(leagueFloor(index) + 5, Math.round(leagueFloor(index) + offset + swing));
 }
