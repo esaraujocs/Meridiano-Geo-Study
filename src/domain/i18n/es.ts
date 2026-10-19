@@ -354,7 +354,7 @@ export const es: Messages = {
         "Si juegas al nivel de tu liga (ganas y pierdes cerca del 50%), un nivel de juego escondido te sujeta: para subir hay que demostrar más, y por eso baja la ganancia de trofeos.",
         `Si juegas por encima de la liga, ganas más, pierdes menos y el sorteo empieza a traer bots de ligas más altas; cuanto más te supera el bot, más rinde la victoria (hasta ${top} contra un bot dos ligas por encima). Si juegas por debajo, ganas menos y pierdes más.`,
         "Una derrota ajustada cuesta menos; una goleada cuesta más. Los trofeos nunca bajan de cero.",
-        "Desde Diamante la victoria rinde cada vez menos y la derrota cuesta cada vez más. Maestro no tiene techo, pero la curva se cierra: es el límite de quienes tienen el mejor rendimiento.",
+        "Desde Diamante la victoria rinde cada vez menos y la derrota cuesta cada vez más. Gran Maestro (desde 3.000) no tiene techo, pero la curva se cierra: es el límite de quienes tienen el mejor rendimiento.",
       ],
       framesTitle: "Marcos del nivel",
       framesSub: "El borde alrededor de tu nivel en el Hub cambia con la liga; la insignia muestra la división (I, II o III). Vale la mejor de las dos escaleras.",

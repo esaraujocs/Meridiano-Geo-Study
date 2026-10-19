@@ -353,7 +353,7 @@ export const en: Messages = {
         "If you play at your league's level (winning and losing close to 50%), a hidden skill level holds you: to climb you have to prove more, which is why the trophy gain drops.",
         `If you play above your league you win more, lose less and the draw starts bringing bots from higher leagues; the more the bot outclasses you, the more a win pays (up to ${top} against a bot two leagues above). If you play below it, you win less and lose more.`,
         "A close loss costs less; a blowout costs more. Trophies never go below zero.",
-        "From Diamond up a win pays less and less and a loss costs more and more. Master has no ceiling, but the curve closes: it is the limit for the best performers.",
+        "From Diamond up a win pays less and less and a loss costs more and more. Grandmaster (from 3,000) has no ceiling, but the curve closes: it is the limit for the best performers.",
       ],
       framesTitle: "Level frames",
       framesSub: "The border around your level on the Hub changes with the league; the badge shows the division (I, II or III). The better of the two ladders counts.",

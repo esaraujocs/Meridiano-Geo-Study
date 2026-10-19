@@ -354,7 +354,7 @@ export const pt = {
         "Se você joga no nível da sua liga (ganha e perde perto de 50%), um nível de jogo escondido te segura: para subir é preciso provar mais, e por isso o ganho de troféus cai.",
         `Se joga acima da liga, ganha mais, perde menos e o sorteio passa a trazer bots de ligas mais altas; quanto mais o bot passa do seu nível, mais a vitória rende (até ${top}, com um bot duas ligas acima). Se joga abaixo, ganha menos e perde mais.`,
         "Derrota apertada custa menos; goleada custa mais. Os troféus nunca ficam abaixo de zero.",
-        "A partir do Diamante a vitória rende cada vez menos e a derrota custa cada vez mais. O Mestre não tem teto, mas a curva se fecha: é o limite de quem tem o melhor desempenho.",
+        "A partir do Diamante a vitória rende cada vez menos e a derrota custa cada vez mais. O Grão-Mestre (a partir de 3.000) não tem teto, mas a curva se fecha: é o limite de quem tem o melhor desempenho.",
       ],
       framesTitle: "Molduras do nível",
       framesSub: "A borda em volta do seu nível no Hub muda com a liga; o selo mostra a divisão (I, II ou III). Vale a melhor das duas escadas.",

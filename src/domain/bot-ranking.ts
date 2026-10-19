@@ -1,7 +1,13 @@
 // Economia persistente e simulação diária dos bots do ranking. Lógica pura.
-import { BOTS, hashSeed, mulberry32, type Bot } from "./bots.js";
-import { LEAGUES, leagueFloor } from "./league.js";
-import { LADDERS, type Ladder } from "./duel-modes.js";
+//
+// Desde 19/10/2026 (pedido do Enzo: "uma rodada massiva entre os bots, para ver se com essas stats muda a escada; quero que use isso") cada dia é
+// um duelo de verdade bot × bot, com as estatísticas de cada um (acerto, tempo, ajuste do modo, digitação pelo tamanho da resposta, piso humano),
+// no lugar do sorteio "MMR + forma do dia" de antes; os pares são vizinhos de força (com as faixas de 6, o bot no fundo de uma faixa forte perdia
+// quase tudo e afundava). Um estado salvo de antes é recalibrado uma vez com um ano desses duelos (`calibrateBotRanking`).
+import { BOTS, hashSeed, mulberry32, simulateBot, type Bot, type BotContext } from "./bots.js";
+import { LEAGUES, hasDivisions, leagueFloor } from "./league.js";
+import { LADDERS, drawLegs, groupDef, type Ladder } from "./duel-modes.js";
+import { TYPED_LENGTHS } from "./typed-lengths.js";
 import {
   SURPRISE_WINDOW,
   SIGMA_MAX,
@@ -35,6 +41,8 @@ export type BotRankingState = {
   revision: number;
   lastDay: number;
   bots: Record<Ladder, Record<string, BotStanding>>;
+  /** Versão da calibração pelos duelos bot × bot (ausente nos estados de antes, que são recalibrados ao abrir). */
+  calibration?: number;
 };
 
 export type BotMatchInput = {
@@ -164,12 +172,14 @@ export function parseBotRanking(value: unknown): BotRankingState {
     }
     bots[ladder] = parsed;
   }
+  if (value.calibration !== undefined && !Number.isSafeInteger(value.calibration)) throw new TypeError("Bot ranking calibration must be an integer");
   return {
     id: BOT_RANKING_ID,
     version: 1,
     revision: value.revision as number,
     lastDay: value.lastDay as number,
     bots,
+    ...(value.calibration !== undefined ? { calibration: value.calibration as number } : {}),
   };
 }
 
@@ -226,40 +236,59 @@ function shuffle<T>(items: T[], random: () => number): T[] {
   return items;
 }
 
-/** A balanced local band, shuffled from a seed fixed by ladder and UTC day. */
+/** Quanto a força de cada bot é sacudida antes de parear os vizinhos (para os pares variarem de um dia para o outro). */
+export const PAIR_JITTER = 120;
+
+/** Pares do dia: os bots em ordem de força (MMR com um pouco de sorte), cada um contra o vizinho; com número ímpar, uma ponta descansa. */
 function dailyPairs(state: BotRankingState, ladder: Ladder, day: number) {
-  const ordered = BOT_IDS.map((id) => ({ id, mmr: state.bots[ladder][id].mmr }))
-    .sort((a, b) => a.mmr - b.mmr || a.id.localeCompare(b.id));
   const random = mulberry32(hashSeed(`bot-ranking:pairs:${ladder}:${day}`));
+  const ordered = BOT_IDS.map((id) => ({ id, key: state.bots[ladder][id].mmr + (random() - 0.5) * PAIR_JITTER }))
+    .sort((a, b) => a.key - b.key || a.id.localeCompare(b.id));
   const pairs: [string, string][] = [];
-  const bandSize = 6;
-  for (let start = 0; start < ordered.length; start += bandSize) {
-    const band = shuffle(ordered.slice(start, start + bandSize), random);
-    for (let index = 0; index + 1 < band.length; index += 2) pairs.push([band[index].id, band[index + 1].id]);
-  }
+  for (let index = Math.floor(random() * 2); index + 1 < ordered.length; index += 2) pairs.push([ordered[index].id, ordered[index + 1].id]);
   return pairs;
 }
 
-function dailyPerformanceScore(standing: BotStanding, ladder: Ladder, botId: string, day: number) {
-  const random = mulberry32(hashSeed(`bot-ranking:score:${ladder}:${day}:${botId}`));
-  // Abstract score, not a generated quiz: current MMR plus deterministic day-specific form.
-  return standing.mmr + (random() - 0.5) * 360;
+/** A força própria do bot no duelo bot × bot: a base da liga dele (divisão II nas ligas com divisões), sem o rating do matchmaking. */
+const ownDivision = (bot: Bot): 2 | null => (hasDivisions(LEAGUES.indexOf(bot.league)) ? 2 : null);
+const expand = (pairs: readonly (readonly [number, number])[]) => pairs.flatMap(([length, count]) => Array<number>(count).fill(length));
+const LENGTH_POOLS = { nome: expand(TYPED_LENGTHS.nome), capital: expand(TYPED_LENGTHS.capital) };
+
+/** Um duelo de verdade entre dois bots: os 2 tempos sorteados da escada, cada bot jogando com o próprio perfil (nos modos digitados, as mesmas
+ *  respostas sorteadas do catálogo para os dois); mais acertos vence, empate no menor tempo total. `margin` é do ponto de vista de `a`. */
+export function botVersusBot(a: Bot, b: Bot, ladder: Ladder, seed: string): { outcome: "win" | "loss" | "draw"; margin: number } {
+  let correctA = 0, correctB = 0, msA = 0, msB = 0;
+  drawLegs(ladder, seed).forEach((leg, index) => {
+    const def = groupDef(leg.group);
+    const typing = def.typing;
+    let chars: number[] | undefined;
+    if (typing) {
+      const pool = LENGTH_POOLS[typing.answer];
+      const random = mulberry32(hashSeed(`bot-ranking:deck:${seed}:${index}`));
+      chars = Array.from({ length: leg.rounds }, () => pool[Math.floor(random() * pool.length)]);
+    }
+    const context = (bot: Bot): BotContext => ({
+      division: ownDivision(bot), family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
+      ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
+    });
+    const resultA = simulateBot(a, leg.rounds, `${seed}:${index}`, context(a));
+    const resultB = simulateBot(b, leg.rounds, `${seed}:${index}`, context(b));
+    correctA += resultA.correct; correctB += resultB.correct; msA += resultA.totalMs; msB += resultB.totalMs;
+  });
+  const outcome = correctA > correctB ? "win" : correctA < correctB ? "loss" : msA < msB ? "win" : msA > msB ? "loss" : "draw";
+  return { outcome, margin: correctA - correctB };
 }
+
+const botOf = new Map(BOTS.map((bot) => [bot.id, bot]));
 
 function simulateDay(state: BotRankingState, day: number): BotRankingState {
   let next = state;
   for (const ladder of LADDERS) {
-    const scores = Object.fromEntries(BOT_IDS.map((botId) => [
-      botId,
-      dailyPerformanceScore(state.bots[ladder][botId], ladder, botId, day),
-    ])) as Record<string, number>;
     for (const [firstId, secondId] of dailyPairs(state, ladder, day)) {
       // Both opponents are rated from the same pre-match snapshot.
       const first = next.bots[ladder][firstId];
       const second = next.bots[ladder][secondId];
-      const scoreMargin = scores[firstId] - scores[secondId];
-      const margin = scoreMargin === 0 ? 0 : Math.max(1, Math.min(10, Math.round(Math.abs(scoreMargin) / 36))) * Math.sign(scoreMargin);
-      const firstOutcome = scoreMargin > 0 ? "win" : scoreMargin < 0 ? "loss" : "draw";
+      const { outcome: firstOutcome, margin } = botVersusBot(botOf.get(firstId) as Bot, botOf.get(secondId) as Bot, ladder, `bot-ranking:${ladder}:${day}:${firstId}:${secondId}`);
       const secondOutcome = firstOutcome === "win" ? "loss" : firstOutcome === "loss" ? "win" : "draw";
       next = settleBotMatchCore(next, {
         ladder, botId: firstId, opponentMmr: second.mmr, outcome: firstOutcome, margin,
@@ -270,6 +299,20 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
     }
   }
   return { ...next, revision: state.revision + 1, lastDay: day };
+}
+
+/** Versão da calibração pelos duelos bot × bot; subir este número recalibra os estados salvos na próxima abertura. */
+export const BOT_RANKING_CALIBRATION = 1;
+/** Quantos dias de duelos bot × bot a recalibração simula (de onde cada bot estava). */
+export const CALIBRATION_DAYS = 365;
+export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;
+
+/** Recalibra uma vez: um ano de duelos bot × bot a partir de onde cada bot estava, para a escada já refletir as estatísticas; o dia do estado
+ *  não muda (os dias simulados são "de bastidor") e a revisão sobe uma vez. Determinística: o mesmo estado dá o mesmo resultado em qualquer aparelho. */
+export function calibrateBotRanking(state: BotRankingState): BotRankingState {
+  let next = state;
+  for (let day = 1; day <= CALIBRATION_DAYS; day += 1) next = simulateDay(next, -day);
+  return { ...next, revision: state.revision + 1, lastDay: state.lastDay, calibration: BOT_RANKING_CALIBRATION };
 }
 
 /** Advance lazily, simulating every missed UTC day once in chronological order. */

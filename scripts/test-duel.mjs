@@ -93,6 +93,23 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
   }
 }
 
+// ---- Correção do teto (19/10/2026): uma vez, no instante dela, o que passava de 2.500 vale 80%; o que vem depois soma normal ----
+{
+  const at = D.CEILING_FIX.at;
+  const e = (id, when, delta, extra = {}) => ({ id, at: when, ladder: "bandeiras", delta, outcome: "win", ...extra });
+  assert.equal(D.ceilingFix(2400), 2400, "abaixo de 2.500 não muda");
+  assert.equal(D.ceilingFix(3558), 3346, "3.558 → 3.346");
+  const old = [e("a", at - 2000, 2000), e("b", at - 1000, 1558)];
+  assert.equal(D.trophiesFromDuels(old, "bandeiras"), 3346, "tudo antes da correção: corrigido no fim");
+  assert.equal(D.trophiesFromDuels([...old, e("c", at + 1000, 30)], "bandeiras"), 3376, "o que vem depois soma normal, em cima do corrigido");
+  assert.equal(D.trophiesFromDuels([e("x", at + 5, 3000)], "bandeiras"), 3000, "troféus ganhos depois da correção não são corrigidos");
+  assert.equal(D.trophiesFromDuels([e("y", at - 5, 2400)], "bandeiras"), 2400);
+  // o MMR passa pela mesma correção (o registro com o MMR da versão atual soma o mmrDelta)
+  const mm = [e("m", at - 10, 3500, { mmrDelta: 3672, mmrVersion: D.MMR_MODEL })];
+  assert.equal(D.mmrStateFromDuels(mm, "bandeiras").mmr, 3438, "MMR 3.672 → 3.438");
+  assert.equal(D.mmrFromDuels(mm, "bandeiras"), 3438);
+}
+
 // ---- Elenco: 5 bots por liga, ids e nomes únicos, um de cada jeito ----
 assert.equal(B.BOTS.length, 35);
 assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 35);

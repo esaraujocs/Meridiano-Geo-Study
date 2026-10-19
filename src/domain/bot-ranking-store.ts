@@ -3,7 +3,9 @@ import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schem
 import {
   BOT_RANKING_ID,
   advanceBotRanking,
+  calibrateBotRanking,
   createBotRanking,
+  needsCalibration,
   parseBotRanking,
   type BotRankingState,
 } from "./bot-ranking.js";
@@ -27,12 +29,12 @@ export function botRankingDay(now: number): number {
   return day;
 }
 
-/** A missing row is a fresh seed; a present malformed row is always an error, never reset. */
+/** A missing row is a fresh seed; a present malformed row is always an error, never reset. A state from before the bot × bot duels (or a fresh
+ *  seed) is calibrated once with a year of them before catching up to today. */
 export function advanceStoredBotRanking(value: unknown, now = Date.now()): BotRankingState {
   const day = botRankingDay(now);
-  return value === undefined
-    ? createBotRanking(day)
-    : advanceBotRanking(parseBotRanking(value), day);
+  const base = value === undefined ? createBotRanking(day) : parseBotRanking(value);
+  return advanceBotRanking(needsCalibration(base) ? calibrateBotRanking(base) : base, day);
 }
 
 /** Read, lazily catch up to the current UTC day, and persist in one readwrite transaction. */

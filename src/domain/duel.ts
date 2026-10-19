@@ -200,11 +200,27 @@ export function parseDuel(row: unknown): DuelRecord | null {
 
 /** Os troféus são derivados do histórico (como XP e maestria): refaz a conta na ordem dos duelos, sem passar de zero.
  * Com `ladder`, conta só os duelos daquela escada. */
+/** Correção do teto (19/10/2026, pedido do Enzo: "pensa num diminishing justo para encaixar minha conta no ranking; 3.600 está inflado do sistema
+ *  anterior"). Os troféus e o MMR ganhos contra os bots de antes (o Mestre lento e a força esticada acima do Grão-Mestre, que dava centenas de
+ *  troféus por uma diferença pequena de habilidade) ficaram altos demais. Uma vez, no instante `at`, o que passava de `from` passa a valer `keep`
+ *  (3.558 → 3.346, o ponto onde a conta dele se estabiliza contra os bots novos, simulado em `.tmp-hub/sim-account.mjs`); o que vem depois soma
+ *  normal. Nada é gravado: a soma do histórico aplica a correção ao passar pelo instante, então todo aparelho chega ao mesmo número. */
+export const CEILING_FIX = { at: Date.UTC(2026, 9, 19, 6), from: 2500, keep: 0.8 } as const;
+export const ceilingFix = (value: number) => (value <= CEILING_FIX.from ? value : Math.round(CEILING_FIX.from + (value - CEILING_FIX.from) * CEILING_FIX.keep));
+/** Soma da escada na ordem, sem passar de zero, com a correção do teto ao chegar no instante dela (ou no fim, se tudo veio antes). */
+function sumLadder<T extends { at: number }>(sorted: readonly T[], step: (entry: T) => number) {
+  let total = 0;
+  let fixed = false;
+  for (const entry of sorted) {
+    if (!fixed && entry.at >= CEILING_FIX.at) { total = ceilingFix(total); fixed = true; }
+    total = Math.max(0, total + step(entry));
+  }
+  return fixed ? total : ceilingFix(total);
+}
+
 export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder">[], ladder?: Ladder) {
-  return [...duels]
-    .filter((duel) => !ladder || duel.ladder === ladder)
-    .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
-    .reduce((total, duel) => Math.max(0, total + duel.delta), 0);
+  const sorted = [...duels].filter((duel) => !ladder || duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
+  return sumLadder(sorted, (duel) => duel.delta);
 }
 /** O MMR escondido também é derivado do histórico: soma o `mmrDelta` (ou o `delta`, nos duelos antigos) na ordem dos duelos, sem passar de zero. */
 /** O MMR gravado no registro só vale se veio de uma versão da conta que ainda vale. */
@@ -214,7 +230,7 @@ const validMmr = (duel: { mmrVersion?: number }) => duel.mmrVersion !== undefine
  *  duelos sem surpresa), os duelos recentes para a surpresa e quantos duelos já foram jogados. */
 export function mmrStateFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "outcome" | "mmrDelta" | "mmrVersion" | "mmrSigma" | "mmrExp">[], ladder: Ladder) {
   const list = [...duels].filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
-  const mmr = list.reduce((total, duel) => Math.max(0, total + (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
+  const mmr = sumLadder(list, (duel) => (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta));
   const last = [...list].reverse().find((duel) => validMmr(duel) && duel.mmrSigma !== undefined);
   const samples: SurpriseSample[] = list
     .filter((duel) => validMmr(duel) && duel.mmrExp !== undefined)
@@ -223,10 +239,8 @@ export function mmrStateFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
   return { mmr, sigma: last?.mmrSigma ?? sigmaFromGames(list.length), samples, games: list.length };
 }
 export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[], ladder?: Ladder) {
-  return [...duels]
-    .filter((duel) => !ladder || duel.ladder === ladder)
-    .sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1))
-    .reduce((total, duel) => Math.max(0, total + (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta)), 0);
+  const sorted = [...duels].filter((duel) => !ladder || duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
+  return sumLadder(sorted, (duel) => (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta));
 }
 export const mmrByLadder = (duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[]): Record<Ladder, number> =>
   Object.fromEntries(LADDERS.map((ladder) => [ladder, mmrFromDuels(duels, ladder)])) as Record<Ladder, number>;
