@@ -20,6 +20,7 @@ const lastPeoplesTopic = () => { try { return localStorage.getItem(PEOPLES_LAST_
 import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
+import { leaguePip } from "../domain/duel-labels";
 import { MAP_BASES, type MapBase } from "../domain/map-base";
 import type { ArenaSearch } from "./hub-parts";
 import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
@@ -351,7 +352,7 @@ export function Hub({
             <svg className="hub-level-ring" viewBox="0 0 132 132" aria-hidden="true"><circle className="hub-ring-track" cx="66" cy="66" r="58" />{xpInLevel > 0 && xpSpan > 0 && <circle className="hub-ring-arc" cx="66" cy="66" r="58" strokeDasharray={`${2 * Math.PI * 58 * Math.min(1, xpInLevel / xpSpan)} ${2 * Math.PI * 58}`} />}</svg>
             <strong>{level}</strong>
             <span className="hub-level-cap">{t.hub.levelCap}</span>
-            {framed && <span className="lg-pip" title={t.duel.frameAria(leagueLabel)}>{divisionRoman(league.division) || "M"}</span>}
+            {framed && <span className="lg-pip" title={t.duel.frameAria(leagueLabel)}>{leaguePip(league.league, league.division)}</span>}
           </div>
           <div className="hub-head">
             <HubTitle text={profile.title} />

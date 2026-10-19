@@ -1,7 +1,7 @@
-// Bots do Duelo: 5 por liga, cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
+// Bots do Duelo: 5 por liga (7 ligas, do Bronze ao Grão-Mestre), cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
 // com uma chance (que sobe com a divisão da pessoa e muda com o jeito dele) e "demora" um tempo, tudo sorteado com semente
 // (a sessão), então o mesmo duelo sempre dá o mesmo placar. Lógica pura.
-import { LEAGUES, leagueFloor, type LeagueKey } from "./league.js";
+import { LEAGUES, leagueFloor, leagueSpan, type LeagueKey } from "./league.js";
 
 export type BotFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
 export type BotStyle = "constante" | "preciso" | "rapido" | "irregular" | "especialista";
@@ -15,20 +15,27 @@ export type Bot = {
   specialty: BotFamily | null;
 };
 
-/** Acerto e tempo por resposta do bot "constante" de cada liga, na divisão I. */
+/** Acerto e tempo por resposta do bot "constante" de cada liga, na divisão I (o tempo ainda leva o fator do modo, 1 a 1,9, e o do jeito do bot).
+ *  19/10/2026, com o Enzo de referência (jogador muito engajado: 196 duelos; no Mestre de Bandeiras ~99% e ~2 s por resposta antes do fator do
+ *  modo; nos modos digitados de Mapas ~80–86% e ~3,7 s). O Diamante e o Mestre ficaram mais rápidos (eram 4,6 e 3,8 s: o Mestre acertava bem,
+ *  mas perdia quase todo empate no tempo, 20 das 38 vitórias dele no Mestre foram no desempate) e o Grão-Mestre acerta quase tudo no ritmo dele.
+ *  Simulado com os números do Enzo (`.tmp-hub/sim-gm*.mjs`): ele vence ~85% do Mestre e ~56% do Grão-Mestre em Bandeiras (~53% e ~25% em Mapas),
+ *  então, com a vitória rendendo pouco e a derrota custando muito no alto, ele se segura perto dos 3.500, a linha do Grão-Mestre. */
 export const LEAGUE_BASE: Record<LeagueKey, { accuracy: number; avgMs: number }> = {
   bronze: { accuracy: 0.6, avgMs: 9000 },
   prata: { accuracy: 0.68, avgMs: 7800 },
   ouro: { accuracy: 0.76, avgMs: 6600 },
   platina: { accuracy: 0.84, avgMs: 5600 },
-  diamante: { accuracy: 0.91, avgMs: 4600 },
-  mestre: { accuracy: 0.96, avgMs: 3800 },
+  diamante: { accuracy: 0.91, avgMs: 3800 },
+  mestre: { accuracy: 0.96, avgMs: 2600 },
+  "grao-mestre": { accuracy: 0.985, avgMs: 1700 },
 };
-/** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE). Abaixo do Bronze segue a
- *  mesma inclinação (com piso) e acima do Mestre o acerto sobe até 99% em RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
-export const RATING_TOP = 3750;
+/** Força contínua: o acerto e o tempo do bot para um rating qualquer, interpolados entre o meio de cada liga (LEAGUE_BASE; o Mestre tem 1.000 troféus,
+ *  então o meio dele é 3.000, e o do Grão-Mestre, sem teto, 3.750). Abaixo do Bronze segue a mesma inclinação (com piso) e acima do Grão-Mestre o
+ *  acerto sobe até 99% e o tempo cai 15% em RATING_TOP, então o bot acompanha o rating sorteado sem saltos de liga. */
+export const RATING_TOP = 4500;
 export function baseAtRating(rating: number): { accuracy: number; avgMs: number } {
-  const anchors = LEAGUES.map((league, index) => ({ at: leagueFloor(index) + 250, ...LEAGUE_BASE[league] }));
+  const anchors = LEAGUES.map((league, index) => ({ at: leagueFloor(index) + leagueSpan(index) / 2, ...LEAGUE_BASE[league] }));
   const value = Number.isFinite(rating) ? Math.max(0, rating) : 0;
   const first = anchors[0];
   const last = anchors[anchors.length - 1];
@@ -39,7 +46,7 @@ export function baseAtRating(rating: number): { accuracy: number; avgMs: number 
   }
   if (value >= last.at) {
     const part = Math.min(1, (value - last.at) / (RATING_TOP - last.at));
-    return { accuracy: Math.min(0.99, last.accuracy + (0.99 - last.accuracy) * part), avgMs: last.avgMs * (1 - 0.25 * part) };
+    return { accuracy: Math.min(0.99, last.accuracy + (0.99 - last.accuracy) * part), avgMs: last.avgMs * (1 - 0.15 * part) };
   }
   const index = anchors.findIndex((anchor) => anchor.at > value);
   const low = anchors[index - 1];
@@ -64,9 +71,10 @@ const ROSTER: Record<LeagueKey, readonly [string, string, string, string, string
   platina: ["Helena Estreito", "Yara Cordilheira", "Marcos Delta", "Vítor Península", "Alice Arquipélago"],
   diamante: ["Ísis Cartógrafa", "Vera Equador", "Bento Polar", "Nando Trópico", "Dr. Mercator"],
   mestre: ["Mestre Ptolomeu", "Lúcia Antípoda", "Cosmo", "Almirante Zé", "Ana Hemisfério"],
+  "grao-mestre": ["Humboldt", "Marta Meridiana", "Ibn Battuta", "Capitã Monção", "Rosa dos Ventos"],
 };
 const STYLES: readonly BotStyle[] = ["constante", "preciso", "rapido", "irregular", "especialista"];
-const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandeiras", ouro: "capitais", platina: "idiomas", diamante: "mapa", mestre: "bandeiras" };
+const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandeiras", ouro: "capitais", platina: "idiomas", diamante: "mapa", mestre: "bandeiras", "grao-mestre": "capitais" };
 
 export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) =>
   ROSTER[league].map((name, index): Bot => ({
@@ -127,8 +135,10 @@ export type BotContext = {
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
   tuning?: { accuracy: number; time: number };
 };
-/** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa. */
+/** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa, mas nunca menos que TUNING_MIN: no topo os modos
+ *  difíceis ainda dão uma pequena chance de erro (o Grão-Mestre, 98,5% nas alternativas, fica em ~94% na capital escrita e ~96% nas Históricas). */
 export const TUNING_REF = 0.4;
+export const TUNING_MIN = 0.12;
 export type BotProfile = { accuracy: number; avgMs: number; streaky: boolean };
 
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
@@ -142,7 +152,7 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
   if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
   if (context.tuning) {
-    accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, 0, 1);
+    accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, TUNING_MIN, 1);
     avgMs *= context.tuning.time;
   }
   return { accuracy: clamp(accuracy, 0.05, 0.99), avgMs: Math.round(avgMs), streaky: bot.style === "irregular" };

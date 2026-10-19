@@ -296,11 +296,11 @@ export type ArenaSearch = {
   onFriendly: (ladder: Ladder) => void;
 };
 
-/** Progresso dentro da divisão atual (0 a 100). */
+/** Progresso dentro da divisão atual (0 a 100); no Mestre, sem divisões, até o Grão-Mestre; no Grão-Mestre, cheio. */
 const divisionProgress = (card: LadderCard) => {
   const { status } = card;
-  if (status.nextDivisionAt === null || status.division === null) return 100;
-  const start = status.floor + (status.division - 1) * DIVISION_SPAN;
+  if (status.nextDivisionAt === null) return 100;
+  const start = status.floor + ((status.division ?? 1) - 1) * DIVISION_SPAN;
   return Math.min(100, Math.max(0, ((card.trophies - start) / (status.nextDivisionAt - start)) * 100));
 };
 

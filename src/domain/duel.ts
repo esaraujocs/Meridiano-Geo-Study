@@ -1,7 +1,7 @@
 // Duelo contra bots: a pessoa joga a partida de sempre; o bot "joga" o mesmo número de rodadas (ver bots.ts) e o placar decide.
 // Quem acertar mais vence; empatou nos acertos, o menor tempo total desempata. Os troféus seguem uma conta tipo Elo.
 // O duelo v2 tem 2 tempos de 10 rodadas (ver duel-modes.ts) e troféus por escada (Mapas e Bandeiras).
-import { DIVISION_SPAN, LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf, type LeagueKey } from "./league.js";
+import { DIVISION_SPAN, LEAGUES, leagueFloor, leagueOf, leagueSpan, type LeagueKey } from "./league.js";
 import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
 import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
@@ -12,7 +12,7 @@ export const DUEL_ROUNDS = 20;
 
 /** Nota do bot na conta do MMR: o meio da divisão em que a pessoa o enfrenta (a força do bot acompanha a divisão) ou, sem divisão, o meio da liga. */
 export const botRating = (bot: Pick<Bot, "league">, division: 1 | 2 | 3 | null = null) =>
-  leagueFloor(LEAGUES.indexOf(bot.league)) + (division ? (division - 1) * DIVISION_SPAN + DIVISION_SPAN / 2 : LEAGUE_SPAN / 2);
+  leagueFloor(LEAGUES.indexOf(bot.league)) + (division ? (division - 1) * DIVISION_SPAN + DIVISION_SPAN / 2 : leagueSpan(LEAGUES.indexOf(bot.league)) / 2);
 
 export type DuelOutcome = "win" | "loss" | "draw";
 // Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.

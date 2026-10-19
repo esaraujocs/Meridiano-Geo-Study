@@ -49,7 +49,9 @@ const BOT_IDS = BOTS.map((bot) => bot.id);
 const BOT_ID_SET = new Set(BOT_IDS);
 const LADDER_SET = new Set<string>(LADDERS);
 const OFFSETS = [70, 170, 260, 350, 440] as const;
-const MASTER_OFFSETS = [100, 350, 600, 850, 1100] as const;
+/** O Mestre (1.000 troféus, de 2.500 a 3.499) espalha os bots pela faixa toda; o Grão-Mestre, sem teto, começa um pouco acima de 3.500. */
+const MASTER_OFFSETS = [80, 280, 480, 680, 880] as const;
+const GRAND_OFFSETS = [60, 220, 380, 540, 700] as const;
 const DAILY_SWING = 30;
 
 /**
@@ -60,7 +62,7 @@ const DAILY_SWING = 30;
 function initialBotTrophies(bot: Bot, ladder: Ladder, day: number) {
   const index = LEAGUES.indexOf(bot.league);
   const slot = Math.max(0, Number(bot.id.split("-").pop()) || 0);
-  const offset = (bot.league === "mestre" ? MASTER_OFFSETS : OFFSETS)[Math.min(slot, OFFSETS.length - 1)];
+  const offset = (bot.league === "grao-mestre" ? GRAND_OFFSETS : bot.league === "mestre" ? MASTER_OFFSETS : OFFSETS)[Math.min(slot, OFFSETS.length - 1)];
   const swing = (mulberry32(hashSeed(`rank:${bot.id}:${ladder}:${day}`))() - 0.5) * 2 * DAILY_SWING;
   return Math.max(leagueFloor(index) + 5, Math.round(leagueFloor(index) + offset + swing));
 }
@@ -125,7 +127,8 @@ function assertStanding(value: unknown, label: string): asserts value is BotStan
   }
 }
 
-/** Strict persistence parser: malformed or roster-incompatible data is an explicit error, never a silent reset. */
+/** Strict persistence parser: malformed or roster-incompatible data is an explicit error, never a silent reset. Bots added to the roster later
+ *  are seeded on read; an unknown bot id is still an error. */
 export function parseBotRanking(value: unknown): BotRankingState {
   if (!isRecord(value)) throw new TypeError("Bot ranking state must be an object");
   if (value.id !== BOT_RANKING_ID) throw new TypeError(`Bot ranking state id must be ${BOT_RANKING_ID}`);
@@ -145,11 +148,17 @@ export function parseBotRanking(value: unknown): BotRankingState {
     const ladderBots = value.bots[ladder];
     if (!isRecord(ladderBots)) throw new TypeError(`Bot ranking ${ladder} roster must be an object`);
     const ids = Object.keys(ladderBots);
-    if (ids.length !== BOT_IDS.length || ids.some((id) => !BOT_ID_SET.has(id))) {
+    if (ids.some((id) => !BOT_ID_SET.has(id))) {
       throw new TypeError(`Bot ranking ${ladder} roster does not match the current bot roster`);
     }
     const parsed: Record<string, BotStanding> = {};
     for (const botId of BOT_IDS) {
+      // bot que chegou depois (os do Grão-Mestre, 19/10/2026): entra com os troféus iniciais do dia em que o estado parou, sem inventar histórico
+      if (!(botId in ladderBots)) {
+        const trophies = initialBotTrophies(BOTS.find((bot) => bot.id === botId) as Bot, ladder, value.lastDay as number);
+        parsed[botId] = { trophies, mmr: trophies, sigma: SIGMA_START, streak: 0, samples: [], matches: 0 };
+        continue;
+      }
       const standing = ladderBots[botId];
       assertStanding(standing, `bots.${ladder}.${botId}`);
       parsed[botId] = copyStanding(standing);

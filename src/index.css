@@ -1418,7 +1418,7 @@ html[data-reduced-motion=true] .gs-continue i{animation:none}
 .cv-favs .cv-hint{margin:8px 0 0}
 
 /* ---- Duelo e Ligas (Solo | Duelo no Hub, chip de troféus, moldura do nível, tela da Liga, placar do duelo) ---- */
-[data-league=bronze]{--lg:#A8703F}[data-league=prata]{--lg:#A3ABAE}[data-league=ouro]{--lg:#C49345}[data-league=platina]{--lg:#5FA8A2}[data-league=diamante]{--lg:#5B93D3}[data-league=mestre]{--lg:#8B5FBF}
+[data-league=bronze]{--lg:#A8703F}[data-league=prata]{--lg:#A3ABAE}[data-league=ouro]{--lg:#C49345}[data-league=platina]{--lg:#5FA8A2}[data-league=diamante]{--lg:#5B93D3}[data-league=mestre]{--lg:#8B5FBF}[data-league=grao-mestre]{--lg:#C0443A}
 .hub-rank{display:flex;align-items:center;gap:6px;margin:12px 10px 12px 0;padding:6px 14px 6px 8px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;cursor:pointer;align-self:center}
 .hub-rank i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(47,111,106,.14);color:var(--green)}
 .hub-rank strong{font:500 20px 'Fraunces',Georgia,serif}
@@ -2037,6 +2037,7 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 .ar-emblem b{color:var(--ink)}
 [data-league=bronze] .ar-tag,[data-league=bronze] .lg-pip{background:#8A5A2B}
 [data-league=mestre] .ar-tag,[data-league=mestre] .lg-pip{background:#7A4FAE}
+[data-league=grao-mestre] .ar-tag,[data-league=grao-mestre] .lg-pip{background:#A8352C}
 .dr-legs td>small{display:block;font:400 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--muted)}
 .dr-legs tr.dr-time td{border-top:1px solid rgba(199,182,143,.55);font:500 17px 'Fraunces',serif}
 .dr-legs tr.dr-time td:first-child{font:600 14px 'Plus Jakarta Sans',sans-serif}

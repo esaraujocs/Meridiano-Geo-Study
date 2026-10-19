@@ -4,7 +4,7 @@ import { ThemeUnlockCard } from "./theme-unlock";
 import type { DuelView } from "../domain/duel";
 import { LADDER_BASE, LADDER_BASE_GROUP, groupDef, type ModeGroup } from "../domain/duel-modes";
 import { clockOf, decisiveLeg, meterLayout, resultPlan, secondsPer, worstLeg, type Pill, type ResultTier } from "../domain/duel-view";
-import { leagueLabel, milestoneLabel, nextStep } from "../domain/duel-labels";
+import { leagueLabel, leaguePip, milestoneLabel, nextStep } from "../domain/duel-labels";
 import { DIVISION_SPAN, LEAGUES, divisionRoman, leagueOf } from "../domain/league";
 import { baseCoins } from "../domain/spoils";
 import type { ResultView } from "../domain/result-view";
@@ -92,7 +92,7 @@ export function DuelResultCard({ duel, view, lootCoinRef, xpChipRef, onAgain, on
   const beforeStatus = leagueOf(duel.trophiesBefore);
   const afterName = leagueLabel(afterStatus.league, afterStatus.division);
   const nowName = leagueLabel(status.league, status.division);
-  const pip = divisionRoman(status.division) || "M";
+  const pip = leaguePip(status.league, status.division);
 
   // a moldura brilha quando a liga muda no meio da animação
   useEffect(() => {

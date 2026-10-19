@@ -3,7 +3,7 @@ import { useEnterKey } from "./use-enter-key";
 import { leadOf, stakesRange, streakBonus } from "../domain/duel";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP, groupsOfLadder, type ModeGroup } from "../domain/duel-modes";
-import { botLabel, leagueLabel, styleLabel } from "../domain/duel-labels";
+import { botLabel, leagueLabel, leaguePip, styleLabel } from "../domain/duel-labels";
 import { policyFor } from "../domain/economy-rules";
 import { LEAGUES, divisionRoman, leagueOf } from "../domain/league";
 import { baseCoins } from "../domain/spoils";
@@ -42,7 +42,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
         <h1>{t.duel.reveal.title}</h1>
         <div className="rv-vs">
           <div className="rv-side">
-            <div className="ar-emblem lg-frame" data-league={player.league}><Icon type="achievements" size={34} /><span className="lg-pip">{divisionRoman(player.division) || "M"}</span></div>
+            <div className="ar-emblem lg-frame" data-league={player.league}><Icon type="achievements" size={34} /><span className="lg-pip">{leaguePip(player.league, player.division)}</span></div>
             <strong>{t.duel.reveal.you}</strong>
             <small>{playerLabel} · {money(run.trophiesBefore)}</small>
           </div>

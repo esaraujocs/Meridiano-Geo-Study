@@ -3,7 +3,7 @@
 import { trophiesByLadder, type DuelOutcome, type DuelRecord } from "./duel.js";
 import { LADDERS, groupsOfLadder, isGroupOwned, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { MILESTONES, reachedMilestones, type Milestone } from "./duel-rewards.js";
-import { DIVISION_SPAN, leagueFloor, leagueOf, LEAGUE_SPAN, type LeagueStatus } from "./league.js";
+import { DIVISION_SPAN, hasDivisions, leagueFloor, leagueOf, leagueSpan, type LeagueStatus } from "./league.js";
 
 export type LadderCard = {
   ladder: Ladder;
@@ -160,10 +160,11 @@ export function trophyFrame(plan: Pick<ResultPlan, "from" | "to" | "cross">, pro
   if (plan.cross) {
     const { floorA, floorB, mid } = plan.cross;
     const split = 0.5;
-    if (p < split) return { value: lerp(plan.from, mid, easeOut(p / split)), floor: floorA, span: LEAGUE_SPAN, phase: 0 as const };
-    return { value: lerp(mid, plan.to, easeOut((p - split) / (1 - split))), floor: floorB, span: LEAGUE_SPAN, phase: 1 as const };
+    if (p < split) return { value: lerp(plan.from, mid, easeOut(p / split)), floor: floorA, span: leagueSpan(leagueOf(floorA).index), phase: 0 as const };
+    return { value: lerp(mid, plan.to, easeOut((p - split) / (1 - split))), floor: floorB, span: leagueSpan(leagueOf(floorB).index), phase: 1 as const };
   }
-  return { value: lerp(plan.from, plan.to, easeOut(p)), floor: leagueOf(plan.from).floor, span: LEAGUE_SPAN, phase: 0 as const };
+  const from = leagueOf(plan.from);
+  return { value: lerp(plan.from, plan.to, easeOut(p)), floor: from.floor, span: leagueSpan(from.index), phase: 0 as const };
 }
 
 
@@ -194,7 +195,7 @@ export function meterLayout(plan: Pick<ResultPlan, "from" | "to" | "cross">, pro
   const fill = rising ? pct(start) : pct(frame.value);
   const deltaFrom = rising ? pct(start) : pct(frame.value);
   const deltaTo = rising ? pct(frame.value) : pct(plan.from);
-  const master = frame.floor >= leagueFloor(5);
+  const master = !hasDivisions(leagueOf(frame.floor).index);
   return {
     value: frame.value, floor: frame.floor, span: frame.span, phase: frame.phase, status, fill, deltaFrom, deltaTo,
     ticks: master ? [false, false] : [frame.value >= frame.floor + DIVISION_SPAN, frame.value >= frame.floor + 2 * DIVISION_SPAN],

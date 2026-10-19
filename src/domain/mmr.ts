@@ -9,7 +9,7 @@
 // os resultados fogem do esperado (uma "surpresa": vitórias demais, ou derrotas demais, para a força dos bots enfrentados) a incerteza volta a subir e
 // o MMR passa a andar depressa até se acertar. O adversário é escolhido pelo MMR mais um otimismo proporcional à incerteza (quem está em
 // surpresa positiva enfrenta bots mais fortes, em negativa, mais fracos), e a força do bot é contínua: acompanha o rating sorteado, sem saltos de liga.
-import { LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf } from "./league.js";
+import { LEAGUES, LEAGUE_SPAN, leagueFloor, leagueOf, leagueSpan } from "./league.js";
 
 export const expectedScore = (rating: number, opponent: number) => 1 / (1 + Math.pow(10, (opponent - rating) / 400));
 
@@ -140,7 +140,7 @@ export function sigmaNext(sigma: number, samples: readonly SurpriseSample[]) {
 export function matchRating(trophies: number, mmr: number, sigma = SIGMA_MIN, z = 0) {
   const home = leagueOf(trophies).index;
   const topIndex = Math.min(LEAGUES.length - 1, home + MATCH_UP);
-  const high = leagueFloor(topIndex) + (topIndex === LEAGUES.length - 1 ? MASTER_MATCH_SPAN : LEAGUE_SPAN) - 1;
+  const high = leagueFloor(topIndex) + (topIndex === LEAGUES.length - 1 ? MASTER_MATCH_SPAN : leagueSpan(topIndex)) - 1;
   const bump = OPTIMISM * Math.max(0, (Number.isFinite(sigma) ? sigma : SIGMA_MIN) - SIGMA_MIN) * (z < 0 ? -1 : 1);
   return Math.round(clamp((Number.isFinite(mmr) ? mmr : 0) + bump, leagueFloor(home), high));
 }

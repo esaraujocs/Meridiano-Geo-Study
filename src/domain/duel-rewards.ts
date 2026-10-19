@@ -1,13 +1,13 @@
 // Marcos do Duelo: recompensa em moedas, paga uma vez só, por divisão nova (em cada escada) e (maior) por liga nova.
 // Como os troféus podem cair, cada marco é um crédito com id único no livro-caixa: descer e subir de novo não repete o prêmio.
 // O marco de liga é um só por liga: quem chegar primeiro, em qualquer das duas escadas, leva; o de divisão é de cada escada.
-import { DIVISION_SPAN, LEAGUES, leagueFloor, type LeagueKey } from "./league.js";
+import { DIVISION_SPAN, LEAGUES, hasDivisions, leagueFloor, type LeagueKey } from "./league.js";
 import { LADDERS, type Ladder } from "./duel-modes.js";
 
 // Um duelo rende perto de mil moedas, então o prêmio de uma divisão vale uns 2 ou 3 duelos e o de uma liga, de 10 a 150 (a subida é bem mais lenta).
 export const DIVISION_COINS = 2500;
 /** Entrar na liga: Prata, Ouro, Platina, Diamante e Mestre. */
-export const LEAGUE_COINS: Partial<Record<LeagueKey, number>> = { prata: 10000, ouro: 20000, platina: 40000, diamante: 80000, mestre: 150000 };
+export const LEAGUE_COINS: Partial<Record<LeagueKey, number>> = { prata: 10000, ouro: 20000, platina: 40000, diamante: 80000, mestre: 150000, "grao-mestre": 300000 };
 
 export type Milestone = {
   id: string;
@@ -28,7 +28,7 @@ export const MILESTONES: readonly Milestone[] = [
     return coins ? [{ id: `league:${league}`, kind: "league", league, division: null, ladder: null, at: leagueFloor(index), coins }] : [];
   }),
   ...LADDERS.flatMap((ladder) => LEAGUES.flatMap((league, index): Milestone[] => {
-    if (league === "mestre") return [];
+    if (!hasDivisions(index)) return [];
     const floor = leagueFloor(index);
     return ([2, 3] as const).map((division) => ({ id: `division:${ladder}:${league}:${division}`, kind: "division" as const, league, division, ladder, at: floor + (division - 1) * DIVISION_SPAN, coins: DIVISION_COINS }));
   })),

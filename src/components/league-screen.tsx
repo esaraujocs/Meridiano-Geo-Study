@@ -3,21 +3,21 @@ import { Icon } from "./icons";
 import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
 import { botById, botProfile, botsOfLeague } from "../domain/bots";
-import { botLabel, styleLabel } from "../domain/duel-labels";
+import { botLabel, leaguePip, styleLabel } from "../domain/duel-labels";
 import { globalLeaderboard, playersLeaderboard, rankWindow } from "../domain/leaderboard";
 import type { BotRankingState } from "../domain/bot-ranking";
 import type { LeaderboardRow } from "../domain/pvp";
 import type { LadderEntry } from "../domain/pvp-trophies";
 import type { PvpMatchRecord } from "../domain/pvp-store";
 import { BASE_WIN, LEAD_TOP, PERF_MAX, WIN_CAP_EXTRA, baseStakes } from "../domain/mmr";
-import { LEAGUES, LEAGUE_SPAN, MASTER_AT, divisionRoman, leagueFloor, leagueOf, type LeagueKey } from "../domain/league";
+import { GRAND_MASTER_AT, LEAGUES, divisionRoman, hasDivisions, leagueFloor, leagueOf, leagueSpan, type LeagueKey } from "../domain/league";
 import { formatNumber, t } from "../domain/i18n";
 
 const signed = (value: number) => (value > 0 ? `+${formatNumber(value)}` : value < 0 ? `−${formatNumber(Math.abs(value))}` : "0");
 const nameOf = (league: LeagueKey, division: 1 | 2 | 3 | null = null) => t.duel.leagueName(t.duel.leagues[league], divisionRoman(division));
 const when = (at: number) => new Date(at).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-/** Posição na régua (0 a 100): o Mestre é a ponta direita. */
-const along = (trophies: number) => Math.min(100, (trophies / MASTER_AT) * 100);
+/** Posição na régua (0 a 100): o Grão-Mestre é a ponta direita. */
+const along = (trophies: number) => Math.min(100, (trophies / GRAND_MASTER_AT) * 100);
 const RING = 2 * Math.PI * 58;
 
 // Tela da Liga: uma aba por escada (Mapas e Bandeiras, cada uma com a sua liga) com troféus, régua de ligas e divisões,
@@ -43,10 +43,10 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
   const bestTrophies = byLadder[best];
   const status = leagueOf(trophies);
   const title = nameOf(status.league, status.division);
-  const nextName = status.toNextDivision === null ? null : status.division === 3
+  const nextName = status.toNextDivision === null ? null : status.division === 3 || status.division === null
     ? nameOf(LEAGUES[status.index + 1])
-    : nameOf(status.league, ((status.division ?? 1) + 1) as 2 | 3);
-  const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / LEAGUE_SPAN;
+    : nameOf(status.league, (status.division + 1) as 2 | 3);
+  const ringFraction = status.toNextLeague === null ? 1 : (trophies - status.floor) / leagueSpan(status.index);
   const board = boards[ladder];
   // o ranking: por padrão os 10 primeiros (e a pessoa, se estiver mais abaixo); "Ver mais" mostra a lista inteira; "Só jogadores" tira os bots
   const rankRows = rankView === "players" ? playersLeaderboard(board ?? [], trophies) : globalLeaderboard(ladder, board ?? [], trophies, undefined, botRanking);
@@ -81,7 +81,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
             <div className="pg-ring lg-ring lg-frame" role="img" aria-label={t.duel.frameAria(title)}>
               <svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="var(--paper)" stroke="rgba(199,182,143,.7)" strokeWidth="8" /><circle cx="66" cy="66" r="58" fill="none" stroke="var(--lg)" strokeWidth="8" strokeLinecap="round" strokeDasharray={`${RING * ringFraction} ${RING}`} transform="rotate(-90 66 66)" /></svg>
               <div><b>{formatNumber(trophies)}</b><span>{t.duel.league.trophies}</span></div>
-              <span className="lg-pip">{divisionRoman(status.division) || "M"}</span>
+              <span className="lg-pip">{leaguePip(status.league, status.division)}</span>
             </div>
             <div className="pg-title">
               <span className="pg-eyebrow">{t.duel.league.eyebrow(t.duel.ladders[ladder])}</span>
@@ -102,7 +102,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
                     {reached && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5l10-10" /></svg>}
                     <span className="pr-node-label"><b>{t.duel.leagues[league]}</b><small>{formatNumber(start)}</small></span>
                   </span>
-                  {index < LEAGUES.length - 1 && [1, 2].map((division) => {
+                  {hasDivisions(index) && [1, 2].map((division) => {
                     const mark = start + division * 167;
                     return <span key={division} className={`lg-tick${trophies >= mark ? " on" : ""}`} style={{ left: `${along(mark)}%` }}><i>{divisionRoman((division + 1) as 2 | 3)}</i></span>;
                   })}
@@ -168,7 +168,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
               <thead><tr><th>{t.duel.league.howCols.league}</th><th>{t.duel.league.howCols.win}</th><th>{t.duel.league.howCols.loss}</th></tr></thead>
               <tbody>{LEAGUES.map((league, index) => {
                 const start = baseStakes(leagueFloor(index));
-                const falling = baseStakes(leagueFloor(index) + LEAGUE_SPAN - 1).win < start.win || start.win < BASE_WIN;
+                const falling = baseStakes(leagueFloor(index) + leagueSpan(index) - 1).win < start.win || start.win < BASE_WIN;
                 return <tr key={league} className={league === status.league ? "is-now" : ""}>
                   <th scope="row">{t.duel.leagues[league]}</th>
                   <td>{falling ? t.duel.league.howFalling(start.win) : t.duel.league.howWin(start.win, start.win + WIN_CAP_EXTRA)}</td>
@@ -186,7 +186,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
             {LEAGUES.map((league, index) => {
               const reached = bestTrophies >= leagueFloor(index);
               return <div key={league} className={`lg-frame-item${reached ? "" : " is-locked"}`}>
-                <div className="hub-level lg-frame" data-league={league}><strong>20</strong><span className="lg-pip">{league === "mestre" ? "M" : "I"}</span></div>
+                <div className="hub-level lg-frame" data-league={league}><strong>20</strong><span className="lg-pip">{hasDivisions(index) ? "I" : leaguePip(league)}</span></div>
                 <b>{t.duel.leagues[league]}</b>
                 <small>{reached ? t.duel.league.unlocked : t.duel.league.from(formatNumber(leagueFloor(index)))}</small>
               </div>;

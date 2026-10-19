@@ -145,7 +145,7 @@ export const pt = {
     moreModes: "Mais modos",
   },
   duel: {
-    leagues: { bronze: "Bronze", prata: "Prata", ouro: "Ouro", platina: "Platina", diamante: "Diamante", mestre: "Mestre" },
+    leagues: { bronze: "Bronze", prata: "Prata", ouro: "Ouro", platina: "Platina", diamante: "Diamante", mestre: "Mestre", "grao-mestre": "Grão-Mestre" },
     leagueName: (league: string, division: string) => (division ? `${league} ${division}` : league),
     modeSolo: "Solo",
     modeDuel: "Duelo",

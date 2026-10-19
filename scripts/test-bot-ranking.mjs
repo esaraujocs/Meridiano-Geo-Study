@@ -139,10 +139,14 @@ const expectedScores = Object.fromEntries(BOTS.map((bot) => [
 ]));
 const daily = advanceBotRanking(deepFreeze(clone(varied)), day);
 assert.equal(daily.revision, varied.revision + 1, "a whole simulated day advances the snapshot once, not once per side");
+// com um número ímpar de bots (35, desde o Grão-Mestre) um deles descansa no dia; o sorteio das faixas muda quem
+const resting = BOTS.filter((bot) => !expectedOpponent.has(bot.id));
+assert.equal(resting.length, BOTS.length % 2, "só sobra quem não tem par: nenhum com número par de bots, um com ímpar");
+for (const bot of resting) assert.deepEqual(daily.bots.mapas[bot.id], varied.bots.mapas[bot.id], "quem descansa fica como estava");
 for (const bot of BOTS) {
   const original = varied.bots.mapas[bot.id];
   const opponentId = expectedOpponent.get(bot.id);
-  assert.ok(opponentId);
+  if (!opponentId) continue;
   const opponent = varied.bots.mapas[opponentId];
   const scoreMargin = expectedScores[bot.id] - expectedScores[opponentId];
   const margin = scoreMargin === 0 ? 0 : Math.max(1, Math.min(10, Math.round(Math.abs(scoreMargin) / 36))) * Math.sign(scoreMargin);
@@ -226,9 +230,13 @@ assert.throws(() => parseBotRanking({ ...initial, lastDay: 1.5 }), /lastDay/);
 const missingLadder = clone(initial);
 delete missingLadder.bots.mapas;
 assert.throws(() => parseBotRanking(missingLadder), /ladders/);
+// bot que chegou depois no elenco (os do Grão-Mestre) entra semeado ao ler um estado antigo; bot desconhecido continua sendo erro
 const missingBot = clone(initial);
 delete missingBot.bots.mapas[botId];
-assert.throws(() => parseBotRanking(missingBot), /roster/);
+const seeded = parseBotRanking(missingBot);
+assert.deepEqual(Object.keys(seeded.bots.mapas).sort(), BOTS.map((bot) => bot.id).sort(), "o bot que faltava volta ao elenco");
+assert.equal(seeded.bots.mapas[botId].matches, 0, "sem histórico inventado");
+assert.equal(seeded.bots.mapas[botId].trophies, initial.bots.mapas[botId].trophies, "com os troféus iniciais do dia do estado");
 const extraBot = clone(initial);
 extraBot.bots.bandeiras["bot-added"] = clone(extraBot.bots.bandeiras[botId]);
 assert.throws(() => parseBotRanking(extraBot), /roster/);

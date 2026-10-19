@@ -34,16 +34,20 @@ s = L.leagueOf(500); assert.deepEqual([s.league, s.division, s.floor], ["prata",
 s = L.leagueOf(1240); assert.deepEqual([s.league, s.division, s.toNextDivision, s.toNextLeague], ["ouro", 2, 94, 260]);
 s = L.leagueOf(2000); assert.deepEqual([s.league, s.division], ["diamante", 1]);
 s = L.leagueOf(2499); assert.deepEqual([s.league, s.division], ["diamante", 3]);
-s = L.leagueOf(2500); assert.deepEqual([s.league, s.division, s.toNextLeague], ["mestre", null, null]);
-s = L.leagueOf(99999); assert.equal(s.league, "mestre");
+s = L.leagueOf(2500); assert.deepEqual([s.league, s.division, s.toNextLeague, s.toNextDivision], ["mestre", null, 1000, 1000], "o Mestre vai até o Grão-Mestre, sem divisões");
+s = L.leagueOf(3499); assert.deepEqual([s.league, s.toNextLeague], ["mestre", 1]);
+s = L.leagueOf(3500); assert.deepEqual([s.league, s.division, s.toNextLeague, s.floor], ["grao-mestre", null, null, 3500]);
+s = L.leagueOf(99999); assert.equal(s.league, "grao-mestre");
+assert.deepEqual(L.LEAGUES.map((_, i) => L.leagueSpan(i)), [500, 500, 500, 500, 500, 1000, 500]);
+assert.deepEqual(L.LEAGUES.map((_, i) => L.hasDivisions(i)), [true, true, true, true, true, false, false]);
 s = L.leagueOf(-40); assert.equal(s.trophies, 0);
 s = L.leagueOf(Number.NaN); assert.equal(s.trophies, 0);
 assert.equal(L.divisionRoman(2), "II"); assert.equal(L.divisionRoman(null), "");
 
 // ---- Elenco: 5 bots por liga, ids e nomes únicos, um de cada jeito ----
-assert.equal(B.BOTS.length, 30);
-assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 30);
-assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 30);
+assert.equal(B.BOTS.length, 35);
+assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 35);
+assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 35);
 for (const league of L.LEAGUES) {
   const group = B.botsOfLeague(league);
   assert.equal(group.length, 5, league);
@@ -57,8 +61,8 @@ assert.equal(B.botById("bot-nao-existe"), null);
 // ---- Força: sobe com a liga e com a divisão; cada jeito muda o perfil ----
 const base = (league) => B.botsOfLeague(league)[0];
 for (let i = 1; i < L.LEAGUES.length; i += 1) {
-  const low = B.botProfile(base(L.LEAGUES[i - 1]), { division: 3, family: null });
-  const high = B.botProfile(base(L.LEAGUES[i]), { division: 1, family: null });
+  const low = B.botProfile(base(L.LEAGUES[i - 1]), { division: L.hasDivisions(i - 1) ? 3 : null, family: null });
+  const high = B.botProfile(base(L.LEAGUES[i]), { division: L.hasDivisions(i) ? 1 : null, family: null });
   assert.ok(high.accuracy > low.accuracy, "a liga seguinte, mesmo na divisão I, é mais forte que a anterior na III");
   assert.ok(high.avgMs < low.avgMs, "e mais rápida");
 }
@@ -83,7 +87,7 @@ assert.notDeepEqual(B.simulateBot(constant, 200, "abc", ctx), B.simulateBot(cons
 assert.equal(B.simulateBot(constant, 0, "x", ctx).correct, 0);
 for (const bot of B.BOTS) {
   for (const division of [1, 3]) {
-    const context = { division: bot.league === "mestre" ? null : division, family: bot.specialty };
+    const context = { division: bot.league === "mestre" || bot.league === "grao-mestre" ? null : division, family: bot.specialty };
     const expected = B.botProfile(bot, context).accuracy;
     let hits = 0, rounds = 0;
     for (let game = 0; game < 400; game += 1) { hits += B.simulateBot(bot, 25, `g${game}`, context).correct; rounds += 25; }
@@ -148,12 +152,13 @@ assert.equal(D.playerTotalMs([{ responseTimeMs: 1000 }, { responseTimeMs: null, 
 assert.equal(D.playerTotalMs([{ responseTimeMs: 1000 }, { responseTimeMs: null }], 15), null);
 
 // ---- Marcos de recompensa ----
-assert.equal(R.MILESTONES.length, 5 + 2 * 10, "5 ligas novas + 2 divisões em cada uma das 5 ligas com divisão, nas 2 escadas");
+assert.equal(R.MILESTONES.length, 6 + 2 * 10, "6 ligas novas (Prata ao Grão-Mestre) + 2 divisões em cada uma das 5 ligas com divisão, nas 2 escadas");
 assert.deepEqual(R.MILESTONES.map((m) => m.at), [...R.MILESTONES.map((m) => m.at)].sort((a, b) => a - b), "em ordem de troféus");
-assert.equal(new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m))).size, 25, "ids únicos");
+assert.equal(new Set(R.MILESTONES.map((m) => R.milestoneLedgerId(m))).size, 26, "ids únicos");
 const coinsAt = (trophies) => R.reachedMilestones(trophies).reduce((n, m) => n + m.coins, 0);
 assert.equal(R.reachedMilestones(0).length, 0);
 assert.equal(R.reachedMilestones(166).length, 0);
+assert.equal(R.LEAGUE_COINS["grao-mestre"], 300000, "o Grão-Mestre vale o dobro do Mestre");
 assert.deepEqual([R.DIVISION_COINS, R.LEAGUE_COINS.prata, R.LEAGUE_COINS.ouro, R.LEAGUE_COINS.platina, R.LEAGUE_COINS.diamante, R.LEAGUE_COINS.mestre], [2500, 10000, 20000, 40000, 80000, 150000], "um duelo rende perto de mil: divisão vale uns 2-3 duelos");
 assert.equal(coinsAt(167), 2500, "Bronze II");
 assert.equal(coinsAt(334), 5000, "Bronze III");
@@ -165,7 +170,7 @@ assert.equal(R.MILESTONES.find((m) => m.id === "league:mestre").at, 2500);
 for (const m of R.MILESTONES) {
   const at = L.leagueOf(m.at);
   assert.equal(at.league, m.league, m.id);
-  assert.equal(at.division, m.kind === "league" ? (m.league === "mestre" ? null : 1) : m.division, m.id);
+  assert.equal(at.division, m.kind === "league" ? (m.league === "mestre" || m.league === "grao-mestre" ? null : 1) : m.division, m.id);
   const before = L.leagueOf(m.at - 1);
   assert.ok(before.index < at.index || (before.division ?? 0) < (at.division ?? 99) || m.at === 0, `${m.id} abre exatamente em ${m.at}`);
 }
@@ -290,7 +295,7 @@ const plain = (bot, division) => B.botProfile(bot, { division, family: null });
 const tuned = (bot, division) => B.botProfile(bot, { division, family: null, tuning: hard });
 assert.ok(Math.abs((tuned(bronze, 1).accuracy - plain(bronze, 1).accuracy) - hard.accuracy) < 1e-9, "no Bronze o ajuste vale por inteiro");
 assert.ok(tuned(ouro, 1).accuracy < plain(ouro, 1).accuracy && tuned(ouro, 1).accuracy > plain(ouro, 1).accuracy + hard.accuracy, "no Ouro vale menos");
-assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.04, "no Mestre quase não pesa (o modo mais duro tira uns 3,6 pontos)");
+assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.05, "no Mestre quase não pesa (o modo mais duro tira uns 4,3 pontos, o piso TUNING_MIN)");
 assert.equal(tuned(bronze, 1).avgMs, Math.round(plain(bronze, 1).avgMs * hard.time), "o tempo do bot cresce com a dificuldade do modo");
 for (const g of M.MODE_GROUPS) for (const league of L.LEAGUES) { const p = B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: null, tuning: g }); assert.ok(p.accuracy >= 0.05 && p.accuracy <= 0.99, g.group + league); }
 // modo mais difícil = bot erra mais, e a média simulada acompanha
@@ -450,7 +455,9 @@ assert.deepEqual(nx.map((m) => m.id), ["division:mapas:bronze:2", "league:prata"
 nx = V.nextMilestones([dd(1, 1, "bandeiras", "win", 200)]);
 assert.deepEqual(nx.map((m) => m.id), ["division:bandeiras:bronze:3", "league:prata"], "olha a escada com mais troféus");
 nx = V.nextMilestones([dd(1, 1, "mapas", "win", 2600)]);
-assert.deepEqual(nx.map((m) => m.id), [], "no Mestre não sobra marco");
+assert.deepEqual(nx.map((m) => m.id), ["league:grao-mestre"], "no Mestre o próximo marco é o Grão-Mestre");
+nx = V.nextMilestones([dd(1, 1, "mapas", "win", 3600)]);
+assert.deepEqual(nx.map((m) => m.id), [], "no Grão-Mestre não sobra marco");
 assert.equal(V.nextMilestones([dd(1, 1, "mapas", "win", 500)])[0].id, "division:mapas:prata:2");
 
 // plano do resultado: festa por importância
@@ -638,7 +645,8 @@ assert.equal(X.matchRating(1091, 1300, 155, 0), 1300 + 95, "sem surpresa mas inc
 assert.equal(X.matchRating(1091, 1091, 250, -3), 1000, "incerto e perdendo: mais fraco, mas nunca abaixo da própria liga");
 assert.equal(X.matchRating(1500, 1700, 250, -3), 1510, "perdendo: desce, ainda dentro da liga");
 assert.equal(X.matchRating(100, 5000), 1499, "no máximo 2 ligas acima");
-assert.equal(X.matchRating(3000, 9000), 3499, "no Mestre, mil troféus além do começo");
+assert.equal(X.matchRating(3000, 9000), 4499, "no Mestre, até mil troféus além do começo do Grão-Mestre");
+assert.equal(X.matchRating(4000, 9000), 4499, "no Grão-Mestre, mil troféus além do começo");
 assert.equal(X.matchRating(1200, 100), 1000, "nunca abaixo da própria liga, mesmo com o MMR lá embaixo");
 assert.equal(X.matchRating(0, NaN), 0, "MMR inválido não quebra");
 const mmkRes = X.matchmaking(1091, 1091, 250, 3);
@@ -653,13 +661,13 @@ assert.ok(X.mmrChange(1000, 1000, "win", 8, 155) > X.mmrChange(1000, 1000, "win"
 assert.equal(X.mmrChange(1000, 1000, "loss", -8, 250), -80);
 assert.equal(X.mmrChange(1000, 1000, "draw", 0, 250), 0);
 // força contínua do bot pelo rating: passa pelos meios das ligas e sobe sem degraus
-assert.deepEqual([250, 750, 1250, 1750, 2250, 2750].map((r) => Math.round(B.baseAtRating(r).accuracy * 100)), [60, 68, 76, 84, 91, 96], "no meio de cada liga vale a base da liga");
-assert.deepEqual([250, 750, 1250, 1750, 2250, 2750].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 4600, 3800]);
+assert.deepEqual([250, 750, 1250, 1750, 2250, 3000, 3750].map((r) => Math.round(B.baseAtRating(r).accuracy * 1000) / 10), [60, 68, 76, 84, 91, 96, 98.5], "no meio de cada liga vale a base da liga (o meio do Mestre é 3.000, o do Grão-Mestre 3.750)");
+assert.deepEqual([250, 750, 1250, 1750, 2250, 3000, 3750].map((r) => B.baseAtRating(r).avgMs), [9000, 7800, 6600, 5600, 3800, 2600, 1700]);
 assert.ok(Math.abs(B.baseAtRating(500).accuracy - 0.64) < 1e-9, "entre duas ligas, interpolado");
 let lastAcc = 0, lastMs = Infinity;
-for (let r = 0; r <= 4200; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= 0.99 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }
+for (let r = 0; r <= 5000; r += 50) { const p = B.baseAtRating(r); assert.ok(p.accuracy >= lastAcc - 1e-12 && p.avgMs <= lastMs + 1e-9 && p.accuracy <= 0.99 && p.accuracy >= 0.5, "monótona e limitada em " + r); lastAcc = p.accuracy; lastMs = p.avgMs; }
 assert.ok(B.baseAtRating(0).accuracy < 0.6 && B.baseAtRating(0).accuracy >= 0.5, "abaixo do Bronze continua caindo, com piso");
-assert.equal(B.baseAtRating(B.RATING_TOP).accuracy, 0.99, "acima do Mestre chega a 99%");
+assert.equal(B.baseAtRating(B.RATING_TOP).accuracy, 0.99, "acima do Grão-Mestre chega a 99%");
 assert.equal(B.baseAtRating(NaN).accuracy, B.baseAtRating(0).accuracy);
 const constBot = B.botsOfLeague("prata")[0];
 assert.equal(B.botProfile(constBot, { division: 3, family: null, rating: 1000 }).accuracy, B.baseAtRating(1000).accuracy, "com rating, a divisão não pesa");
@@ -789,13 +797,13 @@ assert.equal(lb.length, B.BOTS.length + 1);
 assert.deepEqual(lb.map((row) => row.pos), Array.from({ length: lb.length }, (_, i) => i + 1));
 assert.equal(lb.filter((row) => row.you).length, 1);
 assert.ok(lb.every((row, i) => i === 0 || lb[i - 1].trophies >= row.trophies), "do maior para o menor");
-assert.equal(lb[0].league, "mestre", "os bots do Mestre lideram");
+assert.equal(lb[0].league, "grao-mestre", "os bots do Grão-Mestre lideram");
 assert.deepEqual(LB.leaderboard("mapas", 847, 20000), lb, "mesmo dia, mesmo ranking");
 const lb2 = LB.leaderboard("mapas", 847, 20001);
 assert.ok(lb.some((row, i) => row.id !== lb2[i].id || row.trophies !== lb2[i].trophies), "de um dia para o outro os troféus dos bots mudam um pouco");
 for (const bot of B.BOTS) assert.ok(Math.abs(LB.botTrophies(bot, "mapas", 20000) - LB.botTrophies(bot, "mapas", 20001)) <= 2 * LB.DAILY_SWING + 1, "a variação diária é pequena");
 assert.ok(B.BOTS.some((bot) => LB.botTrophies(bot, "mapas", 20000) !== LB.botTrophies(bot, "bandeiras", 20000)), "cada escada tem os seus números");
-for (const bot of B.BOTS.filter((b) => b.league !== "mestre")) { const v = LB.botTrophies(bot, "bandeiras", 123); assert.ok(L.leagueOf(v).league === bot.league, bot.id + " fica na própria liga"); }
+for (const bot of B.BOTS) for (const day of [123, 20000, 20001]) { const v = LB.botTrophies(bot, "bandeiras", day); assert.ok(L.leagueOf(v).league === bot.league, bot.id + " fica na própria liga (o Mestre agora tem teto)"); }
 assert.ok(LB.leaderboard("mapas", 0, 5).at(-1).you && LB.leaderboard("mapas", 99999, 5)[0].you, "com 0 troféus é o último; com muitos, o primeiro");
 assert.equal(LB.leaderboard("bandeiras", 500.4, 5).find((row) => row.you).trophies, 500);
 const tie = LB.leaderboard("mapas", LB.botTrophies(B.BOTS[7], "mapas", 5), 5);

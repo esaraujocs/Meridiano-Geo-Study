@@ -5,6 +5,8 @@ import { LEAGUES, divisionRoman, type LeagueKey, type LeagueStatus } from "./lea
 import { t } from "./i18n/index.js";
 
 export const leagueLabel = (league: LeagueKey, division: 1 | 2 | 3 | null = null) => t.duel.leagueName(t.duel.leagues[league], divisionRoman(division));
+/** O sinal na moldura do nível: a divisão em romanos ou, nas ligas sem divisões, M (Mestre) e GM (Grão-Mestre). */
+export const leaguePip = (league: LeagueKey, division: 1 | 2 | 3 | null = null) => divisionRoman(division) || (league === "grao-mestre" ? "GM" : "M");
 
 /** "Bot Bronze" só aparece para registros antigos, que guardavam a liga e não o bot. */
 export const botLabel = (bot: Pick<Bot, "name" | "league">) => bot.name || t.duel.botName(t.duel.leagues[bot.league]);
@@ -17,10 +19,10 @@ export const milestoneLabel = (milestone: Pick<Milestone, "kind" | "league" | "d
     ? t.duel.result.milestoneLeague(t.duel.leagues[milestone.league])
     : t.duel.result.milestoneDivision(t.duel.leagues[milestone.league], divisionRoman(milestone.division));
 
-/** O próximo degrau na escada de ligas: a divisão seguinte ou, na III, a liga seguinte (null no Mestre). */
+/** O próximo degrau na escada de ligas: a divisão seguinte ou, na III e no Mestre (sem divisões), a liga seguinte (null no Grão-Mestre). */
 export function nextStep(status: LeagueStatus): { label: string; remaining: number } | null {
-  if (status.toNextDivision === null || status.division === null) return null;
-  const label = status.division === 3
+  if (status.toNextDivision === null) return null;
+  const label = status.division === 3 || status.division === null
     ? leagueLabel(LEAGUES[status.index + 1])
     : leagueLabel(status.league, (status.division + 1) as 2 | 3);
   return { label, remaining: status.toNextDivision };
