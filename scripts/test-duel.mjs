@@ -74,6 +74,25 @@ for (const group of ["mapa", "atuais", "historicas", "silhueta-opcoes", "capitai
   assert.equal(leg(Array(10).fill(25)).legs[1].botMs, leg(Array(10).fill(4)).legs[1].botMs, "o tempo de alternativas não muda");
 }
 
+// ---- Piso de tempo humano: nenhum bot responde mais rápido que uma pessoa muito rápida ----
+assert.equal(B.humanFloorMs(undefined), 0, "sem o tipo do modo (chamada antiga), sem piso");
+assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFloorMs("escrita", 25)], [900, 1300, 500 + 25 * 140]);
+{
+  const fastest = B.botsOfLeague("grao-mestre")[2]; // o rápido do Grão-Mestre
+  for (const [group, kind] of [["atuais", "opcoes"], ["mapa", "clique"]]) {
+    const def = M.groupDef(group);
+    for (let i = 0; i < 200; i += 1) {
+      const { totalMs } = B.simulateBot(fastest, 1, "piso" + i, { division: null, family: null, tuning: { accuracy: def.accuracy, time: def.time }, kind });
+      assert.ok(totalMs >= B.humanFloorMs(kind), group + ": " + totalMs + " ms abaixo do piso humano");
+    }
+  }
+  const def = M.groupDef("escrita-pais");
+  for (let i = 0; i < 200; i += 1) {
+    const { totalMs } = B.simulateBot(fastest, 1, "pisoE" + i, { division: null, family: null, tuning: { accuracy: def.accuracy, time: def.time }, typing: { think: def.typing.think, key: def.typing.key, chars: [4] }, kind: "escrita" });
+    assert.ok(totalMs >= B.humanFloorMs("escrita", 4), "escrita: " + totalMs + " ms abaixo do piso humano");
+  }
+}
+
 // ---- Elenco: 5 bots por liga, ids e nomes únicos, um de cada jeito ----
 assert.equal(B.BOTS.length, 35);
 assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 35);

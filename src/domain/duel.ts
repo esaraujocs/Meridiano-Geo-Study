@@ -113,7 +113,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, s
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const typing = def.typing && leg.chars?.length ? { think: def.typing.think, key: def.typing.key, chars: leg.chars } : undefined;
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing });
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);

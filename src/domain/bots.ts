@@ -137,6 +137,8 @@ export type BotContext = {
   /** Modos digitados: o tempo de cada rodada sai do tamanho da resposta (ver `typingMs`), não do fator de tempo do modo. `chars` são as letras de
    *  cada resposta do baralho, na ordem das rodadas. */
   typing?: { think: number; key: number; chars: readonly number[] };
+  /** Tipo do modo (tocar numa alternativa, clicar no mapa, digitar): decide o piso de tempo humano de cada resposta (ver HUMAN_FLOOR). */
+  kind?: "clique" | "opcoes" | "escrita";
 };
 /** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa, mas nunca menos que TUNING_MIN: no topo os modos
  *  difíceis ainda dão uma pequena chance de erro (o Grão-Mestre, 98,5% nas alternativas, fica em ~94% na capital escrita e ~96% nas Históricas). */
@@ -169,6 +171,18 @@ export const TYPO_MAX = 1.5;
 export const typingMs = (avgMs: number, typing: { think: number; key: number }, chars: number, random: () => number) =>
   Math.round(avgMs * (typing.think * (0.7 + random() * 0.6) + Math.max(1, chars) * (TYPO_MIN + random() * (TYPO_MAX - TYPO_MIN)) * typing.key));
 
+/** O mais rápido que uma pessoa muito rápida responde (19/10/2026, pedido do Enzo: "o tempo de reação tem que ser realista, humano, senão os bots
+ *  ficam imbatíveis"): ler e tocar numa alternativa 0,9 s; achar e clicar no mapa 1,3 s; digitar 0,5 s para começar e 140 ms por letra (~85
+ *  palavras por minuto, já com algum erro). Nenhuma resposta do bot sai mais rápida; só pesa nos mais rápidos (o "rápido" do Grão-Mestre). */
+export const HUMAN_FLOOR = { opcoes: 900, clique: 1300, escritaStart: 500, escritaPerChar: 140 };
+/** Letras de uma resposta digitada quando o baralho não é conhecido (o nome médio de país). */
+const MEAN_CHARS = 10;
+export function humanFloorMs(kind: BotContext["kind"], chars?: number) {
+  if (!kind) return 0;
+  if (kind === "escrita") return HUMAN_FLOOR.escritaStart + Math.max(1, chars ?? MEAN_CHARS) * HUMAN_FLOOR.escritaPerChar;
+  return HUMAN_FLOOR[kind];
+}
+
 export function simulateBot(bot: Bot, rounds: number, seed: string, context: BotContext = { division: 1, family: null }) {
   const profile = botProfile(bot, context);
   const typing = context.typing?.chars.length ? context.typing : null;
@@ -182,7 +196,9 @@ export function simulateBot(bot: Bot, rounds: number, seed: string, context: Bot
     const swing = Math.min(STREAKY.swing, profile.accuracy, 1 - profile.accuracy);
     const chance = profile.streaky ? profile.accuracy + (hot ? swing : -swing) : profile.accuracy;
     if (random() < chance) correct += 1;
-    totalMs += typing ? typingMs(profile.avgMs, typing, typing.chars[round % typing.chars.length], random) : Math.round(profile.avgMs * (0.7 + random() * 0.6));
+    const chars = typing ? typing.chars[round % typing.chars.length] : undefined;
+    const ms = typing ? typingMs(profile.avgMs, typing, chars as number, random) : Math.round(profile.avgMs * (0.7 + random() * 0.6));
+    totalMs += Math.max(ms, humanFloorMs(context.kind, chars));
   }
   return { correct, totalMs };
 }
