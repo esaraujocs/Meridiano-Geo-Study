@@ -8,7 +8,7 @@ import { regionMatches } from "./regions.js";
 import { matchesSearch, type ProgressColumns } from "./collection-view.js";
 import type { Region } from "./types.js";
 import { PILLAR_KEYS, bayesianScore, pillarDomain, pillarStatus, pillarTotals, type PillarDomain } from "./pillars.js";
-import { conqueredByPillar, masteredIdsFromSessions } from "./dominated.js";
+import { conqueredByPillar, domainTimeline, masteredIdsFromSessions } from "./dominated.js";
 import { t } from "./i18n/index.js";
 import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
 import { PVP_ID_PREFIX, parsePvpMatch, type PvpMatchRecord } from "./pvp-store.js";
@@ -23,7 +23,9 @@ export type SurfaceSession = {
   startedAt: number | null;
   endedAt: number | null;
   complete: boolean;
-  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean }>;
+  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number }>;
+  /** "timed" ou "training" (o Treino fica fora do Seu ritmo). */
+  pace?: string;
   /** Rodadas jogadas: as listadas em `rounds` ou, em partida antiga já resumida, o total do resumo. */
   roundCount: number;
   /** Tamanho pedido ao começar (10/20/50/100) ou `null` quando o jogador escolheu "Todas" — o baralho
@@ -77,7 +79,7 @@ function familyFor(mode: string) {
   if (mode === "capital-pais" || mode === "pais-capital") return "capitais";
   return "bandeiras";
 }
-type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean };
+type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number };
 // A rodada vem como objeto (partida atual) ou como tupla [alvo, acertou, ms, km] (perfil clássico, inclusive
 // quando migrado para o campo `rounds`).
 function roundFrom(round: any): NormalizedRound {
@@ -94,6 +96,7 @@ function roundFrom(round: any): NormalizedRound {
     responseTimeMs: typeof round?.responseTimeMs === "number" ? round.responseTimeMs : null,
     distanceKm: typeof round?.distanceKm === "number" ? round.distanceKm : null,
     byWater: Boolean(round?.byWater),
+    ...(typeof round?.answeredAt === "number" ? { answeredAt: round.answeredAt } : {}),
     assisted: Boolean(round?.assisted),
   };
 }
@@ -125,6 +128,7 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     subject: typeof value?.subject === "string" ? value.subject : typeof value?.assunto === "string" ? value.assunto : undefined,
     duelId: typeof value?.duelId === "string" ? value.duelId : undefined,
     duelLeg: typeof value?.duelLeg === "number" ? value.duelLeg : undefined,
+    ...(typeof value?.pace === "string" ? { pace: value.pace } : {}),
     correct,
     accuracy: total ? correct / total : null,
     averageTime: times.length ? times.reduce((sum: number, time: number) => sum + time, 0) / times.length : null,
@@ -259,7 +263,11 @@ export async function querySurfaces(data?: Legacy) {
     const record = progress.find((item) => String(item.entityId ?? item.id) === id);
     return collectionCard(id, data.meta[id], Number(record?.mastery ?? 0), data.meta[id]?.fl, record?.columns);
   }) : [];
-   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...masteredIdsFromSessions(rawSessions)] };
+  // o Resumo do Progresso: o mapa pinta o que foi conquistado em cada pilar, e o gráfico mostra a evolução do domínio dia a dia
+  const conquered = conqueredByPillar(rawSessions);
+  const localDay = (at: number) => { const d = new Date(at); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...masteredIdsFromSessions(rawSessions)],
+    conquered: { mapa: [...conquered.mapa], bandeiras: [...conquered.bandeiras], capitais: [...conquered.capitais] }, domainTimeline: domainTimeline(rawSessions, localDay) };
 }
 
 /** Só as partidas, normalizadas e da mais nova para a mais antiga: leitura leve para as estatísticas da Mesa de jogo (sem recalcular progresso nem gravar conquistas, como faz `querySurfaces`). */

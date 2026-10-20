@@ -162,3 +162,15 @@ export function conqueredByPillar(sessions: unknown[]): Record<RecognitionPillar
   for (const [id, conquest] of conquestFromSessions(sessions).entries()) for (const pillar of conquest.pillars) out[pillar].add(id);
   return out;
 }
+
+/** A evolução do domínio (o gráfico do Resumo do Progresso, 20/10/2026): no fim de cada dia jogado, quantos países estavam dominados. Como o
+ *  domínio é para sempre, a linha só sobe. Com muitos dias, até `samples` pontos (o último dia sempre entra). `dayOf` dá o dia local. */
+export function domainTimeline(sessions: readonly unknown[], dayOf: (at: number) => string, samples = 60): Array<{ day: string; dominated: number }> {
+  const startOf = (session: unknown) => Number((session as { startedAt?: unknown })?.startedAt);
+  const sorted = sessions.filter((session) => Number.isFinite(startOf(session))).sort((a, b) => startOf(a) - startOf(b));
+  const days: Array<{ day: string; end: number }> = [];
+  sorted.forEach((session, index) => { const day = dayOf(startOf(session)); if (days.at(-1)?.day === day) days[days.length - 1].end = index + 1; else days.push({ day, end: index + 1 }); });
+  const step = Math.max(1, Math.ceil(days.length / samples));
+  const picked = days.filter((_, index) => index % step === 0 || index === days.length - 1);
+  return picked.map(({ day, end }) => ({ day, dominated: masteredIdsFromSessions(sorted.slice(0, end)).size }));
+}

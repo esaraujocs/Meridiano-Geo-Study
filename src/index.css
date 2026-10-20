@@ -890,7 +890,7 @@ html[data-reduced-motion=true] .ach-toast-medal .ach-med{animation:none}
 .pr-s-res{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .pr-s-res b{font:500 19px/1 'Fraunces',Georgia,serif}
 .pr-s-res .pr-mini{width:76px}.pr-s-res small{font-size:11px;color:var(--muted)}
-.pr-s-res.low b{color:#93452f}.pr-s-res.low .pr-mini i{background:var(--terracotta)}
+.pr-s-res.low b{color:color-mix(in srgb,var(--terracotta) 52%,var(--ink))}.pr-s-res.low .pr-mini i{background:var(--terracotta)}
 .pr-hist-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .pr-filters.pg-chips{margin:0}
 .pr-hist-right{display:flex;align-items:center;gap:14px}

@@ -5,6 +5,7 @@ import { AchievementView } from "./achievement-view";
 import { CollectionView } from "./collection-view";
 import { OpenPlayerContext, ProgressView, type TrainFamily } from "./progress-view";
 import type { EconomySnapshot } from "../domain/economy-store";
+import type { LadderCard } from "../domain/duel-view";
 import type { Region } from "../domain/types";
 import { t } from "../domain/i18n";
 
@@ -21,9 +22,12 @@ type Props = {
   /** Abre o perfil do adversário de um duelo contra pessoa (histórico). */
   onOpenPlayer?: (code: string) => void;
   onEconomyRefresh?: () => void | Promise<void>;
+  /** As escadas do Duelo (o Progresso mostra troféus, liga e forma). */
+  ladders?: readonly LadderCard[];
+  onOpenLeague?: () => void;
 };
 const label = (mode: string) => (t.sessions.legacyModes[mode] ?? mode) || t.sessions.session;
-export function Surface({ data, kind, onBack, economy, onTrain, onOpenCollection, collectionRegion, collectionAlbum, onOpenPlayer, onEconomyRefresh }: Props) {
+export function Surface({ data, kind, onBack, economy, onTrain, onOpenCollection, collectionRegion, collectionAlbum, onOpenPlayer, onEconomyRefresh, ladders, onOpenLeague }: Props) {
   const [state, setState] = useState<Awaited<ReturnType<typeof querySurfaces>> | null>(null);
   useEffect(() => { querySurfaces(data).then(setState).catch(() => setState(null)); }, [data]);
   return <OpenPlayerContext.Provider value={onOpenPlayer ?? null}><main className="content surface" data-surface={kind}>
@@ -32,7 +36,7 @@ export function Surface({ data, kind, onBack, economy, onTrain, onOpenCollection
       <div className="eyebrow" style={{ marginTop: 32 }}>{t.sessions.localProfile(kind)}</div>
        <h1 style={{ marginTop: 16 }}>{kind === "result" ? t.sessions.sessionClosed : t.sessions.sessionHistory}</h1>
     </>}
-     {!state ? <p className="lede">{t.sessions.consulting}</p> : kind === "progress" ? <ProgressView state={state} data={data} economy={economy} onTrain={onTrain} onOpenCollection={onOpenCollection} onGoHub={onBack} /> : kind === "collection" ? <CollectionView state={state} meta={data.meta} names={data.names3} initialRegion={collectionRegion} initialAlbum={collectionAlbum} onEconomyRefresh={onEconomyRefresh} /> : kind === "achievements" ? <AchievementView achievements={state.achievements} /> : <HistoryView sessions={kind === "result" ? state.sessions.slice(0, 1) : state.sessions} />}
+     {!state ? <p className="lede">{t.sessions.consulting}</p> : kind === "progress" ? <ProgressView state={state} data={data} economy={economy} onTrain={onTrain} onOpenCollection={onOpenCollection} onGoHub={onBack} ladders={ladders} onOpenLeague={onOpenLeague} /> : kind === "collection" ? <CollectionView state={state} meta={data.meta} names={data.names3} initialRegion={collectionRegion} initialAlbum={collectionAlbum} onEconomyRefresh={onEconomyRefresh} /> : kind === "achievements" ? <AchievementView achievements={state.achievements} /> : <HistoryView sessions={kind === "result" ? state.sessions.slice(0, 1) : state.sessions} />}
   </main></OpenPlayerContext.Provider>;
 }
 function HistoryView({ sessions }: { sessions: SurfaceSession[] }) {

@@ -15,8 +15,12 @@ import { loadDivision, loadDivisionFlags } from "../domain/divisions-data";
 import { asDivisionSession, divisionCountry, divisionCountryOf, isDivisionFamily } from "../domain/divisions";
 import { Glyph } from "./achievement-art";
 import { Icon } from "./icons";
-import { ProgressHero } from "./progress-hero";
-import { compareText, t } from "../domain/i18n";
+import { DomainChart, DuelCard, ModesTab, NumbersCard, PillarsCompact, ProfileHero, WorldMap, levelsOf, type LadderTally, type MapMeasure } from "./progress-profile";
+import { RhythmTab } from "./progress-rhythm";
+import { buildRhythm, modesOverview, rhythmRounds } from "../domain/rhythm";
+import type { LadderCard } from "../domain/duel-view";
+import { pvpAccountName, pvpName } from "../domain/pvp-client";
+import { compareText, formatNumber, t } from "../domain/i18n";
 
 type SurfaceState = Awaited<ReturnType<typeof querySurfaces>>;
 export type TrainFamily = "mapa" | "bandeiras" | "capitais";
@@ -27,6 +31,9 @@ type Props = {
   onTrain: (family: TrainFamily) => void;
   onOpenCollection: (region: Region) => void;
   onGoHub: () => void;
+  /** As duas escadas do Duelo (troféus com os ajustes da conta, liga e forma), do app. */
+  ladders?: readonly LadderCard[];
+  onOpenLeague?: () => void;
 };
 type FlagOf = (code?: string) => string | undefined;
 
@@ -51,48 +58,6 @@ function RowMeta({ row, when, flagIncomplete }: { row: SessionRow; when?: string
     {lead} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}
     {row.duel?.abandoned ? <> · <span className="pr-inc">{t.progress.duelLeft}</span></> : flagIncomplete && !row.complete ? <> · <span className="pr-inc">{t.progress.incomplete}</span></> : null}
   </>;
-}
-
-// ---------- topo ----------
-function StageTrack({ hero }: { hero: Dashboard["hero"] }) {
-  return <div className="pr-track" role="group" aria-label={t.progress.scaleAria}>
-    <div className="pr-rail-wrap"><div className="pr-rail">
-      <i style={{ width: `${hero.pct}%` }} />
-      <span className="pr-you" style={{ left: `${hero.pct}%` }}><em>{t.progress.you(hero.pct)}</em></span>
-      {hero.stages.map((stage, index) => {
-        const reached = index <= hero.stageIndex;
-        return <span key={stage.name} className={`pr-node${reached ? " done" : ""}${index === hero.stageIndex ? " now" : ""}`} style={{ left: `${index * 20}%` }} aria-current={index === hero.stageIndex ? "step" : undefined}>
-          {reached && <Glyph name="check" size={12} stroke={3.2} />}
-          <span className="pr-node-label"><b>{stage.name}</b><small>{stage.at}</small></span>
-        </span>;
-      })}
-    </div></div>
-  </div>;
-}
-
-function heroSummary(hero: Dashboard["hero"]): ReactNode {
-  if (hero.cosmographer) { const [a, title, b] = t.progress.heroCosmo(hero.stageTitle); return <>{a}<b>{title}</b>{b}</>; }
-  const [a, title, b] = t.progress.heroBase(hero.stageTitle, hero.dominated, hero.total);
-  const base = <>{a}<b>{title}</b>{b}</>;
-  if (hero.next) return <>{base}<b>{t.progress.nextTitleLabel}</b>{t.progress.nextTitleText(hero.next.name, hero.next.at, hero.missing ?? 0)}</>;
-  return <>{base}<b>{t.progress.nextStepLabel}</b>{t.progress.nextStepText}</>;
-}
-
-// ---------- números rápidos ----------
-function Kpis({ kpis, onOpenCollection }: { kpis: Dashboard["kpis"]; onOpenCollection: () => void }) {
-  const { album } = kpis;
-  const stack = album.distribution.map((count, level) => count > 0 ? <i key={level} style={{ flex: count, background: LEVEL_COLORS[level] }} /> : null);
-  const acc = kpis.accuracyDelta;
-  const time = kpis.timeDeltaMs;
-  return <div className="pr-kpis">
-    <div className="pr-kpi" data-fam="idiomas"><span className="pr-k"><Glyph name="trend" size={15} /> {t.progress.level}</span><b>{kpis.level}</b><div className="pr-mini" role="img" aria-label={t.progress.xpAria(kpis.xpInLevel, kpis.xpSpan)}><i style={{ width: `${Math.round((kpis.xpInLevel / kpis.xpSpan) * 100)}%` }} /></div><small>{t.progress.xpToLevel(kpis.xpInLevel, kpis.xpSpan, kpis.level + 1)}</small></div>
-    <div className="pr-kpi" data-fam="capitais"><span className="pr-k"><Glyph name="coll" size={15} /> {t.progress.collection}</span><b>{album.discovered}<em>/{album.total}</em></b><div className="pr-stack" aria-hidden="true">{stack}</div><small>{t.progress.cardsFound} · <button type="button" className="pr-inline" onClick={onOpenCollection}>{t.progress.open}</button></small></div>
-    <div className="pr-kpi" data-fam="mapa"><span className="pr-k"><Glyph name="world" size={15} /> {t.progress.matches}</span><b>{kpis.sessions}</b><small>{t.progress.roundsPlayed(kpis.rounds)}</small></div>
-    <div className="pr-kpi" data-fam="bandeiras"><span className="pr-k"><Glyph name="target" size={15} /> {t.progress.accuracy}</span><b>{kpis.accuracyPct === null ? "—" : `${kpis.accuracyPct}%`}</b>
-      {kpis.accuracyPct === null ? <small>{t.progress.afterFirst}</small> : acc === null ? <small>{t.progress.allRounds}</small> : <small className={acc >= 0 ? "up" : "down"}>{t.progress.lastFive(acc >= 0 ? "▲" : "▼", Math.abs(acc))}</small>}</div>
-    <div className="pr-kpi" data-fam="idiomas"><span className="pr-k"><Glyph name="clock" size={15} /> {t.progress.avgTime}</span><b>{kpis.avgTimeMs === null ? "—" : formatSeconds(kpis.avgTimeMs)}</b>
-      {time === null || Math.abs(time) < 50 ? <small>{t.progress.perAnswer}</small> : <small className={time < 0 ? "up" : "down"}>{t.progress.perAnswerDelta(time < 0 ? "▼" : "▲", formatSeconds(Math.abs(time)))}</small>}</div>
-  </div>;
 }
 
 // ---------- pilares ----------
@@ -138,30 +103,6 @@ function Pillars({ pillars, onTrain }: { pillars: PillarCard[]; onTrain: (family
       setActive(Math.min(pillars.length - 1, Math.max(0, Math.round(list.scrollLeft / step))));
     }}>{pillars.map((pillar) => <PillarCardView key={pillar.key} pillar={pillar} onTrain={() => onTrain(pillar.key)} />)}</div>
     <div className="pr-dots" aria-hidden="true">{pillars.map((pillar, index) => <i key={pillar.key} className={index === active ? "on" : ""} />)}</div>
-  </section>;
-}
-
-// ---------- recortes ----------
-function Regions({ rows, onOpen }: { rows: RegionRow[]; onOpen: (region: Region) => void }) {
-  const [measure, setMeasure] = useState<"domain" | "found">("domain");
-  return <section className="pr-card pr-regions" aria-labelledby="pr-recortes">
-    <header>
-      <div><h2 id="pr-recortes">{measure === "domain" ? t.progress.domainByRegion : t.progress.foundByRegion}</h2><p>{measure === "domain" ? t.progress.domainHint : t.progress.foundHint}</p></div>
-      <div className="pr-seg" role="group" aria-label={t.progress.measure}><button type="button" aria-pressed={measure === "domain"} onClick={() => setMeasure("domain")}>{t.progress.domain}</button><button type="button" aria-pressed={measure === "found"} onClick={() => setMeasure("found")}>{t.progress.found}</button></div>
-    </header>
-    <ul>{rows.map((row) => {
-      const value = measure === "domain" ? row.found : row.discovered;
-      const pct = row.total ? Math.round((value / row.total) * 100) : 0;
-      const tag = measure === "domain" ? row.tag : null;
-      return <li key={row.key} className={row.world ? "is-world" : ""}>
-        <button type="button" className={tag === "warn" ? "has-tag-warn" : ""} onClick={() => onOpen(row.key as Region)} aria-label={t.progress.regionAria(row.label, value, row.total, pct)}>
-          <span className="pr-rname"><b>{row.label}</b><small>{t.progress.valueOf(value, row.total)}{tag && <span className={`pr-tag ${tag}`}>{tag === "good" ? t.progress.best : t.progress.startHere}</span>}</small></span>
-          <span className="pr-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span>
-          <strong>{pct}%</strong>
-          <span className="pr-chev"><Glyph name="chevron" size={16} stroke={2} /></span>
-        </button>
-      </li>;
-    })}</ul>
   </section>;
 }
 
@@ -221,20 +162,6 @@ function Activity({ activity }: { activity: Dashboard["activity"] }) {
   </section>;
 }
 
-// ---------- recordes ----------
-function Records({ records }: { records: Dashboard["records"] }) {
-  const tiles: Array<[string, string, string, string]> = [
-    ["flame", t.progress.bestStreak, records.bestStreak ? String(records.bestStreak.value) : "—", records.bestStreak ? t.progress.bestStreakSub(records.bestStreak.when) : t.progress.noMark],
-    ["target", t.progress.bestMatch, records.bestSession ? `${records.bestSession.pct}%` : "—", records.bestSession ? t.progress.bestMatchSub(records.bestSession.rounds, records.bestSession.when) : t.progress.noMark],
-    ["bolt", t.progress.fastest, records.fastest ? formatSeconds(records.fastest.ms) : "—", records.fastest ? `${records.fastest.family} · ${records.fastest.when}` : t.progress.noMark],
-    ["map", t.progress.lowestError, records.bestMapError ? `${Math.round(records.bestMapError.km)} km` : "—", records.bestMapError ? t.progress.mapWhen(records.bestMapError.when) : t.progress.noMark],
-  ];
-  return <section className="pr-card pr-records" aria-labelledby="pr-recordes">
-    <header><div><h2 id="pr-recordes">{t.progress.records}</h2><p>{t.progress.recordsHint}</p></div></header>
-    <div className="pr-rec-grid">{tiles.map(([icon, label, value, sub]) => <div className="pr-rec" key={label}><span className="pr-ricon"><Glyph name={icon} size={20} /></span><small>{label}</small><b>{value}</b><em>{sub}</em></div>)}</div>
-  </section>;
-}
-
 // ---------- evolução ----------
 function EvolutionChart({ points, width, height, ticks, className }: { points: Array<{ pct: number; when: string }>; width: number; height: number; ticks: boolean; className: string }) {
   const gradient = `pr-evg-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -261,33 +188,19 @@ function EvolutionChart({ points, width, height, ticks, className }: { points: A
     <text x={width - pr} y={height - 6} textAnchor="end">{t.progress.today}</text>
   </svg>;
 }
-function Evolution({ evolution }: { evolution: Dashboard["evolution"] }) {
+function Evolution({ evolution, timeline, stages }: { evolution: Dashboard["evolution"]; timeline: ReadonlyArray<{ day: string; dominated: number }>; stages: ReadonlyArray<{ name: string; at: number }> }) {
   const { delta } = evolution;
+  const [view, setView] = useState<"domain" | "accuracy">("domain");
   return <section className="pr-card pr-evo" aria-labelledby="pr-evolucao">
     <header>
-      <div><h2 id="pr-evolucao">{t.progress.evolution}</h2><p>{t.progress.evolutionHint}</p></div>
-      {delta !== null && <span className={`pr-delta${delta < 0 ? " down" : ""}`}>{delta >= 0 ? "▲ +" : "▼ −"}{Math.abs(delta)} pts <small>{t.progress.vsFirst(evolution.deltaOver)}</small></span>}
+      <div><h2 id="pr-evolucao">{view === "domain" ? t.profile.evolutionTitle : t.progress.evolution}</h2><p>{view === "domain" ? t.profile.evolutionSub : t.progress.evolutionHint}</p></div>
+      <div className="pr-seg" role="group" aria-label={t.progress.measure}><button type="button" aria-pressed={view === "domain"} onClick={() => setView("domain")}>{t.profile.evolutionDomain}</button><button type="button" aria-pressed={view === "accuracy"} onClick={() => setView("accuracy")}>{t.profile.evolutionAccuracy}</button></div>
     </header>
-    {evolution.points.length >= 2
+    {view === "domain" ? <DomainChart timeline={timeline} stages={stages} />
+      : evolution.points.length >= 2
       ? <><EvolutionChart points={evolution.points} width={600} height={178} ticks className="pr-chart-d" /><EvolutionChart points={evolution.points} width={330} height={168} ticks={false} className="pr-chart-m" /></>
       : <div className="pr-empty"><Glyph name="trend" size={40} stroke={1.3} /><b>{t.progress.curveEmpty}</b><p>{t.progress.curveEmptyHint}</p></div>}
-  </section>;
-}
-
-// ---------- partidas recentes ----------
-function Recent({ rows, onHistory, onGoHub }: { rows: SessionRow[]; onHistory: () => void; onGoHub: () => void }) {
-  return <section className="pr-card pr-recent" aria-labelledby="pr-recentes">
-    <header><div><h2 id="pr-recentes">{t.progress.recent}</h2></div></header>
-    {rows.length === 0
-      ? <div className="pr-empty"><b>{t.progress.noMatches}</b><p>{t.progress.noMatchesHint}</p><button type="button" className="pr-cta-line" onClick={onGoHub}>{t.progress.goModes} <Glyph name="arrow" size={16} /></button></div>
-      : <ul>{rows.map((row) => <li key={row.id} className={row.duel ? "is-duel" : undefined}>
-        <RowIcon row={row} />
-        <div className="pr-s-main"><RowTitle row={row} /><small><RowMeta row={row} when={row.duel ? row.when : undefined} /></small></div>
-        {row.duel
-          ? <div className={`pr-s-res pr-duel-res is-${row.duel.outcome}`} role="img" aria-label={t.progress.duelAria(t.progress.duelOutcome[row.duel.outcome], row.duel.playerCorrect, row.duel.botCorrect, row.duel.deltaText ?? "")}><b>{row.duel.playerCorrect} × {row.duel.botCorrect}</b>{row.duel.deltaText && <small>{row.duel.deltaText}</small>}</div>
-          : <div className={`pr-s-res${row.pct !== null && row.pct < 60 ? " low" : ""}`}><b>{row.pct ?? 0}%</b><div className="pr-mini"><i style={{ width: `${row.pct ?? 0}%` }} /></div><small>{row.when}</small></div>}
-      </li>)}</ul>}
-    {rows.length > 0 && <button type="button" className="pr-link pr-link-center" onClick={onHistory}>{t.progress.allHistory} <Glyph name="arrow" size={16} /></button>}
+    {view === "accuracy" && delta !== null && <p className={`pr-delta${delta < 0 ? " down" : ""}`}>{delta >= 0 ? "▲ +" : "▼ −"}{Math.abs(delta)} pts <small>{t.progress.vsFirst(evolution.deltaOver)}</small></p>}
   </section>;
 }
 
@@ -424,8 +337,9 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
 }
 
 // ---------- tela ----------
-export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub }: Props) {
-  const [tab, setTab] = useState<"resumo" | "historico">("resumo");
+export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague }: Props) {
+  const [tab, setTab] = useState<"resumo" | "modos" | "ritmo" | "historico">("resumo");
+  const [measure, setMeasure] = useState<MapMeasure>("domain");
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
   const [historical, setHistorical] = useState<HistoricalEntity[]>([]);
@@ -469,29 +383,61 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
   }), [now, state, data, historicalMeta, economy]);
   const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()] ?? divisionFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
   const { hero } = dashboard;
-  const openCollection = () => onOpenCollection("mundo");
+  // Seu ritmo e Modos: as rodadas com hora (Treino incluído nos Modos, fora no Seu ritmo)
+  const rounds = useMemo(() => rhythmRounds(state.sessions), [state.sessions]);
+  const modes = useMemo(() => modesOverview(rounds), [rounds]);
+  const nights = useMemo(() => buildRhythm(rounds, "todos").nights.medianMinutes, [rounds]);
+  const dominatedSet = useMemo(() => new Set(state.dominatedIds), [state.dominatedIds]);
+  const conqueredSet = useMemo(() => new Set([...state.conquered.mapa, ...state.conquered.bandeiras, ...state.conquered.capitais]), [state.conquered]);
+  const levels = useMemo(() => levelsOf(state.cards), [state.cards]);
+  // vitórias e derrotas por escada: duelos contra bot e os valendo contra pessoas
+  const tally = useMemo(() => {
+    const out: Record<string, LadderTally> = {};
+    const add = (ladder: string, outcome: string) => { const item = (out[ladder] ??= { wins: 0, losses: 0 }); if (outcome === "win") item.wins += 1; else if (outcome === "loss") item.losses += 1; };
+    for (const duel of state.duels) add(duel.ladder, duel.outcome);
+    for (const match of state.pvpMatches) if (match.mode === "ranked" && typeof match.trophyDelta === "number") add(match.ladder, match.outcome);
+    return out;
+  }, [state.duels, state.pvpMatches]);
+  const duelCount = ladders.reduce((sum, card) => sum + card.duels, 0);
+  const duelWins = Object.values(tally).reduce((sum, item) => sum + item.wins, 0);
+  const firstAt = state.sessions.reduce((min, session) => (session.startedAt && session.startedAt < min ? session.startedAt : min), Infinity);
+  const days = new Set(state.sessions.filter((session) => session.startedAt).map((session) => { const d = new Date(session.startedAt as number); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; })).size;
+  const { kpis } = dashboard;
+  const accDelta = kpis.accuracyDelta;
+  const numbers = [
+    { key: "matches", label: t.profile.matches, value: formatNumber(kpis.sessions), note: t.profile.rounds(formatNumber(kpis.rounds)) },
+    { key: "collection", label: t.profile.collection, value: formatNumber(kpis.album.discovered), note: state.historical.length ? t.profile.historical(state.historical.length) : t.progress.cardsFound },
+    { key: "accuracy", label: t.profile.accuracy, value: kpis.accuracyPct === null ? "—" : `${kpis.accuracyPct}%`, note: accDelta === null ? t.progress.allRounds : t.profile.lastFive(`${accDelta >= 0 ? "▲" : "▼"} ${Math.abs(accDelta)}`) },
+    { key: "time", label: t.profile.avgTime, value: kpis.avgTimeMs === null ? "—" : formatSeconds(kpis.avgTimeMs), note: t.profile.perAnswer },
+    { key: "duels", label: t.profile.duels, value: formatNumber(duelCount), note: duelCount ? t.profile.winRate(Math.round((duelWins / duelCount) * 100)) : "—" },
+    { key: "days", label: t.profile.days, value: formatNumber(days), note: nights ? t.profile.nights(Math.round(nights)) : "—" },
+  ];
+  // as metas da maestria (em países) no gráfico da evolução: os estágios por % (sem o 0% e o Cosmógrafo, que é por títulos)
+  const stageMarks = hero.stages.slice(1, -1).map((stage) => ({ name: stage.name, at: Math.round((parseInt(stage.at, 10) / 100) * hero.total) })).filter((mark) => mark.at > 0);
 
-  return <section className="pr" aria-label={t.progress.aria}>
-    <ProgressHero
-      value={hero.pct} total={100} ringValue={`${hero.pct}%`} ringCaption={t.progress.ringCaption} ringLabel={t.progress.ringLabel(hero.pct)}
-      eyebrow={t.progress.eyebrow} title={t.progress.title}
-      summary={<>{heroSummary(hero)}<button type="button" className="pr-how" onClick={() => howRef.current?.showModal()}><Glyph name="info" size={16} /> <span className="pr-d">{t.progress.howTitle}</span><span className="pr-m">{t.progress.howShort}</span></button></>}
-      legendLabel={t.progress.pillarTitles} legendClassName="pr-titles"
-      legend={hero.titles.map((title) => <li key={title.id} className={title.earned ? "is-earned" : "is-locked"}><span className="pr-medal"><Glyph name={title.earned ? "trophy" : "lock"} size={14} stroke={2} /></span><b>{title.label}</b><span className="sr-only">{title.earned ? t.progress.earned : t.progress.locked}</span></li>)}
-      footer={<StageTrack hero={hero} />}
-    />
-    <div className="pg-chips pr-tabs" role="group" aria-label={t.progress.sections}>
+  return <section className="pr pf" aria-label={t.progress.aria}>
+    <ProfileHero hero={hero} kpis={kpis} name={pvpAccountName() || pvpName()} ladders={ladders} />
+    <div className="pg-chips pr-tabs pf-tabs" role="group" aria-label={t.progress.sections}>
       <button type="button" className="pg-chip" aria-pressed={tab === "resumo"} onClick={() => setTab("resumo")}><Glyph name="bars" size={17} /> {t.progress.summary}</button>
-      <button type="button" className="pg-chip" aria-pressed={tab === "historico"} onClick={() => setTab("historico")}><Glyph name="clock" size={17} /> {t.progress.history} {dashboard.history.length > 0 && <em>{dashboard.history.length}</em>}</button>
+      <button type="button" className="pg-chip" aria-pressed={tab === "modos"} onClick={() => setTab("modos")}><Glyph name="world" size={17} /> {t.profile.tabModes}</button>
+      <button type="button" className="pg-chip" aria-pressed={tab === "ritmo"} onClick={() => setTab("ritmo")}><Glyph name="clock" size={17} /> {t.profile.tabRhythm}</button>
+      <button type="button" className="pg-chip" aria-pressed={tab === "historico"} onClick={() => setTab("historico")}><Glyph name="history" size={17} /> {t.progress.history} {dashboard.history.length > 0 && <em>{dashboard.history.length}</em>}</button>
+      <button type="button" className="pr-how" onClick={() => howRef.current?.showModal()}><Glyph name="info" size={16} /> <span className="pr-d">{t.progress.howTitle}</span><span className="pr-m">{t.progress.howShort}</span></button>
     </div>
     {tab === "historico" ? <History rows={dashboard.history} now={now} flagOf={flagOf} />
+      : tab === "modos" ? <ModesTab modes={modes} />
+      : tab === "ritmo" ? <RhythmTab rounds={rounds} modes={modes} calendar={<Activity activity={dashboard.activity} />} />
       : dashboard.empty ? <EmptySummary dashboard={dashboard} onTrain={onTrain} />
       : <>
-        <Kpis kpis={dashboard.kpis} onOpenCollection={openCollection} />
-        <Pillars pillars={dashboard.pillars} onTrain={onTrain} />
-        <div className="pr-row pr-row-a"><Regions rows={dashboard.regions} onOpen={onOpenCollection} /><Review review={dashboard.review} flagOf={flagOf} /></div>
-        <div className="pr-row pr-row-b"><Activity activity={dashboard.activity} /><Records records={dashboard.records} /></div>
-        <div className="pr-row pr-row-c"><Evolution evolution={dashboard.evolution} /><Recent rows={dashboard.recent} onHistory={() => setTab("historico")} onGoHub={onGoHub} /></div>
+        <div className="pf-row pf-row-map">
+          <WorldMap measure={measure} onMeasure={setMeasure} dominated={dominatedSet} conquered={conqueredSet} levels={levels} regions={dashboard.regions} onOpen={onOpenCollection} />
+          <div className="pf-col"><PillarsCompact pillars={dashboard.pillars} /><DuelCard ladders={ladders} tally={tally} onOpenLeague={onOpenLeague} /></div>
+        </div>
+        <div className="pf-row pf-row-evo">
+          <Evolution evolution={dashboard.evolution} timeline={state.domainTimeline} stages={stageMarks} />
+          <NumbersCard items={numbers} since={Number.isFinite(firstAt) ? formatShortDate(firstAt) : null} />
+        </div>
+        {dashboard.review.total > 0 && <Review review={dashboard.review} flagOf={flagOf} />}
       </>}
     <HowDialog dialog={howRef} />
   </section>;
