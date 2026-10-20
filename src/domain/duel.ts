@@ -86,8 +86,9 @@ export function resolveDuel({ trophies, bot, playerCorrect, playerTotal, playerM
 }
 
 // ---- Duelo em dois tempos ----
-/** `chars`: nos modos digitados, as letras de cada resposta do baralho, na ordem (sem elas, o bot usa o fator de tempo do modo). */
-export type LegInput = { group: ModeGroup; rounds: number; playerCorrect: number; playerMs: number | null; chars?: readonly number[] };
+/** `chars`: nos modos digitados, as letras de cada resposta do baralho, na ordem (sem elas, o bot usa o fator de tempo do modo). `spots`: nos modos
+ *  de clicar no mapa, quanto cada alvo pede de tempo (`mapSpot`; sem eles, o mesmo tempo médio em todos). */
+export type LegInput = { group: ModeGroup; rounds: number; playerCorrect: number; playerMs: number | null; chars?: readonly number[]; spots?: readonly number[] };
 export type LegResult = { group: ModeGroup; rounds: number; playerCorrect: number; botCorrect: number; botMs: number };
 export type DuelLegsInput = {
   trophies: number;
@@ -113,7 +114,8 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, s
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const typing = def.typing && leg.chars?.length ? { think: def.typing.think, key: def.typing.key, chars: leg.chars } : undefined;
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind });
+    const spots = def.kind === "clique" && leg.spots?.length ? leg.spots : undefined;
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind, ...(spots ? { spots } : {}) });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);

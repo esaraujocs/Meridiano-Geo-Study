@@ -12,6 +12,7 @@ import { BOTS, hashSeed, mulberry32, pickBot, simulateBot, type Bot, type BotCon
 import { LEAGUES, hasDivisions, leagueFloor } from "./league.js";
 import { LADDERS, drawLegs, groupDef, type Ladder } from "./duel-modes.js";
 import { TYPED_LENGTHS } from "./typed-lengths.js";
+import { MAP_SPOTS } from "./map-spots.js";
 import {
   SURPRISE_WINDOW,
   SIGMA_MAX,
@@ -238,6 +239,8 @@ export function settleBotMatch(state: BotRankingState, input: BotMatchInput): Bo
 const ownDivision = (bot: Bot): 2 | null => (hasDivisions(LEAGUES.indexOf(bot.league)) ? 2 : null);
 const expand = (pairs: readonly (readonly [number, number])[]) => pairs.flatMap(([length, count]) => Array<number>(count).fill(length));
 const LENGTH_POOLS = { nome: expand(TYPED_LENGTHS.nome), capital: expand(TYPED_LENGTHS.capital) };
+/** Os lugares do baralho do mapa (quanto cada um pede de tempo): os modos de clicar sorteiam daqui, os mesmos para os dois lados. */
+const SPOT_POOL = Object.values(MAP_SPOTS);
 
 export type BotDuel = { outcome: "win" | "loss" | "draw"; margin: number; opponentId: string; rating: number };
 
@@ -257,9 +260,15 @@ export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: s
       const random = mulberry32(hashSeed(`bot-ranking:deck:${seed}:${index}`));
       chars = Array.from({ length: leg.rounds }, () => pool[Math.floor(random() * pool.length)]);
     }
+    let spots: number[] | undefined;
+    if (def.kind === "clique") {
+      const random = mulberry32(hashSeed(`bot-ranking:spots:${seed}:${index}`));
+      spots = Array.from({ length: leg.rounds }, () => SPOT_POOL[Math.floor(random() * SPOT_POOL.length)]);
+    }
     const shared = {
       family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
+      ...(spots ? { spots } : {}),
     };
     const own: BotContext = { ...shared, division: ownDivision(bot) };
     const rival: BotContext = { ...shared, division: match.division, rating: match.rating };

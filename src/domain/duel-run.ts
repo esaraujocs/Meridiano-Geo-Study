@@ -6,7 +6,7 @@ import { LEGS, coinModeFor, isVariantOwned, type DuelLeg, type Ladder, type Mode
 import { resolveDuelLegs, type DuelLegsResult, type LegInput } from "./duel.js";
 
 /** `chars`: nos modos digitados, as letras de cada resposta do tempo (o bot digita o mesmo baralho). */
-export type LegDone = { group: ModeGroup; rounds: number; playerCorrect: number; playerMs: number | null; chars?: readonly number[] };
+export type LegDone = { group: ModeGroup; rounds: number; playerCorrect: number; playerMs: number | null; chars?: readonly number[]; spots?: readonly number[] };
 
 export type DuelRun = {
   /** Também é a semente do duelo: sorteio dos tempos, baralhos e bot. */

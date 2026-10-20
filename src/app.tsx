@@ -60,6 +60,7 @@ import { adjustmentEntry, duelRecordId, mmrStateFromDuels, playerTotalMs, trophi
 import { pvpLadderEntries, settlePvpTrophies, type LadderEntry } from "./domain/pvp-trophies";
 import { pickBot } from "./domain/bots";
 import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, typedChars, type Ladder, type ModeGroup } from "./domain/duel-modes";
+import { mapSpot } from "./domain/map-spots";
 import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
@@ -902,7 +903,9 @@ export function App() {
     // nos modos digitados o bot "digita" as mesmas respostas: o tempo dele sai do tamanho de cada uma (ver typingMs em bots.ts)
     const typing = groupDef(leg.group).typing;
     const chars = typing && data ? rounds.map((round) => { const meta = data.meta[round.targetId]; return typedChars(typing.answer === "capital" ? meta?.cap : meta?.pt); }) : undefined;
-    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds), ...(chars ? { chars } : {}) });
+    // nos de clicar no mapa o bot procura os mesmos lugares: um país grande sai rápido, uma ilhota do Caribe demora (ver mapSpot)
+    const spots = groupDef(leg.group).kind === "clique" ? rounds.map((round) => mapSpot(round.targetId)) : undefined;
+    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds), ...(chars ? { chars } : {}), ...(spots ? { spots } : {}) });
     setDuelRun(next);
     if (run.index === 0) { void refreshEconomy(); setScreen("duel-interlude"); return; }
     await concludeDuel(next);
