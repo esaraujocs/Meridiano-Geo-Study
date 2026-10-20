@@ -49,6 +49,9 @@ export function typedChars(text: string | null | undefined) {
 /** Peso de cada grupo da Silhueta e de cada grupo de Capitais no sorteio de Mapas (o Clicar no mapa pesa 1). */
 export const SILHOUETTE_WEIGHT = 0.25;
 export const CAPITALS_WEIGHT = 0.5;
+/** Tempo do bot nas Históricas, em vezes o das bandeiras atuais (20/10/2026, pedido do Enzo: "palpite de bandeira histórica podia ter uma margem
+ *  maior vs as atuais"). Era 1,3; nos duelos dele a mediana é 1,43 s nas atuais e 2,75 s nas históricas (1,9×; média 1,65 × 3,49). */
+export const HISTORICAL_TIME = 1.9;
 
 export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "mapa", axis: "mapa", ladder: "mapas", kind: "clique", botFamily: "mapa", variants: [{ family: "mapa", variant: "mapa" }], accuracy: -0.04, time: 1.4 },
@@ -58,7 +61,7 @@ export const MODE_GROUPS: readonly ModeGroupDef[] = [
   { group: "capitais-escrita", axis: "capitais", ladder: "mapas", kind: "escrita", botFamily: "capitais", variants: [{ family: "escrita", variant: "escrita-capital" }], accuracy: -0.36, time: 1.9, weight: CAPITALS_WEIGHT, typing: { answer: "capital", think: 0.77, key: TYPING_KEY } },
   { group: "atuais", axis: "atuais", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", variants: [{ family: "bandeiras", variant: "nome-bandeira" }, { family: "bandeiras", variant: "bandeira-nome" }], accuracy: 0, time: 1 },
   { group: "escrita-pais", axis: "escrita-pais", ladder: "bandeiras", kind: "escrita", botFamily: "bandeiras", variants: [{ family: "escrita", variant: "escrita-pais" }], accuracy: -0.12, time: 1.7, typing: { answer: "nome", think: 0.31, key: TYPING_KEY } },
-  { group: "historicas", axis: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: 1.3 },
+  { group: "historicas", axis: "historicas", ladder: "bandeiras", kind: "opcoes", botFamily: "bandeiras", neutral: true, variants: [{ family: "historicas", variant: "nome-historica" }, { family: "historicas", variant: "historica-nome" }], accuracy: -0.2, time: HISTORICAL_TIME },
 ];
 export const groupDef = (group: ModeGroup): ModeGroupDef => MODE_GROUPS.find((item) => item.group === group) as ModeGroupDef;
 export const groupsOfLadder = (ladder: Ladder) => MODE_GROUPS.filter((item) => item.ladder === ladder);

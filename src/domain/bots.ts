@@ -148,6 +148,9 @@ export type BotContext = {
   /** Modos de clicar no mapa (20/10/2026, pedido do Enzo: "~2 s fixo é trabalho de louco para alguns lugares"): quanto cada alvo do baralho pede de
    *  tempo para ser achado, ×1 na média do baralho (`mapSpot`, map-spots.ts: 0,45 na Rússia, 2,1 em São Bartolomeu), na ordem das rodadas. */
   spots?: readonly number[];
+  /** O cronômetro do modo, em ms: o bot sempre responde antes de ele acabar (o acerto calibrado de cada liga já conta os tempos esgotados; sem o
+   *  teto, um bot lento numa ilhota de Capitais · clicar ou numa histórica passava dos 15 ou 20 s da rodada). */
+  limitMs?: number;
 };
 /** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa, mas nunca menos que TUNING_MIN: no topo os modos
  *  difíceis ainda dão uma pequena chance de erro (o Grão-Mestre, 98,5% nas alternativas, fica em ~94% na capital escrita e ~96% nas Históricas). */
@@ -208,7 +211,7 @@ export function simulateBot(bot: Bot, rounds: number, seed: string, context: Bot
     const chars = typing ? typing.chars[round % typing.chars.length] : undefined;
     const spot = context.spots?.length ? context.spots[round % context.spots.length] : 1;
     const ms = typing ? typingMs(profile.avgMs, typing, chars as number, random) : Math.round(profile.avgMs * spot * (0.7 + random() * 0.6));
-    totalMs += Math.max(ms, humanFloorMs(context.kind, chars));
+    totalMs += Math.min(context.limitMs ?? Infinity, Math.max(ms, humanFloorMs(context.kind, chars)));
   }
   return { correct, totalMs };
 }

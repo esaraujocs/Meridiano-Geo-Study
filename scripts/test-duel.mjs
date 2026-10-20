@@ -76,6 +76,24 @@ for (const group of ["mapa", "atuais", "historicas", "silhueta-opcoes", "capitai
 
 // ---- Piso de tempo humano: nenhum bot responde mais rápido que uma pessoa muito rápida ----
 assert.equal(B.humanFloorMs(undefined), 0, "sem o tipo do modo (chamada antiga), sem piso");
+// Históricas (20/10/2026): o bot leva ~1,9× o tempo das atuais (a razão das medianas do Enzo nos duelos); e nunca passa do cronômetro do modo
+{
+  const gm = B.BOTS.find((bot) => bot.id === "bot-grao-mestre-0");
+  const leg = (group, k) => { const def = M.groupDef(group); return B.simulateBot(gm, 10, "hist:" + k, { division: null, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind }).totalMs; };
+  const sum = (group) => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].reduce((total, k) => total + leg(group, k), 0);
+  const ratio = sum("historicas") / sum("atuais");
+  assert.equal(M.groupDef("historicas").time, M.HISTORICAL_TIME);
+  assert.ok(ratio > 1.75 && ratio < 2.05, `Históricas ~1,9× as atuais no Grão-Mestre (${ratio.toFixed(2)})`);
+  const bronze = B.BOTS.find((bot) => bot.id === "bot-bronze-0");
+  const def = M.groupDef("capitais-clique");
+  for (let k = 0; k < 20; k += 1) {
+    const { totalMs } = B.simulateBot(bronze, 10, "lim:" + k, { division: 1, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind, spots: Array(10).fill(2.1), limitMs: 15000 });
+    assert.ok(totalMs <= 10 * 15000, "o bot nunca passa do cronômetro da rodada");
+  }
+  const capped = B.simulateBot(bronze, 10, "lim:x", { division: 1, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind, spots: Array(10).fill(2.1), limitMs: 15000 }).totalMs;
+  const free = B.simulateBot(bronze, 10, "lim:x", { division: 1, family: def.botFamily, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind, spots: Array(10).fill(2.1) }).totalMs;
+  assert.ok(capped < free, "sem o teto, o Bronze numa ilhota passava dos 15 s");
+}
 // clicar no mapa (20/10/2026): o tempo do bot acompanha o lugar (país grande rápido, ilhota demorada), com o mesmo tempo médio
 {
   const gm = B.BOTS.find((bot) => bot.id === "bot-grao-mestre-0");

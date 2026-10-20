@@ -13,6 +13,7 @@ import { LEAGUES, hasDivisions, leagueFloor } from "./league.js";
 import { LADDERS, drawLegs, groupDef, type Ladder } from "./duel-modes.js";
 import { TYPED_LENGTHS } from "./typed-lengths.js";
 import { MAP_SPOTS } from "./map-spots.js";
+import { timerSecondsFor } from "./pace.js";
 import {
   SURPRISE_WINDOW,
   SIGMA_MAX,
@@ -267,6 +268,7 @@ export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: s
     }
     const shared = {
       family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
+      limitMs: timerSecondsFor(def.variants[0].variant) * 1000,
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
       ...(spots ? { spots } : {}),
     };
