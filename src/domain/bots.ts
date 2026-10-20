@@ -101,7 +101,7 @@ const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandei
  *  meio dela (do começo + 40 ao começo + 460) e os do Grão-Mestre de 3.050 a 3.900, perto do RATING_TOP. Quem fica com qual força vem desta
  *  ordem, girada a cada liga, para os de nick e os de nome se misturarem no topo e no fundo. */
 const SKILL_RANK = [4, 6, 1, 3, 0, 7, 2, 5] as const;
-const GRAND_SKILLS = [3050, 3150, 3250, 3350, 3450, 3600, 3750, 3900] as const;
+const GRAND_SKILLS = [3050, 3170, 3290, 3410, 3530, 3650, 3770, 3890] as const;
 const skillOf = (league: LeagueKey, index: number) => {
   const leagueIndex = LEAGUES.indexOf(league);
   const rank = SKILL_RANK[(index + leagueIndex) % SKILL_RANK.length];
@@ -166,6 +166,8 @@ export type BotContext = {
   rating?: number;
   /** O bot joga com a própria força (`skill`), sem rating nem divisão: no ranking e como adversário da pessoa. */
   own?: boolean;
+  /** Com `own`: a forma do dia, somada à força (em pontos de rating; ver `duelForm`). */
+  form?: number;
   /** Modo em que a especialidade não vale nem para bem nem para mal (as bandeiras históricas: o especialista em bandeiras atuais não as domina). */
   neutral?: boolean;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
@@ -182,6 +184,17 @@ export type BotContext = {
    *  teto, um bot lento numa ilhota de Capitais · clicar ou numa histórica passava dos 15 ou 20 s da rodada). */
   limitMs?: number;
 };
+/** A forma do dia (20/10/2026, pedido do Enzo: "tem que ter uma margem de variância na performance, cravar sempre a mesma não é comportamento
+ *  humano"): a cada duelo a força do bot anda um sorteio normal com este desvio, em pontos de rating (~±0,15 s e ~±1 ponto de acerto no topo),
+ *  além da variação de cada resposta. Sorteada pela semente do duelo, então o mesmo duelo dá sempre a mesma forma. */
+export const FORM_SD = 160;
+export function duelForm(bot: Bot, seed: string) {
+  const random = mulberry32(hashSeed(`form:${bot.id}:${seed}`));
+  const u = Math.max(1e-9, random());
+  const v = random();
+  return Math.round(FORM_SD * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
+}
+
 /** Acerto em que o ajuste do modo vale por inteiro; quanto mais perto de 100%, menos ele pesa, mas nunca menos que TUNING_MIN: no topo os modos
  *  difíceis ainda dão uma pequena chance de erro (o Grão-Mestre, 98,5% nas alternativas, fica em ~94% na capital escrita e ~96% nas Históricas). */
 export const TUNING_REF = 0.4;
@@ -192,10 +205,11 @@ const clamp = (value: number, low: number, high: number) => Math.min(high, Math.
 
 /** Acerto, tempo médio e regularidade do bot naquele contexto. */
 export function botProfile(bot: Bot, context: BotContext): BotProfile {
-  const base = context.own ? baseAtRating(bot.skill) : context.rating === undefined ? LEAGUE_BASE[bot.league] : baseAtRating(context.rating);
+  const base = context.own ? baseAtRating(bot.skill + (context.form ?? 0)) : context.rating === undefined ? LEAGUE_BASE[bot.league] : baseAtRating(context.rating);
   let accuracy = base.accuracy + (!context.own && context.rating === undefined && context.division ? (context.division - 1) * DIVISION_STEP : 0);
   let avgMs = base.avgMs;
-  if (bot.style === "preciso") { accuracy += PRECISE.accuracy; avgMs *= PRECISE.time; }
+  // o preciso só paga em tempo o acerto que de fato ganha: perto dos 99% (o teto do perfil) não há o que ganhar, e ser lento à toa o afundava
+  if (bot.style === "preciso") { const gained = Math.max(0, Math.min(PRECISE.accuracy, 0.99 - accuracy)); accuracy += gained; avgMs *= 1 + (PRECISE.time - 1) * (gained / PRECISE.accuracy); }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
   if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
   if (context.tuning) {

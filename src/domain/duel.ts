@@ -2,7 +2,7 @@
 // Quem acertar mais vence; empatou nos acertos, o menor tempo total desempata. Os troféus seguem uma conta tipo Elo.
 // O duelo v2 tem 2 tempos de 10 rodadas (ver duel-modes.ts) e troféus por escada (Mapas e Bandeiras).
 import { DIVISION_SPAN, LEAGUES, leagueFloor, leagueOf, leagueSpan, type LeagueKey } from "./league.js";
-import { hashSeed, simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
+import { duelForm, hashSeed, simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
 import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
@@ -118,7 +118,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, o
     const def = groupDef(leg.group);
     const typing = def.typing && leg.chars?.length ? { think: def.typing.think, key: def.typing.key, chars: leg.chars } : undefined;
     const spots = def.kind === "clique" && leg.spots?.length ? leg.spots : undefined;
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, ...(own ? { own: true } : { rating }), family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind, limitMs: timerSecondsFor(def.variants[0].variant) * 1000, ...(spots ? { spots } : {}) });
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, ...(own ? { own: true, form: duelForm(bot, seed) } : { rating }), family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind, limitMs: timerSecondsFor(def.variants[0].variant) * 1000, ...(spots ? { spots } : {}) });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);

@@ -8,7 +8,7 @@
 // surge". Então cada bot joga o duelo da pessoa: o matchmaking dela (`matchmaking`, pelo MMR, a incerteza e a surpresa do próprio bot) escolhe um bot
 // da liga do rating, com a força desse rating; quanto mais alto, mais forte o adversário, e o bot para onde vence metade, na mesma escala da pessoa.
 // Um estado salvo de outra versão é recalibrado uma vez com um ano desses duelos (`calibrateBotRanking`).
-import { BOTS, hashSeed, mulberry32, pickBot, simulateBot, type Bot, type BotContext } from "./bots.js";
+import { BOTS, duelForm, hashSeed, mulberry32, pickBot, simulateBot, type Bot, type BotContext } from "./bots.js";
 import { LEAGUES, hasDivisions, leagueFloor } from "./league.js";
 import { LADDERS, drawLegs, groupDef, type Ladder } from "./duel-modes.js";
 import { TYPED_LENGTHS } from "./typed-lengths.js";
@@ -263,13 +263,16 @@ const SPOT_POOL = Object.values(MAP_SPOTS);
 export type BotDuel = { outcome: "win" | "loss" | "draw"; margin: number; opponentId: string; rating: number };
 
 /** O duelo do dia de um bot, como o da pessoa: o matchmaking pelo MMR, a incerteza e a surpresa dele dá o alvo e, com o ranking (`state`), o
- *  adversário é um dos bots de MMR mais perto dele (nunca ele mesmo, `rankedOpponent`), os dois com a própria força; o MMR muda contra a FORÇA do
- *  adversário (`skill`, fixa), não contra o MMR dele: é a âncora que impede o mundo fechado de derivar (a 1ª versão, bot × bot contra o MMR do
- *  outro, inflou a média de 1.565 para 1.907). Sem `state`, o de antes: um bot da liga do alvo com a força do alvo. Os 2 tempos sorteados da
+ *  adversário é um dos bots de MMR mais perto dele (nunca ele mesmo, `rankedOpponent`), os dois com a própria força e a forma do dia; o MMR muda
+ *  contra o MMR do adversário (Elo de verdade: quem vence quem decide a ordem, e o jeito conta). A âncora fica no fim do dia (`simulateDay`): o
+ *  k-º do ranking é puxado para a k-ª força. (Ancorar cada duelo na força rotulada do adversário fazia a Capitã Monção, a mais forte de fato no
+ *  topo, disparar 600 troféus: vencia "forças 3.900" que no jeito delas eram mais fracas.) Sem `state`, o de antes: um bot da liga do alvo com a
+ *  força do alvo. Os 2 tempos sorteados da
  *  escada (nos modos digitados, as mesmas respostas sorteadas do catálogo para os dois); mais acertos vence, empate no menor tempo total. */
 export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: string, state?: BotRankingState): BotDuel {
   const match = matchmaking(standing.trophies, standing.mmr, standing.sigma, surprise(standing.samples));
   const opponent = state ? rankedOpponent(state, ladder, match.rating, seed, bot.id).bot : pickBot(match.league, seed, bot.id);
+  const formA = duelForm(bot, seed), formB = duelForm(opponent, `${seed}:rival`);
   let correctA = 0, correctB = 0, msA = 0, msB = 0;
   drawLegs(ladder, seed).forEach((leg, index) => {
     const def = groupDef(leg.group);
@@ -291,17 +294,21 @@ export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: s
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
       ...(spots ? { spots } : {}),
     };
-    const own: BotContext = { ...shared, division: null, own: true };
-    const rival: BotContext = state ? { ...shared, division: null, own: true } : { ...shared, division: match.division, rating: match.rating };
+    const own: BotContext = { ...shared, division: null, own: true, form: formA };
+    const rival: BotContext = state ? { ...shared, division: null, own: true, form: formB } : { ...shared, division: match.division, rating: match.rating };
     const resultA = simulateBot(bot, leg.rounds, `${seed}:${index}`, own);
     const resultB = simulateBot(opponent, leg.rounds, `${seed}:${index}`, rival);
     correctA += resultA.correct; correctB += resultB.correct; msA += resultA.totalMs; msB += resultB.totalMs;
   });
   const outcome = correctA > correctB ? "win" : correctA < correctB ? "loss" : msA < msB ? "win" : msA > msB ? "loss" : "draw";
-  return { outcome, margin: correctA - correctB, opponentId: opponent.id, rating: state ? opponent.skill : match.rating };
+  return { outcome, margin: correctA - correctB, opponentId: opponent.id, rating: state ? Math.round(state.bots[ladder][opponent.id].mmr) : match.rating };
 }
 
 const botOf = new Map(BOTS.map((bot) => [bot.id, bot]));
+
+/** As forças em ordem: a escala da escada. Cada dia, o bot na posição k do ranking (pelo MMR) anda RANK_PULL do caminho até a k-ésima força. */
+const SKILL_SCALE = BOTS.map((bot) => bot.skill).sort((a, b) => b - a);
+export const RANK_PULL = 0.1;
 
 function simulateDay(state: BotRankingState, day: number): BotRankingState {
   let next = state;
@@ -311,13 +318,19 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
       const { outcome, margin, rating } = botDuel(botOf.get(botId) as Bot, standing, ladder, `bot-ranking:${ladder}:${day}:${botId}`, state);
       next = settleBotMatchCore(next, { ladder, botId, opponentMmr: rating, outcome, margin });
     }
+    // âncora: o Elo entre bots decide a ORDEM; a escala vem das forças (o 1º puxado para a maior, o 2º para a segunda…), então a escada tem
+    // sempre o mesmo formato (8 no Grão-Mestre, o topo perto de 3.900) e não deriva
+    const standings = next.bots[ladder];
+    const order = [...BOT_IDS].sort((a, b) => standings[b].mmr - standings[a].mmr);
+    const pulled = Object.fromEntries(order.map((id, rank) => [id, { ...standings[id], mmr: Math.max(0, Math.round(standings[id].mmr + (SKILL_SCALE[rank] - standings[id].mmr) * RANK_PULL)) }]));
+    next = { ...next, bots: { ...next.bots, [ladder]: { ...standings, ...pulled } } };
   }
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles); subir este número recalibra os estados
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia); subir este número recalibra os estados
  *  salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 4;
+export const BOT_RANKING_CALIBRATION = 5;
 /** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;
