@@ -1,4 +1,4 @@
-// Bots do Duelo: 5 por liga (7 ligas, do Bronze ao Grão-Mestre), cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
+// Bots do Duelo: 8 por liga (7 ligas, do Bronze ao Grão-Mestre; os 3 últimos de cada liga com nick de jogador), cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
 // com uma chance (que sobe com a divisão da pessoa e muda com o jeito dele) e "demora" um tempo, tudo sorteado com semente
 // (a sessão), então o mesmo duelo sempre dá o mesmo placar. Lógica pura.
 import { LEAGUES, leagueFloor, leagueSpan, type LeagueKey } from "./league.js";
@@ -80,17 +80,29 @@ const ROSTER: Record<LeagueKey, readonly [string, string, string, string, string
   "grao-mestre": ["Humboldt", "Marta Meridiana", "Ibn Battuta", "Capitã Monção", "Rosa dos Ventos"],
 };
 const STYLES: readonly BotStyle[] = ["constante", "preciso", "rapido", "irregular", "especialista"];
+/** Mais 3 por liga, com nick de jogador (20/10/2026, pedido do Enzo: "os nomes estão pouco criativos, os players são mais zoeiros/nonsense nos
+ *  nicknames; mescla os normais com os diferentões"). Ids `bot-<liga>-5` a `-7`; a força é a da liga, como a dos outros, e o jeito vem ao lado. */
+const EXTRA: Record<LeagueKey, readonly (readonly [string, BotStyle])[]> = {
+  bronze: [["GPS_quebrado", "rapido"], ["terraplanista_arrependido", "constante"], ["achei_q_era_a_Suiça", "irregular"]],
+  prata: [["Burkina_Fasão", "preciso"], ["Vaticanzinho", "rapido"], ["mapa_de_cabeça_pra_baixo", "constante"]],
+  ouro: [["Djibouti_Djibouti", "irregular"], ["CapivaraNômade", "preciso"], ["o_Lesoto_é_logo_ali", "rapido"]],
+  platina: [["xX_Atlas_Xx", "constante"], ["eslovaquia_ou_eslovenia", "irregular"], ["Andorra_Andorra", "preciso"]],
+  diamante: [["Tuvalu_ou_nada", "rapido"], ["CazaquistãoTremeu", "preciso"], ["senhorDasIlhas", "irregular"]],
+  mestre: [["MoldáviaÉReal", "preciso"], ["Quirguistão_de_Fé", "constante"], ["KiribatiKid", "rapido"]],
+  "grao-mestre": [["ButãoDePânico", "irregular"], ["DonoDoMeridiano", "rapido"], ["nunca_errei_o_Chade", "preciso"]],
+};
 const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandeiras", ouro: "capitais", platina: "idiomas", diamante: "mapa", mestre: "bandeiras", "grao-mestre": "capitais" };
 
-export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) =>
-  ROSTER[league].map((name, index): Bot => ({
+export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
+  ...ROSTER[league].map((name, index): Bot => ({
     id: `bot-${league}-${index}`,
     name,
     league,
     style: STYLES[index],
     specialty: STYLES[index] === "especialista" ? SPECIALTY[league] : null,
   })),
-);
+  ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null })),
+]);
 export const botsOfLeague = (league: LeagueKey) => BOTS.filter((bot) => bot.league === league);
 
 /** Registros antigos guardavam só a liga (`bot-bronze`); o nome vira "Bot Bronze" e o jeito, o de um constante. */

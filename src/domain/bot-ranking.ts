@@ -64,9 +64,9 @@ export type BotMatchInput = {
 const BOT_IDS = BOTS.map((bot) => bot.id);
 const BOT_ID_SET = new Set(BOT_IDS);
 const LADDER_SET = new Set<string>(LADDERS);
-const OFFSETS = [70, 170, 260, 350, 440] as const;
+const OFFSETS = [70, 170, 260, 350, 440, 120, 310, 400] as const;
 /** O Grão-Mestre, sem teto, espalha os bots um pouco mais (de 3.060 a 3.700); o Mestre, desde 19/10/2026 com 500 troféus, é uma liga comum. */
-const GRAND_OFFSETS = [60, 220, 380, 540, 700] as const;
+const GRAND_OFFSETS = [60, 220, 380, 540, 700, 140, 460, 620] as const;
 const DAILY_SWING = 30;
 
 /**
@@ -313,9 +313,9 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa); subir este número recalibra os estados
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick); subir este número recalibra os estados
  *  salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 2;
+export const BOT_RANKING_CALIBRATION = 3;
 /** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;

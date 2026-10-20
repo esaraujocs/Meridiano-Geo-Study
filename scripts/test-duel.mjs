@@ -137,14 +137,15 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
   assert.equal(D.mmrFromDuels(mm, "bandeiras"), 3438);
 }
 
-// ---- Elenco: 5 bots por liga, ids e nomes únicos, um de cada jeito ----
-assert.equal(B.BOTS.length, 35);
-assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 35);
-assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 35);
+// ---- Elenco: 8 bots por liga, ids e nomes únicos, os 5 primeiros um de cada jeito ----
+assert.equal(B.BOTS.length, 56);
+assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 56);
+assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 56);
 for (const league of L.LEAGUES) {
   const group = B.botsOfLeague(league);
-  assert.equal(group.length, 5, league);
-  assert.deepEqual(group.map((bot) => bot.style), ["constante", "preciso", "rapido", "irregular", "especialista"]);
+  assert.equal(group.length, 8, league);
+  assert.deepEqual(group.slice(0, 5).map((bot) => bot.style), ["constante", "preciso", "rapido", "irregular", "especialista"]);
+  assert.deepEqual(group.map((bot) => bot.id), group.map((_, i) => `bot-${league}-${i}`));
   assert.deepEqual(group.filter((bot) => bot.specialty).map((bot) => bot.style), ["especialista"]);
 }
 assert.equal(B.botById("bot-ouro-2").name, "Caio Latitude");
@@ -197,7 +198,7 @@ assert.ok(spread(streaky) > spread(constant) * 1.4, "irregular oscila mais");
 assert.equal(B.pickBot("ouro", 123).id, B.pickBot("ouro", 123).id, "mesma semente, mesmo bot");
 for (const league of L.LEAGUES) for (let seed = 0; seed < 50; seed += 1) assert.equal(B.pickBot(league, seed).league, league);
 const seen = new Set(Array.from({ length: 200 }, (_, seed) => B.pickBot("bronze", seed).id));
-assert.equal(seen.size, 5, "com sementes diferentes aparecem os 5 bots");
+assert.equal(seen.size, 8, "com sementes diferentes aparecem os 8 bots");
 for (let seed = 0; seed < 100; seed += 1) assert.notEqual(B.pickBot("prata", seed, "bot-prata-0").id, "bot-prata-0", "não repete o do duelo anterior");
 
 // ---- Resolução do duelo ----
