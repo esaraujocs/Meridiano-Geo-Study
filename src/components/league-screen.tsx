@@ -117,7 +117,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
             <header><div><h2>{t.duel.league.botsTitle}</h2><p>{t.duel.league.botsSub}</p></div></header>
             <ul className="rk">
               {botsOfLeague(status.league).map((bot) => {
-                const profile = botProfile(bot, { division: status.division, family: null });
+                const profile = botProfile(bot, { division: null, family: null, own: true });
                 return <li key={bot.id} className="rk-li lg-bot" data-league={bot.league}>
                   <span className="rk-av lg-badge" aria-hidden="true">{bot.name.charAt(0)}</span>
                   <span className="pr-rname"><b>{bot.name}</b><small>{t.duel.league.botLine(styleLabel(bot.style, bot.specialty), Math.round(profile.accuracy * 100), t.time.seconds(Math.round(profile.avgMs / 1000)))}</small>{botRanking && <small>{t.duel.rank.botTrophies(formatNumber(botRanking.bots[ladder][bot.id].trophies))}</small>}</span>

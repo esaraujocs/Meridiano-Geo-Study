@@ -13,6 +13,8 @@ export type Bot = {
   style: BotStyle;
   /** Só o especialista: a família em que ele é forte (nas outras, é fraco). */
   specialty: BotFamily | null;
+  /** A força própria do bot, na escala do rating (`baseAtRating`): com que acerto e tempo ele joga no ranking e contra a pessoa (ver SKILL_RANK). */
+  skill: number;
 };
 
 /** Acerto e tempo por resposta do bot "constante" de cada liga, na divisão I (o tempo ainda leva o fator do modo, 1 a 1,9, e o do jeito do bot).
@@ -93,6 +95,19 @@ const EXTRA: Record<LeagueKey, readonly (readonly [string, BotStyle])[]> = {
 };
 const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandeiras", ouro: "capitais", platina: "idiomas", diamante: "mapa", mestre: "bandeiras", "grao-mestre": "capitais" };
 
+/** Forças em vários níveis, até bem perto do teto (20/10/2026, pedido do Enzo: "precisamos de bots em diversos níveis de força, incluindo bem
+ *  próximo do ceiling; assim a própria simulação entre eles atualiza o ranking e surgem naturalmente os bots com mais troféus"). Antes todos da
+ *  liga jogavam com a base dela, e o Grão-Mestre inteiro parava em ~3.300. Agora cada bot tem a sua: os 8 da liga espalhados de 60 em 60 pelo
+ *  meio dela (do começo + 40 ao começo + 460) e os do Grão-Mestre de 3.050 a 3.900, perto do RATING_TOP. Quem fica com qual força vem desta
+ *  ordem, girada a cada liga, para os de nick e os de nome se misturarem no topo e no fundo. */
+const SKILL_RANK = [4, 6, 1, 3, 0, 7, 2, 5] as const;
+const GRAND_SKILLS = [3050, 3150, 3250, 3350, 3450, 3600, 3750, 3900] as const;
+const skillOf = (league: LeagueKey, index: number) => {
+  const leagueIndex = LEAGUES.indexOf(league);
+  const rank = SKILL_RANK[(index + leagueIndex) % SKILL_RANK.length];
+  return league === "grao-mestre" ? GRAND_SKILLS[rank] : leagueFloor(leagueIndex) + 40 + rank * 60;
+};
+
 export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
   ...ROSTER[league].map((name, index): Bot => ({
     id: `bot-${league}-${index}`,
@@ -100,8 +115,9 @@ export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
     league,
     style: STYLES[index],
     specialty: STYLES[index] === "especialista" ? SPECIALTY[league] : null,
+    skill: skillOf(league, index),
   })),
-  ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null })),
+  ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null, skill: skillOf(league, ROSTER[league].length + index) })),
 ]);
 export const botsOfLeague = (league: LeagueKey) => BOTS.filter((bot) => bot.league === league);
 
@@ -110,7 +126,7 @@ export function botById(id: string): Bot | null {
   const found = BOTS.find((bot) => bot.id === id);
   if (found) return found;
   const league = LEAGUES.find((key) => id === `bot-${key}`);
-  return league ? { id, name: "", league, style: "constante", specialty: null } : null;
+  return league ? { id, name: "", league, style: "constante", specialty: null, skill: leagueFloor(LEAGUES.indexOf(league)) + leagueSpan(LEAGUES.indexOf(league)) / 2 } : null;
 }
 
 export function hashSeed(text: string) {
@@ -148,6 +164,8 @@ export type BotContext = {
   family: BotFamily | null;
   /** Rating do bot (matchmaking pelo MMR): se vier, a base do acerto e do tempo é a do rating e a divisão não pesa. */
   rating?: number;
+  /** O bot joga com a própria força (`skill`), sem rating nem divisão: no ranking e como adversário da pessoa. */
+  own?: boolean;
   /** Modo em que a especialidade não vale nem para bem nem para mal (as bandeiras históricas: o especialista em bandeiras atuais não as domina). */
   neutral?: boolean;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
@@ -174,8 +192,8 @@ const clamp = (value: number, low: number, high: number) => Math.min(high, Math.
 
 /** Acerto, tempo médio e regularidade do bot naquele contexto. */
 export function botProfile(bot: Bot, context: BotContext): BotProfile {
-  const base = context.rating === undefined ? LEAGUE_BASE[bot.league] : baseAtRating(context.rating);
-  let accuracy = base.accuracy + (context.rating === undefined && context.division ? (context.division - 1) * DIVISION_STEP : 0);
+  const base = context.own ? baseAtRating(bot.skill) : context.rating === undefined ? LEAGUE_BASE[bot.league] : baseAtRating(context.rating);
+  let accuracy = base.accuracy + (!context.own && context.rating === undefined && context.division ? (context.division - 1) * DIVISION_STEP : 0);
   let avgMs = base.avgMs;
   if (bot.style === "preciso") { accuracy += PRECISE.accuracy; avgMs *= PRECISE.time; }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
