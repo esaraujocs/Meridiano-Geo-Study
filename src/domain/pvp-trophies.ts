@@ -47,6 +47,8 @@ export function settlePvpTrophies({ trophies, mmr, sigma, samples, streak, oppon
 export type LadderEntry = {
   id: string; at: number; ladder: Ladder; delta: number; outcome: DuelOutcome;
   mmrDelta?: number; mmrVersion?: number; mmrSigma?: number; mmrExp?: number;
+  /** Ajuste da escada (duel.ts, `adjustmentEntry`): soma nos troféus e no MMR, mas não é duelo. */
+  adjust?: true;
 };
 
 /** O que um duelo entre pessoas guarda para a escada (só o valendo calculado no aparelho tem; o amistoso e os que vieram só do servidor, não). */

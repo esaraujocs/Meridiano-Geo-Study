@@ -1,6 +1,6 @@
 // O que as telas do duelo mostram, derivado do histórico: cartões das escadas no Hub, sequência de vitórias e o "plano" do
 // resultado (que festa fazer, quais pílulas mostrar e como a barra de troféus se move). Lógica pura.
-import { trophiesByLadder, type DuelOutcome, type DuelRecord } from "./duel.js";
+import { isDuelEntry, trophiesByLadder, type DuelOutcome, type DuelRecord } from "./duel.js";
 import { LADDERS, groupsOfLadder, isGroupOwned, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { MILESTONES, reachedMilestones, type Milestone } from "./duel-rewards.js";
 import { DIVISION_SPAN, hasDivisions, leagueFloor, leagueOf, leagueSpan, type LeagueStatus } from "./league.js";
@@ -17,14 +17,15 @@ export type LadderCard = {
   groups: { group: ModeGroup; owned: boolean }[];
 };
 
-export type LadderResult = Pick<DuelRecord, "id" | "at" | "ladder" | "delta" | "outcome">;
+export type LadderResult = Pick<DuelRecord, "id" | "at" | "ladder" | "delta" | "outcome"> & { adjust?: boolean };
 
 /** Um cartão por escada, com a liga, a forma recente e os modos que entram no sorteio (com os de prévia marcados). Conta os duelos contra bot e os
  *  valendo contra pessoas (a mesma escada). */
 export function ladderCards(duels: readonly LadderResult[], unlocked: readonly string[]): LadderCard[] {
   const byLadder = trophiesByLadder(duels);
   return LADDERS.map((ladder) => {
-    const mine = duels.filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
+    // os ajustes da escada já estão nos troféus; forma, sequência e contagem são só de duelos
+    const mine = duels.filter((duel) => duel.ladder === ladder && isDuelEntry(duel)).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
     return {
       ladder,
       trophies: byLadder[ladder],
@@ -58,8 +59,8 @@ export const secondsPer = (ms: number | null | undefined, answers: number) =>
   ms === null || ms === undefined || answers <= 0 ? null : Math.round((ms / answers / 1000) * 10) / 10;
 
 /** Vitórias seguidas até o duelo mais recente da lista. Quem chama passa só os duelos de uma escada: a sequência é por escada. */
-export function winStreak(duels: readonly Pick<DuelRecord, "at" | "id" | "outcome">[]) {
-  const ordered = [...duels].sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1));
+export function winStreak(duels: readonly (Pick<DuelRecord, "at" | "id" | "outcome"> & { adjust?: boolean })[]) {
+  const ordered = duels.filter(isDuelEntry).sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1));
   let streak = 0;
   for (const duel of ordered) { if (duel.outcome !== "win") break; streak += 1; }
   return streak;

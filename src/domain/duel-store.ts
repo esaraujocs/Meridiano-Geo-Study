@@ -1,6 +1,6 @@
 // Duelos no IndexedDB (loja `preferences`, id `duel:<sessão>`): entram no Exportar/Importar progresso, como as Favoritas.
 import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schema.js";
-import { DUEL_ID_PREFIX, DUEL_SOURCE, parseDuel, type DuelRecord } from "./duel.js";
+import { ADJUST_ID_PREFIX, DUEL_ID_PREFIX, DUEL_SOURCE, accountAdjustments, parseAdjustment, parseDuel, type DuelRecord, type LadderAdjustment } from "./duel.js";
 import { milestoneLedgerId, milestoneTopUps, pendingMilestones, type Milestone, type TrophiesByLadder } from "./duel-rewards.js";
 import { leagueOf } from "./league.js";
 import { leagueThemesFor, themeUnlockKey } from "./themes.js";
@@ -31,6 +31,43 @@ export async function listDuels(): Promise<DuelRecord[]> {
       .map(parseDuel)
       .filter((item): item is DuelRecord => item !== null)
       .sort((a, b) => a.at - b.at);
+  } finally { database.close(); }
+}
+
+/** Os ajustes da escada gravados (`ladder-adjust:*`), na ordem. */
+export async function listAdjustments(): Promise<LadderAdjustment[]> {
+  const database = await openDatabase();
+  try {
+    const rows = await new Promise<unknown[]>((resolve, reject) => {
+      const request = database.transaction(STORE, "readonly").objectStore(STORE).getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    return rows
+      .filter((row) => String((row as { id?: unknown })?.id ?? "").startsWith(ADJUST_ID_PREFIX))
+      .map(parseAdjustment)
+      .filter((item): item is LadderAdjustment => item !== null)
+      .sort((a, b) => a.at - b.at);
+  } finally { database.close(); }
+}
+
+/** Grava os ajustes pedidos para a conta em que o aparelho está (`accountAdjustments`), uma vez: linha que já existe não é tocada. */
+export async function ensureAccountAdjustments(username: string): Promise<void> {
+  const wanted = accountAdjustments(username);
+  if (!wanted.length) return;
+  const database = await openDatabase();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction(STORE, "readwrite");
+      const store = transaction.objectStore(STORE);
+      for (const row of wanted) {
+        const request = store.get(row.id);
+        request.onsuccess = () => { if (request.result === undefined) store.put({ ...row }); };
+      }
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
   } finally { database.close(); }
 }
 

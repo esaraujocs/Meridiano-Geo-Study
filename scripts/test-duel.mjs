@@ -967,4 +967,24 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.notDeepEqual(LB.globalLeaderboard("mapas", rows, 800, 6), board, "bots variam por dia");
 }
 
-console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok");
+// Ajustes da escada (20/10/2026): somam nos troféus e no MMR no instante deles, mas não contam como duelo
+{
+  const at = Date.UTC(2026, 9, 21);
+  const duelsHere = [0, 1, 2].map((index) => ({ id: `duel:a${index}`, at: at - 1000 + index, ladder: "bandeiras", delta: 40, outcome: "win", mmrDelta: 30, mmrVersion: X.MMR_MODEL, mmrSigma: 80, mmrExp: 0.5 }));
+  const adjust = D.parseAdjustment({ id: "ladder-adjust:t", at, ladder: "bandeiras", trophies: -500, mmr: -500 });
+  assert.ok(adjust && D.parseAdjustment({ id: "ladder-adjust:x", at, ladder: "lua", trophies: 1, mmr: 1 }) === null && D.parseAdjustment({ id: "duel:x", at, ladder: "mapas", trophies: 1, mmr: 1 }) === null);
+  const start = [{ id: "duel:base", at: at - 5000, ladder: "bandeiras", delta: 1000, outcome: "win", mmrDelta: 1000, mmrVersion: X.MMR_MODEL }];
+  const entries = [...start, ...duelsHere, D.adjustmentEntry(adjust)];
+  assert.equal(D.trophiesFromDuels(entries, "bandeiras"), 1000 + 120 - 500, "o ajuste entra nos troféus");
+  const state = D.mmrStateFromDuels(entries, "bandeiras");
+  assert.equal(state.mmr, 1000 + 90 - 500, "e no MMR");
+  assert.equal(state.games, 4, "mas não conta como duelo");
+  assert.equal(V.winStreak(entries), 4, "nem quebra a sequência");
+  const card = V.ladderCards(entries, []).find((item) => item.ladder === "bandeiras");
+  assert.equal(card.duels, 4); assert.deepEqual(card.form, ["win", "win", "win", "win"]); assert.equal(card.trophies, 620);
+  assert.equal(D.accountAdjustments("MrMussahRellah").length, 2, "a conta do pedido tem os dois ajustes");
+  assert.deepEqual(D.accountAdjustments("MrMussahRellah").map((row) => [row.ladder, row.trophies]), [["bandeiras", -500], ["mapas", -200]]);
+  assert.equal(D.accountAdjustments("outra-pessoa").length, 0); assert.equal(D.accountAdjustments("").length, 0);
+}
+
+console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok; ajustes da escada ok");

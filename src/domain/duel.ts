@@ -2,7 +2,7 @@
 // Quem acertar mais vence; empatou nos acertos, o menor tempo total desempata. Os troféus seguem uma conta tipo Elo.
 // O duelo v2 tem 2 tempos de 10 rodadas (ver duel-modes.ts) e troféus por escada (Mapas e Bandeiras).
 import { DIVISION_SPAN, LEAGUES, leagueFloor, leagueOf, leagueSpan, type LeagueKey } from "./league.js";
-import { simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
+import { hashSeed, simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
 import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
@@ -218,6 +218,42 @@ function sumLadder<T extends { at: number }>(sorted: readonly T[], step: (entry:
   return fixed ? total : ceilingFix(total);
 }
 
+// ---- Ajustes da escada (20/10/2026) ----
+/** Um ajuste de troféus e MMR numa escada, pedido pela pessoa (o primeiro, do Enzo: "me tira 500 em Bandeiras e 200 no Mapa"). Fica numa linha
+ *  da loja `preferences` (`ladder-adjust:<id>`, sincroniza com a conta e entra no backup) e soma na escada no instante dele, como um duelo, mas
+ *  **não é duelo**: não entra na forma, na sequência, na contagem de duelos nem na surpresa (`isDuelEntry`). */
+export const ADJUST_ID_PREFIX = "ladder-adjust:";
+export type LadderAdjustment = { id: string; at: number; ladder: Ladder; trophies: number; mmr: number };
+
+export function parseAdjustment(row: unknown): LadderAdjustment | null {
+  const item = row as Partial<LadderAdjustment> | null;
+  if (!item || typeof item.id !== "string" || !item.id.startsWith(ADJUST_ID_PREFIX) || !isLadder(item.ladder)) return null;
+  if (![item.at, item.trophies, item.mmr].every((value) => typeof value === "number" && Number.isFinite(value))) return null;
+  return { id: item.id, at: item.at as number, ladder: item.ladder, trophies: item.trophies as number, mmr: item.mmr as number };
+}
+
+/** O ajuste no formato das entradas da escada (o MMR vale como o de um duelo da versão atual). */
+export const adjustmentEntry = (adjust: LadderAdjustment) => ({
+  id: adjust.id, at: adjust.at, ladder: adjust.ladder, delta: adjust.trophies, outcome: "draw" as DuelOutcome,
+  mmrDelta: adjust.mmr, mmrVersion: MMR_MODEL, adjust: true as const,
+});
+/** Entrada que é duelo de verdade (não ajuste): só elas contam na forma, na sequência e no número de duelos. */
+export const isDuelEntry = (entry: { adjust?: boolean }) => !entry.adjust;
+
+/** Ajustes por conta: o aparelho entrado nessa conta grava as linhas uma vez (ids fixos: dois aparelhos gravam a mesma linha e a sincronização
+ *  une). A conta vai pelo `hashSeed("conta:<usuário em minúsculas>")`, para o nome não ficar no código. */
+export const ACCOUNT_ADJUSTMENTS: readonly { account: number; rows: readonly LadderAdjustment[] }[] = [
+  {
+    account: 3176936172,
+    rows: [
+      { id: "ladder-adjust:2026-10-20:bandeiras", at: Date.UTC(2026, 9, 20, 0, 45), ladder: "bandeiras", trophies: -500, mmr: -500 },
+      { id: "ladder-adjust:2026-10-20:mapas", at: Date.UTC(2026, 9, 20, 0, 45), ladder: "mapas", trophies: -200, mmr: -200 },
+    ],
+  },
+];
+export const accountAdjustments = (username: string): readonly LadderAdjustment[] =>
+  username ? ACCOUNT_ADJUSTMENTS.find((entry) => entry.account === hashSeed(`conta:${username.trim().toLowerCase()}`))?.rows ?? [] : [];
+
 export function trophiesFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder">[], ladder?: Ladder) {
   const sorted = [...duels].filter((duel) => !ladder || duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
   return sumLadder(sorted, (duel) => duel.delta);
@@ -228,7 +264,7 @@ const validMmr = (duel: { mmrVersion?: number }) => duel.mmrVersion !== undefine
 
 /** O estado do MMR de uma escada, derivado do histórico: o MMR, a incerteza (a do último duelo que a gravou ou, sem ela, a de quem jogou tantos
  *  duelos sem surpresa), os duelos recentes para a surpresa e quantos duelos já foram jogados. */
-export function mmrStateFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "outcome" | "mmrDelta" | "mmrVersion" | "mmrSigma" | "mmrExp">[], ladder: Ladder) {
+export function mmrStateFromDuels(duels: readonly (Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "outcome" | "mmrDelta" | "mmrVersion" | "mmrSigma" | "mmrExp"> & { adjust?: boolean })[], ladder: Ladder) {
   const list = [...duels].filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
   const mmr = sumLadder(list, (duel) => (validMmr(duel) && duel.mmrDelta !== undefined ? duel.mmrDelta : duel.delta));
   const last = [...list].reverse().find((duel) => validMmr(duel) && duel.mmrSigma !== undefined);
@@ -236,7 +272,8 @@ export function mmrStateFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta
     .filter((duel) => validMmr(duel) && duel.mmrExp !== undefined)
     .slice(-SURPRISE_WINDOW)
     .map((duel) => ({ score: outcomeScore(duel.outcome), expected: duel.mmrExp as number }));
-  return { mmr, sigma: last?.mmrSigma ?? sigmaFromGames(list.length), samples, games: list.length };
+  const games = list.filter(isDuelEntry).length;
+  return { mmr, sigma: last?.mmrSigma ?? sigmaFromGames(games), samples, games };
 }
 export function mmrFromDuels(duels: readonly Pick<DuelRecord, "at" | "delta" | "id" | "ladder" | "mmrDelta" | "mmrVersion">[], ladder?: Ladder) {
   const sorted = [...duels].filter((duel) => !ladder || duel.ladder === ladder).sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));

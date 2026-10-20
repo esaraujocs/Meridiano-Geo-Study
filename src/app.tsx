@@ -56,7 +56,7 @@ import type { BotRankingState } from "./domain/bot-ranking";
 import { loadBotRanking } from "./domain/bot-ranking-store";
 import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
-import { duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, trophiesFromDuels, type DuelRecord, type DuelView } from "./domain/duel";
+import { adjustmentEntry, duelRecordId, mmrStateFromDuels, playerTotalMs, trophiesByLadder, trophiesFromDuels, type DuelRecord, type DuelView, type LadderAdjustment } from "./domain/duel";
 import { pvpLadderEntries, settlePvpTrophies, type LadderEntry } from "./domain/pvp-trophies";
 import { pickBot } from "./domain/bots";
 import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, typedChars, type Ladder, type ModeGroup } from "./domain/duel-modes";
@@ -67,7 +67,7 @@ import { DUEL_PREVIEW_NAMES, duelPreview } from "./domain/duel-preview";
 import { DuelReveal } from "./components/duel-reveal";
 import { DuelInterlude } from "./components/duel-interlude";
 import type { Milestone } from "./domain/duel-rewards";
-import { claimDuelMilestones, claimLeagueThemes, listDuels, saveDuel } from "./domain/duel-store";
+import { claimDuelMilestones, claimLeagueThemes, ensureAccountAdjustments, listAdjustments, listDuels, saveDuel } from "./domain/duel-store";
 import { isDebugEnabled } from "./domain/debug-flag";
 import { DRAW_LEGS, PvpLobby, legChoiceGroups, type LegChoice, type PvpLobbyView } from "./components/pvp-lobby";
 import { PvpInterlude } from "./components/pvp-interlude";
@@ -83,7 +83,7 @@ import { PvpNamePrompt } from "./components/pvp-name-prompt";
 import { newPvpRun, pvpLegOptions, recordPvpLeg, roomLegs, type PvpRun } from "./domain/pvp-run";
 import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
-  PvpClientError, hasPvpIdentity, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
+  PvpClientError, hasPvpIdentity, pvpAccountName, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
   pvpChallenge, pvpFriendRemove, pvpFriendRequest, pvpFriendRespond, pvpFriends, pvpLeaderboard, pvpPlayer, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
 } from "./domain/pvp-client";
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
@@ -167,19 +167,24 @@ export function App() {
   // Duelos entre pessoas já terminados (IndexedDB): os valendo calculados neste aparelho mexem na mesma escada dos duelos contra bot (transição, 28/09).
   const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
   const [ladderLoaded, setLadderLoaded] = useState(false);
-  const ladderEntries = useMemo<LadderEntry[]>(() => [...duels, ...pvpLadderEntries(pvpMatches)], [duels, pvpMatches]);
+  // Ajustes da escada pedidos pela pessoa (`ladder-adjust:*`, duel.ts): somam nos troféus e no MMR sem ser duelo.
+  const [adjustments, setAdjustments] = useState<LadderAdjustment[]>([]);
+  const adjustEntries = useMemo<LadderEntry[]>(() => adjustments.map(adjustmentEntry), [adjustments]);
+  const ladderEntries = useMemo<LadderEntry[]>(() => [...duels, ...pvpLadderEntries(pvpMatches), ...adjustEntries], [duels, pvpMatches, adjustEntries]);
   const byLadder = useMemo(() => trophiesByLadder(ladderEntries), [ladderEntries]);
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
   // Onde a pessoa está em cada escada (troféus e MMR escondido): vai para o servidor (ranking, proposta da fila e a conta do adversário).
   const standings = useMemo<LadderStandings>(() => Object.fromEntries(LADDERS.map((ladder) => [ladder, { trophies: byLadder[ladder], mmr: mmrStateFromDuels(ladderEntries, ladder).mmr }])) as LadderStandings, [ladderEntries, byLadder]);
   useEffect(() => {
-    void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[]), loadBotRanking()]).then(async ([list, matches, ranking]) => {
+    const adjusted = ensureAccountAdjustments(pvpAccountName()).catch(() => undefined).then(() => listAdjustments()).catch(() => [] as LadderAdjustment[]);
+    void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[]), loadBotRanking(), adjusted]).then(async ([list, matches, ranking, adjusts]) => {
       setDuels(list);
       setPvpMatches(matches);
       setBotRanking(ranking);
+      setAdjustments(adjusts);
       setLadderLoaded(true);
       // ao abrir: paga o que faltar (marco novo ou a diferença de um prêmio que foi aumentado) e atualiza o saldo
-      const entries = [...list, ...pvpLadderEntries(matches)];
+      const entries = [...list, ...pvpLadderEntries(matches), ...adjusts.map(adjustmentEntry)];
       await claimDuelMilestones(trophiesByLadder(entries)).catch(() => []);
       await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
       void refreshEconomy();
@@ -392,7 +397,7 @@ export function App() {
     let ladderFields: Partial<PvpMatchRecord> = {};
     const known = pvpMatches.find((match) => match.id === id);
     if (room.mode === "ranked" && typeof known?.trophyDelta !== "number") {
-      const prior: LadderEntry[] = [...duels, ...pvpLadderEntries(pvpMatches.filter((match) => match.id !== id))];
+      const prior: LadderEntry[] = [...duels, ...pvpLadderEntries(pvpMatches.filter((match) => match.id !== id)), ...adjustEntries];
       const before = trophiesFromDuels(prior, room.ladder);
       const state = mmrStateFromDuels(prior, room.ladder);
       const settled = settlePvpTrophies({
@@ -422,7 +427,7 @@ export function App() {
     void savePvpMatch(record).then(async () => {
       if (room.mode !== "ranked") return;
       // subiu de divisão ou de liga contra uma pessoa: os mesmos marcos e temas de liga do duelo contra bot
-      const entries = [...duels, ...pvpLadderEntries(nextMatches)];
+      const entries = [...duels, ...pvpLadderEntries(nextMatches), ...adjustEntries];
       await claimDuelMilestones(trophiesByLadder(entries)).catch(() => []);
       await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
       void refreshEconomy();
@@ -846,7 +851,7 @@ export function App() {
     const nextDuels = [...duels.filter((item) => item.id !== record.id), record];
     setDuels(nextDuels);
     // a escada soma os duelos contra bot e os valendo contra pessoas
-    const nextEntries = [...nextDuels, ...pvpLadderEntries(pvpMatches)];
+    const nextEntries = [...nextDuels, ...pvpLadderEntries(pvpMatches), ...adjustEntries];
     // Marcos de divisão e de liga: crédito único no livro-caixa (não repete se os troféus caírem e subirem de novo).
     const milestones: readonly Milestone[] = await claimDuelMilestones(trophiesByLadder(nextEntries)).catch(() => []);
     // Tema de liga: dado uma vez ao entrar na liga (melhor das duas escadas); o resultado avisa quando foi este duelo que abriu.
@@ -1033,9 +1038,10 @@ export function App() {
     return () => registerAchievementLifecycleListener(null);
   }, [syncAchievements]);
   const onDebugChange = async ({ announce }: { announce: boolean }) => {
-    const [list, matches, ranking] = await Promise.all([listDuels(), listPvpMatches(), loadBotRanking()]);
+    const [list, matches, ranking, adjusts] = await Promise.all([listDuels(), listPvpMatches(), loadBotRanking(), listAdjustments()]);
     setDuels(list);
     setPvpMatches(matches);
+    setAdjustments(adjusts);
     setBotRanking(ranking);
     await refreshEconomy();
     await syncAchievements(announce);
