@@ -55,7 +55,7 @@ import { achievementToasts } from "./domain/achievement-toast";
 import { queryCollectionSummary, querySurfaces } from "./domain/progress-surfaces";
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
-import type { BotRankingState } from "./domain/bot-ranking";
+import { rankedOpponent, type BotRankingState } from "./domain/bot-ranking";
 import { loadBotRanking } from "./domain/bot-ranking-store";
 import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
@@ -818,12 +818,17 @@ export function App() {
     const legs = drawLegs(ladder, id, ownedGroups(economy.unlocked));
     const streak = winStreak(ladderEntries.filter((duel) => duel.ladder === ladder));
     const state = mmrStateFromDuels(ladderEntries, ladder);
-    // matchmaking: o rating do bot é o MMR mais o otimismo pela incerteza (para cima quando a pessoa vem vencendo mais do que o esperado), preso entre a
-    // própria liga e 2 ligas acima; o bot sai da liga desse rating e a força dele acompanha o rating
+    // matchmaking: o alvo é o MMR mais o otimismo pela incerteza (para cima quando a pessoa vem vencendo mais do que o esperado), preso entre a
+    // própria liga e 2 ligas acima; o adversário é um dos bots do ranking mais perto dele, com a própria força (`rankedOpponent`). Sem o ranking
+    // carregado, o de antes: um bot da liga do alvo com a força do alvo.
     const match = matchmaking(trophiesBefore, state.mmr, state.sigma, surprise(state.samples));
+    const ranked = botRanking ? rankedOpponent(botRanking, ladder, match.rating, id, lastBotRef.current[ladder]) : null;
     setLastDuel(null);
     legResults.current = [null, null];
-    setDuelRun(newDuelRun({ id, ladder, bot: pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, division: match.division, rating: match.rating, legs, streak, mmr: state.mmr, sigma: state.sigma, samples: state.samples }));
+    setDuelRun(newDuelRun({
+      id, ladder, bot: ranked?.bot ?? pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, legs, streak, mmr: state.mmr, sigma: state.sigma, samples: state.samples,
+      ...(ranked ? { division: ranked.division, rating: ranked.rating, own: true } : { division: match.division, rating: match.rating }),
+    }));
     setScreen("duel-reveal");
   };
   /** Só com ?debug=1: troca o modo de um tempo para testar. */

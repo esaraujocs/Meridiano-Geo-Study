@@ -237,7 +237,24 @@ export function settleBotMatch(state: BotRankingState, input: BotMatchInput): Bo
 }
 
 /** A força própria do bot: a base da liga dele (divisão II nas ligas com divisões), sem o rating do matchmaking. */
-const ownDivision = (bot: Bot): 2 | null => (hasDivisions(LEAGUES.indexOf(bot.league)) ? 2 : null);
+export const ownDivision = (bot: Bot): 2 | null => (hasDivisions(LEAGUES.indexOf(bot.league)) ? 2 : null);
+
+/** Quantos bots do ranking, os mais perto do rating do matchmaking, entram no sorteio do adversário da pessoa. */
+export const NEAREST_OPPONENTS = 3;
+/** O adversário da pessoa é um bot do ranking com a força dele (20/10/2026, pedido do Enzo: "os bots têm que ser consistentes em performance; o
+ *  bot que tem tempo médio de 2,1 s tem que oscilar nesse entorno, não se adequar ao meu MMR"). Antes o nome era sorteado na liga do rating e a
+ *  força vinha do rating, então a Capitã Monção, 1ª do ranking com ~1,7 s, jogava contra ele como um bot de 3.000 (~2,15 s). Agora o matchmaking
+ *  só dá o alvo: sorteia-se entre os NEAREST_OPPONENTS bots com o MMR mais perto dele (sem repetir o anterior), que joga com a própria força (a
+ *  base da liga, como no ranking) e cujo MMR é a nota contra a qual o MMR da pessoa muda. Acima do 1º do ranking não há bot mais forte: o
+ *  adversário mais duro é o topo, e o limite vem da curva de troféus. */
+export function rankedOpponent(state: BotRankingState, ladder: Ladder, target: number, seed: string, excludeId?: string | null) {
+  const standings = state.bots[ladder];
+  const pool = BOTS.filter((bot) => standings[bot.id] && bot.id !== excludeId);
+  const gap = (bot: Bot) => Math.abs(standings[bot.id].mmr - target);
+  const nearest = [...pool].sort((a, b) => gap(a) - gap(b)).slice(0, NEAREST_OPPONENTS);
+  const bot = nearest[Math.floor(mulberry32(hashSeed(`opponent:${seed}`))() * nearest.length)];
+  return { bot, rating: Math.round(standings[bot.id].mmr), division: ownDivision(bot) };
+}
 const expand = (pairs: readonly (readonly [number, number])[]) => pairs.flatMap(([length, count]) => Array<number>(count).fill(length));
 const LENGTH_POOLS = { nome: expand(TYPED_LENGTHS.nome), capital: expand(TYPED_LENGTHS.capital) };
 /** Os lugares do baralho do mapa (quanto cada um pede de tempo): os modos de clicar sorteiam daqui, os mesmos para os dois lados. */

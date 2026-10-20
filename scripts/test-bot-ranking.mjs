@@ -9,9 +9,13 @@ import {
   createBotRanking,
   needsCalibration,
   parseBotRanking,
+  rankedOpponent,
+  NEAREST_OPPONENTS,
+  ownDivision,
   settleBotMatch,
 } from "../.tmp-bot-ranking/bot-ranking.js";
-import { BOTS } from "../.tmp-bot-ranking/bots.js";
+import { BOTS, simulateBot } from "../.tmp-bot-ranking/bots.js";
+import { resolveDuelLegs } from "../.tmp-bot-ranking/duel.js";
 import { LADDERS } from "../.tmp-bot-ranking/duel-modes.js";
 import { leagueOf } from "../.tmp-bot-ranking/league.js";
 import { expectedScore, matchmaking, mmrChange, SIGMA_MIN, surprise, trophyChange } from "../.tmp-bot-ranking/mmr.js";
@@ -266,5 +270,33 @@ assert.throws(() => parseBotRanking(extraBot), /roster/);
 const invalidStanding = clone(initial);
 invalidStanding.bots.mapas[botId].samples = [{ score: 2, expected: 0.5 }];
 assert.throws(() => parseBotRanking(invalidStanding), /samples/);
+
+// o adversário da pessoa é um bot do ranking, entre os NEAREST_OPPONENTS de MMR mais perto do alvo, jogando com a própria força (não a do rating)
+{
+  const state = calibrateBotRanking(createBotRanking(20_000));
+  const standings = state.bots.bandeiras;
+  const gaps = (target) => BOTS.map((bot) => [bot.id, Math.abs(standings[bot.id].mmr - target)]).sort((a, b) => a[1] - b[1]);
+  for (const target of [400, 1800, 3000, 3600, 5000]) {
+    const allowed = new Set(gaps(target).slice(0, NEAREST_OPPONENTS).map(([id]) => id));
+    for (let k = 0; k < 20; k += 1) {
+      const pick = rankedOpponent(state, "bandeiras", target, `seed-${target}-${k}`);
+      assert.ok(allowed.has(pick.bot.id), `alvo ${target}: um dos ${NEAREST_OPPONENTS} mais perto`);
+      assert.equal(pick.rating, Math.round(standings[pick.bot.id].mmr), "a nota é o MMR do bot no ranking");
+      assert.equal(pick.division, ownDivision(pick.bot));
+    }
+  }
+  const top = gaps(5000)[0][0];
+  for (let k = 0; k < 30; k += 1) assert.notEqual(rankedOpponent(state, "bandeiras", 5000, `x${k}`, top).bot.id, top, "não repete o anterior");
+  assert.deepEqual(rankedOpponent(state, "bandeiras", 3000, "same"), rankedOpponent(state, "bandeiras", 3000, "same"), "determinístico pela semente");
+  // com `own` o bot joga igual com qualquer rating; sem ele, a força acompanha o rating
+  const pick = rankedOpponent(state, "bandeiras", 3400, "own");
+  const legs = [{ group: "atuais", rounds: 10, playerCorrect: 10, playerMs: 15000 }, { group: "historicas", rounds: 10, playerCorrect: 10, playerMs: 28000 }];
+  const base = { trophies: 3000, bot: pick.bot, legs, seed: "duelo-x", division: pick.division };
+  const ownA = resolveDuelLegs({ ...base, rating: 2600, own: true });
+  const ownB = resolveDuelLegs({ ...base, rating: 3900, own: true });
+  assert.deepEqual(ownA.legs, ownB.legs, "a força própria não muda com o rating");
+  assert.notDeepEqual(resolveDuelLegs({ ...base, rating: 2600 }).legs, resolveDuelLegs({ ...base, rating: 3900 }).legs, "sem own, muda");
+  assert.equal(simulateBot(pick.bot, 10, "s", { division: pick.division, family: "bandeiras" }).totalMs, simulateBot(pick.bot, 10, "s", { division: pick.division, family: "bandeiras" }).totalMs);
+}
 
 console.log("bot ranking: persistence, independent economy, deterministic daily simulation and revisions verified");

@@ -22,7 +22,7 @@
     "test:duel": "node scripts/test-duel.mjs",
     "test:explore": "node scripts/test-explore.mjs",
     "test:rhythm": "node scripts/test-rhythm.mjs",
-    "test:bot-ranking": "rm -rf .tmp-bot-ranking && tsc --ignoreConfig src/domain/bot-ranking.ts src/domain/leaderboard.ts --outDir .tmp-bot-ranking --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck --strict && node scripts/test-bot-ranking.mjs",
+    "test:bot-ranking": "rm -rf .tmp-bot-ranking && tsc --ignoreConfig src/domain/bot-ranking.ts src/domain/leaderboard.ts src/domain/duel.ts --outDir .tmp-bot-ranking --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck --strict && node scripts/test-bot-ranking.mjs",
     "test:bot-ranking-storage": "node scripts/test-bot-ranking-storage.mjs",
     "test:bot-ranking-ui": "node scripts/test-bot-ranking-ui.mjs",
     "test:silhouette": "node scripts/test-silhouette.mjs",

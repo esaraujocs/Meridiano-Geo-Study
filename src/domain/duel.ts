@@ -98,8 +98,10 @@ export type DuelLegsInput = {
   seed: string;
   /** Divisão do adversário (a força do bot acompanha); com `rating` ele não pesa. */
   division: 1 | 2 | 3 | null;
-  /** Rating do bot sorteado pelo matchmaking: decide a força dele e é a nota contra a qual o MMR muda. */
+  /** Rating do bot sorteado pelo matchmaking: decide a força dele (menos com `own`) e é a nota contra a qual o MMR muda. */
   rating?: number;
+  /** O bot é um do ranking e joga com a própria força (a base da liga e a divisão dele), não com a do rating (`rankedOpponent`). */
+  own?: boolean;
   /** Vitórias seguidas que a pessoa já tinha nesta escada (bônus de sequência). */
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
@@ -111,12 +113,12 @@ export type DuelLegsInput = {
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, streak, mmr, sigma, recent }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, own, streak, mmr, sigma, recent }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const typing = def.typing && leg.chars?.length ? { think: def.typing.think, key: def.typing.key, chars: leg.chars } : undefined;
     const spots = def.kind === "clique" && leg.spots?.length ? leg.spots : undefined;
-    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, rating, family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind, limitMs: timerSecondsFor(def.variants[0].variant) * 1000, ...(spots ? { spots } : {}) });
+    const { correct, totalMs } = simulateBot(bot, leg.rounds, `${seed}:${index}`, { division, ...(own ? {} : { rating }), family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, typing, kind: def.kind, limitMs: timerSecondsFor(def.variants[0].variant) * 1000, ...(spots ? { spots } : {}) });
     return { group: leg.group, rounds: leg.rounds, playerCorrect: leg.playerCorrect, botCorrect: correct, botMs: totalMs };
   });
   const playerCorrect = results.reduce((sum, leg) => sum + leg.playerCorrect, 0);
