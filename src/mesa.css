@@ -205,3 +205,6 @@
   .mz-card{flex:1}
   .mz .cv-bar{position:static}
 }
+/* Explorar escolhido no Ritmo: as rodadas não valem (o mapa é livre) */
+.mz-group.is-off .cv-ctl{opacity:.45}
+.mz-group.is-off .cv-chip{cursor:default}

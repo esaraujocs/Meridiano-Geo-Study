@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Game, type MapBoard } from "./components/map-game";
+import { ExploreMap, type ExploreSpec } from "./components/explore-map";
+import { loadFlags } from "./domain/quiz";
+import { locale as uiLocale } from "./domain/i18n/locale";
 import { Header, Hub, OptionsScreen, type NavProgress, type TopFamily } from "./components/screens";
 import { useAccountSync } from "./components/use-account-sync";
 import { AccountNudge } from "./components/account-nudge";
@@ -94,8 +97,8 @@ import { MecenatoReturnToast } from "./components/mecenato-toast";
 import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
 import { isCountry } from "./domain/sovereignty";
 import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
-import { DIVISION_COUNTRIES, divisionsOfKind, baseVariant, divisionBounds, divisionCounts, divisionCountry, divisionCountryOf, divisionIdsIn, divisionRegion, divisionSelectedCount, unitWord, type DivisionPack } from "./domain/divisions";
-import { cachedDivision, loadDivision } from "./domain/divisions-data";
+import { DIVISION_COUNTRIES, divisionsOfKind, baseVariant, divisionBounds, divisionCounts, divisionCountry, divisionCountryOf, divisionIdsIn, divisionRegion, divisionSelectedCount, isCapitalVariant, kindOf, unitWord, type DivisionPack } from "./domain/divisions";
+import { cachedDivision, loadDivision, loadDivisionFlags } from "./domain/divisions-data";
 import "./mecenato.css";
 
 // O filtro "Só países" (antes "Só membros da ONU"): o mesmo critério de país × território das perguntas.
@@ -764,6 +767,36 @@ export function App() {
   useEffect(() => { if (screen === "hub") setLastConfigs(readLastConfigs()); }, [screen]);
   const rememberConfig = (config: PresetConfig) => { try { localStorage.setItem(LAST_CONFIG_PREFIX + config.topFamily, JSON.stringify(config)); } catch { /* sem armazenamento */ } };
   const startGame = () => { rememberConfig(configOf({ topFamily, variant, pace, roundTier, region, onlyUn })); beginGame(); };
+  // ---- Explorar (20/10/2026): o mapa da família aberta na Mesa, livre, com os nomes à vista (sem sessão, moedas nem XP) ----
+  const [exploring, setExploring] = useState(false);
+  const [exploreSpec, setExploreSpec] = useState<ExploreSpec | null>(null);
+  const EXPLORE_FAMILIES: readonly TopFamily[] = ["mapa", "capitais", "divisoes", "epocas"];
+  const openExplore = async () => {
+    if (family === "divisoes" || family === "epocas") {
+      const country = divisionCountry(divisionId);
+      const pack = country ? (divisionPack?.country === country.id ? divisionPack : await ensureDivision(country.id)) : null;
+      if (!country || !pack) return;
+      const ids = divisionIdsIn(pack, region);
+      const whole = normalizeRegionSelection(region).every((key) => key === divisionRegion(country.id));
+      const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: country.carta } } : {}) };
+      setExploreSpec({
+        data: pack.data, ids, region, board, bbox: pack.bbox,
+        title: kindOf(country) === "era" && whole ? t.explore.eraTitle(country.name[uiLocale]) : regionLabel(region),
+        capitals: isCapitalVariant(variant),
+        loadFlags: () => (country.flags ? loadDivisionFlags(country.id) : Promise.resolve({})),
+      });
+    } else {
+      if (!data) return;
+      const place = normalizeRegionSelection(region).every((key) => key === "mundo") ? t.explore.world : regionLabel(region);
+      setExploreSpec({
+        data, ids: data.mapEntityIds, region,
+        title: topFamily === "capitais" ? `${t.explore.capitals} · ${place}` : place,
+        capitals: topFamily === "capitais",
+        loadFlags,
+      });
+    }
+    setScreen("explore");
+  };
   /** A última partida do modo, se ainda dá para jogar igual (o modo e o corte de rodadas continuam liberados). */
   const replayableConfig = (top: TopFamily) => {
     const config = lastConfigs[top];
@@ -1358,6 +1391,10 @@ export function App() {
     }} onDebugChange={onDebugChange} onBack={() => setScreen("hub")} /></div>;
   }
 
+  if (screen === "explore" && exploreSpec) {
+    return <ExploreMap key={`${exploreSpec.title}:${exploreSpec.ids.length}`} spec={exploreSpec} onExit={() => setScreen("recorte")} />;
+  }
+
   if (screen === "game") {
     // Estados e províncias: o catálogo do país no lugar do acervo dos países e, nos modos de mapa, o tabuleiro do país com o mapa-múndi de fundo
     if (family === "divisoes" || family === "epocas") {
@@ -1462,6 +1499,9 @@ export function App() {
            setOnlyUn={setOnlyUn}
            presetApi={presetApi}
            pillarPct={pillarPct}
+           exploring={exploring}
+           setExploring={setExploring}
+           onExplore={EXPLORE_FAMILIES.includes(topFamily) ? () => void openExplore() : undefined}
             setVariant={setVariant}
             topFamily={topFamily}
             onTopicChange={(topic) => void selectFamily(topic)}

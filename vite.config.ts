@@ -45,6 +45,7 @@ const injectPrecacheManifest = () => {
       "/data/legacy/historical-flags.json",
       "/data/legacy/languages.json",
       "/data/peoples.json",
+      "/data/explore-capitals.json",
       // Estados e províncias (scripts/divisions): o catálogo, as silhuetas e as bandeiras de cada país; o mapa do país vai para o cache na primeira
       // partida (sw.js)
       ...DIVISION_INDEX.flatMap((country) => ["units", "shapes", ...(country.flags ? ["flags"] : [])].map((file) => `/data/divisions/${country.id}/${file}.json`)),

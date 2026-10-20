@@ -102,6 +102,7 @@ export type Screen =
   | "pvp-interlude"
   | "pvp-result"
   | "friends"
-  | "player";
+  | "player"
+  | "explore";
 
 export type RegionCounts = Record<Region, number>;

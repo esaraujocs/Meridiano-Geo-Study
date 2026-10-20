@@ -1,14 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { MapMouseEvent } from "maplibre-gl";
-import { Protocol } from "pmtiles";
 import { Icon } from "./icons";
 import { cameraFor, inRegion, normalizeRegionSelection, regionLabel } from "../domain/regions";
-import { coastBands, graticuleLines, mixHex, rhumbLines } from "../domain/map-palette";
 import { baseVariant, divisionRegionLabel, type UnitWord } from "../domain/divisions";
 import { mapPaletteFor } from "../domain/themes";
 import type { AnyQuizVariant, Family, GeoFeature, Legacy, Region, RegionSelection } from "../domain/types";
-import { MAP_URL } from "../domain/offline-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { cardParentsOf } from "../domain/learning-rules";
 import { sameCapitalName } from "../domain/typed-answer";
@@ -20,8 +17,9 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
-import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
+import { atlasStyle } from "./map-style";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
 import { compassGroup, emptySupplyCounts, lanternZoom, type SupplyCounts, type SupplyId } from "../domain/supplies";
@@ -34,10 +32,8 @@ import {
   isMarkerVisibleAtZoom,
   MARKER_BAND_ZOOMS,
   markerBandFilter,
-  markerBandOpacity,
   markerFilter,
   markerLayerId,
-  SMALL_ENTITY_SOURCE,
 } from "../domain/small-entities";
 import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
 import { mapDeckSignature } from "../domain/map-round-engine";
@@ -75,8 +71,6 @@ const boardPadding = (element: HTMLElement | null) => {
   return { top: Math.round(Math.min(116, height * 0.2)), bottom: Math.round(Math.min(84, height * 0.13)), left: Math.round(Math.min(28, width * 0.05)), right: Math.round(Math.min(28, width * 0.05)) };
 };
 const currentPalette = () => mapPaletteFor(document.documentElement.dataset.theme);
-const pmtilesProtocol = new Protocol();
-maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 export function Game({
   data,
   features,
@@ -430,102 +424,13 @@ export function Game({
     if (!mapEl.current) return;
     if (!board) assertMarkerBound(data.mapEntityIds.length);
     const camera = cameraFor(normalizeRegionSelection(region)[0] ?? "mundo");
-    const activeFilter = markerFilter(markerIds);
     setMapReady(false);
     let map: maplibregl.Map;
     const palette = paletteNow();
     try {
       map = new maplibregl.Map({
         container: mapEl.current,
-        style: {
-          version: 8,
-          sources: {
-            atlas: {
-              type: "vector",
-              url: `pmtiles://${board?.url ?? MAP_URL}`,
-              promoteId: "carta_id",
-              attribution: board?.attribution ??
-                `© OpenStreetMap contributors · Overture Maps Foundation · geoBoundaries${mapBase !== "padrao" ? ` · ${MAP_BASE_CREDIT}` : ""}`,
-            },
-            ...(MAP_BASE_TILES[mapBase] ? { "map-base": { type: "raster" as const, tiles: [MAP_BASE_TILES[mapBase] as string], tileSize: 512, maxzoom: MAP_BASE_MAXZOOM } } : {}),
-            ...(board?.backdrop ? { backdrop: { type: "vector" as const, url: `pmtiles://${board.backdrop.url}`, promoteId: "carta_id" } } : {}),
-            "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE },
-            ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
-            ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs, palette.rhumb.directions) as unknown as GeoJSON.FeatureCollection } } : {}),
-          },
-          layers: [
-            {
-              id: "bg",
-              type: "background",
-              paint: { "background-color": palette.ocean },
-            },
-            ...(satellite ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
-            ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": palette.graticuleOpacity, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
-            ...(palette.rhumb ? [{ id: "rhumb", type: "line" as const, source: "rhumb", paint: { "line-color": palette.rhumb.color, "line-opacity": palette.rhumb.opacity, "line-width": 0.7 } }] : []),
-            // sombra junto às costas (três faixas opacas, da mais clara à mais escura), por baixo da terra: só aparece do lado do mar
-            ...coastBands(palette).map((band) => ({
-              id: band.id,
-              type: "line",
-              source: "atlas",
-              "source-layer": "countries",
-              filter: ["==", "$type", "Polygon"],
-              layout: { "line-join": "round" },
-              paint: { "line-color": band.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, band.w1, 5, band.w5], "line-blur": band.blur },
-            }) as maplibregl.LayerSpecification),
-            // tabuleiro de um país: os vizinhos do mapa-múndi em tom apagado, opacos (cobrem a sombra da costa na fronteira) e fora do clique
-            ...(board?.backdrop ? [{
-              id: "backdrop-land",
-              type: "fill" as const,
-              source: "backdrop",
-              "source-layer": "countries",
-              filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!=", ["get", "carta_id"], board.backdrop.hide]] as unknown as maplibregl.FilterSpecification,
-              paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, palette.outline, 0.25) },
-            }] : []),
-            ...(mapBase === "relevo" ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
-            {
-              id: "land",
-              type: "fill",
-              source: "atlas",
-              "source-layer": "countries",
-              filter: ["==", ["geometry-type"], "Polygon"] as unknown as maplibregl.FilterSpecification,
-              paint: {
-                "fill-color": palette.land,
-                "fill-outline-color": palette.outline,
-                "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number>,
-              },
-            },
-            // com a foto, as costas e fronteiras viram um traço claro e fino sobre um contorno escuro (lê no deserto e na floresta)
-            ...mapBaseBorderLayers(mapBase, withMapStyle(currentPalette(), mapStyleId)).map((line) => ({ id: line.id, type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": line.color, "line-opacity": line.opacity, "line-width": ["interpolate", ["linear"], ["zoom"], 1, line.width[0], 6, line.width[1]] as unknown as maplibregl.ExpressionSpecification } })),
-            // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
-            ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
-             ...MARKER_BAND_ZOOMS.map((band) => ({
-              id: markerLayerId(band),
-              type: "circle" as const,
-              source: "small-entities",
-              maxzoom: band,
-              filter: markerBandFilter(band, markerIds) as unknown as maplibregl.FilterSpecification,
-              paint: {
-                "circle-radius": 4,
-                "circle-color": palette.marker,
-                "circle-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
-                "circle-stroke-color": palette.markerStroke,
-                "circle-stroke-width": 1,
-                "circle-stroke-opacity": markerBandOpacity(band) as unknown as maplibregl.ExpressionSpecification,
-              },
-            })),
-            {
-               id: "small-entities-hit",
-               type: "circle",
-               source: "small-entities",
-               filter: activeFilter as unknown as maplibregl.FilterSpecification,
-                paint: {
-                  "circle-radius": MARKER_TOUCH_PX,
-                  "circle-color": palette.marker,
-                  "circle-opacity": 0.01,
-                },
-             },
-          ],
-        },
+        style: atlasStyle({ palette, borderPalette: withMapStyle(currentPalette(), mapStyleId), board, mapBase, markerIds }),
         ...(board ? { bounds: board.bounds, fitBoundsOptions: { padding: boardPadding(mapEl.current) } } : { center: camera.center, zoom: camera.zoom }),
         maxZoom: MAP_MAX_ZOOM,
         attributionControl: { compact: true },

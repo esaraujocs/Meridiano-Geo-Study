@@ -1,0 +1,69 @@
+/* Explorar (20/10/2026, mock mockups-carta-cega/hub-v39): a barra de vidro escuro em cima, o mapa da partida na tela toda, os rótulos HTML por cima
+   e a ficha do lugar tocado (à direita no desktop, folha de baixo no celular). Cores fixas de propósito: a barra e a ficha são vidro escuro em todo
+   tema (como a hotbar dos suprimentos); os rótulos seguem a terra do mapa (claro sobre terra escura, escuro sobre terra clara). */
+.ex-app{position:fixed;inset:0;display:flex;flex-direction:column;background:#0d1e26;overflow:hidden}
+.ex-bar{position:relative;z-index:5;flex:none;display:flex;align-items:center;gap:12px;height:60px;padding:0 16px;background:rgba(13,30,38,.96);border-bottom:1px solid rgba(240,207,143,.25);color:#eef3ef;font:600 13px 'Plus Jakarta Sans',sans-serif}
+.ex-bar button{font:inherit;cursor:pointer}
+.ex-bar .ex-x{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:1px solid rgba(238,243,239,.3);border-radius:999px;background:none;color:inherit}
+.ex-bar .ex-x:hover{background:rgba(238,243,239,.1)}
+.ex-bar .ex-t{display:grid;min-width:0;line-height:1.1}
+.ex-bar .ex-t small{font:500 10px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#f0cf8f}
+.ex-bar .ex-t b{overflow:hidden;font:600 19px 'Fraunces',Georgia,serif;white-space:nowrap;text-overflow:ellipsis}
+.ex-bar .ex-sp{flex:1}
+.ex-bar .ex-chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1px solid rgba(238,243,239,.3);border-radius:999px;background:none;color:#d6e0dc;font-size:12.5px}
+.ex-bar .ex-chip i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.55}
+.ex-bar .ex-chip[aria-pressed=true]{background:#eef3ef;border-color:#eef3ef;color:#0f2630}
+.ex-bar .ex-chip[aria-pressed=true] i{opacity:1}
+.ex-bar .ex-search-open{display:none;width:36px;height:36px;place-items:center;border:1px solid rgba(238,243,239,.3);border-radius:50%;background:none;color:inherit}
+.ex-search{position:relative;display:flex;align-items:center;gap:8px;width:260px;height:36px;padding:0 13px;border:1px solid rgba(238,243,239,.3);border-radius:999px;color:#b9c8c3}
+.ex-search:focus-within{border-color:#f0cf8f}
+.ex-search input{flex:1;min-width:0;height:100%;border:0;background:none;color:#eef3ef;font:500 13px 'Plus Jakarta Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none}
+.ex-search input::placeholder{color:#a9bbb6}
+.ex-search input::-webkit-search-cancel-button{display:none}
+.ex-results{position:absolute;top:42px;right:0;left:0;z-index:6;margin:0;padding:6px;list-style:none;border:1px solid rgba(240,207,143,.3);border-radius:16px;background:rgba(13,30,38,.98);box-shadow:0 18px 30px -18px #000}
+.ex-results li{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;color:#eef3ef}
+.ex-results li small{color:#f0cf8f;font:italic 500 11.5px 'Plus Jakarta Sans',sans-serif}
+.ex-results li[aria-selected=true]{background:rgba(238,243,239,.12)}
+.ex-results li.is-empty{cursor:default;color:#a9bbb6}
+.ex-wrap{position:relative;flex:1;min-height:0}
+.ex-map{position:absolute;inset:0;width:100%;height:100%}
+.ex-map:focus-visible{outline:3px solid #f0cf8f;outline-offset:-3px}
+/* os rótulos: escondidos até caberem (is-on); a posição vem por transform */
+.ex-layer{--ex-ink:#f3f1e8;--ex-halo:#071820;--ex-cap:#f0cf8f;position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.ex-layer.is-light{--ex-ink:#1d2a2e;--ex-halo:#fbf7ec;--ex-cap:#6b4206}
+.ex-l,.ex-c{position:absolute;top:0;left:0;visibility:hidden;white-space:nowrap;text-shadow:0 0 3px var(--ex-halo),0 0 3px var(--ex-halo),0 1px 2px var(--ex-halo)}
+.ex-l.is-on,.ex-c.is-on{visibility:visible}
+.ex-l{color:var(--ex-ink);font:600 12px 'Fraunces',Georgia,serif;letter-spacing:.01em}
+.ex-l.is-big{font:700 11.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.ex-l.is-mid{font-size:13px}
+.ex-l.is-small{font-size:11px;font-weight:500}
+.ex-l.is-sel{padding:1px 8px;border-radius:999px;background:#4fe0a8;color:#0c241c;text-shadow:none;font-weight:700}
+.ex-c{display:flex;align-items:center;gap:5px;color:var(--ex-cap);font:italic 500 10.5px 'Plus Jakarta Sans',sans-serif}
+.ex-c i{flex:none;width:6px;height:6px;border-radius:50%;background:var(--ex-cap);box-shadow:0 0 0 2px var(--ex-halo)}
+/* a ficha */
+.ex-card{position:absolute;z-index:4;top:16px;right:16px;width:330px;max-height:calc(100% - 32px);overflow:auto;padding:16px 18px 18px;border:1px solid rgba(240,207,143,.35);border-radius:20px;background:#0f222b;color:#eef3ef;box-shadow:0 24px 40px -24px #000;font:500 12.5px/1.45 'Plus Jakarta Sans',sans-serif}
+.ex-card .ex-top{display:flex;align-items:center;gap:12px;padding-right:30px}
+.ex-card img{width:62px;height:auto;max-height:44px;object-fit:contain;border-radius:5px;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+.ex-card h2{margin:0;font:600 25px/1.05 'Fraunces',Georgia,serif;color:#fff}
+.ex-card .ex-sub{color:#f0cf8f;font:500 10px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+.ex-card dl{display:grid;gap:5px;margin:14px 0 0}
+.ex-card dl div{display:grid;grid-template-columns:92px 1fr;gap:12px}
+.ex-card dt{padding-top:2px;color:#a9bbb6;font:500 9.5px 'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.ex-card dd{margin:0}
+.ex-card p{margin:12px 0 0;padding-top:12px;border-top:1px solid rgba(238,243,239,.14);color:#d4dfdb}
+.ex-card .ex-close{position:absolute;top:12px;right:12px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid rgba(238,243,239,.3);border-radius:50%;background:none;color:#d6e0dc;cursor:pointer}
+.ex-card .ex-close:hover{background:rgba(238,243,239,.1)}
+.ex-wrap .maplibregl-ctrl-bottom-right{z-index:3}
+@media (max-width:760px){
+  .ex-bar{gap:8px;height:56px;padding:0 10px}
+  .ex-bar .ex-x span,.ex-bar .ex-chip span{display:none}
+  .ex-bar .ex-x{width:36px;padding:0;justify-content:center}
+  .ex-bar .ex-chip{width:34px;padding:0;justify-content:center}
+  .ex-bar .ex-chip i{width:10px;height:10px}
+  .ex-bar .ex-t b{font-size:16px}
+  .ex-bar .ex-search-open{display:grid}
+  .ex-search{display:none;position:absolute;top:60px;left:10px;right:10px;width:auto;background:rgba(13,30,38,.97)}
+  .ex-search.is-open{display:flex}
+  .ex-card{top:auto;bottom:0;left:0;right:0;width:auto;max-height:55%;border-radius:22px 22px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom))}
+  .ex-card p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+}

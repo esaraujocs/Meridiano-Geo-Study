@@ -47,6 +47,9 @@ export function Recorte({
   onBuyRounds,
   presetApi,
   pillarPct = {},
+  exploring = false,
+  setExploring,
+  onExplore,
 }: {
   data: Legacy;
   family: Family;
@@ -74,6 +77,11 @@ export function Recorte({
   presetApi: PresetApi;
   /** Precisão de cada pilar (0 a 100) para mostrar nas famílias e no histórico. */
   pillarPct?: Partial<Record<"mapa" | "bandeiras" | "capitais", number | null>>;
+  /** Explorar (só nas famílias que usam o mapa): o mapa livre, com os nomes, sem tempo nem moedas. É um controle à parte, não um ritmo (decisão 3:
+   *  `Pace` está costurado na economia), mostrado como a 3ª opção do Ritmo. */
+  exploring?: boolean;
+  setExploring?: (value: boolean) => void;
+  onExplore?: () => void;
 }) {
   // Idiomas, povos e moedas: o título é o do grupo e a cor a de Idiomas; o tema escolhido (Idiomas, Gentílicos, Moedas) é a família de sempre
   const grouped = isPeoplesTopic(topFamily);
@@ -169,8 +177,10 @@ export function Recorte({
   const showFilter = family !== "historicas" && family !== "idiomas" && family !== "divisoes" && family !== "epocas";
   const pending = pendingTier ? roundUnlockFor(pendingTier) : null;
 
+  const explore = Boolean(onExplore && exploring);
   const start = async () => {
     if (busy) return;
+    if (explore) { onExplore?.(); return; }
     if (activeOwned) { onPlay(); return; }
     if (!canBuyActive) return;
     setBusy(true);
@@ -290,17 +300,18 @@ export function Recorte({
             <div className="mz-trio">
               {trio(t.config.pace, <>
                 <div className="cv-chips" role="group" aria-label={t.config.pace}>
-                  <button type="button" className="cv-chip" aria-pressed={pace === "timed"} onClick={() => setPace("timed")}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
-                  <button type="button" className="cv-chip" aria-pressed={pace === "training"} onClick={() => setPace("training")}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
+                  <button type="button" className="cv-chip" aria-pressed={!explore && pace === "timed"} onClick={() => { setExploring?.(false); setPace("timed"); }}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
+                  <button type="button" className="cv-chip" aria-pressed={!explore && pace === "training"} onClick={() => { setExploring?.(false); setPace("training"); }}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
+                  {onExplore && <button type="button" className="cv-chip" aria-pressed={explore} onClick={() => setExploring?.(true)}><span className="cv-l"><Icon type="compass" size={16} /><span>{t.explore.pace}</span></span></button>}
                 </div>
-                <p className="cv-hint">{paceHint(pace, variant, unit)}</p>
+                <p className="cv-hint">{explore ? t.explore.hint : paceHint(pace, variant, unit)}</p>
               </>)}
               {trio(t.config.rounds, <>
-                <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds}>
+                <div className="cv-chips cv-rounds" role="group" aria-label={t.config.rounds} aria-disabled={explore || undefined}>
                   {roundChips(family, selectedCount).map(({ tier, label }) => {
                     const unlock = roundUnlockFor(tier);
                     const tierOwned = isRoundTierUnlocked(tier, economy?.unlocked ?? []);
-                    return <button type="button" key={tier} className={`cv-chip${tierOwned ? "" : " is-locked"}`} aria-pressed={displayTier(roundTier, family, selectedCount) === tier && tierOwned} onClick={() => { if (tierOwned) { setPendingTier(null); setRoundTier(tier); } else setPendingTier(tier); }}>
+                    return <button type="button" key={tier} disabled={explore} className={`cv-chip${tierOwned ? "" : " is-locked"}`} aria-pressed={displayTier(roundTier, family, selectedCount) === tier && tierOwned} onClick={() => { if (tierOwned) { setPendingTier(null); setRoundTier(tier); } else setPendingTier(tier); }}>
                       <span className="cv-l"><span>{label}</span></span>
                       {!tierOwned && unlock && <b><Icon type="lock" size={12} /> {money(unlock.cost)}</b>}
                     </button>;
@@ -311,7 +322,7 @@ export function Recorte({
                     ? <>{t.config.unlockRounds(pending.label.toLowerCase(), money(pending.cost))} <button type="button" className="cv-buy" disabled={busy} onClick={() => void buyRounds()}>{t.config.unlock}</button></>
                     : <>{t.config.missingRounds(money(pending.cost - balance), pending.label.toLowerCase(), money(balance))}</>}
                 </p>}
-              </>)}
+              </>, explore ? "is-off" : "")}
               {trio(t.config.region, <>
                 <div className="cv-chips cv-region" role="group" aria-label={t.config.regionsAvailable}>
                   {regionItems.map(([key, label]) => <button type="button" key={key} className="cv-chip" aria-pressed={selectedRegions.includes(key)} disabled={!counts[key]} onClick={() => toggleRegion(key)}><span className="cv-l"><span>{label}</span><em>{counts[key] ?? 0}</em></span></button>)}
@@ -334,11 +345,15 @@ export function Recorte({
             </div>
           </section>
           <div className="cv-bar">
-            <div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
-            <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div>
-            <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
-              {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
-            </button>
+            {explore
+              ? <div className="cv-sum"><b>{t.explore.summary}</b><small>{t.explore.summarySub(regionText)}</small></div>
+              : <><div className="cv-sum"><b>{summary.title}</b><small>{summary.sub}</small></div>
+                <div className="cv-earn"><span className="cv-coin" aria-hidden="true">$</span><span><b>{summary.earn}</b><small>{summary.earnUnit}</small></span></div></>}
+            {explore
+              ? <button type="button" className="button coral cv-go" disabled={busy} onClick={() => void start()}>{t.explore.go} <Icon type="arrow" /></button>
+              : <button type="button" className="button coral cv-go" disabled={selectedCount === 0 || busy || (!activeOwned && !canBuyActive)} onClick={() => void start()}>
+                {activeOwned ? <>{t.config.start}<span className="cv-go-l">{t.config.startTail}</span></> : <>{t.config.unlockFor}<span className="cv-go-l">{t.config.unlockForTail}</span> {money(activeCost)}</>} <Icon type="arrow" />
+              </button>}
           </div>
         </div>
       </div>

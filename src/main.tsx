@@ -10,6 +10,7 @@ import "./index.css";
 import "./hub.css";
 import "./store.css";
 import "./mesa.css";
+import "./explore.css";
 import "./themes.css";
 import "./themes-league.css";
 import "./themes-dark.css";
