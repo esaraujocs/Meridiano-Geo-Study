@@ -189,6 +189,13 @@ assert.equal(shown.title, "Partida concluída");
 assert.equal(shown.eyebrow, "Silhueta · escrita · Europa");
 assert.deepEqual([shown.correct, shown.total, shown.pct], [8, 10, 80]);
 assert.equal(shown.duration, "2 min 40 s");
+// com o tempo de cada resposta, mostra o tempo respondendo (como no duelo), não o relógio da partida
+{
+  const timed = { ...session, timerSeconds: 15, rounds: [{ correct: true, responseTimeMs: 1200 }, { correct: true, responseTimeMs: 1400 }, { correct: false, timedOut: true, responseTimeMs: null }] };
+  assert.equal(view.answeringMs(timed.rounds, 15), 17600);
+  assert.equal(view.buildResultView({ session: timed, spoils: null, before: { balance: 0, xp: 0, level: 1 }, after: { balance: 0, xp: 0, level: 1 }, regionLabel: "Mundo" }).duration, "17,6 s respondendo · 5,9 s por resposta");
+  assert.equal(view.answeringMs([{ correct: true }], 15), null, "sem o tempo de alguma rodada, volta ao relógio");
+}
 assert.equal(shown.paceLabel, "Partida · 30 s por pergunta");
 assert.equal(shown.coins, result.total);
 assert.equal(shown.balanceAfter - shown.balanceBefore, shown.coins);

@@ -3,14 +3,14 @@ import type { AnyQuizVariant } from "./types";
 import type { Pace, Spoils } from "./spoils";
 import { MAP_ERROR_GOAL_KM, meanMapErrorKm } from "./map-error.js";
 import { levelForXp, xpForLevel } from "./player-level.js";
-import { t } from "./i18n/index.js";
+import { intlLocale, t } from "./i18n/index.js";
 
 export type ResultSessionLike = {
   variant: AnyQuizVariant;
   startedAt: number;
   endedAt: number | null;
   complete: boolean;
-  rounds: readonly { correct: boolean; timedOut?: boolean; distanceKm?: number | null }[];
+  rounds: readonly { correct: boolean; timedOut?: boolean; distanceKm?: number | null; responseTimeMs?: number | null }[];
   pace?: Pace;
   timerSeconds?: number | null;
 };
@@ -51,6 +51,20 @@ export function formatDuration(ms: number) {
   const seconds = total % 60;
   return seconds ? t.time.minutesSeconds(minutes, seconds) : t.time.minutes(minutes);
 }
+/** Tempo respondendo (20/10/2026, pedido do Enzo): a soma das respostas, como no duelo; o relógio da partida contava também a pausa do retorno
+ *  depois de cada acerto (~0,8 s por rodada) e "parecia que eu jogava igual batata". Tempo esgotado sem registro vale o cronômetro; faltando dado
+ *  de alguma rodada (sessões antigas), null e a tela volta ao relógio da partida. */
+export function answeringMs(rounds: ResultSessionLike["rounds"], timerSeconds: number | null | undefined) {
+  if (!rounds.length) return null;
+  let total = 0;
+  for (const round of rounds) {
+    if (typeof round.responseTimeMs === "number" && Number.isFinite(round.responseTimeMs)) total += round.responseTimeMs;
+    else if (round.timedOut && timerSeconds) total += timerSeconds * 1000;
+    else return null;
+  }
+  return total;
+}
+const decimalSeconds = (ms: number) => t.dates.decimalSeconds((ms / 1000).toLocaleString(intlLocale, { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: false }));
 const formatSeconds = (seconds: number) => (seconds >= 60 && seconds % 60 === 0 ? t.time.minutes(seconds / 60) : t.time.seconds(seconds));
 
 // Níveis: a curva vive em player-level.ts (a mesma da economia).
@@ -89,6 +103,7 @@ export function buildResultView(input: {
   const total = session.rounds.length;
   const correct = session.rounds.filter((round) => round.correct).length;
   const timeouts = session.rounds.filter((round) => round.timedOut).length;
+  const answering = answeringMs(session.rounds, session.timerSeconds);
   const unit = session.variant === "travel" ? t.time.perRoute : t.time.perQuestion;
   const paceLabel = training
     ? t.result.trainingNoTime
@@ -128,7 +143,7 @@ export function buildResultView(input: {
     correct,
     total,
     pct: total ? Math.round((correct / total) * 100) : 0,
-    duration: formatDuration((session.endedAt ?? session.startedAt) - session.startedAt),
+    duration: answering === null ? formatDuration((session.endedAt ?? session.startedAt) - session.startedAt) : t.result.answering(decimalSeconds(answering), decimalSeconds(answering / total), session.variant === "travel"),
     paceLabel,
     training,
     coins: spoils?.total ?? 0,

@@ -1946,6 +1946,7 @@ export const es: Messages = {
     adjust: "Ajustar",
     homeAria: "Volver al Hub",
     home: "Hub",
+    answering: (total: string, each: string, travel: boolean) => `${total} respondiendo · ${each} por ${travel ? "ruta" : "respuesta"}`,
     trainingNoTime: "Práctica · sin tiempo",
     timedPace: (time: string, unit: string) => `Partida · ${time} ${unit}`,
     timed: "Partida",

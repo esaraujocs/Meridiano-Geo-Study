@@ -1945,6 +1945,7 @@ export const en: Messages = {
     adjust: "Adjust",
     homeAria: "Back to the Hub",
     home: "Hub",
+    answering: (total: string, each: string, travel: boolean) => `${total} answering · ${each} per ${travel ? "route" : "answer"}`,
     trainingNoTime: "Practice · no timer",
     timedPace: (time: string, unit: string) => `Match · ${time} ${unit}`,
     timed: "Match",

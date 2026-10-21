@@ -1948,6 +1948,7 @@ export const pt = {
     adjust: "Ajustar",
     homeAria: "Voltar ao Hub",
     home: "Hub",
+    answering: (total: string, each: string, travel: boolean) => `${total} respondendo · ${each} por ${travel ? "rota" : "resposta"}`,
     trainingNoTime: "Treino · sem tempo",
     timedPace: (time: string, unit: string) => `Partida · ${time} ${unit}`,
     timed: "Partida",
