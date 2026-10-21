@@ -1048,4 +1048,14 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.equal(U.quitLeg(run, []).done.length, 1, "sem resposta no tempo, nada é gravado");
 }
 
+// digitação: menos reescrita no alto (as teclas por letra caem com o nível) e variando de resposta para resposta
+{
+  const mean = (avgMs) => { const random = B.mulberry32(7); let sum = 0; for (let k = 0; k < 4000; k += 1) sum += B.keysPerChar(avgMs, random); return sum / 4000; };
+  const top = mean(1000), master = mean(2600), bronze = mean(9000);
+  assert.ok(top < master && master < bronze, `menos teclas por letra no alto (${top.toFixed(2)} · ${master.toFixed(2)} · ${bronze.toFixed(2)})`);
+  assert.ok(top > 1.1 && top < 1.3 && bronze > 1.6 && bronze < 1.85, "de ~1,2 no topo a ~1,7 no Bronze");
+  const random = B.mulberry32(3); const keys = Array.from({ length: 500 }, () => B.keysPerChar(2600, random));
+  assert.ok(Math.max(...keys) - Math.min(...keys) > 0.5, "às vezes apaga e reescreve um pedaço");
+}
+
 console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok; ajustes da escada ok");

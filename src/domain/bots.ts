@@ -248,12 +248,21 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
 }
 
 /** Digitação do bot (19/10/2026, pedido do Enzo: "1,7 s fixo castiga a escrita: cai República Centro-Africana e eu nunca bato o tempo do bot"):
- *  cada letra da resposta conta de TYPO_MIN a TYPO_MAX teclas (os erros de digitação e as correções: 10 letras viram 13 a 15 teclas) e cada tecla
- *  leva `key` vezes o tempo-base do bot; antes vem o tempo de pensar (`think` vezes o tempo-base, com a mesma variação das outras respostas). */
-export const TYPO_MIN = 1.3;
-export const TYPO_MAX = 1.5;
+ *  cada letra da resposta conta mais de uma tecla (os erros e as correções) e cada tecla leva `key` vezes o tempo-base do bot; antes vem o tempo de
+ *  pensar (`think` vezes o tempo-base, com a mesma variação das outras respostas). As teclas a mais dependem do nível (20/10/2026, pedido do Enzo:
+ *  "10 letras viram de 10 a 15 com chances diferentes, escrever errado, apagar e reescrever, mas no high elo tende a ter menos reescrita"): a taxa
+ *  de erro (`typoRate`) vai de 12% no topo a 55% no Bronze; em cada resposta há os erros pequenos (uma letra trocada e o backspace: a taxa × 0,5 a
+ *  1,5) e, com chance de 60% da taxa, um pedaço apagado e reescrito (30% a 80% da palavra). Na média, 10 letras viram ~12,5 teclas no Grão-Mestre,
+ *  ~13 no Mestre e ~17 no Bronze (antes, 13 a 15 para todos). */
+export const typoRate = (avgMs: number) => Math.min(0.55, Math.max(0.12, 0.1 + 0.05 * (avgMs / 1000)));
+export function keysPerChar(avgMs: number, random: () => number) {
+  const rate = typoRate(avgMs);
+  const slips = rate * (0.5 + random());
+  const retype = random() < rate * 0.6 ? 0.3 + random() * 0.5 : 0;
+  return 1 + slips + retype;
+}
 export const typingMs = (avgMs: number, typing: { think: number; key: number }, chars: number, random: () => number) =>
-  Math.round(avgMs * (typing.think * (0.7 + random() * 0.6) + Math.max(1, chars) * (TYPO_MIN + random() * (TYPO_MAX - TYPO_MIN)) * typing.key));
+  Math.round(avgMs * (typing.think * (0.7 + random() * 0.6) + Math.max(1, chars) * keysPerChar(avgMs, random) * typing.key));
 
 /** O mais rápido que uma pessoa muito rápida responde (19/10/2026, pedido do Enzo: "o tempo de reação tem que ser realista, humano, senão os bots
  *  ficam imbatíveis"): ler e tocar numa alternativa 0,9 s; achar e clicar no mapa 1,3 s; digitar 0,5 s para começar e 140 ms por letra (~85

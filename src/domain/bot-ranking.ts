@@ -330,9 +330,9 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre; 7: meia especialidade nas Históricas; 8: mais bots no alto (desfeito); 9: 8 por liga de novo e vitória contra quem está abaixo rendendo pouco); subir este número recalibra os estados
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre; 7: meia especialidade nas Históricas; 8: mais bots no alto (desfeito); 9: 8 por liga de novo e vitória contra quem está abaixo rendendo pouco; 10: digitação pelo nível); subir este número recalibra os estados
  *  salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 9;
+export const BOT_RANKING_CALIBRATION = 10;
 /** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;
