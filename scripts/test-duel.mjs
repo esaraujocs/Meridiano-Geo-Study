@@ -103,7 +103,7 @@ assert.equal(B.humanFloorMs(undefined), 0, "sem o tipo do modo (chamada antiga),
   assert.equal(same, flat, "fator 1 é o tempo de sempre");
   assert.ok(small > 1.9 * flat && big < 0.65 * flat && big >= 80 * B.humanFloorMs("clique"), "ilhota demora o dobro; país grande é rápido, mas nunca abaixo do piso humano");
 }
-assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFloorMs("escrita", 25)], [900, 1300, 500 + 25 * 140]);
+assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFloorMs("escrita", 25)], [900, 1300, 700 + 25 * 170]);
 {
   const fastest = B.botsOfLeague("grao-mestre")[2]; // o rápido do Grão-Mestre
   for (const [group, kind] of [["atuais", "opcoes"], ["mapa", "clique"]]) {

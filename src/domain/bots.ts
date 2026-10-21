@@ -265,9 +265,10 @@ export const typingMs = (avgMs: number, typing: { think: number; key: number }, 
   Math.round(avgMs * (typing.think * (0.7 + random() * 0.6) + Math.max(1, chars) * keysPerChar(avgMs, random) * typing.key));
 
 /** O mais rápido que uma pessoa muito rápida responde (19/10/2026, pedido do Enzo: "o tempo de reação tem que ser realista, humano, senão os bots
- *  ficam imbatíveis"): ler e tocar numa alternativa 0,9 s; achar e clicar no mapa 1,3 s; digitar 0,5 s para começar e 140 ms por letra (~85
- *  palavras por minuto, já com algum erro). Nenhuma resposta do bot sai mais rápida; só pesa nos mais rápidos (o "rápido" do Grão-Mestre). */
-export const HUMAN_FLOOR = { opcoes: 900, clique: 1300, escritaStart: 500, escritaPerChar: 140 };
+ *  ficam imbatíveis"): ler e tocar numa alternativa 0,9 s; achar e clicar no mapa 1,3 s; digitar 0,7 s para começar e 170 ms por letra (~70 palavras por minuto, já com algum erro; até 20/10/2026 eram 0,5 s e 140 ms, e o Enzo achou
+ *  "1,8 s por país escrito bem agressivo": um nome de 10 letras sai em no mínimo 2,4 s). Nenhuma resposta do bot sai mais rápida; só pesa nos mais
+ *  rápidos (o "rápido" do Grão-Mestre). */
+export const HUMAN_FLOOR = { opcoes: 900, clique: 1300, escritaStart: 700, escritaPerChar: 170 };
 /** Letras de uma resposta digitada quando o baralho não é conhecido (o nome médio de país). */
 const MEAN_CHARS = 10;
 export function humanFloorMs(kind: BotContext["kind"], chars?: number) {
