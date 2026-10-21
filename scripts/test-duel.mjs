@@ -1029,4 +1029,23 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.equal(at(400, "win"), at(700, "win"), "satura em 400");
 }
 
+// sair no meio: o tempo interrompido fica com o que foi respondido, e o duelo é derrota mesmo com o placar à frente
+{
+  const bot = B.botById("bot-ouro-0");
+  const legs = M.drawLegs("bandeiras", "quit-1");
+  let run = U.newDuelRun({ id: "quit-1", ladder: "bandeiras", bot, trophiesBefore: 1200, division: 1, legs });
+  const answered = [{ correct: true }, { correct: true }, { correct: false }, { correct: true }];
+  const quit = U.quitLeg(run, answered);
+  assert.equal(quit.done.length, 1); assert.equal(quit.done[0].playerCorrect, 3); assert.equal(quit.done[0].playerMs, null);
+  assert.ok(U.isAbandoned(quit));
+  assert.equal(U.resolveRun(quit).legs[0].playerCorrect, 3, "conta as 3 certas que respondeu");
+  // no 2º tempo, mesmo somando mais que o bot, é derrota
+  run = U.recordLeg(run, { group: legs[0].group, rounds: 10, playerCorrect: 10, playerMs: 9000 });
+  const late = U.quitLeg(run, Array.from({ length: 9 }, () => ({ correct: true })));
+  assert.equal(late.done.length, 2); assert.ok(U.isAbandoned(late));
+  const result = U.resolveRun(late);
+  assert.equal(result.playerCorrect, 19); assert.equal(result.outcome, "loss", "sair é derrota");
+  assert.equal(U.quitLeg(run, []).done.length, 1, "sem resposta no tempo, nada é gravado");
+}
+
 console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok; ajustes da escada ok");

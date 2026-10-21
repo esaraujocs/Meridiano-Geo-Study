@@ -22,6 +22,8 @@ export type DuelRun = {
   own?: boolean;
   /** Os troféus do bot no ranking na hora do duelo: a liga dele que aparece na tela (a mesma do ranking), não a de nascimento. */
   botTrophies?: number;
+  /** A pessoa saiu no meio: o duelo é derrota, mesmo que o tempo interrompido (gravado com o que ela respondeu, `quitLeg`) somasse mais. */
+  abandoned?: boolean;
   /** Vitórias seguidas na escada antes deste duelo (bônus de sequência). */
   streak: number;
   /** MMR escondido na escada antes deste duelo (muda o ganho e a perda de troféus). */
@@ -63,8 +65,20 @@ export const previewLegs = (run: DuelRun, unlocked: readonly string[]) =>
 export const recordLeg = (run: DuelRun, done: LegDone): DuelRun => ({ ...run, done: [...run.done, done], index: Math.min(LEGS - 1, run.index + 1) });
 export const isRunComplete = (run: DuelRun) => run.done.length >= LEGS;
 
-/** Fecha o duelo. Tempo que ficou por jogar (a pessoa saiu no meio) conta como zero acerto: desistir no 2º tempo é derrota, não escapatória. */
+/** A pessoa saiu no meio de um tempo (20/10/2026, pedido do Enzo: "quitar no meio podia marcar as que eu joguei"): o tempo fica com os acertos
+ *  das rodadas que ela respondeu (as que faltaram valem zero, sem tempo) e o duelo fica marcado como abandonado. */
+export function quitLeg(run: DuelRun, answered: readonly { correct: boolean }[]): DuelRun {
+  const leg = run.legs[run.index];
+  const partial = run.done.length <= run.index && answered.length > 0
+    ? recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: answered.filter((round) => round.correct).length, playerMs: null })
+    : run;
+  return { ...partial, abandoned: true };
+}
+
+/** Fecha o duelo. Tempo que ficou por jogar (a pessoa saiu no meio) conta como zero acerto, e sair é sempre derrota (`forfeit`): desistir no 2º
+ *  tempo não é escapatória. */
 export function resolveRun(run: DuelRun): DuelLegsResult {
   const legs: LegInput[] = run.legs.map((leg, index) => run.done[index] ?? { group: leg.group, rounds: leg.rounds, playerCorrect: 0, playerMs: null });
-  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division, rating: run.rating, own: run.own, streak: run.streak, mmr: run.mmr, sigma: run.sigma, recent: run.samples });
+  return resolveDuelLegs({ trophies: run.trophiesBefore, bot: run.bot, legs, seed: run.id, division: run.division, rating: run.rating, own: run.own, streak: run.streak, mmr: run.mmr, sigma: run.sigma, recent: run.samples, forfeit: isAbandoned(run) });
 }
+export const isAbandoned = (run: DuelRun) => Boolean(run.abandoned) || run.done.length < LEGS;

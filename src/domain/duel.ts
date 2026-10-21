@@ -59,10 +59,10 @@ export type DuelResult = {
 };
 
 /** Vencedor e troféus a partir dos números finais (a mesma conta para 1 tempo ou 2). */
-function settle(input: { trophies: number; mmr?: number; sigma?: number; recent?: readonly SurpriseSample[]; rating?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number }) {
+function settle(input: { trophies: number; mmr?: number; sigma?: number; recent?: readonly SurpriseSample[]; rating?: number; division?: 1 | 2 | 3 | null; bot: Bot; playerCorrect: number; botCorrect: number; playerMs: number | null; botMs: number; streak?: number; forfeit?: boolean }) {
   const { trophies, bot, playerCorrect, botCorrect, playerMs, botMs } = input;
   const mmr = input.mmr ?? trophies;
-  let outcome: DuelOutcome = playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
+  let outcome: DuelOutcome = input.forfeit ? "loss" : playerCorrect > botCorrect ? "win" : playerCorrect < botCorrect ? "loss" : "draw";
   let tiebreak = false;
   if (outcome === "draw" && playerMs !== null && playerMs !== botMs) {
     outcome = playerMs < botMs ? "win" : "loss";
@@ -103,6 +103,8 @@ export type DuelLegsInput = {
   rating?: number;
   /** O bot é um do ranking e joga com a própria força (a base da liga e a divisão dele), não com a do rating (`rankedOpponent`). */
   own?: boolean;
+  /** A pessoa saiu no meio: derrota, qualquer que seja o placar. */
+  forfeit?: boolean;
   /** Vitórias seguidas que a pessoa já tinha nesta escada (bônus de sequência). */
   streak?: number;
   /** MMR escondido da pessoa nesta escada (sem ele, vale os próprios troféus). */
@@ -114,7 +116,7 @@ export type DuelLegsInput = {
 export type DuelLegsResult = DuelResult & { legs: LegResult[]; playerCorrect: number; total: number };
 
 /** Cada tempo tem o próprio sorteio do bot, ajustado à dificuldade do modo; o placar soma os tempos. */
-export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, own, streak, mmr, sigma, recent }: DuelLegsInput): DuelLegsResult {
+export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, own, forfeit, streak, mmr, sigma, recent }: DuelLegsInput): DuelLegsResult {
   const results: LegResult[] = legs.map((leg, index) => {
     const def = groupDef(leg.group);
     const typing = def.typing && leg.chars?.length ? { think: def.typing.think, key: def.typing.key, chars: leg.chars } : undefined;
@@ -126,7 +128,7 @@ export function resolveDuelLegs({ trophies, bot, legs, seed, division, rating, o
   const botCorrect = results.reduce((sum, leg) => sum + leg.botCorrect, 0);
   const botMs = results.reduce((sum, leg) => sum + leg.botMs, 0);
   const playerMs = legs.every((leg) => leg.playerMs !== null) ? legs.reduce((sum, leg) => sum + (leg.playerMs as number), 0) : null;
-  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, sigma, recent, rating, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak }) };
+  return { botId: bot.id, botCorrect, botMs, legs: results, playerCorrect, total: results.reduce((sum, leg) => sum + leg.rounds, 0), ...settle({ trophies, mmr, sigma, recent, rating, division, bot, playerCorrect, botCorrect, playerMs, botMs, streak, forfeit }) };
 }
 
 // ---- Registro dos duelos (um por duelo, guardado na loja `preferences`) ----

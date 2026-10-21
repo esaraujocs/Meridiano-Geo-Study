@@ -64,7 +64,7 @@ import { pvpLadderEntries, settlePvpTrophies, type LadderEntry } from "./domain/
 import { pickBot } from "./domain/bots";
 import { LADDERS, LEG_ROUNDS, LEGS, drawLegs, groupDef, isVariantOwned, legOfGroup, ownedGroups, typedChars, type Ladder, type ModeGroup } from "./domain/duel-modes";
 import { mapSpot } from "./domain/map-spots";
-import { legOptions, newDuelRun, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
+import { isAbandoned, legOptions, newDuelRun, quitLeg, recordLeg, resolveRun, type DuelRun } from "./domain/duel-run";
 import { emptySpoils, mergeSpoils } from "./domain/spoils";
 import { ladderCards, nextMilestones, winStreak } from "./domain/duel-view";
 import { DUEL_PREVIEW_NAMES, duelPreview } from "./domain/duel-preview";
@@ -165,6 +165,8 @@ export function App() {
   const finalizingDuelIds = useRef(new Set<string>());
   const setDuelRun = (run: DuelRun | null) => { duelRunRef.current = run; setDuelRunState(run); };
   const legResults = useRef<(SessionResult | null)[]>([null, null]);
+  /** As respostas do tempo em andamento do duelo: se a pessoa sair no meio, o tempo fica com o que ela respondeu (`quitLeg`). */
+  const liveLegRounds = useRef<{ correct: boolean }[]>([]);
   const lastBotRef = useRef<Record<Ladder, string | null>>({ mapas: null, bandeiras: null });
   const [duelBusy, setDuelBusy] = useState(false);
   const [leagueLadder, setLeagueLadder] = useState<Ladder | undefined>(undefined);
@@ -749,7 +751,7 @@ export function App() {
 
   // Duelo: cada tempo é uma sessão de 10 rodadas com tempo, baralho da semente do duelo e, em modo de prévia, moedas do modo base.
   const sessionOptions = useMemo(() => duelRun && screen === "game"
-    ? legOptions(duelRun, economy.unlocked)
+    ? { ...legOptions(duelRun, economy.unlocked), onRound: (round: { correct: boolean }) => { liveLegRounds.current.push({ correct: round.correct }); } }
     : pvpRun && screen === "game"
     ? pvpLegOptions(pvpRun, pvpRun.index, economy.unlocked, reportPvpRound)
     : trainOnce ? { pace: "training" as Pace, roundLimit: 10 }
@@ -825,6 +827,7 @@ export function App() {
     const ranked = botRanking ? rankedOpponent(botRanking, ladder, match.rating, id, lastBotRef.current[ladder]) : null;
     setLastDuel(null);
     legResults.current = [null, null];
+    liveLegRounds.current = [];
     setDuelRun(newDuelRun({
       id, ladder, bot: ranked?.bot ?? pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, legs, streak, mmr: state.mmr, sigma: state.sigma, samples: state.samples,
       ...(ranked ? { division: ranked.division, rating: ranked.rating, own: true, botTrophies: botRanking?.bots[ladder][ranked.bot.id]?.trophies } : { division: match.division, rating: match.rating }),
@@ -872,7 +875,7 @@ export function App() {
       family: run.legs[0].family, variant: run.legs[0].variant, playerCorrect: outcome.playerCorrect, total: outcome.total, botCorrect: outcome.botCorrect,
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL, mmrSigma: outcome.mmrSigma, mmrExp: outcome.mmrExp,
       legs: outcome.legs.map((leg, index) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds, playerMs: run.done[index]?.playerMs ?? null, botMs: leg.botMs })),
-      abandoned: run.done.length < LEGS,
+      abandoned: isAbandoned(run),
       ...(run.botTrophies !== undefined ? { botTrophies: run.botTrophies } : {}),
     };
     try {
@@ -915,7 +918,7 @@ export function App() {
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, playerCorrect: outcome.playerCorrect, botCorrect: outcome.botCorrect, total: outcome.total,
       delta: outcome.delta, trophiesBefore: run.trophiesBefore, trophiesAfter: outcome.trophiesAfter, milestones, ladder: run.ladder, legs: record.legs,
       ...(themesGranted.length ? { themeUnlocked: themesGranted[themesGranted.length - 1] } : {}),
-      streakBefore: run.streak, streakAfter: winStreak(nextEntries.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: run.done.length < LEGS,
+      streakBefore: run.streak, streakAfter: winStreak(nextEntries.filter((duel) => duel.ladder === run.ladder)), streakBonus: outcome.streakBonus, perfBonus: outcome.perfBonus, abandoned: isAbandoned(run),
       // moedas de cada tempo sem o bônus de partida completa (ele aparece à parte) e se o modo foi de prévia
       legCoins: run.legs.map((_, index) => { const spoils = legResults.current[index]?.spoils; return spoils ? spoils.total - spoils.completion.coins : 0; }),
       legPreview: run.legs.map((leg) => !isVariantOwned(leg, economy.unlocked)),
@@ -931,9 +934,11 @@ export function App() {
   const finishLeg = async (result: SessionResult | null) => {
     const run = duelRunRef.current;
     if (!run) return;
+    const answered = liveLegRounds.current;
+    liveLegRounds.current = [];
     if (!result?.spoils) {
       void refreshEconomy();
-      await concludeDuel(run);
+      await concludeDuel(quitLeg(run, answered));
       return;
     }
     const rounds = result.session.rounds;
