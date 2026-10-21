@@ -29,6 +29,7 @@ export const es: Messages = {
     keyContinue: "continúa",
     keyExit: "salir",
     keyAnswerContinue: "responde y continúa",
+    keyGiveUp: "vacío: no sé",
     keyAnswer: "responde",
     flagStimulus: "Bandera mostrada como pregunta",
     flagOption: "Opción de bandera",

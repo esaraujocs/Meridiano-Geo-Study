@@ -174,11 +174,11 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
   // Texto da resposta certa: a capital na escrita de capitais, senão o nome (ou os países do idioma).
   const expectedLabel = (item: HistoricalEntity | LanguageEntry | WritingTarget) =>
     rule === "escrita-capital" ? ("cap" in item ? item.cap : "") : "pt" in item ? item.pt : "idioma" in item && languageName ? item.idioma : "paises" in item ? item.paises : item.id;
-  const answer = (id: string, value: string, forcedCorrect?: boolean, timedOut = false) => {
+  const answer = (id: string, value: string, forcedCorrect?: boolean, timedOut = false, gaveUp = false) => {
     if (!target || locked || committedTarget.current === target.id) return;
     const correct = forcedCorrect ?? id === target.id;
     // Segunda chance: errou respondendo (o tempo acabar não vale): a rodada segue aberta. Nas alternativas a errada fica marcada; na escrita o campo limpa.
-    if (!correct && !timedOut && supply.consumeArmed("retorno")) {
+    if (!correct && !timedOut && !gaveUp && supply.consumeArmed("retorno")) {
       if (writing) { setTyped(""); requestAnimationFrame(() => inputRef.current?.focus()); } else setTriedWrong((current) => new Set(current).add(id));
       setRetryNotice(true);
       return;
@@ -345,14 +345,14 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
         <section className="gs-tray" aria-label={t.common.answersRegion}>
           {writing ? <>
             <form className="gs-field" onSubmit={(e) => { e.preventDefault(); submitWriting(); }}>
-              <TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} answers={writingAnswers} />
+              <TypedAnswerInput key={target.id} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submitWriting} onGiveUp={() => target && answer("", "", false, false, true)} answers={writingAnswers} />
               <button className="go" disabled={locked || !typed.trim()}>{t.common.answer}</button>
             </form>
             {answerResult
               ? <AnswerReveal verdict={answerResult} expected={String(expectedLabel(target))} typed={typed} timedOut={timedOutRound} />
               : <div className="gs-hintline">{t.common.typingHint}</div>}
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={advance.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span>{t.common.keyGiveUp}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
             <div className={`quiz-options gs-opts${flagOptions ? " flags" : ""}`}>{visibleChoices.map((choice, index) => {
               const historicalFlag = choice.flag ? historicalFlags[choice.flag.toLowerCase()] : undefined;

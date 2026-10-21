@@ -28,6 +28,7 @@ export const en: Messages = {
     keyContinue: "continue",
     keyExit: "leave",
     keyAnswerContinue: "answer and continue",
+    keyGiveUp: "empty: don't know",
     keyAnswer: "answer",
     flagStimulus: "Flag shown as the question",
     flagOption: "Flag answer option",

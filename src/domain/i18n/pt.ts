@@ -28,6 +28,7 @@ export const pt = {
     keyContinue: "continua",
     keyExit: "sair",
     keyAnswerContinue: "responde e continua",
+    keyGiveUp: "vazio: não sei",
     keyAnswer: "responde",
     flagStimulus: "Bandeira apresentada como estímulo visual",
     flagOption: "Alternativa visual de bandeira",

@@ -179,10 +179,10 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
     }, delay, skipAfter);
   };
   // Uma resposta (digitada ou escolhida) ou o fim do tempo (timedOut) fecha a rodada.
-  const resolve = (value: string, correct: boolean, timedOut = false) => {
+  const resolve = (value: string, correct: boolean, timedOut = false, gaveUp = false) => {
     if (!target || locked || settled.current) return;
-    // Segunda chance: errou respondendo (o tempo acabar não vale): a rodada segue aberta. Nas alternativas a errada fica marcada; na digitação o campo limpa.
-    if (!correct && !timedOut && supply.consumeArmed("retorno")) {
+    // Segunda chance: errou respondendo (o tempo acabar e o "não sei" não valem): a rodada segue aberta. Nas alternativas a errada fica marcada; na digitação o campo limpa.
+    if (!correct && !timedOut && !gaveUp && supply.consumeArmed("retorno")) {
       if (engineVariant === "silhueta-opcoes") { setTriedWrong((current) => new Set(current).add(value)); setSelectedSilhouette(""); }
       else { setTyped(""); requestAnimationFrame(() => inputRef.current?.focus()); }
       setRetryNotice(true);
@@ -272,14 +272,14 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
         <section className="gs-tray" aria-label={t.common.answersRegion}>
           {typedMode ? <>
             <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-              <TypedAnswerInput key={target} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} answers={aliases(data.meta[target])} />
+              <TypedAnswerInput key={target} className={answerResult === "correct" ? "answer-success" : answerResult === "wrong" ? "answer-error" : ""} inputRef={inputRef} aria-label={t.common.answerField} autoFocus value={typed} disabled={locked} onChange={setTyped} onCommit={submit} onGiveUp={() => resolve("", false, false, true)} answers={aliases(data.meta[target])} />
               <button className="go" disabled={locked || !typed.trim()}>Responder</button>
             </form>
             {answerResult
               ? <AnswerReveal verdict={answerResult} expected={targetName} typed={typed} timedOut={timedOutRound} />
               : <div className="gs-hintline">{t.common.typingHint}</div>}
             {answerResult === "wrong" && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
-            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
+            <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswerContinue}</span><span>{t.common.keyGiveUp}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
           </> : <>
             <div className="quiz-options gs-opts">{visibleChoices.map((id, index) => <button className={`${triedWrong.has(id) && !answerResult ? "quiz-option wrong is-tried" : optionClass(id === target, id === selectedSilhouette, answerResult)} gs-opt`} disabled={locked || triedWrong.has(id)} key={id} data-option-id={id} onClick={() => {
               if (locked) return;

@@ -173,6 +173,8 @@ No Hub, o seletor **Solo | Duelo** (ao lado de "Modos") liga o Duelo. Em Duelo o
 
 **Teclado nas alternativas** (`useGameKeys` em `game-shell.tsx`): 1–4 e, desde 20/10/2026 (pedido do Enzo), as setas ← 1, ↑ 2, ↓ 3, → 4, nos modos de 4 alternativas (quiz, especiais e silhueta), fora de campo de texto; a dica embaixo mostra os dois.
 
+**"Não sei" na escrita** (20/10/2026, pedido do Enzo: ele digitava uma letra e dava Enter para pular, "sem poluir a interface"): Enter com o campo vazio desiste da pergunta (`onGiveUp` do `TypedAnswerInput`, nas escritas do `special-quiz.tsx` e na Silhueta · escrita): conta como erro, mostra a resposta e não gasta a Segunda chance; ignorado nos primeiros 0,7 s da pergunta (`GIVE_UP_GRACE_MS`), para o Enter que confirmou a anterior não pular a nova. A dica embaixo diz "vazio: não sei".
+
 **Idiomas não avança sozinho:** depois de responder, o cartão do idioma fica na tela até a pessoa confirmar (botão Continuar ou Enter/Espaço; toque solto não pula) — `useAdvance.schedule(..., manual = true)` em `use-advance.ts`. Os outros modos seguem com o retorno temporizado (`feedback-timing.ts`).
 
 Todos usam **baralho finito sem repetição** (`finite-deck.ts`, `roundLimit` do corte; `null` = "Todas"), gravam a sessão por `startLearningSession` (`learning-store.ts`) e calculam moedas em `spoils.ts`. `game-shell.tsx` tem a barra do topo, o log de rodadas e as teclas.
