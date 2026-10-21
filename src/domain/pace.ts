@@ -96,7 +96,8 @@ export function timerSecondsFor(variant: AnyQuizVariant): number {
     default: return 15;
   }
 }
-export const paceSecondsFor = (pace: Pace, variant: AnyQuizVariant) => (pace === "timed" ? timerSecondsFor(variant) : null);
+// O Travel não tem cronômetro desde 21/10/2026 (no estilo do Travle, o que conta são os chutes): os 120 s ficam só como teto do bot.
+export const paceSecondsFor = (pace: Pace, variant: AnyQuizVariant) => (pace === "timed" && variant !== "travel" ? timerSecondsFor(variant) : null);
 
 export const DEFAULT_PACE: Pace = "timed";
 export const isPace = (value: unknown): value is Pace => value === "training" || value === "timed";

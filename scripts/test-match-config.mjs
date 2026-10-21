@@ -47,7 +47,7 @@ assert.equal(config.paceHint("training", "capital-pais"), "Sem cronômetro. Rend
 assert.equal(config.paceHint("training", "nome-bandeira"), "Sem cronômetro. Rende só 50% das moedas.", "só marca no mapa nos modos que clicam nele");
 assert.equal(config.paceHint("timed", "mapa"), "20 s por pergunta. Acabou o tempo, conta como erro.");
 assert.equal(config.paceHint("timed", "nome-bandeira"), "15 s por pergunta. Acabou o tempo, conta como erro.");
-assert.equal(config.paceHint("timed", "travel"), "2 min por rota. Acabou o tempo, a rota conta como erro.");
+assert.equal(config.paceHint("timed", "travel"), "Sem cronômetro: vale fechar a rota com poucos chutes.");
 assert.equal(config.formatSeconds(30, "silhueta"), "30 s");
 assert.equal(config.formatSeconds(120, "travel"), "2 min por rota");
 
@@ -68,7 +68,7 @@ assert.equal(silhouette.title, "Silhueta · alternativas", "modo sem sentido nã
 assert.equal(silhouette.earn, "56 a 70");
 assert.equal(silhouette.sub, "Partida 20 s · 20 rodadas · 2 recortes (82)");
 const travel = config.configSummary({ mode: config.modesFor("mapa")[3], variant: "travel", pace: "timed", rounds: 5, regionText: "Mundo", count: 150 });
-assert.equal(travel.sub, "Partida 2 min · 5 rodadas · Mundo (150)");
+assert.equal(travel.sub, "Partida · 5 rodadas · Mundo (150)");
 assert.equal(travel.earnUnit, "moedas por país da rota");
 
 // Idiomas, povos e moedas: um cartão só para os três temas; abre no último jogado, senão no primeiro com modo liberado, senão em Idiomas

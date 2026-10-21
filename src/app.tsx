@@ -47,7 +47,7 @@ import { DEFAULT_PACE, isPace, isRoundTier, isRoundTierUnlocked, roundLimitFor, 
 import type { Pace } from "./domain/spoils";
 import type { SessionResult } from "./domain/learning-store";
 import { Surface } from "./components/surfaces";
-import { geometryIndex, travelDestinationIds } from "./domain/legacy-geometry";
+import { travelDestinations, travelGraph, travelPool } from "./domain/travel";
 import { registerAchievementLifecycleListener } from "./domain/achievements";
 import { freshUnlocks, nearAchievements } from "./domain/achievement-summary";
 import { EMPTY_ACHIEVEMENT_SUMMARY, TITLE_IDS, type AchievementSummary } from "./domain/hub-profile";
@@ -1062,14 +1062,10 @@ export function App() {
   }, [topFamily]);
   useEffect(() => {
     if (!data) return;
-    setTravelCounts(null);
-    void geometryIndex().then(({ features: geometryFeatures }) => {
-      const ids = [...geometryFeatures.keys()].filter((id) =>
-        data.meta[id] && (!onlyUn || isUnPresetEntity(id, data.meta[id])),
-      );
-      setTravelIds(ids);
-      setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinationIds(data.meta, ids.filter((id) => inRegion(id, key, data))).length])) as RegionCounts);
-    }).catch(() => setTravelCounts(null));
+    // o Travel (21/10/2026): os países do filtro, ligados por terra; conta os destinos com rota em cada recorte
+    const ids = travelPool(data.meta, onlyUn);
+    setTravelIds(ids);
+    setTravelCounts(Object.fromEntries(REGION_ITEMS.map(([key]) => [key, travelDestinations(travelGraph(data.meta, ids.filter((id) => inRegion(id, key, data)))).length])) as RegionCounts);
   }, [data, onlyUn]);
   useEffect(() => {
     if (!data) return;
@@ -1221,7 +1217,7 @@ export function App() {
       const source = family === "historicas" ? specialEntries.historicas : specialEntries.idiomas;
       return source.filter((item) => specialInRegion(item, region)).length;
     }
-    if (family === "travel") return travelDestinationIds(data.meta, travelIds.filter((id) => inRegion(id, region, data))).length;
+    if (family === "travel") return travelDestinations(travelGraph(data.meta, travelIds.filter((id) => inRegion(id, region, data)))).length;
     if (isPeoplesFamily(family)) {
       if (!peoples) return 0;
       const pool = peoplesPool(ids.filter(([, meta]) => !meta.soBandeira).map(([id]) => id), peoples, family);

@@ -8,15 +8,15 @@ import { join } from "node:path";
 const out = join(tmpdir(), "carta-cega-regions-test");
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
-execFileSync("node_modules/.bin/tsc", ["src/domain/regions.ts", "src/domain/quiz.ts", "src/domain/special-data.ts", "src/domain/legacy-geometry.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022", "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig"], { stdio: "ignore" });
-for (const module of ["regions", "special-data", "legacy-geometry"]) {
+execFileSync("node_modules/.bin/tsc", ["src/domain/regions.ts", "src/domain/quiz.ts", "src/domain/special-data.ts", "src/domain/travel.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022", "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig"], { stdio: "ignore" });
+for (const module of ["regions", "special-data", "travel"]) {
   await symlink(`${module}.js`, join(out, module));
 }
 await symlink(join(process.cwd(), "node_modules"), join(out, "node_modules"), "junction");
 const { inRegion, normalizeRegionSelection } = await import(`file://${out}/regions.js`);
 const { quizPool } = await import(`file://${out}/quiz.js`);
 const { historicalPool, languagePool } = await import(`file://${out}/special-data.js`);
-const { travelDestinationIds } = await import(`file://${out}/legacy-geometry.js`);
+const { travelDestinations, travelGraph } = await import(`file://${out}/travel.js`);
 const meta = {
   caribe: { reg: "Caribbean", fl: "flag-caribe", cap: "Capital Caribe" },
   europe: { reg: "Europe", fl: "flag-europe", cap: "Capital Europe" },
@@ -39,12 +39,12 @@ for (const mode of ["mapa", "bandeiras", "capitais", "escrita"]) {
 assert.deepEqual(historicalPool(ids.map((id) => ({ id, pt: id, reg: meta[id].reg, sub: meta[id].sub })), ["caribe", "europa"]).map((item) => item.id).sort(), ["caribe", "europe", "overlap"].sort());
 assert.deepEqual(languagePool(ids.map((id) => ({ id, idioma: id, script: id, paises: id, reg: meta[id].reg })), ["caribe", "europa"]).map((item) => item.id).sort(), ["caribe", "europe", "overlap"].sort());
 const travelMeta = {
-  a: { reg: "Europe", borders: ["b"] },
-  b: { reg: "Europe", borders: ["a", "c"] },
-  c: { reg: "Europe", borders: ["b"] },
-  island: { reg: "Europe" },
+  a: { reg: "Europe", cca3: "a", borders: ["b"] },
+  b: { reg: "Europe", cca3: "b", borders: ["a", "c"] },
+  c: { reg: "Europe", cca3: "c", borders: ["b"] },
+  island: { reg: "Europe", cca3: "island" },
 };
 const travelUnion = ["a", "b", "c", "island"];
-assert.deepEqual(travelDestinationIds(travelMeta, travelUnion).sort(), ["a", "c"].sort(), "Travel must prune over union once, not sum regional counts");
+assert.deepEqual(travelDestinations(travelGraph(travelMeta, travelUnion)).sort(), ["a", "c"].sort(), "Travel must prune over union once, not sum regional counts");
 assert.deepEqual(ids.filter((id) => inRegion(id, ["mundo"], data)).sort(), ids.sort());
 console.log("regions: unions, canonicalization and deduplication pass");

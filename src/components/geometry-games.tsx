@@ -7,17 +7,9 @@ import { variantLabel } from "../domain/result-view";
 import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
-import {
-  aliases,
-  evaluateTravelGuess,
-  featurePath,
-  geometryIndex,
-  normalizeName,
-  pathForFeatures,
-  solveTravelRoute,
-  solveTravelRouteToDestination,
-  travelDestinationIds,
-} from "../domain/legacy-geometry";
+import { aliases, featurePath, geometryIndex, normalizeName } from "../domain/legacy-geometry";
+import { bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { TravelMap, type TravelBox, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
@@ -300,13 +292,30 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   </div>;
 }
 
+// Travel no estilo do Travle (21/10/2026; regras em domain/travel.ts): a origem e o destino no mapa, chutes em qualquer ordem, cada um pintado
+// com o contorno de verdade e a cor de quanto ajudou; vence quem liga os dois por terra antes de acabarem os chutes. Sem cronômetro.
+type TravelHint = "next" | "borders" | "initials";
+const TRAVEL_POINT_KM2 = 3000;
+type TravelGuess = { id: string; grade: TravelGrade };
+type TravelNotice = { kind: "" | "ok" | "no" | "info"; text: string };
+
+/** A caixa de um país para a câmera, pelo centro e pela área do catálogo (os contornos antigos traziam os territórios de ultramar junto). */
+function travelBox(meta: Legacy["meta"], id: string): TravelBox | null {
+  const item = meta[id];
+  if (!item?.ll) return null;
+  const [lat, lon] = item.ll;
+  const r = Math.min(22, Math.max(0.8, (Math.sqrt(Math.max(1, item.area ?? 1)) / 111) * 0.6));
+  const rLon = Math.min(60, r / Math.max(0.25, Math.cos((lat * Math.PI) / 180)));
+  return [lon - rLon, lat - r, lon + rLon, lat + r];
+}
+
 function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts() }: Omit<Props, "family"> & { onRestart: () => void }) {
   const settings = sessionSettings(options, "travel");
   const session = useSession("travel", "travel", region, settings);
   const leaveGuard = useLeaveGuard(settings.pvp ? "pvp" : Boolean(settings.duel));
   const log = useRoundLog("travel", settings.pace);
   const flow = useAdvance();
-  // Suprimentos de expedição só em Partida solo (nunca Treino/duelo/PvP); no Travel só a Ampulheta faz sentido.
+  // Suprimentos só fora do duelo; sem cronômetro, sobram Pular, Escudo e o Tônico.
   const suppliesEnabled = !settings.duel && !settings.pvp;
   const supply = useSupplies(supplies, suppliesEnabled);
   const leave = async (destination: Destination = "recorte") => {
@@ -315,178 +324,195 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     else if (destination === "result" && result?.spoils && onEnd) onEnd(result);
     else onBack();
   };
-  const [features, setFeatures] = useState<Map<string, Feature<Geometry>> | null>(null);
-  const [route, setRoute] = useState<string[] | null>(null);
+  const meta = data.meta;
+  const ids = useMemo(() => travelPool(meta).filter((id) => inRegion(id, region, data)), [data, meta, region]);
+  const graph = useMemo(() => travelGraph(meta, ids), [meta, ids]);
+  const destinations = useMemo(() => travelDestinations(graph), [graph]);
+  // o nome digitado → o país do jogo (as nações do Reino Unido valem pelo Reino Unido)
+  const nameIndex = useMemo(() => {
+    const index = new Map<string, string>();
+    const byCca3 = new Map(Object.entries(meta).filter(([, item]) => item.cca3).map(([id, item]) => [item.cca3!.toUpperCase(), id]));
+    for (const id of Object.keys(meta)) {
+      const parent = (meta[id] as { substitui?: string }).substitui;
+      const target = parent ? byCca3.get(parent.toUpperCase()) ?? id : id;
+      for (const alias of aliases(meta[id])) if (!index.has(alias) || target === id) index.set(alias, target);
+    }
+    return index;
+  }, [meta]);
+  const answers = useMemo(() => [...nameIndex.keys()], [nameIndex]);
+  const runSeed = useRef(settings.deckSeed ?? Math.floor(Math.random() * 0x7fffffff));
+  const deck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
+  const [puzzle, setPuzzle] = useState<TravelPuzzle | null>(null);
+  const [guesses, setGuesses] = useState<TravelGuess[]>([]);
+  const [hints, setHints] = useState<ReadonlySet<TravelHint>>(new Set());
+  const [nextHint, setNextHint] = useState<string | null>(null);
+  const [closed, setClosed] = useState<"won" | "lost" | null>(null);
   const [typed, setTyped] = useState("");
-  const [guesses, setGuesses] = useState<string[]>([]);
-  const [attempts, setAttempts] = useState(0);
-  const [hints, setHints] = useState(0);
-  const [feedback, setFeedbackState] = useState<{ kind: "" | "ok" | "no" | "info" | "done"; text: string }>({ kind: "", text: "" });
-  const setFeedback = (kind: "" | "ok" | "no" | "info" | "done", text = "") => setFeedbackState({ kind, text });
-  const [over, setOver] = useState(false);
-  const [error, setError] = useState("");
-  const [score, setScore] = useState(0);
+  const [notice, setNotice] = useState<TravelNotice>({ kind: "", text: "" });
   const [streak, setStreak] = useState(0);
-  const [round, setRound] = useState(1);
-  const overRef = useRef(false);
+  const [error, setError] = useState("");
+  const closedRef = useRef(false);
+  const startedAt = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const destinationDeck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
-  const destinationStarted = useRef(0);
-  useEffect(() => {
-    geometryIndex().then(({ features }) => setFeatures(features)).catch((e) => setError(e instanceof Error ? e.message : String(e)));
-  }, []);
-  const ids = useMemo(() => features ? [...features.keys()].filter((id) => data.meta[id] && inRegion(id, region, data)) : [], [features, data, region]);
-  const destinations = useMemo(() => travelDestinationIds(data.meta, ids), [data, ids]);
-  useEffect(() => {
-    if (!destinations.length || destinationDeck.current) return;
-    destinationDeck.current = createFiniteDeck(destinations, undefined, settings.roundLimit);
-    const destination = destinationDeck.current.draw();
-    if (!destination) return;
-    setRoute(solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination)));
-    destinationStarted.current = Date.now();
-    supply.resetRound();
-  }, [destinations, ids, data, region]);
-  const intermediates = route?.slice(1, -1) ?? [];
-  const next = intermediates[guesses.length];
-  // Depois do retorno da rota: próximo destino ou, se o baralho acabou, o resultado da partida.
-  const openRoute = (destination: string) => {
-    const nextRoute = solveTravelRouteToDestination(data.meta, ids, destination, seedFromParts(destination));
-    if (!nextRoute) { setError(t.travel.noRoute); return; }
-    setRoute(nextRoute); setGuesses([]); setAttempts(0); setHints(0); setFeedback(""); setOver(false); overRef.current = false; setRound((current) => current + 1); destinationStarted.current = Date.now();
+  const openPuzzle = (destination: string) => {
+    const next = travelPuzzle(graph, destination, runSeed.current);
+    if (!next) { setError(t.travel.noRoute); return; }
+    setPuzzle(next); setGuesses([]); setHints(new Set()); setNextHint(null); setClosed(null); closedRef.current = false;
+    setTyped(""); setNotice({ kind: "", text: "" });
+    startedAt.current = Date.now();
     supply.resetRound();
     requestAnimationFrame(() => inputRef.current?.focus());
   };
-  const advance = (delay: number, skipAfter: number) => {
+  useEffect(() => {
+    if (deck.current) return;
+    if (!destinations.length) { setError(t.travel.noRoute); return; }
+    deck.current = createFiniteDeck(destinations, deckSeedFor(seedFromParts("travel", JSON.stringify(region), destinations.join("|")), settings.deckSeed), settings.roundLimit);
+    const first = deck.current.draw();
+    if (first) openPuzzle(first);
+  }, [destinations]);
+  const have = useMemo(() => new Set(guesses.map((guess) => guess.id)), [guesses]);
+  const nameOf = (id: string) => meta[id]?.pt ?? id;
+  const advance = () => {
     flow.schedule(async () => {
-      const destination = destinationDeck.current?.draw();
+      const destination = deck.current?.draw();
       if (!destination) {
         const result = await session.finish();
         if (onEnd) onEnd(result);
         else onBack();
         return;
       }
-      openRoute(destination);
-    }, delay, skipAfter);
+      openPuzzle(destination);
+    }, 0, 600, true);
   };
-  // Pular: o destino vai para o fim do baralho (sem contar acerto nem erro) e o próximo entra. No último destino não há para onde mandar.
-  const skipRound = () => {
-    const cards = destinationDeck.current;
-    if (!route || over || overRef.current || !cards || cards.remaining === 0 || !supply.use("pular")) return;
-    cards.defer(route[route.length - 1]);
-    const destination = cards.draw();
-    if (destination) openRoute(destination);
-  };
-  // A rota acabou (fechou, estourou as tentativas ou o tempo): grava a rodada com quantos países foram acertados.
-  const closeRoute = (activeRoute: string[], complete: boolean, newGuesses: string[], nextAttempts: number, value: string, timedOut = false) => {
-    overRef.current = true;
-    setOver(true);
+  // A rota acabou (ligou a origem ao destino ou acabaram os chutes): grava a rodada com quanto ela rendeu.
+  const closeRoute = (active: TravelPuzzle, won: boolean, all: TravelGuess[], value: string) => {
+    closedRef.current = true;
+    setClosed(won ? "won" : "lost");
     // Escudo: a rota perdida não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
-    const shielded = !complete && supply.consumeArmed("escudo");
-    if (shielded) setFeedbackState((current) => ({ ...current, text: `${current.text} · ${t.supplies.shieldSaved}`.trim() }));
-    setScore((current) => current + (complete ? 1 : 0));
-    setStreak((current) => complete ? current + 1 : shielded ? current : 0);
-    const destination = activeRoute[activeRoute.length - 1];
+    const shielded = !won && supply.consumeArmed("escudo");
+    const route = (bestRoute(graph, active.start, active.end, new Set(all.map((guess) => guess.id))) ?? []).map(nameOf).join(" → ");
+    setNotice({ kind: won ? "ok" : "no", text: `${won ? t.travel.won(all.length, active.shortest) : t.travel.lost(route)}${shielded ? ` · ${t.supplies.shieldSaved}` : ""}` });
+    setStreak((current) => won ? current + 1 : shielded ? current : 0);
+    const weight = travelWeight(active, all.length, hints.size, won);
     leaveGuard.noteAnswer();
-    log.push({ correct: complete, tier: entityTier(data.meta, destination), weight: newGuesses.length, shielded });
+    log.push({ correct: won, tier: entityTier(meta, active.end), weight, shielded });
     session.recordRound({
-      targetId: destination, correct: complete, responseTimeMs: Date.now() - destinationStarted.current, answeredAt: Date.now(),
-      selectedId: value, attempts: nextAttempts, guesses: newGuesses,
-      tier: entityTier(data.meta, destination), weight: newGuesses.length,
-      ...(timedOut ? { timedOut: true } : {}),
+      targetId: active.end, correct: won, responseTimeMs: Date.now() - startedAt.current, answeredAt: Date.now(),
+      selectedId: value, attempts: all.length, guesses: all.map((guess) => guess.id),
+      tier: entityTier(meta, active.end), weight,
       ...(supply.assisted || shielded ? { assisted: true } : {}),
       ...(shielded ? { shielded: true } : {}),
     });
-    advance(feedbackHoldMs(complete, true), feedbackSkipAfterMs(complete));
-    if (complete) cueCorrect();
+    advance();
+    if (won) cueCorrect();
   };
   const submit = (value = typed) => {
-    if (!route || !value.trim() || over || overRef.current) return;
-    const result = evaluateTravelGuess(data.meta, intermediates, guesses, value);
-    if (result.kind === "duplicate") {
-      setFeedback("no", t.travel.duplicate);
-      setTyped("");
-      return;
+    if (!puzzle || !value.trim() || closedRef.current) return;
+    setTyped("");
+    requestAnimationFrame(() => inputRef.current?.focus());
+    const id = nameIndex.get(normalizeName(value));
+    if (!id) { setNotice({ kind: "no", text: t.travel.unknown }); return; }
+    if (id === puzzle.start || id === puzzle.end) { setNotice({ kind: "info", text: t.travel.endpoint }); return; }
+    if (have.has(id)) { setNotice({ kind: "info", text: t.travel.duplicate }); return; }
+    if (!graph.has(id)) { setNotice({ kind: "no", text: t.travel.outside(nameOf(id)) }); return; }
+    const grade = gradeGuess(graph, puzzle, have, id);
+    const all = [...guesses, { id, grade }];
+    setGuesses(all);
+    const linked = new Set(all.map((guess) => guess.id));
+    if (routeClosed(graph, puzzle.start, puzzle.end, linked)) closeRoute(puzzle, true, all, value);
+    else if (all.length >= puzzle.budget) closeRoute(puzzle, false, all, value);
+    else setNotice({ kind: grade === "far" ? "no" : grade === "near" ? "info" : "ok", text: t.travel.graded(nameOf(id), t.travel.grades[grade]) });
+  };
+  const useHint = (hint: TravelHint) => {
+    if (!puzzle || closed || hints.has(hint)) return;
+    setHints((current) => new Set(current).add(hint));
+    if (hint === "next") {
+      const next = remainingRoute(graph, puzzle, have)[0];
+      if (next) { setNextHint(next); setNotice({ kind: "info", text: t.travel.nextShown }); }
     }
-    const correct = result.kind === "correct";
-    const newGuesses = correct ? [...guesses, result.guessedId] : guesses;
-    const nextAttempts = attempts + 1;
-    if (correct) setGuesses(newGuesses);
-    const complete = correct && newGuesses.length === intermediates.length;
-    const failed = !correct && nextAttempts >= 10;
-    const routeText = route.map((id) => data.meta[id]?.pt ?? id).join(" → ");
-    if (complete) setFeedback("done", t.travel.complete);
-    else if (failed) setFeedback("no", t.travel.failed(routeText));
-    else if (correct) setFeedback("ok", t.travel.correct);
-    else setFeedback("no", t.travel.wrong);
-    setAttempts(nextAttempts);
-    setTyped("");
-    if (complete || failed) closeRoute(route, complete, newGuesses, nextAttempts, value);
-    else requestAnimationFrame(() => inputRef.current?.focus());
+    requestAnimationFrame(() => inputRef.current?.focus());
   };
-  const timeUp = () => {
-    if (!route || over || overRef.current) return;
-    setFeedback("no", t.travel.timeUp(route.map((id) => data.meta[id]?.pt ?? id).join(" → ")));
-    setTyped("");
-    closeRoute(route, false, guesses, attempts, typed, true);
+  // Pular: o destino vai para o fim do baralho (sem contar acerto nem erro) e o próximo entra. No último destino não há para onde mandar.
+  const skipRound = () => {
+    const cards = deck.current;
+    if (!puzzle || closedRef.current || !cards || cards.remaining === 0 || !supply.use("pular")) return;
+    cards.defer(puzzle.end);
+    const destination = cards.draw();
+    if (destination) openPuzzle(destination);
   };
-  const hint = () => {
-    if (hints >= 3 || !next || over) return;
-    setHints((value) => value + 1);
-    setFeedback("info", t.travel.hint(data.meta[next]?.pt ?? next));
-  };
-  const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: destinationDeck.current?.size ?? destinations.length });
-  useGameKeys({ exit, enabled: Boolean(route) });
+  const total = deck.current?.size ?? Math.min(destinations.length, settings.roundLimit ?? destinations.length);
+  const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: total });
+  useGameKeys({ exit, enabled: Boolean(puzzle) });
+  // o que o mapa pinta: as pontas, os chutes e, no fim, o caminho que faltava
+  const reveal = useMemo(() => (puzzle && closed === "lost" ? remainingRoute(graph, puzzle, have) : []), [closed, graph, have, puzzle]);
+  // o ✓ vale para todo chute verde que já se liga à origem (a cor do chute fica a da hora em que foi dado)
+  const linked = useMemo(() => (puzzle ? linkedToStart(graph, puzzle.start, have) : new Set<string>()), [graph, have, puzzle]);
+  const shownGrade = (guess: TravelGuess): TravelGrade => (guess.grade === "linked" || guess.grade === "closer" ? (linked.has(guess.id) ? "linked" : "closer") : guess.grade);
+  const paints = useMemo(() => {
+    const out = new Map<string, TravelPaint>();
+    if (!puzzle) return out;
+    for (const id of reveal) for (const piece of travelFeatureIds(meta, id)) out.set(piece, "reveal");
+    for (const guess of guesses) for (const piece of travelFeatureIds(meta, guess.id)) out.set(piece, shownGrade(guess));
+    for (const id of [puzzle.start, puzzle.end]) for (const piece of travelFeatureIds(meta, id)) out.set(piece, "end");
+    return out;
+  }, [guesses, linked, meta, puzzle, reveal]);
+  // os pequenos demais para o contorno aparecer ganham um ponto
+  const points = useMemo(() => {
+    if (!puzzle) return [];
+    const shown: Array<[string, TravelPaint]> = [...reveal.map((id) => [id, "reveal"] as [string, TravelPaint]), ...guesses.map((guess) => [guess.id, shownGrade(guess)] as [string, TravelPaint]), [puzzle.start, "end"], [puzzle.end, "end"]];
+    return shown.filter(([id]) => (meta[id]?.area ?? Infinity) < TRAVEL_POINT_KM2 && meta[id]?.ll).map(([id, paint]) => ({ id, lat: meta[id].ll![0], lon: meta[id].ll![1], paint }));
+  }, [guesses, linked, meta, puzzle, reveal]);
+  const boxes = useMemo(() => (puzzle ? [puzzle.start, puzzle.end, ...guesses.filter((guess) => guess.grade !== "far").map((guess) => guess.id), ...reveal].map((id) => travelBox(meta, id)).filter((box): box is TravelBox => Boolean(box)) : []), [guesses, meta, puzzle, reveal]);
+  const dashed = useMemo(() => (nextHint && !have.has(nextHint) ? travelFeatureIds(meta, nextHint) : []), [have, meta, nextHint]);
+  const initials = puzzle && hints.has("initials") ? remainingRoute(graph, puzzle, have).map((id) => nameOf(id).charAt(0).toUpperCase()).join(" · ") : "";
   if (error) return <GeometryError error={error} onBack={onBack} />;
-  if (!features || (!route && !error)) return <LoadingGeometry />;
-  const activeRoute = route;
-  if (!activeRoute) return <LoadingGeometry />;
-  const routeFeatures = activeRoute.map((id) => features.get(id)).filter(Boolean) as Feature<Geometry>[];
-  const routePath = pathForFeatures(routeFeatures, 420, 190);
-  const bad = feedback.kind === "no";
-  const done = feedback.kind === "done";
-  const total = destinationDeck.current?.size ?? destinations.length;
-  const failedRoute = over && guesses.length < intermediates.length;
-  const feedbackKind = done ? "ok" : feedback.kind;
-  const nameOf = (id: string) => data.meta[id]?.pt ?? id;
+  if (!puzzle) return <LoadingGeometry />;
   return <div className="app-shell gs-app">{leaveGuard.dialog}
-    <div className="gs">
+    <div className="gs gs-travel">
       <GameTopBar results={log.results} total={total} streak={streak} pending={log.pending} onExit={exit} meta={`${variantLabel("travel")} · ${regionLabel(region)}`}>
-        <RoundTimer pausable={!settings.duel} seconds={settings.timerSeconds} bonusSeconds={supply.bonusSeconds} running={!over && !leaveGuard.asking} resetKey={round} onExpire={timeUp} />
         {suppliesEnabled && (
-          <SupplyTray timed={settings.pace === "timed"}
+          <SupplyTray timed={false}
             variant="travel"
             counts={supply.counts}
             usedThisRound={supply.usedThisRound}
             armed={supply.armed} tonicLeft={supply.tonicLeft}
             onArm={supply.toggleArm}
-            blocked={destinationDeck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
-            disabled={over}
+            blocked={deck.current?.remaining === 0 ? new Set<SupplyId>(["pular"]) : undefined}
+            disabled={Boolean(closed)}
             onUse={(id) => (id === "pular" ? skipRound() : supply.use(id))}
           />
         )}
       </GameTopBar>
       <div className="gs-body">
-        <main className="gs-stage" data-target-id={import.meta.env.DEV ? activeRoute.at(-1) : undefined}>
-          <div className="gs-kicker">{t.travel.destination} <b>{nameOf(activeRoute.at(-1)!)}</b></div>
-          <div className="silhouette-frame travel-frame"><svg viewBox={`0 0 ${routePath.width} ${routePath.height}`} role="img" aria-label={t.travel.routeAria}><path d={routePath.d} /></svg></div>
-          <ol className="gs-route" aria-label={t.travel.route}>
-            <li className="rc start">{nameOf(activeRoute[0])}</li>
-            {guesses.map((id) => <li key={id} className="rc done">{nameOf(id)}</li>)}
-            {intermediates.slice(guesses.length).map((id) => failedRoute
-              ? <li key={id} className="rc missed">{nameOf(id)}</li>
-              : <li key={id} className="rc" aria-label={t.travel.unknown}>?</li>)}
-            <li className="rc end">{nameOf(activeRoute.at(-1)!)}</li>
+        <main className="gs-stage tv-stage" data-target-id={import.meta.env.DEV ? `${puzzle.start}>${puzzle.end}` : undefined}>
+          <div className="gs-kicker tv-kicker">{t.travel.from} <b className="tv-end">{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
+          <TravelMap paints={paints} points={points} boxes={boxes} borders={hints.has("borders")} dashed={dashed} />
+          <div className="tv-count"><span>{t.travel.counter(guesses.length, puzzle.budget, puzzle.shortest)}</span>{initials && <b>{t.travel.initials(initials)}</b>}</div>
+          <ol className="tv-guesses" aria-label={t.travel.guessesAria}>
+            {guesses.map((guess) => {
+              const grade = shownGrade(guess);
+              return <li key={guess.id} className={`tv-guess is-${grade}`}>
+                <i aria-hidden="true">{grade === "linked" ? "✓" : ""}</i>{nameOf(guess.id)}<span className="sr-only">: {t.travel.grades[grade]}</span>
+              </li>;
+            })}
+            {reveal.map((id) => <li key={id} className="tv-guess is-reveal"><i aria-hidden="true" />{nameOf(id)}<span className="sr-only">: {t.travel.grades.reveal}</span></li>)}
           </ol>
-          <div className="gs-stats"><span>{t.travel.attempts} <b>{attempts}/10</b></span><span>{t.travel.hints} <b>{hints}/3</b></span></div>
-          <div className={`gs-ribbon wrap${feedbackKind ? ` on ${feedbackKind}` : ""}`} role="status" aria-live="polite">{feedback.text}</div>
+          <div className={`gs-ribbon wrap on ${notice.kind || "info"}`} role="status" aria-live="polite">{notice.text || t.travel.typeHint}</div>
         </main>
         <section className="gs-tray" aria-label={t.common.answersRegion}>
           <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-            <TypedAnswerInput key={activeRoute.at(-1)} className={done ? "answer-success" : bad ? "answer-error" : ""} inputRef={inputRef} aria-label={t.travel.nextCountry} value={typed} disabled={over} onChange={setTyped} onCommit={submit} answers={ids.flatMap((id) => aliases(data.meta[id]))} ambiguitySafe />
-            <button className="go" disabled={over || !typed.trim()}>{t.common.answer}</button>
+            <TypedAnswerInput key={`${puzzle.start}-${puzzle.end}`} inputRef={inputRef} aria-label={t.travel.guessField} autoFocus value={typed} disabled={Boolean(closed)} onChange={setTyped} onCommit={submit} answers={answers} ambiguitySafe />
+            <button className="go" disabled={Boolean(closed) || !typed.trim()}>{t.travel.guess}</button>
           </form>
-          <div className="gs-hintline gs-hintrow"><span>{t.travel.typeNth(guesses.length + 1)}</span><button type="button" className="gs-link" onClick={hint} disabled={hints >= 3 || over}>{t.travel.hintButton(3 - hints)}</button></div>
-          {over && !done && <ContinueBar holdMs={feedbackHoldMs(false, true)} onSkip={flow.skip} />}
+          {closed
+            ? <ContinueBar holdMs={null} onSkip={flow.skip} />
+            : <div className="tv-hints" role="group" aria-label={t.travel.hints}>
+              <span className="tv-hints-label">{t.travel.hints}</span>
+              {(["next", "borders", "initials"] as const).map((hint) => <button key={hint} type="button" className="tv-hint" aria-pressed={hints.has(hint)} disabled={hints.has(hint)} onClick={() => useHint(hint)}>
+                {hint === "next" ? t.travel.hintNext : hint === "borders" ? t.travel.hintBorders : t.travel.hintInitials}
+              </button>)}
+              <small>{t.travel.hintsNote}</small>
+            </div>}
           <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswer}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
         </section>
       </div>

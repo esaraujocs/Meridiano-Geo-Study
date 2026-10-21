@@ -139,8 +139,8 @@ export function paceHint(pace: Pace, variant: AnyQuizVariant, unit?: UnitWord) {
     const marking = base === "mapa" || base === "capital-pais" ? (isDivisionVariant(variant) && unit ? t.divisions.trainingMarks(unit) : t.config.trainingMarks) : "";
     return `${t.config.trainingHint}${marking}`;
   }
-  const time = formatSeconds(timerSecondsFor(variant), variant);
-  return variant === "travel" ? t.config.timedTravelHint(time) : t.config.timedHint(time);
+  if (variant === "travel") return t.config.travelHint;
+  return t.config.timedHint(formatSeconds(timerSecondsFor(variant), variant));
 }
 
 export type ConfigSummary = { title: string; sub: string; earn: string; earnUnit: string };
@@ -157,7 +157,7 @@ export function configSummary(input: {
 }): ConfigSummary {
   const { mode, variant, pace } = input;
   const [low, high] = hitRange(variant, pace);
-  const time = pace === "timed" ? t.config.summaryTimed(formatSeconds(timerSecondsFor(variant), "mapa")) : t.config.training;
+  const time = pace !== "timed" ? t.config.training : variant === "travel" ? t.config.travelMatch : t.config.summaryTimed(formatSeconds(timerSecondsFor(variant), "mapa"));
   const unit = variant === "travel" ? t.config.perRouteCountry : t.config.perHit;
   return {
     title: mode.direction && input.direction ? `${mode.label} · ${directionLabel(input.direction)}` : mode.label,

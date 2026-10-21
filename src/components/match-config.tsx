@@ -300,7 +300,7 @@ export function Recorte({
             <div className="mz-trio">
               {trio(t.config.pace, <>
                 <div className="cv-chips" role="group" aria-label={t.config.pace}>
-                  <button type="button" className="cv-chip" aria-pressed={!explore && pace === "timed"} onClick={() => { setExploring?.(false); setPace("timed"); }}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
+                  <button type="button" className="cv-chip" aria-pressed={!explore && pace === "timed"} onClick={() => { setExploring?.(false); setPace("timed"); }}><span className="cv-l"><Icon type="stopwatch" size={16} /><span>{variant === "travel" ? t.config.travelMatch : t.config.timed(formatSeconds(timerSecondsFor(variant), "mapa"))}</span></span></button>
                   <button type="button" className="cv-chip" aria-pressed={!explore && pace === "training"} onClick={() => { setExploring?.(false); setPace("training"); }}><span className="cv-l"><Icon type="book" size={16} /><span>{t.config.training}</span></span></button>
                   {onExplore && <button type="button" className="cv-chip" aria-pressed={explore} onClick={() => setExploring?.(true)}><span className="cv-l"><Icon type="compass" size={16} /><span>{t.explore.pace}</span></span></button>}
                 </div>
