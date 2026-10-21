@@ -174,8 +174,10 @@ export type BotContext = {
   own?: boolean;
   /** Com `own`: a forma do dia, somada à força (em pontos de rating; ver `duelForm`). */
   form?: number;
-  /** Modo em que a especialidade não vale nem para bem nem para mal (as bandeiras históricas: o especialista em bandeiras atuais não as domina). */
+  /** Modo em que a especialidade não vale nem para bem nem para mal. */
   neutral?: boolean;
+  /** Quanto da especialidade vale no modo (1 sem isto; as Históricas, 0,5). */
+  specialtyWeight?: number;
   /** Dificuldade do modo do tempo: pontos de acerto (negativo = mais difícil) e fator de tempo. O ajuste encolhe nas ligas altas, que erram pouco em qualquer modo. */
   tuning?: { accuracy: number; time: number };
   /** Modos digitados: o tempo de cada rodada sai do tamanho da resposta (ver `typingMs`), não do fator de tempo do modo. `chars` são as letras de
@@ -217,7 +219,7 @@ export function botProfile(bot: Bot, context: BotContext): BotProfile {
   // o preciso só paga em tempo o acerto que de fato ganha: perto dos 99% (o teto do perfil) não há o que ganhar, e ser lento à toa o afundava
   if (bot.style === "preciso") { const gained = Math.max(0, Math.min(PRECISE.accuracy, 0.99 - accuracy)); accuracy += gained; avgMs *= 1 + (PRECISE.time - 1) * (gained / PRECISE.accuracy); }
   if (bot.style === "rapido") { accuracy += FAST.accuracy; avgMs *= FAST.time; }
-  if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside;
+  if (bot.style === "especialista" && bot.specialty && !context.neutral) accuracy += (context.specialtyWeight ?? 1) * (context.family === bot.specialty ? SPECIALIST.inside : SPECIALIST.outside);
   if (context.tuning) {
     accuracy += context.tuning.accuracy * clamp((1 - accuracy) / TUNING_REF, TUNING_MIN, 1);
     if (!context.typing?.chars.length) avgMs *= context.tuning.time;

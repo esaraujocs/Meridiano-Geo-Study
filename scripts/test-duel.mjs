@@ -780,10 +780,11 @@ const brunaBot = B.BOTS.find((b) => b.name === "Bruna Sul");
 const spec = (ctx) => B.botProfile(brunaBot, { division: 1, family: "bandeiras", ...ctx }).accuracy;
 assert.ok(spec({}) > spec({ neutral: true }) && spec({ neutral: true }) > B.botProfile(brunaBot, { division: 1, family: "mapa" }).accuracy, "dentro da família > neutro > fora dela");
 assert.equal(spec({ neutral: true }), B.botProfile(B.botsOfLeague("prata")[0], { division: 1, family: "bandeiras" }).accuracy, "neutro: igual ao bot constante da liga");
-assert.equal(M.groupDef("historicas").neutral, true); assert.equal(M.groupDef("atuais").neutral, undefined);
+assert.equal(M.groupDef("historicas").specialtyWeight, 0.5, "nas históricas a especialidade vale pela metade"); assert.equal(M.groupDef("atuais").specialtyWeight, undefined);
+assert.ok(spec({}) > spec({ specialtyWeight: 0.5 }) && spec({ specialtyWeight: 0.5 }) > spec({ neutral: true }), "metade fica entre o inteiro e o neutro");
 const histLegs = [{ group: "historicas", rounds: 10, playerCorrect: 5, playerMs: 1 }, { group: "atuais", rounds: 10, playerCorrect: 5, playerMs: 1 }];
 const meanHist = (group) => { let n = 0; for (let g = 0; g < 400; g += 1) n += D.resolveDuelLegs({ trophies: 500, bot: brunaBot, seed: "h" + g, division: 3, legs: [{ ...histLegs[0], group }, histLegs[1]] }).legs[0].botCorrect; return n / 400; };
-assert.ok(meanHist("historicas") < 6.4 && meanHist("historicas") > 5.2, "Bruna (Prata III) acerta em torno de 5,8 das históricas (era 7,3 com a especialidade e 6,2 sem ela)");
+assert.ok(meanHist("historicas") < 7 && meanHist("historicas") > 5.9, `Bruna (Prata III) acerta em torno de 6,4 das históricas com meia especialidade (5,8 sem ela) (${meanHist("historicas")})`);
 // as históricas são um tema de nicho: nas ligas baixas o bot acerta bem menos, no alto quase igual a antes
 const histAcc = (league) => B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("historicas").accuracy, time: M.groupDef("historicas").time } }).accuracy;
 assert.deepEqual(["bronze", "prata", "ouro", "platina", "diamante", "mestre"].map((l) => Math.round(histAcc(l) * 100)), [40, 52, 64, 76, 87, 94], "históricas: 40% no Bronze até 94% no Mestre");

@@ -289,7 +289,7 @@ export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: s
       spots = Array.from({ length: leg.rounds }, () => SPOT_POOL[Math.floor(random() * SPOT_POOL.length)]);
     }
     const shared = {
-      family: def.botFamily, neutral: def.neutral, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
+      family: def.botFamily, neutral: def.neutral, specialtyWeight: def.specialtyWeight, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
       limitMs: timerSecondsFor(def.variants[0].variant) * 1000,
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
       ...(spots ? { spots } : {}),
@@ -328,9 +328,9 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre); subir este número recalibra os estados
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre; 7: meia especialidade nas Históricas); subir este número recalibra os estados
  *  salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 6;
+export const BOT_RANKING_CALIBRATION = 7;
 /** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;
