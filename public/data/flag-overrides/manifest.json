@@ -1,10 +1,534 @@
 {
+  "ae": {
+    "src": "/data/flag-overrides/ae.svg",
+    "ratio": 2
+  },
+  "ag": {
+    "src": "/data/flag-overrides/ag.svg",
+    "ratio": 1.5
+  },
+  "am": {
+    "src": "/data/flag-overrides/am.svg",
+    "ratio": 2
+  },
+  "at": {
+    "src": "/data/flag-overrides/at.svg",
+    "ratio": 1.5
+  },
+  "au": {
+    "src": "/data/flag-overrides/au.svg",
+    "ratio": 2
+  },
+  "aw": {
+    "src": "/data/flag-overrides/aw.svg",
+    "ratio": 1.5
+  },
+  "ax": {
+    "src": "/data/flag-overrides/ax.svg",
+    "ratio": 1.5294117647058822
+  },
+  "az": {
+    "src": "/data/flag-overrides/az.svg",
+    "ratio": 2
+  },
+  "ba": {
+    "src": "/data/flag-overrides/ba.svg",
+    "ratio": 2
+  },
+  "bd": {
+    "src": "/data/flag-overrides/bd.svg",
+    "ratio": 1.6666666666666667
+  },
+  "be": {
+    "src": "/data/flag-overrides/be.svg",
+    "ratio": 1.1538461538461537
+  },
+  "bg": {
+    "src": "/data/flag-overrides/bg.svg",
+    "ratio": 1.6666666666666667
+  },
+  "bh": {
+    "src": "/data/flag-overrides/bh.svg",
+    "ratio": 1.6666666666666667
+  },
+  "bi": {
+    "src": "/data/flag-overrides/bi.svg",
+    "ratio": 1.6666666666666667
+  },
+  "bj": {
+    "src": "/data/flag-overrides/bj.svg",
+    "ratio": 1.5
+  },
+  "br": {
+    "src": "/data/flag-overrides/br.svg",
+    "ratio": 1.4285714285714286
+  },
+  "bs": {
+    "src": "/data/flag-overrides/bs.svg",
+    "ratio": 2
+  },
+  "bw": {
+    "src": "/data/flag-overrides/bw.svg",
+    "ratio": 1.5
+  },
+  "by": {
+    "src": "/data/flag-overrides/by.svg",
+    "ratio": 2
+  },
+  "ca": {
+    "src": "/data/flag-overrides/ca.svg",
+    "ratio": 2
+  },
+  "cf": {
+    "src": "/data/flag-overrides/cf.svg",
+    "ratio": 1.5
+  },
+  "cg": {
+    "src": "/data/flag-overrides/cg.svg",
+    "ratio": 1.5
+  },
+  "ch": {
+    "src": "/data/flag-overrides/ch.svg",
+    "ratio": 1
+  },
+  "ci": {
+    "src": "/data/flag-overrides/ci.svg",
+    "ratio": 1.5
+  },
+  "ck": {
+    "src": "/data/flag-overrides/ck.svg",
+    "ratio": 2
+  },
+  "cl": {
+    "src": "/data/flag-overrides/cl.svg",
+    "ratio": 1.5
+  },
+  "cm": {
+    "src": "/data/flag-overrides/cm.svg",
+    "ratio": 1.5
+  },
+  "cn": {
+    "src": "/data/flag-overrides/cn.svg",
+    "ratio": 1.5
+  },
+  "co": {
+    "src": "/data/flag-overrides/co.svg",
+    "ratio": 1.5
+  },
+  "cu": {
+    "src": "/data/flag-overrides/cu.svg",
+    "ratio": 2
+  },
+  "cv": {
+    "src": "/data/flag-overrides/cv.svg",
+    "ratio": 1.7
+  },
+  "cw": {
+    "src": "/data/flag-overrides/cw.svg",
+    "ratio": 1.5
+  },
+  "cz": {
+    "src": "/data/flag-overrides/cz.svg",
+    "ratio": 1.5
+  },
+  "dj": {
+    "src": "/data/flag-overrides/dj.svg",
+    "ratio": 1.5
+  },
+  "dm": {
+    "src": "/data/flag-overrides/dm.svg",
+    "ratio": 2
+  },
+  "ee": {
+    "src": "/data/flag-overrides/ee.svg",
+    "ratio": 1.5714285714285714
+  },
+  "es": {
+    "src": "/data/flag-overrides/es.webp",
+    "ratio": null
+  },
+  "et": {
+    "src": "/data/flag-overrides/et.svg",
+    "ratio": 2
+  },
+  "fi": {
+    "src": "/data/flag-overrides/fi.svg",
+    "ratio": 1.6363636363636365
+  },
+  "fm": {
+    "src": "/data/flag-overrides/fm.svg",
+    "ratio": 1.9
+  },
+  "fo": {
+    "src": "/data/flag-overrides/fo.svg",
+    "ratio": 1.375
+  },
+  "fr": {
+    "src": "/data/flag-overrides/fr.svg",
+    "ratio": 1.5
+  },
+  "gb-eng": {
+    "src": "/data/flag-overrides/gb-eng.svg",
+    "ratio": 1.6666666666666667
+  },
+  "gb-sct": {
+    "src": "/data/flag-overrides/gb-sct.svg",
+    "ratio": 1.6666666666666667
+  },
+  "gb": {
+    "src": "/data/flag-overrides/gb.svg",
+    "ratio": 1.6666666666666667
+  },
+  "gd": {
+    "src": "/data/flag-overrides/gd.svg",
+    "ratio": 1.6666666666666667
+  },
+  "ge": {
+    "src": "/data/flag-overrides/ge.svg",
+    "ratio": 1.5
+  },
+  "gg": {
+    "src": "/data/flag-overrides/gg.svg",
+    "ratio": 1.5
+  },
+  "gm": {
+    "src": "/data/flag-overrides/gm.svg",
+    "ratio": 1.5
+  },
+  "gn": {
+    "src": "/data/flag-overrides/gn.svg",
+    "ratio": 1.5
+  },
+  "gr": {
+    "src": "/data/flag-overrides/gr.svg",
+    "ratio": 1.5
+  },
+  "gw": {
+    "src": "/data/flag-overrides/gw.svg",
+    "ratio": 2
+  },
+  "gy": {
+    "src": "/data/flag-overrides/gy.svg",
+    "ratio": 1.6666666666666667
+  },
+  "hn": {
+    "src": "/data/flag-overrides/hn.svg",
+    "ratio": 2
+  },
+  "hu": {
+    "src": "/data/flag-overrides/hu.svg",
+    "ratio": 2
+  },
   "id": {
     "src": "/data/flag-overrides/id.svg",
     "ratio": 1.5
   },
+  "il": {
+    "src": "/data/flag-overrides/il.svg",
+    "ratio": 1.375
+  },
+  "in": {
+    "src": "/data/flag-overrides/in.svg",
+    "ratio": 1.5
+  },
+  "ir": {
+    "src": "/data/flag-overrides/ir.svg",
+    "ratio": 1.75
+  },
+  "is": {
+    "src": "/data/flag-overrides/is.svg",
+    "ratio": 1.3888888888888888
+  },
+  "it": {
+    "src": "/data/flag-overrides/it.svg",
+    "ratio": 1.5
+  },
+  "je": {
+    "src": "/data/flag-overrides/je.webp",
+    "ratio": null
+  },
+  "jm": {
+    "src": "/data/flag-overrides/jm.svg",
+    "ratio": 2
+  },
+  "jo": {
+    "src": "/data/flag-overrides/jo.svg",
+    "ratio": 2
+  },
+  "jp": {
+    "src": "/data/flag-overrides/jp.svg",
+    "ratio": 1.5
+  },
+  "ke": {
+    "src": "/data/flag-overrides/ke.svg",
+    "ratio": 1.5
+  },
+  "ki": {
+    "src": "/data/flag-overrides/ki.svg",
+    "ratio": 2
+  },
+  "km": {
+    "src": "/data/flag-overrides/km.svg",
+    "ratio": 1.6666666666666667
+  },
+  "kr": {
+    "src": "/data/flag-overrides/kr.svg",
+    "ratio": 1.5
+  },
+  "kw": {
+    "src": "/data/flag-overrides/kw.svg",
+    "ratio": 2
+  },
+  "la": {
+    "src": "/data/flag-overrides/la.svg",
+    "ratio": 1.5
+  },
+  "lc": {
+    "src": "/data/flag-overrides/lc.svg",
+    "ratio": 2
+  },
+  "lr": {
+    "src": "/data/flag-overrides/lr.svg",
+    "ratio": 1.9
+  },
+  "lt": {
+    "src": "/data/flag-overrides/lt.svg",
+    "ratio": 1.6666666666666667
+  },
+  "lv": {
+    "src": "/data/flag-overrides/lv.svg",
+    "ratio": 2
+  },
+  "ly": {
+    "src": "/data/flag-overrides/ly.svg",
+    "ratio": 2
+  },
   "mc": {
     "src": "/data/flag-overrides/mc.svg",
     "ratio": 1.25
+  },
+  "mg": {
+    "src": "/data/flag-overrides/mg.svg",
+    "ratio": 1.5
+  },
+  "mk": {
+    "src": "/data/flag-overrides/mk.svg",
+    "ratio": 2
+  },
+  "ml": {
+    "src": "/data/flag-overrides/ml.svg",
+    "ratio": 1.5
+  },
+  "mm": {
+    "src": "/data/flag-overrides/mm.svg",
+    "ratio": 1.5
+  },
+  "mn": {
+    "src": "/data/flag-overrides/mn.svg",
+    "ratio": 2
+  },
+  "mu": {
+    "src": "/data/flag-overrides/mu.svg",
+    "ratio": 1.5
+  },
+  "mv": {
+    "src": "/data/flag-overrides/mv.svg",
+    "ratio": 1.5
+  },
+  "mw": {
+    "src": "/data/flag-overrides/mw.svg",
+    "ratio": 1.5
+  },
+  "na": {
+    "src": "/data/flag-overrides/na.svg",
+    "ratio": 1.5
+  },
+  "ne": {
+    "src": "/data/flag-overrides/ne.svg",
+    "ratio": 1.1666666666666667
+  },
+  "ng": {
+    "src": "/data/flag-overrides/ng.svg",
+    "ratio": 2
+  },
+  "nl": {
+    "src": "/data/flag-overrides/nl.svg",
+    "ratio": 1.5
+  },
+  "nu": {
+    "src": "/data/flag-overrides/nu.svg",
+    "ratio": 2
+  },
+  "nz": {
+    "src": "/data/flag-overrides/nz.svg",
+    "ratio": 2
+  },
+  "pa": {
+    "src": "/data/flag-overrides/pa.svg",
+    "ratio": 1.5
+  },
+  "ph": {
+    "src": "/data/flag-overrides/ph.svg",
+    "ratio": 2
+  },
+  "pk": {
+    "src": "/data/flag-overrides/pk.svg",
+    "ratio": 1.5
+  },
+  "pl": {
+    "src": "/data/flag-overrides/pl.svg",
+    "ratio": 1.6
+  },
+  "pr": {
+    "src": "/data/flag-overrides/pr.svg",
+    "ratio": 1.5
+  },
+  "ps": {
+    "src": "/data/flag-overrides/ps.svg",
+    "ratio": 2
+  },
+  "pw": {
+    "src": "/data/flag-overrides/pw.svg",
+    "ratio": 1.6
+  },
+  "qa": {
+    "src": "/data/flag-overrides/qa.svg",
+    "ratio": 4.166666666666667
+  },
+  "ro": {
+    "src": "/data/flag-overrides/ro.svg",
+    "ratio": 1.5
+  },
+  "rs": {
+    "src": "/data/flag-overrides/rs.webp",
+    "ratio": null
+  },
+  "ru": {
+    "src": "/data/flag-overrides/ru.svg",
+    "ratio": 1.5
+  },
+  "sb": {
+    "src": "/data/flag-overrides/sb.svg",
+    "ratio": 2
+  },
+  "sc": {
+    "src": "/data/flag-overrides/sc.svg",
+    "ratio": 2
+  },
+  "sd": {
+    "src": "/data/flag-overrides/sd.svg",
+    "ratio": 2
+  },
+  "si": {
+    "src": "/data/flag-overrides/si.svg",
+    "ratio": 2
+  },
+  "sl": {
+    "src": "/data/flag-overrides/sl.svg",
+    "ratio": 1.5
+  },
+  "ss": {
+    "src": "/data/flag-overrides/ss.svg",
+    "ratio": 2
+  },
+  "st": {
+    "src": "/data/flag-overrides/st.svg",
+    "ratio": 2
+  },
+  "tc": {
+    "src": "/data/flag-overrides/tc.svg",
+    "ratio": 2
+  },
+  "td": {
+    "src": "/data/flag-overrides/td.svg",
+    "ratio": 1.5
+  },
+  "tf": {
+    "src": "/data/flag-overrides/tf.svg",
+    "ratio": 1.5
+  },
+  "tg": {
+    "src": "/data/flag-overrides/tg.svg",
+    "ratio": 1.5
+  },
+  "th": {
+    "src": "/data/flag-overrides/th.svg",
+    "ratio": 1.5
+  },
+  "tj": {
+    "src": "/data/flag-overrides/tj.svg",
+    "ratio": 2.000024190817166
+  },
+  "tl": {
+    "src": "/data/flag-overrides/tl.svg",
+    "ratio": 2
+  },
+  "to": {
+    "src": "/data/flag-overrides/to.svg",
+    "ratio": 2
+  },
+  "tr": {
+    "src": "/data/flag-overrides/tr.svg",
+    "ratio": 1.5
+  },
+  "tt": {
+    "src": "/data/flag-overrides/tt.svg",
+    "ratio": 1.6666666666666667
+  },
+  "tv": {
+    "src": "/data/flag-overrides/tv.svg",
+    "ratio": 2
+  },
+  "tw": {
+    "src": "/data/flag-overrides/tw.svg",
+    "ratio": 1.5
+  },
+  "tz": {
+    "src": "/data/flag-overrides/tz.svg",
+    "ratio": 1.5
+  },
+  "ua": {
+    "src": "/data/flag-overrides/ua.svg",
+    "ratio": 1.5
+  },
+  "ug": {
+    "src": "/data/flag-overrides/ug.svg",
+    "ratio": 1.5
+  },
+  "uz": {
+    "src": "/data/flag-overrides/uz.svg",
+    "ratio": 2
+  },
+  "vc": {
+    "src": "/data/flag-overrides/vc.svg",
+    "ratio": 1.5
+  },
+  "ve": {
+    "src": "/data/flag-overrides/ve.svg",
+    "ratio": 1.5
+  },
+  "ws": {
+    "src": "/data/flag-overrides/ws.svg",
+    "ratio": 2
+  },
+  "xk": {
+    "src": "/data/flag-overrides/xk.svg",
+    "ratio": 1.4
+  },
+  "xo": {
+    "src": "/data/flag-overrides/xo.svg",
+    "ratio": 2
+  },
+  "ye": {
+    "src": "/data/flag-overrides/ye.svg",
+    "ratio": 1.5
+  },
+  "za": {
+    "src": "/data/flag-overrides/za.svg",
+    "ratio": 1.5
+  },
+  "zw": {
+    "src": "/data/flag-overrides/zw.svg",
+    "ratio": 2
   }
 }

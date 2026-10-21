@@ -3,7 +3,7 @@ import { join, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = new URL("../public/data/flag-overrides/", import.meta.url);
-const files = (await readdir(root)).filter((name) => /\.(svg|png)$/i.test(name));
+const files = (await readdir(root)).filter((name) => /\.(svg|png|webp)$/i.test(name));
 let failures = 0;
 const manifest = {};
 for (const name of files) {
@@ -22,6 +22,8 @@ for (const name of files) {
     // Only remove harmless inter-tag whitespace; no transforms or path rewrites.
     const optimized = text.replace(/>\s+</g, "><").trim();
     if (optimized !== text) await writeFile(path, optimized);
+  } else if (ext === ".webp") {
+    if (bytes.length < 16 || bytes.toString("ascii", 0, 4) !== "RIFF" || bytes.toString("ascii", 8, 12) !== "WEBP") { console.error(`${name}: invalid WebP`); failures++; continue; }
   } else {
     if (bytes.length < 24 || bytes.readUInt32BE(0) !== 0x89504e47 || bytes.toString("ascii", 1, 4) !== "PNG") { console.error(`${name}: invalid PNG`); failures++; continue; }
     ratio = bytes.readUInt32BE(16) / bytes.readUInt32BE(20);

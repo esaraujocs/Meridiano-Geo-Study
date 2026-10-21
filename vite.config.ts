@@ -52,7 +52,7 @@ const injectPrecacheManifest = () => {
       // bandeiras corrigidas por cima do flags.json herdado (scripts/validate-flag-overrides.mjs): o manifesto e os arquivos, para valer sem conexão
       "/data/flag-overrides/manifest.json",
       ...(await readdir(new URL("./public/data/flag-overrides/", import.meta.url)))
-        .filter((file) => /\.(svg|png)$/.test(file))
+        .filter((file) => /\.(svg|png|webp)$/.test(file))
         .map((file) => `/data/flag-overrides/${file}`),
       // Peças locais do museu: adquiridas continuam visíveis sem conexão.
       ...(await readdir(new URL("./public/museum/", import.meta.url)))
