@@ -51,15 +51,7 @@ export function cueCorrect() {
  * Bandeira dentro de uma alternativa: preenche a caixa inteira (a maioria das bandeiras é 4:3 ou parecida, então quase nada é cortado).
  * Formatos muito diferentes (quadradas, faixas 2:1 ou mais) ficam inteiros, sem cortar o desenho (sobre o fundo do próprio cartão).
  */
+/** A bandeira de uma alternativa, sempre inteira e na proporção dela (o CSS de `.opt-flag`). */
 export function OptionFlag({ src, alt }: { src: string; alt: string }) {
-  const [wide, setWide] = useState(false);
-  return <img
-    className={wide ? "opt-flag fit-contain" : "opt-flag"}
-    src={src}
-    alt={alt}
-    onLoad={(event) => {
-      const { naturalWidth: w, naturalHeight: h } = event.currentTarget;
-      if (w > 0 && h > 0) setWide(w / h < 1.2 || w / h > 1.95);
-    }}
-  />;
+  return <img className="opt-flag" src={src} alt={alt} />;
 }

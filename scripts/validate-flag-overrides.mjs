@@ -1,12 +1,13 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join, extname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = new URL("../public/data/flag-overrides/", import.meta.url);
 const files = (await readdir(root)).filter((name) => /\.(svg|png)$/i.test(name));
 let failures = 0;
 const manifest = {};
 for (const name of files) {
-  const path = join(root.pathname, name);
+  const path = join(fileURLToPath(root), name);
   const bytes = await readFile(path);
   const ext = extname(name).toLowerCase();
   let ratio = null;

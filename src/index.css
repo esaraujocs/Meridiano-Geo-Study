@@ -1139,8 +1139,9 @@ html[data-reduced-motion=true] .rs-level.is-levelup{animation:none}
 /* alternativas com bandeira: a bandeira preenche a caixa inteira (4:3, sem vazar) e a moldura fica por cima dela */
 .quiz-options .quiz-option:has(.opt-flag){position:relative;display:block;overflow:hidden;padding:0;height:auto;min-height:0;aspect-ratio:4/3;max-height:min(300px,27dvh)}
 .quiz-options:has(.opt-flag){grid-template-columns:repeat(2,minmax(0,300px));justify-content:start}
-.quiz-option .opt-flag{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:0;max-height:none;margin:0;object-fit:cover;object-position:center}
-.quiz-option .opt-flag.fit-contain{object-fit:contain}
+/* a bandeira na proporção dela (20/10/2026, pedido do Enzo: Mônaco 5:4 e Indonésia 3:2 ficavam iguais, cortadas para 4:3): inteira dentro do
+   cartão, e o contorno vem do drop-shadow, que segue a forma da bandeira e não a caixa */
+.quiz-option .opt-flag{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:0;max-height:none;margin:0;padding:7%;box-sizing:border-box;object-fit:contain;object-position:center;filter:drop-shadow(0 0 .6px rgba(20,30,30,.55)) drop-shadow(0 2px 5px rgba(20,30,30,.14))}
 .quiz-option:has(img).correct{outline:3px solid var(--green);outline-offset:-3px;box-shadow:none}
 .quiz-option:has(img).wrong{outline:3px solid var(--terracotta);outline-offset:-3px;box-shadow:none}
 @keyframes opt-pop{40%{transform:scale(1.025)}}
@@ -1270,8 +1271,8 @@ body:has(.gs-hotbar) .gs .gs-body{padding-bottom:104px}
 .gs-big.script{font:600 clamp(28px,9vw,38px)/1.3 'Noto Sans','Segoe UI',sans-serif;letter-spacing:0}
 .gs-big.script.long{font-size:clamp(22px,6.8vw,30px);line-height:1.35}
 .gs-big.script.xlong{font-size:clamp(19px,5.8vw,25px);line-height:1.4}
-.gs-flag{width:min(250px,72%);aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 18px rgba(36,59,58,.16);background:#fff}
-.gs-flag img{display:block;width:100%;height:100%;object-fit:contain}
+.gs-flag{width:min(250px,72%);aspect-ratio:4/3}
+.gs-flag img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 .6px rgba(20,30,30,.55)) drop-shadow(0 6px 14px rgba(36,59,58,.16))}
 .gs-ribbon{min-height:40px;display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:99px;font:700 15px 'Plus Jakarta Sans',sans-serif;margin-top:6px;opacity:0;transition:opacity .15s}
 .gs-ribbon.on{opacity:1}
 .gs-ribbon.ok{background:#D5E6DC;color:#174A43}

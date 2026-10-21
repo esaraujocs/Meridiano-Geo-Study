@@ -1,1 +1,10 @@
-{}
+{
+  "id": {
+    "src": "/data/flag-overrides/id.svg",
+    "ratio": 1.5
+  },
+  "mc": {
+    "src": "/data/flag-overrides/mc.svg",
+    "ratio": 1.25
+  }
+}
