@@ -153,7 +153,9 @@ export function ContinueBar({ holdMs, onSkip }: { holdMs: number | null; onSkip:
   </button>;
 }
 
-/** Atalhos do teclado no computador: 1–4 escolhem a alternativa; Esc abre a saída. Não age com a confirmação aberta nem digitando. */
+/** Setas como atalho das 4 alternativas (20/10/2026, pedido do Enzo): ← 1, ↑ 2, ↓ 3, → 4. */
+const ARROW_CHOICE: Record<string, number> = { ArrowLeft: 0, ArrowUp: 1, ArrowDown: 2, ArrowRight: 3 };
+/** Atalhos do teclado no computador: 1–4 (ou as setas) escolhem a alternativa; Esc abre a saída. Não age com a confirmação aberta nem digitando. */
 export function useGameKeys({ choose, exit, enabled = true }: { choose?: (index: number) => void; exit: () => void; enabled?: boolean }) {
   useEffect(() => {
     if (!enabled) return;
@@ -163,6 +165,7 @@ export function useGameKeys({ choose, exit, enabled = true }: { choose?: (index:
       const typing = event.target instanceof HTMLElement && (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA");
       if (event.key === "Escape") { exit(); return; }
       if (choose && !typing && /^[1-9]$/.test(event.key)) choose(Number(event.key) - 1);
+      else if (choose && !typing && event.key in ARROW_CHOICE) { event.preventDefault(); choose(ARROW_CHOICE[event.key]); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

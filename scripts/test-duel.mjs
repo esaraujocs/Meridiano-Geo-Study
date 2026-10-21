@@ -141,19 +141,21 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
 assert.equal(B.BOTS.length, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 56);
+// a Ana Hemisfério (bot-mestre-4) foi promovida ao Grão-Mestre, com o mesmo id
+const ana = B.botById("bot-mestre-4");
+assert.equal(ana.name, "Ana Hemisfério"); assert.equal(ana.league, "grao-mestre"); assert.equal(ana.skill, 3350); assert.equal(ana.specialty, "bandeiras");
 for (const league of L.LEAGUES) {
   const group = B.botsOfLeague(league);
-  assert.equal(group.length, 8, league);
-  assert.deepEqual(group.slice(0, 5).map((bot) => bot.style), ["constante", "preciso", "rapido", "irregular", "especialista"]);
-  assert.deepEqual(group.map((bot) => bot.id), group.map((_, i) => `bot-${league}-${i}`));
-  assert.deepEqual(group.filter((bot) => bot.specialty).map((bot) => bot.style), ["especialista"]);
+  assert.equal(group.length, league === "mestre" ? 7 : league === "grao-mestre" ? 9 : 8, league);
+  if (league !== "mestre") assert.deepEqual(group.filter((bot) => bot.id.startsWith(`bot-${league}-`)).slice(0, 5).map((bot) => bot.style), ["constante", "preciso", "rapido", "irregular", "especialista"]);
+  assert.deepEqual(group.filter((bot) => bot.specialty).map((bot) => bot.style), league === "mestre" ? [] : league === "grao-mestre" ? ["especialista", "especialista"] : ["especialista"]);
 }
 assert.equal(B.botById("bot-ouro-2").name, "Caio Latitude");
 assert.equal(B.botById("bot-prata").league, "prata", "registro antigo (só a liga) ainda resolve");
 assert.equal(B.botById("bot-nao-existe"), null);
 
 // ---- Força: sobe com a liga e com a divisão; cada jeito muda o perfil ----
-const base = (league) => B.botsOfLeague(league)[0];
+const base = (league) => B.botById(`bot-${league}-0`);
 for (let i = 1; i < L.LEAGUES.length; i += 1) {
   const low = B.botProfile(base(L.LEAGUES[i - 1]), { division: L.hasDivisions(i - 1) ? 3 : null, family: null });
   const high = B.botProfile(base(L.LEAGUES[i]), { division: L.hasDivisions(i) ? 1 : null, family: null });
@@ -1010,8 +1012,8 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.equal(V.winStreak(entries), 4, "nem quebra a sequência");
   const card = V.ladderCards(entries, []).find((item) => item.ladder === "bandeiras");
   assert.equal(card.duels, 4); assert.deepEqual(card.form, ["win", "win", "win", "win"]); assert.equal(card.trophies, 620);
-  assert.equal(D.accountAdjustments("MrMussahRellah").length, 2, "a conta do pedido tem os dois ajustes");
-  assert.deepEqual(D.accountAdjustments("MrMussahRellah").map((row) => [row.ladder, row.trophies]), [["bandeiras", -500], ["mapas", -200]]);
+  assert.equal(D.accountAdjustments("MrMussahRellah").length, 3, "a conta do pedido tem os três ajustes");
+  assert.deepEqual(D.accountAdjustments("MrMussahRellah").map((row) => [row.ladder, row.trophies]), [["bandeiras", -500], ["mapas", -200], ["mapas", -150]]);
   assert.equal(D.accountAdjustments("outra-pessoa").length, 0); assert.equal(D.accountAdjustments("").length, 0);
 }
 

@@ -253,6 +253,8 @@ export const ACCOUNT_ADJUSTMENTS: readonly { account: number; rows: readonly Lad
     rows: [
       { id: "ladder-adjust:2026-10-20:bandeiras", at: Date.UTC(2026, 9, 20, 0, 45), ladder: "bandeiras", trophies: -500, mmr: -500 },
       { id: "ladder-adjust:2026-10-20:mapas", at: Date.UTC(2026, 9, 20, 0, 45), ladder: "mapas", trophies: -200, mmr: -200 },
+      // 20/10/2026, de novo: "deduz do meu mapa uns 150 pontos (capital escrita e silhueta estão jogando minha precisão para 60/70%)"
+      { id: "ladder-adjust:2026-10-21:mapas", at: Date.UTC(2026, 9, 21, 0, 15), ladder: "mapas", trophies: -150, mmr: -150 },
     ],
   },
 ];

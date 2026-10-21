@@ -108,6 +108,12 @@ const skillOf = (league: LeagueKey, index: number) => {
   return league === "grao-mestre" ? GRAND_SKILLS[rank] : leagueFloor(leagueIndex) + 40 + rank * 60;
 };
 
+/** Bots promovidos à mão (o id não muda, então o histórico continua apontando para eles). 20/10/2026, pedido do Enzo: "dá um buff na Ana
+ *  Hemisfério, quero ela no nível GM" (era a especialista em bandeiras do Mestre, força 2.900). */
+const PROMOTED: Record<string, { league: LeagueKey; skill: number }> = {
+  "bot-mestre-4": { league: "grao-mestre", skill: 3350 },
+};
+
 export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
   ...ROSTER[league].map((name, index): Bot => ({
     id: `bot-${league}-${index}`,
@@ -118,7 +124,7 @@ export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
     skill: skillOf(league, index),
   })),
   ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null, skill: skillOf(league, ROSTER[league].length + index) })),
-]);
+]).map((bot) => (PROMOTED[bot.id] ? { ...bot, ...PROMOTED[bot.id] } : bot));
 export const botsOfLeague = (league: LeagueKey) => BOTS.filter((bot) => bot.league === league);
 
 /** Registros antigos guardavam só a liga (`bot-bronze`); o nome vira "Bot Bronze" e o jeito, o de um constante. */
