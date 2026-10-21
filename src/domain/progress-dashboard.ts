@@ -80,7 +80,10 @@ export type RegionRow = { key: string; label: string; found: number; discovered:
 export type ReviewItem = { id: string; name: string; place: string; flag?: string; pct: number; correct: number; tries: number; weak: string[] };
 type Miss = { id: string; name: string; flag?: string };
 /** Um tempo do duelo: o modo, o placar contra o bot e, se a partida ainda existe, o que a pessoa acertou e errou. */
-export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: number; total: number; playerMs: number | null; botMs: number | null; pattern: string; misses: Miss[] };
+/** Cada pergunta da partida (21/10/2026, pedido do Enzo: o tempo por pergunta no Histórico): o alvo, se acertou, o tempo e, nas escritas, o que
+ *  foi digitado quando errou e a resposta esperada (a capital, na escrita da capital). */
+export type Question = { id: string; name: string; flag?: string; correct: boolean; ms: number | null; timedOut?: boolean; answer?: string; typed?: string };
+export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: number; total: number; playerMs: number | null; botMs: number | null; pattern: string; misses: Miss[]; questions: Question[] };
 export type DuelRow = {
   /** Contra bot (liga/MMR) ou com amigo (PvP, força própria). O layout é o mesmo; só o rótulo do adversário e do delta muda. */
   kind: "bot" | "pvp";
@@ -98,6 +101,7 @@ export type SessionRow = {
   id: string; title: string; family: string; variant: string; group: SessionGroup; region: string;
   rounds: number; duration: string | null; pct: number | null; complete: boolean; startedAt: number; when: string;
   pattern: string; avgTimeMs: number | null; bestStreak: number; misses: Miss[];
+  questions: Question[];
   /** Só nas linhas de duelo: adversário, placar, troféus e os dois tempos. */
   duel?: DuelRow;
 };
@@ -175,6 +179,23 @@ function missesOf(rounds: SurfaceSession["rounds"], meta: Record<string, Meta>, 
   return misses;
 }
 
+const WRITING_VARIANTS = new Set(["escrita-pais", "escrita-capital", "silhueta", "dv-escrita-nome", "dv-escrita-capital", "dv-silhueta"]);
+function questionsOf(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (id: string) => string | undefined): Question[] {
+  const writing = WRITING_VARIANTS.has(session.variant);
+  const capital = session.variant === "escrita-capital" || session.variant === "dv-escrita-capital";
+  return session.rounds.filter((round) => round.targetId).map((round) => {
+    const item = meta[round.targetId];
+    const answer = capital && typeof item?.cap === "string" ? item.cap : undefined;
+    return {
+      id: round.targetId, name: item?.pt ?? round.targetId, flag: flagOf(round.targetId), correct: round.correct,
+      ms: typeof round.responseTimeMs === "number" ? round.responseTimeMs : null,
+      ...(round.timedOut ? { timedOut: true } : {}),
+      ...(answer ? { answer } : {}),
+      ...(writing && !round.correct && round.selectedId !== undefined ? { typed: round.selectedId } : {}),
+    };
+  });
+}
+
 function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number): SessionRow {
   const label = sessionLabel(session);
   const startedAt = startedAtOf(session);
@@ -197,6 +218,7 @@ function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (
     avgTimeMs: mean(times),
     bestStreak: longestStreak(session.rounds),
     misses,
+    questions: questionsOf(session, meta, flagOf),
   };
 }
 
@@ -226,6 +248,7 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
         playerMs: typeof leg.playerMs === "number" ? leg.playerMs : null, botMs: typeof leg.botMs === "number" ? leg.botMs : null,
         pattern: session ? session.rounds.slice(0, 30).map((round) => (round.correct ? "1" : "0")).join("") : "",
         misses: session ? missesOf(session.rounds, meta, flagOf) : [],
+        questions: session ? questionsOf(session, meta, flagOf) : [],
       };
     });
     const startedAt = mine.length ? Math.min(...mine.map(startedAtOf)) || record.at : record.at;
@@ -235,6 +258,7 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
     const seen = new Set<string>();
     const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
     return {
+      questions: [],
       id: `duel:${record.sessionId}`,
       title: t.progress.duelTitle(ladderLabel),
       family: ladderLabel,
@@ -287,6 +311,7 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
         playerMs: leg.youMs, botMs: leg.opponentMs,
         pattern: session ? session.rounds.slice(0, 30).map((round) => (round.correct ? "1" : "0")).join("") : "",
         misses: session ? missesOf(session.rounds, meta, flagOf) : [],
+        questions: session ? questionsOf(session, meta, flagOf) : [],
       };
     });
     const startedAt = mine.length ? Math.min(...mine.map(startedAtOf)) || record.at : record.at;
@@ -296,6 +321,7 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
     const seen = new Set<string>();
     const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
     return {
+      questions: [],
       id: `pvp:${record.code}`,
       title: t.progress.pvpDuelTitle(ladderLabel),
       family: ladderLabel,

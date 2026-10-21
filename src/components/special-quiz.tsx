@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { flagSource, loadFlags, type FlagCatalog } from "../domain/quiz";
 import { acceptedCapitalAnswers, acceptedWritingAnswers, historicalPool, languagePool, loadSpecialData, type HistoricalEntity, type LanguageEntry } from "../domain/special-data";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
-import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { focusPool, sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { AnswerReveal, cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
@@ -160,7 +160,7 @@ export function SpecialQuiz({ family, variant, region, data, options, onBack, on
        const key = `${variant}|${JSON.stringify(region)}|${pool.map((item) => item.id).join("|")}`;
       if (deckKey.current === key) return;
       deckKey.current = key;
-       deck.current = createFiniteDeck<any>(pool, deckSeedFor(seedFromParts(variant, JSON.stringify(region), pool.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
+       deck.current = createFiniteDeck<any>(focusPool(pool, (item: { id: string }) => item.id, settings.focusIds), deckSeedFor(seedFromParts(variant, JSON.stringify(region), pool.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
       next();
     }
   }, [pool, variant, region, runKey]);

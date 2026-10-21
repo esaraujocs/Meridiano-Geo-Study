@@ -10,7 +10,7 @@ import { startLearningSession, type LearningSessionHandle, type SessionResult } 
 import { cardParentsOf } from "../domain/learning-rules";
 import { sameCapitalName } from "../domain/typed-answer";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
-import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { focusPool, sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { addMapFauna } from "./map-fauna";
@@ -291,7 +291,7 @@ export function Game({
     deck.defer(item);
     nextTarget();
   };
-  const newDeck = () => createFiniteDeck(features, deckSeedFor(seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
+  const newDeck = () => createFiniteDeck(focusPool(features, (item) => item.id, settings.focusIds), deckSeedFor(seedFromParts(engineFamily, engineVariant, JSON.stringify(region), features.map((item) => item.id).join("|")), settings.deckSeed), roundLimit);
 
   useEffect(() => {
     deckRef.current = newDeck();

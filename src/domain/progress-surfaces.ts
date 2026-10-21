@@ -23,7 +23,7 @@ export type SurfaceSession = {
   startedAt: number | null;
   endedAt: number | null;
   complete: boolean;
-  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number }>;
+  rounds: Array<{ targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number; selectedId?: string; timedOut?: boolean }>;
   /** "timed" ou "training" (o Treino fica fora do Seu ritmo). */
   pace?: string;
   /** Rodadas jogadas: as listadas em `rounds` ou, em partida antiga já resumida, o total do resumo. */
@@ -79,7 +79,7 @@ function familyFor(mode: string) {
   if (mode === "capital-pais" || mode === "pais-capital") return "capitais";
   return "bandeiras";
 }
-type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number };
+type NormalizedRound = { targetId: string; correct: boolean; responseTimeMs: number | null; distanceKm?: number | null; byWater?: boolean; assisted?: boolean; answeredAt?: number; selectedId?: string; timedOut?: boolean };
 // A rodada vem como objeto (partida atual) ou como tupla [alvo, acertou, ms, km] (perfil clássico, inclusive
 // quando migrado para o campo `rounds`).
 function roundFrom(round: any): NormalizedRound {
@@ -97,6 +97,8 @@ function roundFrom(round: any): NormalizedRound {
     distanceKm: typeof round?.distanceKm === "number" ? round.distanceKm : null,
     byWater: Boolean(round?.byWater),
     ...(typeof round?.answeredAt === "number" ? { answeredAt: round.answeredAt } : {}),
+    ...(typeof round?.selectedId === "string" ? { selectedId: round.selectedId } : {}),
+    ...(round?.timedOut ? { timedOut: true } : {}),
     assisted: Boolean(round?.assisted),
   };
 }

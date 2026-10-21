@@ -5,7 +5,7 @@ import type { EconomySnapshot } from "../domain/economy-store";
 import { TITLE_IDS } from "../domain/hub-profile";
 import {
   TITLE_DOMAIN_PCT, buildProgressDashboard, groupHistory,
-  type Dashboard, type HistoryGroup, type PillarCard, type RegionRow, type ReviewItem, type SessionRow,
+  type Dashboard, type HistoryGroup, type PillarCard, type Question, type RegionRow, type ReviewItem, type SessionRow,
 } from "../domain/progress-dashboard";
 import { addDays, formatClock, formatSeconds, formatShortDate, type SessionGroup } from "../domain/session-view";
 import { clockOf } from "../domain/duel-view";
@@ -15,9 +15,10 @@ import { loadDivision, loadDivisionFlags } from "../domain/divisions-data";
 import { asDivisionSession, divisionCountry, divisionCountryOf, isDivisionFamily } from "../domain/divisions";
 import { Glyph } from "./achievement-art";
 import { Icon } from "./icons";
-import { DomainChart, DuelCard, ModesTab, NumbersCard, PillarsCompact, ProfileHero, WorldMap, levelsOf, type LadderTally, type MapMeasure } from "./progress-profile";
+import { DomainChart, DuelCard, ModesTab, NumbersCard, PillarsCompact, ProfileHero, ReflexesCard, WorldMap, levelsOf, type LadderTally, type MapMeasure, type ReflexLookup } from "./progress-profile";
 import { RhythmTab } from "./progress-rhythm";
-import { buildRhythm, modesOverview, rhythmRounds } from "../domain/rhythm";
+import { buildRhythm, modesOverview, reflexes, rhythmRounds, type ReflexMode } from "../domain/rhythm";
+import { answerKey } from "../domain/typed-answer";
 import type { LadderCard } from "../domain/duel-view";
 import { pvpAccountName, pvpName } from "../domain/pvp-client";
 import { compareText, formatNumber, t } from "../domain/i18n";
@@ -34,6 +35,8 @@ type Props = {
   /** As duas escadas do Duelo (troféus com os ajustes da conta, liga e forma), do app. */
   ladders?: readonly LadderCard[];
   onOpenLeague?: () => void;
+  /** "Treinar os 5 mais lentos" de Seus reflexos: um Treino só com esses alvos, no modo. */
+  onTrainFocus?: (mode: ReflexMode, ids: readonly string[]) => void;
 };
 type FlagOf = (code?: string) => string | undefined;
 
@@ -206,6 +209,31 @@ function Evolution({ evolution, timeline, stages }: { evolution: Dashboard["evol
 
 // ---------- histórico ----------
 const PAGE = 20;
+/** Pergunta a pergunta (21/10/2026, pedido do Enzo): o tempo de cada resposta, a mais demorada marcada. Partida longa mostra só as mais demoradas. */
+const QUESTIONS_ALL = 20;
+const QUESTIONS_SLOWEST = 10;
+function QuestionList({ questions, flagOf }: { questions: readonly Question[]; flagOf: FlagOf }) {
+  const timed = questions.filter((question) => question.ms !== null);
+  if (!timed.length) return null;
+  const long = questions.length > QUESTIONS_ALL;
+  const shown = long ? [...timed].sort((a, b) => (b.ms as number) - (a.ms as number)).slice(0, QUESTIONS_SLOWEST) : questions;
+  const max = Math.max(...timed.map((question) => question.ms as number));
+  const slowest = timed.reduce((a, b) => ((b.ms as number) > (a.ms as number) ? b : a));
+  return <div className="pr-qs">
+    <p className="pr-qs-h">{long ? t.progress.questionsSlowest(QUESTIONS_SLOWEST) : t.progress.questionsTitle}</p>
+    <ol>{shown.map((question, index) => {
+      const src = flagOf(question.flag);
+      const time = question.ms === null ? "—" : formatSeconds(question.ms);
+      return <li key={`${question.id}:${index}`} className={question === slowest ? "is-slowest" : undefined} aria-label={t.progress.questionsAria(question.name, time, question.correct)}>
+        <span className={question.correct ? "ok" : "no"} aria-hidden="true">{question.correct ? "✓" : "✕"}</span>
+        {src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : <span className="pr-flag" aria-hidden="true" />}
+        <span className="pr-q-name" aria-hidden="true">{question.name}{question.answer || question.typed !== undefined ? <small>{" · "}{!question.correct && question.typed !== undefined ? <><em>{question.typed || "—"}</em>{question.answer ? ` → ${question.answer}` : ""}</> : question.answer}</small> : null}</span>
+        <span className="pr-q-bar" aria-hidden="true"><i style={{ width: `${question.ms === null ? 0 : (question.ms / max) * 100}%` }} /></span>
+        <strong aria-hidden="true">{time}</strong>
+      </li>;
+    })}</ol>
+  </div>;
+}
 function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; group: string; open: boolean; onToggle: () => void; flagOf: FlagOf }) {
   const when = group === "hoje" || group === "ontem" ? formatClock(row.startedAt) : formatShortDate(row.startedAt);
   const pct = row.pct ?? 0;
@@ -228,9 +256,9 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
           <div><dt>{t.progress.duration}</dt><dd>{row.duration ?? "—"}</dd></div>
         </dl>
       </div>
-      <div className="pr-sd-miss">{row.misses.length === 0
+      {row.questions.some((question) => question.ms !== null) ? <QuestionList questions={row.questions} flagOf={flagOf} /> : <div className="pr-sd-miss">{row.misses.length === 0
         ? <span>{row.pattern ? t.progress.noErrors : t.progress.oldSession}</span>
-        : <><span>{t.progress.youMissed}</span>{row.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{row.misses.length > 8 && <span>+{row.misses.length - 8}</span>}</>}</div>
+        : <><span>{t.progress.youMissed}</span>{row.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{row.misses.length > 8 && <span>+{row.misses.length - 8}</span>}</>}</div>}
     </div>}
   </article>;
 }
@@ -248,7 +276,7 @@ function DuelDetail({ row, duel, flagOf }: { row: SessionRow; duel: NonNullable<
     <div className="pr-duel-legs">{duel.legs.map((leg, index) => <div className="pr-duel-leg" key={index}>
       <div className="pr-duel-leg-h"><b>{duel.legs.length > 1 ? t.duel.result.legTitle(index + 1, leg.mode) : leg.mode}</b><div className="pr-duel-leg-r"><span>{leg.playerCorrect} × {leg.botCorrect}</span>{leg.playerMs !== null ? <small>{clockOf(leg.playerMs)}</small> : null}</div></div>
       {leg.pattern && <div className="pr-strip" role="img" aria-label={t.progress.stripAria(leg.pattern.split("").filter((c) => c === "1").length, leg.pattern.length)}>{leg.pattern.split("").map((c, i) => <i key={i} className={c === "1" ? "ok" : "no"} />)}</div>}
-      {leg.pattern && <div className="pr-sd-miss">{leg.misses.length === 0
+      {leg.questions.some((question) => question.ms !== null) ? <QuestionList questions={leg.questions} flagOf={flagOf} /> : leg.pattern && <div className="pr-sd-miss">{leg.misses.length === 0
         ? <span>{t.progress.noErrors}</span>
         : <><span>{t.progress.youMissed}</span>{leg.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{leg.misses.length > 8 && <span>+{leg.misses.length - 8}</span>}</>}</div>}
     </div>)}</div>
@@ -337,7 +365,7 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
 }
 
 // ---------- tela ----------
-export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague }: Props) {
+export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague, onTrainFocus }: Props) {
   const [tab, setTab] = useState<"resumo" | "modos" | "ritmo" | "historico">("resumo");
   const [measure, setMeasure] = useState<MapMeasure>("domain");
   const [flags, setFlags] = useState<FlagCatalog>({});
@@ -386,6 +414,20 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
   // Seu ritmo e Modos: as rodadas com hora (Treino incluído nos Modos, fora no Seu ritmo)
   const rounds = useMemo(() => rhythmRounds(state.sessions), [state.sessions]);
   const modes = useMemo(() => modesOverview(rounds), [rounds]);
+  // Seus reflexos: os nomes, as bandeiras e, nas escritas, o que a pessoa escreve quando foge da grafia esperada (o "spain")
+  const reflexData = useMemo(() => reflexes(rounds), [rounds]);
+  const reflexLookup: ReflexLookup = {
+    name: (id) => data.meta[id]?.pt ?? historicalMeta[id]?.pt ?? id,
+    flag: (id) => flagOf(data.meta[id]?.fl ?? id),
+    sub: (id, mode) => (mode.key === "capitais:escrita-capital" ? data.meta[id]?.cap : undefined),
+    typed: (item, mode) => {
+      const meta = data.meta[item.id];
+      if (!item.typed || !meta) return undefined;
+      const accepted = mode.key === "capitais:escrita-capital" ? [meta.cap, ...(meta.capAl ?? [])] : [meta.pt, meta.en, ...(meta.al ?? [])];
+      const keys = new Set(accepted.filter((value): value is string => typeof value === "string").map(answerKey));
+      return keys.has(answerKey(item.typed)) ? undefined : item.typed;
+    },
+  };
   const nights = useMemo(() => buildRhythm(rounds, "todos").nights.medianMinutes, [rounds]);
   const dominatedSet = useMemo(() => new Set(state.dominatedIds), [state.dominatedIds]);
   const conqueredSet = useMemo(() => new Set([...state.conquered.mapa, ...state.conquered.bandeiras, ...state.conquered.capitais]), [state.conquered]);
@@ -425,7 +467,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
       <button type="button" className="pr-how" onClick={() => howRef.current?.showModal()}><Glyph name="info" size={16} /> <span className="pr-d">{t.progress.howTitle}</span><span className="pr-m">{t.progress.howShort}</span></button>
     </div>
     {tab === "historico" ? <History rows={dashboard.history} now={now} flagOf={flagOf} />
-      : tab === "modos" ? <ModesTab modes={modes} />
+      : tab === "modos" ? <ModesTab modes={modes} after={reflexData.length ? <ReflexesCard data={reflexData} lookup={reflexLookup} onTrain={onTrainFocus ? (mode) => onTrainFocus(mode, mode.slow.map((item) => item.id)) : undefined} /> : null} />
       : tab === "ritmo" ? <RhythmTab rounds={rounds} modes={modes} calendar={<Activity activity={dashboard.activity} />} />
       : dashboard.empty ? <EmptySummary dashboard={dashboard} onTrain={onTrain} />
       : <>

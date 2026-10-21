@@ -11,7 +11,7 @@ import {
 } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
-import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { focusPool, sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { cueCorrect, OptionFlag, OptionMarks, optionClass } from "./answer-feedback";
@@ -217,7 +217,7 @@ export function QuizGame({
     const seed = deckSeedFor(seedFromParts(family, variant, JSON.stringify(region), pool.join("|")), settings.deckSeed);
     // Moeda → país: uma rodada por moeda (ver peoplesDeckPool)
     const cards = peoplesMode && peoples ? peoplesDeckPool(pool, peoples, peoplesMode, String(seed)) : pool;
-    return createFiniteDeck(cards, seed, roundLimit);
+    return createFiniteDeck(focusPool(cards, (id) => id, settings.focusIds), seed, roundLimit);
   };
 
   useEffect(() => {

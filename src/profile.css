@@ -9,12 +9,12 @@
 .pf-head>div:first-child{flex:1 1 240px;min-width:0}
 .pf-head h2{margin:0;font-size:22px}
 .pf-head p{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.45}
-.pf-row{display:grid;gap:18px;align-items:start}
+.pf-row{display:grid;gap:18px;align-items:stretch}
 .pf-row-map{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
 .pf-row-evo{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
 .pf-row-a{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
 .pf-row-b{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr)}
-.pf-col{display:grid;gap:18px}
+.pf-col{display:grid;gap:18px;grid-template-rows:auto 1fr}
 .pf .pr-card h2{color:var(--ink)}
 /* ---------- cabeçalho ---------- */
 .pf-hero{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px 28px;align-items:center;overflow:hidden}
@@ -123,7 +123,7 @@
 .pf-modes{display:grid;gap:18px}
 .pf-stack{display:flex;height:16px;border-radius:9px;overflow:hidden}
 .pf-stack i{display:block;height:100%;background:var(--h,var(--line))}
-.pf-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.pf-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
 .pf-fam-h{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .pf-fam-ic{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--h,var(--green));color:var(--on,#fff)}
 .pf-fam-h h3{margin:0;font-size:20px;color:var(--ink)}.pf-fam-h small{display:block;color:var(--muted);font-size:11.5px}
@@ -198,4 +198,55 @@
   .pf-filter{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px}.pf-filter button{flex:none}.pf-note{display:none}
   .pf-tabs .pr-how{margin:0}
   .pf-fam-h p b{font-size:18px}
+}
+
+/* Caixas alinhadas (21/10/2026, pedido do Enzo: "as caixas não têm alturas em comum, as coisas ficam soltas"): na mesma linha os cartões têm a
+   mesma altura; o conteúdo fica no topo e o que pode crescer (a lista dos números, os picos) ocupa a sobra. */
+.pf-row>.pr-card,.pf-row>.pf-col>.pr-card,.pf-fams>.pr-card{box-sizing:border-box;display:flex;flex-direction:column}
+.pf-row-evo .pf-numbers dl{flex:1;align-content:stretch}
+.pf-row .pf-peaks{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+
+/* Seus reflexos (21/10/2026, mock ../mockups-carta-cega/progresso-v2) */
+.pf-modes{grid-template-columns:minmax(0,1fr)}
+.pf-rx{min-width:0}
+.pf-rx-modes{margin:0 0 14px}
+.pf-rx-modes button small{font-weight:600;margin-left:2px}
+.pf-rx-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pf-rx h3{margin:0 0 8px;font:500 10px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.pf-rx ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pf-rx li{display:grid;grid-template-columns:44px minmax(0,1fr) minmax(60px,120px) 56px;gap:12px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.pf-rx li img,.pf-rx-noflag{width:44px;height:30px;object-fit:contain;filter:drop-shadow(0 0 .6px rgba(20,30,30,.55))}
+.pf-rx-name{min-width:0}
+.pf-rx-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-rx-name small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-rx-name em{font-style:normal;font-family:'DM Mono',monospace;color:var(--ink);background:color-mix(in srgb,var(--brass) 18%,transparent);padding:0 4px;border-radius:4px}
+.pf-rx-bar{height:8px;border-radius:999px;background:var(--pf-neutral);position:relative;overflow:hidden}
+.pf-rx-bar i{position:absolute;inset:0 auto 0 0;border-radius:inherit}
+.pf-rx .fast .pf-rx-bar i{background:var(--pf-up)}
+.pf-rx .slow .pf-rx-bar i{background:var(--pf-down)}
+.pf-rx-bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.55}
+.pf-rx li strong{font-family:'DM Serif Display',serif;font-size:18px;text-align:right;white-space:nowrap}
+.pf-rx-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--pf-hair);color:var(--muted);font-size:12.5px}
+.pf-rx-foot button{height:38px;padding:0 16px;border-radius:999px;border:0;background:var(--ink);color:var(--paper);font-weight:700;cursor:pointer}
+
+/* Pergunta a pergunta, no Histórico */
+.pf .pr-qs{margin-top:10px}
+.pf .pr-qs .pr-qs-h{margin:0 0 4px;font:500 10px 'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pf .pr-qs ol{list-style:none;margin:0;padding:0}
+.pf .pr-qs li{display:grid;grid-template-columns:16px 26px minmax(0,1fr) minmax(50px,140px) 48px;gap:10px;align-items:center;padding:5px 4px;border-top:1px solid var(--pf-hair);font-size:13px}
+.pf .pr-qs li .ok{color:var(--pf-up);font-weight:800}
+.pf .pr-qs li .no{color:var(--pf-down);font-weight:800}
+.pf .pr-qs .pr-flag{width:26px;height:18px;object-fit:contain}
+.pf .pr-q-name{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf .pr-q-name small{color:var(--muted);font-size:11.5px}
+.pf .pr-q-name em{font-style:normal;font-family:'DM Mono',monospace}
+.pf .pr-q-bar{height:7px;border-radius:999px;background:var(--pf-neutral);position:relative;overflow:hidden}
+.pf .pr-q-bar i{position:absolute;inset:0 auto 0 0;border-radius:inherit;background:color-mix(in srgb,var(--ink) 55%,var(--paper))}
+.pf .pr-qs li.is-slowest{background:color-mix(in srgb,var(--terracotta) 9%,transparent)}
+.pf .pr-qs li.is-slowest .pr-q-bar i{background:var(--pf-down)}
+.pf .pr-qs li strong{font-family:'DM Mono',monospace;font-size:12.5px;text-align:right}
+@media (max-width:760px){
+  .pf-rx-cols{grid-template-columns:minmax(0,1fr)}
+  .pf-rx li{grid-template-columns:40px minmax(0,1fr) 54px}.pf-rx li .pf-rx-bar{display:none}
+  .pf .pr-qs li{grid-template-columns:16px 26px minmax(0,1fr) 48px}.pf .pr-q-bar{display:none}
 }

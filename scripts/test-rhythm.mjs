@@ -73,6 +73,21 @@ assert.equal(mapa.best.acc, 1); assert.equal(mapa.best.med, 1500, "no empate de 
 assert.equal(ov.find((m) => m.mode === "capital-pais").duel, 1);
 assert.equal(ov.find((m) => m.mode === "capital-pais").best, null, "menos de 100 rodadas não tem pico");
 
+// Seus reflexos: a mediana das certas por alvo (4 acertos ou mais), fora do Treino e das assistidas; o texto mais digitado nas escritas
+{
+  const rounds = [];
+  for (let k = 0; k < 12; k += 1) for (let r = 0; r < 4; r += 1) rounds.push({ targetId: `p${k}`, correct: true, responseTimeMs: 1000 + k * 300 + r * 10, answeredAt: at(2, 10) + k * 100 + r });
+  rounds.push({ targetId: "p0", correct: false, responseTimeMs: 50, answeredAt: at(2, 11) }, { targetId: "solo", correct: true, responseTimeMs: 900, answeredAt: at(2, 12) });
+  const typedRounds = rounds.map((round, i) => ({ ...round, selectedId: round.targetId === "p3" ? "spain" : "x" + i }));
+  const rx = R.reflexes(R.rhythmRounds([session("bandeiras", "nome-bandeira", rounds), session("escrita", "escrita-pais", typedRounds), session("mapa", "mapa", rounds, { pace: "training" })]));
+  const flags = rx.find((m) => m.key === "bandeiras:atuais");
+  assert.equal(flags.count, 12, "só alvos com 4 acertos ou mais");
+  assert.deepEqual(flags.fast.map((i) => i.id), ["p0", "p1", "p2", "p3", "p4"]); assert.deepEqual(flags.slow.map((i) => i.id), ["p11", "p10", "p9", "p8", "p7"]);
+  assert.equal(flags.fast[0].n, 4); assert.equal(flags.fast[0].typed, undefined, "nas alternativas não há texto digitado");
+  assert.equal(rx.find((m) => m.key === "bandeiras:escrita-pais").fast[3].typed, "spain", "o texto mais digitado");
+  assert.equal(rx.find((m) => m.key === "mapa:mapa"), undefined, "o Treino fica de fora");
+}
+
 // evolução do domínio: só sobe, um ponto por dia (com teto de pontos)
 const timeline = DOM.domainTimeline([], clock.day);
 assert.deepEqual(timeline, []);

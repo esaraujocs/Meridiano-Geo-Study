@@ -34,9 +34,10 @@ export function rhythmMode(family: string, variant: string): { family: RhythmFam
 /** O que o Seu ritmo e os Modos leem de uma partida (`SurfaceSession` serve). */
 export type RhythmSession = {
   family: string; variant: string; startedAt: number | null; duelId?: string; pace?: string;
-  rounds: ReadonlyArray<{ correct: boolean; responseTimeMs: number | null; answeredAt?: number }>;
+  rounds: ReadonlyArray<{ correct: boolean; responseTimeMs: number | null; answeredAt?: number; targetId?: string; selectedId?: string; assisted?: boolean }>;
 };
-export type RhythmRound = { at: number; correct: boolean; ms: number | null; family: RhythmFamily; mode: string; training: boolean; duel: boolean };
+/** `target` e `typed`: o alvo e o que a pessoa mandou (nas escritas, o texto digitado), para Seus reflexos. */
+export type RhythmRound = { at: number; correct: boolean; ms: number | null; family: RhythmFamily; mode: string; training: boolean; duel: boolean; target?: string; typed?: string; assisted?: boolean };
 
 /** As rodadas com hora, na ordem: a hora é a da resposta (sem ela, a do começo da partida). */
 export function rhythmRounds(sessions: readonly RhythmSession[]): RhythmRound[] {
@@ -47,7 +48,11 @@ export function rhythmRounds(sessions: readonly RhythmSession[]): RhythmRound[] 
     for (const round of session.rounds) {
       const at = typeof round.answeredAt === "number" ? round.answeredAt : session.startedAt;
       if (typeof at !== "number" || !Number.isFinite(at)) continue;
-      out.push({ at, correct: Boolean(round.correct), ms: typeof round.responseTimeMs === "number" ? round.responseTimeMs : null, family: kind.family, mode: `${kind.family}:${kind.mode}`, training: session.pace === "training", duel: Boolean(session.duelId) });
+      out.push({
+        at, correct: Boolean(round.correct), ms: typeof round.responseTimeMs === "number" ? round.responseTimeMs : null, family: kind.family, mode: `${kind.family}:${kind.mode}`,
+        training: session.pace === "training", duel: Boolean(session.duelId),
+        ...(round.targetId ? { target: round.targetId } : {}), ...(round.selectedId ? { typed: round.selectedId } : {}), ...(round.assisted ? { assisted: true } : {}),
+      });
     }
   }
   return out.sort((a, b) => a.at - b.at);
@@ -217,4 +222,42 @@ export function modesOverview(rounds: readonly RhythmRound[]): ModeOverview[] {
     });
   }
   return out.sort((a, b) => b.rounds - a.rounds);
+}
+
+// ---- Seus reflexos (21/10/2026, mock ../mockups-carta-cega/progresso-v2, aprovado pelo Enzo) ----
+/** Os modos em que o alvo é um país (ou uma bandeira histórica) e o tempo de cada resposta diz algo: os de alternativas, de clicar e de escrever. */
+export const REFLEX_MODES = ["bandeiras:atuais", "bandeiras:escrita-pais", "bandeiras:historicas", "mapa:mapa", "mapa:silhueta-opcoes", "mapa:silhueta", "capitais:capital-pais", "capitais:escrita-capital"] as const;
+/** Modos em que se digita: o `typed` da rodada é o texto (nos outros é o id escolhido). */
+export const TYPED_REFLEX_MODES = new Set<string>(["bandeiras:escrita-pais", "mapa:silhueta", "capitais:escrita-capital"]);
+/** Acertos mínimos de um alvo para entrar na lista (um acerto lento isolado não é reflexo) e quantos mostrar de cada lado. */
+export const REFLEX_MIN_HITS = 4;
+export const REFLEX_TOP = 5;
+export type ReflexItem = { id: string; med: number; n: number; typed?: string };
+export type ReflexMode = { family: RhythmFamily; mode: string; key: string; median: number; count: number; fast: ReflexItem[]; slow: ReflexItem[] };
+/** O tempo das respostas certas por alvo e modo (a mediana, fora do Treino e sem as rodadas com suprimento): os mais rápidos e os mais lentos.
+ *  `typed` é o texto mais digitado para o alvo, nos modos de escrita (a tela só mostra quando foge da grafia esperada: o "spain" do Enzo). */
+export function reflexes(rounds: readonly RhythmRound[], minHits = REFLEX_MIN_HITS, top = REFLEX_TOP): ReflexMode[] {
+  const out: ReflexMode[] = [];
+  for (const key of REFLEX_MODES) {
+    const byTarget = new Map<string, { ms: number[]; typed: Map<string, number> }>();
+    const all: number[] = [];
+    for (const round of rounds) {
+      if (round.mode !== key || !round.correct || round.training || round.assisted || !round.target || round.ms === null || round.ms < 100 || round.ms > 120_000) continue;
+      const item = byTarget.get(round.target) ?? byTarget.set(round.target, { ms: [], typed: new Map() }).get(round.target)!;
+      item.ms.push(round.ms);
+      all.push(round.ms);
+      if (TYPED_REFLEX_MODES.has(key) && round.typed) { const text = round.typed.trim().toLowerCase(); item.typed.set(text, (item.typed.get(text) ?? 0) + 1); }
+    }
+    const items: ReflexItem[] = [];
+    for (const [id, item] of byTarget) {
+      if (item.ms.length < minHits) continue;
+      const typed = [...item.typed].sort((a, b) => b[1] - a[1])[0]?.[0];
+      items.push({ id, med: median(item.ms) as number, n: item.ms.length, ...(typed ? { typed } : {}) });
+    }
+    if (items.length < top * 2) continue;
+    items.sort((a, b) => a.med - b.med || (a.id < b.id ? -1 : 1));
+    const [family, mode] = key.split(":") as [RhythmFamily, string];
+    out.push({ family, mode, key, median: median(all) as number, count: items.length, fast: items.slice(0, top), slow: items.slice(-top).reverse() });
+  }
+  return out;
 }

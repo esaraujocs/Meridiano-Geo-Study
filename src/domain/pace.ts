@@ -23,7 +23,17 @@ export type SessionOptions = {
   onRound?: (round: LearningRound) => void;
   /** Multiplica as moedas da sessão (1 = normal); hoje nenhum modo usa (o amistoso pagava metade até 28/09, FRIENDLY_COIN_FACTOR em pvp.ts). */
   coinFactor?: number;
+  /** Treino só com estes alvos (Seus reflexos: "Treinar os 5 mais lentos"); fora deles o baralho não muda. */
+  focusIds?: readonly string[];
 };
+
+/** O baralho de um Treino focado: só os alvos pedidos que existem no baralho; sem pedido (ou nenhum deles no baralho), o baralho inteiro. */
+export function focusPool<T>(items: readonly T[], idOf: (item: T) => string, focus: readonly string[] | undefined): T[] {
+  if (!focus?.length) return [...items];
+  const wanted = new Set(focus);
+  const chosen = items.filter((item) => wanted.has(idOf(item)));
+  return chosen.length ? chosen : [...items];
+}
 
 /** Desbloqueios de rodadas: valem para todos os modos, para sempre. Comprar um corte maior inclui os menores. */
 export const ROUND_UNLOCKS = [
@@ -96,13 +106,14 @@ export const isRoundTier = (value: unknown): value is RoundTier => ROUND_TIERS.i
 export function sessionSettings(options: SessionOptions | undefined, variant: AnyQuizVariant) {
   const pace: Pace = options?.pace ?? "training";
   // Só leva as chaves do duelo quando existem (o solo continua com {pace, roundLimit, timerSeconds}).
-  const duel: Pick<SessionOptions, "deckSeed" | "coinVariant" | "duel" | "pvp" | "onRound" | "coinFactor"> = {
+  const duel: Pick<SessionOptions, "deckSeed" | "coinVariant" | "duel" | "pvp" | "onRound" | "coinFactor" | "focusIds"> = {
     ...(options?.deckSeed !== undefined ? { deckSeed: options.deckSeed } : {}),
     ...(options?.coinVariant ? { coinVariant: options.coinVariant } : {}),
     ...(options?.duel ? { duel: options.duel } : {}),
     ...(options?.pvp ? { pvp: options.pvp } : {}),
     ...(options?.onRound ? { onRound: options.onRound } : {}),
     ...(options?.coinFactor !== undefined ? { coinFactor: options.coinFactor } : {}),
+    ...(options?.focusIds?.length ? { focusIds: options.focusIds } : {}),
   };
   return { pace, roundLimit: options?.roundLimit ?? null, timerSeconds: paceSecondsFor(pace, variant), ...duel };
 }

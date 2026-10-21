@@ -21,7 +21,7 @@ import {
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
-import { sessionSettings, type SessionOptions } from "../domain/pace";
+import { focusPool, sessionSettings, type SessionOptions } from "../domain/pace";
 import { entityTier } from "../domain/spoils";
 import { RoundTimer } from "./round-timer";
 import { AnswerReveal, cueCorrect, OptionMarks, optionClass } from "./answer-feedback";
@@ -141,7 +141,7 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const optionsFor = (id: string) => shuffleAnswerOptions([id, ...shuffleAnswerOptions(ids.filter((item) => item !== id)).slice(0, 3)]);
   useEffect(() => {
     if (ids.length) {
-       deck.current = createFiniteDeck(ids, deckSeedFor(seedFromParts("silhueta", variant ?? "silhueta", JSON.stringify(region), ids.join("|")), settings.deckSeed), settings.roundLimit);
+       deck.current = createFiniteDeck(focusPool(ids, (id) => id, settings.focusIds), deckSeedFor(seedFromParts("silhueta", variant ?? "silhueta", JSON.stringify(region), ids.join("|")), settings.deckSeed), settings.roundLimit);
        const first = deck.current.draw();
        if (!first) return;
        setTarget(first);

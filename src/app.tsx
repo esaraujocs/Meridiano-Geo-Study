@@ -56,6 +56,7 @@ import { queryCollectionSummary, querySurfaces } from "./domain/progress-surface
 import { t } from "./domain/i18n";
 import { LeagueScreen } from "./components/league-screen";
 import { rankedOpponent, type BotRankingState } from "./domain/bot-ranking";
+import type { ReflexMode } from "./domain/rhythm";
 import { loadBotRanking } from "./domain/bot-ranking-store";
 import { leagueOf } from "./domain/league";
 import { MMR_MODEL, matchmaking, surprise } from "./domain/mmr";
@@ -125,6 +126,8 @@ export function App() {
   // Duelo contra bots (liga no Hub): sempre Mundo inteiro, sem o filtro ONU; a escolha do solo fica guardada.
   // "Treinar" no resultado de uma derrota: a próxima partida é um Treino curto do modo, no Mundo inteiro e sem o filtro ONU.
   const [trainOnce, setTrainOnce] = useState(false);
+  /** Treino só com estes alvos (Seus reflexos, "Treinar os 5 mais lentos"); só vale com o trainOnce. */
+  const [trainFocus, setTrainFocus] = useState<readonly string[] | null>(null);
   const [regionPref, setRegion] = useState<RegionSelection>("mundo");
   const [family, setFamily] = useState<Family>("mapa");
   const [topFamily, setTopFamily] = useState<TopFamily>("mapa");
@@ -754,8 +757,8 @@ export function App() {
     ? { ...legOptions(duelRun, economy.unlocked), onRound: (round: { correct: boolean }) => { liveLegRounds.current.push({ correct: round.correct }); } }
     : pvpRun && screen === "game"
     ? pvpLegOptions(pvpRun, pvpRun.index, economy.unlocked, reportPvpRound)
-    : trainOnce ? { pace: "training" as Pace, roundLimit: 10 }
-    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, pvpRun, screen, economy.unlocked, trainOnce, pace, effectiveTier, family]);
+    : trainOnce ? { pace: "training" as Pace, roundLimit: trainFocus?.length ?? 10, ...(trainFocus?.length ? { focusIds: trainFocus } : {}) }
+    : { pace, roundLimit: roundLimitFor(effectiveTier, family) }, [duelRun, pvpRun, screen, economy.unlocked, trainOnce, trainFocus, pace, effectiveTier, family]);
   // Saldo e XP de antes da partida: o resultado mostra o "antes → depois" e anima a diferença.
   const economyBeforeRef = useRef<EconomySnapshot>(economy);
   const beginGame = () => { economyBeforeRef.current = economy; setLastDuel(null); setScreen("game"); };
@@ -986,10 +989,33 @@ export function App() {
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } if (destination === "store") setStoreTab("all"); setScreen(destination); };
   const openMuseum = () => setScreen("mecenato");
+  /** "Treinar os 5 mais lentos" de Seus reflexos (Progresso → Modos): um Treino só com esses alvos, no modo; modo que a pessoa não tem leva à Loja. */
+  const REFLEX_GAME: Record<string, { family: Family; variant: AnyQuizVariant }> = {
+    "bandeiras:atuais": { family: "bandeiras", variant: "nome-bandeira" }, "bandeiras:escrita-pais": { family: "escrita", variant: "escrita-pais" },
+    "bandeiras:historicas": { family: "historicas", variant: "nome-historica" }, "mapa:mapa": { family: "mapa", variant: "mapa" },
+    "mapa:silhueta-opcoes": { family: "silhueta", variant: "silhueta-opcoes" }, "mapa:silhueta": { family: "silhueta", variant: "silhueta" },
+    "capitais:capital-pais": { family: "capitais", variant: "capital-pais" }, "capitais:escrita-capital": { family: "escrita", variant: "escrita-capital" },
+  };
+  const trainFocusMode = async (mode: ReflexMode, ids: readonly string[]) => {
+    const game = REFLEX_GAME[mode.key];
+    if (!game || !ids.length) return;
+    const policy = policyFor(game.family, game.variant, "caribe");
+    const open = !policy || (policy.cost === 0 && policy.sessions === 0) || economy.unlocked.includes(policy.key as UnlockKey);
+    if (!open) { setStoreTab("modes"); setScreen("store"); return; }
+    if (game.family === "bandeiras" || game.family === "historicas" || game.family === "escrita") await loadSpecial();
+    setTrainFocus(ids);
+    setTrainOnce(true);
+    setFamily(game.family);
+    setVariant(game.variant);
+    economyBeforeRef.current = economy;
+    setLastDuel(null);
+    setScreen("game");
+  };
   /** "Treinar" no resultado do duelo: um Treino de 10 rodadas do modo em que a pessoa mais ficou atrás. */
   const trainGroup = async (group: ModeGroup) => {
     const mode = groupDef(group).variants[0];
     if (mode.family === "bandeiras" || mode.family === "historicas" || mode.family === "idiomas" || mode.family === "escrita") await loadSpecial();
+    setTrainFocus(null);
     setTrainOnce(true);
     setFamily(mode.family);
     setVariant(mode.variant);
@@ -1356,7 +1382,7 @@ export function App() {
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
-     return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} ladders={arenaCards} onOpenLeague={() => setScreen("league")} /></div>;
+     return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} ladders={arenaCards} onOpenLeague={() => setScreen("league")} onTrainFocus={(mode, ids) => void trainFocusMode(mode, ids)} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
     return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;

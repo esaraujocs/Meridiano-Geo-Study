@@ -7,7 +7,7 @@ import type { LadderCard } from "../domain/duel-view";
 import { leagueLabel, leaguePip, nextStep } from "../domain/duel-labels";
 import { geometryIndex } from "../domain/legacy-geometry";
 import { formatSeconds } from "../domain/session-view";
-import type { ModeOverview, RhythmFamily } from "../domain/rhythm";
+import type { ModeOverview, ReflexItem, ReflexMode, RhythmFamily } from "../domain/rhythm";
 import { RHYTHM_FAMILIES } from "../domain/rhythm";
 import type { Region } from "../domain/types";
 import { formatNumber, t } from "../domain/i18n";
@@ -113,8 +113,8 @@ export function WorldMap({ measure, dominated, conquered, levels, regions, onOpe
     <ul className="pf-regions">{regions.map((row) => {
       const value = measure === "domain" ? row.found : row.discovered;
       const pct = row.total ? Math.round((value / row.total) * 100) : 0;
-      return <li key={row.key}><button type="button" onClick={() => onOpen(row.key as Region)} aria-label={t.progress.regionAria(row.label, value, row.total, pct)}>
-        <b><span>{row.label}</span><em>{pct}%</em></b><span className="pf-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span><small>{t.profile.regionCount(value, row.total)}</small>
+      return <li key={row.key}><button type="button" onClick={() => onOpen(row.key as Region)}>
+        <b><span>{row.label}</span> <em>{pct}%</em></b><span className="pf-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span><small>{t.profile.regionCount(value, row.total)}</small><span className="sr-only"> · {t.profile.regionOpen}</span>
       </button></li>;
     })}</ul>
   </section>;
@@ -196,7 +196,7 @@ const modeName = (mode: string) => (t.modes as Record<string, readonly string[] 
 /** O nome do modo; fora do cartão da família (os picos do Seu ritmo), com a família na frente ("Capitais · Clicar no mapa"). */
 export const modeLabel = (overview: Pick<ModeOverview, "family" | "mode">, withFamily = false) =>
   (withFamily ? `${t.profile.families[overview.family]} · ${modeName(overview.mode)}` : modeName(overview.mode));
-export function ModesTab({ modes }: { modes: readonly ModeOverview[] }) {
+export function ModesTab({ modes, after }: { modes: readonly ModeOverview[]; after?: ReactNode }) {
   const total = modes.reduce((sum, mode) => sum + mode.rounds, 0);
   const groups = RHYTHM_FAMILIES.map((family) => ({ family, list: modes.filter((mode) => mode.family === family) })).filter((group) => group.list.length);
   if (!total) return null;
@@ -208,6 +208,7 @@ export function ModesTab({ modes }: { modes: readonly ModeOverview[] }) {
       <div className="pf-stack" aria-hidden="true">{groups.flatMap((group) => group.list.map((mode, index) => <i key={`${mode.family}:${mode.mode}`} data-fam={group.family} style={{ width: `${(mode.rounds / total) * 100}%`, opacity: 1 - (index % 3) * 0.22 }} title={modeLabel(mode, true)} />))}</div>
       <ul className="pf-legend">{groups.map((group) => <li key={group.family}><i data-fam={group.family} aria-hidden="true" />{t.profile.families[group.family]} <b>{pctOf(group.list.reduce((sum, mode) => sum + mode.rounds, 0) / total)}%</b></li>)}</ul>
     </section>
+    {after}
     <div className="pf-fams">{groups.map((group) => {
       const rounds = group.list.reduce((sum, mode) => sum + mode.rounds, 0);
       const acc = group.list.reduce((sum, mode) => sum + mode.acc * mode.rounds, 0) / rounds;
@@ -235,3 +236,42 @@ export function ModesTab({ modes }: { modes: readonly ModeOverview[] }) {
 /** Os anéis e as linhas que se medem por nível de carta (0 a 5) na Coleção. */
 export const levelsOf = (cards: ReadonlyArray<{ id: string; mastery: number }>) => new Map(cards.map((card) => [card.id, card.mastery]));
 export const useSet = (ids: readonly string[] | undefined) => useMemo(() => new Set(ids ?? []), [ids]);
+
+// ---------- Seus reflexos (21/10/2026, mock ../mockups-carta-cega/progresso-v2) ----------
+export type ReflexLookup = {
+  name: (id: string) => string;
+  flag: (id: string) => string | undefined;
+  /** A linha de baixo de cada alvo (a capital, na escrita da capital). */
+  sub?: (id: string, mode: ReflexMode) => string | undefined;
+  /** O que a pessoa escreve, quando foge da grafia esperada (o "spain"); sem nada, não mostra. */
+  typed?: (item: ReflexItem, mode: ReflexMode) => string | undefined;
+};
+export function ReflexesCard({ data, lookup, onTrain }: { data: readonly ReflexMode[]; lookup: ReflexLookup; onTrain?: (mode: ReflexMode) => void }) {
+  const [key, setKey] = useState(data[0]?.key);
+  const mode = data.find((item) => item.key === key) ?? data[0];
+  if (!mode) return null;
+  const max = Math.max(...mode.slow.map((item) => item.med));
+  const label = modeLabel(mode, true);
+  const row = (item: ReflexItem, kind: "fast" | "slow") => {
+    const flag = lookup.flag(item.id);
+    const sub = lookup.sub?.(item.id, mode);
+    const typed = lookup.typed?.(item, mode);
+    return <li key={item.id} className={kind}>
+      {flag ? <img src={flag} alt="" loading="lazy" decoding="async" /> : <span className="pf-rx-noflag" aria-hidden="true" />}
+      <span className="pf-rx-name"><b>{lookup.name(item.id)}</b><small>{sub ? `${sub} · ` : ""}{typed ? <>{t.profile.reflexTyped} <em>{typed}</em> · </> : null}{t.profile.reflexHits(item.n)}</small></span>
+      <span className="pf-rx-bar" aria-hidden="true"><i style={{ width: `${(item.med / max) * 100}%` }} /><u style={{ left: `${Math.min(100, (mode.median / max) * 100)}%` }} /></span>
+      <strong>{formatSeconds(item.med)}</strong>
+    </li>;
+  };
+  return <section className="pr-card pf-rx" aria-labelledby="pf-rx">
+    <header className="pf-head"><div><h2 id="pf-rx">{t.profile.reflexTitle}</h2><p>{t.profile.reflexSub}</p></div></header>
+    <div className="pf-filter pf-rx-modes" role="group" aria-label={t.profile.reflexMode}>
+      {data.map((item) => <button key={item.key} type="button" aria-pressed={item.key === mode.key} onClick={() => setKey(item.key)}>{modeLabel(item, true)} <small>{item.count}</small></button>)}
+    </div>
+    <div className="pf-rx-cols">
+      <div><h3><span>{t.profile.reflexFast}</span><span>{t.profile.reflexMedian}</span></h3><ol>{mode.fast.map((item) => row(item, "fast"))}</ol></div>
+      <div><h3><span>{t.profile.reflexSlow}</span><span>{t.profile.reflexMedian}</span></h3><ol>{mode.slow.map((item) => row(item, "slow"))}</ol></div>
+    </div>
+    <footer className="pf-rx-foot"><span>{t.profile.reflexNormal(label, formatSeconds(mode.median), mode.count)}</span>{onTrain && <button type="button" onClick={() => onTrain(mode)}>{t.profile.reflexTrain}</button>}</footer>
+  </section>;
+}
