@@ -54,9 +54,12 @@ export function HubTitle({ text }: { text: string }) {
       if (overflows()) shrink(TITLE_FLOOR);
     };
     fit();
-    let width = el.parentElement?.clientWidth ?? 0;
-    const observer = new ResizeObserver(() => { const now = el.parentElement?.clientWidth ?? 0; if (now !== width) { width = now; fit(); } });
-    if (el.parentElement) observer.observe(el.parentElement);
+    // no celular as peças do cabeçalho são display:contents (largura 0, nunca muda) e o título ocupa uma coluna da grade, que muda quando os
+    // botões ao lado terminam de montar: ali observa o próprio título (a largura dele não depende da fonte)
+    const box = el.parentElement && getComputedStyle(el.parentElement).display === "contents" ? el : el.parentElement;
+    let width = box?.clientWidth ?? 0;
+    const observer = new ResizeObserver(() => { const now = box?.clientWidth ?? 0; if (now !== width) { width = now; fit(); } });
+    if (box) observer.observe(box);
     window.addEventListener("resize", fit);
     let alive = true;
     void document.fonts?.ready.then(() => { if (alive) fit(); });

@@ -593,7 +593,7 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
    cabeçalho do desktop: círculo na cor do destino e o anel do progresso. Com ?hub=coluna tudo volta ao de antes. */
 .hx-ladder-swap,.hx .hub-xp-short,.hx-duel-league{display:none}
 @media (max-width:760px){
-  .hx[data-layout=faixa]{--col:20px}
+  .hx[data-layout=faixa]{--col:20px;grid-template-rows:max-content minmax(min-content,1fr)}
   /* cabeçalho em duas linhas: anel, nome, Amigos e engrenagem; a barra de XP com os números e as moedas */
   .hx[data-layout=faixa] .hx-head{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"ring head friends gear" "xp xp coin coin";align-items:center;column-gap:10px;row-gap:9px;height:auto!important;margin:0 var(--col)!important;padding:12px 14px!important;border-radius:20px!important}
   .hx[data-layout=faixa] .hub-player,.hx[data-layout=faixa] .hub-stats{display:contents!important}
@@ -621,7 +621,9 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .hx-arrow.is-prev{left:calc(var(--col) - 17px)}
   .hx[data-layout=faixa] .hx-arrow.is-next{right:calc(var(--col) - 17px)}
   /* o cartão de modo: ao menos tão alto quanto largo (quadrado a retrato); o ícone na mesma altura em todos (título com 2 linhas, alinhado por baixo) */
-  .hx[data-layout=faixa] .family.hx-mode{min-height:calc(100vw - 2 * var(--col) - 16px)}
+  /* 21/10/2026 (iPhone 17 no Safari, com a barra de endereço embaixo): a linha do cabeçalho é max-content (antes a grade a espremia até as moedas
+     vazarem) e quem cede é o cartão de modo, pela altura visível (dvh): o resto da tela mede ~390 px (~370 no telefone baixo) */
+  .hx[data-layout=faixa] .family.hx-mode{min-height:clamp(220px,calc(100vh - 390px),calc(100vw - 2 * var(--col) - 16px));min-height:clamp(220px,calc(100dvh - 390px),calc(100vw - 2 * var(--col) - 16px))}
   .hx[data-layout=faixa] .hx-mode h3{display:flex;align-items:flex-end;height:calc(2 * 1.05 * 26px);font-size:26px;line-height:1.05}
   .hx[data-layout=faixa] .hx-mode p{min-height:calc(2 * 1.45 * 12.5px);line-height:1.45}
   /* Duelo e Desafios: iguais, lado a lado, compactos: ícone | nome e uma linha (a escada, que troca com um toque · "em breve") | o botão */
@@ -657,8 +659,14 @@ html[data-reduced-motion=true] :is(.hx-voyage-ship,.hx-voyage-dot,.hx-museum.is-
   .hx[data-layout=faixa] .hub-level strong{font-size:20px!important}
   .hx[data-layout=faixa] .hub-title{font-size:20px!important}
   .hx[data-layout=faixa] .hx-grid{margin-top:10px;row-gap:10px}
-  .hx[data-layout=faixa] .family.hx-mode{min-height:calc(100vw - 2 * var(--col) - 46px)}
+  .hx[data-layout=faixa] .family.hx-mode{min-height:clamp(220px,calc(100vh - 372px),calc(100vw - 2 * var(--col) - 46px));min-height:clamp(220px,calc(100dvh - 372px),calc(100vw - 2 * var(--col) - 46px))}
   .hx[data-layout=faixa] .hx-mode h3{height:calc(2 * 1.05 * 24px);font-size:24px}
+}
+/* telefone estreito (360 px): "Diamante III" não cabia ao lado do ícone */
+@media (max-width:380px){
+  .hx[data-layout=faixa] .hx-duel{column-gap:7px;padding-inline:9px}
+  .hx[data-layout=faixa] .hx-duel .hx-duel-ic{width:34px;height:34px}
+  .hx[data-layout=faixa] .hx-duel-league,.hx[data-layout=faixa] .hx-chal .hx-pill{font-size:12.5px}
 }
 /* barra de baixo: os ícones como as fichas do cabeçalho do desktop */
 @media (max-width:760px){
