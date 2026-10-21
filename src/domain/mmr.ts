@@ -27,6 +27,12 @@ export const LEAD_MAX = 2;
 export const LEAD_CURVE = 0.75;
 /** O bônus para uma diferença de `lead` ligas (0 a LEAD_MAX), com `top` no fim da curva. */
 export const leadBonusAt = (lead: number, top = LEAD_TOP) => top * Math.pow(Math.min(1, Math.max(0, Number.isFinite(lead) ? lead : 0) / LEAD_MAX), LEAD_CURVE);
+/** Adversário abaixo (20/10/2026, pedido do Enzo: "se eu ganhar de um cara 400 troféus abaixo de mim, meu ganho tem que ser mínimo"; o extra
+ *  do diminishing): com o rating do adversário TRAIL_SPAN troféus ou mais abaixo dos troféus da pessoa, a vitória rende só 1 − TRAIL_WIN (e os
+ *  bônus encolhem junto) e a derrota custa 1 + TRAIL_LOSS; no caminho, linear. Simétrico ao bônus por adversário acima (LEAD_*). */
+export const TRAIL_SPAN = 400;
+export const TRAIL_WIN = 0.8;
+export const TRAIL_LOSS = 0.4;
 /** Bônus de desempenho: até PERF_MAX troféus quando a pessoa termina PERF_SPAN acertos (ou mais) à frente do bot. */
 export const PERF_MAX = 8;
 export const PERF_SPAN = 8;
@@ -91,6 +97,8 @@ const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
 
 /** Quantas ligas o rating do bot está acima dos troféus da pessoa (0 se está abaixo), até LEAD_MAX. */
+/** Quanto o rating do adversário está abaixo dos troféus da pessoa, de 0 a 1 (1 = TRAIL_SPAN ou mais). */
+export const trailOf = (rating: number, trophies: number) => clamp01(((Number.isFinite(trophies) ? trophies : 0) - (Number.isFinite(rating) ? rating : 0)) / TRAIL_SPAN);
 export const leadOf = (rating: number, trophies: number) => clamp(((Number.isFinite(rating) ? rating : 0) - (Number.isFinite(trophies) ? trophies : 0)) / LEAGUE_SPAN, 0, LEAD_MAX);
 
 /** Ganho e perda-base de quem está com esses troféus: iguais até a Platina e, no alto, encolhendo e crescendo com a altura. `scale` é quanto o
@@ -163,12 +171,19 @@ export type TrophyInput = {
   lead?: number;
   /** Bônus no fim da curva (sem valor, LEAD_TOP). */
   leadTop?: number;
+  /** Quanto o adversário está abaixo (ver trailOf, 0 a 1): a vitória encolhe e a derrota cresce. */
+  trail?: number;
 };
 export type TrophyChange = { delta: number; streakBonus: number; perfBonus: number };
 
 /** Quanto o duelo mexe nos troféus (antes do chão em zero): o valor-base, o MMR, a sequência e o desempenho. */
-export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadTop = LEAD_TOP }: TrophyInput): TrophyChange {
-  const { win, loss, scale, minWin } = baseStakes(trophies);
+export function trophyChange({ trophies, mmr, streak, outcome, margin, lead = 0, leadTop = LEAD_TOP, trail = 0 }: TrophyInput): TrophyChange {
+  const below = clamp01(Number.isFinite(trail) ? trail : 0);
+  const stakes = baseStakes(trophies);
+  const { minWin } = stakes;
+  const win = Math.round(stakes.win * (1 - TRAIL_WIN * below));
+  const loss = stakes.loss * (1 + TRAIL_LOSS * below);
+  const scale = stakes.scale * (1 - TRAIL_WIN * below);
   const factors = gapFactors(mmr - trophies);
   if (outcome === "win") {
     const base = Math.round(win * factors.win);
@@ -198,8 +213,8 @@ export function mmrChange(mmr: number, opponent: number, outcome: "win" | "loss"
 
 /** O que está em jogo antes do duelo, como faixa: vitória de `win[0]` (apertada) a `win[1]` (goleada); derrota de `loss[0]` (apertada) a
  *  `loss[1]` (goleada, negativos). O chão em zero vale nas duas. */
-export function stakesRange(trophies: number, mmr: number, streak = 0, lead = 0) {
+export function stakesRange(trophies: number, mmr: number, streak = 0, lead = 0, trail = 0) {
   const floor = (delta: number) => Math.max(0, trophies + delta) - Math.max(0, trophies);
-  const at = (outcome: "win" | "loss", margin: number) => floor(trophyChange({ trophies, mmr, streak, outcome, margin, lead }).delta);
+  const at = (outcome: "win" | "loss", margin: number) => floor(trophyChange({ trophies, mmr, streak, outcome, margin, lead, trail }).delta);
   return { win: [at("win", 0), at("win", PERF_SPAN)] as [number, number], loss: [at("loss", -1), at("loss", -(PERF_SPAN + 2))] as [number, number] };
 }

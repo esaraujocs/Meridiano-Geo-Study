@@ -4,7 +4,7 @@
 import { DIVISION_SPAN, LEAGUES, leagueFloor, leagueOf, leagueSpan, type LeagueKey } from "./league.js";
 import { duelForm, hashSeed, simulateBot, type Bot, type BotContext, type BotStyle, type BotFamily } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
-import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
+import { MIN_LOSS, MIN_WIN, MMR_MODEL, MMR_VALID_MODELS, SIGMA_MIN, leadOf, trailOf, SURPRISE_WINDOW, expectedScore, mmrChange, outcomeScore, sigmaFromGames, sigmaNext, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP, trophyChange, type SurpriseSample } from "./mmr.js";
 import { LADDERS, groupDef, isLadder, ladderForFamily, type Ladder, type ModeGroup } from "./duel-modes.js";
 import { timerSecondsFor } from "./pace.js";
 
@@ -17,7 +17,7 @@ export const botRating = (bot: Pick<Bot, "league">, division: 1 | 2 | 3 | null =
 
 export type DuelOutcome = "win" | "loss" | "draw";
 // Troféus, MMR escondido e bônus (sequência e desempenho): ver mmr.ts.
-export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, leadOf, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
+export { MIN_LOSS, MIN_WIN, MMR_MODEL, expectedScore, leadOf, trailOf, stakesRange, streakBonus, STREAK_CAP, STREAK_STEP };
 export type { SurpriseSample };
 
 export type DuelInput = {
@@ -72,7 +72,8 @@ function settle(input: { trophies: number; mmr?: number; sigma?: number; recent?
   // quantas ligas o bot está acima da pessoa (crescente, pelo rating): soma ao ganho da vitória
   const opponent = input.rating ?? botRating(bot, input.division ?? null);
   const lead = input.rating === undefined ? Math.max(0, LEAGUES.indexOf(bot.league) - leagueOf(trophies).index) : leadOf(opponent, trophies);
-  const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead });
+  const trail = input.rating === undefined ? 0 : trailOf(opponent, trophies);
+  const change = trophyChange({ trophies, mmr, streak: input.streak ?? 0, outcome, margin, lead, trail });
   const trophiesAfter = Math.max(0, trophies + change.delta);
   const sigma = input.sigma ?? SIGMA_MIN;
   const mmrAfter = Math.max(0, mmr + mmrChange(mmr, opponent, outcome, margin, sigma));

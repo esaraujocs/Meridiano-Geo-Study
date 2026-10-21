@@ -114,11 +114,11 @@ const PROMOTED: Record<string, { league: LeagueKey; skill: number }> = {
   "bot-mestre-4": { league: "grao-mestre", skill: 3350 },
 };
 
-/** Quantos bots por liga (20/10/2026, pedido do Enzo: "esvaziar o bottom, redistribuir para termos mais de alto desempenho: Diamante, Mestre e
- *  GM"). Os 56 são postos em ordem pela força de antes (SKILL_RANK + PROMOTED) e repartidos de baixo para cima; dentro de cada liga as forças são
- *  espalhadas por igual do começo + 40 ao começo + 460 e, no Grão-Mestre, de 3.050 a 3.890 (com 14, de ~65 em 65: o topo fica disputado). O id
+/** Quantos bots por liga: 8 em todas (20/10/2026: o Enzo testou 4/5/6/7/9/11/14, "mais jogadores no topo que na base fica estranho", e
+ *  preferiu as caixas iguais a simular um U invertido). Os 56 são postos em ordem pela força de antes (SKILL_RANK + PROMOTED) e repartidos de baixo
+ *  para cima; dentro de cada liga as forças são espalhadas por igual do começo + 40 ao começo + 460 e, no Grão-Mestre, de 3.050 a 3.890. O id
  *  não muda (o histórico continua apontando para o bot); a liga de nascimento só decide a especialidade e o nome. */
-export const LEAGUE_SIZES: Record<LeagueKey, number> = { bronze: 4, prata: 5, ouro: 6, platina: 7, diamante: 9, mestre: 11, "grao-mestre": 14 };
+export const LEAGUE_SIZES: Record<LeagueKey, number> = { bronze: 8, prata: 8, ouro: 8, platina: 8, diamante: 8, mestre: 8, "grao-mestre": 8 };
 const GRAND_RANGE = [3050, 3890] as const;
 function redistribute(bots: readonly Bot[]): Bot[] {
   const order = [...bots].sort((a, b) => a.skill - b.skill || (a.id < b.id ? -1 : 1));

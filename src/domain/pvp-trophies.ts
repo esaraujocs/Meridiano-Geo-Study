@@ -1,7 +1,7 @@
 // Troféus do duelo entre pessoas (valendo): a mesma escada e a mesma conta do duelo contra bot (mmr.ts), com o adversário de verdade no lugar do bot.
 // Transição (28/09): enquanto há pouca gente, bot e pessoa mexem nos mesmos troféus; o MMR escondido do adversário (que o aparelho dele informa ao
 // servidor) faz o papel do rating do bot. O amistoso não mexe em troféu. Lógica pura.
-import { MMR_MODEL, expectedScore, leadOf, mmrChange, outcomeScore, sigmaNext, trophyChange, SIGMA_MIN, type SurpriseSample } from "./mmr.js";
+import { MMR_MODEL, expectedScore, leadOf, trailOf, mmrChange, outcomeScore, sigmaNext, trophyChange, SIGMA_MIN, type SurpriseSample } from "./mmr.js";
 import type { DuelOutcome } from "./duel.js";
 import type { Ladder } from "./duel-modes.js";
 
@@ -32,7 +32,7 @@ export function settlePvpTrophies({ trophies, mmr, sigma, samples, streak, oppon
   const start = Math.max(0, Number.isFinite(trophies) ? trophies : 0);
   const own = Number.isFinite(mmr) ? mmr : start;
   const opponent = Math.max(0, Number.isFinite(opponentMmr) ? opponentMmr : 0);
-  const change = trophyChange({ trophies: start, mmr: own, streak, outcome, margin, lead: leadOf(opponent, start) });
+  const change = trophyChange({ trophies: start, mmr: own, streak, outcome, margin, lead: leadOf(opponent, start), trail: trailOf(opponent, start) });
   const trophiesAfter = Math.max(0, start + change.delta);
   const step = Number.isFinite(sigma) ? sigma : SIGMA_MIN;
   const mmrAfter = Math.max(0, own + mmrChange(own, opponent, outcome, margin, step));

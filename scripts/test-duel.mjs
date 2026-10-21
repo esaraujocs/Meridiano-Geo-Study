@@ -141,7 +141,7 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
 assert.equal(B.BOTS.length, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 56);
-assert.deepEqual(L.LEAGUES.map((league) => B.botsOfLeague(league).length), [4, 5, 6, 7, 9, 11, 14]);
+assert.deepEqual(L.LEAGUES.map((league) => B.botsOfLeague(league).length), [8, 8, 8, 8, 8, 8, 8]);
 for (const [i, league] of L.LEAGUES.entries()) {
   const skills = B.botsOfLeague(league).map((bot) => bot.skill).sort((x, y) => x - y);
   const [low, high] = league === "grao-mestre" ? [3050, 3890] : [L.leagueFloor(i) + 40, L.leagueFloor(i) + 460];
@@ -1017,6 +1017,16 @@ assert.deepEqual([w4.length, "gap" in w4[3]], [4, false], "na posição logo dep
   assert.equal(D.accountAdjustments("MrMussahRellah").length, 3, "a conta do pedido tem os três ajustes");
   assert.deepEqual(D.accountAdjustments("MrMussahRellah").map((row) => [row.ladder, row.trophies]), [["bandeiras", -500], ["mapas", -200], ["mapas", -150]]);
   assert.equal(D.accountAdjustments("outra-pessoa").length, 0); assert.equal(D.accountAdjustments("").length, 0);
+}
+
+// adversário abaixo: a vitória encolhe até 1 − TRAIL_WIN e a derrota cresce até 1 + TRAIL_LOSS com 400 troféus de diferença
+{
+  assert.equal(X.trailOf(2600, 3000), 1); assert.equal(X.trailOf(2800, 3000), 0.5); assert.equal(X.trailOf(3100, 3000), 0);
+  const at = (gap, outcome) => X.trophyChange({ trophies: 3000, mmr: 3000, streak: 0, outcome, margin: outcome === "win" ? 2 : -2, trail: X.trailOf(3000 - gap, 3000) }).delta;
+  assert.ok(at(0, "win") > at(200, "win") && at(200, "win") > at(400, "win"), "quanto mais abaixo, menos rende");
+  assert.ok(at(400, "win") <= 5, "400 abaixo: ganho mínimo");
+  assert.ok(at(400, "loss") < at(0, "loss"), "e perder custa mais");
+  assert.equal(at(400, "win"), at(700, "win"), "satura em 400");
 }
 
 console.log("duelo: ligas, bots, escadas, resolução, troféus e marcos ok; ranking global com pessoas e bots ok; ajustes da escada ok");

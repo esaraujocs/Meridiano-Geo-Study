@@ -189,7 +189,7 @@ for (const [league, floor] of [["bronze", 0], ["ouro", 1000]]) {
   assert.equal(skills[0], floor + 40, league); assert.equal(skills[skills.length - 1], floor + 460, league);
 }
 const grand = BOTS.filter((bot) => bot.league === "grao-mestre").map((bot) => bot.skill).sort((a, b) => a - b);
-assert.equal(grand.length, 14); assert.equal(grand[0], 3050); assert.equal(grand[13], 3890);
+assert.equal(grand.length, 8); assert.equal(grand[0], 3050); assert.equal(grand[7], 3890);
 // o topo tem âncora: de um estado inflado (o Grão-Mestre a 4.500) ou achatado a calibração leva ao mesmo lugar, com os mais fortes perto do teto
 for (const ladder of LADDERS) {
   const inflated = clone(raw);

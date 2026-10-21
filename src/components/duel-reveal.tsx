@@ -1,6 +1,6 @@
 import { Icon } from "./icons";
 import { useEnterKey } from "./use-enter-key";
-import { leadOf, stakesRange, streakBonus } from "../domain/duel";
+import { leadOf, trailOf, stakesRange, streakBonus } from "../domain/duel";
 import { previewLegs, type DuelRun } from "../domain/duel-run";
 import { LADDER_BASE_GROUP, groupsOfLadder, type ModeGroup } from "../domain/duel-modes";
 import { botLabel, leagueLabel, leaguePip, styleLabel } from "../domain/duel-labels";
@@ -28,7 +28,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
   const player = leagueOf(run.trophiesBefore);
   const playerLabel = leagueLabel(player.league, player.division);
   const lead = run.rating === undefined ? Math.max(0, LEAGUES.indexOf(run.bot.league) - player.index) : leadOf(run.rating, run.trophiesBefore);
-  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, lead);
+  const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, lead, run.rating === undefined ? 0 : trailOf(run.rating, run.trophiesBefore));
   const legs = previewLegs(run, unlocked);
   const baseGroupLabel = t.duel.groups[LADDER_BASE_GROUP[run.ladder]];
   const canBuy = balance >= formatCost;
