@@ -73,7 +73,15 @@ export type CurrentLearningSession = {
   timerSeconds?: number | null;
   promotions?: Promotion[];
   spoils?: Spoils;
+  /** Onde a partida foi jogada (21/10/2026, pedido do Enzo: marcar PC × celular no Histórico): pela tela de toque do aparelho. Partidas de antes não têm. */
+  device?: SessionDevice;
 };
+export type SessionDevice = "desktop" | "mobile";
+/** Celular (ou tablet) é a tela em que o ponteiro principal é o dedo; fora do navegador (testes), nada. */
+export function sessionDevice(): SessionDevice | undefined {
+  if (typeof matchMedia !== "function") return undefined;
+  return matchMedia("(pointer: coarse)").matches ? "mobile" : "desktop";
+}
 
 export type SessionResult = { session: CurrentLearningSession; spoils: Spoils | null };
 
@@ -189,6 +197,7 @@ export async function startLearningSession(input: {
     promotions: [],
     ...(input.coinVariant ? { coinVariant: input.coinVariant } : {}),
     ...(input.duel ? { duelId: input.duel.id, duelLeg: input.duel.leg } : {}),
+    ...(sessionDevice() ? { device: sessionDevice() } : {}),
   };
   const transaction = database.transaction(SESSIONS_STORE, "readwrite");
   transaction.objectStore(SESSIONS_STORE).put(session);

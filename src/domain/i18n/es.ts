@@ -1417,6 +1417,7 @@ export const es: Messages = {
     noErrors: "Sin errores en esta partida.",
     oldSession: "Esta partida antigua solo guarda el resumen, sin las rondas.",
     youMissed: "Fallaste:",
+    device: { desktop: "en PC", mobile: "en el móvil" },
     questionsTitle: "Pregunta a pregunta",
     questionsSlowest: (n: number) => `Las ${n} más lentas`,
     questionsAria: (name: string, time: string, ok: boolean) => `${name}: ${ok ? "correcta" : "incorrecta"}, ${time}`,

@@ -58,7 +58,7 @@ function RowTitle({ row }: { row: SessionRow }) {
 function RowMeta({ row, when, flagIncomplete }: { row: SessionRow; when?: string; flagIncomplete?: boolean }) {
   const lead = row.duel ? t.progress.duelVs(row.duel.botName, row.duel.botLeague) : row.region;
   return <>
-    {lead} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}
+    {lead} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}{row.device ? ` · ${t.progress.device[row.device]}` : ""}
     {row.duel?.abandoned ? <> · <span className="pr-inc">{t.progress.duelLeft}</span></> : flagIncomplete && !row.complete ? <> · <span className="pr-inc">{t.progress.incomplete}</span></> : null}
   </>;
 }

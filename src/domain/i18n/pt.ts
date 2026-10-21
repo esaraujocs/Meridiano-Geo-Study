@@ -1637,6 +1637,7 @@ export const pt = {
     noErrors: "Sem erros nesta partida.",
     oldSession: "Esta partida antiga guarda só o resumo, sem as rodadas.",
     youMissed: "Você errou:",
+    device: { desktop: "no PC", mobile: "no celular" },
     questionsTitle: "Pergunta a pergunta",
     questionsSlowest: (n: number) => `As ${n} mais demoradas`,
     questionsAria: (name: string, time: string, ok: boolean) => `${name}: ${ok ? "certo" : "errado"}, ${time}`,

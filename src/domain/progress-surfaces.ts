@@ -37,6 +37,8 @@ export type SurfaceSession = {
   subject?: string;
   /** Duelo a que a partida pertence e o número do tempo (0 ou 1); só nas partidas jogadas dentro de um duelo. */
   duelId?: string;
+  /** PC ou celular (só nas partidas jogadas desde 21/10/2026). */
+  device?: "desktop" | "mobile";
   duelLeg?: number;
   correct: number;
   accuracy: number | null;
@@ -130,6 +132,7 @@ export function normalizeSession(value: any, index = 0): SurfaceSession {
     subject: typeof value?.subject === "string" ? value.subject : typeof value?.assunto === "string" ? value.assunto : undefined,
     duelId: typeof value?.duelId === "string" ? value.duelId : undefined,
     duelLeg: typeof value?.duelLeg === "number" ? value.duelLeg : undefined,
+    ...(value?.device === "desktop" || value?.device === "mobile" ? { device: value.device } : {}),
     ...(typeof value?.pace === "string" ? { pace: value.pace } : {}),
     correct,
     accuracy: total ? correct / total : null,

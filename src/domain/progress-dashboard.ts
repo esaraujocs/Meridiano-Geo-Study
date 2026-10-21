@@ -102,6 +102,8 @@ export type SessionRow = {
   rounds: number; duration: string | null; pct: number | null; complete: boolean; startedAt: number; when: string;
   pattern: string; avgTimeMs: number | null; bestStreak: number; misses: Miss[];
   questions: Question[];
+  /** PC ou celular (partidas novas). */
+  device?: "desktop" | "mobile";
   /** Só nas linhas de duelo: adversário, placar, troféus e os dois tempos. */
   duel?: DuelRow;
 };
@@ -219,6 +221,7 @@ function buildRow(session: SurfaceSession, meta: Record<string, Meta>, flagOf: (
     bestStreak: longestStreak(session.rounds),
     misses,
     questions: questionsOf(session, meta, flagOf),
+    ...(session.device ? { device: session.device } : {}),
   };
 }
 
@@ -257,8 +260,10 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
     const abandoned = record.abandoned ?? (mine.length > 0 && (mine.length < (record.legs?.length ?? 1) || mine.some((session) => !session.complete)));
     const seen = new Set<string>();
     const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
+    const device = mine.find((session) => session.device)?.device;
     return {
       questions: [],
+      ...(device ? { device } : {}),
       id: `duel:${record.sessionId}`,
       title: t.progress.duelTitle(ladderLabel),
       family: ladderLabel,
@@ -320,8 +325,10 @@ function buildPvpRows(matches: readonly PvpMatchRecord[], sessions: readonly Sur
     const abandoned = record.youForfeited;
     const seen = new Set<string>();
     const misses = legs.flatMap((leg) => leg.misses).filter((miss) => !seen.has(miss.id) && Boolean(seen.add(miss.id)));
+    const device = mine.find((session) => session.device)?.device;
     return {
       questions: [],
+      ...(device ? { device } : {}),
       id: `pvp:${record.code}`,
       title: t.progress.pvpDuelTitle(ladderLabel),
       family: ladderLabel,

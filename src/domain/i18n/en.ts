@@ -1416,6 +1416,7 @@ export const en: Messages = {
     noErrors: "No mistakes in this match.",
     oldSession: "This old match only keeps the summary, without the rounds.",
     youMissed: "You missed:",
+    device: { desktop: "on PC", mobile: "on mobile" },
     questionsTitle: "Question by question",
     questionsSlowest: (n: number) => `The ${n} slowest`,
     questionsAria: (name: string, time: string, ok: boolean) => `${name}: ${ok ? "right" : "wrong"}, ${time}`,
