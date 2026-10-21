@@ -114,7 +114,27 @@ const PROMOTED: Record<string, { league: LeagueKey; skill: number }> = {
   "bot-mestre-4": { league: "grao-mestre", skill: 3350 },
 };
 
-export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
+/** Quantos bots por liga (20/10/2026, pedido do Enzo: "esvaziar o bottom, redistribuir para termos mais de alto desempenho: Diamante, Mestre e
+ *  GM"). Os 56 são postos em ordem pela força de antes (SKILL_RANK + PROMOTED) e repartidos de baixo para cima; dentro de cada liga as forças são
+ *  espalhadas por igual do começo + 40 ao começo + 460 e, no Grão-Mestre, de 3.050 a 3.890 (com 14, de ~65 em 65: o topo fica disputado). O id
+ *  não muda (o histórico continua apontando para o bot); a liga de nascimento só decide a especialidade e o nome. */
+export const LEAGUE_SIZES: Record<LeagueKey, number> = { bronze: 4, prata: 5, ouro: 6, platina: 7, diamante: 9, mestre: 11, "grao-mestre": 14 };
+const GRAND_RANGE = [3050, 3890] as const;
+function redistribute(bots: readonly Bot[]): Bot[] {
+  const order = [...bots].sort((a, b) => a.skill - b.skill || (a.id < b.id ? -1 : 1));
+  const placed = new Map<string, { league: LeagueKey; skill: number }>();
+  let at = 0;
+  for (const league of LEAGUES) {
+    const size = LEAGUE_SIZES[league];
+    const index = LEAGUES.indexOf(league);
+    const [low, high] = league === "grao-mestre" ? GRAND_RANGE : [leagueFloor(index) + 40, leagueFloor(index) + 460];
+    order.slice(at, at + size).forEach((bot, k) => placed.set(bot.id, { league, skill: Math.round(size > 1 ? low + ((high - low) * k) / (size - 1) : (low + high) / 2) }));
+    at += size;
+  }
+  return bots.map((bot) => ({ ...bot, ...placed.get(bot.id) }));
+}
+
+export const BOTS: readonly Bot[] = redistribute(LEAGUES.flatMap((league) => [
   ...ROSTER[league].map((name, index): Bot => ({
     id: `bot-${league}-${index}`,
     name,
@@ -124,7 +144,7 @@ export const BOTS: readonly Bot[] = LEAGUES.flatMap((league) => [
     skill: skillOf(league, index),
   })),
   ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null, skill: skillOf(league, ROSTER[league].length + index) })),
-]).map((bot) => (PROMOTED[bot.id] ? { ...bot, ...PROMOTED[bot.id] } : bot));
+]).map((bot) => (PROMOTED[bot.id] ? { ...bot, ...PROMOTED[bot.id] } : bot)));
 export const botsOfLeague = (league: LeagueKey) => BOTS.filter((bot) => bot.league === league);
 
 /** Registros antigos guardavam só a liga (`bot-bronze`); o nome vira "Bot Bronze" e o jeito, o de um constante. */

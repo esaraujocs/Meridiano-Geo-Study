@@ -137,25 +137,25 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
   assert.equal(D.mmrFromDuels(mm, "bandeiras"), 3438);
 }
 
-// ---- Elenco: 8 bots por liga, ids e nomes únicos, os 5 primeiros um de cada jeito ----
+// ---- Elenco: 56 bots, ids e nomes únicos, mais no alto (LEAGUE_SIZES), forças espalhadas por igual dentro da liga ----
 assert.equal(B.BOTS.length, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 56);
 assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 56);
-// a Ana Hemisfério (bot-mestre-4) foi promovida ao Grão-Mestre, com o mesmo id
-const ana = B.botById("bot-mestre-4");
-assert.equal(ana.name, "Ana Hemisfério"); assert.equal(ana.league, "grao-mestre"); assert.equal(ana.skill, 3350); assert.equal(ana.specialty, "bandeiras");
-for (const league of L.LEAGUES) {
-  const group = B.botsOfLeague(league);
-  assert.equal(group.length, league === "mestre" ? 7 : league === "grao-mestre" ? 9 : 8, league);
-  if (league !== "mestre") assert.deepEqual(group.filter((bot) => bot.id.startsWith(`bot-${league}-`)).slice(0, 5).map((bot) => bot.style), ["constante", "preciso", "rapido", "irregular", "especialista"]);
-  assert.deepEqual(group.filter((bot) => bot.specialty).map((bot) => bot.style), league === "mestre" ? [] : league === "grao-mestre" ? ["especialista", "especialista"] : ["especialista"]);
+assert.deepEqual(L.LEAGUES.map((league) => B.botsOfLeague(league).length), [4, 5, 6, 7, 9, 11, 14]);
+for (const [i, league] of L.LEAGUES.entries()) {
+  const skills = B.botsOfLeague(league).map((bot) => bot.skill).sort((x, y) => x - y);
+  const [low, high] = league === "grao-mestre" ? [3050, 3890] : [L.leagueFloor(i) + 40, L.leagueFloor(i) + 460];
+  assert.equal(skills[0], low, league); assert.equal(skills[skills.length - 1], high, league);
 }
+const ana = B.botById("bot-mestre-4");
+assert.equal(ana.name, "Ana Hemisfério"); assert.equal(ana.league, "grao-mestre"); assert.equal(ana.specialty, "bandeiras");
+assert.equal(B.BOTS.filter((bot) => bot.specialty).length, 7, "um especialista de cada liga de nascimento");
 assert.equal(B.botById("bot-ouro-2").name, "Caio Latitude");
 assert.equal(B.botById("bot-prata").league, "prata", "registro antigo (só a liga) ainda resolve");
 assert.equal(B.botById("bot-nao-existe"), null);
 
 // ---- Força: sobe com a liga e com a divisão; cada jeito muda o perfil ----
-const base = (league) => B.botById(`bot-${league}-0`);
+const base = (league) => ({ id: `teste-${league}`, name: "", league, style: "constante", specialty: null, skill: 0 });
 for (let i = 1; i < L.LEAGUES.length; i += 1) {
   const low = B.botProfile(base(L.LEAGUES[i - 1]), { division: L.hasDivisions(i - 1) ? 3 : null, family: null });
   const high = B.botProfile(base(L.LEAGUES[i]), { division: L.hasDivisions(i) ? 1 : null, family: null });
@@ -166,7 +166,8 @@ const c1 = B.botProfile(base("ouro"), { division: 1, family: null });
 const c3 = B.botProfile(base("ouro"), { division: 3, family: null });
 assert.ok(Math.abs(c3.accuracy - c1.accuracy - 0.04) < 1e-9, "cada divisão soma 2 pontos");
 assert.equal(B.botProfile(base("mestre"), { division: null, family: null }).accuracy, 0.96);
-const [constant, precise, fast, streaky, expert] = B.botsOfLeague("prata");
+const mk = (style, specialty = null) => ({ id: `teste-prata-${style}`, name: "", league: "prata", style, specialty, skill: 750 });
+const [constant, precise, fast, streaky, expert] = [mk("constante"), mk("preciso"), mk("rapido"), mk("irregular"), mk("especialista", "bandeiras")];
 const P = (bot, family = null) => B.botProfile(bot, { division: 1, family });
 assert.ok(P(precise).accuracy > P(constant).accuracy && P(precise).avgMs > P(constant).avgMs, "preciso: acerta mais e demora mais");
 assert.ok(P(fast).accuracy < P(constant).accuracy && P(fast).avgMs < P(constant).avgMs, "rápido: erra mais e responde antes");
@@ -200,7 +201,7 @@ assert.ok(spread(streaky) > spread(constant) * 1.4, "irregular oscila mais");
 assert.equal(B.pickBot("ouro", 123).id, B.pickBot("ouro", 123).id, "mesma semente, mesmo bot");
 for (const league of L.LEAGUES) for (let seed = 0; seed < 50; seed += 1) assert.equal(B.pickBot(league, seed).league, league);
 const seen = new Set(Array.from({ length: 200 }, (_, seed) => B.pickBot("bronze", seed).id));
-assert.equal(seen.size, 8, "com sementes diferentes aparecem os 8 bots");
+assert.equal(seen.size, B.botsOfLeague("bronze").length, "com sementes diferentes aparecem todos os bots da liga");
 for (let seed = 0; seed < 100; seed += 1) assert.notEqual(B.pickBot("prata", seed, "bot-prata-0").id, "bot-prata-0", "não repete o do duelo anterior");
 
 // ---- Resolução do duelo ----
@@ -385,7 +386,7 @@ assert.equal(M.ladderForFamily("escrita", "escrita-pais"), "bandeiras"); assert.
 assert.equal(M.ladderForFamily("idiomas", "idioma-nome"), "mapas");
 
 // ---- Bot calibrado por modo ----
-const mestre = B.botsOfLeague("mestre")[0], bronze = B.botsOfLeague("bronze")[0], ouro = B.botsOfLeague("ouro")[0];
+const mestre = base("mestre"), bronze = base("bronze"), ouro = base("ouro");
 const hard = { accuracy: M.groupDef("capitais-escrita").accuracy, time: M.groupDef("capitais-escrita").time };
 const plain = (bot, division) => B.botProfile(bot, { division, family: null });
 const tuned = (bot, division) => B.botProfile(bot, { division, family: null, tuning: hard });
@@ -393,7 +394,7 @@ assert.ok(Math.abs((tuned(bronze, 1).accuracy - plain(bronze, 1).accuracy) - har
 assert.ok(tuned(ouro, 1).accuracy < plain(ouro, 1).accuracy && tuned(ouro, 1).accuracy > plain(ouro, 1).accuracy + hard.accuracy, "no Ouro vale menos");
 assert.ok(Math.abs(tuned(mestre, null).accuracy - plain(mestre, null).accuracy) < 0.05, "no Mestre quase não pesa (o modo mais duro tira uns 4,3 pontos, o piso TUNING_MIN)");
 assert.equal(tuned(bronze, 1).avgMs, Math.round(plain(bronze, 1).avgMs * hard.time), "o tempo do bot cresce com a dificuldade do modo");
-for (const g of M.MODE_GROUPS) for (const league of L.LEAGUES) { const p = B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: null, tuning: g }); assert.ok(p.accuracy >= 0.05 && p.accuracy <= 0.99, g.group + league); }
+for (const g of M.MODE_GROUPS) for (const league of L.LEAGUES) { const p = B.botProfile(base(league), { division: 1, family: null, tuning: g }); assert.ok(p.accuracy >= 0.05 && p.accuracy <= 0.99, g.group + league); }
 // modo mais difícil = bot erra mais, e a média simulada acompanha
 const mean = (bot, tuning, division = 1) => { let hits = 0, rounds = 0; for (let g = 0; g < 400; g += 1) { hits += B.simulateBot(bot, 25, "t" + g, { division, family: null, tuning }).correct; rounds += 25; } return hits / rounds; };
 assert.ok(mean(bronze, hard) < mean(bronze, { accuracy: 0, time: 1 }) - 0.1, "Bronze erra bem mais em Capitais · escrita que em Bandeiras");
@@ -776,19 +777,19 @@ assert.equal(B.botProfile(constBot, { division: 3, family: null, rating: 1000 })
 assert.equal(B.botProfile(constBot, { division: 3, family: null }).accuracy, 0.68 + 2 * 0.02, "sem rating segue o caminho antigo (liga e divisão)");
 assert.ok(B.botProfile(constBot, { division: 1, family: null, rating: 3000 }).accuracy > B.botProfile(constBot, { division: 1, family: null, rating: 500 }).accuracy, "o mesmo bot fica mais forte com o rating");
 // especialista: bônus na família, penalidade fora e nada nas históricas (grupo neutro)
-const brunaBot = B.BOTS.find((b) => b.name === "Bruna Sul");
+const brunaBot = mk("especialista", "bandeiras");
 const spec = (ctx) => B.botProfile(brunaBot, { division: 1, family: "bandeiras", ...ctx }).accuracy;
 assert.ok(spec({}) > spec({ neutral: true }) && spec({ neutral: true }) > B.botProfile(brunaBot, { division: 1, family: "mapa" }).accuracy, "dentro da família > neutro > fora dela");
-assert.equal(spec({ neutral: true }), B.botProfile(B.botsOfLeague("prata")[0], { division: 1, family: "bandeiras" }).accuracy, "neutro: igual ao bot constante da liga");
+assert.equal(spec({ neutral: true }), B.botProfile(base("prata"), { division: 1, family: "bandeiras" }).accuracy, "neutro: igual ao bot constante da liga");
 assert.equal(M.groupDef("historicas").specialtyWeight, 0.5, "nas históricas a especialidade vale pela metade"); assert.equal(M.groupDef("atuais").specialtyWeight, undefined);
 assert.ok(spec({}) > spec({ specialtyWeight: 0.5 }) && spec({ specialtyWeight: 0.5 }) > spec({ neutral: true }), "metade fica entre o inteiro e o neutro");
 const histLegs = [{ group: "historicas", rounds: 10, playerCorrect: 5, playerMs: 1 }, { group: "atuais", rounds: 10, playerCorrect: 5, playerMs: 1 }];
 const meanHist = (group) => { let n = 0; for (let g = 0; g < 400; g += 1) n += D.resolveDuelLegs({ trophies: 500, bot: brunaBot, seed: "h" + g, division: 3, legs: [{ ...histLegs[0], group }, histLegs[1]] }).legs[0].botCorrect; return n / 400; };
 assert.ok(meanHist("historicas") < 7 && meanHist("historicas") > 5.9, `Bruna (Prata III) acerta em torno de 6,4 das históricas com meia especialidade (5,8 sem ela) (${meanHist("historicas")})`);
 // as históricas são um tema de nicho: nas ligas baixas o bot acerta bem menos, no alto quase igual a antes
-const histAcc = (league) => B.botProfile(B.botsOfLeague(league)[0], { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("historicas").accuracy, time: M.groupDef("historicas").time } }).accuracy;
+const histAcc = (league) => B.botProfile(base(league), { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("historicas").accuracy, time: M.groupDef("historicas").time } }).accuracy;
 assert.deepEqual(["bronze", "prata", "ouro", "platina", "diamante", "mestre"].map((l) => Math.round(histAcc(l) * 100)), [40, 52, 64, 76, 87, 94], "históricas: 40% no Bronze até 94% no Mestre");
-assert.ok(histAcc("prata") < B.botProfile(B.botsOfLeague("prata")[0], { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("atuais").accuracy, time: 1 } }).accuracy - 0.1, "na Prata as históricas ficam bem abaixo das bandeiras atuais");
+assert.ok(histAcc("prata") < B.botProfile(base("prata"), { division: 1, family: "bandeiras", neutral: true, tuning: { accuracy: M.groupDef("atuais").accuracy, time: 1 } }).accuracy - 0.1, "na Prata as históricas ficam bem abaixo das bandeiras atuais");
 
 assert.ok(X.mmrChange(500, 1000, "win", 8) > X.mmrChange(1000, 1000, "win", 8));
 assert.ok(X.mmrChange(1000, 1000, "loss", -1) > X.mmrChange(1000, 1000, "loss", -10), "perder por pouco custa menos MMR");

@@ -161,7 +161,8 @@ const winRate = (id, rating, ladder) => {
   }
   return wins / 400;
 };
-const gm = [2750, 3250, 3990].map((rating) => winRate("bot-grao-mestre-0", rating, "bandeiras"));
+const humboldt = byId("bot-grao-mestre-0");
+const gm = [humboldt.skill - 500, humboldt.skill, Math.min(3990, humboldt.skill + 450)].map((rating) => winRate("bot-grao-mestre-0", rating, "bandeiras"));
 assert.ok(gm[0] > 0.7 && gm[1] > 0.4 && gm[1] < 0.65 && gm[2] < 0.3, `o Grão-Mestre constante: vence abaixo, metade no meio, perde no topo (${gm.map((x) => Math.round(x * 100)).join("% · ")}%)`);
 assert.ok(winRate("bot-mestre-1", 2750, "mapas") >= 0.4, "ser precisa e lenta não deixa a Lúcia para trás no meio do Mestre");
 assert.ok(winRate("bot-bronze-0", 1750, "bandeiras") < 0.1, "o Bronze não vence a Platina");
@@ -183,8 +184,12 @@ const leagueIds = (league) => BOTS.filter((bot) => bot.league === league).map((b
 assert.ok(mean(leagueIds("grao-mestre")) > mean(leagueIds("mestre")) && mean(leagueIds("mestre")) > mean(leagueIds("diamante")) && mean(leagueIds("ouro")) > mean(leagueIds("bronze")), "depois de calibrar, a média de cada liga segue a ordem das ligas");
 assert.ok(BOTS.every((bot) => calibrated.bots.mapas[bot.id].trophies > 0 || bot.league === "bronze"), "ninguém acima do Bronze afunda a zero");
 // forças em vários níveis, até perto do teto: cada liga espalhada pelo meio dela e o Grão-Mestre de 3.050 a 3.900
-for (const [league, floor] of [["bronze", 0], ["ouro", 1000]]) assert.deepEqual(BOTS.filter((bot) => bot.league === league).map((bot) => bot.skill).sort((a, b) => a - b), Array.from({ length: 8 }, (_, i) => floor + 40 + i * 60), league);
-assert.deepEqual(BOTS.filter((bot) => bot.league === "grao-mestre").map((bot) => bot.skill).sort((a, b) => a - b), [3050, 3170, 3290, 3350, 3410, 3530, 3650, 3770, 3890], "com a Ana Hemisfério promovida");
+for (const [league, floor] of [["bronze", 0], ["ouro", 1000]]) {
+  const skills = BOTS.filter((bot) => bot.league === league).map((bot) => bot.skill).sort((a, b) => a - b);
+  assert.equal(skills[0], floor + 40, league); assert.equal(skills[skills.length - 1], floor + 460, league);
+}
+const grand = BOTS.filter((bot) => bot.league === "grao-mestre").map((bot) => bot.skill).sort((a, b) => a - b);
+assert.equal(grand.length, 14); assert.equal(grand[0], 3050); assert.equal(grand[13], 3890);
 // o topo tem âncora: de um estado inflado (o Grão-Mestre a 4.500) ou achatado a calibração leva ao mesmo lugar, com os mais fortes perto do teto
 for (const ladder of LADDERS) {
   const inflated = clone(raw);
@@ -193,7 +198,8 @@ for (const ladder of LADDERS) {
   const top = Math.max(...Object.values(settled.bots[ladder]).map((standing) => standing.trophies));
   assert.ok(top < 4_500 && top > 3_600, `o 1º do ranking fica perto do teto (${ladder}: ${top})`);
   const average = Object.values(settled.bots[ladder]).reduce((sum, standing) => sum + standing.trophies, 0) / BOTS.length;
-  assert.ok(average > 1_650 && average < 2_050, `a média não deriva (${ladder}: ${Math.round(average)})`);
+  const meanSkill = BOTS.reduce((sum, bot) => sum + bot.skill, 0) / BOTS.length;
+  assert.ok(Math.abs(average - meanSkill) < 250, `a média não deriva (${ladder}: ${Math.round(average)} × forças ${Math.round(meanSkill)})`);
 }
 
 // Daily simulation is deterministic; catch-up is the same chronological sequence as one-day advances.
