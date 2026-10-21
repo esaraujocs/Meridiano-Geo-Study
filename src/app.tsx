@@ -827,7 +827,7 @@ export function App() {
     legResults.current = [null, null];
     setDuelRun(newDuelRun({
       id, ladder, bot: ranked?.bot ?? pickBot(match.league, id, lastBotRef.current[ladder]), trophiesBefore, legs, streak, mmr: state.mmr, sigma: state.sigma, samples: state.samples,
-      ...(ranked ? { division: ranked.division, rating: ranked.rating, own: true } : { division: match.division, rating: match.rating }),
+      ...(ranked ? { division: ranked.division, rating: ranked.rating, own: true, botTrophies: botRanking?.bots[ladder][ranked.bot.id]?.trophies } : { division: match.division, rating: match.rating }),
     }));
     setScreen("duel-reveal");
   };
@@ -873,6 +873,7 @@ export function App() {
       outcome: outcome.outcome, tiebreak: outcome.tiebreak, delta: outcome.delta, mmrDelta: outcome.mmrDelta, mmrVersion: MMR_MODEL, mmrSigma: outcome.mmrSigma, mmrExp: outcome.mmrExp,
       legs: outcome.legs.map((leg, index) => ({ group: leg.group, playerCorrect: leg.playerCorrect, botCorrect: leg.botCorrect, total: leg.rounds, playerMs: run.done[index]?.playerMs ?? null, botMs: leg.botMs })),
       abandoned: run.done.length < LEGS,
+      ...(run.botTrophies !== undefined ? { botTrophies: run.botTrophies } : {}),
     };
     try {
       setBotRanking(await saveDuel(record, run.mmr));

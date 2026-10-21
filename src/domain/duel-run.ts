@@ -20,6 +20,8 @@ export type DuelRun = {
   rating?: number;
   /** O bot é um do ranking e joga com a própria força (`rankedOpponent`); sem isso (duelos de antes, sem o ranking), com a do rating. */
   own?: boolean;
+  /** Os troféus do bot no ranking na hora do duelo: a liga dele que aparece na tela (a mesma do ranking), não a de nascimento. */
+  botTrophies?: number;
   /** Vitórias seguidas na escada antes deste duelo (bônus de sequência). */
   streak: number;
   /** MMR escondido na escada antes deste duelo (muda o ganho e a perda de troféus). */
@@ -33,7 +35,7 @@ export type DuelRun = {
   index: number;
 };
 
-export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[]; streak?: number; mmr?: number; rating?: number; own?: boolean; sigma?: number; samples?: readonly SurpriseSample[] }): DuelRun => ({ ...input, streak: input.streak ?? 0, mmr: input.mmr ?? input.trophiesBefore, sigma: input.sigma ?? SIGMA_MIN, samples: input.samples ?? [], done: [], index: 0 });
+export const newDuelRun = (input: { id: string; ladder: Ladder; bot: Bot; trophiesBefore: number; division: 1 | 2 | 3 | null; legs: readonly DuelLeg[]; streak?: number; mmr?: number; rating?: number; own?: boolean; botTrophies?: number; sigma?: number; samples?: readonly SurpriseSample[] }): DuelRun => ({ ...input, streak: input.streak ?? 0, mmr: input.mmr ?? input.trophiesBefore, sigma: input.sigma ?? SIGMA_MIN, samples: input.samples ?? [], done: [], index: 0 });
 
 /** Opções da sessão de um tempo: sempre com tempo, 10 rodadas, baralho da semente e, se o modo é de prévia, as moedas do modo base. */
 export type LegSessionOptions = { pace: "timed"; roundLimit: number; deckSeed: number; coinVariant?: AnyQuizVariant; duel: { id: string; leg: number } };

@@ -160,6 +160,8 @@ export type DuelRecord = {
   legs?: DuelLegRecord[];
   /** A pessoa saiu antes de terminar os dois tempos (o que faltou valeu zero). Sem o campo, o histórico deduz pelas sessões. */
   abandoned?: boolean;
+  /** Troféus do bot no ranking na hora do duelo (a liga dele no histórico); sem o campo, a liga de nascimento. */
+  botTrophies?: number;
 };
 
 export const duelRecordId = (sessionId: string) => `${DUEL_ID_PREFIX}${sessionId}`;
@@ -201,6 +203,7 @@ export function parseDuel(row: unknown): DuelRecord | null {
     ...(typeof item.mmrExp === "number" && Number.isFinite(item.mmrExp) ? { mmrExp: item.mmrExp } : {}),
     ...(legs ? { legs } : {}),
     ...(typeof item.abandoned === "boolean" ? { abandoned: item.abandoned } : {}),
+    ...(typeof item.botTrophies === "number" && Number.isFinite(item.botTrophies) ? { botTrophies: item.botTrophies } : {}),
   };
 }
 

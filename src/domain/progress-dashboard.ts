@@ -13,6 +13,7 @@ import {
 } from "./session-view.js";
 import { compareText, t } from "./i18n/index.js";
 import { botById } from "./bots.js";
+import { leagueOf } from "./league.js";
 import type { DuelOutcome, DuelRecord } from "./duel.js";
 import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { botLabel, styleLabel } from "./duel-labels.js";
@@ -254,7 +255,7 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
         kind: "bot",
         ladder: record.ladder, ladderLabel,
         botName: bot ? botLabel(bot) : t.duel.opponent,
-        botLeague: bot ? t.duel.leagues[bot.league] : "",
+        botLeague: record.botTrophies !== undefined ? t.duel.leagues[leagueOf(record.botTrophies).league] : bot ? t.duel.leagues[bot.league] : "",
         botStyle: bot ? styleLabel(bot.style, bot.specialty) : "",
         outcome: record.outcome, tiebreak: record.tiebreak,
         playerCorrect: record.playerCorrect, botCorrect: record.botCorrect, total: record.total, delta: record.delta,

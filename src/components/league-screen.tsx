@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Icon } from "./icons";
 import { trophiesByLadder, type DuelRecord } from "../domain/duel";
 import { LADDERS, type Ladder } from "../domain/duel-modes";
-import { botById, botProfile, botsOfLeague } from "../domain/bots";
+import { BOTS, botById, botProfile, botsOfLeague } from "../domain/bots";
 import { botLabel, leaguePip, styleLabel } from "../domain/duel-labels";
 import { globalLeaderboard, playersLeaderboard, rankWindow } from "../domain/leaderboard";
 import type { BotRankingState } from "../domain/bot-ranking";
@@ -116,7 +116,7 @@ export function LeagueScreen({ entries, duels, pvpMatches, boards, botRanking, i
           <section className="pr-card">
             <header><div><h2>{t.duel.league.botsTitle}</h2><p>{t.duel.league.botsSub}</p></div></header>
             <ul className="rk">
-              {botsOfLeague(status.league).map((bot) => {
+              {(botRanking ? BOTS.filter((bot) => leagueOf(botRanking.bots[ladder][bot.id]?.trophies ?? 0).league === status.league).sort((a, b) => botRanking.bots[ladder][b.id].trophies - botRanking.bots[ladder][a.id].trophies) : botsOfLeague(status.league)).map((bot) => {
                 const profile = botProfile(bot, { division: null, family: null, own: true });
                 return <li key={bot.id} className="rk-li lg-bot" data-league={bot.league}>
                   <span className="rk-av lg-badge" aria-hidden="true">{bot.name.charAt(0)}</span>

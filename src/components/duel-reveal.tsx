@@ -27,6 +27,9 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
 }) {
   const player = leagueOf(run.trophiesBefore);
   const playerLabel = leagueLabel(player.league, player.division);
+  // a liga do bot é a dos troféus dele no ranking (a mesma da tela da Liga), não a de nascimento
+  const botStatus = run.botTrophies !== undefined ? leagueOf(run.botTrophies) : null;
+  const botLeague = botStatus?.league ?? run.bot.league;
   const lead = run.rating === undefined ? Math.max(0, LEAGUES.indexOf(run.bot.league) - player.index) : leadOf(run.rating, run.trophiesBefore);
   const stakes = stakesRange(run.trophiesBefore, run.mmr, run.streak, lead, run.rating === undefined ? 0 : trailOf(run.rating, run.trophiesBefore));
   const legs = previewLegs(run, unlocked);
@@ -48,9 +51,9 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
           </div>
           <span className="rv-x">VS</span>
           <div className="rv-side">
-            <div className="rv-bot" data-league={run.bot.league}><b>{run.bot.name.charAt(0)}</b></div>
+            <div className="rv-bot" data-league={botLeague}><b>{run.bot.name.charAt(0)}</b></div>
             <strong>{botLabel(run.bot)}</strong>
-            <small>{t.duel.opponentMeta(leagueLabel(run.bot.league), styleLabel(run.bot.style, run.bot.specialty))}</small>
+            <small>{t.duel.opponentMeta(botStatus ? `${leagueLabel(botStatus.league, botStatus.division)} · ${money(run.botTrophies as number)}` : leagueLabel(run.bot.league), styleLabel(run.bot.style, run.bot.specialty))}</small>
           </div>
         </div>
         <ul className="rv-legs">
