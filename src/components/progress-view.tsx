@@ -19,6 +19,7 @@ import { DomainChart, DuelCard, ModesTab, NumbersCard, PillarsCompact, ProfileHe
 import { RhythmTab } from "./progress-rhythm";
 import { buildRhythm, modesOverview, reflexes, rhythmRounds, type ReflexMode } from "../domain/rhythm";
 import { answerKey } from "../domain/typed-answer";
+import { deviceSplitFor, withInferredDevice } from "../domain/device-history";
 import type { LadderCard } from "../domain/duel-view";
 import { pvpAccountName, pvpName } from "../domain/pvp-client";
 import { compareText, formatNumber, t } from "../domain/i18n";
@@ -394,9 +395,11 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
   // Nome e bandeira das entidades históricas, para o "Você errou" de um tempo de Históricas no histórico (mesma ideia da Coleção): sem isto,
   // o id cru (ex.: "anhalt-ducado") aparecia no lugar do nome, porque o Históricas fica fora de `meta` de propósito (decisão 1 do CLAUDE.md).
   const historicalMeta = useMemo(() => ({ ...Object.fromEntries(historical.map((entity) => [entity.id, entity as Meta])), ...divisionMeta }), [historical, divisionMeta]);
+  // PC × celular nas partidas de antes da marca (a regra da conta, device-history.ts)
+  const historySessions = useMemo(() => withInferredDevice(state.sessions, deviceSplitFor(pvpAccountName())), [state.sessions]);
   const dashboard = useMemo(() => buildProgressDashboard({
     now,
-    sessions: state.sessions,
+    sessions: historySessions,
     duels: state.duels,
     pvpMatches: state.pvpMatches,
     records: state.progress.records ?? [],
@@ -408,7 +411,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     pillars: state.progress.pillars,
     album: { discovered: state.progress.discovered, total: state.progress.total, distribution: state.progress.distribution },
     economy,
-  }), [now, state, data, historicalMeta, economy]);
+  }), [now, state, historySessions, data, historicalMeta, economy]);
   const flagOf: FlagOf = (code) => { const value = code ? (flags[code.toLowerCase()] ?? historicalFlags[code.toLowerCase()] ?? divisionFlags[code.toLowerCase()]) : undefined; return value ? flagSource(value) : undefined; };
   const { hero } = dashboard;
   // Seu ritmo e Modos: as rodadas com hora (Treino incluído nos Modos, fora no Seu ritmo)
