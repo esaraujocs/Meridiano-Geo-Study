@@ -289,7 +289,7 @@ function buildDuelRows(duels: readonly DuelRecord[], sessions: readonly SurfaceS
         ladder: record.ladder, ladderLabel,
         botName: bot ? botLabel(bot) : t.duel.opponent,
         botLeague: record.botTrophies !== undefined ? t.duel.leagues[leagueOf(record.botTrophies).league] : bot ? t.duel.leagues[bot.league] : "",
-        botStyle: bot ? styleLabel(bot.style, bot.specialty) : "",
+        botStyle: bot ? styleLabel(bot.style, bot.specialty, bot.region) : "",
         outcome: record.outcome, tiebreak: record.tiebreak,
         playerCorrect: record.playerCorrect, botCorrect: record.botCorrect, total: record.total, delta: record.delta,
         deltaLabel: t.progress.duelTrophies, deltaText: `${signed(record.delta)} ${t.duel.result.trophies}`,

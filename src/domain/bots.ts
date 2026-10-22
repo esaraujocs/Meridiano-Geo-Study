@@ -1,18 +1,22 @@
-// Bots do Duelo: 8 por liga (7 ligas, do Bronze ao Grão-Mestre; os 3 últimos de cada liga com nick de jogador), cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
+// Bots do Duelo: 16 por liga (7 ligas, do Bronze ao Grão-Mestre; desde 21/10/2026, eram 8), cada um com nome e um jeito de jogar. O bot não responde de verdade: a cada rodada ele acerta
 // com uma chance (que sobe com a divisão da pessoa e muda com o jeito dele) e "demora" um tempo, tudo sorteado com semente
 // (a sessão), então o mesmo duelo sempre dá o mesmo placar. Lógica pura.
 import { LEAGUES, leagueFloor, leagueSpan, type LeagueKey } from "./league.js";
 
 export type BotFamily = "mapa" | "bandeiras" | "capitais" | "idiomas";
-export type BotStyle = "constante" | "preciso" | "rapido" | "irregular" | "especialista";
+export type BotStyle = "constante" | "preciso" | "rapido" | "irregular" | "especialista" | "regional" | "aquecimento" | "folego" | "chutador" | "metodico";
+/** Os continentes (o `reg` do catálogo e das Históricas) em que um bot regional conhece mais. */
+export type BotRegion = "Asia" | "Europe" | "Africa" | "Americas" | "Oceania";
 
 export type Bot = {
   id: string;
   name: string;
   league: LeagueKey;
   style: BotStyle;
-  /** Só o especialista: a família em que ele é forte (nas outras, é fraco). */
+  /** O especialista: a família em que ele é forte (nas outras, é fraco). O regional: a família em que ele conhece o continente (`region`). */
   specialty: BotFamily | null;
+  /** Só o regional: o continente que ele conhece (ver REGIONAL). */
+  region?: BotRegion;
   /** A força própria do bot, na escala do rating (`baseAtRating`): com que acerto e tempo ele joga no ranking e contra a pessoa (ver SKILL_RANK). */
   skill: number;
 };
@@ -70,6 +74,19 @@ export const FAST = { accuracy: -0.04, time: 0.7 };
 export const SPECIALIST = { inside: 0.08, outside: -0.05 };
 /** O irregular alterna fases boas e ruins (mesma média): acerto ± isto, trocando de fase com esta chance por rodada. */
 export const STREAKY = { swing: 0.2, switchChance: 0.15 };
+/** Jeitos novos (21/10/2026, pedido do Enzo: "mais comportamentos; bots com conhecimentos super específicos, tipo bandeiras da Ásia, com boost de
+ *  performance nas bandeiras da Ásia, atuais e históricas, metade nas históricas, condicionado ao ceiling de cada categoria"). Todos jogam como o
+ *  constante fora do que os distingue, e o acerto nunca passa do teto do perfil (99%):
+ *  - `regional`: na família `specialty` e no continente `region`, +12 pontos de acerto e −25% de tempo (nas Históricas, pela metade);
+ *  - `aquecimento` (começa frio): nas 3 primeiras rodadas do 1º tempo, −10 pontos e +30% de tempo; depois, +2 pontos;
+ *  - `folego` (cansa no 2º tempo): no 1º tempo +3 pontos e −7% de tempo; no 2º, −4 pontos e +12%;
+ *  - `chutador`: o que não sabe ele chuta rápido (a resposta errada leva 45% do tempo), o que sabe leva o normal;
+ *  - `metodico`: o tempo de cada resposta varia pouco (0,9 a 1,1 do médio, contra 0,7 a 1,3). */
+export const REGIONAL = { accuracy: 0.12, speed: 0.25 };
+export const WARMUP = { rounds: 3, cold: -0.1, coldTime: 1.3, warm: 0.02 };
+export const STAMINA = { first: 0.03, firstTime: 0.93, second: -0.04, secondTime: 1.12 };
+export const GUESSER_TIME = 0.45;
+export const STEADY_JITTER = 0.2;
 
 // Ordem em cada liga: Constante, Preciso e lento, Rápido e descuidado, Irregular, Especialista.
 const ROSTER: Record<LeagueKey, readonly [string, string, string, string, string]> = {
@@ -94,6 +111,26 @@ const EXTRA: Record<LeagueKey, readonly (readonly [string, BotStyle])[]> = {
   "grao-mestre": [["ButãoDePânico", "irregular"], ["DonoDoMeridiano", "rapido"], ["nunca_errei_o_Chade", "preciso"]],
 };
 const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandeiras", ouro: "capitais", platina: "idiomas", diamante: "mapa", mestre: "bandeiras", "grao-mestre": "capitais" };
+/** Mais 8 por liga (21/10/2026, pedido do Enzo: "16 por liga; gera novos tipos de nick, não só zoeira ou sóbrio, quero mais variantes"): ids
+ *  `bot-<liga>-8` a `-15`, com os jeitos novos (dois ou três regionais por liga) e nicks de vários tipos: gamer com número, tag de clã, estrangeiro,
+ *  figura histórica ou literária, minimalista, perfil de streamer, caixa alta e mais alguns zoeiros. */
+type Newcomer = readonly [string, BotStyle] | readonly [string, "regional", BotFamily, BotRegion];
+const NEWCOMERS: Record<LeagueKey, readonly Newcomer[]> = {
+  bronze: [["lhama_perdida", "chutador"], ["Kaique2011", "rapido"], ["Dona Cida do Mapa", "aquecimento"], ["[BR] Tuca", "irregular"],
+    ["Ingrid Fjord", "regional", "bandeiras", "Europe"], ["CAPITALSEMACENTO", "folego"], ["pedrinho.geo", "metodico"], ["Marco Pólo Jr.", "regional", "mapa", "Asia"]],
+  prata: [["Kenji Tabi", "regional", "bandeiras", "Asia"], ["sushi_de_Lisboa", "chutador"], ["N3bul0sa", "rapido"], ["Profª Isóbara", "metodico"],
+    ["[GEO] Tainá", "aquecimento"], ["bolinha", "constante"], ["Amélia Voa", "folego"], ["Kwame Savana", "regional", "mapa", "Africa"]],
+  ouro: [["Phileas Fogg", "rapido"], ["Saudade_do_Pacífico", "regional", "bandeiras", "Oceania"], ["Lukas_Alpen", "regional", "capitais", "Europe"], ["M4R1N4", "chutador"],
+    ["zé.bússola", "aquecimento"], ["Dr. Topônimo", "metodico"], ["furacão_Catarina", "folego"], ["Soledad Andes", "regional", "mapa", "Americas"]],
+  platina: [["Capitão Nemo", "preciso"], ["Aisha Sahel", "regional", "bandeiras", "Africa"], ["pinguim_de_galápagos", "irregular"], ["Ragnar_Fiorde", "regional", "mapa", "Europe"],
+    ["@cartografa.bia", "metodico"], ["MERIDIANO_77", "chutador"], ["Wei Seda", "regional", "capitais", "Asia"], ["esqueci_o_passaporte", "aquecimento"]],
+  diamante: [["Astrid Aurora", "folego"], ["Chen Monção", "regional", "bandeiras", "Asia"], ["[MAP] Gaúcho", "rapido"], ["Kaimana", "regional", "mapa", "Oceania"],
+    ["Geodésia", "metodico"], ["ZÉ DO DATUM", "chutador"], ["Iracema Litoral", "aquecimento"], ["Inti_Andino", "regional", "capitais", "Americas"]],
+  mestre: [["Al-Idrisi", "regional", "mapa", "Africa"], ["Yuki Ilhas", "regional", "capitais", "Asia"], ["nórdica_silenciosa", "metodico"], ["Hipátia", "preciso"],
+    ["kraken_do_mapa", "chutador"], ["Ama Volta", "regional", "bandeiras", "Africa"], ["Bartolomeu Dias", "folego"], ["atlas_vivo", "aquecimento"]],
+  "grao-mestre": [["Mercedes Pampa", "regional", "bandeiras", "Americas"], ["Zheng He", "regional", "mapa", "Asia"], ["Ortelius", "metodico"], ["Anaximandro", "preciso"],
+    ["ÚLTIMO_PAÍS", "chutador"], ["Moana Rota", "regional", "bandeiras", "Oceania"], ["Sacagawea", "aquecimento"], ["Ibn Hawqal", "folego"]],
+};
 
 /** Forças em vários níveis, até bem perto do teto (20/10/2026, pedido do Enzo: "precisamos de bots em diversos níveis de força, incluindo bem
  *  próximo do ceiling; assim a própria simulação entre eles atualiza o ranking e surgem naturalmente os bots com mais troféus"). Antes todos da
@@ -102,10 +139,13 @@ const SPECIALTY: Record<LeagueKey, BotFamily> = { bronze: "mapa", prata: "bandei
  *  ordem, girada a cada liga, para os de nick e os de nome se misturarem no topo e no fundo. */
 const SKILL_RANK = [4, 6, 1, 3, 0, 7, 2, 5] as const;
 const GRAND_SKILLS = [3050, 3170, 3290, 3410, 3530, 3650, 3770, 3890] as const;
+/** Os 8 novos de cada liga (índices 8 a 15) ficam no meio das forças dos antigos (+30), então os antigos continuam na mesma liga. */
+const NEW_RANK = [5, 2, 7, 0, 3, 6, 1, 4] as const;
 const skillOf = (league: LeagueKey, index: number) => {
   const leagueIndex = LEAGUES.indexOf(league);
-  const rank = SKILL_RANK[(index + leagueIndex) % SKILL_RANK.length];
-  return league === "grao-mestre" ? GRAND_SKILLS[rank] : leagueFloor(leagueIndex) + 40 + rank * 60;
+  const fresh = index >= 8;
+  const rank = fresh ? NEW_RANK[(index - 8 + leagueIndex) % NEW_RANK.length] : SKILL_RANK[(index + leagueIndex) % SKILL_RANK.length];
+  return (league === "grao-mestre" ? GRAND_SKILLS[rank] : leagueFloor(leagueIndex) + 40 + rank * 60) + (fresh ? 30 : 0);
 };
 
 /** Bots promovidos à mão (o id não muda, então o histórico continua apontando para eles). 20/10/2026, pedido do Enzo: "dá um buff na Ana
@@ -114,11 +154,11 @@ const PROMOTED: Record<string, { league: LeagueKey; skill: number }> = {
   "bot-mestre-4": { league: "grao-mestre", skill: 3350 },
 };
 
-/** Quantos bots por liga: 8 em todas (20/10/2026: o Enzo testou 4/5/6/7/9/11/14, "mais jogadores no topo que na base fica estranho", e
- *  preferiu as caixas iguais a simular um U invertido). Os 56 são postos em ordem pela força de antes (SKILL_RANK + PROMOTED) e repartidos de baixo
+/** Quantos bots por liga: 16 em todas desde 21/10/2026 (eram 8; o Enzo testou 4/5/6/7/9/11/14 em 20/10, "mais jogadores no topo que na base fica
+ *  estranho", e preferiu as caixas iguais a simular um U invertido; depois pediu o dobro, igual em todas). Os 112 são postos em ordem pela força de antes (SKILL_RANK + PROMOTED) e repartidos de baixo
  *  para cima; dentro de cada liga as forças são espalhadas por igual do começo + 40 ao começo + 460 e, no Grão-Mestre, de 3.050 a 3.890. O id
  *  não muda (o histórico continua apontando para o bot); a liga de nascimento só decide a especialidade e o nome. */
-export const LEAGUE_SIZES: Record<LeagueKey, number> = { bronze: 8, prata: 8, ouro: 8, platina: 8, diamante: 8, mestre: 8, "grao-mestre": 8 };
+export const LEAGUE_SIZES: Record<LeagueKey, number> = { bronze: 16, prata: 16, ouro: 16, platina: 16, diamante: 16, mestre: 16, "grao-mestre": 16 };
 const GRAND_RANGE = [3050, 3890] as const;
 function redistribute(bots: readonly Bot[]): Bot[] {
   const order = [...bots].sort((a, b) => a.skill - b.skill || (a.id < b.id ? -1 : 1));
@@ -144,6 +184,11 @@ export const BOTS: readonly Bot[] = redistribute(LEAGUES.flatMap((league) => [
     skill: skillOf(league, index),
   })),
   ...EXTRA[league].map(([name, style], index): Bot => ({ id: `bot-${league}-${ROSTER[league].length + index}`, name, league, style, specialty: null, skill: skillOf(league, ROSTER[league].length + index) })),
+  ...NEWCOMERS[league].map((entry, index): Bot => {
+    const slot = 8 + index;
+    const base = { id: `bot-${league}-${slot}`, name: entry[0], league, skill: skillOf(league, slot) };
+    return entry[1] === "regional" && entry.length === 4 ? { ...base, style: "regional", specialty: entry[2], region: entry[3] } : { ...base, style: entry[1], specialty: null };
+  }),
 ]).map((bot) => (PROMOTED[bot.id] ? { ...bot, ...PROMOTED[bot.id] } : bot)));
 export const botsOfLeague = (league: LeagueKey) => BOTS.filter((bot) => bot.league === league);
 
@@ -208,6 +253,10 @@ export type BotContext = {
   /** Modos de clicar no mapa (20/10/2026, pedido do Enzo: "~2 s fixo é trabalho de louco para alguns lugares"): quanto cada alvo do baralho pede de
    *  tempo para ser achado, ×1 na média do baralho (`mapSpot`, map-spots.ts: 0,45 na Rússia, 2,1 em São Bartolomeu), na ordem das rodadas. */
   spots?: readonly number[];
+  /** O tempo do duelo (0 ou 1): o `folego` e o `aquecimento` dependem dele. */
+  leg?: number;
+  /** O continente de cada alvo do baralho, na ordem das rodadas (o `regional` conhece um). */
+  regions?: readonly (string | undefined)[];
   /** O cronômetro do modo, em ms: o bot sempre responde antes de ele acabar (o acerto calibrado de cada liga já conta os tempos esgotados; sem o
    *  teto, um bot lento numa ilhota de Capitais · clicar ou numa histórica passava dos 15 ou 20 s da rodada). */
   limitMs?: number;
@@ -277,6 +326,18 @@ export function humanFloorMs(kind: BotContext["kind"], chars?: number) {
   return HUMAN_FLOOR[kind];
 }
 
+/** O que a rodada muda no acerto (pontos) e no tempo (fator), pelos jeitos novos (ver REGIONAL e os outros). */
+export function roundShape(bot: Bot, context: BotContext, round: number): { accuracy: number; time: number } {
+  if (bot.style === "regional") {
+    const known = bot.specialty !== null && context.family === bot.specialty && context.regions?.[round] === bot.region;
+    const weight = context.specialtyWeight ?? 1;
+    return known ? { accuracy: REGIONAL.accuracy * weight, time: 1 - REGIONAL.speed * weight } : { accuracy: 0, time: 1 };
+  }
+  if (bot.style === "aquecimento") return (context.leg ?? 0) === 0 && round < WARMUP.rounds ? { accuracy: WARMUP.cold, time: WARMUP.coldTime } : { accuracy: WARMUP.warm, time: 1 };
+  if (bot.style === "folego") return (context.leg ?? 0) === 0 ? { accuracy: STAMINA.first, time: STAMINA.firstTime } : { accuracy: STAMINA.second, time: STAMINA.secondTime };
+  return { accuracy: 0, time: 1 };
+}
+
 export function simulateBot(bot: Bot, rounds: number, seed: string, context: BotContext = { division: 1, family: null }) {
   const profile = botProfile(bot, context);
   const typing = context.typing?.chars.length ? context.typing : null;
@@ -288,11 +349,16 @@ export function simulateBot(bot: Bot, rounds: number, seed: string, context: Bot
     if (profile.streaky && random() < STREAKY.switchChance) hot = !hot;
     // a oscilação encolhe perto de 0% e 100% para a média continuar sendo o acerto do perfil
     const swing = Math.min(STREAKY.swing, profile.accuracy, 1 - profile.accuracy);
-    const chance = profile.streaky ? profile.accuracy + (hot ? swing : -swing) : profile.accuracy;
-    if (random() < chance) correct += 1;
+    let chance = profile.streaky ? profile.accuracy + (hot ? swing : -swing) : profile.accuracy;
+    const shape = roundShape(bot, context, round);
+    chance = clamp(chance + shape.accuracy, 0.05, Math.max(chance, 0.99));
+    const hit = random() < chance;
+    if (hit) correct += 1;
     const chars = typing ? typing.chars[round % typing.chars.length] : undefined;
     const spot = context.spots?.length ? context.spots[round % context.spots.length] : 1;
-    const ms = typing ? typingMs(profile.avgMs, typing, chars as number, random) : Math.round(profile.avgMs * spot * (0.7 + random() * 0.6));
+    const jitter = bot.style === "metodico" ? 1 - STEADY_JITTER / 2 + random() * STEADY_JITTER : 0.7 + random() * 0.6;
+    const avgMs = profile.avgMs * shape.time * (bot.style === "chutador" && !hit ? GUESSER_TIME : 1);
+    const ms = typing ? typingMs(avgMs, typing, chars as number, random) : Math.round(avgMs * spot * jitter);
     totalMs += Math.min(context.limitMs ?? Infinity, Math.max(ms, humanFloorMs(context.kind, chars)));
   }
   return { correct, totalMs };

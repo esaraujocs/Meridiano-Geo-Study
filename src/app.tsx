@@ -952,7 +952,10 @@ export function App() {
     const chars = typing && data ? rounds.map((round) => { const meta = data.meta[round.targetId]; return typedChars(typing.answer === "capital" ? meta?.cap : meta?.pt); }) : undefined;
     // nos de clicar no mapa o bot procura os mesmos lugares: um país grande sai rápido, uma ilhota do Caribe demora (ver mapSpot)
     const spots = groupDef(leg.group).kind === "clique" ? rounds.map((round) => mapSpot(round.targetId)) : undefined;
-    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds), ...(chars ? { chars } : {}), ...(spots ? { spots } : {}) });
+    // o continente de cada alvo: o bot regional conhece o dele (países pelo catálogo, históricas pelas próprias fichas)
+    const historicalReg = new Map(specialEntries.historicas.map((entry) => [entry.id, entry.reg]));
+    const regions = rounds.map((round) => data?.meta[round.targetId]?.reg ?? historicalReg.get(round.targetId));
+    const next = recordLeg(run, { group: leg.group, rounds: leg.rounds, playerCorrect: rounds.filter((round) => round.correct).length, playerMs: playerTotalMs(rounds, result.session.timerSeconds), ...(chars ? { chars } : {}), ...(spots ? { spots } : {}), regions });
     setDuelRun(next);
     if (run.index === 0) { void refreshEconomy(); setScreen("duel-interlude"); return; }
     await concludeDuel(next);

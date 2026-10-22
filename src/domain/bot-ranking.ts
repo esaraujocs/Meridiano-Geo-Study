@@ -65,9 +65,20 @@ export type BotMatchInput = {
 const BOT_IDS = BOTS.map((bot) => bot.id);
 const BOT_ID_SET = new Set(BOT_IDS);
 const LADDER_SET = new Set<string>(LADDERS);
-const OFFSETS = [70, 170, 260, 350, 440, 120, 310, 400] as const;
+const OFFSETS = [70, 170, 260, 350, 440, 120, 310, 400, 95, 215, 285, 375, 145, 335, 425, 235] as const;
 /** O Grão-Mestre, sem teto, espalha os bots um pouco mais (de 3.060 a 3.700); o Mestre, desde 19/10/2026 com 500 troféus, é uma liga comum. */
-const GRAND_OFFSETS = [60, 220, 380, 540, 700, 140, 460, 620] as const;
+const GRAND_OFFSETS = [60, 220, 380, 540, 700, 140, 460, 620, 100, 300, 500, 660, 180, 420, 580, 260] as const;
+/** O continente dos alvos nos duelos entre bots (o regional conhece um): a proporção dos 250 territórios do mapa e das 226 Históricas. */
+const REGION_SHARES: Record<"atual" | "historica", readonly (readonly [string, number])[]> = {
+  atual: [["Asia", 50], ["Europe", 55], ["Africa", 60], ["Americas", 55], ["Oceania", 27]],
+  historica: [["Asia", 61], ["Europe", 70], ["Africa", 54], ["Americas", 36], ["Oceania", 5]],
+};
+function sampleRegions(kind: "atual" | "historica", rounds: number, seed: string) {
+  const shares = REGION_SHARES[kind];
+  const total = shares.reduce((sum, [, weight]) => sum + weight, 0);
+  const random = mulberry32(hashSeed(seed));
+  return Array.from({ length: rounds }, () => { let pick = random() * total; return (shares.find(([, weight]) => (pick -= weight) < 0) ?? shares[0])[0]; });
+}
 const DAILY_SWING = 30;
 
 /**
@@ -200,8 +211,18 @@ function settleBotMatchCore(state: BotRankingState, input: BotMatchInput): BotRa
   if (!Number.isFinite(opponentMmr) || opponentMmr < 0) throw new TypeError("opponentMmr must be a nonnegative finite number");
   if (outcome !== "win" && outcome !== "loss" && outcome !== "draw") throw new TypeError("Unknown bot match outcome");
   if (!Number.isFinite(margin)) throw new TypeError("margin must be finite");
+  const next = settleStanding(state.bots[ladder][botId], opponentMmr, outcome, margin);
+  return {
+    ...state,
+    bots: {
+      ...state.bots,
+      [ladder]: { ...state.bots[ladder], [botId]: next },
+    },
+  };
+}
 
-  const current = state.bots[ladder][botId];
+/** O resultado de um duelo para um bot (troféus, MMR, incerteza e sequência), sem copiar o estado inteiro: o dia simulado chama isto 112 vezes por escada. */
+function settleStanding(current: BotStanding, opponentMmr: number, outcome: BotMatchInput["outcome"], margin: number): BotStanding {
   const beforeMmr = current.mmr;
   const expected = expectedScore(beforeMmr, opponentMmr);
   const sample: SurpriseSample = { score: outcomeScore(outcome), expected };
@@ -215,20 +236,13 @@ function settleBotMatchCore(state: BotRankingState, input: BotMatchInput): BotRa
     lead: leadOf(opponentMmr, current.trophies),
     trail: trailOf(opponentMmr, current.trophies),
   });
-  const next: BotStanding = {
+  return {
     trophies: Math.max(0, current.trophies + change.delta),
     mmr: Math.max(0, beforeMmr + mmrChange(beforeMmr, opponentMmr, outcome, margin, current.sigma)),
     sigma: sigmaNext(current.sigma, samples),
     streak: outcome === "win" ? current.streak + 1 : 0,
     samples,
     matches: current.matches + 1,
-  };
-  return {
-    ...state,
-    bots: {
-      ...state.bots,
-      [ladder]: { ...state.bots[ladder], [botId]: next },
-    },
   };
 }
 
@@ -249,11 +263,29 @@ export const NEAREST_OPPONENTS = 3;
  *  só dá o alvo: sorteia-se entre os NEAREST_OPPONENTS bots com o MMR mais perto dele (sem repetir o anterior), que joga com a própria força (a
  *  base da liga, como no ranking) e cujo MMR é a nota contra a qual o MMR da pessoa muda. Acima do 1º do ranking não há bot mais forte: o
  *  adversário mais duro é o topo, e o limite vem da curva de troféus. */
-export function rankedOpponent(state: BotRankingState, ladder: Ladder, target: number, seed: string, excludeId?: string | null) {
+/** Os bots da escada em ordem de MMR, para achar os mais perto por busca binária (o dia simulado monta uma vez; ordenar todos a cada duelo, com
+ *  112 bots, levava a recalibração de ~1 s para ~4,4 s). */
+type ByMmr = { readonly bots: readonly Bot[]; readonly mmr: readonly number[] };
+function byMmr(state: BotRankingState, ladder: Ladder): ByMmr {
   const standings = state.bots[ladder];
-  const pool = BOTS.filter((bot) => standings[bot.id] && bot.id !== excludeId);
-  const gap = (bot: Bot) => Math.abs(standings[bot.id].mmr - target);
-  const nearest = [...pool].sort((a, b) => gap(a) - gap(b)).slice(0, NEAREST_OPPONENTS);
+  const bots = BOTS.filter((bot) => standings[bot.id]).sort((a, b) => standings[a.id].mmr - standings[b.id].mmr || (a.id < b.id ? -1 : 1));
+  return { bots, mmr: bots.map((bot) => standings[bot.id].mmr) };
+}
+function nearestByMmr(sorted: ByMmr, target: number, excludeId: string | null | undefined, count: number): Bot[] {
+  let lo = 0, hi = sorted.mmr.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted.mmr[mid] < target) lo = mid + 1; else hi = mid; }
+  const out: Bot[] = [];
+  let left = lo - 1, right = lo;
+  while (out.length < count && (left >= 0 || right < sorted.bots.length)) {
+    const takeRight = left < 0 || (right < sorted.bots.length && sorted.mmr[right] - target <= target - sorted.mmr[left]);
+    const index = takeRight ? right++ : left--;
+    if (sorted.bots[index].id !== excludeId) out.push(sorted.bots[index]);
+  }
+  return out;
+}
+export function rankedOpponent(state: BotRankingState, ladder: Ladder, target: number, seed: string, excludeId?: string | null, sorted: ByMmr = byMmr(state, ladder)) {
+  const standings = state.bots[ladder];
+  const nearest = nearestByMmr(sorted, target, excludeId, NEAREST_OPPONENTS);
   const bot = nearest[Math.floor(mulberry32(hashSeed(`opponent:${seed}`))() * nearest.length)];
   return { bot, rating: Math.round(standings[bot.id].mmr), division: ownDivision(bot) };
 }
@@ -271,9 +303,9 @@ export type BotDuel = { outcome: "win" | "loss" | "draw"; margin: number; oppone
  *  topo, disparar 600 troféus: vencia "forças 3.900" que no jeito delas eram mais fracas.) Sem `state`, o de antes: um bot da liga do alvo com a
  *  força do alvo. Os 2 tempos sorteados da
  *  escada (nos modos digitados, as mesmas respostas sorteadas do catálogo para os dois); mais acertos vence, empate no menor tempo total. */
-export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: string, state?: BotRankingState): BotDuel {
+export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: string, state?: BotRankingState, sorted?: ByMmr): BotDuel {
   const match = matchmaking(standing.trophies, standing.mmr, standing.sigma, surprise(standing.samples));
-  const opponent = state ? rankedOpponent(state, ladder, match.rating, seed, bot.id).bot : pickBot(match.league, seed, bot.id);
+  const opponent = state ? rankedOpponent(state, ladder, match.rating, seed, bot.id, sorted ?? byMmr(state, ladder)).bot : pickBot(match.league, seed, bot.id);
   const formA = duelForm(bot, seed), formB = duelForm(opponent, `${seed}:rival`);
   let correctA = 0, correctB = 0, msA = 0, msB = 0;
   drawLegs(ladder, seed).forEach((leg, index) => {
@@ -292,7 +324,8 @@ export function botDuel(bot: Bot, standing: BotStanding, ladder: Ladder, seed: s
     }
     const shared = {
       family: def.botFamily, neutral: def.neutral, specialtyWeight: def.specialtyWeight, tuning: { accuracy: def.accuracy, time: def.time }, kind: def.kind,
-      limitMs: timerSecondsFor(def.variants[0].variant) * 1000,
+      limitMs: timerSecondsFor(def.variants[0].variant) * 1000, leg: index,
+      regions: sampleRegions(leg.group === "historicas" ? "historica" : "atual", leg.rounds, `bot-ranking:regions:${seed}:${index}`),
       ...(typing && chars ? { typing: { think: typing.think, key: typing.key, chars } } : {}),
       ...(spots ? { spots } : {}),
     };
@@ -315,11 +348,14 @@ export const RANK_PULL = 0.1;
 function simulateDay(state: BotRankingState, day: number): BotRankingState {
   let next = state;
   for (const ladder of LADDERS) {
+    const sorted = byMmr(state, ladder);
+    const work = { ...next.bots[ladder] };
     for (const botId of BOT_IDS) {
       const standing = state.bots[ladder][botId];
-      const { outcome, margin, rating } = botDuel(botOf.get(botId) as Bot, standing, ladder, `bot-ranking:${ladder}:${day}:${botId}`, state);
-      next = settleBotMatchCore(next, { ladder, botId, opponentMmr: rating, outcome, margin });
+      const { outcome, margin, rating } = botDuel(botOf.get(botId) as Bot, standing, ladder, `bot-ranking:${ladder}:${day}:${botId}`, state, sorted);
+      work[botId] = settleStanding(work[botId], rating, outcome, margin);
     }
+    next = { ...next, bots: { ...next.bots, [ladder]: work } };
     // âncora: o Elo entre bots decide a ORDEM; a escala vem das forças (o 1º puxado para a maior, o 2º para a segunda…), então a escada tem
     // sempre o mesmo formato (8 no Grão-Mestre, o topo perto de 3.900) e não deriva
     const standings = next.bots[ladder];
@@ -330,9 +366,9 @@ function simulateDay(state: BotRankingState, day: number): BotRankingState {
   return { ...next, revision: state.revision + 1, lastDay: day };
 }
 
-/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre; 7: meia especialidade nas Históricas; 8: mais bots no alto (desfeito); 9: 8 por liga de novo e vitória contra quem está abaixo rendendo pouco; 10: digitação pelo nível; 11: piso de digitação de 0,7 s + 170 ms por letra); subir este número recalibra os estados
+/** Versão da calibração pelos duelos do dia (1: bot × bot entre vizinhos; 2: o matchmaking da pessoa; 3: 8 bots por liga, com os de nick; 4: força própria de cada bot e duelos entre eles; 5: Elo entre eles, a escala pelas forças e a forma do dia; 6: a Ana Hemisfério no Grão-Mestre; 7: meia especialidade nas Históricas; 8: mais bots no alto (desfeito); 9: 8 por liga de novo e vitória contra quem está abaixo rendendo pouco; 10: digitação pelo nível; 11: piso de digitação de 0,7 s + 170 ms por letra; 12: 16 por liga e os jeitos novos); subir este número recalibra os estados
  *  salvos na próxima abertura. */
-export const BOT_RANKING_CALIBRATION = 11;
+export const BOT_RANKING_CALIBRATION = 12;
 /** Quantos dias de duelos a recalibração simula (de onde cada bot estava). */
 export const CALIBRATION_DAYS = 365;
 export const needsCalibration = (state: BotRankingState) => state.calibration !== BOT_RANKING_CALIBRATION;

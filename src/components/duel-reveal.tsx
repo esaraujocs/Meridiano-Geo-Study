@@ -53,7 +53,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
           <div className="rv-side">
             <div className="rv-bot" data-league={botLeague}><b>{run.bot.name.charAt(0)}</b></div>
             <strong>{botLabel(run.bot)}</strong>
-            <small>{t.duel.opponentMeta(botStatus ? `${leagueLabel(botStatus.league, botStatus.division)} · ${money(run.botTrophies as number)}` : leagueLabel(run.bot.league), styleLabel(run.bot.style, run.bot.specialty))}</small>
+            <small>{t.duel.opponentMeta(botStatus ? `${leagueLabel(botStatus.league, botStatus.division)} · ${money(run.botTrophies as number)}` : leagueLabel(run.bot.league), styleLabel(run.bot.style, run.bot.specialty, run.bot.region))}</small>
           </div>
         </div>
         <ul className="rv-legs">

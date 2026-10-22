@@ -8,9 +8,9 @@ export const DAY_MS = 86_400_000;
 export const dayNumber = (now = Date.now()) => Math.floor(now / DAY_MS);
 
 /** Onde cada bot fica dentro da liga dele (troféus acima do começo da liga); os do Mestre (sem teto) vão mais longe. */
-const OFFSETS = [70, 170, 260, 350, 440, 120, 310, 400] as const;
+const OFFSETS = [70, 170, 260, 350, 440, 120, 310, 400, 95, 215, 285, 375, 145, 335, 425, 235] as const;
 /** O Grão-Mestre, sem teto, espalha os bots um pouco mais (de 3.060 a 3.700); o Mestre, desde 19/10/2026 com 500 troféus, é uma liga comum. */
-const GRAND_OFFSETS = [60, 220, 380, 540, 700, 140, 460, 620] as const;
+const GRAND_OFFSETS = [60, 220, 380, 540, 700, 140, 460, 620, 100, 300, 500, 660, 180, 420, 580, 260] as const;
 /** Quanto os troféus do bot variam de um dia para o outro (para cima ou para baixo). */
 export const DAILY_SWING = 30;
 

@@ -1,5 +1,5 @@
 // Textos dos bots e dos marcos no idioma da interface (nomes próprios dos bots não se traduzem).
-import type { Bot, BotFamily, BotStyle } from "./bots.js";
+import type { Bot, BotFamily, BotRegion, BotStyle } from "./bots.js";
 import type { Milestone } from "./duel-rewards.js";
 import { LEAGUES, divisionRoman, type LeagueKey, type LeagueStatus } from "./league.js";
 import { t } from "./i18n/index.js";
@@ -11,8 +11,10 @@ export const leaguePip = (league: LeagueKey, division: 1 | 2 | 3 | null = null) 
 /** "Bot Bronze" só aparece para registros antigos, que guardavam a liga e não o bot. */
 export const botLabel = (bot: Pick<Bot, "name" | "league">) => bot.name || t.duel.botName(t.duel.leagues[bot.league]);
 
-export const styleLabel = (style: BotStyle, specialty: BotFamily | null) =>
-  style === "especialista" && specialty ? t.duel.styles.especialista(t.families[specialty]) : t.duel.styles[style === "especialista" ? "constante" : style];
+export const styleLabel = (style: BotStyle, specialty: BotFamily | null, region?: BotRegion) =>
+  style === "especialista" && specialty ? t.duel.styles.especialista(t.families[specialty])
+    : style === "regional" && specialty && region ? t.duel.styles.regional(t.families[specialty], t.duel.regionOf[region])
+      : t.duel.styles[style === "especialista" || style === "regional" ? "constante" : style];
 
 export const milestoneLabel = (milestone: Pick<Milestone, "kind" | "league" | "division">) =>
   milestone.kind === "league"

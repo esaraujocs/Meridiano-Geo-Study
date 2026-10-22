@@ -137,11 +137,19 @@ assert.deepEqual([B.humanFloorMs("opcoes"), B.humanFloorMs("clique"), B.humanFlo
   assert.equal(D.mmrFromDuels(mm, "bandeiras"), 3438);
 }
 
-// ---- Elenco: 56 bots, ids e nomes únicos, mais no alto (LEAGUE_SIZES), forças espalhadas por igual dentro da liga ----
-assert.equal(B.BOTS.length, 56);
-assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 56);
-assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 56);
-assert.deepEqual(L.LEAGUES.map((league) => B.botsOfLeague(league).length), [8, 8, 8, 8, 8, 8, 8]);
+// ---- Elenco: 112 bots (16 por liga desde 21/10/2026), ids e nomes únicos, forças espalhadas por igual dentro da liga ----
+assert.equal(B.BOTS.length, 112);
+assert.equal(new Set(B.BOTS.map((bot) => bot.id)).size, 112);
+assert.equal(new Set(B.BOTS.map((bot) => bot.name)).size, 112);
+assert.deepEqual(L.LEAGUES.map((league) => B.botsOfLeague(league).length), [16, 16, 16, 16, 16, 16, 16]);
+// os 56 de antes continuam na liga em que estavam (os novos ficam no meio das forças deles)
+const before = { "bot-bronze-0": "bronze", "bot-ouro-2": "ouro", "bot-mestre-0": "mestre", "bot-grao-mestre-0": "grao-mestre", "bot-diamante-5": "diamante" };
+for (const [id, league] of Object.entries(before)) assert.equal(B.botById(id).league, league, id);
+// regionais em todas as ligas, com família e continente; os jeitos novos todos presentes
+const regionals = B.BOTS.filter((bot) => bot.style === "regional");
+assert.equal(regionals.length, 19, "dois ou três regionais por liga de nascimento");
+assert.ok(regionals.every((bot) => bot.specialty && ["Asia", "Europe", "Africa", "Americas", "Oceania"].includes(bot.region)));
+for (const style of ["aquecimento", "folego", "chutador", "metodico"]) assert.ok(B.BOTS.filter((bot) => bot.style === style).length >= 5, style);
 for (const [i, league] of L.LEAGUES.entries()) {
   const skills = B.botsOfLeague(league).map((bot) => bot.skill).sort((x, y) => x - y);
   const [low, high] = league === "grao-mestre" ? [3050, 3890] : [L.leagueFloor(i) + 40, L.leagueFloor(i) + 460];
@@ -149,7 +157,33 @@ for (const [i, league] of L.LEAGUES.entries()) {
 }
 const ana = B.botById("bot-mestre-4");
 assert.equal(ana.name, "Ana Hemisfério"); assert.equal(ana.league, "grao-mestre"); assert.equal(ana.specialty, "bandeiras");
-assert.equal(B.BOTS.filter((bot) => bot.specialty).length, 7, "um especialista de cada liga de nascimento");
+assert.equal(B.BOTS.filter((bot) => bot.style === "especialista").length, 7, "um especialista de cada liga de nascimento");
+// ---- Jeitos novos (21/10/2026) ----
+{
+  const kenji = B.BOTS.find((bot) => bot.name === "Kenji Tabi");
+  assert.equal(kenji.style, "regional"); assert.equal(kenji.specialty, "bandeiras"); assert.equal(kenji.region, "Asia");
+  const flags = { division: null, family: "bandeiras", own: true, form: 0 };
+  assert.deepEqual(B.roundShape(kenji, { ...flags, regions: ["Asia"] }, 0), { accuracy: 0.12, time: 0.75 }, "bandeira da Ásia: +12 pontos e −25% de tempo");
+  assert.deepEqual(B.roundShape(kenji, { ...flags, regions: ["Europe"] }, 0), { accuracy: 0, time: 1 }, "fora do continente, nada");
+  assert.deepEqual(B.roundShape(kenji, { ...flags, family: "mapa", regions: ["Asia"] }, 0), { accuracy: 0, time: 1 }, "fora da família, nada");
+  assert.deepEqual(B.roundShape(kenji, { ...flags, regions: ["Asia"], specialtyWeight: 0.5 }, 0), { accuracy: 0.06, time: 0.875 }, "nas Históricas, metade");
+  // o teto: na Ásia ele acerta mais, mas nunca passa dos 99%
+  const top = { ...kenji, skill: 3900 };
+  const asia = B.simulateBot(top, 2000, "teto", { ...flags, regions: Array(2000).fill("Asia") });
+  const other = B.simulateBot(top, 2000, "teto", { ...flags, regions: Array(2000).fill("Europe") });
+  assert.ok(asia.correct <= 2000 * 0.995 && asia.correct >= other.correct, `teto respeitado (${asia.correct} × ${other.correct})`);
+  const mid = { ...kenji, skill: 1500 };
+  const midAsia = B.simulateBot(mid, 4000, "m", { ...flags, regions: Array(4000).fill("Asia") }).correct / 4000;
+  const midEurope = B.simulateBot(mid, 4000, "m", { ...flags, regions: Array(4000).fill("Europe") }).correct / 4000;
+  assert.ok(midAsia - midEurope > 0.08, `boost na Ásia (${midAsia.toFixed(3)} × ${midEurope.toFixed(3)})`);
+  const mk2 = (style) => ({ id: `t-${style}`, name: "", league: "ouro", style, specialty: null, skill: 1250 });
+  assert.deepEqual(B.roundShape(mk2("aquecimento"), { division: null, family: null, leg: 0 }, 1), { accuracy: -0.1, time: 1.3 });
+  assert.deepEqual(B.roundShape(mk2("aquecimento"), { division: null, family: null, leg: 1 }, 1), { accuracy: 0.02, time: 1 });
+  assert.ok(B.roundShape(mk2("folego"), { division: null, family: null, leg: 1 }, 0).accuracy < 0);
+  // o chutador erra no mesmo ritmo, mas o erro sai rápido: o tempo total cai
+  const ctx = { division: null, family: null, own: true, form: 0 };
+  assert.ok(B.simulateBot(mk2("chutador"), 400, "c", ctx).totalMs < B.simulateBot(mk2("constante"), 400, "c", ctx).totalMs);
+}
 assert.equal(B.botById("bot-ouro-2").name, "Caio Latitude");
 assert.equal(B.botById("bot-prata").league, "prata", "registro antigo (só a liga) ainda resolve");
 assert.equal(B.botById("bot-nao-existe"), null);
@@ -187,7 +221,8 @@ for (const bot of B.BOTS) {
     const context = { division: bot.league === "mestre" || bot.league === "grao-mestre" ? null : division, family: bot.specialty };
     const expected = B.botProfile(bot, context).accuracy;
     let hits = 0, rounds = 0;
-    for (let game = 0; game < 400; game += 1) { hits += B.simulateBot(bot, 25, `g${game}`, context).correct; rounds += 25; }
+    // quem muda com o tempo do duelo (começa frio, cansa no 2º) é medido nos dois tempos: a média fica perto do nominal
+    for (let game = 0; game < 400; game += 1) { hits += B.simulateBot(bot, 25, `g${game}`, { ...context, leg: game % 2 }).correct; rounds += 25; }
     const observed = hits / rounds;
     const tolerance = 0.03;
     assert.ok(Math.abs(observed - expected) < tolerance, `${bot.id} div ${division}: ${observed.toFixed(3)} vs ${expected.toFixed(3)}`);
