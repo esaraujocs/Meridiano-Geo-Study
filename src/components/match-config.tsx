@@ -103,7 +103,7 @@ export function Recorte({
   const selectedCount = selectedCountProp ?? (selectedRegions.length === 1 && selectedRegions[0] === allKey
     ? counts[allKey]
     : selectedRegions.reduce((total, item) => total + (counts[item] ?? 0), 0));
-  // o nível do Travel (21/10/2026): Livre, Trilha ou Rota exata, guardado no navegador
+  // o nível do Travel (21/10/2026): Livre, Trilha ou Em ordem, guardado no navegador
   const [travelLevel, setTravelLevel] = useState<TravelLevel>(readTravelLevel);
   const [flagDirection, setFlagDirection] = useState<FlagDirection>(() =>
     flagDirectionFromVariant(variant) ??

@@ -51,7 +51,7 @@ assert.equal(tv.travelWeight(puzzle, 9, true), 1.5);
 assert.equal(tv.travelWeight(puzzle, 7, false), 0);
 assert.equal(tv.travelWeight(puzzle, 3, true, "trilha"), 3.75);
 assert.equal(tv.travelWeight(puzzle, 3, true, "exata"), 4.5);
-// níveis: a folga diminui; a Trilha só aceita o que encosta na cadeia da origem; a Rota exata só o próximo de um caminho mais curto
+// níveis: a folga diminui; a Trilha só aceita o que encosta na cadeia da origem; Em ordem, só o que encosta no último país aceito
 assert.deepEqual([3, 4, 7].map((n) => tv.travelExtra(n, "trilha")), [2, 3, 3]);
 assert.equal(tv.travelBudget(3, "exata"), 4);
 assert.equal(tv.guessAllowed(g, puzzle, new Set(), "d", "livre"), true);
@@ -59,9 +59,11 @@ assert.equal(tv.guessAllowed(g, puzzle, new Set(), "d", "trilha"), false, "D nã
 assert.equal(tv.guessAllowed(g, puzzle, new Set(), "b", "trilha"), true);
 assert.equal(tv.guessAllowed(g, puzzle, new Set(), "f", "trilha"), true, "F encosta em A (longe do caminho, mas vale na Trilha)");
 assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "c", "trilha"), true);
-assert.equal(tv.guessAllowed(g, puzzle, new Set(), "f", "exata"), false, "F não encurta");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "f", "exata"), true, "F encosta na origem: desvio vale, só custa chute");
 assert.equal(tv.guessAllowed(g, puzzle, new Set(), "b", "exata"), true);
-assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "x", "exata", "b"), true, "X ou C: os dois caminhos mais curtos valem");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "x", "exata", "b"), true, "X ou C: encostam no último");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "f", "exata", "b"), false, "F encosta na origem, mas a ponta agora é B");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "f", "trilha"), true, "na Trilha pode ramificar");
 assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "d", "exata", "b"), false, "pular um país não vale");
 // sorteio: determinístico, distância de 2 a 7 fronteiras, origem à distância sorteada
 const p1 = tv.travelPuzzle(g, "e", 7), p2 = tv.travelPuzzle(g, "e", 7);

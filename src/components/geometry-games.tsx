@@ -395,7 +395,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     if (first) openPuzzle(first);
   }, [destinations]);
   const have = useMemo(() => new Set(guesses.filter((guess) => !guess.off).map((guess) => guess.id)), [guesses]);
-  // na Rota exata, a ponta da cadeia: o último país aceito
+  // em "Em ordem", a ponta da cadeia: o último país aceito
   const tip = [...guesses].reverse().find((guess) => !guess.off)?.id ?? puzzle?.start;
   const nameOf = (id: string) => meta[id]?.pt ?? id;
   const advance = () => {

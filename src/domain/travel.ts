@@ -125,8 +125,9 @@ export function gradeGuess(graph: TravelGraph, puzzle: TravelPuzzle, before: Rea
 }
 
 /** Os níveis (decisão do Enzo, 21/10/2026: "qualquer ordem fica bagunçado, a não ser que tenha níveis com a tolerância diminuindo"):
- *  `livre` qualquer ordem (o Travle); `trilha` cada chute tem de encostar na cadeia que sai da origem; `exata` só o próximo país de um caminho
- *  mais curto, em ordem. Chute que o nível não aceita gasta um chute e não entra no mapa. */
+ *  `livre` qualquer ordem (o Travle); `trilha` cada chute tem de encostar na cadeia que sai da origem (pode ramificar); `exata` ("Em ordem")
+ *  cada chute continua do último país aceito, uma linha só. Desvio vale, só custa chute (o Enzo: "Bulgária → Grécia → Turquia… usaria um país
+ *  a mais, mas era ok"; até 21/10/2026 a `exata` só aceitava o caminho mais curto). Chute que o nível não aceita gasta um chute e não entra no mapa. */
 export type TravelLevel = "livre" | "trilha" | "exata";
 export const TRAVEL_LEVELS: readonly TravelLevel[] = ["livre", "trilha", "exata"];
 export const DEFAULT_TRAVEL_LEVEL: TravelLevel = "trilha";
@@ -145,18 +146,17 @@ export const TRAVEL_LEVEL_EXTRA: Record<TravelLevel, string> = { livre: "4–6",
 export const TRAVEL_LEVEL_COINS: Record<TravelLevel, number> = { livre: 1, trilha: 1.25, exata: 1.5 };
 
 /** A folga sobre o mínimo de chutes. Livre, a do Travle: 3 → +4, 4–6 → +5, 7–9 → +6, 10–12 → +7, 13 ou mais → +8 (rotas curtas também +4);
- *  Trilha, +2 até 3 países e +3 acima; Rota exata, +1. */
+ *  Trilha, +2 até 3 países e +3 acima; Em ordem, +1. */
 export const travelExtra = (shortest: number, level: TravelLevel = "livre") =>
   level === "exata" ? 1 : level === "trilha" ? (shortest <= 3 ? 2 : 3) : shortest <= 3 ? 4 : shortest <= 6 ? 5 : shortest <= 9 ? 6 : shortest <= 12 ? 7 : 8;
 export const travelBudget = (shortest: number, level: TravelLevel = "livre") => shortest + travelExtra(shortest, level);
 
-/** O nível aceita o chute? `tip`: na Rota exata, o último país aceito (ou a origem). */
+/** O nível aceita o chute? `tip`: em "Em ordem", o último país aceito (ou a origem). */
 export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
   if (level === "livre") return true;
   const near = graph.get(guess) ?? new Set<string>();
   if (level === "trilha") return [...linkedToStart(graph, puzzle.start, have)].some((id) => near.has(id));
-  const toEnd = distancesFrom(graph, puzzle.end);
-  return near.has(tip) && toEnd.get(guess) === (toEnd.get(tip) ?? Infinity) - 1;
+  return near.has(tip);
 }
 
 /** Rotas de 3 a 8 países ao todo (decisão do Enzo, "misturadas"): de 2 a 7 fronteiras entre origem e destino, com as do meio mais frequentes. */

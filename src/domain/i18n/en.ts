@@ -1138,11 +1138,11 @@ export const en: Messages = {
     levels: {
       livre: { name: "Free", hint: "Guess countries in any order until the start and the destination are linked by land." },
       trilha: { name: "Trail", hint: "Each guess has to border your trail, which leaves from the start." },
-      exata: { name: "Exact route", hint: "Only the next country of a shortest way counts, in order, leaving from the start." },
+      exata: { name: "In order", hint: "Each guess continues from the last country, in order, leaving from the start. Detours count, they just cost guesses." },
     },
     levelNote: (extra: string, bonus: string) => `${extra} spare ${extra === "1" ? "guess" : "guesses"} · coins ${bonus}`,
     offTrail: (name: string) => `${name} doesn't border your trail (counts as a guess).`,
-    offRoute: (name: string) => `${name} isn't the next country of a shortest way (counts as a guess).`,
+    offRoute: (name: string) => `${name} doesn't border the last country of your route (counts as a guess).`,
     supplies: {
       vizinho: { short: "Next", detail: "Dashes on the map the next country of a shortest way." },
       lanterna: { short: "Borders", detail: "Lights up the borders of every country on the map." },

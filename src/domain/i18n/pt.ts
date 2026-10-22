@@ -1141,13 +1141,13 @@ export const pt = {
     levels: {
       livre: { name: "Livre", hint: "Chute países em qualquer ordem até ligar a origem ao destino por terra." },
       trilha: { name: "Trilha", hint: "Cada chute tem de fazer fronteira com a sua trilha, que sai da origem." },
-      exata: { name: "Rota exata", hint: "Só vale o próximo país de um caminho mais curto, em ordem, saindo da origem." },
+      exata: { name: "Em ordem", hint: "Cada chute continua do último país, em ordem, saindo da origem. Desvio vale, só custa chute." },
     },
     levelNote: (extra: string, bonus: string) => `Folga de ${extra} ${extra === "1" ? "chute" : "chutes"} · moedas ${bonus}`,
     offTrail: (name: string) => `${name} não faz fronteira com a sua trilha (conta como chute).`,
-    offRoute: (name: string) => `${name} não é o próximo país de um caminho mais curto (conta como chute).`,
+    offRoute: (name: string) => `${name} não faz fronteira com o último país da rota (conta como chute).`,
     supplies: {
-      vizinho: { short: "Próximo", detail: "Tracejado no mapa o próximo país de um caminho mais curto." },
+      vizinho: { short: "Próximo", detail: "Marca no mapa, tracejado, o próximo país de um caminho mais curto." },
       lanterna: { short: "Fronteiras", detail: "Acende as fronteiras de todos os países do mapa." },
       letra: { short: "Iniciais", detail: "Mostra as iniciais dos países que ainda faltam no caminho mais curto." },
     },

@@ -1139,11 +1139,11 @@ export const es: Messages = {
     levels: {
       livre: { name: "Libre", hint: "Prueba países en cualquier orden hasta unir el origen con el destino por tierra." },
       trilha: { name: "Sendero", hint: "Cada intento tiene que hacer frontera con tu sendero, que sale del origen." },
-      exata: { name: "Ruta exacta", hint: "Solo vale el siguiente país de un camino más corto, en orden, saliendo del origen." },
+      exata: { name: "En orden", hint: "Cada intento sigue desde el último país, en orden, saliendo del origen. Los desvíos valen, solo cuestan intentos." },
     },
     levelNote: (extra: string, bonus: string) => `Margen de ${extra} ${extra === "1" ? "intento" : "intentos"} · monedas ${bonus}`,
     offTrail: (name: string) => `${name} no hace frontera con tu sendero (cuenta como intento).`,
-    offRoute: (name: string) => `${name} no es el siguiente país de un camino más corto (cuenta como intento).`,
+    offRoute: (name: string) => `${name} no hace frontera con el último país de tu ruta (cuenta como intento).`,
     supplies: {
       vizinho: { short: "Siguiente", detail: "Marca con trazos en el mapa el siguiente país de un camino más corto." },
       lanterna: { short: "Fronteras", detail: "Enciende las fronteras de todos los países del mapa." },
