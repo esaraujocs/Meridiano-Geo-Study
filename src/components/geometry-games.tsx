@@ -8,7 +8,7 @@ import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoun
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
-import { guessAllowed, readTravelLevel, travelBand, wrongSide, travelBoxes, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { guessAllowed, readTravelLevel, travelBand, wrongSide, travelTips, travelBoxes, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
 import { TravelMap, travelPoints, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
@@ -397,8 +397,8 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     if (first) openPuzzle(first);
   }, [destinations]);
   const have = useMemo(() => new Set(guesses.filter((guess) => !guess.off).map((guess) => guess.id)), [guesses]);
-  // em "Em ordem", a ponta da cadeia: o último país aceito
-  const tip = [...guesses].reverse().find((guess) => !guess.off)?.id ?? puzzle?.start;
+  // em "Em ordem", as pontas da cadeia: o último país aceito e, depois de um desvio vermelho, o último útil
+  const tip = puzzle ? travelTips(puzzle.start, guesses.filter((guess) => !guess.off)) : [];
   const nameOf = (id: string) => meta[id]?.pt ?? id;
   const advance = () => {
     flow.schedule(async () => {

@@ -154,17 +154,30 @@ export const travelBudget = (shortest: number, level: TravelLevel = "livre") => 
 
 /** Começou pelo lado errado (22/10/2026, pedido do Enzo: "muitas vezes começo do país do final; é confusão de ordem, não erro, penalizar é chato"):
  *  na Trilha e em Em ordem, um chute que o nível não aceita mas faz fronteira com o DESTINO não gasta chute; a tela avisa por onde começar. */
-export function wrongSide(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
+export function wrongSide(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip: TravelTip = puzzle.start): boolean {
   if (level === "livre" || guessAllowed(graph, puzzle, have, guess, level, tip)) return false;
-  return graph.get(guess)?.has(puzzle.end) ?? false;
+  const near = graph.get(guess) ?? new Set<string>();
+  // encostar na trilha não é lado errado (em Em ordem é pular a ponta, e esse chute conta)
+  if ([...linkedToStart(graph, puzzle.start, have)].some((id) => near.has(id))) return false;
+  return near.has(puzzle.end);
+}
+
+/** A ponta em "Em ordem": um país ou mais de onde o próximo chute pode sair. */
+export type TravelTip = string | readonly string[];
+/** As pontas de "Em ordem" (22/10/2026, bug achado pelo Enzo: um desvio sem saída, Singapura, prendia a ponta e a Indonésia, vizinha da
+ *  Malásia, era recusada): o último país aceito e, se ele foi um desvio vermelho (`far`), também o último aceito que não foi. */
+export function travelTips(start: string, accepted: readonly { id: string; grade: TravelGrade }[]): string[] {
+  const last = accepted[accepted.length - 1]?.id ?? start;
+  const useful = [...accepted].reverse().find((guess) => guess.grade !== "far")?.id ?? start;
+  return last === useful ? [last] : [last, useful];
 }
 
 /** O nível aceita o chute? `tip`: em "Em ordem", o último país aceito (ou a origem). */
-export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
+export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip: TravelTip = puzzle.start): boolean {
   if (level === "livre") return true;
   const near = graph.get(guess) ?? new Set<string>();
   if (level === "trilha") return [...linkedToStart(graph, puzzle.start, have)].some((id) => near.has(id));
-  return near.has(tip);
+  return (typeof tip === "string" ? [tip] : tip).some((id) => near.has(id));
 }
 
 /** Sem teto de tamanho (22/10/2026, pedido do Enzo: "deixa sem limite"; até então eram de 3 a 8 países e as travessias de ponta a ponta, como

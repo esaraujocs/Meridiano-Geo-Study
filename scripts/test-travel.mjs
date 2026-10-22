@@ -71,6 +71,12 @@ assert.equal(tv.wrongSide(g, puzzle, new Set(), "d", "exata"), true);
 assert.equal(tv.wrongSide(g, puzzle, new Set(), "d", "livre"), false);
 assert.equal(tv.wrongSide(g, puzzle, new Set(), "f", "exata"), false, "F é chute aceito (encosta na origem)");
 assert.equal(tv.wrongSide(g, puzzle, new Set(["b"]), "x", "exata", "b"), false, "X encosta na ponta: aceito, não é lado errado");
+assert.equal(tv.wrongSide(g, puzzle, new Set(["b", "c"]), "d", "exata", "b"), false, "D encosta na trilha (C): pular a ponta conta como chute, não é lado errado");
+// desvio vermelho não prende a ponta (Malásia → Singapura → Indonésia): F é o desvio sem saída, B continua valendo pela origem
+assert.deepEqual(tv.travelTips("a", [{ id: "f", grade: "far" }]), ["f", "a"]);
+assert.deepEqual(tv.travelTips("a", [{ id: "b", grade: "closer" }, { id: "c", grade: "linked" }]), ["c"]);
+assert.deepEqual(tv.travelTips("a", []), ["a"]);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["f"]), "b", "exata", tv.travelTips("a", [{ id: "f", grade: "far" }])), true, "depois do desvio, B (vizinho da origem) vale");
 // sorteio: determinístico, distância de 2 a 7 fronteiras, origem à distância sorteada
 const p1 = tv.travelPuzzle(g, "e", 7), p2 = tv.travelPuzzle(g, "e", 7);
 assert.deepEqual(p1, p2);
