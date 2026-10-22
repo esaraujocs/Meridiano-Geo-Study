@@ -2199,3 +2199,26 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 @media (prefers-reduced-motion:reduce){.tv-side,.tv-end.is-flash{animation:none!important}.tv-end.is-flash{background:color-mix(in srgb,#f2c14e 45%,transparent)}}
 html[data-reduced-motion=true] .tv-side,html[data-reduced-motion=true] .tv-end.is-flash{animation:none!important}
 html[data-reduced-motion=true] .tv-end.is-flash{background:color-mix(in srgb,#f2c14e 45%,transparent)}
+
+/* Resultado com extra (o carrossel do Travel, 22/10/2026, pedido do Enzo: "reorganizar para não precisar de scroll no desktop").
+   Fora do desktop as duas colunas se desfazem e o extra volta para logo depois do aviso do Treino, como antes. */
+.rs-card.has-extra{display:flex;flex-direction:column}
+.rs-card.has-extra .rs-main,.rs-card.has-extra .rs-extra{display:contents}
+.rs-card.has-extra .rs-chips,.rs-card.has-extra .rs-toggle,.rs-card.has-extra .rs-details,.rs-card.has-extra .rs-actions{order:2}
+.rs-card.has-extra .rs-extra>*{order:1}
+.rs-card.has-extra .rs-toggle{align-self:flex-start}
+@media (min-width:1100px){
+  .rs-page:has(.rs-card.has-extra){max-width:1400px;padding-bottom:14px;min-height:100dvh;box-sizing:border-box}
+  .rs-card.has-extra{display:grid;grid-template-columns:minmax(340px,400px) minmax(0,1fr);column-gap:36px;flex:1;min-height:0}
+  .rs-card.has-extra .rs-main{display:flex;flex-direction:column;min-width:0}
+  .rs-card.has-extra .rs-extra{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .rs-card.has-extra .rs-score{gap:16px}
+  .rs-card.has-extra .rs-loot{margin-left:0;width:100%;box-sizing:border-box}
+  .rs-card.has-extra .rs-score{flex-wrap:wrap}
+  .rs-card.has-extra .rs-scoretext{flex:1;min-width:0}
+  .rs-card.has-extra .rs-actions{margin-top:auto;padding-top:16px}
+  .rs-card.has-extra .rs-btn{padding:12px 16px}
+  .rs-card.has-extra .rs-btn:not(.primary) .rs-lbl{display:none}
+  .rs-card.has-extra .tv-recap{flex:1;display:flex;flex-direction:column;margin:0;min-height:0}
+  .rs-card.has-extra .tv-recap-map{flex:1;height:auto;min-height:300px}
+}

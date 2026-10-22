@@ -131,8 +131,28 @@ export function TravelMap({ paints, points, boxes, borders, dashed }: {
     const west = Math.min(...boxes.map((box) => box[0])), south = Math.min(...boxes.map((box) => box[1]));
     const east = Math.max(...boxes.map((box) => box[2])), north = Math.max(...boxes.map((box) => box[3]));
     const pad = Math.min(48, Math.round((mapEl.current?.clientWidth ?? 400) / 10));
-    map.fitBounds([[west, Math.max(-80, south)], [east, Math.min(84, north)]], { padding: pad, maxZoom: 6, duration: ready ? 700 : 0 });
+    const bounds: [[number, number], [number, number]] = [[west, Math.max(-80, south)], [east, Math.min(84, north)]];
+    fitted.current = bounds;
+    map.fitBounds(bounds, { padding: pad, maxZoom: 6, duration: ready ? 700 : 0 });
   }, [boxKey, ready]);
+
+  // o mapa mudou de tamanho (a coluna do resultado assentando, a janela): reenquadra o mesmo trecho, sem animação
+  const fitted = useRef<[[number, number], [number, number]] | null>(null);
+  useEffect(() => {
+    const el = mapEl.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let last = `${el.clientWidth}x${el.clientHeight}`;
+    const observer = new ResizeObserver(() => {
+      const size = `${el.clientWidth}x${el.clientHeight}`;
+      const map = mapRef.current;
+      if (size === last || !map || !fitted.current) return;
+      last = size;
+      map.resize();
+      map.fitBounds(fitted.current, { padding: Math.min(48, Math.round(el.clientWidth / 10)), maxZoom: 6, duration: 0 });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return <div className="tv-map" role="region" aria-label={t.travel.mapAria}>
     <div ref={mapEl} className="tv-map-canvas" />

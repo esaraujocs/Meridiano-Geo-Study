@@ -143,7 +143,9 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, 
     </div>
 
     <p className="sr-only" role="status">{t.result.srSummary(view.correct, view.total, view.coins, view.xpGain)}</p>
-    {duel ? <DuelResultCard duel={duel} view={view} lootCoinRef={lootCoinRef} xpChipRef={xpChipRef} onAgain={onAgain} onHome={onHome} onLeague={onLeague} onTrain={onTrain} onStore={onStore} onEquipTheme={onEquipTheme} /> : <section className="rs-card">
+    {duel ? <DuelResultCard duel={duel} view={view} lootCoinRef={lootCoinRef} xpChipRef={xpChipRef} onAgain={onAgain} onHome={onHome} onLeague={onLeague} onTrain={onTrain} onStore={onStore} onEquipTheme={onEquipTheme} /> : <section className={`rs-card${extra ? " has-extra" : ""}`}>
+      {/* com um extra (o carrossel do Travel), no desktop o card vira duas colunas: o placar à esquerda, o extra à direita, sem rolar */}
+      <div className="rs-main">
       <span className="eyebrow">{view.eyebrow}</span>
       <h1 id="rs-title" className="rs-title">{view.title}</h1>
       <div className="rs-score">
@@ -159,7 +161,6 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, 
         </div>
       </div>
       {view.training && <p className="rs-note">{t.result.trainingNote}</p>}
-      {extra}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
         <button type="button" className="rs-toggle" aria-expanded={open} aria-controls="rs-details" onClick={() => setOpen((value) => !value)}>{open ? t.result.hideDetails : t.result.showDetails} <Icon type="chevron" /></button>
@@ -172,6 +173,8 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, 
         <button type="button" className="rs-btn" aria-label={t.result.adjustAria} onClick={onAdjust}><Icon type="sliders" /><span className="rs-lbl">{t.result.adjust}</span></button>
         <button type="button" className="rs-btn" aria-label={t.result.homeAria} onClick={onHome}><Icon type="home" /><span className="rs-lbl">{t.result.home}</span></button>
       </div>
+      </div>
+      {extra && <div className="rs-extra">{extra}</div>}
     </section>}
   </main>;
 }

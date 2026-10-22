@@ -139,10 +139,13 @@ await rm(out, { recursive: true, force: true });
   const ru = byName("Rússia"), fi = byName("Finlândia"), mn = byName("Mongólia"), kp = byName("Coreia do Norte");
   const whole = tv.travelBox(catalog.meta, ru);
   const [, , , [ , ruS, , ruN]] = [0, 0, 0, tv.travelBoxes(catalog.meta, [fi, mn, ru])[2]];
-  assert.ok(ruN < whole[3] - 5 && ruN <= 76, `Rússia cortada no norte (${ruN.toFixed(1)} < ${whole[3].toFixed(1)})`);
+  assert.ok(ruN < whole[3] - 3 && ruN <= 74, `Rússia cortada no norte (${ruN.toFixed(1)} < ${whole[3].toFixed(1)})`);
   assert.ok(ruS >= whole[1], "nunca maior que a caixa inteira");
   const east = tv.travelBoxes(catalog.meta, [ru, kp])[0];
   assert.ok(east[0] > whole[0] + 30, `Rússia → Coreia do Norte enquadra o Extremo Oriente (${east[0].toFixed(1)})`);
   assert.deepEqual(tv.travelBoxes(catalog.meta, [ru, byName("China")]), [whole, tv.travelBox(catalog.meta, byName("China"))], "só enormes: inteiros");
 }
 console.log("travel boxes ok");
+// caixa de verdade: o Chile inteiro (era estimado pelo centro e pela área e saía cortado no sul)
+{ const cl = tv.travelBox(catalog.meta, byName("Chile")); assert.ok(cl[1] < -54 && cl[3] > -19, `Chile de ${cl[3]} a ${cl[1]}`); }
+console.log("travel extents ok");
