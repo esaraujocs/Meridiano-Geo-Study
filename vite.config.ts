@@ -40,6 +40,7 @@ const injectPrecacheManifest = () => {
       "/manifest.webmanifest",
       "/data/legacy/catalog.json",
       "/data/legacy-map.json",
+      "/data/silhouettes.json",
       "/data/legacy/flags.json",
       "/data/legacy/historical.json",
       "/data/legacy/historical-flags.json",

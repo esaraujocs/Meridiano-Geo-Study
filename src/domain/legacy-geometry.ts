@@ -32,6 +32,19 @@ export async function geometryIndex() {
   return { data, features: featureCache };
 }
 
+let silhouettePending: Promise<Map<string, Feature<Geometry>>> | null = null;
+/** As silhuetas do mapa-múndi tiradas do mapa HD (21/10/2026, scripts/map-hd/build-silhouettes.py): os mesmos países do legacy-map.json, com a
+ *  costa e as fronteiras do mapa da partida. */
+export function silhouetteIndex() {
+  silhouettePending ??= fetch("/data/silhouettes.json").then(async (response) => {
+    if (!response.ok) throw new Error(t.errors.geometryFailed);
+    const shapes = await response.json() as Record<string, Geometry>;
+    return new Map(Object.entries(shapes).map(([id, geometry]) => [id, { type: "Feature", id, properties: {}, geometry } as Feature<Geometry>]));
+  });
+  silhouettePending.catch(() => { silhouettePending = null; });
+  return silhouettePending;
+}
+
 export function boundsOf(features: Feature<Geometry>[]) {
   const pieces = unwrapPieces(features);
   if (!pieces.length) return [-180, -90, 180, 90] as [number, number, number, number];

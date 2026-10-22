@@ -7,7 +7,7 @@ import { variantLabel } from "../domain/result-view";
 import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoundLog } from "./game-shell";
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
-import { aliases, featurePath, geometryIndex, normalizeName } from "../domain/legacy-geometry";
+import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
 import { bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
 import { TravelMap, type TravelBox, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
@@ -124,9 +124,9 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<number | null>(null);
   useEffect(() => {
-    (country ? loadDivisionShapes(country) : geometryIndex().then(({ features }) => features)).then(setFeatures).catch((e) => setError(e instanceof Error ? e.message : String(e)));
+    (country ? loadDivisionShapes(country) : silhouetteIndex()).then(setFeatures).catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, []);
-  // as unidades de um país entram todas (o corte das ilhas pequenas é dos países)
+  // as unidades de um país entram todas
   const ids = useMemo(() => features ? [...features.keys()].filter((id) => {
     return (country ? Boolean(data.meta[id]) : inSilhouetteDeck(data.meta[id])) && inRegion(id, region, data);
   }) : [], [features, data, region]);

@@ -1,11 +1,8 @@
-// Baralho do modo Silhueta. Ilha pequena vira um pontinho no mapa e não dá para reconhecer, então fica de fora. Lógica pura.
+// Baralho do modo Silhueta. Lógica pura.
+// Até 21/10/2026 as ilhas sem fronteira e com menos de 5.000 km² ficavam de fora (no legacy-map.json eram um pontinho). Com as silhuetas do mapa
+// HD (scripts/map-hd/build-silhouettes.py) elas voltaram, a pedido do Enzo: "voltemos com todos os países soberanos da ONU, agora as bordas são
+// bem melhores" (Malta, Maldivas, Tuvalu, São Martinho…).
 import type { Meta } from "./types";
 
-/** Abaixo desta área (km²) uma ilha, sem fronteira terrestre, sai do baralho da Silhueta (Chipre, Jamaica e Trinidad e Tobago ficam; Cabo Verde, Malta e Tuvalu saem). */
-export const SMALL_ISLAND_KM2 = 5000;
-
-export const isSmallIsland = (meta: Pick<Meta, "area" | "borders"> | undefined) =>
-  Boolean(meta) && (meta?.borders?.length ?? 0) === 0 && typeof meta?.area === "number" && meta.area < SMALL_ISLAND_KM2;
-
-/** A entidade entra no baralho: jogável no mapa, não absorvida por outra e não é uma ilha pequena. */
-export const inSilhouetteDeck = (meta: Meta | undefined) => Boolean(meta) && !meta?.absorvido && meta?.mapa !== false && !isSmallIsland(meta);
+/** A entidade entra no baralho: jogável no mapa e não absorvida por outra. */
+export const inSilhouetteDeck = (meta: Meta | undefined) => Boolean(meta) && !meta?.absorvido && meta?.mapa !== false;

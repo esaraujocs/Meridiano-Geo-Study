@@ -1152,7 +1152,7 @@ export function App() {
       : null,
     [data, features],
   );
-  // O baralho da Silhueta não tem as ilhas pequenas (silhouette.ts); a configuração conta o mesmo que a partida sorteia.
+  // A configuração conta o mesmo que a partida sorteia (silhouette.ts).
   const silhouetteCounts = useMemo(
     () => data
       ? Object.fromEntries(REGION_ITEMS.map(([key]) => [
