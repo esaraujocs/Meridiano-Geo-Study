@@ -296,7 +296,12 @@ def split_land(country, config, zones, out_dir, land_by_unit):
                 inside = shapely.clip_by_rect(zone, x0, y0, x1, y1)
                 if shapely.is_empty(inside):
                     continue
-                inter = polygonal(shapely.intersection(piece, inside))
+                try:
+                    inter = polygonal(shapely.intersection(piece, inside))
+                except shapely.errors.GEOSException:
+                    # o clip_by_rect às vezes devolve um anel inválido (a Rússia perto de Astracã, 22/10/2026): conserta e refaz
+                    inside = shapely.make_valid(inside)
+                    inter = polygonal(shapely.intersection(shapely.make_valid(piece), inside))
                 if inter is not None:
                     parts.setdefault(code, []).append(inter)
                     rest = polygonal(shapely.difference(rest, inside)) if rest is not None else None

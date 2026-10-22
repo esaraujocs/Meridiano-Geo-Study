@@ -1,0 +1,372 @@
+{
+  "comment": "Alemanha: os 16 estados (Länder). Berlim, Hamburgo e Bremen são cidades-estado e ficam fora dos modos de capital. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Leste, Oeste e Sul, agrupamento nosso por posição.",
+  "id": "de",
+  "carta": "276",
+  "source": "overture",
+  "name": {
+    "pt": "Alemanha",
+    "en": "Germany",
+    "es": "Alemania"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    },
+    "en": {
+      "one": "state",
+      "many": "states"
+    },
+    "es": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    }
+  },
+  "regions": {
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    },
+    "east": {
+      "pt": "Leste",
+      "en": "East",
+      "es": "Este"
+    },
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 276)",
+      "use": "a terra de Alemanha, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 16 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "BB",
+      "name": "Brandenburg",
+      "names": {
+        "pt": "Brandemburgo",
+        "es": "Brandeburgo"
+      },
+      "capital": "Potsdam",
+      "region": "east"
+    },
+    {
+      "code": "BE",
+      "name": "Berlin",
+      "names": {
+        "pt": "Berlim",
+        "es": "Berlín"
+      },
+      "region": "east"
+    },
+    {
+      "code": "BW",
+      "name": "Baden-Württemberg",
+      "names": {
+        "es": "Baden-Wurtemberg"
+      },
+      "alias": [
+        "Baden-Wurttemberg"
+      ],
+      "capital": "Stuttgart",
+      "capAl": [
+        "Estugarda"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "BY",
+      "name": "Bavaria",
+      "sourceName": "Bayern",
+      "names": {
+        "pt": "Baviera",
+        "es": "Baviera"
+      },
+      "alias": [
+        "Bayern"
+      ],
+      "capital": {
+        "pt": "Munique",
+        "en": "Munich",
+        "es": "Múnich"
+      },
+      "capAl": [
+        "München"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "HB",
+      "name": "Bremen",
+      "region": "north"
+    },
+    {
+      "code": "HE",
+      "name": "Hesse",
+      "sourceName": "Hessen",
+      "alias": [
+        "Hessen"
+      ],
+      "capital": "Wiesbaden",
+      "region": "west"
+    },
+    {
+      "code": "HH",
+      "name": "Hamburg",
+      "names": {
+        "pt": "Hamburgo",
+        "es": "Hamburgo"
+      },
+      "region": "north"
+    },
+    {
+      "code": "MV",
+      "name": "Mecklenburg-Vorpommern",
+      "names": {
+        "pt": "Mecklemburgo-Pomerânia Ocidental",
+        "es": "Mecklemburgo-Pomerania Occidental"
+      },
+      "alias": [
+        "Mecklemburgo"
+      ],
+      "capital": "Schwerin",
+      "region": "north"
+    },
+    {
+      "code": "NI",
+      "name": "Lower Saxony",
+      "sourceName": "Niedersachsen",
+      "names": {
+        "pt": "Baixa Saxônia",
+        "es": "Baja Sajonia"
+      },
+      "alias": [
+        "Niedersachsen"
+      ],
+      "capital": {
+        "pt": "Hanôver",
+        "en": "Hanover",
+        "es": "Hannover"
+      },
+      "capAl": [
+        "Hannover"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "NW",
+      "name": "North Rhine-Westphalia",
+      "sourceName": "Nordrhein-Westfalen",
+      "names": {
+        "pt": "Renânia do Norte-Vestfália",
+        "es": "Renania del Norte-Westfalia"
+      },
+      "alias": [
+        "Nordrhein-Westfalen"
+      ],
+      "capital": "Düsseldorf",
+      "region": "west"
+    },
+    {
+      "code": "RP",
+      "name": "Rhineland-Palatinate",
+      "sourceName": "Rheinland-Pfalz",
+      "names": {
+        "pt": "Renânia-Palatinado",
+        "es": "Renania-Palatinado"
+      },
+      "alias": [
+        "Rheinland-Pfalz"
+      ],
+      "capital": {
+        "pt": "Mainz",
+        "en": "Mainz",
+        "es": "Maguncia"
+      },
+      "capAl": [
+        "Mogúncia"
+      ],
+      "region": "west"
+    },
+    {
+      "code": "SH",
+      "name": "Schleswig-Holstein",
+      "capital": "Kiel",
+      "region": "north"
+    },
+    {
+      "code": "SL",
+      "name": "Saarland",
+      "names": {
+        "pt": "Sarre",
+        "es": "Sarre"
+      },
+      "capital": {
+        "pt": "Saarbrücken",
+        "en": "Saarbrücken",
+        "es": "Sarrebruck"
+      },
+      "region": "west"
+    },
+    {
+      "code": "SN",
+      "name": "Saxony",
+      "sourceName": "Sachsen",
+      "names": {
+        "pt": "Saxônia",
+        "es": "Sajonia"
+      },
+      "alias": [
+        "Sachsen",
+        "Saxónia"
+      ],
+      "capital": {
+        "pt": "Dresden",
+        "en": "Dresden",
+        "es": "Dresde"
+      },
+      "capAl": [
+        "Dresda"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "ST",
+      "name": "Saxony-Anhalt",
+      "sourceName": "Sachsen-Anhalt",
+      "names": {
+        "pt": "Saxônia-Anhalt",
+        "es": "Sajonia-Anhalt"
+      },
+      "alias": [
+        "Sachsen-Anhalt",
+        "Saxónia-Anhalt"
+      ],
+      "capital": {
+        "pt": "Magdeburgo",
+        "en": "Magdeburg",
+        "es": "Magdeburgo"
+      },
+      "region": "east"
+    },
+    {
+      "code": "TH",
+      "name": "Thuringia",
+      "sourceName": "Thüringen",
+      "names": {
+        "pt": "Turíngia",
+        "es": "Turingia"
+      },
+      "alias": [
+        "Thüringen"
+      ],
+      "capital": "Erfurt",
+      "region": "east"
+    }
+  ],
+  "probes": [
+    [
+      "Potsdam",
+      13.0591,
+      52.4009,
+      "de-bb"
+    ],
+    [
+      "Stuttgart",
+      9.18,
+      48.7775,
+      "de-bw"
+    ],
+    [
+      "Munique",
+      11.575,
+      48.1375,
+      "de-by"
+    ],
+    [
+      "Wiesbaden",
+      8.24,
+      50.0825,
+      "de-he"
+    ],
+    [
+      "Schwerin",
+      11.415,
+      53.6289,
+      "de-mv"
+    ],
+    [
+      "Hanôver",
+      9.7386,
+      52.3744,
+      "de-ni"
+    ],
+    [
+      "Düsseldorf",
+      6.7767,
+      51.2256,
+      "de-nw"
+    ],
+    [
+      "Mainz",
+      8.2736,
+      49.9994,
+      "de-rp"
+    ],
+    [
+      "Kiel",
+      10.1394,
+      54.3233,
+      "de-sh"
+    ],
+    [
+      "Saarbrücken",
+      7.0,
+      49.2333,
+      "de-sl"
+    ],
+    [
+      "Dresden",
+      13.7381,
+      51.0493,
+      "de-sn"
+    ],
+    [
+      "Magdeburgo",
+      11.64,
+      52.1316,
+      "de-st"
+    ],
+    [
+      "Erfurt",
+      11.0289,
+      50.9781,
+      "de-th"
+    ]
+  ]
+}

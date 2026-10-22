@@ -1,0 +1,1122 @@
+{
+ "source": "Indonésia: as 38 províncias (com as 4 novas da Papua de 2022: Papua do Sul, Central, das Montanhas e do Sudoeste). Jacarta fica fora dos modos de capital. Capitais do Wikidata com as mudanças recentes (Banjarbaru em Kalimantan do Sul desde 2022; Wamena, a sede da Papua das Montanhas). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as ilhas (Sumatra, Java e as Pequenas Sonda, Kalimantan, Celebes, Molucas e Papua).",
+ "country": "id",
+ "regions": {
+  "sumatra": {
+   "pt": "Sumatra",
+   "en": "Sumatra",
+   "es": "Sumatra"
+  },
+  "java": {
+   "pt": "Java e Sonda",
+   "en": "Java and Lesser Sundas",
+   "es": "Java y Sonda"
+  },
+  "kalimantan": {
+   "pt": "Kalimantan",
+   "en": "Kalimantan",
+   "es": "Kalimantan"
+  },
+  "sulawesi": {
+   "pt": "Celebes",
+   "en": "Sulawesi",
+   "es": "Célebes"
+  },
+  "east": {
+   "pt": "Molucas e Papua",
+   "en": "Maluku and Papua",
+   "es": "Molucas y Papúa"
+  }
+ },
+ "units": {
+  "id-ac": {
+   "code": "AC",
+   "ref": "ID-AC",
+   "name": {
+    "pt": "Aceh",
+    "en": "Aceh",
+    "es": "Aceh"
+   },
+   "alias": [
+    "Achém"
+   ],
+   "capital": "Banda Aceh",
+   "capAl": [
+    "Banda Achém"
+   ],
+   "region": "sumatra",
+   "area": 57121,
+   "ll": [
+    4.3677,
+    97.2246
+   ],
+   "bbox": [
+    95.194,
+    2.057,
+    98.288,
+    5.907
+   ],
+   "borders": [
+    "id-su"
+   ]
+  },
+  "id-ba": {
+   "code": "BA",
+   "ref": "ID-BA",
+   "name": {
+    "pt": "Bali",
+    "en": "Bali",
+    "es": "Bali"
+   },
+   "capital": "Denpasar",
+   "region": "java",
+   "area": 5610,
+   "ll": [
+    -8.3559,
+    115.2115
+   ],
+   "bbox": [
+    114.432,
+    -8.85,
+    115.711,
+    -8.062
+   ],
+   "borders": []
+  },
+  "id-bb": {
+   "code": "BB",
+   "ref": "ID-BB",
+   "name": {
+    "pt": "Bangka-Belitung",
+    "en": "Bangka Belitung Islands",
+    "es": "Bangka-Belitung"
+   },
+   "alias": [
+    "Bangka Belitung"
+   ],
+   "capital": "Pangkal Pinang",
+   "capAl": [
+    "Pangkalpinang"
+   ],
+   "region": "sumatra",
+   "area": 16775,
+   "ll": [
+    -2.6107,
+    106.1588
+   ],
+   "bbox": [
+    105.108,
+    -3.272,
+    108.3,
+    -1.501
+   ],
+   "borders": []
+  },
+  "id-be": {
+   "code": "BE",
+   "ref": "ID-BE",
+   "name": {
+    "pt": "Bengkulu",
+    "en": "Bengkulu",
+    "es": "Bengkulu"
+   },
+   "capital": "Bengkulu",
+   "region": "sumatra",
+   "area": 20194,
+   "ll": [
+    -3.0512,
+    101.8777
+   ],
+   "bbox": [
+    101.022,
+    -5.514,
+    103.778,
+    -2.289
+   ],
+   "borders": [
+    "id-ja",
+    "id-la",
+    "id-sb",
+    "id-ss"
+   ]
+  },
+  "id-bt": {
+   "code": "BT",
+   "ref": "ID-BT",
+   "name": {
+    "pt": "Banten",
+    "en": "Banten",
+    "es": "Bantén"
+   },
+   "capital": "Serang",
+   "region": "java",
+   "area": 9403,
+   "ll": [
+    -6.5264,
+    106.1086
+   ],
+   "bbox": [
+    105.1,
+    -6.999,
+    106.78,
+    -5.876
+   ],
+   "borders": [
+    "id-jb",
+    "id-jk"
+   ]
+  },
+  "id-go": {
+   "code": "GO",
+   "ref": "ID-GO",
+   "name": {
+    "pt": "Gorontalo",
+    "en": "Gorontalo",
+    "es": "Gorontalo"
+   },
+   "capital": "Gorontalo",
+   "region": "sulawesi",
+   "area": 12084,
+   "ll": [
+    0.7386,
+    122.1981
+   ],
+   "bbox": [
+    121.162,
+    0.306,
+    123.552,
+    1.04
+   ],
+   "borders": [
+    "id-sa",
+    "id-st"
+   ]
+  },
+  "id-ja": {
+   "code": "JA",
+   "ref": "ID-JA",
+   "name": {
+    "pt": "Jambi",
+    "en": "Jambi",
+    "es": "Jambi"
+   },
+   "capital": "Jambi",
+   "region": "sumatra",
+   "area": 49255,
+   "ll": [
+    -1.8091,
+    102.3455
+   ],
+   "bbox": [
+    101.132,
+    -2.77,
+    104.491,
+    -0.73
+   ],
+   "borders": [
+    "id-be",
+    "id-ri",
+    "id-sb",
+    "id-ss"
+   ]
+  },
+  "id-jb": {
+   "code": "JB",
+   "ref": "ID-JB",
+   "name": {
+    "pt": "Java Ocidental",
+    "en": "West Java",
+    "es": "Java Occidental"
+   },
+   "alias": [
+    "Jawa Barat"
+   ],
+   "capital": "Bandung",
+   "region": "java",
+   "area": 37229,
+   "ll": [
+    -6.9719,
+    107.9068
+   ],
+   "bbox": [
+    106.371,
+    -7.821,
+    108.836,
+    -5.921
+   ],
+   "borders": [
+    "id-bt",
+    "id-jk",
+    "id-jt"
+   ]
+  },
+  "id-ji": {
+   "code": "JI",
+   "ref": "ID-JI",
+   "name": {
+    "pt": "Java Oriental",
+    "en": "East Java",
+    "es": "Java Oriental"
+   },
+   "alias": [
+    "Jawa Timur"
+   ],
+   "capital": {
+    "pt": "Surabaia",
+    "en": "Surabaya",
+    "es": "Surabaya"
+   },
+   "capAl": [
+    "Surabaya"
+   ],
+   "region": "java",
+   "area": 48178,
+   "ll": [
+    -7.6152,
+    112.1081
+   ],
+   "bbox": [
+    110.899,
+    -8.78,
+    115.576,
+    -5.716
+   ],
+   "borders": [
+    "id-jt"
+   ]
+  },
+  "id-jk": {
+   "code": "JK",
+   "ref": "ID-JK",
+   "name": {
+    "pt": "Jacarta",
+    "en": "Jakarta",
+    "es": "Yakarta"
+   },
+   "region": "java",
+   "area": 669,
+   "ll": [
+    -6.211,
+    106.8315
+   ],
+   "bbox": [
+    106.686,
+    -6.374,
+    106.974,
+    -6.074
+   ],
+   "borders": [
+    "id-bt",
+    "id-jb"
+   ]
+  },
+  "id-jt": {
+   "code": "JT",
+   "ref": "ID-JT",
+   "name": {
+    "pt": "Java Central",
+    "en": "Central Java",
+    "es": "Java Central"
+   },
+   "alias": [
+    "Jawa Tengah"
+   ],
+   "capital": "Semarang",
+   "region": "java",
+   "area": 34568,
+   "ll": [
+    -7.3134,
+    109.6031
+   ],
+   "bbox": [
+    108.556,
+    -8.212,
+    111.691,
+    -6.403
+   ],
+   "borders": [
+    "id-jb",
+    "id-ji",
+    "id-yo"
+   ]
+  },
+  "id-kb": {
+   "code": "KB",
+   "ref": "ID-KB",
+   "name": {
+    "pt": "Kalimantan Ocidental",
+    "en": "West Kalimantan",
+    "es": "Kalimantan Occidental"
+   },
+   "alias": [
+    "Bornéu Ocidental"
+   ],
+   "capital": "Pontianak",
+   "region": "kalimantan",
+   "area": 147800,
+   "ll": [
+    -0.2787,
+    110.713
+   ],
+   "bbox": [
+    108.838,
+    -3.037,
+    114.202,
+    2.081
+   ],
+   "borders": [
+    "id-ki",
+    "id-kt"
+   ]
+  },
+  "id-ki": {
+   "code": "KI",
+   "ref": "ID-KI",
+   "name": {
+    "pt": "Kalimantan Oriental",
+    "en": "East Kalimantan",
+    "es": "Kalimantan Oriental"
+   },
+   "alias": [
+    "Bornéu Oriental"
+   ],
+   "capital": "Samarinda",
+   "region": "kalimantan",
+   "area": 128004,
+   "ll": [
+    0.3112,
+    116.3622
+   ],
+   "bbox": [
+    113.838,
+    -2.409,
+    118.987,
+    2.569
+   ],
+   "borders": [
+    "id-kb",
+    "id-ks",
+    "id-kt",
+    "id-ku"
+   ]
+  },
+  "id-kr": {
+   "code": "KR",
+   "ref": "ID-KR",
+   "name": {
+    "pt": "Ilhas Riau",
+    "en": "Riau Islands",
+    "es": "Islas Riau"
+   },
+   "alias": [
+    "Kepulauan Riau"
+   ],
+   "capital": "Tanjung Pinang",
+   "capAl": [
+    "Tanjungpinang"
+   ],
+   "region": "sumatra",
+   "area": 8230,
+   "ll": [
+    3.962,
+    108.1801
+   ],
+   "bbox": [
+    103.294,
+    -0.684,
+    109.121,
+    4.775
+   ],
+   "borders": []
+  },
+  "id-ks": {
+   "code": "KS",
+   "ref": "ID-KS",
+   "name": {
+    "pt": "Kalimantan do Sul",
+    "en": "South Kalimantan",
+    "es": "Kalimantan Meridional"
+   },
+   "alias": [
+    "Bornéu do Sul"
+   ],
+   "capital": "Banjarbaru",
+   "region": "kalimantan",
+   "area": 37318,
+   "ll": [
+    -3.0472,
+    115.3953
+   ],
+   "bbox": [
+    114.347,
+    -4.178,
+    116.556,
+    -1.313
+   ],
+   "borders": [
+    "id-ki",
+    "id-kt"
+   ]
+  },
+  "id-kt": {
+   "code": "KT",
+   "ref": "ID-KT",
+   "name": {
+    "pt": "Kalimantan Central",
+    "en": "Central Kalimantan",
+    "es": "Kalimantan Central"
+   },
+   "capital": "Palangka Raya",
+   "capAl": [
+    "Palangkaraya"
+   ],
+   "region": "kalimantan",
+   "area": 154104,
+   "ll": [
+    -1.7835,
+    113.701
+   ],
+   "bbox": [
+    110.733,
+    -3.54,
+    115.849,
+    0.791
+   ],
+   "borders": [
+    "id-kb",
+    "id-ki",
+    "id-ks"
+   ]
+  },
+  "id-ku": {
+   "code": "KU",
+   "ref": "ID-KU",
+   "name": {
+    "pt": "Kalimantan do Norte",
+    "en": "North Kalimantan",
+    "es": "Kalimantan Septentrional"
+   },
+   "alias": [
+    "Kalimantan Setentrional"
+   ],
+   "capital": "Tanjung Selor",
+   "region": "kalimantan",
+   "area": 70737,
+   "ll": [
+    3.3091,
+    116.4772
+   ],
+   "bbox": [
+    114.565,
+    1.114,
+    117.988,
+    4.408
+   ],
+   "borders": [
+    "id-ki"
+   ]
+  },
+  "id-la": {
+   "code": "LA",
+   "ref": "ID-LA",
+   "name": {
+    "pt": "Lampung",
+    "en": "Lampung",
+    "es": "Lampung"
+   },
+   "capital": "Bandar Lampung",
+   "region": "sumatra",
+   "area": 33754,
+   "ll": [
+    -4.8017,
+    105.1929
+   ],
+   "bbox": [
+    103.591,
+    -5.943,
+    105.915,
+    -3.724
+   ],
+   "borders": [
+    "id-be",
+    "id-ss"
+   ]
+  },
+  "id-ma": {
+   "code": "MA",
+   "ref": "ID-MA",
+   "name": {
+    "pt": "Molucas",
+    "en": "Maluku",
+    "es": "Molucas"
+   },
+   "alias": [
+    "Maluku"
+   ],
+   "capital": "Ambon",
+   "region": "east",
+   "area": 46380,
+   "ll": [
+    -3.2826,
+    130.2698
+   ],
+   "bbox": [
+    125.793,
+    -8.344,
+    134.902,
+    -2.773
+   ],
+   "borders": []
+  },
+  "id-mu": {
+   "code": "MU",
+   "ref": "ID-MU",
+   "name": {
+    "pt": "Molucas do Norte",
+    "en": "North Maluku",
+    "es": "Molucas Septentrional"
+   },
+   "alias": [
+    "Maluku Utara"
+   ],
+   "capital": "Sofifi",
+   "region": "east",
+   "area": 31574,
+   "ll": [
+    1.2356,
+    128.4503
+   ],
+   "bbox": [
+    124.304,
+    -2.477,
+    129.656,
+    2.644
+   ],
+   "borders": []
+  },
+  "id-nb": {
+   "code": "NB",
+   "ref": "ID-NB",
+   "name": {
+    "pt": "Nusa Tenggara Ocidental",
+    "en": "West Nusa Tenggara",
+    "es": "Nusatenggara Occidental"
+   },
+   "alias": [
+    "Sonda Ocidental"
+   ],
+   "capital": "Mataram",
+   "region": "java",
+   "area": 19691,
+   "ll": [
+    -8.7205,
+    117.2087
+   ],
+   "bbox": [
+    115.821,
+    -9.109,
+    119.335,
+    -8.081
+   ],
+   "borders": []
+  },
+  "id-nt": {
+   "code": "NT",
+   "ref": "ID-NT",
+   "name": {
+    "pt": "Nusa Tenggara Oriental",
+    "en": "East Nusa Tenggara",
+    "es": "Nusatenggara Oriental"
+   },
+   "alias": [
+    "Sonda Oriental"
+   ],
+   "capital": "Kupang",
+   "capAl": [
+    "Cupão"
+   ],
+   "region": "java",
+   "area": 46516,
+   "ll": [
+    -8.5543,
+    120.3943
+   ],
+   "bbox": [
+    118.928,
+    -10.943,
+    125.186,
+    -8.064
+   ],
+   "borders": []
+  },
+  "id-pa": {
+   "code": "PA",
+   "ref": "ID-PA",
+   "name": {
+    "pt": "Papua",
+    "en": "Papua",
+    "es": "Papúa"
+   },
+   "capital": "Jayapura",
+   "region": "east",
+   "area": 81352,
+   "ll": [
+    -2.2957,
+    137.9289
+   ],
+   "bbox": [
+    134.792,
+    -3.954,
+    141.0,
+    -0.62
+   ],
+   "borders": [
+    "id-pe",
+    "id-pt"
+   ]
+  },
+  "id-pb": {
+   "code": "PB",
+   "ref": "ID-PB",
+   "name": {
+    "pt": "Papua Ocidental",
+    "en": "West Papua",
+    "es": "Papúa Occidental"
+   },
+   "capital": "Manokwari",
+   "region": "east",
+   "area": 60422,
+   "ll": [
+    -1.7159,
+    133.3727
+   ],
+   "bbox": [
+    131.95,
+    -4.315,
+    135.334,
+    -0.714
+   ],
+   "borders": [
+    "id-pd",
+    "id-pt"
+   ]
+  },
+  "id-pd": {
+   "code": "PD",
+   "ref": "ID-PD",
+   "name": {
+    "pt": "Papua do Sudoeste",
+    "en": "Southwest Papua",
+    "es": "Papúa Suroccidental"
+   },
+   "alias": [
+    "Sudoeste de Papua"
+   ],
+   "capital": "Sorong",
+   "region": "east",
+   "area": 39154,
+   "ll": [
+    -1.0085,
+    132.4078
+   ],
+   "bbox": [
+    129.719,
+    -2.284,
+    133.493,
+    -0.005
+   ],
+   "borders": [
+    "id-pb"
+   ]
+  },
+  "id-pe": {
+   "code": "PE",
+   "ref": "ID-PE",
+   "name": {
+    "pt": "Papua das Montanhas",
+    "en": "Highland Papua",
+    "es": "Papúa de las Tierras Altas"
+   },
+   "alias": [
+    "Alta Papua",
+    "Papua Pegunungan"
+   ],
+   "capital": "Wamena",
+   "capAl": [
+    "Jayawijaya"
+   ],
+   "region": "east",
+   "area": 53606,
+   "ll": [
+    -4.2788,
+    139.556
+   ],
+   "bbox": [
+    137.827,
+    -5.265,
+    141.0,
+    -3.107
+   ],
+   "borders": [
+    "id-pa",
+    "id-ps",
+    "id-pt"
+   ]
+  },
+  "id-ps": {
+   "code": "PS",
+   "ref": "ID-PS",
+   "name": {
+    "pt": "Papua do Sul",
+    "en": "South Papua",
+    "es": "Papúa Meridional"
+   },
+   "alias": [
+    "Papua Meridional"
+   ],
+   "capital": "Merauke",
+   "region": "east",
+   "area": 117885,
+   "ll": [
+    -6.1356,
+    139.8634
+   ],
+   "bbox": [
+    137.553,
+    -9.127,
+    141.019,
+    -4.541
+   ],
+   "borders": [
+    "id-pe",
+    "id-pt"
+   ]
+  },
+  "id-pt": {
+   "code": "PT",
+   "ref": "ID-PT",
+   "name": {
+    "pt": "Papua Central",
+    "en": "Central Papua",
+    "es": "Papúa Central"
+   },
+   "capital": "Nabire",
+   "region": "east",
+   "area": 60524,
+   "ll": [
+    -3.969,
+    136.9876
+   ],
+   "bbox": [
+    134.585,
+    -5.12,
+    138.302,
+    -2.747
+   ],
+   "borders": [
+    "id-pa",
+    "id-pb",
+    "id-pe",
+    "id-ps"
+   ]
+  },
+  "id-ri": {
+   "code": "RI",
+   "ref": "ID-RI",
+   "name": {
+    "pt": "Riau",
+    "en": "Riau",
+    "es": "Riau"
+   },
+   "capital": "Pekanbaru",
+   "region": "sumatra",
+   "area": 90582,
+   "ll": [
+    0.0295,
+    101.9496
+   ],
+   "bbox": [
+    100.028,
+    -1.128,
+    103.813,
+    2.548
+   ],
+   "borders": [
+    "id-ja",
+    "id-sb",
+    "id-su"
+   ]
+  },
+  "id-sa": {
+   "code": "SA",
+   "ref": "ID-SA",
+   "name": {
+    "pt": "Celebes do Norte",
+    "en": "North Sulawesi",
+    "es": "Célebes Septentrional"
+   },
+   "alias": [
+    "Sulawesi do Norte"
+   ],
+   "capital": "Manado",
+   "region": "sulawesi",
+   "area": 14559,
+   "ll": [
+    0.7086,
+    124.2847
+   ],
+   "bbox": [
+    123.113,
+    0.292,
+    126.911,
+    4.546
+   ],
+   "borders": [
+    "id-go"
+   ]
+  },
+  "id-sb": {
+   "code": "SB",
+   "ref": "ID-SB",
+   "name": {
+    "pt": "Sumatra Ocidental",
+    "en": "West Sumatra",
+    "es": "Sumatra Occidental"
+   },
+   "capital": "Padang",
+   "region": "sumatra",
+   "area": 42301,
+   "ll": [
+    -1.1626,
+    101.0653
+   ],
+   "bbox": [
+    98.596,
+    -3.347,
+    101.892,
+    0.906
+   ],
+   "borders": [
+    "id-be",
+    "id-ja",
+    "id-ri",
+    "id-su"
+   ]
+  },
+  "id-sg": {
+   "code": "SG",
+   "ref": "ID-SG",
+   "name": {
+    "pt": "Celebes do Sudeste",
+    "en": "Southeast Sulawesi",
+    "es": "Célebes Suroriental"
+   },
+   "alias": [
+    "Sulawesi do Sudeste"
+   ],
+   "capital": "Kendari",
+   "region": "sulawesi",
+   "area": 36068,
+   "ll": [
+    -3.5007,
+    121.6653
+   ],
+   "bbox": [
+    120.864,
+    -6.035,
+    124.08,
+    -2.774
+   ],
+   "borders": [
+    "id-sn",
+    "id-st"
+   ]
+  },
+  "id-sn": {
+   "code": "SN",
+   "ref": "ID-SN",
+   "name": {
+    "pt": "Celebes do Sul",
+    "en": "South Sulawesi",
+    "es": "Célebes Meridional"
+   },
+   "alias": [
+    "Sulawesi do Sul"
+   ],
+   "capital": {
+    "pt": "Makassar",
+    "en": "Makassar",
+    "es": "Macasar"
+   },
+   "capAl": [
+    "Macáçar",
+    "Macassar"
+   ],
+   "region": "sulawesi",
+   "area": 45737,
+   "ll": [
+    -3.6548,
+    119.9543
+   ],
+   "bbox": [
+    119.354,
+    -7.424,
+    121.84,
+    -1.891
+   ],
+   "borders": [
+    "id-sg",
+    "id-sr",
+    "id-st"
+   ]
+  },
+  "id-sr": {
+   "code": "SR",
+   "ref": "ID-SR",
+   "name": {
+    "pt": "Celebes Ocidental",
+    "en": "West Sulawesi",
+    "es": "Célebes Occidental"
+   },
+   "alias": [
+    "Sulawesi Ocidental"
+   ],
+   "capital": "Mamuju",
+   "region": "sulawesi",
+   "area": 16651,
+   "ll": [
+    -2.8791,
+    119.2202
+   ],
+   "bbox": [
+    118.757,
+    -3.571,
+    119.875,
+    -0.847
+   ],
+   "borders": [
+    "id-sn",
+    "id-st"
+   ]
+  },
+  "id-ss": {
+   "code": "SS",
+   "ref": "ID-SS",
+   "name": {
+    "pt": "Sumatra do Sul",
+    "en": "South Sumatra",
+    "es": "Sumatra Meridional"
+   },
+   "capital": "Palembang",
+   "capAl": [
+    "Palimbão"
+   ],
+   "region": "sumatra",
+   "area": 87258,
+   "ll": [
+    -3.1894,
+    104.1971
+   ],
+   "bbox": [
+    102.064,
+    -4.924,
+    106.094,
+    -1.628
+   ],
+   "borders": [
+    "id-be",
+    "id-ja",
+    "id-la"
+   ]
+  },
+  "id-st": {
+   "code": "ST",
+   "ref": "ID-ST",
+   "name": {
+    "pt": "Celebes Central",
+    "en": "Central Sulawesi",
+    "es": "Célebes Central"
+   },
+   "alias": [
+    "Sulawesi Central"
+   ],
+   "capital": "Palu",
+   "region": "sulawesi",
+   "area": 61448,
+   "ll": [
+    -1.4058,
+    120.1478
+   ],
+   "bbox": [
+    119.427,
+    -3.28,
+    123.623,
+    1.356
+   ],
+   "borders": [
+    "id-go",
+    "id-sg",
+    "id-sn",
+    "id-sr"
+   ]
+  },
+  "id-su": {
+   "code": "SU",
+   "ref": "ID-SU",
+   "name": {
+    "pt": "Sumatra do Norte",
+    "en": "North Sumatra",
+    "es": "Sumatra Septentrional"
+   },
+   "capital": "Medan",
+   "region": "sumatra",
+   "area": 71373,
+   "ll": [
+    1.8118,
+    99.5074
+   ],
+   "bbox": [
+    97.058,
+    -0.598,
+    100.434,
+    4.302
+   ],
+   "borders": [
+    "id-ac",
+    "id-ri",
+    "id-sb"
+   ]
+  },
+  "id-yo": {
+   "code": "YO",
+   "ref": "ID-YO",
+   "name": {
+    "pt": "Yogyakarta",
+    "en": "Yogyakarta",
+    "es": "Yogyakarta"
+   },
+   "alias": [
+    "Jogjacarta"
+   ],
+   "capital": "Yogyakarta",
+   "capAl": [
+    "Jogjacarta"
+   ],
+   "region": "java",
+   "area": 3192,
+   "ll": [
+    -7.8576,
+    110.351
+   ],
+   "bbox": [
+    110.004,
+    -8.204,
+    110.839,
+    -7.541
+   ],
+   "borders": [
+    "id-jt"
+   ]
+  }
+ }
+}

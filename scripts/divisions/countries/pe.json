@@ -1,0 +1,389 @@
+{
+  "comment": "Peru: as 25 regiões do Overture (24 departamentos e Callao; a Província de Lima vem junto com a Região Lima, então a capital da unidade é Lima, com Huacho, a sede da Região Lima, aceita). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Centro e Sul, agrupamento nosso por posição.",
+  "id": "pe",
+  "carta": "604",
+  "source": "overture",
+  "name": {
+    "pt": "Peru",
+    "en": "Peru",
+    "es": "Perú"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "região",
+      "many": "regiões",
+      "g": "f"
+    },
+    "en": {
+      "one": "region",
+      "many": "regions"
+    },
+    "es": {
+      "one": "región",
+      "many": "regiones",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    },
+    "center": {
+      "pt": "Centro",
+      "en": "Centre",
+      "es": "Centro"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 604)",
+      "use": "a terra de Peru, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 25 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AMA",
+      "name": "Amazonas",
+      "capital": "Chachapoyas",
+      "region": "north"
+    },
+    {
+      "code": "ANC",
+      "name": "Áncash",
+      "sourceName": "Ancash",
+      "alias": [
+        "Ancash"
+      ],
+      "capital": "Huaraz",
+      "region": "center"
+    },
+    {
+      "code": "APU",
+      "name": "Apurímac",
+      "capital": "Abancay",
+      "region": "south"
+    },
+    {
+      "code": "ARE",
+      "name": "Arequipa",
+      "capital": "Arequipa",
+      "region": "south"
+    },
+    {
+      "code": "AYA",
+      "name": "Ayacucho",
+      "capital": "Ayacucho",
+      "capAl": [
+        "Aiacucho",
+        "Huamanga"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "CAJ",
+      "name": "Cajamarca",
+      "capital": "Cajamarca",
+      "region": "north"
+    },
+    {
+      "code": "CAL",
+      "name": "Callao",
+      "capital": "Callao",
+      "region": "center"
+    },
+    {
+      "code": "CUS",
+      "name": "Cusco",
+      "alias": [
+        "Cuzco"
+      ],
+      "capital": "Cusco",
+      "capAl": [
+        "Cuzco"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "HUC",
+      "name": "Huánuco",
+      "capital": "Huánuco",
+      "region": "center"
+    },
+    {
+      "code": "HUV",
+      "name": "Huancavelica",
+      "capital": "Huancavelica",
+      "region": "center"
+    },
+    {
+      "code": "ICA",
+      "name": "Ica",
+      "capital": "Ica",
+      "region": "center"
+    },
+    {
+      "code": "JUN",
+      "name": "Junín",
+      "capital": "Huancayo",
+      "region": "center"
+    },
+    {
+      "code": "LAL",
+      "name": "La Libertad",
+      "alias": [
+        "Liberdade"
+      ],
+      "capital": "Trujillo",
+      "region": "north"
+    },
+    {
+      "code": "LAM",
+      "name": "Lambayeque",
+      "capital": "Chiclayo",
+      "region": "north"
+    },
+    {
+      "code": "LIM",
+      "name": "Lima",
+      "capital": "Lima",
+      "capAl": [
+        "Huacho"
+      ],
+      "region": "center"
+    },
+    {
+      "code": "LOR",
+      "name": "Loreto",
+      "capital": "Iquitos",
+      "region": "north"
+    },
+    {
+      "code": "MDD",
+      "name": "Madre de Dios",
+      "alias": [
+        "Madre de Deus"
+      ],
+      "capital": "Puerto Maldonado",
+      "region": "south"
+    },
+    {
+      "code": "MOQ",
+      "name": "Moquegua",
+      "capital": "Moquegua",
+      "region": "south"
+    },
+    {
+      "code": "PAS",
+      "name": "Pasco",
+      "capital": "Cerro de Pasco",
+      "region": "center"
+    },
+    {
+      "code": "PIU",
+      "name": "Piura",
+      "capital": "Piura",
+      "region": "north"
+    },
+    {
+      "code": "PUN",
+      "name": "Puno",
+      "capital": "Puno",
+      "region": "south"
+    },
+    {
+      "code": "SAM",
+      "name": "San Martín",
+      "capital": "Moyobamba",
+      "region": "north"
+    },
+    {
+      "code": "TAC",
+      "name": "Tacna",
+      "capital": "Tacna",
+      "region": "south"
+    },
+    {
+      "code": "TUM",
+      "name": "Tumbes",
+      "capital": "Tumbes",
+      "region": "north"
+    },
+    {
+      "code": "UCA",
+      "name": "Ucayali",
+      "capital": "Pucallpa",
+      "region": "center"
+    }
+  ],
+  "probes": [
+    [
+      "Chachapoyas",
+      -77.87,
+      -6.23,
+      "pe-ama"
+    ],
+    [
+      "Huaraz",
+      -77.5333,
+      -9.5333,
+      "pe-anc"
+    ],
+    [
+      "Abancay",
+      -72.8833,
+      -13.6333,
+      "pe-apu"
+    ],
+    [
+      "Arequipa",
+      -71.5369,
+      -16.3989,
+      "pe-are"
+    ],
+    [
+      "Ayacucho",
+      -74.2244,
+      -13.1631,
+      "pe-aya"
+    ],
+    [
+      "Cajamarca",
+      -78.5175,
+      -7.1575,
+      "pe-caj"
+    ],
+    [
+      "Callao",
+      -77.1392,
+      -12.0522,
+      "pe-cal"
+    ],
+    [
+      "Cusco",
+      -71.9786,
+      -13.5169,
+      "pe-cus"
+    ],
+    [
+      "Huánuco",
+      -76.2397,
+      -9.9294,
+      "pe-huc"
+    ],
+    [
+      "Huancavelica",
+      -74.9714,
+      -12.785,
+      "pe-huv"
+    ],
+    [
+      "Ica",
+      -75.7333,
+      -14.0667,
+      "pe-ica"
+    ],
+    [
+      "Huancayo",
+      -75.2167,
+      -12.0667,
+      "pe-jun"
+    ],
+    [
+      "Trujillo",
+      -79.0289,
+      -8.1119,
+      "pe-lal"
+    ],
+    [
+      "Chiclayo",
+      -79.8383,
+      -6.7717,
+      "pe-lam"
+    ],
+    [
+      "Lima",
+      -77.605,
+      -11.1067,
+      "pe-lim"
+    ],
+    [
+      "Iquitos",
+      -73.25,
+      -3.7333,
+      "pe-lor"
+    ],
+    [
+      "Puerto Maldonado",
+      -69.1833,
+      -12.6,
+      "pe-mdd"
+    ],
+    [
+      "Moquegua",
+      -70.9333,
+      -17.2,
+      "pe-moq"
+    ],
+    [
+      "Cerro de Pasco",
+      -76.2625,
+      -10.6864,
+      "pe-pas"
+    ],
+    [
+      "Piura",
+      -80.6253,
+      -5.2008,
+      "pe-piu"
+    ],
+    [
+      "Puno",
+      -70.0236,
+      -15.8433,
+      "pe-pun"
+    ],
+    [
+      "Moyobamba",
+      -76.9667,
+      -6.0333,
+      "pe-sam"
+    ],
+    [
+      "Tacna",
+      -70.2483,
+      -18.0556,
+      "pe-tac"
+    ],
+    [
+      "Tumbes",
+      -80.4597,
+      -3.5708,
+      "pe-tum"
+    ],
+    [
+      "Pucallpa",
+      -74.55,
+      -8.3833,
+      "pe-uca"
+    ]
+  ]
+}

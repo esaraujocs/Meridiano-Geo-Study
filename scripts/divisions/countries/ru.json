@@ -1,0 +1,2033 @@
+{
+  "comment": "Rússia: os 83 sujeitos federais (repúblicas, krais, oblasts, cidades federais, o oblast e os distritos autônomos; palavra \"região\"), sem a Crimeia e Sevastopol, como no Overture e no mapa-múndi do jogo. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Os nomes sem \"Oblast de\"/\"Krai de\" valem na escrita quando não viram o nome de outra unidade. Moscou e São Petersburgo (cidades federais) ficam fora dos modos de capital; o Oblast de Leningrado tem Gatchina e o de Moscou, Krasnogorsk (Wikidata). Recortes: os 8 distritos federais (Buriácia e Transbaicália no Extremo Oriente desde 2018).",
+  "id": "ru",
+  "carta": "643",
+  "source": "overture",
+  "name": {
+    "pt": "Rússia",
+    "en": "Russia",
+    "es": "Rusia"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "região",
+      "many": "regiões",
+      "g": "f"
+    },
+    "en": {
+      "one": "region",
+      "many": "regions"
+    },
+    "es": {
+      "one": "región",
+      "many": "regiones",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "central": {
+      "pt": "Central",
+      "en": "Central",
+      "es": "Central"
+    },
+    "northwest": {
+      "pt": "Noroeste",
+      "en": "Northwest",
+      "es": "Noroeste"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    },
+    "caucasus": {
+      "pt": "Cáucaso Norte",
+      "en": "North Caucasus",
+      "es": "Cáucaso Norte"
+    },
+    "volga": {
+      "pt": "Volga",
+      "en": "Volga",
+      "es": "Volga"
+    },
+    "ural": {
+      "pt": "Urais",
+      "en": "Urals",
+      "es": "Urales"
+    },
+    "siberia": {
+      "pt": "Sibéria",
+      "en": "Siberia",
+      "es": "Siberia"
+    },
+    "fareast": {
+      "pt": "Extremo Oriente",
+      "en": "Far East",
+      "es": "Lejano Oriente"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 643)",
+      "use": "a terra de Rússia, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 83 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AD",
+      "name": "Adygea",
+      "sourceName": "Адыгея",
+      "names": {
+        "pt": "Adigueia",
+        "es": "Adigueya"
+      },
+      "capital": {
+        "pt": "Maykop",
+        "en": "Maykop",
+        "es": "Maikop"
+      },
+      "capAl": [
+        "Maicope"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "AL",
+      "name": "Altai Republic",
+      "sourceName": "Республика Алтай",
+      "names": {
+        "pt": "Altai",
+        "es": "Altái"
+      },
+      "capital": {
+        "pt": "Gorno-Altaysk",
+        "en": "Gorno-Altaysk",
+        "es": "Gorno-Altaisk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "ALT",
+      "name": "Altai Krai",
+      "sourceName": "Алтайский край",
+      "names": {
+        "pt": "Krai de Altai",
+        "es": "Krai de Altái"
+      },
+      "capital": {
+        "pt": "Barnaul",
+        "en": "Barnaul",
+        "es": "Barnaúl"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "AMU",
+      "name": "Amur Oblast",
+      "sourceName": "Amur",
+      "names": {
+        "pt": "Oblast de Amur",
+        "es": "Óblast de Amur"
+      },
+      "alias": [
+        "Amur"
+      ],
+      "capital": {
+        "pt": "Blagoveshchensk",
+        "en": "Blagoveshchensk",
+        "es": "Blagovéshchensk"
+      },
+      "capAl": [
+        "Blagoveschensk"
+      ],
+      "region": "fareast"
+    },
+    {
+      "code": "ARK",
+      "name": "Arkhangelsk Oblast",
+      "sourceName": "Архангельская область",
+      "names": {
+        "pt": "Oblast de Arcangel",
+        "es": "Óblast de Arcángel"
+      },
+      "alias": [
+        "Arkhangelsk",
+        "Arcangel",
+        "Arcángel"
+      ],
+      "capital": {
+        "pt": "Arcangel",
+        "en": "Arkhangelsk",
+        "es": "Arcángel"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "AST",
+      "name": "Astrakhan Oblast",
+      "sourceName": "Астраханская область",
+      "names": {
+        "pt": "Oblast de Astracã",
+        "es": "Astracán"
+      },
+      "alias": [
+        "Astrakhan",
+        "Astracã"
+      ],
+      "capital": {
+        "pt": "Astracã",
+        "en": "Astrakhan",
+        "es": "Astracán"
+      },
+      "region": "south"
+    },
+    {
+      "code": "BA",
+      "name": "Bashkortostan",
+      "sourceName": "Башкортостан",
+      "names": {
+        "pt": "Bascortostão",
+        "es": "Baskortostán"
+      },
+      "capital": {
+        "pt": "Ufá",
+        "en": "Ufa",
+        "es": "Ufá"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "BEL",
+      "name": "Belgorod Oblast",
+      "sourceName": "Белгородская область",
+      "names": {
+        "pt": "Oblast de Belgorod",
+        "es": "Óblast de Bélgorod"
+      },
+      "alias": [
+        "Belgorod",
+        "Bélgorod"
+      ],
+      "capital": {
+        "pt": "Belgorod",
+        "en": "Belgorod",
+        "es": "Bélgorod"
+      },
+      "region": "central"
+    },
+    {
+      "code": "BRY",
+      "name": "Bryansk Oblast",
+      "sourceName": "Брянская область",
+      "names": {
+        "pt": "Oblast de Briansk",
+        "es": "Óblast de Briansk"
+      },
+      "alias": [
+        "Bryansk",
+        "Briansk"
+      ],
+      "capital": {
+        "pt": "Bryansk",
+        "en": "Bryansk",
+        "es": "Briansk"
+      },
+      "region": "central"
+    },
+    {
+      "code": "BU",
+      "name": "Buryatia",
+      "sourceName": "Республика Бурятия",
+      "names": {
+        "pt": "Buriácia",
+        "es": "Buriatia"
+      },
+      "capital": {
+        "pt": "Ulan-Ude",
+        "en": "Ulan-Ude",
+        "es": "Ulán-Udé"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "CE",
+      "name": "Chechnya",
+      "sourceName": "Чечня",
+      "names": {
+        "pt": "Chechénia",
+        "es": "Chechenia"
+      },
+      "capital": {
+        "pt": "Grózni",
+        "en": "Grozny",
+        "es": "Grozni"
+      },
+      "region": "caucasus"
+    },
+    {
+      "code": "CHE",
+      "name": "Chelyabinsk Oblast",
+      "sourceName": "Челябинская область",
+      "names": {
+        "pt": "Oblast de Cheliabinsk",
+        "es": "Cheliábinsk"
+      },
+      "alias": [
+        "Chelyabinsk"
+      ],
+      "capital": {
+        "pt": "Chelyabinsk",
+        "en": "Chelyabinsk",
+        "es": "Cheliábinsk"
+      },
+      "capAl": [
+        "Cheliabinsk"
+      ],
+      "region": "ural"
+    },
+    {
+      "code": "CHU",
+      "name": "Chukotka Autonomous District",
+      "sourceName": "Чукотский автономный округ",
+      "names": {
+        "pt": "Chukotka",
+        "es": "Chukotka"
+      },
+      "capital": {
+        "pt": "Anadyr",
+        "en": "Anadyr",
+        "es": "Anádyr"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "CU",
+      "name": "Chuvashia",
+      "sourceName": "Чувашия",
+      "names": {
+        "pt": "Chuváxia",
+        "es": "Chuvasia"
+      },
+      "capital": {
+        "pt": "Cheboksary",
+        "en": "Cheboksary",
+        "es": "Cheboksari"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "DA",
+      "name": "Dagestan",
+      "sourceName": "Дагестан",
+      "names": {
+        "pt": "Daguestão",
+        "es": "Daguestán"
+      },
+      "capital": {
+        "pt": "Makhachkala",
+        "en": "Makhachkala",
+        "es": "Majachkalá"
+      },
+      "capAl": [
+        "Mahackala"
+      ],
+      "region": "caucasus"
+    },
+    {
+      "code": "IN",
+      "name": "Ingushetia",
+      "sourceName": "Ингушетия",
+      "names": {
+        "pt": "Inguxétia",
+        "es": "Ingusetia"
+      },
+      "capital": {
+        "pt": "Magas",
+        "en": "Magas",
+        "es": "Magás"
+      },
+      "region": "caucasus"
+    },
+    {
+      "code": "IRK",
+      "name": "Irkutsk Oblast",
+      "sourceName": "Иркутская область",
+      "names": {
+        "pt": "Oblast de Irkutsk",
+        "es": "Irkutsk"
+      },
+      "capital": {
+        "pt": "Irkutsk",
+        "en": "Irkutsk",
+        "es": "Irkutsk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "IVA",
+      "name": "Ivanovo Oblast",
+      "sourceName": "Ивановская область",
+      "names": {
+        "pt": "Oblast de Ivanovo",
+        "es": "Óblast de Ivánovo"
+      },
+      "alias": [
+        "Ivanovo",
+        "Ivánovo"
+      ],
+      "capital": {
+        "pt": "Ivanovo",
+        "en": "Ivanovo",
+        "es": "Ivánovo"
+      },
+      "region": "central"
+    },
+    {
+      "code": "KAM",
+      "name": "Kamchatka Krai",
+      "sourceName": "Камчатский край",
+      "names": {
+        "pt": "Krai de Kamtchatka",
+        "es": "Kamchatka"
+      },
+      "alias": [
+        "Kamtchatka"
+      ],
+      "capital": {
+        "pt": "Petropavlovsk-Kamchatsky",
+        "en": "Petropavlovsk-Kamchatsky",
+        "es": "Petropávlovsk-Kamchatski"
+      },
+      "capAl": [
+        "Petropavlovsk-Kamchatski"
+      ],
+      "region": "fareast"
+    },
+    {
+      "code": "KB",
+      "name": "Kabardino-Balkaria",
+      "sourceName": "Кабардино-Балкария",
+      "names": {
+        "pt": "Cabárdia-Balcária",
+        "es": "Kabardia-Balkaria"
+      },
+      "capital": {
+        "pt": "Nalchik",
+        "en": "Nalchik",
+        "es": "Nálchik"
+      },
+      "capAl": [
+        "Nalchique"
+      ],
+      "region": "caucasus"
+    },
+    {
+      "code": "KC",
+      "name": "Karachay-Cherkessia",
+      "sourceName": "Карачаево-Черкесия",
+      "names": {
+        "pt": "Carachai-Circássia",
+        "es": "Karacháyevo-Cherkesia"
+      },
+      "capital": {
+        "pt": "Cherkessk",
+        "en": "Cherkessk",
+        "es": "Cherkesk"
+      },
+      "capAl": [
+        "Cherquésseque"
+      ],
+      "region": "caucasus"
+    },
+    {
+      "code": "KDA",
+      "name": "Krasnodar Krai",
+      "sourceName": "Краснодарский край",
+      "names": {
+        "pt": "Krai de Krasnodar",
+        "es": "Krai de Krasnodar"
+      },
+      "alias": [
+        "Krasnodar"
+      ],
+      "capital": {
+        "pt": "Krasnodar",
+        "en": "Krasnodar",
+        "es": "Krasnodar"
+      },
+      "capAl": [
+        "Crasnodar"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "KEM",
+      "name": "Kemerovo Oblast",
+      "sourceName": "Кемеровская область",
+      "names": {
+        "pt": "Oblast de Kemerovo",
+        "es": "Kémerovo"
+      },
+      "capital": {
+        "pt": "Kemerovo",
+        "en": "Kemerovo",
+        "es": "Kémerovo"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "KGD",
+      "name": "Kaliningrad Oblast",
+      "sourceName": "Калининградская область",
+      "names": {
+        "pt": "Oblast de Kaliningrado",
+        "es": "Óblast de Kaliningrado"
+      },
+      "alias": [
+        "Kaliningrad",
+        "Kaliningrado"
+      ],
+      "capital": {
+        "pt": "Kaliningrado",
+        "en": "Kaliningrad",
+        "es": "Kaliningrado"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "KGN",
+      "name": "Kurgan Oblast",
+      "sourceName": "Курганская область",
+      "names": {
+        "pt": "Oblast de Kurgan",
+        "es": "Kurgán"
+      },
+      "capital": {
+        "pt": "Kurgan",
+        "en": "Kurgan",
+        "es": "Kurgán"
+      },
+      "region": "ural"
+    },
+    {
+      "code": "KHA",
+      "name": "Khabarovsk Krai",
+      "sourceName": "Хабаровский край",
+      "names": {
+        "pt": "Krai de Khabarovsk",
+        "es": "Jabárovsk"
+      },
+      "alias": [
+        "Khabarovsk"
+      ],
+      "capital": {
+        "pt": "Khabarovsk",
+        "en": "Khabarovsk",
+        "es": "Jabárovsk"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "KHM",
+      "name": "Khanty-Mansi Autonomous District",
+      "sourceName": "Ханты-Мансийский автономный округ — Югра",
+      "names": {
+        "pt": "Khantia-Mansia",
+        "es": "Janti-Mansi"
+      },
+      "alias": [
+        "Khanty-Mansi"
+      ],
+      "capital": {
+        "pt": "Khanty-Mansiysk",
+        "en": "Khanty-Mansiysk",
+        "es": "Janti-Mansisk"
+      },
+      "region": "ural"
+    },
+    {
+      "code": "KIR",
+      "name": "Kirov Oblast",
+      "sourceName": "Кировская область",
+      "names": {
+        "pt": "Oblast de Kirov",
+        "es": "Óblast de Kírov"
+      },
+      "alias": [
+        "Kirov",
+        "Kírov"
+      ],
+      "capital": {
+        "pt": "Kirov",
+        "en": "Kirov",
+        "es": "Kírov"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "KK",
+      "name": "Khakassia",
+      "sourceName": "Республика Хакасия",
+      "names": {
+        "pt": "Cacássia",
+        "es": "Jakasia"
+      },
+      "capital": {
+        "pt": "Abakan",
+        "en": "Abakan",
+        "es": "Abakán"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "KL",
+      "name": "Kalmykia",
+      "sourceName": "Калмыкия",
+      "names": {
+        "pt": "Calmúquia",
+        "es": "Kalmukia"
+      },
+      "capital": {
+        "pt": "Elista",
+        "en": "Elista",
+        "es": "Elistá"
+      },
+      "region": "south"
+    },
+    {
+      "code": "KLU",
+      "name": "Kaluga Oblast",
+      "sourceName": "Калужская область",
+      "names": {
+        "pt": "Oblast de Kaluga",
+        "es": "Kaluga"
+      },
+      "capital": {
+        "pt": "Kaluga",
+        "en": "Kaluga",
+        "es": "Kaluga"
+      },
+      "region": "central"
+    },
+    {
+      "code": "KO",
+      "name": "Komi Republic",
+      "sourceName": "Республика Коми",
+      "names": {
+        "pt": "República de Komi",
+        "es": "Komi"
+      },
+      "capital": {
+        "pt": "Syktyvkar",
+        "en": "Syktyvkar",
+        "es": "Siktivkar"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "KOS",
+      "name": "Kostroma Oblast",
+      "sourceName": "Костромская область",
+      "names": {
+        "pt": "Oblast de Kostroma",
+        "es": "Óblast de Kostromá"
+      },
+      "alias": [
+        "Kostroma",
+        "Kostromá"
+      ],
+      "capital": {
+        "pt": "Kostroma",
+        "en": "Kostroma",
+        "es": "Kostromá"
+      },
+      "region": "central"
+    },
+    {
+      "code": "KR",
+      "name": "Karelia",
+      "sourceName": "Карелия",
+      "names": {
+        "pt": "Carélia",
+        "es": "Carelia"
+      },
+      "capital": {
+        "pt": "Petrozavodsk",
+        "en": "Petrozavodsk",
+        "es": "Petrozavodsk"
+      },
+      "capAl": [
+        "Petrozavódseque"
+      ],
+      "region": "northwest"
+    },
+    {
+      "code": "KRS",
+      "name": "Kursk Oblast",
+      "sourceName": "Курская область",
+      "names": {
+        "pt": "Oblast de Kursk",
+        "es": "óblast de Kursk"
+      },
+      "alias": [
+        "Kursk"
+      ],
+      "capital": {
+        "pt": "Kursk",
+        "en": "Kursk",
+        "es": "Kursk"
+      },
+      "region": "central"
+    },
+    {
+      "code": "KYA",
+      "name": "Krasnoyarsk Krai",
+      "sourceName": "Красноярский край",
+      "names": {
+        "pt": "Krai de Krasnoiarsk",
+        "es": "Krai de Krasnoyarsk"
+      },
+      "alias": [
+        "Krasnoyarsk",
+        "Krasnoiarsk"
+      ],
+      "capital": {
+        "pt": "Krasnoyarsk",
+        "en": "Krasnoyarsk",
+        "es": "Krasnoyarsk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "LEN",
+      "name": "Leningrad Oblast",
+      "sourceName": "Ленинградская область",
+      "names": {
+        "pt": "Oblast de Leningrado",
+        "es": "Óblast de Leningrado"
+      },
+      "alias": [
+        "Leningrad",
+        "Leningrado"
+      ],
+      "capital": {
+        "pt": "Gatchina",
+        "en": "Gatchina",
+        "es": "Gátchina"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "LIP",
+      "name": "Lipetsk Oblast",
+      "sourceName": "Липецкая область",
+      "names": {
+        "pt": "Oblast de Lipetsk",
+        "es": "Óblast de Lípetsk"
+      },
+      "alias": [
+        "Lipetsk",
+        "Lípetsk"
+      ],
+      "capital": {
+        "pt": "Lipetsk",
+        "en": "Lipetsk",
+        "es": "Lípetsk"
+      },
+      "region": "central"
+    },
+    {
+      "code": "MAG",
+      "name": "Magadan Oblast",
+      "sourceName": "Магаданская область",
+      "names": {
+        "pt": "Oblast de Magadan",
+        "es": "Magadán"
+      },
+      "capital": {
+        "pt": "Magadan",
+        "en": "Magadan",
+        "es": "Magadán"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "ME",
+      "name": "Mari El",
+      "sourceName": "Марий Эл",
+      "names": {
+        "es": "Mari-El"
+      },
+      "capital": {
+        "pt": "Yoshkar-Ola",
+        "en": "Yoshkar-Ola",
+        "es": "Yoshkar-Olá"
+      },
+      "capAl": [
+        "Iochkar-Ola"
+      ],
+      "region": "volga"
+    },
+    {
+      "code": "MO",
+      "name": "Mordovia",
+      "sourceName": "Мордовия",
+      "names": {
+        "pt": "Mordóvia"
+      },
+      "capital": {
+        "pt": "Saransk",
+        "en": "Saransk",
+        "es": "Saransk"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "MOS",
+      "name": "Moscow Oblast",
+      "sourceName": "Московская область",
+      "names": {
+        "pt": "Oblast de Moscou",
+        "es": "Óblast de Moscú"
+      },
+      "capital": {
+        "pt": "Krasnogorsk",
+        "en": "Krasnogorsk",
+        "es": "Krasnogorsk"
+      },
+      "region": "central"
+    },
+    {
+      "code": "MOW",
+      "name": "Moscow",
+      "sourceName": "Москва",
+      "names": {
+        "pt": "Moscou",
+        "es": "Moscú"
+      },
+      "region": "central"
+    },
+    {
+      "code": "MUR",
+      "name": "Murmansk Oblast",
+      "sourceName": "Мурманская область",
+      "names": {
+        "pt": "Oblast de Murmansk",
+        "es": "Óblast de Múrmansk"
+      },
+      "alias": [
+        "Murmansk",
+        "Múrmansk"
+      ],
+      "capital": {
+        "pt": "Murmansk",
+        "en": "Murmansk",
+        "es": "Múrmansk"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "NEN",
+      "name": "Nenets Autonomous District",
+      "sourceName": "Ненецкий автономный округ",
+      "names": {
+        "pt": "Nenetsia",
+        "es": "Nenetsia"
+      },
+      "alias": [
+        "Nenets"
+      ],
+      "capital": {
+        "pt": "Naryan-Mar",
+        "en": "Naryan-Mar",
+        "es": "Narián-Mar"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "NGR",
+      "name": "Novgorod Oblast",
+      "sourceName": "Новгородская область",
+      "names": {
+        "pt": "Oblast de Novgorod",
+        "es": "Óblast de Nóvgorod"
+      },
+      "alias": [
+        "Novgorod",
+        "Nóvgorod"
+      ],
+      "capital": {
+        "pt": "Novgorod",
+        "en": "Veliky Novgorod",
+        "es": "Nóvgorod"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "NIZ",
+      "name": "Nizhny Novgorod Oblast",
+      "sourceName": "Нижегородская область",
+      "names": {
+        "pt": "Oblast de Níjni Novgorod",
+        "es": "Óblast de Nizhni Nóvgorod"
+      },
+      "alias": [
+        "Nizhny Novgorod",
+        "Níjni Novgorod",
+        "Nizhni Nóvgorod"
+      ],
+      "capital": {
+        "pt": "Níjni Novgorod",
+        "en": "Nizhny Novgorod",
+        "es": "Nizhni Nóvgorod"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "NVS",
+      "name": "Novosibirsk Oblast",
+      "sourceName": "Новосибирская область",
+      "names": {
+        "pt": "Oblast de Novosibirsk",
+        "es": "Novosibirsk"
+      },
+      "capital": {
+        "pt": "Novosibirsk",
+        "en": "Novosibirsk",
+        "es": "Novosibirsk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "OMS",
+      "name": "Omsk Oblast",
+      "sourceName": "Омская область",
+      "names": {
+        "pt": "Oblast de Omsk",
+        "es": "Omsk"
+      },
+      "capital": {
+        "pt": "Omsk",
+        "en": "Omsk",
+        "es": "Omsk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "ORE",
+      "name": "Orenburg Oblast",
+      "sourceName": "Оренбургская область",
+      "names": {
+        "pt": "Oblast de Oremburgo",
+        "es": "Óblast de Oremburgo"
+      },
+      "alias": [
+        "Orenburg",
+        "Oremburgo"
+      ],
+      "capital": {
+        "pt": "Oremburgo",
+        "en": "Orenburg",
+        "es": "Oremburgo"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "ORL",
+      "name": "Oryol Oblast",
+      "sourceName": "Орловская область",
+      "names": {
+        "pt": "Oblast de Oriol",
+        "es": "óblast de Oriol"
+      },
+      "alias": [
+        "Oryol",
+        "Oriol"
+      ],
+      "capital": {
+        "pt": "Oryol",
+        "en": "Oryol",
+        "es": "Oriol"
+      },
+      "region": "central"
+    },
+    {
+      "code": "PER",
+      "name": "Perm Krai",
+      "sourceName": "Пермский край",
+      "names": {
+        "pt": "Krai de Perm",
+        "es": "Perm"
+      },
+      "capital": {
+        "pt": "Perm",
+        "en": "Perm",
+        "es": "Perm"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "PNZ",
+      "name": "Penza Oblast",
+      "sourceName": "Пензенская область",
+      "names": {
+        "pt": "Oblast de Penza",
+        "es": "Óblast de Penza"
+      },
+      "alias": [
+        "Penza"
+      ],
+      "capital": {
+        "pt": "Penza",
+        "en": "Penza",
+        "es": "Penza"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "PRI",
+      "name": "Primorsky Krai",
+      "sourceName": "Приморский край",
+      "names": {
+        "pt": "Krai do Litoral",
+        "es": "Primorie"
+      },
+      "alias": [
+        "Primorsky",
+        "Litoral"
+      ],
+      "capital": {
+        "pt": "Vladivostok",
+        "en": "Vladivostok",
+        "es": "Vladivostok"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "PSK",
+      "name": "Pskov Oblast",
+      "sourceName": "Псковская область",
+      "names": {
+        "pt": "Oblast de Pskov",
+        "es": "Óblast de Pskov"
+      },
+      "alias": [
+        "Pskov"
+      ],
+      "capital": {
+        "pt": "Pskov",
+        "en": "Pskov",
+        "es": "Pskov"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "ROS",
+      "name": "Rostov Oblast",
+      "sourceName": "Ростовская область",
+      "names": {
+        "pt": "Oblast de Rostov",
+        "es": "Rostov"
+      },
+      "capital": {
+        "pt": "Rostov do Don",
+        "en": "Rostov-on-Don",
+        "es": "Rostov del Don"
+      },
+      "region": "south"
+    },
+    {
+      "code": "RYA",
+      "name": "Ryazan Oblast",
+      "sourceName": "Рязанская область",
+      "names": {
+        "pt": "Oblast de Riazan",
+        "es": "Óblast de Riazán"
+      },
+      "alias": [
+        "Ryazan",
+        "Riazan",
+        "Riazán"
+      ],
+      "capital": {
+        "pt": "Ryazan",
+        "en": "Ryazan",
+        "es": "Riazán"
+      },
+      "capAl": [
+        "Riazan"
+      ],
+      "region": "central"
+    },
+    {
+      "code": "SA",
+      "name": "Sakha (Yakutia)",
+      "sourceName": "Республика Саха (Якутия)",
+      "names": {
+        "pt": "Sakha",
+        "es": "Sajá"
+      },
+      "capital": {
+        "pt": "Yakutsk",
+        "en": "Yakutsk",
+        "es": "Yakutsk"
+      },
+      "region": "fareast"
+    },
+    {
+      "code": "SAK",
+      "name": "Sakhalin Oblast",
+      "sourceName": "Сахалинская область",
+      "names": {
+        "pt": "Oblast de Sacalina",
+        "es": "Sajalín"
+      },
+      "alias": [
+        "Sakhalin",
+        "Sacalina"
+      ],
+      "capital": {
+        "pt": "Yuzhno-Sakhalinsk",
+        "en": "Yuzhno-Sakhalinsk",
+        "es": "Yuzhno-Sajalinsk"
+      },
+      "capAl": [
+        "Iujno-Sakhalinsk"
+      ],
+      "region": "fareast"
+    },
+    {
+      "code": "SAM",
+      "name": "Samara Oblast",
+      "sourceName": "Самарская область",
+      "names": {
+        "pt": "Oblast de Samara",
+        "es": "Óblast de Samara"
+      },
+      "alias": [
+        "Samara"
+      ],
+      "capital": {
+        "pt": "Samara",
+        "en": "Samara",
+        "es": "Samara"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "SAR",
+      "name": "Saratov Oblast",
+      "sourceName": "Саратовская область",
+      "names": {
+        "pt": "Oblast de Saratov",
+        "es": "Óblast de Sarátov"
+      },
+      "alias": [
+        "Saratov",
+        "Sarátov"
+      ],
+      "capital": {
+        "pt": "Saratov",
+        "en": "Saratov",
+        "es": "Sarátov"
+      },
+      "region": "volga"
+    },
+    {
+      "code": "SE",
+      "name": "North Ossetia–Alania",
+      "sourceName": "Северная Осетия — Алания",
+      "names": {
+        "pt": "Ossétia do Norte-Alânia",
+        "es": "Osetia del Norte-Alania"
+      },
+      "capital": {
+        "pt": "Vladikavkaz",
+        "en": "Vladikavkaz",
+        "es": "Vladikavkaz"
+      },
+      "region": "caucasus"
+    },
+    {
+      "code": "SMO",
+      "name": "Smolensk Oblast",
+      "sourceName": "Смоленская область",
+      "names": {
+        "pt": "Oblast de Smolensk",
+        "es": "Óblast de Smolensk"
+      },
+      "alias": [
+        "Smolensk"
+      ],
+      "capital": {
+        "pt": "Smolensk",
+        "en": "Smolensk",
+        "es": "Smolensk"
+      },
+      "region": "central"
+    },
+    {
+      "code": "SPE",
+      "name": "Saint Petersburg",
+      "sourceName": "Санкт-Петербург",
+      "names": {
+        "pt": "São Petersburgo",
+        "es": "San Petersburgo"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "STA",
+      "name": "Stavropol Krai",
+      "sourceName": "Ставропольский край",
+      "names": {
+        "pt": "Krai de Stavropol",
+        "es": "Krai de Stávropol"
+      },
+      "alias": [
+        "Stavropol",
+        "Stávropol"
+      ],
+      "capital": {
+        "pt": "Stavropol",
+        "en": "Stavropol",
+        "es": "Stávropol"
+      },
+      "region": "caucasus"
+    },
+    {
+      "code": "SVE",
+      "name": "Sverdlovsk Oblast",
+      "sourceName": "Свердловская область",
+      "names": {
+        "pt": "Oblast de Sverdlovsk",
+        "es": "Sverdlovsk"
+      },
+      "capital": {
+        "pt": "Ecaterimburgo",
+        "en": "Yekaterinburg",
+        "es": "Ekaterimburgo"
+      },
+      "region": "ural"
+    },
+    {
+      "code": "TA",
+      "name": "Tatarstan",
+      "sourceName": "Татарстан",
+      "names": {
+        "pt": "Tartaristão",
+        "es": "Tartaristán"
+      },
+      "capital": {
+        "pt": "Kazan",
+        "en": "Kazan",
+        "es": "Kazán"
+      },
+      "capAl": [
+        "Cazã"
+      ],
+      "region": "volga"
+    },
+    {
+      "code": "TAM",
+      "name": "Tambov Oblast",
+      "sourceName": "Тамбовская область",
+      "names": {
+        "pt": "Oblast de Tambov",
+        "es": "Tambov"
+      },
+      "capital": {
+        "pt": "Tambov",
+        "en": "Tambov",
+        "es": "Tambov"
+      },
+      "region": "central"
+    },
+    {
+      "code": "TOM",
+      "name": "Tomsk Oblast",
+      "sourceName": "Томская область",
+      "names": {
+        "pt": "Oblast de Tomsk",
+        "es": "Tomsk"
+      },
+      "capital": {
+        "pt": "Tomsk",
+        "en": "Tomsk",
+        "es": "Tomsk"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "TUL",
+      "name": "Tula Oblast",
+      "sourceName": "Тульская область",
+      "names": {
+        "pt": "Oblast de Tula",
+        "es": "Óblast de Tula"
+      },
+      "alias": [
+        "Tula"
+      ],
+      "capital": {
+        "pt": "Tula",
+        "en": "Tula",
+        "es": "Tula"
+      },
+      "region": "central"
+    },
+    {
+      "code": "TVE",
+      "name": "Tver Oblast",
+      "sourceName": "Тверская область",
+      "names": {
+        "pt": "Oblast de Tver",
+        "es": "Óblast de Tver"
+      },
+      "alias": [
+        "Tver"
+      ],
+      "capital": {
+        "pt": "Tver",
+        "en": "Tver",
+        "es": "Tver"
+      },
+      "region": "central"
+    },
+    {
+      "code": "TY",
+      "name": "Tuva",
+      "sourceName": "Республика Тыва",
+      "names": {
+        "es": "Tuvá"
+      },
+      "capital": {
+        "pt": "Kyzyl",
+        "en": "Kyzyl",
+        "es": "Kizil"
+      },
+      "region": "siberia"
+    },
+    {
+      "code": "TYU",
+      "name": "Tyumen Oblast",
+      "sourceName": "Тюменская область",
+      "names": {
+        "pt": "Oblast de Tiumen",
+        "es": "Tiumén"
+      },
+      "alias": [
+        "Tyumen"
+      ],
+      "capital": {
+        "pt": "Tyumen",
+        "en": "Tyumen",
+        "es": "Tiumén"
+      },
+      "capAl": [
+        "Tiumen"
+      ],
+      "region": "ural"
+    },
+    {
+      "code": "UD",
+      "name": "Udmurtia",
+      "sourceName": "Удмуртия",
+      "names": {
+        "pt": "Udmúrtia"
+      },
+      "capital": {
+        "pt": "Izhevsk",
+        "en": "Izhevsk",
+        "es": "Izhevsk"
+      },
+      "capAl": [
+        "Ijevsk"
+      ],
+      "region": "volga"
+    },
+    {
+      "code": "ULY",
+      "name": "Ulyanovsk Oblast",
+      "sourceName": "Ульяновская область",
+      "names": {
+        "pt": "Oblast de Ulianovsk",
+        "es": "Óblast de Uliánovsk"
+      },
+      "alias": [
+        "Ulyanovsk",
+        "Ulianovsk",
+        "Uliánovsk"
+      ],
+      "capital": {
+        "pt": "Ulyanovsk",
+        "en": "Ulyanovsk",
+        "es": "Uliánovsk"
+      },
+      "capAl": [
+        "Ulianovsk"
+      ],
+      "region": "volga"
+    },
+    {
+      "code": "VGG",
+      "name": "Volgograd Oblast",
+      "sourceName": "Волгоградская область",
+      "names": {
+        "pt": "Oblast de Volgogrado",
+        "es": "Volgogrado"
+      },
+      "alias": [
+        "Volgograd"
+      ],
+      "capital": {
+        "pt": "Volgogrado",
+        "en": "Volgograd",
+        "es": "Volgogrado"
+      },
+      "region": "south"
+    },
+    {
+      "code": "VLA",
+      "name": "Vladimir Oblast",
+      "sourceName": "Владимирская область",
+      "names": {
+        "pt": "Oblast de Vladimir",
+        "es": "Óblast de Vladímir"
+      },
+      "alias": [
+        "Vladimir",
+        "Vladímir"
+      ],
+      "capital": {
+        "pt": "Vladimir",
+        "en": "Vladimir",
+        "es": "Vladímir"
+      },
+      "region": "central"
+    },
+    {
+      "code": "VLG",
+      "name": "Vologda Oblast",
+      "sourceName": "Вологодская область",
+      "names": {
+        "pt": "Oblast de Vologda",
+        "es": "Óblast de Vólogda"
+      },
+      "alias": [
+        "Vologda",
+        "Vólogda"
+      ],
+      "capital": {
+        "pt": "Vologda",
+        "en": "Vologda",
+        "es": "Vólogda"
+      },
+      "region": "northwest"
+    },
+    {
+      "code": "VOR",
+      "name": "Voronezh Oblast",
+      "sourceName": "Воронежская область",
+      "names": {
+        "pt": "Oblast de Voronej",
+        "es": "Óblast de Vorónezh"
+      },
+      "alias": [
+        "Voronezh",
+        "Voronej",
+        "Vorónezh"
+      ],
+      "capital": {
+        "pt": "Voronezh",
+        "en": "Voronezh",
+        "es": "Vorónezh"
+      },
+      "capAl": [
+        "Voronej"
+      ],
+      "region": "central"
+    },
+    {
+      "code": "YAN",
+      "name": "Yamalo-Nenets Autonomous District",
+      "sourceName": "Ямало-Ненецкий автономный округ",
+      "names": {
+        "pt": "Iamália",
+        "es": "Yamalia-Nenetsia"
+      },
+      "alias": [
+        "Yamalo-Nenets"
+      ],
+      "capital": {
+        "pt": "Salekhard",
+        "en": "Salekhard",
+        "es": "Salejard"
+      },
+      "region": "ural"
+    },
+    {
+      "code": "YAR",
+      "name": "Yaroslavl Oblast",
+      "sourceName": "Ярославская область",
+      "names": {
+        "pt": "Oblast de Iaroslavl",
+        "es": "Óblast de Yaroslavl"
+      },
+      "alias": [
+        "Yaroslavl",
+        "Iaroslavl"
+      ],
+      "capital": {
+        "pt": "Yaroslavl",
+        "en": "Yaroslavl",
+        "es": "Yaroslavl"
+      },
+      "capAl": [
+        "Iaroslavl"
+      ],
+      "region": "central"
+    },
+    {
+      "code": "YEV",
+      "name": "Jewish Autonomous Oblast",
+      "sourceName": "Еврейская автономная область",
+      "names": {
+        "pt": "Oblast Autônomo Judaico",
+        "es": "Óblast Autónomo Hebreo"
+      },
+      "alias": [
+        "Jewish Autonomous"
+      ],
+      "capital": {
+        "pt": "Birobidzhan",
+        "en": "Birobidzhan",
+        "es": "Birobidzhán"
+      },
+      "capAl": [
+        "Birobidjan"
+      ],
+      "region": "fareast"
+    },
+    {
+      "code": "ZAB",
+      "name": "Zabaykalsky Krai",
+      "sourceName": "Забайкальский край",
+      "names": {
+        "pt": "Krai da Transbaicália",
+        "es": "Krai de Transbaikalia"
+      },
+      "alias": [
+        "Zabaykalsky",
+        "Transbaicália",
+        "Transbaikalia"
+      ],
+      "capital": {
+        "pt": "Chita",
+        "en": "Chita",
+        "es": "Chitá"
+      },
+      "region": "fareast"
+    }
+  ],
+  "probes": [
+    [
+      "Maykop",
+      40.0833,
+      44.6,
+      "ru-ad"
+    ],
+    [
+      "Gorno-Altaysk",
+      85.96,
+      51.96,
+      "ru-al"
+    ],
+    [
+      "Barnaul",
+      83.7872,
+      53.3567,
+      "ru-alt"
+    ],
+    [
+      "Blagoveshchensk",
+      127.5364,
+      50.2578,
+      "ru-amu"
+    ],
+    [
+      "Arcangel",
+      40.5375,
+      64.5431,
+      "ru-ark"
+    ],
+    [
+      "Astracã",
+      48.035,
+      46.35,
+      "ru-ast"
+    ],
+    [
+      "Ufá",
+      55.9475,
+      54.7261,
+      "ru-ba"
+    ],
+    [
+      "Belgorod",
+      36.6,
+      50.6,
+      "ru-bel"
+    ],
+    [
+      "Bryansk",
+      34.3667,
+      53.2425,
+      "ru-bry"
+    ],
+    [
+      "Ulan-Ude",
+      107.6064,
+      51.8272,
+      "ru-bu"
+    ],
+    [
+      "Grózni",
+      45.6986,
+      43.3125,
+      "ru-ce"
+    ],
+    [
+      "Chelyabinsk",
+      61.4,
+      55.15,
+      "ru-che"
+    ],
+    [
+      "Anadyr",
+      177.5042,
+      64.7333,
+      "ru-chu"
+    ],
+    [
+      "Cheboksary",
+      47.25,
+      56.1333,
+      "ru-cu"
+    ],
+    [
+      "Makhachkala",
+      47.505,
+      42.9825,
+      "ru-da"
+    ],
+    [
+      "Magas",
+      44.8167,
+      43.1667,
+      "ru-in"
+    ],
+    [
+      "Irkutsk",
+      104.28,
+      52.2892,
+      "ru-irk"
+    ],
+    [
+      "Ivanovo",
+      41.0,
+      57.0,
+      "ru-iva"
+    ],
+    [
+      "Petropavlovsk-Kamchatsky",
+      158.65,
+      53.0167,
+      "ru-kam"
+    ],
+    [
+      "Nalchik",
+      43.6167,
+      43.4833,
+      "ru-kb"
+    ],
+    [
+      "Cherkessk",
+      42.0575,
+      44.2222,
+      "ru-kc"
+    ],
+    [
+      "Krasnodar",
+      38.9833,
+      45.0333,
+      "ru-kda"
+    ],
+    [
+      "Kemerovo",
+      86.0667,
+      55.3333,
+      "ru-kem"
+    ],
+    [
+      "Kaliningrado",
+      20.5,
+      54.7167,
+      "ru-kgd"
+    ],
+    [
+      "Kurgan",
+      65.3411,
+      55.4408,
+      "ru-kgn"
+    ],
+    [
+      "Khabarovsk",
+      135.0667,
+      48.4833,
+      "ru-kha"
+    ],
+    [
+      "Khanty-Mansiysk",
+      69.0,
+      61.0,
+      "ru-khm"
+    ],
+    [
+      "Kirov",
+      49.65,
+      58.6,
+      "ru-kir"
+    ],
+    [
+      "Abakan",
+      91.4167,
+      53.7167,
+      "ru-kk"
+    ],
+    [
+      "Elista",
+      44.2667,
+      46.3167,
+      "ru-kl"
+    ],
+    [
+      "Kaluga",
+      36.2667,
+      54.5333,
+      "ru-klu"
+    ],
+    [
+      "Syktyvkar",
+      50.8167,
+      61.6667,
+      "ru-ko"
+    ],
+    [
+      "Kostroma",
+      40.9269,
+      57.7681,
+      "ru-kos"
+    ],
+    [
+      "Petrozavodsk",
+      34.35,
+      61.7833,
+      "ru-kr"
+    ],
+    [
+      "Kursk",
+      36.1872,
+      51.7372,
+      "ru-krs"
+    ],
+    [
+      "Krasnoyarsk",
+      92.8719,
+      56.0089,
+      "ru-kya"
+    ],
+    [
+      "Gatchina",
+      30.1229,
+      59.5684,
+      "ru-len"
+    ],
+    [
+      "Lipetsk",
+      39.6,
+      52.6167,
+      "ru-lip"
+    ],
+    [
+      "Magadan",
+      150.8,
+      59.5667,
+      "ru-mag"
+    ],
+    [
+      "Yoshkar-Ola",
+      47.8958,
+      56.6328,
+      "ru-me"
+    ],
+    [
+      "Saransk",
+      45.1833,
+      54.1833,
+      "ru-mo"
+    ],
+    [
+      "Krasnogorsk",
+      37.3386,
+      55.8217,
+      "ru-mos"
+    ],
+    [
+      "Murmansk",
+      33.0833,
+      68.9667,
+      "ru-mur"
+    ],
+    [
+      "Naryan-Mar",
+      53.0067,
+      67.6378,
+      "ru-nen"
+    ],
+    [
+      "Novgorod",
+      31.2758,
+      58.521,
+      "ru-ngr"
+    ],
+    [
+      "Níjni Novgorod",
+      44.0075,
+      56.3269,
+      "ru-niz"
+    ],
+    [
+      "Novosibirsk",
+      82.9167,
+      55.0333,
+      "ru-nvs"
+    ],
+    [
+      "Omsk",
+      73.3833,
+      54.9667,
+      "ru-oms"
+    ],
+    [
+      "Oremburgo",
+      55.1,
+      51.7667,
+      "ru-ore"
+    ],
+    [
+      "Oryol",
+      36.0694,
+      52.9686,
+      "ru-orl"
+    ],
+    [
+      "Perm",
+      56.2489,
+      58.0139,
+      "ru-per"
+    ],
+    [
+      "Penza",
+      45.0,
+      53.2,
+      "ru-pnz"
+    ],
+    [
+      "Vladivostok",
+      131.8853,
+      43.115,
+      "ru-pri"
+    ],
+    [
+      "Pskov",
+      28.3333,
+      57.8167,
+      "ru-psk"
+    ],
+    [
+      "Rostov do Don",
+      39.71,
+      47.2225,
+      "ru-ros"
+    ],
+    [
+      "Ryazan",
+      39.7425,
+      54.63,
+      "ru-rya"
+    ],
+    [
+      "Yakutsk",
+      129.7319,
+      62.0272,
+      "ru-sa"
+    ],
+    [
+      "Yuzhno-Sakhalinsk",
+      142.7333,
+      46.95,
+      "ru-sak"
+    ],
+    [
+      "Samara",
+      50.1167,
+      53.1833,
+      "ru-sam"
+    ],
+    [
+      "Saratov",
+      46.035,
+      51.53,
+      "ru-sar"
+    ],
+    [
+      "Vladikavkaz",
+      44.6775,
+      43.04,
+      "ru-se"
+    ],
+    [
+      "Smolensk",
+      32.0453,
+      54.7828,
+      "ru-smo"
+    ],
+    [
+      "Stavropol",
+      41.9833,
+      45.05,
+      "ru-sta"
+    ],
+    [
+      "Ecaterimburgo",
+      60.6128,
+      56.8356,
+      "ru-sve"
+    ],
+    [
+      "Kazan",
+      49.1144,
+      55.7908,
+      "ru-ta"
+    ],
+    [
+      "Tambov",
+      41.4539,
+      52.7231,
+      "ru-tam"
+    ],
+    [
+      "Tomsk",
+      84.9522,
+      56.4886,
+      "ru-tom"
+    ],
+    [
+      "Tula",
+      37.6167,
+      54.2,
+      "ru-tul"
+    ],
+    [
+      "Tver",
+      35.9219,
+      56.8578,
+      "ru-tve"
+    ],
+    [
+      "Kyzyl",
+      94.45,
+      51.7167,
+      "ru-ty"
+    ],
+    [
+      "Tyumen",
+      65.5333,
+      57.15,
+      "ru-tyu"
+    ],
+    [
+      "Izhevsk",
+      53.2167,
+      56.85,
+      "ru-ud"
+    ],
+    [
+      "Ulyanovsk",
+      48.3667,
+      54.3167,
+      "ru-uly"
+    ],
+    [
+      "Volgogrado",
+      44.5147,
+      48.7086,
+      "ru-vgg"
+    ],
+    [
+      "Vladimir",
+      40.4058,
+      56.1286,
+      "ru-vla"
+    ],
+    [
+      "Vologda",
+      39.9,
+      59.2167,
+      "ru-vlg"
+    ],
+    [
+      "Voronezh",
+      39.2106,
+      51.6717,
+      "ru-vor"
+    ],
+    [
+      "Salekhard",
+      66.6333,
+      66.5333,
+      "ru-yan"
+    ],
+    [
+      "Yaroslavl",
+      39.8933,
+      57.6264,
+      "ru-yar"
+    ],
+    [
+      "Birobidzhan",
+      132.9333,
+      48.7833,
+      "ru-yev"
+    ],
+    [
+      "Chita",
+      113.5009,
+      52.0334,
+      "ru-zab"
+    ]
+  ]
+}

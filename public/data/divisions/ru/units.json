@@ -1,0 +1,2961 @@
+{
+ "source": "Rússia: os 83 sujeitos federais (repúblicas, krais, oblasts, cidades federais, o oblast e os distritos autônomos; palavra \"região\"), sem a Crimeia e Sevastopol, como no Overture e no mapa-múndi do jogo. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Os nomes sem \"Oblast de\"/\"Krai de\" valem na escrita quando não viram o nome de outra unidade. Moscou e São Petersburgo (cidades federais) ficam fora dos modos de capital; o Oblast de Leningrado tem Gatchina e o de Moscou, Krasnogorsk (Wikidata). Recortes: os 8 distritos federais (Buriácia e Transbaicália no Extremo Oriente desde 2018).",
+ "country": "ru",
+ "regions": {
+  "central": {
+   "pt": "Central",
+   "en": "Central",
+   "es": "Central"
+  },
+  "northwest": {
+   "pt": "Noroeste",
+   "en": "Northwest",
+   "es": "Noroeste"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  },
+  "caucasus": {
+   "pt": "Cáucaso Norte",
+   "en": "North Caucasus",
+   "es": "Cáucaso Norte"
+  },
+  "volga": {
+   "pt": "Volga",
+   "en": "Volga",
+   "es": "Volga"
+  },
+  "ural": {
+   "pt": "Urais",
+   "en": "Urals",
+   "es": "Urales"
+  },
+  "siberia": {
+   "pt": "Sibéria",
+   "en": "Siberia",
+   "es": "Siberia"
+  },
+  "fareast": {
+   "pt": "Extremo Oriente",
+   "en": "Far East",
+   "es": "Lejano Oriente"
+  }
+ },
+ "units": {
+  "ru-ad": {
+   "code": "AD",
+   "ref": "RU-AD",
+   "name": {
+    "pt": "Adigueia",
+    "en": "Adygea",
+    "es": "Adigueya"
+   },
+   "capital": {
+    "pt": "Maykop",
+    "en": "Maykop",
+    "es": "Maikop"
+   },
+   "capAl": [
+    "Maicope"
+   ],
+   "region": "south",
+   "area": 7802,
+   "ll": [
+    44.4926,
+    40.1266
+   ],
+   "bbox": [
+    38.684,
+    43.76,
+    40.776,
+    45.217
+   ],
+   "borders": [
+    "ru-kda"
+   ]
+  },
+  "ru-al": {
+   "code": "AL",
+   "ref": "RU-AL",
+   "name": {
+    "pt": "Altai",
+    "en": "Altai Republic",
+    "es": "Altái"
+   },
+   "capital": {
+    "pt": "Gorno-Altaysk",
+    "en": "Gorno-Altaysk",
+    "es": "Gorno-Altaisk"
+   },
+   "region": "siberia",
+   "area": 92649,
+   "ll": [
+    50.9571,
+    86.8066
+   ],
+   "bbox": [
+    83.933,
+    49.071,
+    89.866,
+    52.658
+   ],
+   "borders": [
+    "ru-alt",
+    "ru-kem",
+    "ru-kk",
+    "ru-ty"
+   ]
+  },
+  "ru-alt": {
+   "code": "ALT",
+   "ref": "RU-ALT",
+   "name": {
+    "pt": "Krai de Altai",
+    "en": "Altai Krai",
+    "es": "Krai de Altái"
+   },
+   "capital": {
+    "pt": "Barnaul",
+    "en": "Barnaul",
+    "es": "Barnaúl"
+   },
+   "region": "siberia",
+   "area": 166675,
+   "ll": [
+    52.5286,
+    83.5982
+   ],
+   "bbox": [
+    77.889,
+    50.64,
+    87.169,
+    54.453
+   ],
+   "borders": [
+    "ru-al",
+    "ru-kem",
+    "ru-nvs"
+   ]
+  },
+  "ru-amu": {
+   "code": "AMU",
+   "ref": "RU-AMU",
+   "name": {
+    "pt": "Oblast de Amur",
+    "en": "Amur Oblast",
+    "es": "Óblast de Amur"
+   },
+   "alias": [
+    "Amur"
+   ],
+   "capital": {
+    "pt": "Blagoveshchensk",
+    "en": "Blagoveshchensk",
+    "es": "Blagovéshchensk"
+   },
+   "capAl": [
+    "Blagoveschensk"
+   ],
+   "region": "fareast",
+   "area": 358799,
+   "ll": [
+    52.2116,
+    128.9879
+   ],
+   "bbox": [
+    119.656,
+    48.854,
+    134.921,
+    57.06
+   ],
+   "borders": [
+    "ru-kha",
+    "ru-sa",
+    "ru-yev",
+    "ru-zab"
+   ]
+  },
+  "ru-ark": {
+   "code": "ARK",
+   "ref": "RU-ARK",
+   "name": {
+    "pt": "Oblast de Arcangel",
+    "en": "Arkhangelsk Oblast",
+    "es": "Óblast de Arcángel"
+   },
+   "alias": [
+    "Arkhangelsk",
+    "Arcangel",
+    "Arcángel"
+   ],
+   "capital": {
+    "pt": "Arcangel",
+    "en": "Arkhangelsk",
+    "es": "Arcángel"
+   },
+   "region": "northwest",
+   "area": 401347,
+   "ll": [
+    63.5437,
+    42.7679
+   ],
+   "bbox": [
+    35.893,
+    60.636,
+    50.499,
+    66.512
+   ],
+   "borders": [
+    "ru-kir",
+    "ru-ko",
+    "ru-kr",
+    "ru-nen",
+    "ru-vlg"
+   ]
+  },
+  "ru-ast": {
+   "code": "AST",
+   "ref": "RU-AST",
+   "name": {
+    "pt": "Oblast de Astracã",
+    "en": "Astrakhan Oblast",
+    "es": "Astracán"
+   },
+   "alias": [
+    "Astrakhan",
+    "Astracã"
+   ],
+   "capital": {
+    "pt": "Astracã",
+    "en": "Astrakhan",
+    "es": "Astracán"
+   },
+   "region": "south",
+   "area": 53020,
+   "ll": [
+    46.9654,
+    47.7535
+   ],
+   "bbox": [
+    44.961,
+    45.361,
+    49.36,
+    48.864
+   ],
+   "borders": [
+    "ru-kl",
+    "ru-vgg"
+   ]
+  },
+  "ru-ba": {
+   "code": "BA",
+   "ref": "RU-BA",
+   "name": {
+    "pt": "Bascortostão",
+    "en": "Bashkortostan",
+    "es": "Baskortostán"
+   },
+   "capital": {
+    "pt": "Ufá",
+    "en": "Ufa",
+    "es": "Ufá"
+   },
+   "region": "volga",
+   "area": 142378,
+   "ll": [
+    54.7213,
+    55.5372
+   ],
+   "bbox": [
+    53.158,
+    51.571,
+    60.002,
+    56.535
+   ],
+   "borders": [
+    "ru-che",
+    "ru-ore",
+    "ru-per",
+    "ru-sve",
+    "ru-ta",
+    "ru-ud"
+   ]
+  },
+  "ru-bel": {
+   "code": "BEL",
+   "ref": "RU-BEL",
+   "name": {
+    "pt": "Oblast de Belgorod",
+    "en": "Belgorod Oblast",
+    "es": "Óblast de Bélgorod"
+   },
+   "alias": [
+    "Belgorod",
+    "Bélgorod"
+   ],
+   "capital": {
+    "pt": "Belgorod",
+    "en": "Belgorod",
+    "es": "Bélgorod"
+   },
+   "region": "central",
+   "area": 27054,
+   "ll": [
+    50.8141,
+    37.9058
+   ],
+   "bbox": [
+    35.326,
+    49.797,
+    39.281,
+    51.43
+   ],
+   "borders": [
+    "ru-krs",
+    "ru-vor"
+   ]
+  },
+  "ru-bry": {
+   "code": "BRY",
+   "ref": "RU-BRY",
+   "name": {
+    "pt": "Oblast de Briansk",
+    "en": "Bryansk Oblast",
+    "es": "Óblast de Briansk"
+   },
+   "alias": [
+    "Bryansk",
+    "Briansk"
+   ],
+   "capital": {
+    "pt": "Bryansk",
+    "en": "Bryansk",
+    "es": "Briansk"
+   },
+   "region": "central",
+   "area": 34774,
+   "ll": [
+    53.1214,
+    33.6904
+   ],
+   "bbox": [
+    31.242,
+    51.844,
+    35.325,
+    54.032
+   ],
+   "borders": [
+    "ru-klu",
+    "ru-krs",
+    "ru-orl",
+    "ru-smo"
+   ]
+  },
+  "ru-bu": {
+   "code": "BU",
+   "ref": "RU-BU",
+   "name": {
+    "pt": "Buriácia",
+    "en": "Buryatia",
+    "es": "Buriatia"
+   },
+   "capital": {
+    "pt": "Ulan-Ude",
+    "en": "Ulan-Ude",
+    "es": "Ulán-Udé"
+   },
+   "region": "fareast",
+   "area": 331152,
+   "ll": [
+    54.7169,
+    111.9565
+   ],
+   "bbox": [
+    98.632,
+    49.971,
+    116.922,
+    57.249
+   ],
+   "borders": [
+    "ru-irk",
+    "ru-ty",
+    "ru-zab"
+   ]
+  },
+  "ru-ce": {
+   "code": "CE",
+   "ref": "RU-CE",
+   "name": {
+    "pt": "Chechénia",
+    "en": "Chechnya",
+    "es": "Chechenia"
+   },
+   "capital": {
+    "pt": "Grózni",
+    "en": "Grozny",
+    "es": "Grozni"
+   },
+   "region": "caucasus",
+   "area": 16143,
+   "ll": [
+    43.3078,
+    45.7543
+   ],
+   "bbox": [
+    44.832,
+    42.476,
+    46.662,
+    44.01
+   ],
+   "borders": [
+    "ru-da",
+    "ru-in",
+    "ru-se",
+    "ru-sta"
+   ]
+  },
+  "ru-che": {
+   "code": "CHE",
+   "ref": "RU-CHE",
+   "name": {
+    "pt": "Oblast de Cheliabinsk",
+    "en": "Chelyabinsk Oblast",
+    "es": "Cheliábinsk"
+   },
+   "alias": [
+    "Chelyabinsk"
+   ],
+   "capital": {
+    "pt": "Chelyabinsk",
+    "en": "Chelyabinsk",
+    "es": "Cheliábinsk"
+   },
+   "capAl": [
+    "Cheliabinsk"
+   ],
+   "region": "ural",
+   "area": 88233,
+   "ll": [
+    55.1867,
+    60.9582
+   ],
+   "bbox": [
+    57.131,
+    51.991,
+    63.352,
+    56.366
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-kgn",
+    "ru-ore",
+    "ru-sve"
+   ]
+  },
+  "ru-chu": {
+   "code": "CHU",
+   "ref": "RU-CHU",
+   "name": {
+    "pt": "Chukotka",
+    "en": "Chukotka Autonomous District",
+    "es": "Chukotka"
+   },
+   "capital": {
+    "pt": "Anadyr",
+    "en": "Anadyr",
+    "es": "Anádyr"
+   },
+   "region": "fareast",
+   "area": 713861,
+   "ll": [
+    66.0093,
+    171.5186
+   ],
+   "bbox": [
+    157.731,
+    61.808,
+    180.0,
+    71.531
+   ],
+   "borders": [
+    "ru-kam",
+    "ru-mag",
+    "ru-sa"
+   ]
+  },
+  "ru-cu": {
+   "code": "CU",
+   "ref": "RU-CU",
+   "name": {
+    "pt": "Chuváxia",
+    "en": "Chuvashia",
+    "es": "Chuvasia"
+   },
+   "capital": {
+    "pt": "Cheboksary",
+    "en": "Cheboksary",
+    "es": "Cheboksari"
+   },
+   "region": "volga",
+   "area": 18119,
+   "ll": [
+    55.4807,
+    47.0287
+   ],
+   "bbox": [
+    45.911,
+    54.632,
+    48.421,
+    56.328
+   ],
+   "borders": [
+    "ru-me",
+    "ru-mo",
+    "ru-niz",
+    "ru-ta",
+    "ru-uly"
+   ]
+  },
+  "ru-da": {
+   "code": "DA",
+   "ref": "RU-DA",
+   "name": {
+    "pt": "Daguestão",
+    "en": "Dagestan",
+    "es": "Daguestán"
+   },
+   "capital": {
+    "pt": "Makhachkala",
+    "en": "Makhachkala",
+    "es": "Majachkalá"
+   },
+   "capAl": [
+    "Mahackala"
+   ],
+   "region": "caucasus",
+   "area": 50863,
+   "ll": [
+    42.4788,
+    47.0413
+   ],
+   "bbox": [
+    45.103,
+    41.185,
+    48.593,
+    44.992
+   ],
+   "borders": [
+    "ru-ce",
+    "ru-kl",
+    "ru-sta"
+   ]
+  },
+  "ru-in": {
+   "code": "IN",
+   "ref": "RU-IN",
+   "name": {
+    "pt": "Inguxétia",
+    "en": "Ingushetia",
+    "es": "Ingusetia"
+   },
+   "capital": {
+    "pt": "Magas",
+    "en": "Magas",
+    "es": "Magás"
+   },
+   "region": "caucasus",
+   "area": 3093,
+   "ll": [
+    43.2959,
+    44.9208
+   ],
+   "bbox": [
+    44.478,
+    42.615,
+    45.195,
+    43.614
+   ],
+   "borders": [
+    "ru-ce",
+    "ru-se"
+   ]
+  },
+  "ru-irk": {
+   "code": "IRK",
+   "ref": "RU-IRK",
+   "name": {
+    "pt": "Oblast de Irkutsk",
+    "en": "Irkutsk Oblast",
+    "es": "Irkutsk"
+   },
+   "capital": {
+    "pt": "Irkutsk",
+    "en": "Irkutsk",
+    "es": "Irkutsk"
+   },
+   "region": "siberia",
+   "area": 753005,
+   "ll": [
+    55.6543,
+    106.0586
+   ],
+   "bbox": [
+    95.646,
+    51.13,
+    119.138,
+    64.306
+   ],
+   "borders": [
+    "ru-bu",
+    "ru-kya",
+    "ru-sa",
+    "ru-ty",
+    "ru-zab"
+   ]
+  },
+  "ru-iva": {
+   "code": "IVA",
+   "ref": "RU-IVA",
+   "name": {
+    "pt": "Oblast de Ivanovo",
+    "en": "Ivanovo Oblast",
+    "es": "Óblast de Ivánovo"
+   },
+   "alias": [
+    "Ivanovo",
+    "Ivánovo"
+   ],
+   "capital": {
+    "pt": "Ivanovo",
+    "en": "Ivanovo",
+    "es": "Ivánovo"
+   },
+   "region": "central",
+   "area": 21155,
+   "ll": [
+    57.0088,
+    42.3195
+   ],
+   "bbox": [
+    39.374,
+    56.352,
+    43.23,
+    57.74
+   ],
+   "borders": [
+    "ru-kos",
+    "ru-niz",
+    "ru-vla",
+    "ru-yar"
+   ]
+  },
+  "ru-kam": {
+   "code": "KAM",
+   "ref": "RU-KAM",
+   "name": {
+    "pt": "Krai de Kamtchatka",
+    "en": "Kamchatka Krai",
+    "es": "Kamchatka"
+   },
+   "alias": [
+    "Kamtchatka"
+   ],
+   "capital": {
+    "pt": "Petropavlovsk-Kamchatsky",
+    "en": "Petropavlovsk-Kamchatsky",
+    "es": "Petropávlovsk-Kamchatski"
+   },
+   "capAl": [
+    "Petropavlovsk-Kamchatski"
+   ],
+   "region": "fareast",
+   "area": 461779,
+   "ll": [
+    55.2005,
+    157.9629
+   ],
+   "bbox": [
+    155.556,
+    50.869,
+    174.516,
+    64.939
+   ],
+   "borders": [
+    "ru-chu",
+    "ru-mag"
+   ]
+  },
+  "ru-kb": {
+   "code": "KB",
+   "ref": "RU-KB",
+   "name": {
+    "pt": "Cabárdia-Balcária",
+    "en": "Kabardino-Balkaria",
+    "es": "Kabardia-Balkaria"
+   },
+   "capital": {
+    "pt": "Nalchik",
+    "en": "Nalchik",
+    "es": "Nálchik"
+   },
+   "capAl": [
+    "Nalchique"
+   ],
+   "region": "caucasus",
+   "area": 12434,
+   "ll": [
+    43.3781,
+    43.343
+   ],
+   "bbox": [
+    42.397,
+    42.89,
+    44.475,
+    44.02
+   ],
+   "borders": [
+    "ru-kc",
+    "ru-se",
+    "ru-sta"
+   ]
+  },
+  "ru-kc": {
+   "code": "KC",
+   "ref": "RU-KC",
+   "name": {
+    "pt": "Carachai-Circássia",
+    "en": "Karachay-Cherkessia",
+    "es": "Karacháyevo-Cherkesia"
+   },
+   "capital": {
+    "pt": "Cherkessk",
+    "en": "Cherkessk",
+    "es": "Cherkesk"
+   },
+   "capAl": [
+    "Cherquésseque"
+   ],
+   "region": "caucasus",
+   "area": 14258,
+   "ll": [
+    43.7288,
+    41.9241
+   ],
+   "bbox": [
+    40.675,
+    43.187,
+    42.681,
+    44.498
+   ],
+   "borders": [
+    "ru-kb",
+    "ru-kda",
+    "ru-sta"
+   ]
+  },
+  "ru-kda": {
+   "code": "KDA",
+   "ref": "RU-KDA",
+   "name": {
+    "pt": "Krai de Krasnodar",
+    "en": "Krasnodar Krai",
+    "es": "Krai de Krasnodar"
+   },
+   "alias": [
+    "Krasnodar"
+   ],
+   "capital": {
+    "pt": "Krasnodar",
+    "en": "Krasnodar",
+    "es": "Krasnodar"
+   },
+   "capAl": [
+    "Crasnodar"
+   ],
+   "region": "south",
+   "area": 75054,
+   "ll": [
+    45.9677,
+    39.5806
+   ],
+   "bbox": [
+    36.592,
+    43.385,
+    41.744,
+    46.88
+   ],
+   "borders": [
+    "ru-ad",
+    "ru-kc",
+    "ru-ros",
+    "ru-sta"
+   ]
+  },
+  "ru-kem": {
+   "code": "KEM",
+   "ref": "RU-KEM",
+   "name": {
+    "pt": "Oblast de Kemerovo",
+    "en": "Kemerovo Oblast",
+    "es": "Kémerovo"
+   },
+   "capital": {
+    "pt": "Kemerovo",
+    "en": "Kemerovo",
+    "es": "Kémerovo"
+   },
+   "region": "siberia",
+   "area": 95384,
+   "ll": [
+    55.1085,
+    87.0115
+   ],
+   "bbox": [
+    84.448,
+    52.163,
+    89.401,
+    56.835
+   ],
+   "borders": [
+    "ru-al",
+    "ru-alt",
+    "ru-kk",
+    "ru-kya",
+    "ru-nvs",
+    "ru-tom"
+   ]
+  },
+  "ru-kgd": {
+   "code": "KGD",
+   "ref": "RU-KGD",
+   "name": {
+    "pt": "Oblast de Kaliningrado",
+    "en": "Kaliningrad Oblast",
+    "es": "Óblast de Kaliningrado"
+   },
+   "alias": [
+    "Kaliningrad",
+    "Kaliningrado"
+   ],
+   "capital": {
+    "pt": "Kaliningrado",
+    "en": "Kaliningrad",
+    "es": "Kaliningrado"
+   },
+   "region": "northwest",
+   "area": 13387,
+   "ll": [
+    54.7399,
+    21.6041
+   ],
+   "bbox": [
+    19.639,
+    54.318,
+    22.886,
+    55.294
+   ],
+   "borders": []
+  },
+  "ru-kgn": {
+   "code": "KGN",
+   "ref": "RU-KGN",
+   "name": {
+    "pt": "Oblast de Kurgan",
+    "en": "Kurgan Oblast",
+    "es": "Kurgán"
+   },
+   "capital": {
+    "pt": "Kurgan",
+    "en": "Kurgan",
+    "es": "Kurgán"
+   },
+   "region": "ural",
+   "area": 71285,
+   "ll": [
+    55.3967,
+    64.0377
+   ],
+   "bbox": [
+    61.966,
+    54.189,
+    68.722,
+    56.842
+   ],
+   "borders": [
+    "ru-che",
+    "ru-sve",
+    "ru-tyu"
+   ]
+  },
+  "ru-kha": {
+   "code": "KHA",
+   "ref": "RU-KHA",
+   "name": {
+    "pt": "Krai de Khabarovsk",
+    "en": "Khabarovsk Krai",
+    "es": "Jabárovsk"
+   },
+   "alias": [
+    "Khabarovsk"
+   ],
+   "capital": {
+    "pt": "Khabarovsk",
+    "en": "Khabarovsk",
+    "es": "Jabárovsk"
+   },
+   "region": "fareast",
+   "area": 781257,
+   "ll": [
+    56.9792,
+    134.4955
+   ],
+   "bbox": [
+    130.387,
+    46.639,
+    147.217,
+    62.52
+   ],
+   "borders": [
+    "ru-amu",
+    "ru-mag",
+    "ru-pri",
+    "ru-sa",
+    "ru-yev"
+   ]
+  },
+  "ru-khm": {
+   "code": "KHM",
+   "ref": "RU-KHM",
+   "name": {
+    "pt": "Khantia-Mansia",
+    "en": "Khanty-Mansi Autonomous District",
+    "es": "Janti-Mansi"
+   },
+   "alias": [
+    "Khanty-Mansi"
+   ],
+   "capital": {
+    "pt": "Khanty-Mansiysk",
+    "en": "Khanty-Mansiysk",
+    "es": "Janti-Mansisk"
+   },
+   "region": "ural",
+   "area": 531694,
+   "ll": [
+    61.5737,
+    66.4722
+   ],
+   "bbox": [
+    59.204,
+    58.58,
+    85.977,
+    65.718
+   ],
+   "borders": [
+    "ru-ko",
+    "ru-kya",
+    "ru-sve",
+    "ru-tom",
+    "ru-tyu",
+    "ru-yan"
+   ]
+  },
+  "ru-kir": {
+   "code": "KIR",
+   "ref": "RU-KIR",
+   "name": {
+    "pt": "Oblast de Kirov",
+    "en": "Kirov Oblast",
+    "es": "Óblast de Kírov"
+   },
+   "alias": [
+    "Kirov",
+    "Kírov"
+   ],
+   "capital": {
+    "pt": "Kirov",
+    "en": "Kirov",
+    "es": "Kírov"
+   },
+   "region": "volga",
+   "area": 119979,
+   "ll": [
+    58.0999,
+    50.2017
+   ],
+   "bbox": [
+    46.264,
+    56.061,
+    53.93,
+    61.067
+   ],
+   "borders": [
+    "ru-ark",
+    "ru-ko",
+    "ru-kos",
+    "ru-me",
+    "ru-niz",
+    "ru-per",
+    "ru-ta",
+    "ru-ud",
+    "ru-vlg"
+   ]
+  },
+  "ru-kk": {
+   "code": "KK",
+   "ref": "RU-KK",
+   "name": {
+    "pt": "Cacássia",
+    "en": "Khakassia",
+    "es": "Jakasia"
+   },
+   "capital": {
+    "pt": "Abakan",
+    "en": "Abakan",
+    "es": "Abakán"
+   },
+   "region": "siberia",
+   "area": 61045,
+   "ll": [
+    53.531,
+    90.3035
+   ],
+   "bbox": [
+    87.856,
+    51.284,
+    91.924,
+    55.437
+   ],
+   "borders": [
+    "ru-al",
+    "ru-kem",
+    "ru-kya",
+    "ru-ty"
+   ]
+  },
+  "ru-kl": {
+   "code": "KL",
+   "ref": "RU-KL",
+   "name": {
+    "pt": "Calmúquia",
+    "en": "Kalmykia",
+    "es": "Kalmukia"
+   },
+   "capital": {
+    "pt": "Elista",
+    "en": "Elista",
+    "es": "Elistá"
+   },
+   "region": "south",
+   "area": 124578,
+   "ll": [
+    46.4783,
+    45.4597
+   ],
+   "bbox": [
+    41.635,
+    43.069,
+    47.812,
+    48.271
+   ],
+   "borders": [
+    "ru-ast",
+    "ru-da",
+    "ru-ros",
+    "ru-sta",
+    "ru-vgg"
+   ]
+  },
+  "ru-klu": {
+   "code": "KLU",
+   "ref": "RU-KLU",
+   "name": {
+    "pt": "Oblast de Kaluga",
+    "en": "Kaluga Oblast",
+    "es": "Kaluga"
+   },
+   "capital": {
+    "pt": "Kaluga",
+    "en": "Kaluga",
+    "es": "Kaluga"
+   },
+   "region": "central",
+   "area": 29680,
+   "ll": [
+    54.1269,
+    35.2311
+   ],
+   "bbox": [
+    33.441,
+    53.277,
+    37.275,
+    55.351
+   ],
+   "borders": [
+    "ru-bry",
+    "ru-mos",
+    "ru-mow",
+    "ru-orl",
+    "ru-smo",
+    "ru-tul"
+   ]
+  },
+  "ru-ko": {
+   "code": "KO",
+   "ref": "RU-KO",
+   "name": {
+    "pt": "República de Komi",
+    "en": "Komi Republic",
+    "es": "Komi"
+   },
+   "capital": {
+    "pt": "Syktyvkar",
+    "en": "Syktyvkar",
+    "es": "Siktivkar"
+   },
+   "region": "northwest",
+   "area": 414375,
+   "ll": [
+    63.9712,
+    54.0335
+   ],
+   "bbox": [
+    45.399,
+    59.198,
+    66.252,
+    68.418
+   ],
+   "borders": [
+    "ru-ark",
+    "ru-khm",
+    "ru-kir",
+    "ru-nen",
+    "ru-per",
+    "ru-sve",
+    "ru-yan"
+   ]
+  },
+  "ru-kos": {
+   "code": "KOS",
+   "ref": "RU-KOS",
+   "name": {
+    "pt": "Oblast de Kostroma",
+    "en": "Kostroma Oblast",
+    "es": "Óblast de Kostromá"
+   },
+   "alias": [
+    "Kostroma",
+    "Kostromá"
+   ],
+   "capital": {
+    "pt": "Kostroma",
+    "en": "Kostroma",
+    "es": "Kostromá"
+   },
+   "region": "central",
+   "area": 59928,
+   "ll": [
+    58.3502,
+    43.944
+   ],
+   "bbox": [
+    40.39,
+    57.275,
+    47.64,
+    59.624
+   ],
+   "borders": [
+    "ru-iva",
+    "ru-kir",
+    "ru-niz",
+    "ru-vlg",
+    "ru-yar"
+   ]
+  },
+  "ru-kr": {
+   "code": "KR",
+   "ref": "RU-KR",
+   "name": {
+    "pt": "Carélia",
+    "en": "Karelia",
+    "es": "Carelia"
+   },
+   "capital": {
+    "pt": "Petrozavodsk",
+    "en": "Petrozavodsk",
+    "es": "Petrozavodsk"
+   },
+   "capAl": [
+    "Petrozavódseque"
+   ],
+   "region": "northwest",
+   "area": 151560,
+   "ll": [
+    62.3386,
+    32.597
+   ],
+   "bbox": [
+    29.306,
+    60.681,
+    37.947,
+    66.662
+   ],
+   "borders": [
+    "ru-ark",
+    "ru-len",
+    "ru-mur",
+    "ru-vlg"
+   ]
+  },
+  "ru-krs": {
+   "code": "KRS",
+   "ref": "RU-KRS",
+   "name": {
+    "pt": "Oblast de Kursk",
+    "en": "Kursk Oblast",
+    "es": "óblast de Kursk"
+   },
+   "alias": [
+    "Kursk"
+   ],
+   "capital": {
+    "pt": "Kursk",
+    "en": "Kursk",
+    "es": "Kursk"
+   },
+   "region": "central",
+   "area": 29888,
+   "ll": [
+    51.6473,
+    35.5802
+   ],
+   "bbox": [
+    34.08,
+    50.902,
+    38.519,
+    52.445
+   ],
+   "borders": [
+    "ru-bel",
+    "ru-bry",
+    "ru-lip",
+    "ru-orl",
+    "ru-vor"
+   ]
+  },
+  "ru-kya": {
+   "code": "KYA",
+   "ref": "RU-KYA",
+   "name": {
+    "pt": "Krai de Krasnoiarsk",
+    "en": "Krasnoyarsk Krai",
+    "es": "Krai de Krasnoyarsk"
+   },
+   "alias": [
+    "Krasnoyarsk",
+    "Krasnoiarsk"
+   ],
+   "capital": {
+    "pt": "Krasnoyarsk",
+    "en": "Krasnoyarsk",
+    "es": "Krasnoyarsk"
+   },
+   "region": "siberia",
+   "area": 2305574,
+   "ll": [
+    65.0248,
+    98.6717
+   ],
+   "bbox": [
+    78.431,
+    51.772,
+    113.921,
+    81.262
+   ],
+   "borders": [
+    "ru-irk",
+    "ru-kem",
+    "ru-khm",
+    "ru-kk",
+    "ru-sa",
+    "ru-tom",
+    "ru-ty",
+    "ru-yan"
+   ]
+  },
+  "ru-len": {
+   "code": "LEN",
+   "ref": "RU-LEN",
+   "name": {
+    "pt": "Oblast de Leningrado",
+    "en": "Leningrad Oblast",
+    "es": "Óblast de Leningrado"
+   },
+   "alias": [
+    "Leningrad",
+    "Leningrado"
+   ],
+   "capital": {
+    "pt": "Gatchina",
+    "en": "Gatchina",
+    "es": "Gátchina"
+   },
+   "region": "northwest",
+   "area": 73882,
+   "ll": [
+    60.1375,
+    34.2195
+   ],
+   "bbox": [
+    27.738,
+    58.417,
+    35.696,
+    61.329
+   ],
+   "borders": [
+    "ru-kr",
+    "ru-ngr",
+    "ru-psk",
+    "ru-spe",
+    "ru-vlg"
+   ]
+  },
+  "ru-lip": {
+   "code": "LIP",
+   "ref": "RU-LIP",
+   "name": {
+    "pt": "Oblast de Lipetsk",
+    "en": "Lipetsk Oblast",
+    "es": "Óblast de Lípetsk"
+   },
+   "alias": [
+    "Lipetsk",
+    "Lípetsk"
+   ],
+   "capital": {
+    "pt": "Lipetsk",
+    "en": "Lipetsk",
+    "es": "Lípetsk"
+   },
+   "region": "central",
+   "area": 23970,
+   "ll": [
+    52.7486,
+    39.2554
+   ],
+   "bbox": [
+    37.722,
+    51.888,
+    40.765,
+    53.586
+   ],
+   "borders": [
+    "ru-krs",
+    "ru-orl",
+    "ru-rya",
+    "ru-tam",
+    "ru-tul",
+    "ru-vor"
+   ]
+  },
+  "ru-mag": {
+   "code": "MAG",
+   "ref": "RU-MAG",
+   "name": {
+    "pt": "Oblast de Magadan",
+    "en": "Magadan Oblast",
+    "es": "Magadán"
+   },
+   "capital": {
+    "pt": "Magadan",
+    "en": "Magadan",
+    "es": "Magadán"
+   },
+   "region": "fareast",
+   "area": 459496,
+   "ll": [
+    61.8899,
+    152.6873
+   ],
+   "bbox": [
+    144.734,
+    58.837,
+    163.495,
+    66.335
+   ],
+   "borders": [
+    "ru-chu",
+    "ru-kam",
+    "ru-kha",
+    "ru-sa"
+   ]
+  },
+  "ru-me": {
+   "code": "ME",
+   "ref": "RU-ME",
+   "name": {
+    "pt": "Mari El",
+    "en": "Mari El",
+    "es": "Mari-El"
+   },
+   "capital": {
+    "pt": "Yoshkar-Ola",
+    "en": "Yoshkar-Ola",
+    "es": "Yoshkar-Olá"
+   },
+   "capAl": [
+    "Iochkar-Ola"
+   ],
+   "region": "volga",
+   "area": 23004,
+   "ll": [
+    56.4717,
+    48.3158
+   ],
+   "bbox": [
+    45.624,
+    55.832,
+    50.203,
+    57.343
+   ],
+   "borders": [
+    "ru-cu",
+    "ru-kir",
+    "ru-niz",
+    "ru-ta"
+   ]
+  },
+  "ru-mo": {
+   "code": "MO",
+   "ref": "RU-MO",
+   "name": {
+    "pt": "Mordóvia",
+    "en": "Mordovia",
+    "es": "Mordovia"
+   },
+   "capital": {
+    "pt": "Saransk",
+    "en": "Saransk",
+    "es": "Saransk"
+   },
+   "region": "volga",
+   "area": 26057,
+   "ll": [
+    54.4613,
+    45.615
+   ],
+   "bbox": [
+    42.164,
+    53.643,
+    46.73,
+    55.19
+   ],
+   "borders": [
+    "ru-cu",
+    "ru-niz",
+    "ru-pnz",
+    "ru-rya",
+    "ru-uly"
+   ]
+  },
+  "ru-mos": {
+   "code": "MOS",
+   "ref": "RU-MOS",
+   "name": {
+    "pt": "Oblast de Moscou",
+    "en": "Moscow Oblast",
+    "es": "Óblast de Moscú"
+   },
+   "capital": {
+    "pt": "Krasnogorsk",
+    "en": "Krasnogorsk",
+    "es": "Krasnogorsk"
+   },
+   "region": "central",
+   "area": 44229,
+   "ll": [
+    55.3108,
+    38.5654
+   ],
+   "bbox": [
+    35.148,
+    54.256,
+    40.205,
+    56.958
+   ],
+   "borders": [
+    "ru-klu",
+    "ru-mow",
+    "ru-rya",
+    "ru-smo",
+    "ru-tul",
+    "ru-tve",
+    "ru-vla",
+    "ru-yar"
+   ]
+  },
+  "ru-mow": {
+   "code": "MOW",
+   "ref": "RU-MOW",
+   "name": {
+    "pt": "Moscou",
+    "en": "Moscow",
+    "es": "Moscú"
+   },
+   "region": "central",
+   "area": 2551,
+   "ll": [
+    55.7412,
+    37.5763
+   ],
+   "bbox": [
+    36.803,
+    55.142,
+    37.967,
+    56.021
+   ],
+   "borders": [
+    "ru-klu",
+    "ru-mos"
+   ]
+  },
+  "ru-mur": {
+   "code": "MUR",
+   "ref": "RU-MUR",
+   "name": {
+    "pt": "Oblast de Murmansk",
+    "en": "Murmansk Oblast",
+    "es": "Óblast de Múrmansk"
+   },
+   "alias": [
+    "Murmansk",
+    "Múrmansk"
+   ],
+   "capital": {
+    "pt": "Murmansk",
+    "en": "Murmansk",
+    "es": "Múrmansk"
+   },
+   "region": "northwest",
+   "area": 140438,
+   "ll": [
+    67.73,
+    35.842
+   ],
+   "bbox": [
+    28.416,
+    66.064,
+    41.393,
+    69.954
+   ],
+   "borders": [
+    "ru-kr"
+   ]
+  },
+  "ru-nen": {
+   "code": "NEN",
+   "ref": "RU-NEN",
+   "name": {
+    "pt": "Nenetsia",
+    "en": "Nenets Autonomous District",
+    "es": "Nenetsia"
+   },
+   "alias": [
+    "Nenets"
+   ],
+   "capital": {
+    "pt": "Naryan-Mar",
+    "en": "Naryan-Mar",
+    "es": "Narián-Mar"
+   },
+   "region": "northwest",
+   "area": 175159,
+   "ll": [
+    68.5,
+    62.1265
+   ],
+   "bbox": [
+    43.269,
+    65.821,
+    65.67,
+    70.465
+   ],
+   "borders": [
+    "ru-ark",
+    "ru-ko",
+    "ru-yan"
+   ]
+  },
+  "ru-ngr": {
+   "code": "NGR",
+   "ref": "RU-NGR",
+   "name": {
+    "pt": "Oblast de Novgorod",
+    "en": "Novgorod Oblast",
+    "es": "Óblast de Nóvgorod"
+   },
+   "alias": [
+    "Novgorod",
+    "Nóvgorod"
+   ],
+   "capital": {
+    "pt": "Novgorod",
+    "en": "Veliky Novgorod",
+    "es": "Nóvgorod"
+   },
+   "region": "northwest",
+   "area": 53858,
+   "ll": [
+    58.2615,
+    32.5494
+   ],
+   "bbox": [
+    29.619,
+    56.909,
+    36.229,
+    59.433
+   ],
+   "borders": [
+    "ru-len",
+    "ru-psk",
+    "ru-tve",
+    "ru-vlg"
+   ]
+  },
+  "ru-niz": {
+   "code": "NIZ",
+   "ref": "RU-NIZ",
+   "name": {
+    "pt": "Oblast de Níjni Novgorod",
+    "en": "Nizhny Novgorod Oblast",
+    "es": "Óblast de Nizhni Nóvgorod"
+   },
+   "alias": [
+    "Nizhny Novgorod",
+    "Níjni Novgorod",
+    "Nizhni Nóvgorod"
+   ],
+   "capital": {
+    "pt": "Níjni Novgorod",
+    "en": "Nizhny Novgorod",
+    "es": "Nizhni Nóvgorod"
+   },
+   "region": "volga",
+   "area": 76076,
+   "ll": [
+    56.008,
+    44.4338
+   ],
+   "bbox": [
+    41.776,
+    54.463,
+    47.77,
+    58.091
+   ],
+   "borders": [
+    "ru-cu",
+    "ru-iva",
+    "ru-kir",
+    "ru-kos",
+    "ru-me",
+    "ru-mo",
+    "ru-rya",
+    "ru-vla"
+   ]
+  },
+  "ru-nvs": {
+   "code": "NVS",
+   "ref": "RU-NVS",
+   "name": {
+    "pt": "Oblast de Novosibirsk",
+    "en": "Novosibirsk Oblast",
+    "es": "Novosibirsk"
+   },
+   "capital": {
+    "pt": "Novosibirsk",
+    "en": "Novosibirsk",
+    "es": "Novosibirsk"
+   },
+   "region": "siberia",
+   "area": 174696,
+   "ll": [
+    55.3038,
+    79.4361
+   ],
+   "bbox": [
+    75.088,
+    53.291,
+    85.116,
+    57.238
+   ],
+   "borders": [
+    "ru-alt",
+    "ru-kem",
+    "ru-oms",
+    "ru-tom"
+   ]
+  },
+  "ru-oms": {
+   "code": "OMS",
+   "ref": "RU-OMS",
+   "name": {
+    "pt": "Oblast de Omsk",
+    "en": "Omsk Oblast",
+    "es": "Omsk"
+   },
+   "capital": {
+    "pt": "Omsk",
+    "en": "Omsk",
+    "es": "Omsk"
+   },
+   "region": "siberia",
+   "area": 140594,
+   "ll": [
+    55.9009,
+    73.2729
+   ],
+   "bbox": [
+    70.358,
+    53.435,
+    76.304,
+    58.576
+   ],
+   "borders": [
+    "ru-nvs",
+    "ru-tom",
+    "ru-tyu"
+   ]
+  },
+  "ru-ore": {
+   "code": "ORE",
+   "ref": "RU-ORE",
+   "name": {
+    "pt": "Oblast de Oremburgo",
+    "en": "Orenburg Oblast",
+    "es": "Óblast de Oremburgo"
+   },
+   "alias": [
+    "Orenburg",
+    "Oremburgo"
+   ],
+   "capital": {
+    "pt": "Oremburgo",
+    "en": "Orenburg",
+    "es": "Oremburgo"
+   },
+   "region": "volga",
+   "area": 123825,
+   "ll": [
+    52.6864,
+    53.2426
+   ],
+   "bbox": [
+    50.768,
+    50.495,
+    61.69,
+    54.366
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-che",
+    "ru-sam",
+    "ru-ta"
+   ]
+  },
+  "ru-orl": {
+   "code": "ORL",
+   "ref": "RU-ORL",
+   "name": {
+    "pt": "Oblast de Oriol",
+    "en": "Oryol Oblast",
+    "es": "óblast de Oriol"
+   },
+   "alias": [
+    "Oryol",
+    "Oriol"
+   ],
+   "capital": {
+    "pt": "Oryol",
+    "en": "Oryol",
+    "es": "Oriol"
+   },
+   "region": "central",
+   "area": 24550,
+   "ll": [
+    52.9338,
+    36.0074
+   ],
+   "bbox": [
+    34.792,
+    51.935,
+    38.067,
+    53.652
+   ],
+   "borders": [
+    "ru-bry",
+    "ru-klu",
+    "ru-krs",
+    "ru-lip",
+    "ru-tul"
+   ]
+  },
+  "ru-per": {
+   "code": "PER",
+   "ref": "RU-PER",
+   "name": {
+    "pt": "Krai de Perm",
+    "en": "Perm Krai",
+    "es": "Perm"
+   },
+   "capital": {
+    "pt": "Perm",
+    "en": "Perm",
+    "es": "Perm"
+   },
+   "region": "volga",
+   "area": 158839,
+   "ll": [
+    60.1669,
+    57.2385
+   ],
+   "bbox": [
+    51.772,
+    56.105,
+    59.482,
+    61.663
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-kir",
+    "ru-ko",
+    "ru-sve",
+    "ru-ud"
+   ]
+  },
+  "ru-pnz": {
+   "code": "PNZ",
+   "ref": "RU-PNZ",
+   "name": {
+    "pt": "Oblast de Penza",
+    "en": "Penza Oblast",
+    "es": "Óblast de Penza"
+   },
+   "alias": [
+    "Penza"
+   ],
+   "capital": {
+    "pt": "Penza",
+    "en": "Penza",
+    "es": "Penza"
+   },
+   "region": "volga",
+   "area": 43214,
+   "ll": [
+    53.1419,
+    45.2397
+   ],
+   "bbox": [
+    42.082,
+    52.291,
+    46.981,
+    54.031
+   ],
+   "borders": [
+    "ru-mo",
+    "ru-rya",
+    "ru-sar",
+    "ru-tam",
+    "ru-uly"
+   ]
+  },
+  "ru-pri": {
+   "code": "PRI",
+   "ref": "RU-PRI",
+   "name": {
+    "pt": "Krai do Litoral",
+    "en": "Primorsky Krai",
+    "es": "Primorie"
+   },
+   "alias": [
+    "Primorsky",
+    "Litoral"
+   ],
+   "capital": {
+    "pt": "Vladivostok",
+    "en": "Vladivostok",
+    "es": "Vladivostok"
+   },
+   "region": "fareast",
+   "area": 161225,
+   "ll": [
+    45.4973,
+    135.0682
+   ],
+   "bbox": [
+    130.395,
+    42.293,
+    139.033,
+    48.465
+   ],
+   "borders": [
+    "ru-kha"
+   ]
+  },
+  "ru-psk": {
+   "code": "PSK",
+   "ref": "RU-PSK",
+   "name": {
+    "pt": "Oblast de Pskov",
+    "en": "Pskov Oblast",
+    "es": "Óblast de Pskov"
+   },
+   "alias": [
+    "Pskov"
+   ],
+   "capital": {
+    "pt": "Pskov",
+    "en": "Pskov",
+    "es": "Pskov"
+   },
+   "region": "northwest",
+   "area": 53043,
+   "ll": [
+    57.1325,
+    29.0977
+   ],
+   "bbox": [
+    27.318,
+    55.588,
+    31.518,
+    59.021
+   ],
+   "borders": [
+    "ru-len",
+    "ru-ngr",
+    "ru-smo",
+    "ru-tve"
+   ]
+  },
+  "ru-ros": {
+   "code": "ROS",
+   "ref": "RU-ROS",
+   "name": {
+    "pt": "Oblast de Rostov",
+    "en": "Rostov Oblast",
+    "es": "Rostov"
+   },
+   "capital": {
+    "pt": "Rostov do Don",
+    "en": "Rostov-on-Don",
+    "es": "Rostov del Don"
+   },
+   "region": "south",
+   "area": 99770,
+   "ll": [
+    47.5705,
+    40.9507
+   ],
+   "bbox": [
+    38.221,
+    45.952,
+    44.324,
+    50.214
+   ],
+   "borders": [
+    "ru-kda",
+    "ru-kl",
+    "ru-sta",
+    "ru-vgg",
+    "ru-vor"
+   ]
+  },
+  "ru-rya": {
+   "code": "RYA",
+   "ref": "RU-RYA",
+   "name": {
+    "pt": "Oblast de Riazan",
+    "en": "Ryazan Oblast",
+    "es": "Óblast de Riazán"
+   },
+   "alias": [
+    "Ryazan",
+    "Riazan",
+    "Riazán"
+   ],
+   "capital": {
+    "pt": "Ryazan",
+    "en": "Ryazan",
+    "es": "Riazán"
+   },
+   "capAl": [
+    "Riazan"
+   ],
+   "region": "central",
+   "area": 39539,
+   "ll": [
+    54.3606,
+    40.3881
+   ],
+   "bbox": [
+    38.666,
+    53.309,
+    42.692,
+    55.365
+   ],
+   "borders": [
+    "ru-lip",
+    "ru-mo",
+    "ru-mos",
+    "ru-niz",
+    "ru-pnz",
+    "ru-tam",
+    "ru-tul",
+    "ru-vla"
+   ]
+  },
+  "ru-sa": {
+   "code": "SA",
+   "ref": "RU-SA",
+   "name": {
+    "pt": "Sakha",
+    "en": "Sakha (Yakutia)",
+    "es": "Sajá"
+   },
+   "capital": {
+    "pt": "Yakutsk",
+    "en": "Yakutsk",
+    "es": "Yakutsk"
+   },
+   "region": "fareast",
+   "area": 3048478,
+   "ll": [
+    64.4077,
+    125.1086
+   ],
+   "bbox": [
+    105.507,
+    55.487,
+    162.855,
+    76.201
+   ],
+   "borders": [
+    "ru-amu",
+    "ru-chu",
+    "ru-irk",
+    "ru-kha",
+    "ru-kya",
+    "ru-mag",
+    "ru-zab"
+   ]
+  },
+  "ru-sak": {
+   "code": "SAK",
+   "ref": "RU-SAK",
+   "name": {
+    "pt": "Oblast de Sacalina",
+    "en": "Sakhalin Oblast",
+    "es": "Sajalín"
+   },
+   "alias": [
+    "Sakhalin",
+    "Sacalina"
+   ],
+   "capital": {
+    "pt": "Yuzhno-Sakhalinsk",
+    "en": "Yuzhno-Sakhalinsk",
+    "es": "Yuzhno-Sajalinsk"
+   },
+   "capAl": [
+    "Iujno-Sakhalinsk"
+   ],
+   "region": "fareast",
+   "area": 81303,
+   "ll": [
+    50.0758,
+    143.0037
+   ],
+   "bbox": [
+    141.627,
+    45.893,
+    144.748,
+    54.426
+   ],
+   "borders": []
+  },
+  "ru-sam": {
+   "code": "SAM",
+   "ref": "RU-SAM",
+   "name": {
+    "pt": "Oblast de Samara",
+    "en": "Samara Oblast",
+    "es": "Óblast de Samara"
+   },
+   "alias": [
+    "Samara"
+   ],
+   "capital": {
+    "pt": "Samara",
+    "en": "Samara",
+    "es": "Samara"
+   },
+   "region": "volga",
+   "area": 52583,
+   "ll": [
+    53.0258,
+    50.5936
+   ],
+   "bbox": [
+    47.93,
+    51.773,
+    52.568,
+    54.677
+   ],
+   "borders": [
+    "ru-ore",
+    "ru-sar",
+    "ru-ta",
+    "ru-uly"
+   ]
+  },
+  "ru-sar": {
+   "code": "SAR",
+   "ref": "RU-SAR",
+   "name": {
+    "pt": "Oblast de Saratov",
+    "en": "Saratov Oblast",
+    "es": "Óblast de Sarátov"
+   },
+   "alias": [
+    "Saratov",
+    "Sarátov"
+   ],
+   "capital": {
+    "pt": "Saratov",
+    "en": "Saratov",
+    "es": "Sarátov"
+   },
+   "region": "volga",
+   "area": 100179,
+   "ll": [
+    51.6649,
+    46.5716
+   ],
+   "bbox": [
+    42.506,
+    49.801,
+    50.833,
+    52.813
+   ],
+   "borders": [
+    "ru-pnz",
+    "ru-sam",
+    "ru-tam",
+    "ru-uly",
+    "ru-vgg",
+    "ru-vor"
+   ]
+  },
+  "ru-se": {
+   "code": "SE",
+   "ref": "RU-SE",
+   "name": {
+    "pt": "Ossétia do Norte-Alânia",
+    "en": "North Ossetia–Alania",
+    "es": "Osetia del Norte-Alania"
+   },
+   "capital": {
+    "pt": "Vladikavkaz",
+    "en": "Vladikavkaz",
+    "es": "Vladikavkaz"
+   },
+   "region": "caucasus",
+   "area": 7985,
+   "ll": [
+    43.0386,
+    44.3198
+   ],
+   "bbox": [
+    43.398,
+    42.547,
+    44.96,
+    43.835
+   ],
+   "borders": [
+    "ru-ce",
+    "ru-in",
+    "ru-kb",
+    "ru-sta"
+   ]
+  },
+  "ru-smo": {
+   "code": "SMO",
+   "ref": "RU-SMO",
+   "name": {
+    "pt": "Oblast de Smolensk",
+    "en": "Smolensk Oblast",
+    "es": "Óblast de Smolensk"
+   },
+   "alias": [
+    "Smolensk"
+   ],
+   "capital": {
+    "pt": "Smolensk",
+    "en": "Smolensk",
+    "es": "Smolensk"
+   },
+   "region": "central",
+   "area": 49602,
+   "ll": [
+    54.6835,
+    32.6561
+   ],
+   "bbox": [
+    30.752,
+    53.409,
+    35.395,
+    56.067
+   ],
+   "borders": [
+    "ru-bry",
+    "ru-klu",
+    "ru-mos",
+    "ru-psk",
+    "ru-tve"
+   ]
+  },
+  "ru-spe": {
+   "code": "SPE",
+   "ref": "RU-SPE",
+   "name": {
+    "pt": "São Petersburgo",
+    "en": "Saint Petersburg",
+    "es": "San Petersburgo"
+   },
+   "region": "northwest",
+   "area": 1440,
+   "ll": [
+    59.9159,
+    30.3658
+   ],
+   "bbox": [
+    29.426,
+    59.634,
+    30.759,
+    60.245
+   ],
+   "borders": [
+    "ru-len"
+   ]
+  },
+  "ru-sta": {
+   "code": "STA",
+   "ref": "RU-STA",
+   "name": {
+    "pt": "Krai de Stavropol",
+    "en": "Stavropol Krai",
+    "es": "Krai de Stávropol"
+   },
+   "alias": [
+    "Stavropol",
+    "Stávropol"
+   ],
+   "capital": {
+    "pt": "Stavropol",
+    "en": "Stavropol",
+    "es": "Stávropol"
+   },
+   "region": "caucasus",
+   "area": 66033,
+   "ll": [
+    44.9759,
+    43.3856
+   ],
+   "bbox": [
+    40.846,
+    43.658,
+    45.716,
+    46.236
+   ],
+   "borders": [
+    "ru-ce",
+    "ru-da",
+    "ru-kb",
+    "ru-kc",
+    "ru-kda",
+    "ru-kl",
+    "ru-ros",
+    "ru-se"
+   ]
+  },
+  "ru-sve": {
+   "code": "SVE",
+   "ref": "RU-SVE",
+   "name": {
+    "pt": "Oblast de Sverdlovsk",
+    "en": "Sverdlovsk Oblast",
+    "es": "Sverdlovsk"
+   },
+   "capital": {
+    "pt": "Ecaterimburgo",
+    "en": "Yekaterinburg",
+    "es": "Ekaterimburgo"
+   },
+   "region": "ural",
+   "area": 193181,
+   "ll": [
+    58.6153,
+    61.6707
+   ],
+   "bbox": [
+    57.227,
+    56.054,
+    66.185,
+    61.947
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-che",
+    "ru-kgn",
+    "ru-khm",
+    "ru-ko",
+    "ru-per",
+    "ru-tyu"
+   ]
+  },
+  "ru-ta": {
+   "code": "TA",
+   "ref": "RU-TA",
+   "name": {
+    "pt": "Tartaristão",
+    "en": "Tatarstan",
+    "es": "Tartaristán"
+   },
+   "capital": {
+    "pt": "Kazan",
+    "en": "Kazan",
+    "es": "Kazán"
+   },
+   "capAl": [
+    "Cazã"
+   ],
+   "region": "volga",
+   "area": 65367,
+   "ll": [
+    55.2102,
+    52.4053
+   ],
+   "bbox": [
+    47.259,
+    53.974,
+    54.266,
+    56.676
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-cu",
+    "ru-kir",
+    "ru-me",
+    "ru-ore",
+    "ru-sam",
+    "ru-ud",
+    "ru-uly"
+   ]
+  },
+  "ru-tam": {
+   "code": "TAM",
+   "ref": "RU-TAM",
+   "name": {
+    "pt": "Oblast de Tambov",
+    "en": "Tambov Oblast",
+    "es": "Tambov"
+   },
+   "capital": {
+    "pt": "Tambov",
+    "en": "Tambov",
+    "es": "Tambov"
+   },
+   "region": "central",
+   "area": 34321,
+   "ll": [
+    52.6728,
+    41.6665
+   ],
+   "bbox": [
+    39.916,
+    51.588,
+    43.248,
+    53.823
+   ],
+   "borders": [
+    "ru-lip",
+    "ru-pnz",
+    "ru-rya",
+    "ru-sar",
+    "ru-vor"
+   ]
+  },
+  "ru-tom": {
+   "code": "TOM",
+   "ref": "RU-TOM",
+   "name": {
+    "pt": "Oblast de Tomsk",
+    "en": "Tomsk Oblast",
+    "es": "Tomsk"
+   },
+   "capital": {
+    "pt": "Tomsk",
+    "en": "Tomsk",
+    "es": "Tomsk"
+   },
+   "region": "siberia",
+   "area": 312857,
+   "ll": [
+    58.5724,
+    80.8453
+   ],
+   "bbox": [
+    75.057,
+    55.606,
+    89.379,
+    61.036
+   ],
+   "borders": [
+    "ru-kem",
+    "ru-khm",
+    "ru-kya",
+    "ru-nvs",
+    "ru-oms",
+    "ru-tyu"
+   ]
+  },
+  "ru-tul": {
+   "code": "TUL",
+   "ref": "RU-TUL",
+   "name": {
+    "pt": "Oblast de Tula",
+    "en": "Tula Oblast",
+    "es": "Óblast de Tula"
+   },
+   "alias": [
+    "Tula"
+   ],
+   "capital": {
+    "pt": "Tula",
+    "en": "Tula",
+    "es": "Tula"
+   },
+   "region": "central",
+   "area": 25609,
+   "ll": [
+    53.9825,
+    37.8175
+   ],
+   "bbox": [
+    35.899,
+    52.946,
+    38.95,
+    54.852
+   ],
+   "borders": [
+    "ru-klu",
+    "ru-lip",
+    "ru-mos",
+    "ru-orl",
+    "ru-rya"
+   ]
+  },
+  "ru-tve": {
+   "code": "TVE",
+   "ref": "RU-TVE",
+   "name": {
+    "pt": "Oblast de Tver",
+    "en": "Tver Oblast",
+    "es": "Óblast de Tver"
+   },
+   "alias": [
+    "Tver"
+   ],
+   "capital": {
+    "pt": "Tver",
+    "en": "Tver",
+    "es": "Tver"
+   },
+   "region": "central",
+   "area": 83959,
+   "ll": [
+    57.0547,
+    34.4824
+   ],
+   "bbox": [
+    30.728,
+    55.632,
+    38.325,
+    58.863
+   ],
+   "borders": [
+    "ru-mos",
+    "ru-ngr",
+    "ru-psk",
+    "ru-smo",
+    "ru-vlg",
+    "ru-yar"
+   ]
+  },
+  "ru-ty": {
+   "code": "TY",
+   "ref": "RU-TY",
+   "name": {
+    "pt": "Tuva",
+    "en": "Tuva",
+    "es": "Tuvá"
+   },
+   "capital": {
+    "pt": "Kyzyl",
+    "en": "Kyzyl",
+    "es": "Kizil"
+   },
+   "region": "siberia",
+   "area": 167946,
+   "ll": [
+    51.7151,
+    96.2632
+   ],
+   "bbox": [
+    88.792,
+    49.743,
+    99.272,
+    53.728
+   ],
+   "borders": [
+    "ru-al",
+    "ru-bu",
+    "ru-irk",
+    "ru-kk",
+    "ru-kya"
+   ]
+  },
+  "ru-tyu": {
+   "code": "TYU",
+   "ref": "RU-TYU",
+   "name": {
+    "pt": "Oblast de Tiumen",
+    "en": "Tyumen Oblast",
+    "es": "Tiumén"
+   },
+   "alias": [
+    "Tyumen"
+   ],
+   "capital": {
+    "pt": "Tyumen",
+    "en": "Tyumen",
+    "es": "Tiumén"
+   },
+   "capAl": [
+    "Tiumen"
+   ],
+   "region": "ural",
+   "area": 158998,
+   "ll": [
+    57.4663,
+    68.5749
+   ],
+   "bbox": [
+    64.827,
+    55.146,
+    75.199,
+    59.99
+   ],
+   "borders": [
+    "ru-kgn",
+    "ru-khm",
+    "ru-oms",
+    "ru-sve",
+    "ru-tom"
+   ]
+  },
+  "ru-ud": {
+   "code": "UD",
+   "ref": "RU-UD",
+   "name": {
+    "pt": "Udmúrtia",
+    "en": "Udmurtia",
+    "es": "Udmurtia"
+   },
+   "capital": {
+    "pt": "Izhevsk",
+    "en": "Izhevsk",
+    "es": "Izhevsk"
+   },
+   "capAl": [
+    "Ijevsk"
+   ],
+   "region": "volga",
+   "area": 41855,
+   "ll": [
+    57.4818,
+    53.0576
+   ],
+   "bbox": [
+    51.124,
+    55.851,
+    54.424,
+    58.546
+   ],
+   "borders": [
+    "ru-ba",
+    "ru-kir",
+    "ru-per",
+    "ru-ta"
+   ]
+  },
+  "ru-uly": {
+   "code": "ULY",
+   "ref": "RU-ULY",
+   "name": {
+    "pt": "Oblast de Ulianovsk",
+    "en": "Ulyanovsk Oblast",
+    "es": "Óblast de Uliánovsk"
+   },
+   "alias": [
+    "Ulyanovsk",
+    "Ulianovsk",
+    "Uliánovsk"
+   ],
+   "capital": {
+    "pt": "Ulyanovsk",
+    "en": "Ulyanovsk",
+    "es": "Uliánovsk"
+   },
+   "capAl": [
+    "Ulianovsk"
+   ],
+   "region": "volga",
+   "area": 35011,
+   "ll": [
+    53.8158,
+    47.4161
+   ],
+   "bbox": [
+    45.797,
+    52.533,
+    50.243,
+    54.891
+   ],
+   "borders": [
+    "ru-cu",
+    "ru-mo",
+    "ru-pnz",
+    "ru-sam",
+    "ru-sar",
+    "ru-ta"
+   ]
+  },
+  "ru-vgg": {
+   "code": "VGG",
+   "ref": "RU-VGG",
+   "name": {
+    "pt": "Oblast de Volgogrado",
+    "en": "Volgograd Oblast",
+    "es": "Volgogrado"
+   },
+   "alias": [
+    "Volgograd"
+   ],
+   "capital": {
+    "pt": "Volgogrado",
+    "en": "Volgograd",
+    "es": "Volgogrado"
+   },
+   "region": "south",
+   "area": 111130,
+   "ll": [
+    49.7969,
+    44.1653
+   ],
+   "bbox": [
+    41.168,
+    47.444,
+    47.432,
+    51.245
+   ],
+   "borders": [
+    "ru-ast",
+    "ru-kl",
+    "ru-ros",
+    "ru-sar",
+    "ru-vor"
+   ]
+  },
+  "ru-vla": {
+   "code": "VLA",
+   "ref": "RU-VLA",
+   "name": {
+    "pt": "Oblast de Vladimir",
+    "en": "Vladimir Oblast",
+    "es": "Óblast de Vladímir"
+   },
+   "alias": [
+    "Vladimir",
+    "Vladímir"
+   ],
+   "capital": {
+    "pt": "Vladimir",
+    "en": "Vladimir",
+    "es": "Vladímir"
+   },
+   "region": "central",
+   "area": 29005,
+   "ll": [
+    55.8559,
+    41.4037
+   ],
+   "bbox": [
+    38.268,
+    55.101,
+    42.976,
+    56.813
+   ],
+   "borders": [
+    "ru-iva",
+    "ru-mos",
+    "ru-niz",
+    "ru-rya",
+    "ru-yar"
+   ]
+  },
+  "ru-vlg": {
+   "code": "VLG",
+   "ref": "RU-VLG",
+   "name": {
+    "pt": "Oblast de Vologda",
+    "en": "Vologda Oblast",
+    "es": "Óblast de Vólogda"
+   },
+   "alias": [
+    "Vologda",
+    "Vólogda"
+   ],
+   "capital": {
+    "pt": "Vologda",
+    "en": "Vologda",
+    "es": "Vólogda"
+   },
+   "region": "northwest",
+   "area": 141625,
+   "ll": [
+    59.6815,
+    40.4746
+   ],
+   "bbox": [
+    34.719,
+    58.477,
+    47.153,
+    61.614
+   ],
+   "borders": [
+    "ru-ark",
+    "ru-kir",
+    "ru-kos",
+    "ru-kr",
+    "ru-len",
+    "ru-ngr",
+    "ru-tve",
+    "ru-yar"
+   ]
+  },
+  "ru-vor": {
+   "code": "VOR",
+   "ref": "RU-VOR",
+   "name": {
+    "pt": "Oblast de Voronej",
+    "en": "Voronezh Oblast",
+    "es": "Óblast de Vorónezh"
+   },
+   "alias": [
+    "Voronezh",
+    "Voronej",
+    "Vorónezh"
+   ],
+   "capital": {
+    "pt": "Voronezh",
+    "en": "Voronezh",
+    "es": "Vorónezh"
+   },
+   "capAl": [
+    "Voronej"
+   ],
+   "region": "central",
+   "area": 52055,
+   "ll": [
+    50.8682,
+    40.13
+   ],
+   "bbox": [
+    38.139,
+    49.558,
+    42.947,
+    52.103
+   ],
+   "borders": [
+    "ru-bel",
+    "ru-krs",
+    "ru-lip",
+    "ru-ros",
+    "ru-sar",
+    "ru-tam",
+    "ru-vgg"
+   ]
+  },
+  "ru-yan": {
+   "code": "YAN",
+   "ref": "RU-YAN",
+   "name": {
+    "pt": "Iamália",
+    "en": "Yamalo-Nenets Autonomous District",
+    "es": "Yamalia-Nenetsia"
+   },
+   "alias": [
+    "Yamalo-Nenets"
+   ],
+   "capital": {
+    "pt": "Salekhard",
+    "en": "Salekhard",
+    "es": "Salejard"
+   },
+   "region": "ural",
+   "area": 678917,
+   "ll": [
+    65.0422,
+    78.4114
+   ],
+   "bbox": [
+    62.0,
+    62.196,
+    86.007,
+    73.475
+   ],
+   "borders": [
+    "ru-khm",
+    "ru-ko",
+    "ru-kya",
+    "ru-nen"
+   ]
+  },
+  "ru-yar": {
+   "code": "YAR",
+   "ref": "RU-YAR",
+   "name": {
+    "pt": "Oblast de Iaroslavl",
+    "en": "Yaroslavl Oblast",
+    "es": "Óblast de Yaroslavl"
+   },
+   "alias": [
+    "Yaroslavl",
+    "Iaroslavl"
+   ],
+   "capital": {
+    "pt": "Yaroslavl",
+    "en": "Yaroslavl",
+    "es": "Yaroslavl"
+   },
+   "capAl": [
+    "Iaroslavl"
+   ],
+   "region": "central",
+   "area": 32919,
+   "ll": [
+    57.9339,
+    39.676
+   ],
+   "bbox": [
+    37.328,
+    56.534,
+    41.194,
+    58.956
+   ],
+   "borders": [
+    "ru-iva",
+    "ru-kos",
+    "ru-mos",
+    "ru-tve",
+    "ru-vla",
+    "ru-vlg"
+   ]
+  },
+  "ru-yev": {
+   "code": "YEV",
+   "ref": "RU-YEV",
+   "name": {
+    "pt": "Oblast Autônomo Judaico",
+    "en": "Jewish Autonomous Oblast",
+    "es": "Óblast Autónomo Hebreo"
+   },
+   "alias": [
+    "Jewish Autonomous"
+   ],
+   "capital": {
+    "pt": "Birobidzhan",
+    "en": "Birobidzhan",
+    "es": "Birobidzhán"
+   },
+   "capAl": [
+    "Birobidjan"
+   ],
+   "region": "fareast",
+   "area": 35628,
+   "ll": [
+    48.488,
+    131.7973
+   ],
+   "bbox": [
+    130.523,
+    47.656,
+    134.992,
+    49.494
+   ],
+   "borders": [
+    "ru-amu",
+    "ru-kha"
+   ]
+  },
+  "ru-zab": {
+   "code": "ZAB",
+   "ref": "RU-ZAB",
+   "name": {
+    "pt": "Krai da Transbaicália",
+    "en": "Zabaykalsky Krai",
+    "es": "Krai de Transbaikalia"
+   },
+   "alias": [
+    "Zabaykalsky",
+    "Transbaicália",
+    "Transbaikalia"
+   ],
+   "capital": {
+    "pt": "Chita",
+    "en": "Chita",
+    "es": "Chitá"
+   },
+   "region": "fareast",
+   "area": 430316,
+   "ll": [
+    52.2197,
+    117.4165
+   ],
+   "bbox": [
+    107.734,
+    49.154,
+    122.145,
+    58.437
+   ],
+   "borders": [
+    "ru-amu",
+    "ru-bu",
+    "ru-irk",
+    "ru-sa"
+   ]
+  }
+ }
+}

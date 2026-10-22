@@ -475,6 +475,561 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     }
   },
   {
+    "id": "de",
+    "carta": "276",
+    "name": {
+      "pt": "Alemanha",
+      "en": "Germany",
+      "es": "Alemania"
+    },
+    "unit": {
+      "pt": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      },
+      "en": {
+        "one": "state",
+        "many": "states"
+      },
+      "es": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 5,
+        "capitals": 3,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 5,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 2,
+        "capitals": 2,
+        "flags": 0
+      }
+    ],
+    "count": 16,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 13,
+    "frame": [
+      5.867,
+      47.27,
+      15.042,
+      55.058
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-de.pmtiles",
+      "bytes": 585609,
+      "sha256": "9460e2299e002b541c4084efba6a5d87882e170a211aa293fe86bcaafbde0197"
+    }
+  },
+  {
+    "id": "ru",
+    "carta": "643",
+    "name": {
+      "pt": "Rússia",
+      "en": "Russia",
+      "es": "Rusia"
+    },
+    "unit": {
+      "pt": {
+        "one": "região",
+        "many": "regiões",
+        "g": "f"
+      },
+      "en": {
+        "one": "region",
+        "many": "regions"
+      },
+      "es": {
+        "one": "región",
+        "many": "regiones",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "central",
+        "name": {
+          "pt": "Central",
+          "en": "Central",
+          "es": "Central"
+        },
+        "count": 18,
+        "capitals": 17,
+        "flags": 0
+      },
+      {
+        "key": "northwest",
+        "name": {
+          "pt": "Noroeste",
+          "en": "Northwest",
+          "es": "Noroeste"
+        },
+        "count": 11,
+        "capitals": 10,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "caucasus",
+        "name": {
+          "pt": "Cáucaso Norte",
+          "en": "North Caucasus",
+          "es": "Cáucaso Norte"
+        },
+        "count": 7,
+        "capitals": 7,
+        "flags": 0
+      },
+      {
+        "key": "volga",
+        "name": {
+          "pt": "Volga",
+          "en": "Volga",
+          "es": "Volga"
+        },
+        "count": 14,
+        "capitals": 14,
+        "flags": 0
+      },
+      {
+        "key": "ural",
+        "name": {
+          "pt": "Urais",
+          "en": "Urals",
+          "es": "Urales"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "siberia",
+        "name": {
+          "pt": "Sibéria",
+          "en": "Siberia",
+          "es": "Siberia"
+        },
+        "count": 10,
+        "capitals": 10,
+        "flags": 0
+      },
+      {
+        "key": "fareast",
+        "name": {
+          "pt": "Extremo Oriente",
+          "en": "Far East",
+          "es": "Lejano Oriente"
+        },
+        "count": 11,
+        "capitals": 11,
+        "flags": 0
+      }
+    ],
+    "count": 83,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 81,
+    "frame": [
+      19.639,
+      41.185,
+      180.0,
+      81.262
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-ru.pmtiles",
+      "bytes": 10446924,
+      "sha256": "2ac08d698d95a7ec332f643867cc08d921737ee697a7d835c2d0b3981f5b4f0f"
+    }
+  },
+  {
+    "id": "ar",
+    "carta": "32",
+    "name": {
+      "pt": "Argentina",
+      "en": "Argentina",
+      "es": "Argentina"
+    },
+    "unit": {
+      "pt": {
+        "one": "província",
+        "many": "províncias",
+        "g": "f"
+      },
+      "en": {
+        "one": "province",
+        "many": "provinces"
+      },
+      "es": {
+        "one": "provincia",
+        "many": "provincias",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "nw",
+        "name": {
+          "pt": "Noroeste",
+          "en": "Northwest",
+          "es": "Noroeste"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "ne",
+        "name": {
+          "pt": "Nordeste",
+          "en": "Northeast",
+          "es": "Noreste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "cuyo",
+        "name": {
+          "pt": "Cuyo",
+          "en": "Cuyo",
+          "es": "Cuyo"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      },
+      {
+        "key": "pampas",
+        "name": {
+          "pt": "Pampeana",
+          "en": "Pampas",
+          "es": "Pampeana"
+        },
+        "count": 6,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "patagonia",
+        "name": {
+          "pt": "Patagônia",
+          "en": "Patagonia",
+          "es": "Patagonia"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      }
+    ],
+    "count": 24,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 23,
+    "frame": [
+      -73.56,
+      -55.058,
+      -53.638,
+      -21.781
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-ar.pmtiles",
+      "bytes": 853625,
+      "sha256": "e770a3095f3d3b9ff692b6b2ae1ae9833ff9c2036dbba53c96f3deb4a133b61a"
+    }
+  },
+  {
+    "id": "pe",
+    "carta": "604",
+    "name": {
+      "pt": "Peru",
+      "en": "Peru",
+      "es": "Perú"
+    },
+    "unit": {
+      "pt": {
+        "one": "região",
+        "many": "regiões",
+        "g": "f"
+      },
+      "en": {
+        "one": "region",
+        "many": "regions"
+      },
+      "es": {
+        "one": "región",
+        "many": "regiones",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 8,
+        "capitals": 8,
+        "flags": 0
+      },
+      {
+        "key": "center",
+        "name": {
+          "pt": "Centro",
+          "en": "Centre",
+          "es": "Centro"
+        },
+        "count": 9,
+        "capitals": 9,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 8,
+        "capitals": 8,
+        "flags": 0
+      }
+    ],
+    "count": 25,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 25,
+    "frame": [
+      -81.328,
+      -18.35,
+      -68.652,
+      -0.04
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-pe.pmtiles",
+      "bytes": 587169,
+      "sha256": "f1276545559d0de691a26f05eb088c666a9b4b8c9e30e7ea4c9ed102752e4a8c"
+    }
+  },
+  {
+    "id": "au",
+    "carta": "36",
+    "name": {
+      "pt": "Austrália",
+      "en": "Australia",
+      "es": "Australia"
+    },
+    "unit": {
+      "pt": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      },
+      "en": {
+        "one": "state",
+        "many": "states"
+      },
+      "es": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste e centro",
+          "en": "West and centre",
+          "es": "Oeste y centro"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      }
+    ],
+    "count": 8,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 8,
+    "frame": [
+      113.158,
+      -43.643,
+      153.639,
+      -10.687
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-au.pmtiles",
+      "bytes": 1940985,
+      "sha256": "22010df510f1fbe744f3d9b9e322cbf676c0e49fede4fc7cc699974b0e456c42"
+    }
+  },
+  {
+    "id": "id",
+    "carta": "360",
+    "name": {
+      "pt": "Indonésia",
+      "en": "Indonesia",
+      "es": "Indonesia"
+    },
+    "unit": {
+      "pt": {
+        "one": "província",
+        "many": "províncias",
+        "g": "f"
+      },
+      "en": {
+        "one": "province",
+        "many": "provinces"
+      },
+      "es": {
+        "one": "provincia",
+        "many": "provincias",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "sumatra",
+        "name": {
+          "pt": "Sumatra",
+          "en": "Sumatra",
+          "es": "Sumatra"
+        },
+        "count": 10,
+        "capitals": 10,
+        "flags": 0
+      },
+      {
+        "key": "java",
+        "name": {
+          "pt": "Java e Sonda",
+          "en": "Java and Lesser Sundas",
+          "es": "Java y Sonda"
+        },
+        "count": 9,
+        "capitals": 8,
+        "flags": 0
+      },
+      {
+        "key": "kalimantan",
+        "name": {
+          "pt": "Kalimantan",
+          "en": "Kalimantan",
+          "es": "Kalimantan"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "sulawesi",
+        "name": {
+          "pt": "Celebes",
+          "en": "Sulawesi",
+          "es": "Célebes"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Molucas e Papua",
+          "en": "Maluku and Papua",
+          "es": "Molucas y Papúa"
+        },
+        "count": 8,
+        "capitals": 8,
+        "flags": 0
+      }
+    ],
+    "count": 38,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 37,
+    "frame": [
+      95.194,
+      -10.943,
+      141.019,
+      5.907
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-id.pmtiles",
+      "bytes": 2477035,
+      "sha256": "5ac6672afae465d08eacf56d1513adfb2ef9f23c7954cd48531fc1992775b94c"
+    }
+  },
+  {
     "id": "1914",
     "kind": "era",
     "subtitle": {

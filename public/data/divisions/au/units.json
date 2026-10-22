@@ -1,0 +1,253 @@
+{
+ "source": "Austrália: os 6 estados e os 2 territórios continentais (palavra \"estado\"). As linhas do Overture sem código (Jervis Bay, Ashmore e Cartier, Ilhas do Mar de Coral) ficam fora das zonas: a terra perto vai para a unidade mais perto e a distante vira neutra, como a Ilha Heard (absorvida na Austrália do mapa HD). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Leste e \"Oeste e centro\", agrupamento nosso.",
+ "country": "au",
+ "regions": {
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "west": {
+   "pt": "Oeste e centro",
+   "en": "West and centre",
+   "es": "Oeste y centro"
+  }
+ },
+ "units": {
+  "au-act": {
+   "code": "ACT",
+   "ref": "AU-ACT",
+   "name": {
+    "pt": "Território da Capital Australiana",
+    "en": "Australian Capital Territory",
+    "es": "Territorio de la Capital Australiana"
+   },
+   "alias": [
+    "ACT"
+   ],
+   "capital": {
+    "pt": "Camberra",
+    "en": "Canberra",
+    "es": "Canberra"
+   },
+   "capAl": [
+    "Canberra"
+   ],
+   "region": "east",
+   "area": 2358,
+   "ll": [
+    -35.4617,
+    148.9614
+   ],
+   "bbox": [
+    148.763,
+    -35.92,
+    149.399,
+    -35.124
+   ],
+   "borders": [
+    "au-nsw"
+   ]
+  },
+  "au-nsw": {
+   "code": "NSW",
+   "ref": "AU-NSW",
+   "name": {
+    "pt": "Nova Gales do Sul",
+    "en": "New South Wales",
+    "es": "Nueva Gales del Sur"
+   },
+   "capital": {
+    "pt": "Sydney",
+    "en": "Sydney",
+    "es": "Sídney"
+   },
+   "capAl": [
+    "Sidney"
+   ],
+   "region": "east",
+   "area": 801788,
+   "ll": [
+    -32.4854,
+    146.6771
+   ],
+   "bbox": [
+    140.999,
+    -37.505,
+    153.639,
+    -28.157
+   ],
+   "borders": [
+    "au-act",
+    "au-qld",
+    "au-sa",
+    "au-vic"
+   ]
+  },
+  "au-nt": {
+   "code": "NT",
+   "ref": "AU-NT",
+   "name": {
+    "pt": "Território do Norte",
+    "en": "Northern Territory",
+    "es": "Territorio del Norte"
+   },
+   "capital": "Darwin",
+   "region": "west",
+   "area": 1351376,
+   "ll": [
+    -21.2678,
+    133.4987
+   ],
+   "bbox": [
+    129.0,
+    -25.999,
+    137.999,
+    -11.118
+   ],
+   "borders": [
+    "au-qld",
+    "au-sa",
+    "au-wa"
+   ]
+  },
+  "au-qld": {
+   "code": "QLD",
+   "ref": "AU-QLD",
+   "name": {
+    "pt": "Queensland",
+    "en": "Queensland",
+    "es": "Queensland"
+   },
+   "capital": "Brisbane",
+   "region": "east",
+   "area": 1733923,
+   "ll": [
+    -23.7247,
+    145.0871
+   ],
+   "bbox": [
+    137.995,
+    -29.178,
+    153.552,
+    -10.687
+   ],
+   "borders": [
+    "au-nsw",
+    "au-nt",
+    "au-sa"
+   ]
+  },
+  "au-sa": {
+   "code": "SA",
+   "ref": "AU-SA",
+   "name": {
+    "pt": "Austrália Meridional",
+    "en": "South Australia",
+    "es": "Australia Meridional"
+   },
+   "alias": [
+    "Austrália do Sul"
+   ],
+   "capital": {
+    "pt": "Adelaide",
+    "en": "Adelaide",
+    "es": "Adelaida"
+   },
+   "region": "west",
+   "area": 984692,
+   "ll": [
+    -29.4605,
+    135.9197
+   ],
+   "bbox": [
+    129.002,
+    -38.062,
+    141.003,
+    -25.996
+   ],
+   "borders": [
+    "au-nsw",
+    "au-nt",
+    "au-qld",
+    "au-vic",
+    "au-wa"
+   ]
+  },
+  "au-tas": {
+   "code": "TAS",
+   "ref": "AU-TAS",
+   "name": {
+    "pt": "Tasmânia",
+    "en": "Tasmania",
+    "es": "Tasmania"
+   },
+   "capital": "Hobart",
+   "region": "east",
+   "area": 68178,
+   "ll": [
+    -42.1495,
+    146.5198
+   ],
+   "bbox": [
+    143.832,
+    -43.643,
+    148.482,
+    -39.579
+   ],
+   "borders": []
+  },
+  "au-vic": {
+   "code": "VIC",
+   "ref": "AU-VIC",
+   "name": {
+    "pt": "Vitória",
+    "en": "Victoria",
+    "es": "Victoria"
+   },
+   "capital": "Melbourne",
+   "region": "east",
+   "area": 227390,
+   "ll": [
+    -36.7142,
+    142.6361
+   ],
+   "bbox": [
+    140.964,
+    -39.131,
+    149.977,
+    -33.981
+   ],
+   "borders": [
+    "au-nsw",
+    "au-sa"
+   ]
+  },
+  "au-wa": {
+   "code": "WA",
+   "ref": "AU-WA",
+   "name": {
+    "pt": "Austrália Ocidental",
+    "en": "Western Australia",
+    "es": "Australia Occidental"
+   },
+   "capital": "Perth",
+   "region": "west",
+   "area": 2530476,
+   "ll": [
+    -26.7204,
+    121.4555
+   ],
+   "bbox": [
+    113.158,
+    -35.134,
+    129.002,
+    -13.742
+   ],
+   "borders": [
+    "au-nt",
+    "au-sa"
+   ]
+  }
+ }
+}

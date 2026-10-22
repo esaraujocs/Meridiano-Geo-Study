@@ -1,0 +1,494 @@
+{
+  "comment": "Argentina: as 23 províncias e a Cidade Autônoma de Buenos Aires (sem capital própria: fora dos modos de capital). As Malvinas são outra entidade no mapa-múndi e a Antártida reivindicada fica de fora. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as 5 regiões geográficas (Noroeste, Nordeste, Cuyo, Pampeana e Patagônia).",
+  "id": "ar",
+  "carta": "32",
+  "source": "overture",
+  "name": {
+    "pt": "Argentina",
+    "en": "Argentina",
+    "es": "Argentina"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "província",
+      "many": "províncias",
+      "g": "f"
+    },
+    "en": {
+      "one": "province",
+      "many": "provinces"
+    },
+    "es": {
+      "one": "provincia",
+      "many": "provincias",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "nw": {
+      "pt": "Noroeste",
+      "en": "Northwest",
+      "es": "Noroeste"
+    },
+    "ne": {
+      "pt": "Nordeste",
+      "en": "Northeast",
+      "es": "Noreste"
+    },
+    "cuyo": {
+      "pt": "Cuyo",
+      "en": "Cuyo",
+      "es": "Cuyo"
+    },
+    "pampas": {
+      "pt": "Pampeana",
+      "en": "Pampas",
+      "es": "Pampeana"
+    },
+    "patagonia": {
+      "pt": "Patagônia",
+      "en": "Patagonia",
+      "es": "Patagonia"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 32)",
+      "use": "a terra de Argentina, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 24 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "A",
+      "name": "Salta",
+      "capital": {
+        "pt": "Salta",
+        "en": "Salta",
+        "es": "Salta"
+      },
+      "region": "nw"
+    },
+    {
+      "code": "B",
+      "name": "Buenos Aires",
+      "capital": {
+        "pt": "La Plata",
+        "en": "La Plata",
+        "es": "La Plata"
+      },
+      "region": "pampas"
+    },
+    {
+      "code": "C",
+      "name": "City of Buenos Aires",
+      "sourceName": "Ciudad Autónoma de Buenos Aires",
+      "names": {
+        "pt": "Cidade de Buenos Aires",
+        "es": "Ciudad de Buenos Aires"
+      },
+      "alias": [
+        "CABA",
+        "Capital Federal",
+        "Ciudad Autónoma de Buenos Aires",
+        "Cidade Autônoma de Buenos Aires"
+      ],
+      "region": "pampas"
+    },
+    {
+      "code": "D",
+      "name": "San Luis",
+      "capital": {
+        "pt": "San Luis",
+        "en": "San Luis",
+        "es": "San Luis"
+      },
+      "capAl": [
+        "São Luís"
+      ],
+      "region": "cuyo"
+    },
+    {
+      "code": "E",
+      "name": "Entre Ríos",
+      "capital": {
+        "pt": "Paraná",
+        "en": "Paraná",
+        "es": "Paraná"
+      },
+      "region": "pampas"
+    },
+    {
+      "code": "F",
+      "name": "La Rioja",
+      "capital": {
+        "pt": "La Rioja",
+        "en": "La Rioja",
+        "es": "La Rioja"
+      },
+      "region": "nw"
+    },
+    {
+      "code": "G",
+      "name": "Santiago del Estero",
+      "capital": {
+        "pt": "Santiago del Estero",
+        "en": "Santiago del Estero",
+        "es": "Santiago del Estero"
+      },
+      "region": "nw"
+    },
+    {
+      "code": "H",
+      "name": "Chaco",
+      "capital": {
+        "pt": "Resistencia",
+        "en": "Resistencia",
+        "es": "Resistencia"
+      },
+      "capAl": [
+        "Resistência"
+      ],
+      "region": "ne"
+    },
+    {
+      "code": "J",
+      "name": "San Juan",
+      "capital": {
+        "pt": "San Juan",
+        "en": "San Juan",
+        "es": "San Juan"
+      },
+      "region": "cuyo"
+    },
+    {
+      "code": "K",
+      "name": "Catamarca",
+      "capital": {
+        "pt": "San Fernando del Valle de Catamarca",
+        "en": "San Fernando del Valle de Catamarca",
+        "es": "San Fernando del Valle de Catamarca"
+      },
+      "capAl": [
+        "Catamarca"
+      ],
+      "region": "nw"
+    },
+    {
+      "code": "L",
+      "name": "La Pampa",
+      "capital": {
+        "pt": "Santa Rosa",
+        "en": "Santa Rosa",
+        "es": "Santa Rosa"
+      },
+      "region": "pampas"
+    },
+    {
+      "code": "M",
+      "name": "Mendoza",
+      "capital": {
+        "pt": "Mendoza",
+        "en": "Mendoza",
+        "es": "Mendoza"
+      },
+      "region": "cuyo"
+    },
+    {
+      "code": "N",
+      "name": "Misiones",
+      "capital": {
+        "pt": "Posadas",
+        "en": "Posadas",
+        "es": "Posadas"
+      },
+      "region": "ne"
+    },
+    {
+      "code": "P",
+      "name": "Formosa",
+      "capital": {
+        "pt": "Formosa",
+        "en": "Formosa",
+        "es": "Formosa"
+      },
+      "region": "ne"
+    },
+    {
+      "code": "Q",
+      "name": "Neuquén",
+      "capital": {
+        "pt": "Neuquén",
+        "en": "Neuquén",
+        "es": "Neuquén"
+      },
+      "region": "patagonia"
+    },
+    {
+      "code": "R",
+      "name": "Río Negro",
+      "capital": {
+        "pt": "Viedma",
+        "en": "Viedma",
+        "es": "Viedma"
+      },
+      "region": "patagonia"
+    },
+    {
+      "code": "S",
+      "name": "Santa Fe",
+      "names": {
+        "pt": "Santa Fé"
+      },
+      "capital": {
+        "pt": "Santa Fé",
+        "en": "Santa Fe",
+        "es": "Santa Fe"
+      },
+      "region": "pampas"
+    },
+    {
+      "code": "T",
+      "name": "Tucumán",
+      "alias": [
+        "Tucumã"
+      ],
+      "capital": {
+        "pt": "San Miguel de Tucumán",
+        "en": "San Miguel de Tucumán",
+        "es": "San Miguel de Tucumán"
+      },
+      "capAl": [
+        "Tucumán",
+        "São Miguel de Tucumã"
+      ],
+      "region": "nw"
+    },
+    {
+      "code": "U",
+      "name": "Chubut",
+      "capital": {
+        "pt": "Rawson",
+        "en": "Rawson",
+        "es": "Rawson"
+      },
+      "region": "patagonia"
+    },
+    {
+      "code": "V",
+      "name": "Tierra del Fuego",
+      "names": {
+        "pt": "Terra do Fogo"
+      },
+      "alias": [
+        "Tierra del Fuego"
+      ],
+      "capital": {
+        "pt": "Ushuaia",
+        "en": "Ushuaia",
+        "es": "Ushuaia"
+      },
+      "region": "patagonia"
+    },
+    {
+      "code": "W",
+      "name": "Corrientes",
+      "capital": {
+        "pt": "Corrientes",
+        "en": "Corrientes",
+        "es": "Corrientes"
+      },
+      "region": "ne"
+    },
+    {
+      "code": "X",
+      "name": "Córdoba",
+      "alias": [
+        "Córdova"
+      ],
+      "capital": {
+        "pt": "Córdoba",
+        "en": "Córdoba",
+        "es": "Córdoba"
+      },
+      "capAl": [
+        "Córdova"
+      ],
+      "region": "pampas"
+    },
+    {
+      "code": "Y",
+      "name": "Jujuy",
+      "capital": {
+        "pt": "San Salvador de Jujuy",
+        "en": "San Salvador de Jujuy",
+        "es": "San Salvador de Jujuy"
+      },
+      "capAl": [
+        "Jujuy"
+      ],
+      "region": "nw"
+    },
+    {
+      "code": "Z",
+      "name": "Santa Cruz",
+      "capital": {
+        "pt": "Río Gallegos",
+        "en": "Río Gallegos",
+        "es": "Río Gallegos"
+      },
+      "region": "patagonia"
+    }
+  ],
+  "probes": [
+    [
+      "Salta",
+      -65.4106,
+      -24.7883,
+      "ar-a"
+    ],
+    [
+      "La Plata",
+      -57.95,
+      -34.9333,
+      "ar-b"
+    ],
+    [
+      "San Luis",
+      -66.3392,
+      -33.2994,
+      "ar-d"
+    ],
+    [
+      "Paraná",
+      -60.5297,
+      -31.7331,
+      "ar-e"
+    ],
+    [
+      "La Rioja",
+      -66.8558,
+      -29.4131,
+      "ar-f"
+    ],
+    [
+      "Santiago del Estero",
+      -64.2669,
+      -27.7844,
+      "ar-g"
+    ],
+    [
+      "Resistencia",
+      -58.9867,
+      -27.4514,
+      "ar-h"
+    ],
+    [
+      "San Juan",
+      -68.5364,
+      -31.5375,
+      "ar-j"
+    ],
+    [
+      "San Fernando del Valle de Catamarca",
+      -65.7792,
+      -28.4686,
+      "ar-k"
+    ],
+    [
+      "Santa Rosa",
+      -64.2906,
+      -36.6203,
+      "ar-l"
+    ],
+    [
+      "Mendoza",
+      -68.8444,
+      -32.8897,
+      "ar-m"
+    ],
+    [
+      "Posadas",
+      -55.8969,
+      -27.3667,
+      "ar-n"
+    ],
+    [
+      "Formosa",
+      -58.1758,
+      -26.1847,
+      "ar-p"
+    ],
+    [
+      "Neuquén",
+      -68.0592,
+      -38.9518,
+      "ar-q"
+    ],
+    [
+      "Viedma",
+      -63.0,
+      -40.8,
+      "ar-r"
+    ],
+    [
+      "Santa Fé",
+      -60.7,
+      -31.6333,
+      "ar-s"
+    ],
+    [
+      "San Miguel de Tucumán",
+      -65.2167,
+      -26.8167,
+      "ar-t"
+    ],
+    [
+      "Rawson",
+      -65.1,
+      -43.3,
+      "ar-u"
+    ],
+    [
+      "Ushuaia",
+      -68.3081,
+      -54.8072,
+      "ar-v"
+    ],
+    [
+      "Corrientes",
+      -58.8167,
+      -27.4833,
+      "ar-w"
+    ],
+    [
+      "Córdoba",
+      -64.1833,
+      -31.4167,
+      "ar-x"
+    ],
+    [
+      "San Salvador de Jujuy",
+      -65.2994,
+      -24.1856,
+      "ar-y"
+    ],
+    [
+      "Río Gallegos",
+      -69.2161,
+      -51.6233,
+      "ar-z"
+    ]
+  ]
+}

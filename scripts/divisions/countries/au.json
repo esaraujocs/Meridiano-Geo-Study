@@ -1,0 +1,225 @@
+{
+  "comment": "Austrália: os 6 estados e os 2 territórios continentais (palavra \"estado\"). As linhas do Overture sem código (Jervis Bay, Ashmore e Cartier, Ilhas do Mar de Coral) ficam fora das zonas: a terra perto vai para a unidade mais perto e a distante vira neutra, como a Ilha Heard (absorvida na Austrália do mapa HD). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Leste e \"Oeste e centro\", agrupamento nosso.",
+  "id": "au",
+  "carta": "36",
+  "source": "overture",
+  "name": {
+    "pt": "Austrália",
+    "en": "Australia",
+    "es": "Australia"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    },
+    "en": {
+      "one": "state",
+      "many": "states"
+    },
+    "es": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    }
+  },
+  "regions": {
+    "east": {
+      "pt": "Leste",
+      "en": "East",
+      "es": "Este"
+    },
+    "west": {
+      "pt": "Oeste e centro",
+      "en": "West and centre",
+      "es": "Oeste y centro"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 36)",
+      "use": "a terra de Austrália, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 8 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "ACT",
+      "name": "Australian Capital Territory",
+      "names": {
+        "pt": "Território da Capital Australiana",
+        "es": "Territorio de la Capital Australiana"
+      },
+      "alias": [
+        "ACT"
+      ],
+      "capital": {
+        "pt": "Camberra",
+        "en": "Canberra",
+        "es": "Canberra"
+      },
+      "capAl": [
+        "Canberra"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "NSW",
+      "name": "New South Wales",
+      "names": {
+        "pt": "Nova Gales do Sul",
+        "es": "Nueva Gales del Sur"
+      },
+      "capital": {
+        "pt": "Sydney",
+        "en": "Sydney",
+        "es": "Sídney"
+      },
+      "capAl": [
+        "Sidney"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "NT",
+      "name": "Northern Territory",
+      "names": {
+        "pt": "Território do Norte",
+        "es": "Territorio del Norte"
+      },
+      "capital": "Darwin",
+      "region": "west"
+    },
+    {
+      "code": "QLD",
+      "name": "Queensland",
+      "capital": "Brisbane",
+      "region": "east"
+    },
+    {
+      "code": "SA",
+      "name": "South Australia",
+      "names": {
+        "pt": "Austrália Meridional",
+        "es": "Australia Meridional"
+      },
+      "alias": [
+        "Austrália do Sul"
+      ],
+      "capital": {
+        "pt": "Adelaide",
+        "en": "Adelaide",
+        "es": "Adelaida"
+      },
+      "region": "west"
+    },
+    {
+      "code": "TAS",
+      "name": "Tasmania",
+      "names": {
+        "pt": "Tasmânia"
+      },
+      "capital": "Hobart",
+      "region": "east"
+    },
+    {
+      "code": "VIC",
+      "name": "Victoria",
+      "names": {
+        "pt": "Vitória"
+      },
+      "capital": "Melbourne",
+      "region": "east"
+    },
+    {
+      "code": "WA",
+      "name": "Western Australia",
+      "names": {
+        "pt": "Austrália Ocidental",
+        "es": "Australia Occidental"
+      },
+      "capital": "Perth",
+      "region": "west"
+    }
+  ],
+  "probes": [
+    [
+      "Camberra",
+      149.1269,
+      -35.2931,
+      "au-act"
+    ],
+    [
+      "Sydney",
+      151.21,
+      -33.8678,
+      "au-nsw"
+    ],
+    [
+      "Darwin",
+      130.8411,
+      -12.4381,
+      "au-nt"
+    ],
+    [
+      "Brisbane",
+      153.0278,
+      -27.4678,
+      "au-qld"
+    ],
+    [
+      "Adelaide",
+      138.6,
+      -34.9275,
+      "au-sa"
+    ],
+    [
+      "Hobart",
+      147.3167,
+      -42.8833,
+      "au-tas"
+    ],
+    [
+      "Melbourne",
+      144.9631,
+      -37.8142,
+      "au-vic"
+    ],
+    [
+      "Perth",
+      115.8597,
+      -31.9558,
+      "au-wa"
+    ],
+    [
+      "Alice Springs",
+      133.8807,
+      -23.698,
+      "au-nt"
+    ],
+    [
+      "Cairns",
+      145.771,
+      -16.9203,
+      "au-qld"
+    ],
+    [
+      "Gold Coast",
+      153.4,
+      -28.0167,
+      "au-qld"
+    ]
+  ]
+}

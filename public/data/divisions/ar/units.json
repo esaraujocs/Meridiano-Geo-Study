@@ -1,0 +1,819 @@
+{
+ "source": "Argentina: as 23 províncias e a Cidade Autônoma de Buenos Aires (sem capital própria: fora dos modos de capital). As Malvinas são outra entidade no mapa-múndi e a Antártida reivindicada fica de fora. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as 5 regiões geográficas (Noroeste, Nordeste, Cuyo, Pampeana e Patagônia).",
+ "country": "ar",
+ "regions": {
+  "nw": {
+   "pt": "Noroeste",
+   "en": "Northwest",
+   "es": "Noroeste"
+  },
+  "ne": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Noreste"
+  },
+  "cuyo": {
+   "pt": "Cuyo",
+   "en": "Cuyo",
+   "es": "Cuyo"
+  },
+  "pampas": {
+   "pt": "Pampeana",
+   "en": "Pampas",
+   "es": "Pampeana"
+  },
+  "patagonia": {
+   "pt": "Patagônia",
+   "en": "Patagonia",
+   "es": "Patagonia"
+  }
+ },
+ "units": {
+  "ar-a": {
+   "code": "A",
+   "ref": "AR-A",
+   "name": {
+    "pt": "Salta",
+    "en": "Salta",
+    "es": "Salta"
+   },
+   "capital": {
+    "pt": "Salta",
+    "en": "Salta",
+    "es": "Salta"
+   },
+   "region": "nw",
+   "area": 155698,
+   "ll": [
+    -23.0034,
+    -63.3246
+   ],
+   "bbox": [
+    -68.568,
+    -26.417,
+    -62.339,
+    -21.999
+   ],
+   "borders": [
+    "ar-g",
+    "ar-h",
+    "ar-k",
+    "ar-p",
+    "ar-t",
+    "ar-y"
+   ]
+  },
+  "ar-b": {
+   "code": "B",
+   "ref": "AR-B",
+   "name": {
+    "pt": "Buenos Aires",
+    "en": "Buenos Aires",
+    "es": "Buenos Aires"
+   },
+   "capital": {
+    "pt": "La Plata",
+    "en": "La Plata",
+    "es": "La Plata"
+   },
+   "region": "pampas",
+   "area": 306314,
+   "ll": [
+    -36.4057,
+    -60.2881
+   ],
+   "bbox": [
+    -63.391,
+    -41.038,
+    -56.668,
+    -33.262
+   ],
+   "borders": [
+    "ar-c",
+    "ar-e",
+    "ar-l",
+    "ar-r",
+    "ar-s",
+    "ar-x"
+   ]
+  },
+  "ar-c": {
+   "code": "C",
+   "ref": "AR-C",
+   "name": {
+    "pt": "Cidade de Buenos Aires",
+    "en": "City of Buenos Aires",
+    "es": "Ciudad de Buenos Aires"
+   },
+   "alias": [
+    "CABA",
+    "Capital Federal",
+    "Ciudad Autónoma de Buenos Aires",
+    "Cidade Autônoma de Buenos Aires"
+   ],
+   "region": "pampas",
+   "area": 206,
+   "ll": [
+    -34.6078,
+    -58.457
+   ],
+   "bbox": [
+    -58.531,
+    -34.706,
+    -58.335,
+    -34.527
+   ],
+   "borders": [
+    "ar-b"
+   ]
+  },
+  "ar-d": {
+   "code": "D",
+   "ref": "AR-D",
+   "name": {
+    "pt": "San Luis",
+    "en": "San Luis",
+    "es": "San Luis"
+   },
+   "capital": {
+    "pt": "San Luis",
+    "en": "San Luis",
+    "es": "San Luis"
+   },
+   "capAl": [
+    "São Luís"
+   ],
+   "region": "cuyo",
+   "area": 75668,
+   "ll": [
+    -33.0139,
+    -66.1548
+   ],
+   "bbox": [
+    -67.476,
+    -36.001,
+    -64.883,
+    -31.834
+   ],
+   "borders": [
+    "ar-f",
+    "ar-j",
+    "ar-l",
+    "ar-m",
+    "ar-x"
+   ]
+  },
+  "ar-e": {
+   "code": "E",
+   "ref": "AR-E",
+   "name": {
+    "pt": "Entre Ríos",
+    "en": "Entre Ríos",
+    "es": "Entre Ríos"
+   },
+   "capital": {
+    "pt": "Paraná",
+    "en": "Paraná",
+    "es": "Paraná"
+   },
+   "region": "pampas",
+   "area": 78327,
+   "ll": [
+    -32.394,
+    -59.3991
+   ],
+   "bbox": [
+    -60.772,
+    -34.038,
+    -57.797,
+    -30.159
+   ],
+   "borders": [
+    "ar-b",
+    "ar-s",
+    "ar-w"
+   ]
+  },
+  "ar-f": {
+   "code": "F",
+   "ref": "AR-F",
+   "name": {
+    "pt": "La Rioja",
+    "en": "La Rioja",
+    "es": "La Rioja"
+   },
+   "capital": {
+    "pt": "La Rioja",
+    "en": "La Rioja",
+    "es": "La Rioja"
+   },
+   "region": "nw",
+   "area": 91173,
+   "ll": [
+    -29.8456,
+    -66.6496
+   ],
+   "bbox": [
+    -69.635,
+    -31.998,
+    -65.423,
+    -27.71
+   ],
+   "borders": [
+    "ar-d",
+    "ar-j",
+    "ar-k",
+    "ar-x"
+   ]
+  },
+  "ar-g": {
+   "code": "G",
+   "ref": "AR-G",
+   "name": {
+    "pt": "Santiago del Estero",
+    "en": "Santiago del Estero",
+    "es": "Santiago del Estero"
+   },
+   "capital": {
+    "pt": "Santiago del Estero",
+    "en": "Santiago del Estero",
+    "es": "Santiago del Estero"
+   },
+   "region": "nw",
+   "area": 136511,
+   "ll": [
+    -27.9798,
+    -63.3647
+   ],
+   "bbox": [
+    -65.188,
+    -30.48,
+    -61.712,
+    -25.649
+   ],
+   "borders": [
+    "ar-a",
+    "ar-h",
+    "ar-k",
+    "ar-s",
+    "ar-t",
+    "ar-x"
+   ]
+  },
+  "ar-h": {
+   "code": "H",
+   "ref": "AR-H",
+   "name": {
+    "pt": "Chaco",
+    "en": "Chaco",
+    "es": "Chaco"
+   },
+   "capital": {
+    "pt": "Resistencia",
+    "en": "Resistencia",
+    "es": "Resistencia"
+   },
+   "capAl": [
+    "Resistência"
+   ],
+   "region": "ne",
+   "area": 100001,
+   "ll": [
+    -26.843,
+    -60.5633
+   ],
+   "bbox": [
+    -63.422,
+    -28.069,
+    -58.374,
+    -24.079
+   ],
+   "borders": [
+    "ar-a",
+    "ar-g",
+    "ar-p",
+    "ar-s",
+    "ar-w"
+   ]
+  },
+  "ar-j": {
+   "code": "J",
+   "ref": "AR-J",
+   "name": {
+    "pt": "San Juan",
+    "en": "San Juan",
+    "es": "San Juan"
+   },
+   "capital": {
+    "pt": "San Juan",
+    "en": "San Juan",
+    "es": "San Juan"
+   },
+   "region": "cuyo",
+   "area": 88543,
+   "ll": [
+    -30.8641,
+    -68.8223
+   ],
+   "bbox": [
+    -70.57,
+    -32.626,
+    -66.661,
+    -28.39
+   ],
+   "borders": [
+    "ar-d",
+    "ar-f",
+    "ar-m"
+   ]
+  },
+  "ar-k": {
+   "code": "K",
+   "ref": "AR-K",
+   "name": {
+    "pt": "Catamarca",
+    "en": "Catamarca",
+    "es": "Catamarca"
+   },
+   "capital": {
+    "pt": "San Fernando del Valle de Catamarca",
+    "en": "San Fernando del Valle de Catamarca",
+    "es": "San Fernando del Valle de Catamarca"
+   },
+   "capAl": [
+    "Catamarca"
+   ],
+   "region": "nw",
+   "area": 101684,
+   "ll": [
+    -27.1896,
+    -67.2184
+   ],
+   "bbox": [
+    -69.095,
+    -30.12,
+    -64.781,
+    -25.169
+   ],
+   "borders": [
+    "ar-a",
+    "ar-f",
+    "ar-g",
+    "ar-t",
+    "ar-x"
+   ]
+  },
+  "ar-l": {
+   "code": "L",
+   "ref": "AR-L",
+   "name": {
+    "pt": "La Pampa",
+    "en": "La Pampa",
+    "es": "La Pampa"
+   },
+   "capital": {
+    "pt": "Santa Rosa",
+    "en": "Santa Rosa",
+    "es": "Santa Rosa"
+   },
+   "region": "pampas",
+   "area": 143225,
+   "ll": [
+    -37.3958,
+    -64.8419
+   ],
+   "bbox": [
+    -68.296,
+    -39.33,
+    -63.383,
+    -35.002
+   ],
+   "borders": [
+    "ar-b",
+    "ar-d",
+    "ar-m",
+    "ar-r",
+    "ar-x"
+   ]
+  },
+  "ar-m": {
+   "code": "M",
+   "ref": "AR-M",
+   "name": {
+    "pt": "Mendoza",
+    "en": "Mendoza",
+    "es": "Mendoza"
+   },
+   "capital": {
+    "pt": "Mendoza",
+    "en": "Mendoza",
+    "es": "Mendoza"
+   },
+   "region": "cuyo",
+   "area": 149079,
+   "ll": [
+    -34.4822,
+    -68.313
+   ],
+   "bbox": [
+    -70.584,
+    -37.575,
+    -66.478,
+    -31.999
+   ],
+   "borders": [
+    "ar-d",
+    "ar-j",
+    "ar-l",
+    "ar-q"
+   ]
+  },
+  "ar-n": {
+   "code": "N",
+   "ref": "AR-N",
+   "name": {
+    "pt": "Misiones",
+    "en": "Misiones",
+    "es": "Misiones"
+   },
+   "capital": {
+    "pt": "Posadas",
+    "en": "Posadas",
+    "es": "Posadas"
+   },
+   "region": "ne",
+   "area": 29970,
+   "ll": [
+    -26.7406,
+    -54.2777
+   ],
+   "bbox": [
+    -56.059,
+    -28.164,
+    -53.638,
+    -25.494
+   ],
+   "borders": [
+    "ar-w"
+   ]
+  },
+  "ar-p": {
+   "code": "P",
+   "ref": "AR-P",
+   "name": {
+    "pt": "Formosa",
+    "en": "Formosa",
+    "es": "Formosa"
+   },
+   "capital": {
+    "pt": "Formosa",
+    "en": "Formosa",
+    "es": "Formosa"
+   },
+   "region": "ne",
+   "area": 75599,
+   "ll": [
+    -25.5809,
+    -58.8544
+   ],
+   "bbox": [
+    -62.342,
+    -26.871,
+    -57.555,
+    -22.476
+   ],
+   "borders": [
+    "ar-a",
+    "ar-h"
+   ]
+  },
+  "ar-q": {
+   "code": "Q",
+   "ref": "AR-Q",
+   "name": {
+    "pt": "Neuquén",
+    "en": "Neuquén",
+    "es": "Neuquén"
+   },
+   "capital": {
+    "pt": "Neuquén",
+    "en": "Neuquén",
+    "es": "Neuquén"
+   },
+   "region": "patagonia",
+   "area": 93574,
+   "ll": [
+    -38.3546,
+    -69.6764
+   ],
+   "bbox": [
+    -71.964,
+    -41.068,
+    -67.996,
+    -36.053
+   ],
+   "borders": [
+    "ar-m",
+    "ar-r"
+   ]
+  },
+  "ar-r": {
+   "code": "R",
+   "ref": "AR-R",
+   "name": {
+    "pt": "Río Negro",
+    "en": "Río Negro",
+    "es": "Río Negro"
+   },
+   "capital": {
+    "pt": "Viedma",
+    "en": "Viedma",
+    "es": "Viedma"
+   },
+   "region": "patagonia",
+   "area": 200960,
+   "ll": [
+    -40.3357,
+    -66.9049
+   ],
+   "bbox": [
+    -71.911,
+    -41.992,
+    -62.79,
+    -37.575
+   ],
+   "borders": [
+    "ar-b",
+    "ar-l",
+    "ar-q",
+    "ar-u"
+   ]
+  },
+  "ar-s": {
+   "code": "S",
+   "ref": "AR-S",
+   "name": {
+    "pt": "Santa Fé",
+    "en": "Santa Fe",
+    "es": "Santa Fe"
+   },
+   "capital": {
+    "pt": "Santa Fé",
+    "en": "Santa Fe",
+    "es": "Santa Fe"
+   },
+   "region": "pampas",
+   "area": 133451,
+   "ll": [
+    -30.0571,
+    -60.8447
+   ],
+   "bbox": [
+    -62.884,
+    -34.386,
+    -58.88,
+    -27.999
+   ],
+   "borders": [
+    "ar-b",
+    "ar-e",
+    "ar-g",
+    "ar-h",
+    "ar-w",
+    "ar-x"
+   ]
+  },
+  "ar-t": {
+   "code": "T",
+   "ref": "AR-T",
+   "name": {
+    "pt": "Tucumán",
+    "en": "Tucumán",
+    "es": "Tucumán"
+   },
+   "alias": [
+    "Tucumã"
+   ],
+   "capital": {
+    "pt": "San Miguel de Tucumán",
+    "en": "San Miguel de Tucumán",
+    "es": "San Miguel de Tucumán"
+   },
+   "capAl": [
+    "Tucumán",
+    "São Miguel de Tucumã"
+   ],
+   "region": "nw",
+   "area": 22671,
+   "ll": [
+    -26.795,
+    -65.2801
+   ],
+   "bbox": [
+    -66.178,
+    -28.014,
+    -64.482,
+    -26.058
+   ],
+   "borders": [
+    "ar-a",
+    "ar-g",
+    "ar-k"
+   ]
+  },
+  "ar-u": {
+   "code": "U",
+   "ref": "AR-U",
+   "name": {
+    "pt": "Chubut",
+    "en": "Chubut",
+    "es": "Chubut"
+   },
+   "capital": {
+    "pt": "Rawson",
+    "en": "Rawson",
+    "es": "Rawson"
+   },
+   "region": "patagonia",
+   "area": 224388,
+   "ll": [
+    -43.9792,
+    -68.5078
+   ],
+   "bbox": [
+    -72.188,
+    -46.0,
+    -63.584,
+    -41.992
+   ],
+   "borders": [
+    "ar-r",
+    "ar-z"
+   ]
+  },
+  "ar-v": {
+   "code": "V",
+   "ref": "AR-V",
+   "name": {
+    "pt": "Terra do Fogo",
+    "en": "Tierra del Fuego",
+    "es": "Tierra del Fuego"
+   },
+   "alias": [
+    "Tierra del Fuego"
+   ],
+   "capital": {
+    "pt": "Ushuaia",
+    "en": "Ushuaia",
+    "es": "Ushuaia"
+   },
+   "region": "patagonia",
+   "area": 20602,
+   "ll": [
+    -54.2603,
+    -68.027
+   ],
+   "bbox": [
+    -68.609,
+    -55.058,
+    -63.796,
+    -52.658
+   ],
+   "borders": []
+  },
+  "ar-w": {
+   "code": "W",
+   "ref": "AR-W",
+   "name": {
+    "pt": "Corrientes",
+    "en": "Corrientes",
+    "es": "Corrientes"
+   },
+   "capital": {
+    "pt": "Corrientes",
+    "en": "Corrientes",
+    "es": "Corrientes"
+   },
+   "region": "ne",
+   "area": 89344,
+   "ll": [
+    -28.6554,
+    -57.7801
+   ],
+   "bbox": [
+    -59.671,
+    -30.73,
+    -55.62,
+    -27.262
+   ],
+   "borders": [
+    "ar-e",
+    "ar-h",
+    "ar-n",
+    "ar-s"
+   ]
+  },
+  "ar-x": {
+   "code": "X",
+   "ref": "AR-X",
+   "name": {
+    "pt": "Córdoba",
+    "en": "Córdoba",
+    "es": "Córdoba"
+   },
+   "alias": [
+    "Córdova"
+   ],
+   "capital": {
+    "pt": "Córdoba",
+    "en": "Córdoba",
+    "es": "Córdoba"
+   },
+   "capAl": [
+    "Córdova"
+   ],
+   "region": "pampas",
+   "area": 159957,
+   "ll": [
+    -32.7857,
+    -63.4591
+   ],
+   "bbox": [
+    -65.771,
+    -35.015,
+    -61.772,
+    -29.5
+   ],
+   "borders": [
+    "ar-b",
+    "ar-d",
+    "ar-f",
+    "ar-g",
+    "ar-k",
+    "ar-l",
+    "ar-s"
+   ]
+  },
+  "ar-y": {
+   "code": "Y",
+   "ref": "AR-Y",
+   "name": {
+    "pt": "Jujuy",
+    "en": "Jujuy",
+    "es": "Jujuy"
+   },
+   "capital": {
+    "pt": "San Salvador de Jujuy",
+    "en": "San Salvador de Jujuy",
+    "es": "San Salvador de Jujuy"
+   },
+   "capAl": [
+    "Jujuy"
+   ],
+   "region": "nw",
+   "area": 53362,
+   "ll": [
+    -22.7426,
+    -66.0407
+   ],
+   "bbox": [
+    -67.213,
+    -24.613,
+    -64.151,
+    -21.781
+   ],
+   "borders": [
+    "ar-a"
+   ]
+  },
+  "ar-z": {
+   "code": "Z",
+   "ref": "AR-Z",
+   "name": {
+    "pt": "Santa Cruz",
+    "en": "Santa Cruz",
+    "es": "Santa Cruz"
+   },
+   "capital": {
+    "pt": "Río Gallegos",
+    "en": "Río Gallegos",
+    "es": "Río Gallegos"
+   },
+   "region": "patagonia",
+   "area": 239099,
+   "ll": [
+    -48.356,
+    -70.1448
+   ],
+   "bbox": [
+    -73.56,
+    -52.397,
+    -65.718,
+    -46.0
+   ],
+   "borders": [
+    "ar-u"
+   ]
+  }
+ }
+}

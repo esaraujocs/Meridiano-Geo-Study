@@ -1,0 +1,538 @@
+{
+ "source": "Alemanha: os 16 estados (Länder). Berlim, Hamburgo e Bremen são cidades-estado e ficam fora dos modos de capital. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Leste, Oeste e Sul, agrupamento nosso por posição.",
+ "country": "de",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  }
+ },
+ "units": {
+  "de-bb": {
+   "code": "BB",
+   "ref": "DE-BB",
+   "name": {
+    "pt": "Brandemburgo",
+    "en": "Brandenburg",
+    "es": "Brandeburgo"
+   },
+   "capital": "Potsdam",
+   "region": "east",
+   "area": 29537,
+   "ll": [
+    52.0556,
+    14.1164
+   ],
+   "bbox": [
+    11.266,
+    51.359,
+    14.766,
+    53.559
+   ],
+   "borders": [
+    "de-be",
+    "de-mv",
+    "de-ni",
+    "de-sn",
+    "de-st"
+   ]
+  },
+  "de-be": {
+   "code": "BE",
+   "ref": "DE-BE",
+   "name": {
+    "pt": "Berlim",
+    "en": "Berlin",
+    "es": "Berlín"
+   },
+   "region": "east",
+   "area": 888,
+   "ll": [
+    52.524,
+    13.4156
+   ],
+   "bbox": [
+    13.088,
+    52.338,
+    13.761,
+    52.676
+   ],
+   "borders": [
+    "de-bb"
+   ]
+  },
+  "de-bw": {
+   "code": "BW",
+   "ref": "DE-BW",
+   "name": {
+    "pt": "Baden-Württemberg",
+    "en": "Baden-Württemberg",
+    "es": "Baden-Wurtemberg"
+   },
+   "alias": [
+    "Baden-Wurttemberg"
+   ],
+   "capital": "Stuttgart",
+   "capAl": [
+    "Estugarda"
+   ],
+   "region": "south",
+   "area": 35638,
+   "ll": [
+    48.6328,
+    9.1727
+   ],
+   "bbox": [
+    7.512,
+    47.533,
+    10.496,
+    49.791
+   ],
+   "borders": [
+    "de-by",
+    "de-he",
+    "de-rp"
+   ]
+  },
+  "de-by": {
+   "code": "BY",
+   "ref": "DE-BY",
+   "name": {
+    "pt": "Baviera",
+    "en": "Bavaria",
+    "es": "Baviera"
+   },
+   "alias": [
+    "Bayern"
+   ],
+   "capital": {
+    "pt": "Munique",
+    "en": "Munich",
+    "es": "Múnich"
+   },
+   "capAl": [
+    "München"
+   ],
+   "region": "south",
+   "area": 70320,
+   "ll": [
+    48.7747,
+    11.6834
+   ],
+   "bbox": [
+    8.976,
+    47.27,
+    13.84,
+    50.564
+   ],
+   "borders": [
+    "de-bw",
+    "de-he",
+    "de-sn",
+    "de-th"
+   ]
+  },
+  "de-hb": {
+   "code": "HB",
+   "ref": "DE-HB",
+   "name": {
+    "pt": "Bremen",
+    "en": "Bremen",
+    "es": "Bremen"
+   },
+   "region": "north",
+   "area": 386,
+   "ll": [
+    53.0798,
+    8.9113
+   ],
+   "bbox": [
+    8.488,
+    53.011,
+    8.991,
+    53.61
+   ],
+   "borders": [
+    "de-ni"
+   ]
+  },
+  "de-he": {
+   "code": "HE",
+   "ref": "DE-HE",
+   "name": {
+    "pt": "Hesse",
+    "en": "Hesse",
+    "es": "Hesse"
+   },
+   "alias": [
+    "Hessen"
+   ],
+   "capital": "Wiesbaden",
+   "region": "west",
+   "area": 21041,
+   "ll": [
+    50.8105,
+    9.2597
+   ],
+   "bbox": [
+    7.773,
+    49.396,
+    10.236,
+    51.658
+   ],
+   "borders": [
+    "de-bw",
+    "de-by",
+    "de-ni",
+    "de-nw",
+    "de-rp",
+    "de-th"
+   ]
+  },
+  "de-hh": {
+   "code": "HH",
+   "ref": "DE-HH",
+   "name": {
+    "pt": "Hamburgo",
+    "en": "Hamburg",
+    "es": "Hamburgo"
+   },
+   "region": "north",
+   "area": 751,
+   "ll": [
+    53.5419,
+    9.9696
+   ],
+   "bbox": [
+    8.421,
+    53.396,
+    10.325,
+    53.964
+   ],
+   "borders": [
+    "de-ni",
+    "de-sh"
+   ]
+  },
+  "de-mv": {
+   "code": "MV",
+   "ref": "DE-MV",
+   "name": {
+    "pt": "Mecklemburgo-Pomerânia Ocidental",
+    "en": "Mecklenburg-Vorpommern",
+    "es": "Mecklemburgo-Pomerania Occidental"
+   },
+   "alias": [
+    "Mecklemburgo"
+   ],
+   "capital": "Schwerin",
+   "region": "north",
+   "area": 23004,
+   "ll": [
+    53.7767,
+    12.854
+   ],
+   "bbox": [
+    10.595,
+    53.111,
+    14.412,
+    54.685
+   ],
+   "borders": [
+    "de-bb",
+    "de-ni",
+    "de-sh"
+   ]
+  },
+  "de-ni": {
+   "code": "NI",
+   "ref": "DE-NI",
+   "name": {
+    "pt": "Baixa Saxônia",
+    "en": "Lower Saxony",
+    "es": "Baja Sajonia"
+   },
+   "alias": [
+    "Niedersachsen"
+   ],
+   "capital": {
+    "pt": "Hanôver",
+    "en": "Hanover",
+    "es": "Hannover"
+   },
+   "capAl": [
+    "Hannover"
+   ],
+   "region": "north",
+   "area": 47459,
+   "ll": [
+    52.5648,
+    9.9558
+   ],
+   "bbox": [
+    6.681,
+    51.295,
+    11.598,
+    53.892
+   ],
+   "borders": [
+    "de-bb",
+    "de-hb",
+    "de-he",
+    "de-hh",
+    "de-mv",
+    "de-nw",
+    "de-sh",
+    "de-st",
+    "de-th"
+   ]
+  },
+  "de-nw": {
+   "code": "NW",
+   "ref": "DE-NW",
+   "name": {
+    "pt": "Renânia do Norte-Vestfália",
+    "en": "North Rhine-Westphalia",
+    "es": "Renania del Norte-Westfalia"
+   },
+   "alias": [
+    "Nordrhein-Westfalen"
+   ],
+   "capital": "Düsseldorf",
+   "region": "west",
+   "area": 33986,
+   "ll": [
+    51.5466,
+    7.4046
+   ],
+   "bbox": [
+    5.867,
+    50.323,
+    9.462,
+    52.532
+   ],
+   "borders": [
+    "de-he",
+    "de-ni",
+    "de-rp"
+   ]
+  },
+  "de-rp": {
+   "code": "RP",
+   "ref": "DE-RP",
+   "name": {
+    "pt": "Renânia-Palatinado",
+    "en": "Rhineland-Palatinate",
+    "es": "Renania-Palatinado"
+   },
+   "alias": [
+    "Rheinland-Pfalz"
+   ],
+   "capital": {
+    "pt": "Mainz",
+    "en": "Mainz",
+    "es": "Maguncia"
+   },
+   "capAl": [
+    "Mogúncia"
+   ],
+   "region": "west",
+   "area": 19791,
+   "ll": [
+    50.0994,
+    7.2681
+   ],
+   "bbox": [
+    6.112,
+    48.966,
+    8.508,
+    50.942
+   ],
+   "borders": [
+    "de-bw",
+    "de-he",
+    "de-nw",
+    "de-sl"
+   ]
+  },
+  "de-sh": {
+   "code": "SH",
+   "ref": "DE-SH",
+   "name": {
+    "pt": "Schleswig-Holstein",
+    "en": "Schleswig-Holstein",
+    "es": "Schleswig-Holstein"
+   },
+   "capital": "Kiel",
+   "region": "north",
+   "area": 15691,
+   "ll": [
+    54.2927,
+    9.4328
+   ],
+   "bbox": [
+    8.28,
+    53.36,
+    11.311,
+    55.058
+   ],
+   "borders": [
+    "de-hh",
+    "de-mv",
+    "de-ni"
+   ]
+  },
+  "de-sl": {
+   "code": "SL",
+   "ref": "DE-SL",
+   "name": {
+    "pt": "Sarre",
+    "en": "Saarland",
+    "es": "Sarre"
+   },
+   "capital": {
+    "pt": "Saarbrücken",
+    "en": "Saarbrücken",
+    "es": "Sarrebruck"
+   },
+   "region": "west",
+   "area": 2564,
+   "ll": [
+    49.4064,
+    7.0252
+   ],
+   "bbox": [
+    6.356,
+    49.112,
+    7.405,
+    49.639
+   ],
+   "borders": [
+    "de-rp"
+   ]
+  },
+  "de-sn": {
+   "code": "SN",
+   "ref": "DE-SN",
+   "name": {
+    "pt": "Saxônia",
+    "en": "Saxony",
+    "es": "Sajonia"
+   },
+   "alias": [
+    "Sachsen",
+    "Saxónia"
+   ],
+   "capital": {
+    "pt": "Dresden",
+    "en": "Dresden",
+    "es": "Dresde"
+   },
+   "capAl": [
+    "Dresda"
+   ],
+   "region": "east",
+   "area": 18383,
+   "ll": [
+    50.9839,
+    13.079
+   ],
+   "bbox": [
+    11.872,
+    50.171,
+    15.042,
+    51.685
+   ],
+   "borders": [
+    "de-bb",
+    "de-by",
+    "de-st",
+    "de-th"
+   ]
+  },
+  "de-st": {
+   "code": "ST",
+   "ref": "DE-ST",
+   "name": {
+    "pt": "Saxônia-Anhalt",
+    "en": "Saxony-Anhalt",
+    "es": "Sajonia-Anhalt"
+   },
+   "alias": [
+    "Sachsen-Anhalt",
+    "Saxónia-Anhalt"
+   ],
+   "capital": {
+    "pt": "Magdeburgo",
+    "en": "Magdeburg",
+    "es": "Magdeburgo"
+   },
+   "region": "east",
+   "area": 20476,
+   "ll": [
+    51.9536,
+    11.643
+   ],
+   "bbox": [
+    10.561,
+    50.938,
+    13.187,
+    53.041
+   ],
+   "borders": [
+    "de-bb",
+    "de-ni",
+    "de-sn",
+    "de-th"
+   ]
+  },
+  "de-th": {
+   "code": "TH",
+   "ref": "DE-TH",
+   "name": {
+    "pt": "Turíngia",
+    "en": "Thuringia",
+    "es": "Turingia"
+   },
+   "alias": [
+    "Thüringen"
+   ],
+   "capital": "Erfurt",
+   "region": "east",
+   "area": 16144,
+   "ll": [
+    50.9322,
+    10.7501
+   ],
+   "bbox": [
+    9.877,
+    50.204,
+    12.654,
+    51.649
+   ],
+   "borders": [
+    "de-by",
+    "de-he",
+    "de-ni",
+    "de-sn",
+    "de-st"
+   ]
+  }
+ }
+}

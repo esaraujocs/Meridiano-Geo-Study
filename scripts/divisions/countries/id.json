@@ -1,0 +1,780 @@
+{
+  "comment": "Indonésia: as 38 províncias (com as 4 novas da Papua de 2022: Papua do Sul, Central, das Montanhas e do Sudoeste). Jacarta fica fora dos modos de capital. Capitais do Wikidata com as mudanças recentes (Banjarbaru em Kalimantan do Sul desde 2022; Wamena, a sede da Papua das Montanhas). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as ilhas (Sumatra, Java e as Pequenas Sonda, Kalimantan, Celebes, Molucas e Papua).",
+  "id": "id",
+  "carta": "360",
+  "source": "overture",
+  "name": {
+    "pt": "Indonésia",
+    "en": "Indonesia",
+    "es": "Indonesia"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "província",
+      "many": "províncias",
+      "g": "f"
+    },
+    "en": {
+      "one": "province",
+      "many": "provinces"
+    },
+    "es": {
+      "one": "provincia",
+      "many": "provincias",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "sumatra": {
+      "pt": "Sumatra",
+      "en": "Sumatra",
+      "es": "Sumatra"
+    },
+    "java": {
+      "pt": "Java e Sonda",
+      "en": "Java and Lesser Sundas",
+      "es": "Java y Sonda"
+    },
+    "kalimantan": {
+      "pt": "Kalimantan",
+      "en": "Kalimantan",
+      "es": "Kalimantan"
+    },
+    "sulawesi": {
+      "pt": "Celebes",
+      "en": "Sulawesi",
+      "es": "Célebes"
+    },
+    "east": {
+      "pt": "Molucas e Papua",
+      "en": "Maluku and Papua",
+      "es": "Molucas y Papúa"
+    }
+  },
+  "leftoverKm": 80,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 360)",
+      "use": "a terra de Indonésia, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 38 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AC",
+      "name": "Aceh",
+      "alias": [
+        "Achém"
+      ],
+      "capital": "Banda Aceh",
+      "capAl": [
+        "Banda Achém"
+      ],
+      "region": "sumatra"
+    },
+    {
+      "code": "BA",
+      "name": "Bali",
+      "capital": "Denpasar",
+      "region": "java"
+    },
+    {
+      "code": "BB",
+      "name": "Bangka Belitung Islands",
+      "sourceName": "Kepulauan Bangka Belitung",
+      "names": {
+        "pt": "Bangka-Belitung",
+        "es": "Bangka-Belitung"
+      },
+      "alias": [
+        "Bangka Belitung"
+      ],
+      "capital": "Pangkal Pinang",
+      "capAl": [
+        "Pangkalpinang"
+      ],
+      "region": "sumatra"
+    },
+    {
+      "code": "BE",
+      "name": "Bengkulu",
+      "capital": "Bengkulu",
+      "region": "sumatra"
+    },
+    {
+      "code": "BT",
+      "name": "Banten",
+      "names": {
+        "es": "Bantén"
+      },
+      "capital": "Serang",
+      "region": "java"
+    },
+    {
+      "code": "GO",
+      "name": "Gorontalo",
+      "capital": "Gorontalo",
+      "region": "sulawesi"
+    },
+    {
+      "code": "JA",
+      "name": "Jambi",
+      "capital": "Jambi",
+      "region": "sumatra"
+    },
+    {
+      "code": "JB",
+      "name": "West Java",
+      "sourceName": "Jawa Barat",
+      "names": {
+        "pt": "Java Ocidental",
+        "es": "Java Occidental"
+      },
+      "alias": [
+        "Jawa Barat"
+      ],
+      "capital": "Bandung",
+      "region": "java"
+    },
+    {
+      "code": "JI",
+      "name": "East Java",
+      "sourceName": "Jawa Timur",
+      "names": {
+        "pt": "Java Oriental",
+        "es": "Java Oriental"
+      },
+      "alias": [
+        "Jawa Timur"
+      ],
+      "capital": {
+        "pt": "Surabaia",
+        "en": "Surabaya",
+        "es": "Surabaya"
+      },
+      "capAl": [
+        "Surabaya"
+      ],
+      "region": "java"
+    },
+    {
+      "code": "JK",
+      "name": "Jakarta",
+      "sourceName": "Daerah Khusus Ibukota Jakarta",
+      "names": {
+        "pt": "Jacarta",
+        "es": "Yakarta"
+      },
+      "region": "java"
+    },
+    {
+      "code": "JT",
+      "name": "Central Java",
+      "sourceName": "Jawa Tengah",
+      "names": {
+        "pt": "Java Central",
+        "es": "Java Central"
+      },
+      "alias": [
+        "Jawa Tengah"
+      ],
+      "capital": "Semarang",
+      "region": "java"
+    },
+    {
+      "code": "KB",
+      "name": "West Kalimantan",
+      "sourceName": "Kalimantan Barat",
+      "names": {
+        "pt": "Kalimantan Ocidental",
+        "es": "Kalimantan Occidental"
+      },
+      "alias": [
+        "Bornéu Ocidental"
+      ],
+      "capital": "Pontianak",
+      "region": "kalimantan"
+    },
+    {
+      "code": "KI",
+      "name": "East Kalimantan",
+      "sourceName": "Kalimantan Timur",
+      "names": {
+        "pt": "Kalimantan Oriental",
+        "es": "Kalimantan Oriental"
+      },
+      "alias": [
+        "Bornéu Oriental"
+      ],
+      "capital": "Samarinda",
+      "region": "kalimantan"
+    },
+    {
+      "code": "KR",
+      "name": "Riau Islands",
+      "sourceName": "Kepulauan Riau",
+      "names": {
+        "pt": "Ilhas Riau",
+        "es": "Islas Riau"
+      },
+      "alias": [
+        "Kepulauan Riau"
+      ],
+      "capital": "Tanjung Pinang",
+      "capAl": [
+        "Tanjungpinang"
+      ],
+      "region": "sumatra"
+    },
+    {
+      "code": "KS",
+      "name": "South Kalimantan",
+      "sourceName": "Kalimantan Selatan",
+      "names": {
+        "pt": "Kalimantan do Sul",
+        "es": "Kalimantan Meridional"
+      },
+      "alias": [
+        "Bornéu do Sul"
+      ],
+      "capital": "Banjarbaru",
+      "region": "kalimantan"
+    },
+    {
+      "code": "KT",
+      "name": "Central Kalimantan",
+      "sourceName": "Kalimantan Tengah",
+      "names": {
+        "pt": "Kalimantan Central",
+        "es": "Kalimantan Central"
+      },
+      "capital": "Palangka Raya",
+      "capAl": [
+        "Palangkaraya"
+      ],
+      "region": "kalimantan"
+    },
+    {
+      "code": "KU",
+      "name": "North Kalimantan",
+      "sourceName": "Kalimantan Utara",
+      "names": {
+        "pt": "Kalimantan do Norte",
+        "es": "Kalimantan Septentrional"
+      },
+      "alias": [
+        "Kalimantan Setentrional"
+      ],
+      "capital": "Tanjung Selor",
+      "region": "kalimantan"
+    },
+    {
+      "code": "LA",
+      "name": "Lampung",
+      "capital": "Bandar Lampung",
+      "region": "sumatra"
+    },
+    {
+      "code": "MA",
+      "name": "Maluku",
+      "names": {
+        "pt": "Molucas",
+        "es": "Molucas"
+      },
+      "alias": [
+        "Maluku"
+      ],
+      "capital": "Ambon",
+      "region": "east"
+    },
+    {
+      "code": "MU",
+      "name": "North Maluku",
+      "sourceName": "Maluku Utara",
+      "names": {
+        "pt": "Molucas do Norte",
+        "es": "Molucas Septentrional"
+      },
+      "alias": [
+        "Maluku Utara"
+      ],
+      "capital": "Sofifi",
+      "region": "east"
+    },
+    {
+      "code": "NB",
+      "name": "West Nusa Tenggara",
+      "sourceName": "Nusa Tenggara Barat",
+      "names": {
+        "pt": "Nusa Tenggara Ocidental",
+        "es": "Nusatenggara Occidental"
+      },
+      "alias": [
+        "Sonda Ocidental"
+      ],
+      "capital": "Mataram",
+      "region": "java"
+    },
+    {
+      "code": "NT",
+      "name": "East Nusa Tenggara",
+      "sourceName": "Nusa Tenggara Timur",
+      "names": {
+        "pt": "Nusa Tenggara Oriental",
+        "es": "Nusatenggara Oriental"
+      },
+      "alias": [
+        "Sonda Oriental"
+      ],
+      "capital": "Kupang",
+      "capAl": [
+        "Cupão"
+      ],
+      "region": "java"
+    },
+    {
+      "code": "PA",
+      "name": "Papua",
+      "names": {
+        "es": "Papúa"
+      },
+      "capital": "Jayapura",
+      "region": "east"
+    },
+    {
+      "code": "PB",
+      "name": "West Papua",
+      "sourceName": "Papua Barat",
+      "names": {
+        "pt": "Papua Ocidental",
+        "es": "Papúa Occidental"
+      },
+      "capital": "Manokwari",
+      "region": "east"
+    },
+    {
+      "code": "PD",
+      "name": "Southwest Papua",
+      "sourceName": "Papua Barat Daya",
+      "names": {
+        "pt": "Papua do Sudoeste",
+        "es": "Papúa Suroccidental"
+      },
+      "alias": [
+        "Sudoeste de Papua"
+      ],
+      "capital": "Sorong",
+      "region": "east"
+    },
+    {
+      "code": "PE",
+      "name": "Highland Papua",
+      "sourceName": "Papua Pegunungan",
+      "names": {
+        "pt": "Papua das Montanhas",
+        "es": "Papúa de las Tierras Altas"
+      },
+      "alias": [
+        "Alta Papua",
+        "Papua Pegunungan"
+      ],
+      "capital": "Wamena",
+      "capAl": [
+        "Jayawijaya"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "PS",
+      "name": "South Papua",
+      "sourceName": "Papua Selatan",
+      "names": {
+        "pt": "Papua do Sul",
+        "es": "Papúa Meridional"
+      },
+      "alias": [
+        "Papua Meridional"
+      ],
+      "capital": "Merauke",
+      "region": "east"
+    },
+    {
+      "code": "PT",
+      "name": "Central Papua",
+      "sourceName": "Papua Tengah",
+      "names": {
+        "pt": "Papua Central",
+        "es": "Papúa Central"
+      },
+      "capital": "Nabire",
+      "region": "east"
+    },
+    {
+      "code": "RI",
+      "name": "Riau",
+      "capital": "Pekanbaru",
+      "region": "sumatra"
+    },
+    {
+      "code": "SA",
+      "name": "North Sulawesi",
+      "sourceName": "Sulawesi Utara",
+      "names": {
+        "pt": "Celebes do Norte",
+        "es": "Célebes Septentrional"
+      },
+      "alias": [
+        "Sulawesi do Norte"
+      ],
+      "capital": "Manado",
+      "region": "sulawesi"
+    },
+    {
+      "code": "SB",
+      "name": "West Sumatra",
+      "sourceName": "Sumatera Barat",
+      "names": {
+        "pt": "Sumatra Ocidental",
+        "es": "Sumatra Occidental"
+      },
+      "capital": "Padang",
+      "region": "sumatra"
+    },
+    {
+      "code": "SG",
+      "name": "Southeast Sulawesi",
+      "sourceName": "Sulawesi Tenggara",
+      "names": {
+        "pt": "Celebes do Sudeste",
+        "es": "Célebes Suroriental"
+      },
+      "alias": [
+        "Sulawesi do Sudeste"
+      ],
+      "capital": "Kendari",
+      "region": "sulawesi"
+    },
+    {
+      "code": "SN",
+      "name": "South Sulawesi",
+      "sourceName": "Sulawesi Selatan",
+      "names": {
+        "pt": "Celebes do Sul",
+        "es": "Célebes Meridional"
+      },
+      "alias": [
+        "Sulawesi do Sul"
+      ],
+      "capital": {
+        "pt": "Makassar",
+        "en": "Makassar",
+        "es": "Macasar"
+      },
+      "capAl": [
+        "Macáçar",
+        "Macassar"
+      ],
+      "region": "sulawesi"
+    },
+    {
+      "code": "SR",
+      "name": "West Sulawesi",
+      "sourceName": "Sulawesi Barat",
+      "names": {
+        "pt": "Celebes Ocidental",
+        "es": "Célebes Occidental"
+      },
+      "alias": [
+        "Sulawesi Ocidental"
+      ],
+      "capital": "Mamuju",
+      "region": "sulawesi"
+    },
+    {
+      "code": "SS",
+      "name": "South Sumatra",
+      "sourceName": "Sumatera Selatan",
+      "names": {
+        "pt": "Sumatra do Sul",
+        "es": "Sumatra Meridional"
+      },
+      "capital": "Palembang",
+      "capAl": [
+        "Palimbão"
+      ],
+      "region": "sumatra"
+    },
+    {
+      "code": "ST",
+      "name": "Central Sulawesi",
+      "sourceName": "Sulawesi Tengah",
+      "names": {
+        "pt": "Celebes Central",
+        "es": "Célebes Central"
+      },
+      "alias": [
+        "Sulawesi Central"
+      ],
+      "capital": "Palu",
+      "region": "sulawesi"
+    },
+    {
+      "code": "SU",
+      "name": "North Sumatra",
+      "sourceName": "Sumatera Utara",
+      "names": {
+        "pt": "Sumatra do Norte",
+        "es": "Sumatra Septentrional"
+      },
+      "capital": "Medan",
+      "region": "sumatra"
+    },
+    {
+      "code": "YO",
+      "name": "Yogyakarta",
+      "sourceName": "Daerah Istimewa Yogyakarta",
+      "alias": [
+        "Jogjacarta"
+      ],
+      "capital": "Yogyakarta",
+      "capAl": [
+        "Jogjacarta"
+      ],
+      "region": "java"
+    }
+  ],
+  "probes": [
+    [
+      "Banda Aceh",
+      95.3175,
+      5.55,
+      "id-ac"
+    ],
+    [
+      "Denpasar",
+      115.2339,
+      -8.6717,
+      "id-ba"
+    ],
+    [
+      "Pangkal Pinang",
+      106.1,
+      -2.1,
+      "id-bb"
+    ],
+    [
+      "Bengkulu",
+      102.2592,
+      -3.7956,
+      "id-be"
+    ],
+    [
+      "Serang",
+      106.1503,
+      -6.12,
+      "id-bt"
+    ],
+    [
+      "Gorontalo",
+      123.0614,
+      0.5422,
+      "id-go"
+    ],
+    [
+      "Jambi",
+      103.6082,
+      -1.6288,
+      "id-ja"
+    ],
+    [
+      "Bandung",
+      107.6069,
+      -6.9219,
+      "id-jb"
+    ],
+    [
+      "Surabaia",
+      112.7378,
+      -7.2463,
+      "id-ji"
+    ],
+    [
+      "Semarang",
+      110.4225,
+      -6.99,
+      "id-jt"
+    ],
+    [
+      "Pontianak",
+      109.3667,
+      -0.0833,
+      "id-kb"
+    ],
+    [
+      "Samarinda",
+      117.1536,
+      -0.5022,
+      "id-ki"
+    ],
+    [
+      "Tanjung Pinang",
+      104.4554,
+      0.9188,
+      "id-kr"
+    ],
+    [
+      "Banjarbaru",
+      114.8309,
+      -3.4389,
+      "id-ks"
+    ],
+    [
+      "Palangka Raya",
+      113.92,
+      -2.21,
+      "id-kt"
+    ],
+    [
+      "Tanjung Selor",
+      117.366,
+      2.8435,
+      "id-ku"
+    ],
+    [
+      "Bandar Lampung",
+      105.2625,
+      -5.4294,
+      "id-la"
+    ],
+    [
+      "Ambon",
+      128.1783,
+      -3.6967,
+      "id-ma"
+    ],
+    [
+      "Sofifi",
+      127.3667,
+      0.7833,
+      "id-mu"
+    ],
+    [
+      "Mataram",
+      116.1167,
+      -8.5833,
+      "id-nb"
+    ],
+    [
+      "Kupang",
+      123.5778,
+      -10.1633,
+      "id-nt"
+    ],
+    [
+      "Jayapura",
+      140.7045,
+      -2.5425,
+      "id-pa"
+    ],
+    [
+      "Manokwari",
+      134.0833,
+      -0.8667,
+      "id-pb"
+    ],
+    [
+      "Sorong",
+      131.261,
+      -0.8796,
+      "id-pd"
+    ],
+    [
+      "Wamena",
+      139.0833,
+      -4.0833,
+      "id-pe"
+    ],
+    [
+      "Merauke",
+      139.6667,
+      -7.6667,
+      "id-ps"
+    ],
+    [
+      "Nabire",
+      135.5551,
+      -3.5402,
+      "id-pt"
+    ],
+    [
+      "Pekanbaru",
+      101.45,
+      0.5333,
+      "id-ri"
+    ],
+    [
+      "Manado",
+      124.8413,
+      1.4931,
+      "id-sa"
+    ],
+    [
+      "Padang",
+      100.3606,
+      -0.9556,
+      "id-sb"
+    ],
+    [
+      "Kendari",
+      122.5947,
+      -3.9675,
+      "id-sg"
+    ],
+    [
+      "Makassar",
+      119.4136,
+      -5.1331,
+      "id-sn"
+    ],
+    [
+      "Mamuju",
+      118.8933,
+      -2.6786,
+      "id-sr"
+    ],
+    [
+      "Palembang",
+      104.7644,
+      -2.9833,
+      "id-ss"
+    ],
+    [
+      "Palu",
+      119.8594,
+      -0.895,
+      "id-st"
+    ],
+    [
+      "Medan",
+      98.6739,
+      3.5894,
+      "id-su"
+    ],
+    [
+      "Yogyakarta",
+      110.3913,
+      -7.8005,
+      "id-yo"
+    ]
+  ]
+}

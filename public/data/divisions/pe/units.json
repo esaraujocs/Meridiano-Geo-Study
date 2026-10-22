@@ -1,0 +1,751 @@
+{
+ "source": "Peru: as 25 regiões do Overture (24 departamentos e Callao; a Província de Lima vem junto com a Região Lima, então a capital da unidade é Lima, com Huacho, a sede da Região Lima, aceita). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Centro e Sul, agrupamento nosso por posição.",
+ "country": "pe",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "center": {
+   "pt": "Centro",
+   "en": "Centre",
+   "es": "Centro"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  }
+ },
+ "units": {
+  "pe-ama": {
+   "code": "AMA",
+   "ref": "PE-AMA",
+   "name": {
+    "pt": "Amazonas",
+    "en": "Amazonas",
+    "es": "Amazonas"
+   },
+   "capital": "Chachapoyas",
+   "region": "north",
+   "area": 39408,
+   "ll": [
+    -4.2754,
+    -78.0863
+   ],
+   "bbox": [
+    -78.712,
+    -6.987,
+    -77.132,
+    -2.986
+   ],
+   "borders": [
+    "pe-caj",
+    "pe-lal",
+    "pe-lor",
+    "pe-sam"
+   ]
+  },
+  "pe-anc": {
+   "code": "ANC",
+   "ref": "PE-ANC",
+   "name": {
+    "pt": "Áncash",
+    "en": "Áncash",
+    "es": "Áncash"
+   },
+   "alias": [
+    "Ancash"
+   ],
+   "capital": "Huaraz",
+   "region": "center",
+   "area": 36074,
+   "ll": [
+    -9.3592,
+    -77.6868
+   ],
+   "bbox": [
+    -78.658,
+    -10.786,
+    -76.726,
+    -8.05
+   ],
+   "borders": [
+    "pe-huc",
+    "pe-lal",
+    "pe-lim"
+   ]
+  },
+  "pe-apu": {
+   "code": "APU",
+   "ref": "PE-APU",
+   "name": {
+    "pt": "Apurímac",
+    "en": "Apurímac",
+    "es": "Apurímac"
+   },
+   "capital": "Abancay",
+   "region": "south",
+   "area": 21183,
+   "ll": [
+    -14.0384,
+    -72.9598
+   ],
+   "bbox": [
+    -73.847,
+    -14.843,
+    -72.051,
+    -13.171
+   ],
+   "borders": [
+    "pe-are",
+    "pe-aya",
+    "pe-cus"
+   ]
+  },
+  "pe-are": {
+   "code": "ARE",
+   "ref": "PE-ARE",
+   "name": {
+    "pt": "Arequipa",
+    "en": "Arequipa",
+    "es": "Arequipa"
+   },
+   "capital": "Arequipa",
+   "region": "south",
+   "area": 63449,
+   "ll": [
+    -15.7833,
+    -72.3937
+   ],
+   "bbox": [
+    -75.072,
+    -17.283,
+    -70.804,
+    -14.633
+   ],
+   "borders": [
+    "pe-apu",
+    "pe-aya",
+    "pe-cus",
+    "pe-ica",
+    "pe-moq",
+    "pe-pun"
+   ]
+  },
+  "pe-aya": {
+   "code": "AYA",
+   "ref": "PE-AYA",
+   "name": {
+    "pt": "Ayacucho",
+    "en": "Ayacucho",
+    "es": "Ayacucho"
+   },
+   "capital": "Ayacucho",
+   "capAl": [
+    "Aiacucho",
+    "Huamanga"
+   ],
+   "region": "south",
+   "area": 43754,
+   "ll": [
+    -14.3521,
+    -74.2029
+   ],
+   "bbox": [
+    -75.14,
+    -15.63,
+    -72.847,
+    -12.168
+   ],
+   "borders": [
+    "pe-apu",
+    "pe-are",
+    "pe-cus",
+    "pe-huv",
+    "pe-ica",
+    "pe-jun"
+   ]
+  },
+  "pe-caj": {
+   "code": "CAJ",
+   "ref": "PE-CAJ",
+   "name": {
+    "pt": "Cajamarca",
+    "en": "Cajamarca",
+    "es": "Cajamarca"
+   },
+   "capital": "Cajamarca",
+   "region": "north",
+   "area": 33070,
+   "ll": [
+    -6.8744,
+    -78.5938
+   ],
+   "bbox": [
+    -79.458,
+    -7.764,
+    -77.741,
+    -4.624
+   ],
+   "borders": [
+    "pe-ama",
+    "pe-lal",
+    "pe-lam",
+    "pe-piu"
+   ]
+  },
+  "pe-cal": {
+   "code": "CAL",
+   "ref": "PE-CAL",
+   "name": {
+    "pt": "Callao",
+    "en": "Callao",
+    "es": "Callao"
+   },
+   "capital": "Callao",
+   "region": "center",
+   "area": 162,
+   "ll": [
+    -11.8921,
+    -77.1206
+   ],
+   "bbox": [
+    -77.252,
+    -12.121,
+    -77.077,
+    -11.818
+   ],
+   "borders": [
+    "pe-lim"
+   ]
+  },
+  "pe-cus": {
+   "code": "CUS",
+   "ref": "PE-CUS",
+   "name": {
+    "pt": "Cusco",
+    "en": "Cusco",
+    "es": "Cusco"
+   },
+   "alias": [
+    "Cuzco"
+   ],
+   "capital": "Cusco",
+   "capAl": [
+    "Cuzco"
+   ],
+   "region": "south",
+   "area": 72284,
+   "ll": [
+    -12.6357,
+    -72.8142
+   ],
+   "bbox": [
+    -73.98,
+    -15.457,
+    -70.346,
+    -11.183
+   ],
+   "borders": [
+    "pe-apu",
+    "pe-are",
+    "pe-aya",
+    "pe-jun",
+    "pe-mdd",
+    "pe-pun",
+    "pe-uca"
+   ]
+  },
+  "pe-huc": {
+   "code": "HUC",
+   "ref": "PE-HUC",
+   "name": {
+    "pt": "Huánuco",
+    "en": "Huánuco",
+    "es": "Huánuco"
+   },
+   "capital": "Huánuco",
+   "region": "center",
+   "area": 37526,
+   "ll": [
+    -9.6796,
+    -76.2218
+   ],
+   "bbox": [
+    -77.318,
+    -10.489,
+    -74.527,
+    -8.314
+   ],
+   "borders": [
+    "pe-anc",
+    "pe-lal",
+    "pe-lim",
+    "pe-lor",
+    "pe-pas",
+    "pe-sam",
+    "pe-uca"
+   ]
+  },
+  "pe-huv": {
+   "code": "HUV",
+   "ref": "PE-HUV",
+   "name": {
+    "pt": "Huancavelica",
+    "en": "Huancavelica",
+    "es": "Huancavelica"
+   },
+   "capital": "Huancavelica",
+   "region": "center",
+   "area": 22163,
+   "ll": [
+    -12.8767,
+    -74.9517
+   ],
+   "bbox": [
+    -75.81,
+    -14.13,
+    -74.27,
+    -11.984
+   ],
+   "borders": [
+    "pe-aya",
+    "pe-ica",
+    "pe-jun",
+    "pe-lim"
+   ]
+  },
+  "pe-ica": {
+   "code": "ICA",
+   "ref": "PE-ICA",
+   "name": {
+    "pt": "Ica",
+    "en": "Ica",
+    "es": "Ica"
+   },
+   "capital": "Ica",
+   "region": "center",
+   "area": 21204,
+   "ll": [
+    -14.3648,
+    -75.5659
+   ],
+   "bbox": [
+    -76.398,
+    -15.444,
+    -74.646,
+    -12.966
+   ],
+   "borders": [
+    "pe-are",
+    "pe-aya",
+    "pe-huv",
+    "pe-lim"
+   ]
+  },
+  "pe-jun": {
+   "code": "JUN",
+   "ref": "PE-JUN",
+   "name": {
+    "pt": "Junín",
+    "en": "Junín",
+    "es": "Junín"
+   },
+   "capital": "Huancayo",
+   "region": "center",
+   "area": 44469,
+   "ll": [
+    -11.5017,
+    -75.4007
+   ],
+   "bbox": [
+    -76.519,
+    -12.684,
+    -73.355,
+    -10.653
+   ],
+   "borders": [
+    "pe-aya",
+    "pe-cus",
+    "pe-huv",
+    "pe-lim",
+    "pe-pas",
+    "pe-uca"
+   ]
+  },
+  "pe-lal": {
+   "code": "LAL",
+   "ref": "PE-LAL",
+   "name": {
+    "pt": "La Libertad",
+    "en": "La Libertad",
+    "es": "La Libertad"
+   },
+   "alias": [
+    "Liberdade"
+   ],
+   "capital": "Trujillo",
+   "region": "north",
+   "area": 25305,
+   "ll": [
+    -8.1253,
+    -78.5309
+   ],
+   "bbox": [
+    -79.692,
+    -8.971,
+    -76.901,
+    -6.942
+   ],
+   "borders": [
+    "pe-ama",
+    "pe-anc",
+    "pe-caj",
+    "pe-huc",
+    "pe-lam",
+    "pe-sam"
+   ]
+  },
+  "pe-lam": {
+   "code": "LAM",
+   "ref": "PE-LAM",
+   "name": {
+    "pt": "Lambayeque",
+    "en": "Lambayeque",
+    "es": "Lambayeque"
+   },
+   "capital": "Chiclayo",
+   "region": "north",
+   "area": 14749,
+   "ll": [
+    -6.2658,
+    -79.9038
+   ],
+   "bbox": [
+    -80.627,
+    -7.177,
+    -79.121,
+    -5.48
+   ],
+   "borders": [
+    "pe-caj",
+    "pe-lal",
+    "pe-piu"
+   ]
+  },
+  "pe-lim": {
+   "code": "LIM",
+   "ref": "PE-LIM",
+   "name": {
+    "pt": "Lima",
+    "en": "Lima",
+    "es": "Lima"
+   },
+   "capital": "Lima",
+   "capAl": [
+    "Huacho"
+   ],
+   "region": "center",
+   "area": 35147,
+   "ll": [
+    -12.4962,
+    -76.131
+   ],
+   "bbox": [
+    -77.886,
+    -13.324,
+    -75.508,
+    -10.274
+   ],
+   "borders": [
+    "pe-anc",
+    "pe-cal",
+    "pe-huc",
+    "pe-huv",
+    "pe-ica",
+    "pe-jun",
+    "pe-pas"
+   ]
+  },
+  "pe-lor": {
+   "code": "LOR",
+   "ref": "PE-LOR",
+   "name": {
+    "pt": "Loreto",
+    "en": "Loreto",
+    "es": "Loreto"
+   },
+   "capital": "Iquitos",
+   "region": "north",
+   "area": 376502,
+   "ll": [
+    -4.0024,
+    -74.7963
+   ],
+   "bbox": [
+    -77.826,
+    -8.709,
+    -69.938,
+    -0.04
+   ],
+   "borders": [
+    "pe-ama",
+    "pe-huc",
+    "pe-sam",
+    "pe-uca"
+   ]
+  },
+  "pe-mdd": {
+   "code": "MDD",
+   "ref": "PE-MDD",
+   "name": {
+    "pt": "Madre de Dios",
+    "en": "Madre de Dios",
+    "es": "Madre de Dios"
+   },
+   "alias": [
+    "Madre de Deus"
+   ],
+   "capital": "Puerto Maldonado",
+   "region": "south",
+   "area": 84906,
+   "ll": [
+    -12.1036,
+    -70.1052
+   ],
+   "bbox": [
+    -72.429,
+    -13.341,
+    -68.652,
+    -9.907
+   ],
+   "borders": [
+    "pe-cus",
+    "pe-pun",
+    "pe-uca"
+   ]
+  },
+  "pe-moq": {
+   "code": "MOQ",
+   "ref": "PE-MOQ",
+   "name": {
+    "pt": "Moquegua",
+    "en": "Moquegua",
+    "es": "Moquegua"
+   },
+   "capital": "Moquegua",
+   "region": "south",
+   "area": 15796,
+   "ll": [
+    -16.8951,
+    -70.9198
+   ],
+   "bbox": [
+    -71.491,
+    -17.822,
+    -69.996,
+    -15.976
+   ],
+   "borders": [
+    "pe-are",
+    "pe-pun",
+    "pe-tac"
+   ]
+  },
+  "pe-pas": {
+   "code": "PAS",
+   "ref": "PE-PAS",
+   "name": {
+    "pt": "Pasco",
+    "en": "Pasco",
+    "es": "Pasco"
+   },
+   "capital": "Cerro de Pasco",
+   "region": "center",
+   "area": 24070,
+   "ll": [
+    -10.2754,
+    -74.7871
+   ],
+   "bbox": [
+    -76.73,
+    -11.156,
+    -74.132,
+    -9.446
+   ],
+   "borders": [
+    "pe-huc",
+    "pe-jun",
+    "pe-lim",
+    "pe-uca"
+   ]
+  },
+  "pe-piu": {
+   "code": "PIU",
+   "ref": "PE-PIU",
+   "name": {
+    "pt": "Piura",
+    "en": "Piura",
+    "es": "Piura"
+   },
+   "capital": "Piura",
+   "region": "north",
+   "area": 35547,
+   "ll": [
+    -5.0871,
+    -80.4529
+   ],
+   "bbox": [
+    -81.328,
+    -6.372,
+    -79.21,
+    -4.08
+   ],
+   "borders": [
+    "pe-caj",
+    "pe-lam",
+    "pe-tum"
+   ]
+  },
+  "pe-pun": {
+   "code": "PUN",
+   "ref": "PE-PUN",
+   "name": {
+    "pt": "Puno",
+    "en": "Puno",
+    "es": "Puno"
+   },
+   "capital": "Puno",
+   "region": "south",
+   "area": 67967,
+   "ll": [
+    -14.1946,
+    -69.9557
+   ],
+   "bbox": [
+    -71.118,
+    -17.295,
+    -68.827,
+    -13.005
+   ],
+   "borders": [
+    "pe-are",
+    "pe-cus",
+    "pe-mdd",
+    "pe-moq",
+    "pe-tac"
+   ]
+  },
+  "pe-sam": {
+   "code": "SAM",
+   "ref": "PE-SAM",
+   "name": {
+    "pt": "San Martín",
+    "en": "San Martín",
+    "es": "San Martín"
+   },
+   "capital": "Moyobamba",
+   "region": "north",
+   "area": 50852,
+   "ll": [
+    -7.2007,
+    -76.8951
+   ],
+   "bbox": [
+    -77.775,
+    -8.796,
+    -75.499,
+    -5.407
+   ],
+   "borders": [
+    "pe-ama",
+    "pe-huc",
+    "pe-lal",
+    "pe-lor"
+   ]
+  },
+  "pe-tac": {
+   "code": "TAC",
+   "ref": "PE-TAC",
+   "name": {
+    "pt": "Tacna",
+    "en": "Tacna",
+    "es": "Tacna"
+   },
+   "capital": "Tacna",
+   "region": "south",
+   "area": 16042,
+   "ll": [
+    -17.7559,
+    -70.3431
+   ],
+   "bbox": [
+    -71.139,
+    -18.35,
+    -69.468,
+    -16.77
+   ],
+   "borders": [
+    "pe-moq",
+    "pe-pun"
+   ]
+  },
+  "pe-tum": {
+   "code": "TUM",
+   "ref": "PE-TUM",
+   "name": {
+    "pt": "Tumbes",
+    "en": "Tumbes",
+    "es": "Tumbes"
+   },
+   "capital": "Tumbes",
+   "region": "north",
+   "area": 4671,
+   "ll": [
+    -3.7628,
+    -80.4078
+   ],
+   "bbox": [
+    -81.044,
+    -4.232,
+    -80.126,
+    -3.398
+   ],
+   "borders": [
+    "pe-piu"
+   ]
+  },
+  "pe-uca": {
+   "code": "UCA",
+   "ref": "PE-UCA",
+   "name": {
+    "pt": "Ucayali",
+    "en": "Ucayali",
+    "es": "Ucayali"
+   },
+   "capital": "Pucallpa",
+   "region": "center",
+   "area": 105755,
+   "ll": [
+    -10.2602,
+    -72.9753
+   ],
+   "bbox": [
+    -75.946,
+    -11.448,
+    -70.495,
+    -7.262
+   ],
+   "borders": [
+    "pe-cus",
+    "pe-huc",
+    "pe-jun",
+    "pe-lor",
+    "pe-mdd",
+    "pe-pas"
+   ]
+  }
+ }
+}
