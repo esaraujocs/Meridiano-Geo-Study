@@ -312,3 +312,15 @@
   .pd-win{grid-column:2;grid-row:1;text-align:right}
   .pd-styles li{grid-template-columns:minmax(0,120px) 1fr 62px}
 }
+
+/* Estatísticas: as seções que abrem (22/10/2026; eram as abas Modos, Seu ritmo e Duelos) */
+.pf-more-title{margin:10px 0 0;font:700 13px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pf-more{display:grid;gap:14px}
+.pf-more-h{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;padding:14px 18px;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.pf-more-h:hover{border-color:color-mix(in srgb,var(--ink) 30%,var(--line))}
+.pf-more-i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--ink)}
+.pf-more-t b{display:block;font:700 17px 'Plus Jakarta Sans',sans-serif}
+.pf-more-t small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.pf-more-h>svg{transition:transform .2s ease}
+.pf-more.is-open .pf-more-h>svg{transform:rotate(180deg)}
+.pf-more-b{display:grid;gap:14px}

@@ -115,6 +115,19 @@ function Pillars({ pillars, onTrain }: { pillars: PillarCard[]; onTrain: (family
 }
 
 // ---------- para revisar ----------
+/** Uma seção das Estatísticas que abre no lugar (as antigas abas Modos, Seu ritmo e Duelos); o conteúdo só é montado aberto. */
+function MoreSection({ id, icon, title, sub, children }: { id: string; icon: ReactNode; title: string; sub: string; children: () => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return <div className={`pf-more${open ? " is-open" : ""}`}>
+    <button type="button" className="pr-card pf-more-h" aria-expanded={open} aria-controls={`pf-more-${id}`} onClick={() => setOpen((value) => !value)}>
+      <span className="pf-more-i" aria-hidden="true">{icon}</span>
+      <span className="pf-more-t"><b>{title}</b><small>{sub}</small></span>
+      <Icon type="chevron" size={18} />
+    </button>
+    <div id={`pf-more-${id}`} className="pf-more-b" hidden={!open}>{open && children()}</div>
+  </div>;
+}
+
 function Review({ review, flagOf }: { review: Dashboard["review"]; flagOf: FlagOf }) {
   const [all, setAll] = useState(false);
   const items: ReviewItem[] = all ? review.items : review.items.slice(0, 5);
@@ -371,7 +384,9 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
 
 // ---------- tela ----------
 export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague, onTrainFocus, ladderEntries }: Props) {
-  const [tab, setTab] = useState<"resumo" | "modos" | "ritmo" | "duelos" | "historico">("resumo");
+  // duas abas (22/10/2026, pedido do Enzo: "muitas sub-abas; uma de histórico e outra de estatísticas com os cards mais importantes"):
+  // Modos, Seu ritmo e Duelos viraram seções que abrem no fim das Estatísticas
+  const [tab, setTab] = useState<"estatisticas" | "historico">("estatisticas");
   const [measure, setMeasure] = useState<MapMeasure>("domain");
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
@@ -467,17 +482,11 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
   return <section className="pr pf" aria-label={t.progress.aria}>
     <ProfileHero hero={hero} kpis={kpis} name={pvpAccountName() || pvpName()} ladders={ladders} />
     <div className="pg-chips pr-tabs pf-tabs" role="group" aria-label={t.progress.sections}>
-      <button type="button" className="pg-chip" aria-pressed={tab === "resumo"} onClick={() => setTab("resumo")}><Glyph name="bars" size={17} /> {t.progress.summary}</button>
-      <button type="button" className="pg-chip" aria-pressed={tab === "modos"} onClick={() => setTab("modos")}><Glyph name="world" size={17} /> {t.profile.tabModes}</button>
-      <button type="button" className="pg-chip" aria-pressed={tab === "ritmo"} onClick={() => setTab("ritmo")}><Glyph name="clock" size={17} /> {t.profile.tabRhythm}</button>
-      <button type="button" className="pg-chip" aria-pressed={tab === "duelos"} onClick={() => setTab("duelos")}><Icon type="swords" size={17} /> {t.profile.tabDuels}</button>
+      <button type="button" className="pg-chip" aria-pressed={tab === "estatisticas"} onClick={() => setTab("estatisticas")}><Glyph name="bars" size={17} /> {t.profile.tabStats}</button>
       <button type="button" className="pg-chip" aria-pressed={tab === "historico"} onClick={() => setTab("historico")}><Glyph name="history" size={17} /> {t.progress.history} {dashboard.history.length > 0 && <em>{dashboard.history.length}</em>}</button>
       <button type="button" className="pr-how" onClick={() => howRef.current?.showModal()}><Glyph name="info" size={16} /> <span className="pr-d">{t.progress.howTitle}</span><span className="pr-m">{t.progress.howShort}</span></button>
     </div>
     {tab === "historico" ? <History rows={dashboard.history} now={now} flagOf={flagOf} />
-      : tab === "modos" ? <ModesTab modes={modes} after={reflexData.length ? <ReflexesCard data={reflexData} lookup={reflexLookup} onTrain={onTrainFocus ? (mode) => onTrainFocus(mode, mode.slow.map((item) => item.id)) : undefined} /> : null} />
-      : tab === "duelos" ? <DuelsTab duels={state.duels} entries={ladderEntries ?? state.duels} pvpMatches={state.pvpMatches} ladders={ladders} />
-      : tab === "ritmo" ? <RhythmTab rounds={rounds} modes={modes} calendar={<Activity activity={dashboard.activity} />} />
       : dashboard.empty ? <EmptySummary dashboard={dashboard} onTrain={onTrain} />
       : <>
         <div className="pf-row pf-row-map">
@@ -488,7 +497,12 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
           <Evolution evolution={dashboard.evolution} timeline={state.domainTimeline} stages={stageMarks} />
           <NumbersCard items={numbers} since={Number.isFinite(firstAt) ? formatShortDate(firstAt) : null} />
         </div>
+        {reflexData.length > 0 && <ReflexesCard data={reflexData} lookup={reflexLookup} onTrain={onTrainFocus ? (mode) => onTrainFocus(mode, mode.slow.map((item) => item.id)) : undefined} />}
         {dashboard.review.total > 0 && <Review review={dashboard.review} flagOf={flagOf} />}
+        <h2 className="pf-more-title">{t.profile.moreTitle}</h2>
+        <MoreSection id="modos" icon={<Glyph name="world" size={20} />} title={t.profile.tabModes} sub={t.profile.moreModesSub}>{() => <ModesTab modes={modes} />}</MoreSection>
+        <MoreSection id="ritmo" icon={<Glyph name="clock" size={20} />} title={t.profile.tabRhythm} sub={t.profile.moreRhythmSub}>{() => <RhythmTab rounds={rounds} modes={modes} calendar={<Activity activity={dashboard.activity} />} />}</MoreSection>
+        <MoreSection id="duelos" icon={<Icon type="swords" size={20} />} title={t.profile.tabDuels} sub={t.profile.moreDuelsSub}>{() => <DuelsTab duels={state.duels} entries={ladderEntries ?? state.duels} pvpMatches={state.pvpMatches} ladders={ladders} />}</MoreSection>
       </>}
     <HowDialog dialog={howRef} />
   </section>;
