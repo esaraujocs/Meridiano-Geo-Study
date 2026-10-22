@@ -7,12 +7,11 @@ import type { Legacy } from "./types";
 type Meta = Legacy["meta"];
 export type TravelGraph = ReadonlyMap<string, ReadonlySet<string>>;
 
-/** Pontes e túneis que o Travle conta como ligação (cca3), além das fronteiras do catálogo: o Eurotúnel, Øresund e a ponte de Singapura.
- *  O Pelješac e o Bósforo ficam dentro de um país só; territórios ultramarinos não ligam o país-mãe (decisão do Enzo). */
-export const TRAVEL_LINKS: ReadonlyArray<readonly [string, string]> = [["FRA", "GBR"], ["DNK", "SWE"], ["MYS", "SGP"]];
-/** Fronteiras que o catálogo tem só por um exclave (como no Travle, exclave não liga): Kaliningrado (Lituânia–Rússia; o catálogo já não ligava
- *  Polônia–Rússia), Nakhchivan (Turquia–Azerbaijão) e Cabinda (Angola–Congo). Achado pelo Enzo em 21/10/2026 (Polônia → Rússia não fechava). */
-export const TRAVEL_UNLINKS: ReadonlyArray<readonly [string, string]> = [["LTU", "RUS"], ["TUR", "AZE"], ["AGO", "COG"]];
+/** Ligações além das fronteiras do catálogo: pontes e túneis que o Travle aceita (o Eurotúnel, Øresund, a ponte de Singapura) e as fronteiras
+ *  por exclave que o catálogo não tem. Exclave conta (decisão do Enzo, 21/10/2026: vale o que o mapa pinta como o mesmo país): Kaliningrado liga
+ *  a Rússia à Polônia (e à Lituânia, que o catálogo já tinha), Ceuta e Melilla ligam a Espanha ao Marrocos; Nakhchivan (Turquia–Azerbaijão) e
+ *  Cabinda (Angola–Congo) já estavam no catálogo. Território de ultramar que o mapa pinta à parte (a Guiana Francesa) não liga o país-mãe. */
+export const TRAVEL_LINKS: ReadonlyArray<readonly [string, string]> = [["FRA", "GBR"], ["DNK", "SWE"], ["MYS", "SGP"], ["POL", "RUS"], ["ESP", "MAR"]];
 /** O Saara Ocidental entra (como no Travle: é ele que separa o Marrocos da Mauritânia), fora do filtro "Só países". */
 export const TRAVEL_EXTRA_IDS: readonly string[] = ["732"];
 
@@ -43,10 +42,6 @@ export function travelGraph(meta: Meta, ids: readonly string[]): Map<string, Set
   };
   for (const id of ids) for (const border of meta[id]?.borders ?? []) link(id, byCca3.get(String(border).toUpperCase()));
   for (const [a, b] of TRAVEL_LINKS) link(byCca3.get(a), byCca3.get(b));
-  for (const [a, b] of TRAVEL_UNLINKS) {
-    const x = byCca3.get(a), y = byCca3.get(b);
-    if (x && y) { graph.get(x)?.delete(y); graph.get(y)?.delete(x); }
-  }
   return graph;
 }
 
@@ -129,9 +124,40 @@ export function gradeGuess(graph: TravelGraph, puzzle: TravelPuzzle, before: Rea
   return "far";
 }
 
-/** A folga do Travle sobre o mínimo de chutes: 3 → +4, 4–6 → +5, 7–9 → +6, 10–12 → +7, 13 ou mais → +8 (rotas curtas também +4). */
-export const travelExtra = (shortest: number) => (shortest <= 3 ? 4 : shortest <= 6 ? 5 : shortest <= 9 ? 6 : shortest <= 12 ? 7 : 8);
-export const travelBudget = (shortest: number) => shortest + travelExtra(shortest);
+/** Os níveis (decisão do Enzo, 21/10/2026: "qualquer ordem fica bagunçado, a não ser que tenha níveis com a tolerância diminuindo"):
+ *  `livre` qualquer ordem (o Travle); `trilha` cada chute tem de encostar na cadeia que sai da origem; `exata` só o próximo país de um caminho
+ *  mais curto, em ordem. Chute que o nível não aceita gasta um chute e não entra no mapa. */
+export type TravelLevel = "livre" | "trilha" | "exata";
+export const TRAVEL_LEVELS: readonly TravelLevel[] = ["livre", "trilha", "exata"];
+export const DEFAULT_TRAVEL_LEVEL: TravelLevel = "trilha";
+export const isTravelLevel = (value: unknown): value is TravelLevel => TRAVEL_LEVELS.includes(value as TravelLevel);
+const TRAVEL_LEVEL_KEY = "carta-travel-level";
+/** O nível escolhido na Mesa (guardado no navegador, como o sentido das bandeiras). */
+export function readTravelLevel(): TravelLevel {
+  try { const saved = localStorage.getItem(TRAVEL_LEVEL_KEY); return isTravelLevel(saved) ? saved : DEFAULT_TRAVEL_LEVEL; } catch { return DEFAULT_TRAVEL_LEVEL; }
+}
+export function saveTravelLevel(level: TravelLevel) {
+  try { localStorage.setItem(TRAVEL_LEVEL_KEY, level); } catch { /* sem armazenamento */ }
+}
+/** A folga de cada nível e o que ele paga, para a Mesa. */
+export const TRAVEL_LEVEL_EXTRA: Record<TravelLevel, string> = { livre: "4–6", trilha: "2–3", exata: "1" };
+/** Quanto cada nível paga a mais. */
+export const TRAVEL_LEVEL_COINS: Record<TravelLevel, number> = { livre: 1, trilha: 1.25, exata: 1.5 };
+
+/** A folga sobre o mínimo de chutes. Livre, a do Travle: 3 → +4, 4–6 → +5, 7–9 → +6, 10–12 → +7, 13 ou mais → +8 (rotas curtas também +4);
+ *  Trilha, +2 até 3 países e +3 acima; Rota exata, +1. */
+export const travelExtra = (shortest: number, level: TravelLevel = "livre") =>
+  level === "exata" ? 1 : level === "trilha" ? (shortest <= 3 ? 2 : 3) : shortest <= 3 ? 4 : shortest <= 6 ? 5 : shortest <= 9 ? 6 : shortest <= 12 ? 7 : 8;
+export const travelBudget = (shortest: number, level: TravelLevel = "livre") => shortest + travelExtra(shortest, level);
+
+/** O nível aceita o chute? `tip`: na Rota exata, o último país aceito (ou a origem). */
+export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
+  if (level === "livre") return true;
+  const near = graph.get(guess) ?? new Set<string>();
+  if (level === "trilha") return [...linkedToStart(graph, puzzle.start, have)].some((id) => near.has(id));
+  const toEnd = distancesFrom(graph, puzzle.end);
+  return near.has(tip) && toEnd.get(guess) === (toEnd.get(tip) ?? Infinity) - 1;
+}
 
 /** Rotas de 3 a 8 países ao todo (decisão do Enzo, "misturadas"): de 2 a 7 fronteiras entre origem e destino, com as do meio mais frequentes. */
 export const TRAVEL_HOPS: ReadonlyArray<readonly [number, number]> = [[2, 1], [3, 2], [4, 2], [5, 2], [6, 1], [7, 1]];
@@ -148,7 +174,7 @@ export function travelDestinations(graph: TravelGraph): string[] {
 }
 
 /** A rota de um destino: a distância sorteada entre as que existem (pelos pesos de TRAVEL_HOPS) e a origem entre os países a essa distância. */
-export function travelPuzzle(graph: TravelGraph, end: string, seed: number | string): TravelPuzzle | null {
+export function travelPuzzle(graph: TravelGraph, end: string, seed: number | string, level: TravelLevel = "livre"): TravelPuzzle | null {
   const byHops = new Map<number, string[]>();
   for (const [id, d] of distancesFrom(graph, end)) if (d >= 2 && d <= 7) (byHops.get(d) ?? byHops.set(d, []).get(d)!).push(id);
   const options = TRAVEL_HOPS.filter(([hops]) => byHops.has(hops));
@@ -158,16 +184,16 @@ export function travelPuzzle(graph: TravelGraph, end: string, seed: number | str
   const hops = options.find(([, weight]) => (pick -= weight) < 0)![0];
   const starts = byHops.get(hops)!.sort();
   const start = starts[hash(`${seed}:${end}:start`) % starts.length];
-  return { start, end, shortest: hops - 1, budget: travelBudget(hops - 1) };
+  return { start, end, shortest: hops - 1, budget: travelBudget(hops - 1, level) };
 }
 
-/** Quanto a rota vale nas moedas (o `weight` da rodada: países da rota mais curta). Fechada no mínimo e sem pista vale a rota inteira; cada
- *  chute a mais ou pista tira 10%, até a metade. Rota não fechada não paga. */
+/** Quanto a rota vale nas moedas (o `weight` da rodada: países da rota mais curta × o nível). Fechada no mínimo vale a rota inteira; cada chute
+ *  a mais tira 10%, até a metade. Rota não fechada não paga. As pistas são suprimentos (a rodada fica assistida e paga metade, spoils.ts). */
 export const TRAVEL_WASTE_STEP = 0.1;
-export function travelWeight(puzzle: TravelPuzzle, used: number, hints: number, closed: boolean): number {
+export function travelWeight(puzzle: TravelPuzzle, used: number, closed: boolean, level: TravelLevel = "livre"): number {
   if (!closed) return 0;
-  const waste = Math.max(0, used - puzzle.shortest) + hints;
-  return Math.round(puzzle.shortest * Math.max(0.5, 1 - TRAVEL_WASTE_STEP * waste) * 100) / 100;
+  const waste = Math.max(0, used - puzzle.shortest);
+  return Math.round(puzzle.shortest * Math.max(0.5, 1 - TRAVEL_WASTE_STEP * waste) * TRAVEL_LEVEL_COINS[level] * 100) / 100;
 }
 
 /** As iniciais dos países que ainda faltam no caminho mais curto (a pista "Iniciais"). */

@@ -99,8 +99,8 @@ assert.ok(supplies.FEATURED_SUPPLIES.every((id) => supplies.SUPPLY_IDS.includes(
 assert.deepEqual([...supplies.ARMED_SUPPLIES].sort(), ["escudo", "retorno"], "só Escudo e Segunda chance ficam armados");
 
 // ---- aplicabilidade dos novos: Primeira letra só onde se digita; Pular e Escudo em tudo; Segunda chance em tudo menos o Travel
-for (const variant of ["escrita-pais", "escrita-capital", "silhueta"]) assert.equal(supplies.supplyApplies("letra", variant), true, `Primeira letra em ${variant}`);
-for (const variant of ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta-opcoes", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais", "travel"]) {
+for (const variant of ["escrita-pais", "escrita-capital", "silhueta", "travel"]) assert.equal(supplies.supplyApplies("letra", variant), true, `Primeira letra em ${variant}`);
+for (const variant of ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta-opcoes", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"]) {
   assert.equal(supplies.supplyApplies("letra", variant), false, `Primeira letra não faz sentido em ${variant}`);
 }
 const everyVariant = ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "travel", "escrita-pais", "escrita-capital", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"];
@@ -117,7 +117,7 @@ assert.deepEqual(supplies.usableSupplies(all, "escrita-pais"), ["vizinho", "letr
 assert.deepEqual(supplies.usableSupplies(all, "mapa"), ["bussola", "lanterna", "vizinho", "pular", "retorno", "escudo", "ampulheta", "tonico"]);
 assert.deepEqual(supplies.usableSupplies(all, "bandeira-nome"), ["lupa", "vizinho", "pular", "retorno", "escudo", "ampulheta", "tonico"]);
 assert.deepEqual(supplies.usableSupplies(all, "idioma-nome"), ["lupa", "pular", "retorno", "escudo", "ampulheta", "tonico"], "idiomas não falam de países vizinhos");
-assert.deepEqual(supplies.usableSupplies(all, "travel", false), ["pular", "escudo", "tonico"], "Travel no Treino: Pular, Escudo e o Tônico (que não depende do modo)");
+assert.deepEqual([...supplies.usableSupplies(all, "travel", false)].sort(), ["escudo", "lanterna", "letra", "pular", "tonico", "vizinho"], "Travel (sem cronômetro): as três pistas (Lanterna, Vizinhos, Primeira letra), Pular, Escudo e o Tônico");
 for (const variant of everyVariant) {
   assert.equal(supplies.supplyApplies("tonico", variant), true, `Tônico de XP em ${variant}`);
   assert.equal(supplies.supplyApplies("tonico", variant, false), true);
@@ -159,9 +159,11 @@ console.log("novos suprimentos ok");
 
 // ---- Lanterna e Pista de vizinhos: onde valem
 for (const variant of ["mapa", "capital-pais"]) assert.equal(supplies.supplyApplies("lanterna", variant), true);
-for (const variant of ["bandeira-nome", "silhueta", "silhueta-opcoes", "escrita-pais", "travel", "idioma-nome"]) assert.equal(supplies.supplyApplies("lanterna", variant), false, `Lanterna só no mapa (${variant})`);
+for (const variant of ["bandeira-nome", "silhueta", "silhueta-opcoes", "escrita-pais", "idioma-nome"]) assert.equal(supplies.supplyApplies("lanterna", variant), false, `Lanterna só no mapa e no Travel (${variant})`);
+assert.equal(supplies.supplyApplies("lanterna", "travel"), true, "no Travel a Lanterna acende as fronteiras");
 for (const variant of ["mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "escrita-pais", "escrita-capital"]) assert.equal(supplies.supplyApplies("vizinho", variant), true, `Vizinhos em ${variant}`);
-for (const variant of ["travel", "historica-nome", "nome-historica", "idioma-nome", "idioma-pais"]) assert.equal(supplies.supplyApplies("vizinho", variant), false, `Vizinhos não em ${variant}`);
+for (const variant of ["historica-nome", "nome-historica", "idioma-nome", "idioma-pais"]) assert.equal(supplies.supplyApplies("vizinho", variant), false, `Vizinhos não em ${variant}`);
+assert.equal(supplies.supplyApplies("vizinho", "travel"), true, "no Travel a Pista de vizinhos tracejado o próximo país");
 assert.equal(supplies.supplyApplies("lanterna", "mapa", false), true, "sem cronômetro (Treino) a Lanterna segue valendo");
 assert.equal(supplies.supplyApplies("vizinho", "mapa", false), true);
 

@@ -44,16 +44,32 @@ assert.deepEqual(tv.remainingRoute(g, puzzle, new Set(["d"])), ["b", "c"]);
 // a folga do Travle
 assert.deepEqual([1, 3, 4, 6, 7, 9, 10, 12, 13].map(tv.travelExtra), [4, 4, 5, 5, 6, 6, 7, 7, 8]);
 // moedas: no mínimo, rota inteira; cada chute a mais ou pista −10%, até a metade; perdida não paga
-assert.equal(tv.travelWeight(puzzle, 3, 0, true), 3);
-assert.equal(tv.travelWeight(puzzle, 4, 1, true), 2.4);
-assert.equal(tv.travelWeight(puzzle, 7, 3, true), 1.5);
-assert.equal(tv.travelWeight(puzzle, 7, 0, false), 0);
+assert.equal(tv.travelWeight(puzzle, 3, true), 3);
+assert.equal(tv.travelWeight(puzzle, 5, true), 2.4);
+assert.equal(tv.travelWeight(puzzle, 7, true), 1.8);
+assert.equal(tv.travelWeight(puzzle, 9, true), 1.5);
+assert.equal(tv.travelWeight(puzzle, 7, false), 0);
+assert.equal(tv.travelWeight(puzzle, 3, true, "trilha"), 3.75);
+assert.equal(tv.travelWeight(puzzle, 3, true, "exata"), 4.5);
+// níveis: a folga diminui; a Trilha só aceita o que encosta na cadeia da origem; a Rota exata só o próximo de um caminho mais curto
+assert.deepEqual([3, 4, 7].map((n) => tv.travelExtra(n, "trilha")), [2, 3, 3]);
+assert.equal(tv.travelBudget(3, "exata"), 4);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "d", "livre"), true);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "d", "trilha"), false, "D não encosta na origem");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "b", "trilha"), true);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "f", "trilha"), true, "F encosta em A (longe do caminho, mas vale na Trilha)");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "c", "trilha"), true);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "f", "exata"), false, "F não encurta");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(), "b", "exata"), true);
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "x", "exata", "b"), true, "X ou C: os dois caminhos mais curtos valem");
+assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "d", "exata", "b"), false, "pular um país não vale");
 // sorteio: determinístico, distância de 2 a 7 fronteiras, origem à distância sorteada
 const p1 = tv.travelPuzzle(g, "e", 7), p2 = tv.travelPuzzle(g, "e", 7);
 assert.deepEqual(p1, p2);
 assert.equal(tv.distancesFrom(g, p1.end).get(p1.start), p1.shortest + 1);
 assert.ok(p1.shortest >= 1 && p1.shortest <= 6);
 assert.equal(tv.travelPuzzle(g, "z", 1), null);
+assert.equal(tv.travelPuzzle(g, "e", 7, "exata").budget, p1.shortest + 1);
 
 // o catálogo de verdade
 const catalog = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8"));
@@ -71,10 +87,9 @@ assert.ok(real.get(sg).has(my), "Singapura–Malásia");
 assert.ok(!real.get(ma).has(mr), "Marrocos e Mauritânia não se tocam");
 assert.ok(real.get(eh).has(ma) && real.get(eh).has(mr));
 assert.ok(real.get(ru).has(kp), "Rússia–Coreia do Norte");
-const [pl, lt, tr, az, ao, cg] = ["Polônia", "Lituânia", "Turquia", "Azerbaijão", "Angola", "Congo"].map(byName);
-assert.ok(!real.get(pl).has(ru) && !real.get(lt).has(ru), "Kaliningrado não liga a Rússia à Polônia nem à Lituânia");
-assert.ok(!real.get(tr).has(az) && !real.get(ao).has(cg), "Nakhchivan e Cabinda não ligam");
-assert.ok(real.get(az).has(ru) && real.get(ao).has(byName("Namíbia")), "o resto das fronteiras fica");
+const [pl, lt, tr, az, ao, cg, es] = ["Polônia", "Lituânia", "Turquia", "Azerbaijão", "Angola", "Congo", "Espanha"].map(byName);
+assert.ok(real.get(pl).has(ru) && real.get(lt).has(ru), "Kaliningrado liga a Rússia à Polônia e à Lituânia");
+assert.ok(real.get(tr).has(az) && real.get(ao).has(cg) && real.get(es).has(ma), "Nakhchivan, Cabinda, Ceuta e Melilla ligam");
 assert.ok(!real.get(fr).has(br), "a Guiana Francesa não liga a França ao Brasil");
 assert.ok(!tv.travelPool(catalog.meta, true).includes(eh), "só países tira o Saara Ocidental");
 const dests = tv.travelDestinations(real);

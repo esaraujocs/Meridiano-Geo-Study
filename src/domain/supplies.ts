@@ -40,7 +40,7 @@ const OPTION_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set([
 ]);
 const MAP_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set(["mapa", "capital-pais"]);
 const TYPED_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set(["escrita-pais", "escrita-capital", "silhueta"]);
-// A Pista de vizinhos fala de países: serve onde o alvo é um país (mapa, bandeiras, capitais, silhueta, escrita), não em históricas, idiomas nem Travel.
+// A Pista de vizinhos fala de países: serve onde o alvo é um país (mapa, bandeiras, capitais, silhueta, escrita), não em históricas nem idiomas (no Travel é outra pista, abaixo).
 // Em Gentílicos e Moedas só no sentido em que a resposta é o país (no outro sentido o país já está na pergunta).
 const COUNTRY_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set([
   "mapa", "capital-pais", "bandeira-nome", "nome-bandeira", "pais-capital", "silhueta", "silhueta-opcoes", "escrita-pais", "escrita-capital",
@@ -50,6 +50,8 @@ const COUNTRY_VARIANTS: ReadonlySet<AnyQuizVariant> = new Set([
 /** Se o suprimento `id` faz sentido no modo `variant` — controla quais botões aparecem em cada motor de partida. */
 export function supplyApplies(id: SupplyId, variant: AnyQuizVariant, timed = true): boolean {
   if (id === "lupa") return OPTION_VARIANTS.has(variant);
+  // no Travel (21/10/2026) as pistas são estes três: Lanterna acende as fronteiras, Pista de vizinhos tracejado o próximo país, Primeira letra as iniciais
+  if (variant === "travel" && (id === "lanterna" || id === "vizinho" || id === "letra")) return true;
   if (id === "bussola" || id === "lanterna") return MAP_VARIANTS.has(variant);
   if (id === "vizinho") return COUNTRY_VARIANTS.has(variant);
   if (id === "letra") return TYPED_VARIANTS.has(variant);

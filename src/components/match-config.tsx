@@ -12,6 +12,7 @@ import { unlockContent } from "../domain/economy-store";
 import { canUnlock, policyFor, type UnlockKey } from "../domain/economy-rules";
 import { displayTier, isRoundTierUnlocked, roundChips, roundLimitFor, roundUnlockFor, timerSecondsFor, type RoundTier, type RoundUnlockKey } from "../domain/pace";
 import type { Pace } from "../domain/spoils";
+import { readTravelLevel, saveTravelLevel, TRAVEL_LEVEL_COINS, TRAVEL_LEVEL_EXTRA, TRAVEL_LEVELS, type TravelLevel } from "../domain/travel";
 import { flagDirectionFromVariant, flagSelection, type FlagCategory, type FlagDirection } from "../domain/flag-configuration";
 import { PresetBar, type PresetApi } from "./preset-bar";
 import { PEOPLES_GROUP, configSummary, directionLabel, formatSeconds, isPeoplesTopic, modesFor, paceHint, selectedMode, type ModeOption, type PeoplesTopic, type TopFamily } from "../domain/match-config";
@@ -102,6 +103,8 @@ export function Recorte({
   const selectedCount = selectedCountProp ?? (selectedRegions.length === 1 && selectedRegions[0] === allKey
     ? counts[allKey]
     : selectedRegions.reduce((total, item) => total + (counts[item] ?? 0), 0));
+  // o nível do Travel (21/10/2026): Livre, Trilha ou Rota exata, guardado no navegador
+  const [travelLevel, setTravelLevel] = useState<TravelLevel>(readTravelLevel);
   const [flagDirection, setFlagDirection] = useState<FlagDirection>(() =>
     flagDirectionFromVariant(variant) ??
     (localStorage.getItem("carta-flag-direction") as FlagDirection | null) ??
@@ -290,6 +293,12 @@ export function Recorte({
                   </button>;
                 })}
               </div>
+              {variant === "travel" && <>
+                <div className="cv-chips cv-sub" role="group" aria-label={t.travel.levelLabel}>
+                  {TRAVEL_LEVELS.map((level) => <button type="button" key={level} className="cv-chip" aria-pressed={travelLevel === level} onClick={() => { setTravelLevel(level); saveTravelLevel(level); }}><span className="cv-l"><span>{t.travel.levels[level].name}</span></span></button>)}
+                </div>
+                <p className="cv-hint">{t.travel.levels[travelLevel].hint} {t.travel.levelNote(TRAVEL_LEVEL_EXTRA[travelLevel], TRAVEL_LEVEL_COINS[travelLevel] === 1 ? "×1" : `+${Math.round((TRAVEL_LEVEL_COINS[travelLevel] - 1) * 100)}%`)}</p>
+              </>}
               {active.direction && <div className="cv-chips cv-sub" role="group" aria-label={t.config.direction}>
                 {(["name-to-flag", "flag-to-name"] as const).map((direction) => <button type="button" key={direction} className="cv-chip" aria-pressed={flagDirection === direction} onClick={() => pickDirection(direction)}><span className="cv-l"><span>{directionLabel(direction)}</span></span></button>)}
               </div>}
