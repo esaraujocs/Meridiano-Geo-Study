@@ -32,6 +32,7 @@
     "test:special": "node scripts/test-special-data.mjs",
     "test:geometry": "node scripts/test-geometry.mjs",
     "test:travel": "node scripts/test-travel.mjs",
+    "test:duel-stats": "node scripts/test-duel-stats.mjs",
     "test:map": "node scripts/test-map-hd.mjs",
     "test:manifest": "node scripts/test-manifest-resources.mjs",
     "test:profile": "node scripts/test-progress-surfaces.mjs",

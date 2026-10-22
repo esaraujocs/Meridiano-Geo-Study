@@ -1,3 +1,5 @@
+import { DuelsTab } from "./progress-duels";
+import type { LadderEntry } from "../domain/pvp-trophies";
 import { createContext, useContext, useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { Legacy, Meta, Region } from "../domain/types";
 import type { querySurfaces } from "../domain/progress-surfaces";
@@ -38,6 +40,8 @@ type Props = {
   onOpenLeague?: () => void;
   /** "Treinar os 5 mais lentos" de Seus reflexos: um Treino só com esses alvos, no modo. */
   onTrainFocus?: (mode: ReflexMode, ids: readonly string[]) => void;
+  /** As entradas das escadas (duelos, valendo contra pessoas e ajustes da conta): o MMR antes de cada duelo, na aba Duelos. */
+  ladderEntries?: readonly LadderEntry[];
 };
 type FlagOf = (code?: string) => string | undefined;
 
@@ -366,8 +370,8 @@ function HowDialog({ dialog }: { dialog: RefObject<HTMLDialogElement | null> }) 
 }
 
 // ---------- tela ----------
-export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague, onTrainFocus }: Props) {
-  const [tab, setTab] = useState<"resumo" | "modos" | "ritmo" | "historico">("resumo");
+export function ProgressView({ state, data, economy, onTrain, onOpenCollection, onGoHub, ladders = [], onOpenLeague, onTrainFocus, ladderEntries }: Props) {
+  const [tab, setTab] = useState<"resumo" | "modos" | "ritmo" | "duelos" | "historico">("resumo");
   const [measure, setMeasure] = useState<MapMeasure>("domain");
   const [flags, setFlags] = useState<FlagCatalog>({});
   const [historicalFlags, setHistoricalFlags] = useState<FlagCatalog>({});
@@ -466,11 +470,13 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
       <button type="button" className="pg-chip" aria-pressed={tab === "resumo"} onClick={() => setTab("resumo")}><Glyph name="bars" size={17} /> {t.progress.summary}</button>
       <button type="button" className="pg-chip" aria-pressed={tab === "modos"} onClick={() => setTab("modos")}><Glyph name="world" size={17} /> {t.profile.tabModes}</button>
       <button type="button" className="pg-chip" aria-pressed={tab === "ritmo"} onClick={() => setTab("ritmo")}><Glyph name="clock" size={17} /> {t.profile.tabRhythm}</button>
+      <button type="button" className="pg-chip" aria-pressed={tab === "duelos"} onClick={() => setTab("duelos")}><Icon type="swords" size={17} /> {t.profile.tabDuels}</button>
       <button type="button" className="pg-chip" aria-pressed={tab === "historico"} onClick={() => setTab("historico")}><Glyph name="history" size={17} /> {t.progress.history} {dashboard.history.length > 0 && <em>{dashboard.history.length}</em>}</button>
       <button type="button" className="pr-how" onClick={() => howRef.current?.showModal()}><Glyph name="info" size={16} /> <span className="pr-d">{t.progress.howTitle}</span><span className="pr-m">{t.progress.howShort}</span></button>
     </div>
     {tab === "historico" ? <History rows={dashboard.history} now={now} flagOf={flagOf} />
       : tab === "modos" ? <ModesTab modes={modes} after={reflexData.length ? <ReflexesCard data={reflexData} lookup={reflexLookup} onTrain={onTrainFocus ? (mode) => onTrainFocus(mode, mode.slow.map((item) => item.id)) : undefined} /> : null} />
+      : tab === "duelos" ? <DuelsTab duels={state.duels} entries={ladderEntries ?? state.duels} pvpMatches={state.pvpMatches} ladders={ladders} />
       : tab === "ritmo" ? <RhythmTab rounds={rounds} modes={modes} calendar={<Activity activity={dashboard.activity} />} />
       : dashboard.empty ? <EmptySummary dashboard={dashboard} onTrain={onTrain} />
       : <>
