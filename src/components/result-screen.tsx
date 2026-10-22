@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon, type IconType } from "./icons";
 import { xpSegments, type ResultChip, type ResultView } from "../domain/result-view";
 import { formatKm } from "../domain/map-error";
@@ -7,7 +7,9 @@ import type { DuelView } from "../domain/duel";
 import type { ModeGroup } from "../domain/duel-modes";
 import { DuelResultCard, reducedMotion } from "./duel-result";
 
-type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void; onTrain?: (group: ModeGroup) => void; onStore?: () => void; onEquipTheme?: (id: string) => void };
+type Props = { view: ResultView; onAgain: () => void; onAdjust: () => void; onHome: () => void; duel?: DuelView | null; onLeague?: () => void; onTrain?: (group: ModeGroup) => void; onStore?: () => void; onEquipTheme?: (id: string) => void;
+  /** Conteúdo próprio do modo, no cartão (o Travel põe o carrossel das rotas). */
+  extra?: ReactNode };
 type LevelState = { level: number; span: number; progress: number };
 
 const ARC = 2 * Math.PI * 15;
@@ -23,7 +25,7 @@ const pulse = (element: HTMLElement | null, scale = 1.08) =>
 
 // Resultado da partida: o essencial cabe numa tela (nota, moedas, XP e os botões); o resto fica em "Ver detalhes".
 // As moedas voam do cartão para a carteira do topo e o XP enche a barra de nível, como uma prestação de contas.
-export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, onTrain, onStore, onEquipTheme }: Props) {
+export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, onTrain, onStore, onEquipTheme, extra }: Props) {
   const start = xpSegments(view.xpBefore, view.xpBefore)[0];
   const [balance, setBalance] = useState(view.balanceBefore);
   const [level, setLevel] = useState<LevelState>({ level: start.level, span: start.span, progress: start.from });
@@ -157,6 +159,7 @@ export function ResultScreen({ view, onAgain, onAdjust, onHome, duel, onLeague, 
         </div>
       </div>
       {view.training && <p className="rs-note">{t.result.trainingNote}</p>}
+      {extra}
       {view.chips.length > 0 && <div className="rs-chips">{view.chips.map((chip) => <span key={chip.key}><Icon type={CHIP_ICON[chip.key]} />{chip.text}</span>)}</div>}
       {view.lines.length > 0 && <>
         <button type="button" className="rs-toggle" aria-expanded={open} aria-controls="rs-details" onClick={() => setOpen((value) => !value)}>{open ? t.result.hideDetails : t.result.showDetails} <Icon type="chevron" /></button>

@@ -200,3 +200,23 @@ export function travelWeight(puzzle: TravelPuzzle, used: number, closed: boolean
 export function remainingRoute(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>): string[] {
   return (bestRoute(graph, puzzle.start, puzzle.end, have) ?? []).slice(1, -1).filter((id) => !have.has(id));
 }
+
+/** A caixa de um país para a câmera, pelo centro e pela área do catálogo (os contornos antigos traziam os territórios de ultramar junto). */
+export function travelBox(meta: Meta, id: string): readonly [number, number, number, number] | null {
+  const item = meta[id];
+  if (!item?.ll) return null;
+  const [lat, lon] = item.ll;
+  const r = Math.min(22, Math.max(0.8, (Math.sqrt(Math.max(1, item.area ?? 1)) / 111) * 0.6));
+  const rLon = Math.min(60, r / Math.max(0.25, Math.cos((lat * Math.PI) / 180)));
+  return [lon - rLon, lat - r, lon + rLon, lat + r];
+}
+
+/** Uma rota já jogada, para o carrossel do resultado: o caminho da pessoa (o que os chutes ligaram, ou o mais curto se perdeu), o mais curto e os chutes. */
+export type TravelRecapRoute = { start: string; end: string; won: boolean; path: string[]; shortest: string[]; guesses: string[] };
+export function travelRecap(rounds: readonly { targetId: string; correct: boolean; route?: string[]; shortest?: string[]; guesses?: string[] }[]): TravelRecapRoute[] {
+  return rounds.filter((round) => (round.route?.length ?? 0) >= 2 || (round.shortest?.length ?? 0) >= 2).map((round) => {
+    const path = round.route ?? [];
+    const shortest = round.shortest ?? [];
+    return { start: path[0] ?? shortest[0], end: round.targetId, won: round.correct, path, shortest, guesses: round.guesses ?? [] };
+  });
+}

@@ -8,8 +8,8 @@ import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoun
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
-import { guessAllowed, readTravelLevel, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
-import { TravelMap, type TravelBox, type TravelPaint } from "./travel-map";
+import { guessAllowed, readTravelLevel, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { TravelMap, travelPoints, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
 import { shuffleAnswerOptions } from "../domain/answer-options";
@@ -295,20 +295,11 @@ function SilhouetteGame({ data, region, variant, options, onBack, onEnd, onResta
 
 // Travel no estilo do Travle (21/10/2026; regras em domain/travel.ts): a origem e o destino no mapa, chutes em qualquer ordem, cada um pintado
 // com o contorno de verdade e a cor de quanto ajudou; vence quem liga os dois por terra antes de acabarem os chutes. Sem cronômetro.
-const TRAVEL_POINT_KM2 = 3000;
 /** `off`: o nível não aceitou o chute (não encosta na trilha, não é o próximo da rota): gastou um chute e não entra no mapa. */
 type TravelGuess = { id: string; grade: TravelGrade; off?: boolean };
+/** Quanto a rota fechada fica na tela antes da próxima (22/10/2026, pedido do Enzo: "continuar vai sozinho depois de alguns segundos"; Enter adianta). */
+const TRAVEL_HOLD_MS = 7000;
 type TravelNotice = { kind: "" | "ok" | "no" | "info"; text: string };
-
-/** A caixa de um país para a câmera, pelo centro e pela área do catálogo (os contornos antigos traziam os territórios de ultramar junto). */
-function travelBox(meta: Legacy["meta"], id: string): TravelBox | null {
-  const item = meta[id];
-  if (!item?.ll) return null;
-  const [lat, lon] = item.ll;
-  const r = Math.min(22, Math.max(0.8, (Math.sqrt(Math.max(1, item.area ?? 1)) / 111) * 0.6));
-  const rLon = Math.min(60, r / Math.max(0.25, Math.cos((lat * Math.PI) / 180)));
-  return [lon - rLon, lat - r, lon + rLon, lat + r];
-}
 
 function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies = emptySupplyCounts() }: Omit<Props, "family"> & { onRestart: () => void }) {
   const settings = sessionSettings(options, "travel");
@@ -408,7 +399,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
         return;
       }
       openPuzzle(destination);
-    }, 0, 600, true);
+    }, TRAVEL_HOLD_MS, 600);
   };
   // A rota acabou (ligou a origem ao destino ou acabaram os chutes): grava a rodada com quanto ela rendeu.
   const closeRoute = (active: TravelPuzzle, won: boolean, all: TravelGuess[], value: string) => {
@@ -424,7 +415,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     log.push({ correct: won, tier: entityTier(meta, active.end), weight, shielded });
     session.recordRound({
       targetId: active.end, correct: won, responseTimeMs: Date.now() - startedAt.current, answeredAt: Date.now(),
-      selectedId: value, attempts: all.length, guesses: all.map((guess) => guess.id), route: path,
+      selectedId: value, attempts: all.length, guesses: all.map((guess) => guess.id), route: path, shortest: bestRoute(graph, active.start, active.end) ?? [],
       tier: entityTier(meta, active.end), weight,
       ...(supply.assisted || shielded ? { assisted: true } : {}),
       ...(shielded ? { shielded: true } : {}),
@@ -495,7 +486,9 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const exit = () => leaveGuard.ask({ onLeave: () => void leave(), onRestart: () => void (async () => { flow.cancel(); await session.abandon(); onRestart(); })(), coins: log.pending, xp: total });
   useGameKeys({ exit, enabled: Boolean(puzzle) });
   // o que o mapa pinta: as pontas, os chutes e, no fim, o caminho que faltava
-  const reveal = useMemo(() => (puzzle && closed === "lost" ? remainingRoute(graph, puzzle, have) : []), [closed, graph, have, puzzle]);
+  // no fim da rota (fechada ou perdida): o caminho mais curto destacado, com as fronteiras de todos acesas
+  const shortestPath = useMemo(() => (puzzle && closed ? bestRoute(graph, puzzle.start, puzzle.end) ?? [] : []), [closed, graph, puzzle]);
+  const reveal = useMemo(() => shortestPath.slice(1, -1).filter((id) => !have.has(id)), [have, shortestPath]);
   // o ✓ vale para todo chute verde que já se liga à origem (a cor do chute fica a da hora em que foi dado)
   const linked = useMemo(() => (puzzle ? linkedToStart(graph, puzzle.start, have) : new Set<string>()), [graph, have, puzzle]);
   const shownGrade = (guess: TravelGuess): TravelGrade => (guess.grade === "linked" || guess.grade === "closer" ? (linked.has(guess.id) ? "linked" : "closer") : guess.grade);
@@ -508,13 +501,9 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     return out;
   }, [guesses, linked, meta, puzzle, reveal]);
   // os pequenos demais para o contorno aparecer ganham um ponto
-  const points = useMemo(() => {
-    if (!puzzle) return [];
-    const shown: Array<[string, TravelPaint]> = [...reveal.map((id) => [id, "reveal"] as [string, TravelPaint]), ...guesses.filter((guess) => !guess.off).map((guess) => [guess.id, shownGrade(guess)] as [string, TravelPaint]), [puzzle.start, "end"], [puzzle.end, "end"]];
-    return shown.filter(([id]) => (meta[id]?.area ?? Infinity) < TRAVEL_POINT_KM2 && meta[id]?.ll).map(([id, paint]) => ({ id, lat: meta[id].ll![0], lon: meta[id].ll![1], paint }));
-  }, [guesses, linked, meta, puzzle, reveal]);
-  const boxes = useMemo(() => (puzzle ? [puzzle.start, puzzle.end, ...guesses.filter((guess) => guess.grade !== "far").map((guess) => guess.id), ...reveal].map((id) => travelBox(meta, id)).filter((box): box is TravelBox => Boolean(box)) : []), [guesses, meta, puzzle, reveal]);
-  const dashed = useMemo(() => (nextHint && !have.has(nextHint) ? travelFeatureIds(meta, nextHint) : []), [have, meta, nextHint]);
+  const points = useMemo(() => (puzzle ? travelPoints(meta, [...reveal.map((id) => [id, "reveal"] as [string, TravelPaint]), ...guesses.filter((guess) => !guess.off).map((guess) => [guess.id, shownGrade(guess)] as [string, TravelPaint]), [puzzle.start, "end"], [puzzle.end, "end"]]) : []), [guesses, linked, meta, puzzle, reveal]);
+  const boxes = useMemo(() => (puzzle ? [puzzle.start, puzzle.end, ...guesses.filter((guess) => guess.grade !== "far").map((guess) => guess.id), ...reveal].map((id) => travelBox(meta, id)).filter((box): box is NonNullable<typeof box> => Boolean(box)) : []), [guesses, meta, puzzle, reveal]);
+  const dashed = useMemo(() => (closed ? shortestPath.slice(1, -1).flatMap((id) => travelFeatureIds(meta, id)) : nextHint && !have.has(nextHint) ? travelFeatureIds(meta, nextHint) : []), [closed, have, meta, nextHint, shortestPath]);
   const initials = puzzle && showInitials ? remainingRoute(graph, puzzle, have).map((id) => nameOf(id).charAt(0).toUpperCase()).join(" · ") : "";
   if (error) return <GeometryError error={error} onBack={onBack} />;
   if (!puzzle) return <LoadingGeometry />;
@@ -538,7 +527,14 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
       <div className="gs-body">
         <main className="gs-stage tv-stage" data-target-id={import.meta.env.DEV ? `${puzzle.start}>${puzzle.end}` : undefined}>
           <div className="gs-kicker tv-kicker">{t.travel.from} <b className="tv-end">{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
-          <TravelMap paints={paints} points={points} boxes={boxes} borders={borders} dashed={dashed} />
+          <div className="tv-mapwrap">
+            <TravelMap paints={paints} points={points} boxes={boxes} borders={borders || Boolean(closed)} dashed={dashed} />
+            {closed && <div className={`tv-done is-${closed}`} aria-hidden="true">
+              <i>{closed === "won" ? "✓" : "✕"}</i>
+              <b>{closed === "won" ? (guesses.length === puzzle.shortest ? t.travel.donePerfect : t.travel.doneWon) : t.travel.doneLost}</b>
+              <small>{t.travel.doneLine(guesses.length, puzzle.shortest)}</small>
+            </div>}
+          </div>
           <div className="tv-count"><span>{t.travel.counter(guesses.length, puzzle.budget, closed ? puzzle.shortest : undefined)}</span>{initials && <b>{t.travel.initials(initials)}</b>}</div>
           <ol className="tv-guesses" aria-label={t.travel.guessesAria}>
             {guesses.map((guess, index) => {
@@ -559,7 +555,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
           {!closed && suggestions.length > 0 && <div className="tv-suggest" role="group" aria-label={t.travel.suggestions}>
             {suggestions.map((id, index) => <button key={id} type="button" className="tv-sug" aria-pressed={index === picked} onPointerDown={(event) => event.preventDefault()} onClick={() => submit(nameOf(id))}>{nameOf(id)}</button>)}
           </div>}
-          {closed && <ContinueBar holdMs={null} onSkip={flow.skip} />}
+          {closed && <ContinueBar holdMs={TRAVEL_HOLD_MS} onSkip={flow.skip} />}
           <div className="gs-keys" aria-hidden="true"><span><kbd>Enter</kbd> {t.common.keyAnswer}</span><span><kbd>Esc</kbd> {t.common.keyExit}</span></div>
         </section>
       </div>

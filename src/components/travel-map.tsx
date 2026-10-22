@@ -1,13 +1,14 @@
 // O mapa do Travel (21/10/2026, no estilo do Travle): o mapa HD da partida com a terra apagada e sem fronteiras, e só a origem, o destino e os
 // chutes pintados com o contorno de verdade (a cor diz quanto o chute ajudou). A pista "Fronteiras" acende todas as divisas; a "Próximo país"
 // tracejado o contorno de um país do caminho. Sem clique: o mapa só se arrasta e amplia.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import "./map-style";
 import { MAP_URL } from "../domain/offline-map";
 import { mixHex } from "../domain/map-palette";
 import { mapPaletteFor } from "../domain/themes";
-import type { TravelGrade } from "../domain/travel";
+import { travelBox, travelFeatureIds, type TravelGrade, type TravelRecapRoute } from "../domain/travel";
+import type { Legacy } from "../domain/types";
 import { t } from "../domain/i18n";
 
 /** O estado de cada peça do mapa: as pontas, as cores dos chutes e o caminho revelado no fim. */
@@ -137,4 +138,61 @@ export function TravelMap({ paints, points, boxes, borders, dashed }: {
     <div ref={mapEl} className="tv-map-canvas" />
     {error && <p className="tv-map-error">{error}</p>}
   </div>;
+}
+
+/** Os países pequenos demais para o contorno aparecer viram um ponto. */
+export const TRAVEL_POINT_KM2 = 3000;
+export function travelPoints(meta: Legacy["meta"], shown: readonly (readonly [string, TravelPaint])[]): TravelPoint[] {
+  return shown.filter(([id]) => (meta[id]?.area ?? Infinity) < TRAVEL_POINT_KM2 && meta[id]?.ll).map(([id, paint]) => ({ id, lat: meta[id].ll![0], lon: meta[id].ll![1], paint }));
+}
+
+/** Resultado do Travel (22/10/2026, pedido do Enzo: "no final da partida você pode acessar todas as rotas via seta, como um carrossel"): cada rota
+ *  no mapa, com as fronteiras acesas, o seu caminho, os chutes que sobraram e o caminho mais curto tracejado. ← → (ou os botões) trocam. */
+export function TravelRecap({ routes, meta }: { routes: readonly TravelRecapRoute[]; meta: Legacy["meta"] }) {
+  const [index, setIndex] = useState(0);
+  const route = routes[Math.min(index, routes.length - 1)];
+  const go = (step: number) => setIndex((current) => (current + step + routes.length) % routes.length);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLElement && /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+      if (event.key === "ArrowRight") go(1); else if (event.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [routes.length]);
+  const nameOf = (id: string) => meta[id]?.pt ?? id;
+  const { paints, points, boxes, dashed } = useMemo(() => {
+    const out = new Map<string, TravelPaint>();
+    const shown: Array<[string, TravelPaint]> = [];
+    const put = (id: string, paint: TravelPaint) => { for (const piece of travelFeatureIds(meta, id)) out.set(piece, paint); shown.push([id, paint]); };
+    const onPath = new Set(route.path);
+    for (const id of route.shortest.slice(1, -1)) if (!onPath.has(id)) put(id, "reveal");
+    for (const id of route.guesses) if (!onPath.has(id)) put(id, "far");
+    for (const id of route.path.slice(1, -1)) put(id, route.won ? "linked" : "reveal");
+    put(route.start, "end"); put(route.end, "end");
+    const ids = [...new Set([route.start, route.end, ...route.path, ...route.shortest])];
+    return {
+      paints: out, points: travelPoints(meta, shown),
+      boxes: ids.map((id) => travelBox(meta, id)).filter((box): box is NonNullable<typeof box> => Boolean(box)),
+      dashed: route.shortest.slice(1, -1).flatMap((id) => travelFeatureIds(meta, id)),
+    };
+  }, [meta, route]);
+  if (!route) return null;
+  const used = route.guesses.length;
+  const minimum = Math.max(0, route.shortest.length - 2);
+  const same = route.path.length === route.shortest.length && route.path.every((id, i) => id === route.shortest[i]);
+  return <section className="tv-recap" aria-label={t.travel.recapTitle}>
+    <header className="tv-recap-h">
+      <button type="button" className="tv-recap-arrow" aria-label={t.travel.recapPrev} onClick={() => go(-1)} disabled={routes.length < 2}>‹</button>
+      <div><small>{t.travel.recapPos(index + 1, routes.length)}</small><b>{nameOf(route.start)} → {nameOf(route.end)}</b>
+        <span className={`tv-recap-tag ${route.won ? "is-won" : "is-lost"}`}>{route.won ? t.travel.recapWon(used, minimum) : t.travel.recapLost(minimum)}</span></div>
+      <button type="button" className="tv-recap-arrow" aria-label={t.travel.recapNext} onClick={() => go(1)} disabled={routes.length < 2}>›</button>
+    </header>
+    <div className="tv-mapwrap tv-recap-map"><TravelMap paints={paints} points={points} boxes={boxes} borders dashed={dashed} /></div>
+    <dl className="tv-recap-lines">
+      {route.won && <div><dt>{t.travel.recapYours}</dt><dd>{route.path.map(nameOf).join(" → ")}{same ? ` ${t.travel.recapSame}` : ""}</dd></div>}
+      {!(route.won && same) && <div><dt>{t.travel.recapShortest}</dt><dd>{route.shortest.map(nameOf).join(" → ")}</dd></div>}
+    </dl>
+    {routes.length > 1 && <div className="tv-recap-dots" aria-hidden="true">{routes.map((item, i) => <i key={i} className={`${i === index ? "is-on " : ""}${item.won ? "is-won" : "is-lost"}`} />)}</div>}
+  </section>;
 }

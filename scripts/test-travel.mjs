@@ -73,6 +73,17 @@ assert.ok(p1.shortest >= 1 && p1.shortest <= 6);
 assert.equal(tv.travelPuzzle(g, "z", 1), null);
 assert.equal(tv.travelPuzzle(g, "e", 7, "exata").budget, p1.shortest + 1);
 
+// o carrossel do resultado: as rotas jogadas, com a origem pelo caminho (ou pelo mais curto) e as caixas da câmera
+const recap = tv.travelRecap([
+  { targetId: "e", correct: true, route: ["a", "b", "c", "d", "e"], shortest: ["a", "b", "c", "d", "e"], guesses: ["f", "d", "b", "c"] },
+  { targetId: "e", correct: false, route: ["a", "b", "x", "d", "e"], shortest: ["a", "b", "c", "d", "e"], guesses: ["z"] },
+  { targetId: "q", correct: false },
+]);
+assert.equal(recap.length, 2, "rodada sem caminho fica fora");
+assert.deepEqual([recap[0].start, recap[0].end, recap[0].won, recap[0].guesses.length], ["a", "e", true, 4]);
+assert.deepEqual(tv.travelBox({ p: { ll: [0, 10], area: 10000 } }, "p").map((v) => Math.round(v * 10) / 10), [9.2, -0.8, 10.8, 0.8], "país pequeno: raio mínimo de 0,8°");
+assert.equal(tv.travelBox({}, "nada"), null);
+
 // o catálogo de verdade
 const catalog = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8"));
 const pool = tv.travelPool(catalog.meta);

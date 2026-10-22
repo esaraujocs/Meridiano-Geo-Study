@@ -31,6 +31,8 @@ export type LearningRound = {
   guesses?: string[];
   /** Travel (desde 21/10/2026): o caminho da origem ao destino — o que os chutes ligaram, ou o mais curto se a rota foi perdida. */
   route?: string[];
+  /** Travel: o caminho mais curto da origem ao destino (o carrossel do resultado mostra junto do da pessoa). */
+  shortest?: string[];
   distanceKm?: number | null;
   byWater?: boolean;
   /** Dificuldade do país (1 fácil, 3 difícil): entra no valor das moedas do acerto. */

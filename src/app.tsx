@@ -48,7 +48,8 @@ import { DEFAULT_PACE, isPace, isRoundTier, isRoundTierUnlocked, roundLimitFor, 
 import type { Pace } from "./domain/spoils";
 import type { SessionResult } from "./domain/learning-store";
 import { Surface } from "./components/surfaces";
-import { travelDestinations, travelGraph, travelPool } from "./domain/travel";
+import { travelDestinations, travelGraph, travelPool, travelRecap, type TravelRecapRoute } from "./domain/travel";
+import { TravelRecap } from "./components/travel-map";
 import { registerAchievementLifecycleListener } from "./domain/achievements";
 import { freshUnlocks, nearAchievements } from "./domain/achievement-summary";
 import { EMPTY_ACHIEVEMENT_SUMMARY, TITLE_IDS, type AchievementSummary } from "./domain/hub-profile";
@@ -244,6 +245,7 @@ export function App() {
   }, []);
   const [economyReady, setEconomyReady] = useState(false);
   const [lastResult, setLastResult] = useState<ResultView | null>(null);
+  const [lastTravel, setLastTravel] = useState<TravelRecapRoute[] | null>(null);
   const [specialCounts, setSpecialCounts] = useState({
     historicas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
     idiomas: Object.fromEntries(REGION_ITEMS.map(([key]) => [key, 0])) as RegionCounts,
@@ -1003,6 +1005,7 @@ export function App() {
     if (after) setEconomy(after);
     const { session } = result;
     setLastDuel(null);
+    setLastTravel(session.family === "travel" ? travelRecap(session.rounds) : null);
     setLastResult(buildResultView({
       session, spoils: result.spoils, before, after: after ?? before,
       regionLabel: regionLabel(session.regions?.length ? session.regions : session.region),
@@ -1404,7 +1407,7 @@ export function App() {
 
   if (screen === "result") {
     return <div className="app-shell grain">{lastResult
-      ? <ResultScreen view={lastResult} duel={lastDuel} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onEquipTheme={setTheme} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
+      ? <ResultScreen view={lastResult} duel={lastDuel} extra={!lastDuel && lastTravel?.length && data ? <TravelRecap routes={lastTravel} meta={data.meta} /> : undefined} onLeague={() => openLeague(lastDuel?.ladder)} onTrain={(group) => void trainGroup(group)} onStore={() => navigate("store")} onEquipTheme={setTheme} onAgain={lastDuel?.ladder ? () => openDuel(lastDuel.ladder!) : startGame} onAdjust={() => setScreen(lastDuel ? "hub" : "recorte")} onHome={() => setScreen("hub")} />
       : <main className="content"><button className="back" onClick={() => setScreen("hub")}>{t.common.backHub}</button></main>}</div>;
   }
   if (screen === "progress" || screen === "collection" || screen === "achievements" || screen === "history") {
