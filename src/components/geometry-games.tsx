@@ -8,7 +8,7 @@ import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoun
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
-import { guessAllowed, readTravelLevel, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { guessAllowed, readTravelLevel, travelBand, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
 import { TravelMap, travelPoints, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
@@ -369,8 +369,10 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const closedRef = useRef(false);
   const startedAt = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const routeIndex = useRef(0);
   const openPuzzle = (destination: string) => {
-    const next = travelPuzzle(graph, destination, runSeed.current, level);
+    const next = travelPuzzle(graph, destination, runSeed.current, level, travelBand(routeIndex.current, runSeed.current));
+    routeIndex.current += 1;
     if (!next) { setError(t.travel.noRoute); return; }
     setPuzzle(next); setGuesses([]); setBorders(false); setShowInitials(false); setNextHint(null); setClosed(null); closedRef.current = false;
     setTyped(""); setNotice({ kind: "", text: "" });

@@ -46,13 +46,15 @@ export type RoundUnlockKey = (typeof ROUND_UNLOCKS)[number]["key"];
 export const roundUnlockFor = (tier: RoundTier) => ROUND_UNLOCKS.find((item) => item.tier === tier) ?? null;
 
 // No Travel a rodada é uma rota inteira: 1, 2, 5 e 10 rotas (21/10/2026, o Enzo achou 10 rotas maçante: "talvez individuais/2/5").
+// Sem "Todas" no Travel (22/10/2026, pedido do Enzo: "ninguém vai jogar todas as iterações"): o maior corte, 10 rotas, é o teto.
 export function roundLimitFor(tier: RoundTier, family: Family): number | null {
-  if (tier === "all") return null;
+  if (tier === "all") return family === "travel" ? 10 : null;
   const limits = family === "travel" ? [1, 2, 5, 10] : [10, 20, 50, 100];
   return limits[ROUND_TIERS.indexOf(tier)];
 }
 /** O menor corte que já cobre o baralho inteiro do recorte (é ele que aparece como "Todas · N"). */
 export function coveringTier(family: Family, total: number): RoundTier {
+  if (family === "travel") return ROUND_TIERS.find((tier) => tier !== "all" && (roundLimitFor(tier, family) ?? 0) >= total) ?? "hundred";
   return ROUND_TIERS.find((tier) => { const limit = roundLimitFor(tier, family); return limit === null || limit >= total; }) ?? "all";
 }
 /** Cortes que fazem sentido para o recorte: só até o que cobre tudo (Caribe com 27 não oferece 50 nem 100). */
@@ -60,7 +62,7 @@ export function roundChips(family: Family, total: number): { tier: RoundTier; la
   const covering = coveringTier(family, total);
   return ROUND_TIERS.slice(0, ROUND_TIERS.indexOf(covering) + 1).map((tier) => ({
     tier,
-    label: tier !== covering ? String(roundLimitFor(tier, family)) : tier === "short" ? String(total) : t.config.allRounds(total),
+    label: family === "travel" ? String(Math.min(total, roundLimitFor(tier, family) ?? total)) : tier !== covering ? String(roundLimitFor(tier, family)) : tier === "short" ? String(total) : t.config.allRounds(total),
   }));
 }
 /** Um corte guardado maior do que o recorte precisa aparece como o corte que cobre o recorte. */

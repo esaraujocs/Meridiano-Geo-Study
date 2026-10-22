@@ -162,7 +162,22 @@ export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: Rea
 /** Sem teto de tamanho (22/10/2026, pedido do Enzo: "deixa sem limite"; até então eram de 3 a 8 países e as travessias de ponta a ponta, como
  *  Canadá → Brasil (9 fronteiras) ou Portugal → África do Sul (10), nunca saíam): a distância é sorteada entre todas as que o destino tem, de
  *  TRAVEL_MIN_HOPS fronteiras até a mais longa, cada uma com a mesma chance; a origem, entre os países a essa distância. */
-export const TRAVEL_MIN_HOPS = 2;
+export const TRAVEL_MIN_HOPS = 3;
+/** Faixas de tamanho, em países no meio (22/10/2026, pedido do Enzo: "fronteiras de 1 país só são entediantes; priorizar as mesclas, umas longas,
+ *  outras médias e as curtas, para não cair só curta ou só longa"): desde então o mínimo é 2 países no meio (3 fronteiras) e cada partida alterna
+ *  as três faixas, em ordem embaralhada a cada três rotas (`travelBand`). */
+export type TravelBand = "curta" | "media" | "longa";
+export const TRAVEL_BANDS: Record<TravelBand, readonly [number, number]> = { curta: [2, 3], media: [4, 6], longa: [7, Infinity] };
+/** A faixa da rota número `index` (0, 1, 2…) da partida: cada bloco de três tem uma de cada, numa ordem sorteada pela semente. */
+export function travelBand(index: number, seed: number | string): TravelBand {
+  const order: TravelBand[] = ["curta", "media", "longa"];
+  const block = Math.floor(index / 3);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = hash(`${seed}:band:${block}:${i}`) % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order[index % 3];
+}
 
 function hash(text: string): number {
   let h = 2166136261;
@@ -175,12 +190,20 @@ export function travelDestinations(graph: TravelGraph): string[] {
   return [...graph.keys()].filter((id) => [...distancesFrom(graph, id).values()].some((d) => d >= TRAVEL_MIN_HOPS)).sort();
 }
 
-/** A rota de um destino: a distância sorteada entre as que existem (todas com a mesma chance) e a origem entre os países a essa distância. */
-export function travelPuzzle(graph: TravelGraph, end: string, seed: number | string, level: TravelLevel = "livre"): TravelPuzzle | null {
+/** A rota de um destino: a distância sorteada entre as que existem na faixa pedida (todas com a mesma chance; sem nenhuma na faixa, as da faixa
+ *  mais perto) e a origem entre os países a essa distância. */
+export function travelPuzzle(graph: TravelGraph, end: string, seed: number | string, level: TravelLevel = "livre", band?: TravelBand): TravelPuzzle | null {
   const byHops = new Map<number, string[]>();
   for (const [id, d] of distancesFrom(graph, end)) if (d >= TRAVEL_MIN_HOPS) (byHops.get(d) ?? byHops.set(d, []).get(d)!).push(id);
-  const options = [...byHops.keys()].sort((a, b) => a - b);
-  if (!options.length) return null;
+  const all = [...byHops.keys()].sort((a, b) => a - b);
+  if (!all.length) return null;
+  let options = all;
+  if (band) {
+    const [low, high] = TRAVEL_BANDS[band];
+    const inBand = all.filter((hops) => hops - 1 >= low && hops - 1 <= high);
+    // sem a faixa: a distância mais perto dela (uma curta que não existe vira a menor que há; uma longa, a maior)
+    options = inBand.length ? inBand : [all.reduce((best, hops) => (Math.min(Math.abs(hops - 1 - low), Math.abs(hops - 1 - high)) < Math.min(Math.abs(best - 1 - low), Math.abs(best - 1 - high)) ? hops : best))];
+  }
   const hops = options[hash(`${seed}:${end}:hops`) % options.length];
   const starts = byHops.get(hops)!.sort();
   const start = starts[hash(`${seed}:${end}:start`) % starts.length];

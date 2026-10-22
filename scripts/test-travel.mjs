@@ -71,6 +71,8 @@ assert.deepEqual(p1, p2);
 assert.equal(tv.distancesFrom(g, p1.end).get(p1.start), p1.shortest + 1);
 assert.ok(p1.shortest >= 1, "sem teto de tamanho");
 assert.equal(tv.travelPuzzle(g, "z", 1), null);
+// faixas: cada bloco de três rotas tem uma curta, uma média e uma longa
+for (const block of [0, 1, 2]) assert.deepEqual([0, 1, 2].map((i) => tv.travelBand(block * 3 + i, "s")).sort(), ["curta", "longa", "media"]);
 assert.equal(tv.travelPuzzle(g, "e", 7, "exata").budget, p1.shortest + 1);
 
 // o carrossel do resultado: as rotas jogadas, com a origem pelo caminho (ou pelo mais curto) e as caixas da câmera
@@ -116,6 +118,12 @@ for (const end of dests) for (let seed = 0; seed < 5; seed++) {
   hops.set(p.shortest + 2, (hops.get(p.shortest + 2) ?? 0) + 1);
 }
 assert.ok(Math.max(...hops.keys()) >= 12, "saem travessias longas (Canadá → Brasil tem 10 países)");
+assert.ok(!hops.has(3), "nenhuma rota com 1 país só no meio");
+// com as faixas, numa partida de 9 rotas saem 3 curtas, 3 médias e 3 longas (quando o destino tem a faixa)
+const bandOf = (n) => (n <= 3 ? "curta" : n <= 6 ? "media" : "longa");
+const counts = { curta: 0, media: 0, longa: 0 };
+dests.slice(0, 9).forEach((end, i) => { const p = tv.travelPuzzle(real, end, 42, "livre", tv.travelBand(i, 42)); counts[bandOf(p.shortest)] += 1; });
+assert.ok(counts.curta >= 2 && counts.media >= 2 && counts.longa >= 2, `mistura ${JSON.stringify(counts)}`);
 console.log("rotas por tamanho (países):", [...hops].sort((a, b) => a[0] - b[0]).map(([k, v]) => `${k}:${v}`).join(" "));
 console.log(`travel ok · ${pool.length} países, ${dests.length} destinos`);
 await rm(out, { recursive: true, force: true });
