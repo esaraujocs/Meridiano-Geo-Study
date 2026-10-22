@@ -9,7 +9,8 @@ import type { PvpMatchRecord } from "../domain/pvp-store";
 import type { BotStyle } from "../domain/bots";
 import { botById } from "../domain/bots";
 import { leagueLabel, styleLabel } from "../domain/duel-labels";
-import { estimatedSkill, ladderStats, peopleStats } from "../domain/duel-stats";
+import { estimatedSkill, ladderStats, peopleStats, selfPvp } from "../domain/duel-stats";
+import { pvpAccountName, pvpName } from "../domain/pvp-client";
 import { formatSeconds } from "../domain/session-view";
 import { formatNumber, t } from "../domain/i18n";
 import { OpenPlayerContext } from "./progress-view";
@@ -24,7 +25,8 @@ export function DuelsTab({ duels, entries, pvpMatches, ladders }: { duels: reado
   const stats = useMemo(() => ladderStats(duels, entries, ladder), [duels, entries, ladder]);
   // a força pelos acertos e pelo tempo: uma simulação com semente fixa (~50 ms), só da escada à vista
   const skill = useMemo(() => estimatedSkill(duels.filter((duel) => duel.ladder === ladder).sort((a, b) => a.at - b.at).slice(-20)), [duels, ladder]);
-  const people = useMemo(() => peopleStats(pvpMatches), [pvpMatches]);
+  // o adversário que é a própria pessoa (o teste entre dois aparelhos dela) não conta
+  const people = useMemo(() => peopleStats(pvpMatches, selfPvp(pvpAccountName(), [pvpName()])), [pvpMatches]);
   const openPlayer = useContext(OpenPlayerContext);
   const card = ladders.find((item) => item.ladder === ladder);
   const maxMs = Math.max(1, ...stats.modes.map((mode) => (mode.msRounds ? Math.max(mode.youMs, mode.botMs) / mode.msRounds : 0)));

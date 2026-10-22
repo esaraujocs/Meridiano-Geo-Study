@@ -129,10 +129,24 @@ export function estimatedSkill(duels: readonly DuelRecord[], sims = SKILL_SIMS):
   return Math.round((low + high) / 2 / 10) * 10;
 }
 
+/** Duelos da pessoa contra ela mesma (22/10/2026, o Enzo viu "Mr. Mussar-Ellah contra mim mesmo" no celular): o amistoso de teste entre dois
+ *  aparelhos dela, de antes de um deles entrar na conta. Cada aparelho guardou o próprio lado com o mesmo id e a sincronização (união por id) não
+ *  sobrescreve: num aparelho o adversário é o nome da própria conta, no outro, a identidade anônima do outro aparelho. Ficam fora da aba: pelo
+ *  nome (o adversário com um nome da própria pessoa) e, na conta do Enzo, pelo id do duelo (o lado do PC diz "Habin", o celular de antes). */
+export const SELF_PVP: readonly { account: number; ids: readonly string[] }[] = [
+  { account: 3176936172, ids: ["pvp:4YSP4J"] },
+];
+export function selfPvp(username: string, ownNames: readonly string[]): (match: PvpMatchRecord) => boolean {
+  const account = username ? hashSeed(`conta:${username.trim().toLowerCase()}`) : null;
+  const ids = new Set(SELF_PVP.find((entry) => entry.account === account)?.ids ?? []);
+  const names = new Set(ownNames.map((name) => name.trim().toLowerCase()).filter(Boolean));
+  return (match) => ids.has(match.id) || names.has(match.opponentName.trim().toLowerCase());
+}
+
 /** Contra pessoas: placar, acertos e tempo por resposta dos dois lados, e com quem a pessoa jogou. */
 export type PeopleStats = { duels: number; ranked: number; wins: number; losses: number; draws: number; you: number; them: number; youMs: number | null; themMs: number | null; rivals: { name: string; code?: string; duels: number; wins: number; losses: number }[] };
-export function peopleStats(matches: readonly PvpMatchRecord[]): PeopleStats {
-  const list = [...matches].sort((a, b) => a.at - b.at);
+export function peopleStats(matches: readonly PvpMatchRecord[], isSelf: (match: PvpMatchRecord) => boolean = () => false): PeopleStats {
+  const list = matches.filter((match) => !isSelf(match)).sort((a, b) => a.at - b.at);
   const timed = list.filter((match) => typeof match.youMs === "number" && typeof match.opponentMs === "number");
   const timedRounds = timed.reduce((sum, match) => sum + match.totalRounds, 0);
   const rivals = new Map<string, PeopleStats["rivals"][number]>();

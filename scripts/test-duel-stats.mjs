@@ -56,5 +56,11 @@ const people = S.peopleStats([
 assert.equal(people.duels, 3); assert.equal(people.ranked, 1); assert.equal(people.wins, 2); assert.equal(people.losses, 1);
 assert.equal(people.you, 15); assert.equal(people.youMs, 3000, "tempo só dos duelos com os dois tempos");
 assert.deepEqual(people.rivals.map((r) => [r.name, r.code, r.duels, r.wins, r.losses]), [["Beto", "XYZ", 3, 2, 1]], "o registro antigo sem código junta pelo nome");
+// duelo contra a própria pessoa (o teste entre dois aparelhos dela): fora, pelo nome e pelo id da conta
+const self = { ...{ id: "pvp:4YSP4J", code: "4YSP4J", at, ladder: "bandeiras", mode: "friendly", opponentName: "Habin", opponentRating: 1000, youCorrect: 18, opponentCorrect: 17, totalRounds: 20, outcome: "win", tiebreak: false, youForfeited: false, opponentForfeited: false, youMs: null, opponentMs: null, ratingDelta: null } };
+const mirror = { ...self, opponentName: "Mr. Mussar-Ellah" };
+assert.equal(S.peopleStats([self], S.selfPvp("MrMussahRellah", [])).duels, 0, "o id marcado na conta do Enzo sai");
+assert.equal(S.peopleStats([self], S.selfPvp("outra", [])).duels, 1, "em outra conta, não");
+assert.equal(S.peopleStats([mirror], S.selfPvp("", ["mr. mussar-ellah "])).duels, 0, "o adversário com o próprio nome sai");
 console.log(`duel-stats ok · desempenho ${stats.perf20}, força ${skill}`);
 await rm(out, { recursive: true, force: true });
