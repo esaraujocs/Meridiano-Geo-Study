@@ -1077,9 +1077,21 @@ const lastRoom = (await call("POST", "/rooms", A, { ladder: "bandeiras", mode: "
 assert.deepEqual([lastRoom.you.trophies, lastRoom.you.mmr], [90, 100]);
 await call("POST", `/rooms/${lastRoom.code}/command`, A, { type: "leave" });
 
+// um duelo por vez por conta (22/10/2026): o aparelho que reserva segura a conta; o outro recebe "taken", também na fila, até liberar
+assert.equal((await call("POST", "/me/lease", A, { device: "pc" })).status, 200);
+assert.equal((await call("POST", "/me/lease", A, { device: "pc" })).status, 200, "o mesmo aparelho renova");
+const busy = await call("POST", "/me/lease", A, { device: "celular" });
+assert.equal(busy.status, 409); assert.equal(busy.body.error, "taken");
+assert.equal((await call("POST", "/queue", A, { ladder: "mapas", mode: "friendly", device: "celular" })).status, 409, "a fila também respeita a reserva");
+assert.equal((await call("POST", "/me/release", A, { device: "celular" })).status, 200);
+assert.equal((await call("POST", "/me/lease", A, { device: "celular" })).status, 409, "só quem reservou libera");
+assert.equal((await call("POST", "/me/release", A, { device: "pc" })).status, 200);
+assert.equal((await call("POST", "/me/lease", A, { device: "celular" })).status, 200, "liberado, o outro aparelho pode");
+await call("POST", "/me/release", A, { device: "celular" });
+
 anaChannel.close(); betoChannel.close();
 await new Promise((resolve) => setTimeout(resolve, 100));
 pvp.dispose();
 await new Promise((resolve) => server.close(resolve));
 
-console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, troféus por escada e ranking, amigos e perfil, HTTP+SSE — ok");
+console.log("pvp: regras, máquina de estados (duelo, desempate, empate, desistência, queda, lobby, expiração), fila (par exato, troca, recusa, prazo, presença, volta à fila), histórico e migração de jogadores, troféus por escada e ranking, amigos e perfil, reserva de duelo por conta, HTTP+SSE — ok");

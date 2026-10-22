@@ -11,7 +11,9 @@ import { formatNumber as money, t } from "../domain/i18n";
 
 // Revelação do duelo: quem é o adversário, os dois tempos (com a regra de moedas dos modos de prévia) e o que está em jogo.
 // O modo e o adversário são sorteados; aqui a pessoa só descobre e começa.
-export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, busy, onStart, onBack, onBuyFormat, debug }: {
+export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, busy, notice, onStart, onBack, onBuyFormat, debug }: {
+  /** Por que o duelo não começou (sem conexão, duelo em andamento no outro aparelho). */
+  notice?: string;
   run: DuelRun;
   unlocked: readonly string[];
   balance: number;
@@ -83,6 +85,7 @@ export function DuelReveal({ run, unlocked, balance, formatOwned, formatCost, bu
           {run.streak > 0 && <span className="fire">{t.duel.reveal.streakStake(run.streak, streakBonus(run.streak))}</span>}
         </div>
         {!formatOwned && <p className="rv-note" role="status">{t.duel.reveal.needFormat}</p>}
+        {notice && <p className="rv-notice" role="alert">{notice}</p>}
         <button type="button" className="rs-btn primary rv-go" disabled={busy || (!formatOwned && !canBuy)} onClick={formatOwned ? onStart : onBuyFormat}>
           <Icon type="swords" />
           {formatOwned ? t.duel.reveal.start : `${t.config.unlockFor}${t.config.unlockForTail} ${money(formatCost)}`}

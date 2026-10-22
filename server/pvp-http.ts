@@ -5,7 +5,8 @@
 //   Convite:  GET /rooms/:code/invite (sem login)   POST /rooms {ladder, mode, name, ladders}   POST /rooms/:code/join {name, ladders}
 //             POST /rooms/:code/command {type...}   GET /rooms/:code   GET /rooms/:code/events (SSE da sala)
 //   Fila:     GET /queue   POST /queue {ladder, mode, name, ladders}   POST /queue/leave   POST /queue/offer {id, accept}
-//   Perfil:   GET /me   GET /me/matches?limit=   GET /me/events (SSE do jogador: a visão da fila)   POST /me/profile {name, ladders}
+//   Perfil:   GET /me   GET /me/matches?limit=   GET /me/events (SSE do jogador: a visão da fila e, com conta, o aviso "account" a cada mudança dela)   POST /me/profile {name, ladders}
+//             POST /me/lease {device} e POST /me/release {device}: um duelo por vez por conta (409 "taken" se outro aparelho da conta está num duelo)
 //   Ranking:  GET /leaderboard?ladder=&limit= (identidade opcional: só marca "você")
 //   Conta:    POST /account/login {username, password, secret} (sem identidade; `secret` é o segredo NOVO do aparelho)   GET /account   POST /account/register {username, password}
 //             POST /account/logout (revoga só o segredo deste aparelho)   POST /account/password {current, next} (derruba os outros aparelhos)
@@ -156,6 +157,19 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     } catch { res.end(); }
   };
   rooms.onChange = (code) => { for (const subscriber of roomStreams.get(code) ?? []) sendRoom(subscriber, code); };
+  // conta ao vivo (22/10/2026): a conta mudou (outro aparelho mandou progresso), os aparelhos abertos dela buscam a diferença na hora
+  accountData.onChange = (playerId, rev) => {
+    for (const res of playerStreams.get(playerId) ?? []) { try { res.write(`event: account\ndata: ${JSON.stringify({ rev })}\n\n`); } catch { /* fecha sozinho */ } }
+  };
+  // Um duelo por vez por conta (22/10/2026, decisão do Enzo): o aparelho que começa um duelo (contra bot ou na fila) reserva a conta; outro aparelho
+  // da mesma conta recebe "taken" até o duelo acabar ou a reserva vencer (o aparelho renova enquanto joga; ver LEASE_MS).
+  const LEASE_MS = 15 * 60 * 1000;
+  const leases = new Map<string, { device: string; until: number }>();
+  const leaseHolder = (playerId: string, device: string) => {
+    const lease = leases.get(playerId);
+    if (!lease || lease.until < Date.now()) { leases.delete(playerId); return null; }
+    return lease.device === device ? null : lease;
+  };
   queue.onChange = (playerId) => { for (const res of playerStreams.get(playerId) ?? []) sendQueue(playerId, res); };
 
   const openRoomStream = (req: IncomingMessage, res: ServerResponse, code: string, url: URL) => {
@@ -198,6 +212,7 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (!action && method === "POST") {
       const body = (await readJson(req)) as Record<string, unknown>;
       if (!isQueuePrefs(body)) throw new PvpError("bad_request", "Escolha a escada e o modo do duelo.");
+      if (leaseHolder(playerId, String((body as Record<string, unknown>).device ?? ""))) throw new PvpError("taken", "Há um duelo em andamento no outro aparelho.");
       // Na fila OU numa sala, nunca os dois: convite aberto (sozinho esperando o amigo) é cancelado; duelo já com adversário, não dá para buscar outro.
       const phase = rooms.phaseOf(playerId);
       if (phase && phase !== "open") throw new PvpError("wrong_phase", "Você já está num duelo.");
@@ -231,6 +246,15 @@ export function createPvpHttp({ rooms, players, queue: givenQueue, history: give
     if (action === "matches" && method === "GET") {
       const limit = Math.max(1, Math.min(200, Math.round(Number(url.searchParams.get("limit") ?? 50)) || 50));
       return json(res, 200, { matches: history.matchesOf(playerId, limit, codeOf) });
+    }
+    if ((action === "lease" || action === "release") && method === "POST") {
+      const body = (await readJson(req)) as Record<string, unknown>;
+      const device = String(body.device ?? "").slice(0, 80);
+      if (!device) throw new PvpError("bad_request", "Aparelho inválido.");
+      if (action === "release") { if (!leaseHolder(playerId, device) && leases.get(playerId)?.device === device) leases.delete(playerId); return json(res, 200, { ok: true }); }
+      if (leaseHolder(playerId, device)) throw new PvpError("taken", "Há um duelo em andamento no outro aparelho.");
+      leases.set(playerId, { device, until: Date.now() + LEASE_MS });
+      return json(res, 200, { ok: true, until: Date.now() + LEASE_MS });
     }
     throw new PvpError("not_found", "Rota desconhecida.");
   };

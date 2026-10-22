@@ -2151,3 +2151,6 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 
 /* o motivo da falha da sincronização, embaixo do aviso (22/10/2026) */
 .acct-err{display:block;margin-top:2px;font-size:12px;color:var(--muted);word-break:break-word}
+
+/* revelação do duelo: por que não começou (sem conexão, duelo no outro aparelho) */
+.rv-notice{margin:0 0 10px;padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--terracotta) 14%,transparent);color:var(--ink);font-size:14px}

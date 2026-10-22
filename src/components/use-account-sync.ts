@@ -1,33 +1,34 @@
 import { useEffect } from "react";
-import { runAccountSync } from "../domain/account-sync-client";
+import { onRemoteChange, requestAccountSync, watchLocalWrites } from "../domain/account-live";
 
-// Quando sincronizar o progresso com a conta (só se este aparelho está numa conta; sem conta, `runAccountSync` não faz nada):
-//  - pouco depois de abrir a página (e, se chegou progresso de outro aparelho e a pessoa ainda não começou nada, recarrega UMA vez para o app ler o que chegou);
-//  - de 5 em 5 minutos com a página à vista, e quando a página vai para o segundo plano (melhor esforço: o navegador pode cortar o pedido ao fechar).
-// Se o aparelho ainda precisa de uma escolha (primeiro envio com progresso dos dois lados), nada é enviado: a linha "Conta" das Opções mostra a pergunta.
-const STARTUP_DELAY_MS = 2500;
-const EVERY_MS = 5 * 60 * 1000;
-const RELOAD_FLAG = "carta-sync-reloaded";
-
-// Há uma partida (ou a tela de montar uma) aberta? Aí não recarrega a página por baixo da pessoa.
-const somethingInProgress = () => Boolean(document.querySelector("canvas.maplibregl-canvas, .quiz-options, .rv-page, .gs"));
+// Conta ao vivo (22/10/2026; regras em domain/account-live.ts): sincroniza sozinho, sem botão.
+//  - ao abrir, ao voltar para a aba e quando a internet volta;
+//  - logo depois de cada gravação local que vai para a conta (partida, compra, conquista…);
+//  - quando o servidor avisa que outro aparelho mudou a conta (canal do jogador, evento "account");
+//  - e, de segurança, a cada minuto com a aba à vista.
+// O que chega de outro aparelho atualiza as telas sem recarregar a página (o app ouve "carta-account-updated").
+const STARTUP_DELAY_MS = 800;
+const SAFETY_MS = 60_000;
 
 export function useAccountSync() {
   useEffect(() => {
-    let alive = true;
-    const run = async (startup: boolean) => {
-      const outcome = await runAccountSync();
-      if (!alive || !startup || outcome.status !== "ok" || !outcome.changedFromAccount) return;
-      try {
-        if (somethingInProgress() || sessionStorage.getItem(RELOAD_FLAG)) return;
-        sessionStorage.setItem(RELOAD_FLAG, "1");
-      } catch { return; }
-      window.location.reload();
-    };
-    const startup = window.setTimeout(() => void run(true), STARTUP_DELAY_MS);
-    const every = window.setInterval(() => { if (document.visibilityState === "visible") void run(false); }, EVERY_MS);
-    const onVisibility = () => { if (document.visibilityState === "hidden") void runAccountSync(); };
+    watchLocalWrites();
+    requestAccountSync(STARTUP_DELAY_MS);
+    const onWrite = () => requestAccountSync();
+    const onRemote = (event: Event) => onRemoteChange(Number((event as CustomEvent<{ rev: number }>).detail?.rev) || 0);
+    const onOnline = () => requestAccountSync(0);
+    const onVisibility = () => { if (document.visibilityState === "visible") requestAccountSync(300); else requestAccountSync(0); };
+    const every = window.setInterval(() => { if (document.visibilityState === "visible") requestAccountSync(0); }, SAFETY_MS);
+    window.addEventListener("carta-local-write", onWrite);
+    window.addEventListener("carta-account-remote", onRemote);
+    window.addEventListener("online", onOnline);
     document.addEventListener("visibilitychange", onVisibility);
-    return () => { alive = false; window.clearTimeout(startup); window.clearInterval(every); document.removeEventListener("visibilitychange", onVisibility); };
+    return () => {
+      window.clearInterval(every);
+      window.removeEventListener("carta-local-write", onWrite);
+      window.removeEventListener("carta-account-remote", onRemote);
+      window.removeEventListener("online", onOnline);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 }

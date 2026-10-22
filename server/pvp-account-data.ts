@@ -10,8 +10,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { join } from "node:path";
 import {
   SYNC_LIMITS, SYNC_ROW_STORES, addCounters, diffManifests, emptyCounters, emptyRows, isEmptyCounters, manifestOf, mergeRow, parseCounters,
-  type CounterState, type Manifest, type SyncRow, type SyncRowStore, type SyncRows,
-} from "../src/domain/account-sync.js";
+  type CounterState, type Manifest, type SyncRow, type SyncRowStore, type SyncRows, SYNC_CAPS } from "../src/domain/account-sync.js";
 import { isPlayerId } from "./pvp-players.js";
 import { PvpError } from "./pvp-rooms.js";
 
@@ -33,7 +32,7 @@ type Stored = {
 type Entry = { data: Stored; bytes: number; dirty: boolean };
 
 /** `hasProgress`: a conta já tem contadores de cartas (decide se o primeiro envio de um aparelho com progresso precisa perguntar "somar ou usar o da conta"). */
-export type SyncPlan = { epoch: string; rev: number; hasProgress: boolean; hasData: boolean; need: Record<SyncRowStore, string[]>; rows: SyncRows; local: Record<string, string> };
+export type SyncPlan = { epoch: string; rev: number; hasProgress: boolean; hasData: boolean; need: Record<SyncRowStore, string[]>; rows: SyncRows; local: Record<string, string>; caps: string[] };
 export type CommitResult = { epoch: string; rev: number; applied: boolean; totals: CounterState; local: Record<string, string> };
 
 const newStored = (now: number): Stored => ({
@@ -65,6 +64,8 @@ function readStored(raw: unknown, now: number): Stored | null {
 export class AccountData {
   private cache = new Map<string, Entry>();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Chamado a cada mudança da conta (22/10/2026, conta "ao vivo"): o HTTP avisa os aparelhos dela pelo canal do jogador. */
+  onChange: ((playerId: string, rev: number) => void) | null = null;
 
   /** `dir` guarda um arquivo por jogador entre reinícios; sem ele, tudo fica só na memória (testes). */
   constructor(private dir: string | null = null, private now: () => number = Date.now) {
@@ -108,7 +109,7 @@ export class AccountData {
     const rows = emptyRows();
     for (const store of SYNC_ROW_STORES) for (const id of send[store]) rows[store].push(data.rows[store][id]);
     const hasProgress = Object.keys(data.totals.progress).length > 0;
-    return { epoch: data.epoch, rev: data.rev, hasProgress, hasData: hasProgress || SYNC_ROW_STORES.some((store) => Object.keys(data.rows[store]).length > 0), need: receive, rows, local: { ...data.local } };
+    return { epoch: data.epoch, rev: data.rev, hasProgress, hasData: hasProgress || SYNC_ROW_STORES.some((store) => Object.keys(data.rows[store]).length > 0), need: receive, rows, local: { ...data.local }, caps: [...SYNC_CAPS] };
   }
 
   /** Junta linhas do aparelho às da conta (união por id; só vence a de maior carimbo). Devolve quantas entraram ou foram atualizadas. */
@@ -123,7 +124,7 @@ export class AccountData {
       entry.data.rows[store][row.id] = winner;
       changed += 1;
     }
-    if (changed) { entry.bytes += incomingBytes; this.touch(entry); }
+    if (changed) { entry.bytes += incomingBytes; this.touch(entry, playerId); }
     return { rev: entry.data.rev, changed };
   }
 
@@ -139,21 +140,22 @@ export class AccountData {
         applied = true;
       }
       entry.data.applied[deviceId] = seq;
-      this.touch(entry);
+      this.touch(entry, playerId);
     }
     let localChanged = false;
     for (const [key, value] of Object.entries(local)) {
       if (LOCAL_KEY.test(key) && typeof value === "string" && value.length <= 60 && entry.data.local[key] === undefined) { entry.data.local[key] = value; localChanged = true; }
     }
-    if (localChanged) this.touch(entry);
+    if (localChanged) this.touch(entry, playerId);
     return { epoch: entry.data.epoch, rev: entry.data.rev, applied, totals: entry.data.totals, local: { ...entry.data.local } };
   }
 
-  private touch(entry: Entry) {
+  private touch(entry: Entry, playerId: string) {
     entry.data.rev += 1;
     entry.data.updatedAt = this.now();
     entry.dirty = true;
     this.scheduleSave();
+    this.onChange?.(playerId, entry.data.rev);
   }
 
   /** Grava agora tudo o que mudou (o desligamento do servidor chama isto). */

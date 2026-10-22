@@ -348,11 +348,26 @@ const seed = (store, n = 6) => {
   assert.equal(result.firstSync, false, "não é a primeira vez: não pergunta");
   assert.deepEqual(rebuilt.commit(PLAYER, "outro-aparelho-qualquer", 0, emptyCounters()).totals, before, "a conta foi refeita com tudo o que o aparelho tem");
   assert.deepEqual(phone.counters(), before, "o aparelho não encolheu");
-  assert.equal(rebuilt.manifestOf(PLAYER).sessions["current-v2-sessao-3"], 0);
+  assert.ok(rebuilt.manifestOf(PLAYER).sessions["current-v2-sessao-3"] !== undefined, "a partida voltou para a conta");
+}
+
+// ───────────── conta ao vivo: o armazenamento avisa cada mudança (o HTTP repassa pelo canal do jogador) ─────────────
+{
+  const server = new AccountData(null);
+  const seen = [];
+  server.onChange = (playerId, rev) => seen.push([playerId, rev]);
+  await sync(seed(new MemStore()), server, PLAYER);
+  assert.ok(seen.length > 0 && seen.every(([id]) => id === PLAYER), "cada mudança avisa a conta certa");
+  assert.ok(seen.at(-1)[1] >= seen[0][1], "com a revisão nova");
 }
 
 // ───────────── regras de linha vindas da conta ─────────────
 {
+  // partida: a terminada vence a que subiu pela metade, e mais rodadas vencem menos (conta ao vivo, 22/10/2026)
+  const partial = { id: "s1", complete: false, rounds: [{}, {}] }, done = { id: "s1", complete: true, rounds: [{}, {}, {}] };
+  assert.ok(rowStamp("sessions", done) > rowStamp("sessions", partial));
+  assert.equal(mergeRow("sessions", partial, done)?.complete, true, "a terminada substitui a parcial");
+  assert.equal(mergeRow("sessions", done, partial), null, "a parcial não volta por cima da terminada");
   const server = new AccountData(null);
   const a = new MemStore();
   a.put("achievements", { id: "current:x", unlockedAt: 900 });

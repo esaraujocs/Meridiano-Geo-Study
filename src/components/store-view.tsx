@@ -165,7 +165,7 @@ export function StoreView({ initialTab = "all", onTry, economy, activeTheme, onE
       else if (pending.kind === "rounds") { await onBuyRounds(pending.rounds.key); setNotice(t.store.boughtRounds(t.roundUnlocks[pending.rounds.tier as "long" | "fifty" | "hundred" | "all"])); }
       else { await onBuySupply(pending.id, pending.qty); setNotice(t.store.supplies.boughtNotice(t.supplies[pending.id].name, pending.qty)); }
       setPending(null);
-    } catch { setNotice(pending.kind === "supply" ? t.store.supplies.buyFailed : t.store.buyFailed); setPending(null); }
+    } catch (error) { setNotice(error instanceof Error && (error as { offline?: boolean }).offline ? error.message : pending.kind === "supply" ? t.store.supplies.buyFailed : t.store.buyFailed); setPending(null); }
     setBusy(false);
   };
   const equip = (theme: Theme) => { onEquip(theme.id); setNotice(t.store.equipped(theme.name)); };

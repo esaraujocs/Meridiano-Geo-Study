@@ -48,7 +48,7 @@ export interface LocalStore {
   applyLocal(wanted: Record<SyncRowStore, string[]>, compute: (current: CurrentLocal) => LocalWrites): Promise<void>;
 }
 
-export type PlanResponse = { epoch: string; rev: number; hasProgress: boolean; hasData: boolean; need: Record<SyncRowStore, string[]>; rows: SyncRows; local: Record<string, string> };
+export type PlanResponse = { epoch: string; rev: number; hasProgress: boolean; hasData: boolean; need: Record<SyncRowStore, string[]>; rows: SyncRows; local: Record<string, string>; caps?: string[] };
 export type CommitResponse = { epoch: string; rev: number; applied: boolean; totals: CounterState; local: Record<string, string> };
 export interface SyncTransport {
   plan(manifest: Manifest): Promise<PlanResponse>;
@@ -68,6 +68,8 @@ export type SyncDeps = {
   applyLocalPrefs?: (missing: Record<string, string>) => void;
   /** Sem "mode", o primeiro envio de um aparelho com progresso para uma conta que também tem devolve "needs-choice" (e não grava nada). "sum": soma o que este aparelho jogou à conta. "adopt": nas cartas que a conta já tem vale o número DELA (o do aparelho é descartado); as que só o aparelho tem sobem normalmente. Os dois são a escolha da pessoa. */
   mode?: "sum" | "adopt";
+  /** O servidor entende o carimbo das partidas (SYNC_CAPS)? Sem isto, as partidas vão com carimbo 0, como antes. */
+  sessionStamps?: boolean;
 };
 
 export type SyncResult =
@@ -100,7 +102,7 @@ export async function syncAccount(deps: SyncDeps): Promise<SyncResult> {
   const now = deps.now ?? Date.now;
   const snapshot = await store.snapshot();
   const localCounters = countersFrom(snapshot.progress, snapshot.supply);
-  const plan = await transport.plan(manifestOf(snapshot.rows));
+  const plan = await transport.plan(manifestOf(snapshot.rows, { sessionStamps: deps.sessionStamps ?? true }));
 
   let state = await store.readState();
   let first = false; // primeira vez deste aparelho NESTA conta

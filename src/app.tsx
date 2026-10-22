@@ -1,3 +1,4 @@
+import { freshAccountBeforeSpending, hasAccount, isOnline, requestAccountSync, thisDevice } from "./domain/account-live";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Game, type MapBoard } from "./components/map-game";
 import { ExploreMap, type ExploreSpec } from "./components/explore-map";
@@ -89,8 +90,7 @@ import { newPvpRun, pvpLegOptions, recordPvpLeg, roomLegs, type PvpRun } from ".
 import { IDLE_QUEUE_VIEW, isQueuePrefs, parseInvite, type LadderStandings, type LeaderboardRow, type PvpInvite, type PvpMode, type PvpProfileView, type PvpQueueNotice, type PvpQueueView, type PvpRoomView, type QueuePrefs } from "./domain/pvp";
 import {
   PvpClientError, hasPvpIdentity, pvpAccountName, pvpCommand, pvpCreateRoom, pvpGetInvite, pvpGetRoom, pvpJoinRoom, pvpName as pvpStoredName, pvpProfile, pvpQueueGet, pvpQueueJoin, pvpQueueLeave,
-  pvpChallenge, pvpFriendRemove, pvpFriendRequest, pvpFriendRespond, pvpFriends, pvpLeaderboard, pvpPlayer, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName,
-} from "./domain/pvp-client";
+  pvpChallenge, pvpFriendRemove, pvpFriendRequest, pvpFriendRespond, pvpFriends, pvpLeaderboard, pvpPlayer, pvpQueueRespond, pvpSendProfile, pvpServerMatches, pvpSubscribe, pvpSubscribeQueue, setPvpName as setPvpStoredName, pvpLeaseDuel, pvpReleaseDuel } from "./domain/pvp-client";
 import { listPvpMatches, missingPvpRecords, savePvpMatch, type PvpMatchRecord } from "./domain/pvp-store";
 import { MecenatoView } from "./components/mecenato-view";
 import { queryMecenato } from "./domain/mecenato-store";
@@ -172,6 +172,7 @@ export function App() {
   const liveLegRounds = useRef<{ correct: boolean }[]>([]);
   const lastBotRef = useRef<Record<Ladder, string | null>>({ mapas: null, bandeiras: null });
   const [duelBusy, setDuelBusy] = useState(false);
+  const [duelNotice, setDuelNotice] = useState("");
   const [leagueLadder, setLeagueLadder] = useState<Ladder | undefined>(undefined);
   // Duelos entre pessoas já terminados (IndexedDB): os valendo calculados neste aparelho mexem na mesma escada dos duelos contra bot (transição, 28/09).
   const [pvpMatches, setPvpMatches] = useState<PvpMatchRecord[]>([]);
@@ -184,7 +185,7 @@ export function App() {
   const trophies = Math.max(byLadder.mapas, byLadder.bandeiras);
   // Onde a pessoa está em cada escada (troféus e MMR escondido): vai para o servidor (ranking, proposta da fila e a conta do adversário).
   const standings = useMemo<LadderStandings>(() => Object.fromEntries(LADDERS.map((ladder) => [ladder, { trophies: byLadder[ladder], mmr: mmrStateFromDuels(ladderEntries, ladder).mmr }])) as LadderStandings, [ladderEntries, byLadder]);
-  useEffect(() => {
+  const loadLadderData = () => {
     const adjusted = ensureAccountAdjustments(pvpAccountName()).catch(() => undefined).then(() => listAdjustments()).catch(() => [] as LadderAdjustment[]);
     void Promise.all([listDuels(), listPvpMatches().catch(() => [] as PvpMatchRecord[]), loadBotRanking(), adjusted]).then(async ([list, matches, ranking, adjusts]) => {
       setDuels(list);
@@ -198,6 +199,18 @@ export function App() {
       await claimLeagueThemes(trophiesByLadder(entries)).catch(() => [] as string[]);
       void refreshEconomy();
     }).catch((error) => { console.error("[carta-cega] ranking load failed", error); setError(t.duel.rank.loadError); });
+  };
+  useEffect(() => { loadLadderData(); }, []);
+  // conta ao vivo (22/10/2026): chegou progresso de outro aparelho; as telas releem o aparelho (sem recarregar a página)
+  useEffect(() => {
+    const onUpdated = () => {
+      loadLadderData();
+      void refreshEconomy();
+      void refreshSupplies();
+      setSurfaceRevision((current) => current + 1);
+    };
+    window.addEventListener("carta-account-updated", onUpdated);
+    return () => window.removeEventListener("carta-account-updated", onUpdated);
   }, []);
   useEffect(() => {
     const refresh = () => {
@@ -372,6 +385,7 @@ export function App() {
       if (error.code === "not_found") return t.pvp.invite.notFound;
       if (error.code === "room_full" || error.code === "wrong_phase") return t.pvp.invite.full;
       if (error.code === "network") return t.pvp.errors.network;
+      if (error.code === "taken" && error.message.includes("aparelho")) return t.account.duelElsewhere;
     }
     return t.pvp.errors.generic;
   };
@@ -710,7 +724,7 @@ export function App() {
     const name = pvpNameState.trim();
     if (!name) return;
     setPvpBusy(true); setPvpError(null); setQueueNotice(null);
-    try { applyQueueView(await pvpQueueJoin(queuePrefs, name, standings), false); }
+    try { applyQueueView(await pvpQueueJoin(queuePrefs, name, standings, thisDevice()), false); }
     catch (error) { setPvpError(error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error)); }
     setPvpBusy(false);
   };
@@ -723,7 +737,7 @@ export function App() {
     setArenaError(null);
     setQueuePrefs(prefs);
     setPvpBusy(true); setPvpError(null); setQueueNotice(null);
-    try { applyQueueView(await pvpQueueJoin(prefs, name, standings), false); }
+    try { applyQueueView(await pvpQueueJoin(prefs, name, standings, thisDevice()), false); }
     catch (error) { setArenaError({ ladder, message: error instanceof PvpClientError && error.code === "wrong_phase" ? t.pvp.home.busy : pvpErrorMessage(error) }); }
     setPvpBusy(false);
   };
@@ -854,8 +868,19 @@ export function App() {
     setDuelRun({ ...run, index });
     setScreen("game");
   };
-  const beginDuel = () => {
-    if (!duelRunRef.current || !isRoundTierUnlocked("long", economy.unlocked)) return;
+  const beginDuel = async () => {
+    if (!duelRunRef.current || !isRoundTierUnlocked("long", economy.unlocked) || duelBusy) return;
+    // com conta: o duelo vale troféus na conta, então pede conexão e reserva a conta para este aparelho (um duelo por vez por conta)
+    if (hasAccount()) {
+      if (!isOnline()) { setDuelNotice(t.account.duelOffline); return; }
+      setDuelBusy(true);
+      try {
+        const lease = await pvpLeaseDuel(thisDevice());
+        if (lease === "taken") { setDuelNotice(t.account.duelElsewhere); return; }
+      } catch { setDuelNotice(t.account.duelOffline); return; }
+      finally { setDuelBusy(false); }
+    }
+    setDuelNotice("");
     economyBeforeRef.current = economy;
     startLeg(0);
   };
@@ -866,6 +891,7 @@ export function App() {
   };
   /** Fecha o duelo: o bot joga os dois tempos, o placar decide, os troféus entram no histórico e os marcos são pagos. */
   const concludeDuel = async (run: DuelRun) => {
+    if (hasAccount()) void pvpReleaseDuel(thisDevice());
     // A trava vem antes de qualquer await: terminar e abandonar não podem
     // liquidar o mesmo duelo com placares diferentes durante a gravação.
     if (finalizingDuelIds.current.has(run.id)) return;
@@ -983,12 +1009,13 @@ export function App() {
     }));
     setScreen("result");
   };
-  const buyRounds = async (key: RoundUnlockKey) => { setEconomy(await unlockRounds(key)); };
+  const spend = async <T,>(buy: () => Promise<T>) => { await freshAccountBeforeSpending(t.account.buyOffline); const result = await buy(); requestAccountSync(0); return result; };
+  const buyRounds = async (key: RoundUnlockKey) => { setEconomy(await spend(() => unlockRounds(key))); };
   // Compra na Loja: debita as moedas e já aplica o tema.
-  const buyMode = async (family: Family, variant: AnyQuizVariant) => { setEconomy(await unlockContent(family, variant, "mundo")); };
-  const buyTheme = async (id: string) => { setEconomy(await unlockTheme(id)); setTrial(null); setTheme(id); };
+  const buyMode = async (family: Family, variant: AnyQuizVariant) => { setEconomy(await spend(() => unlockContent(family, variant, "mundo"))); };
+  const buyTheme = async (id: string) => { setEconomy(await spend(() => unlockTheme(id))); setTrial(null); setTheme(id); };
   // Suprimentos de expedição: preço fixo por unidade, compra qualquer quantidade de uma vez.
-  const buySupplyItem = async (id: SupplyId, qty: number) => { await buySupply(id, qty); await Promise.all([refreshEconomy(), refreshSupplies()]); };
+  const buySupplyItem = async (id: SupplyId, qty: number) => { await spend(() => buySupply(id, qty)); await Promise.all([refreshEconomy(), refreshSupplies()]); };
   const openSurface = (surface: "progress" | "collection" | "achievements" | "history") => { if (surface === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } setScreen(surface); };
   const navigate = (destination: "hub" | "progress" | "collection" | "achievements" | "store" | "options") => { if (destination === "collection") { setCollectionRegion("mundo"); setCollectionAlbum(undefined); } if (destination === "store") setStoreTab("all"); setScreen(destination); };
   const openMuseum = () => setScreen("mecenato");
@@ -1384,7 +1411,7 @@ export function App() {
      return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current={screen === "history" ? "hub" : screen} onNavigate={navigate} onSurface={openSurface} /><Surface key={surfaceRevision} data={data} kind={screen} onBack={() => setScreen("hub")} economy={economy} onTrain={selectFamily} onOpenCollection={openCollectionAt} collectionRegion={collectionRegion} collectionAlbum={collectionAlbum} onOpenPlayer={openPlayer} onEconomyRefresh={refreshEconomyForMuseum} ladders={arenaCards} onOpenLeague={() => setScreen("league")} onTrainFocus={(mode, ids) => void trainFocusMode(mode, ids)} ladderEntries={ladderEntries} /></div>;
   }
   if (screen === "duel-reveal" && duelRun) {
-    return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} onStart={beginDuel} onBack={() => { setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
+    return <div className="app-shell grain"><DuelReveal run={duelRun} unlocked={economy.unlocked} balance={economy.balance} formatOwned={isRoundTierUnlocked("long", economy.unlocked)} formatCost={roundUnlockFor("long")?.cost ?? 3000} busy={duelBusy} notice={duelNotice} onStart={() => void beginDuel()} onBack={() => { setDuelNotice(""); setDuelRun(null); setScreen("hub"); }} onBuyFormat={() => void buyDuelFormat()} debug={isDebugEnabled() ? { onPick: pickLegGroup } : undefined} /></div>;
   }
   if (screen === "duel-interlude" && duelRun) {
     return <div className="app-shell grain"><DuelInterlude run={duelRun} unlocked={economy.unlocked} onContinue={() => startLeg(1)} /></div>;

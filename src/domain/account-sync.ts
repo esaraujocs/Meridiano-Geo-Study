@@ -48,11 +48,13 @@ export const isCounterPreference = (row: { id: string }) => row.id.startsWith(SU
 
 // ───────────── linhas ─────────────
 
-/** O carimbo de uma linha: maior vence. Quase tudo é 0 (a primeira que chegou fica). Conquista: a desbloqueada mais cedo (carimbo = −quando). Compra: o valor realmente pago
+/** O carimbo de uma linha: maior vence. Quase tudo é 0 (a primeira que chegou fica). Partida: a mais adiantada (terminada, mais rodadas). Conquista: a desbloqueada mais cedo (carimbo = −quando). Compra: o valor realmente pago
  *  (o preço antigo, mais barato, não pode "devolver" moedas). Favorita: a editada por último. Ranking dos bots: a revisão mais alta. */
 export function rowStamp(store: SyncRowStore, row: SyncRow): number {
   const number = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? value : 0);
   if (store === "achievements") return row.unlockedAt === undefined ? 0 : -number(row.unlockedAt);
+  // partida: a mais adiantada vence (22/10/2026, conta ao vivo: uma partida que subiu pela metade é trocada pela terminada; antes a primeira que chegava ficava)
+  if (store === "sessions") return (row.complete === true ? 1_000_000 : 0) + (Array.isArray(row.rounds) ? row.rounds.length : 0);
   if (store === "ledger") return row.kind === "debit" ? number(row.amount) : 0;
   if (store === "preferences") {
     if (row.id === BOT_RANKING_ROW_ID) return number(row.revision);
@@ -61,11 +63,15 @@ export function rowStamp(store: SyncRowStore, row: SyncRow): number {
   return 0;
 }
 
-export function manifestOf(rows: Partial<Record<SyncRowStore, readonly SyncRow[]>>): Manifest {
+/** O que o servidor entende além do básico (vem no `plan`). "session-stamps": o carimbo das partidas (22/10/2026); um servidor que ainda não o
+ *  conhece veria toda partida do aparelho como "mais nova" e pediria todas de novo a cada sincronização, então o aparelho só usa o carimbo quando o
+ *  servidor avisa que entende. */
+export const SYNC_CAPS = ["session-stamps"] as const;
+export function manifestOf(rows: Partial<Record<SyncRowStore, readonly SyncRow[]>>, options: { sessionStamps?: boolean } = {}): Manifest {
   const manifest = emptyManifest();
   for (const store of SYNC_ROW_STORES) for (const row of rows[store] ?? []) {
     if (store === "preferences" && isCounterPreference(row)) continue;
-    manifest[store][row.id] = rowStamp(store, row);
+    manifest[store][row.id] = store === "sessions" && options.sessionStamps === false ? 0 : rowStamp(store, row);
   }
   return manifest;
 }

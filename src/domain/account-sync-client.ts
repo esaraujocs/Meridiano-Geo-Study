@@ -5,6 +5,7 @@ import { DATABASE_NAME, DATABASE_VERSION, upgradeStorage } from "./storage-schem
 import { SYNC_ROW_STORES, SUPPLY_ROW_PREFIX, countRows, emptyRows, isCounterPreference, type SyncRow, type SyncRowStore, type SyncRows } from "./account-sync.js";
 import { SYNC_STATE_ID, syncUntilSettled, type CurrentLocal, type LocalStore, type LocalWrites, type SupplyRow, type SyncResult, type SyncState, type SyncSnapshot } from "./account-sync-engine.js";
 import { BOT_RANKING_ROW_ID } from "./account-sync.js";
+import { markSyncConnection } from "./account-live.js";
 import { parseBotRanking } from "./bot-ranking.js";
 import { deviceId, readLocalPrefs, setMissingLocalPrefs } from "./progress-backup.js";
 import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpAccountRefresh, pvpIdentity, pvpSyncCommit, pvpSyncPlan, pvpSyncRows } from "./pvp-client.js";
@@ -17,7 +18,7 @@ function openDatabase() {
   return new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
     request.onupgradeneeded = () => upgradeStorage(request.result);
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => resolve(markSyncConnection(request.result));
     request.onerror = () => reject(request.error);
   });
 }
@@ -121,6 +122,9 @@ export function createIdbLocalStore(): LocalStore {
 // ───────────── quando e como sincronizar ─────────────
 
 const STATUS_KEY = "carta-sync-status";
+const CAPS_KEY = "carta-sync-caps";
+const serverCaps = (): string[] => { try { return JSON.parse(localStorage.getItem(CAPS_KEY) ?? "[]") as string[]; } catch { return []; } };
+const rememberCaps = (caps: readonly string[]) => { try { localStorage.setItem(CAPS_KEY, JSON.stringify(caps)); } catch { /* sem armazenamento */ } };
 const OWNER_KEY = "carta-sync-owner";
 
 /** `needsChoice`: o primeiro envio deste aparelho espera a escolha "somar ou usar o da conta" (a linha Conta das Opções pergunta). */
@@ -154,19 +158,27 @@ export async function runAccountSync(options: { mode?: "sum" | "adopt" } = {}): 
   if (!identity) return { status: "skipped" };
   const job = async (): Promise<SyncOutcome> => {
     try {
-      const result = await syncUntilSettled({
+      // conta ao vivo (22/10/2026): a primeira vez deste aparelho na conta não pergunta mais. Progresso de quem jogava sem conta junta na conta uma
+      // vez (decisão do Enzo); um aparelho que já sincronizou ESTA conta e perdeu o estado fica com o número da conta (não soma duas vezes).
+      // (o modo só vale nessa primeira vez: em toda sincronização, "usar o da conta" descartaria o que este aparelho jogou e ainda não subiu)
+      const autoMode = lastSyncedAccount() === account ? "adopt" as const : "sum" as const;
+      const run = (mode: "sum" | "adopt" | undefined) => syncUntilSettled({
         owner: identity.id,
         store: createIdbLocalStore(),
         transport: {
-          plan: pvpSyncPlan,
+          // o servidor diz o que entende; vale a partir da próxima sincronização
+          plan: async (manifest) => { const plan = await pvpSyncPlan(manifest); rememberCaps(plan.caps ?? []); return plan; },
           pushRows: (rows: SyncRows) => (countRows(rows) ? pvpSyncRows(rows) : Promise.resolve()),
           commit: pvpSyncCommit,
         },
         newDeviceId: () => deviceId() ?? crypto.randomUUID(),
         acceptRow,
         applyLocalPrefs: setMissingLocalPrefs,
-        mode: options.mode,
+        mode,
+        sessionStamps: serverCaps().includes("session-stamps"),
       });
+      let result = await run(options.mode);
+      if (result.status === "needs-choice") result = await run(autoMode);
       if (result.status === "ok") {
         remember({ at: Date.now(), ok: true, changed: result.changedFromAccount, rev: result.rev }, account);
         window.dispatchEvent(new CustomEvent("carta-sync", { detail: result }));

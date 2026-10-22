@@ -1,3 +1,4 @@
+import { liveState, requestAccountSync } from "../domain/account-live";
 import { useEffect, useId, useState, type FormEvent } from "react";
 import { PvpClientError, hasPvpIdentity, pvpAccountName, pvpAccountRefresh, pvpChangePassword, pvpLogin, pvpLogout, pvpRegister } from "../domain/pvp-client";
 import { forgetSyncStatus, lastSyncedAccount, runAccountSync, syncStatus } from "../domain/account-sync-client";
@@ -81,24 +82,20 @@ export function AccountRow() {
     return () => window.removeEventListener("carta-sync", onSync);
   }, []);
 
+  // conta ao vivo (22/10/2026): sem botão de sincronizar; a linha mostra o estado (salvo, salvando, sem conexão, erro com o motivo)
+  const [live, setLive] = useState(liveState);
+  useEffect(() => {
+    const onLive = (event: Event) => setLive((event as CustomEvent<ReturnType<typeof liveState>>).detail);
+    window.addEventListener("carta-live", onLive);
+    return () => window.removeEventListener("carta-live", onLive);
+  }, []);
   const status = username ? syncStatus() : null;
-  const needsChoice = Boolean(username && status?.needsChoice);
 
   const open = (to: Mode) => { setMode(to); setUser(""); setPassword(""); setRepeat(""); setNext(""); setError(""); setMessage(""); };
   const reloadSoon = (text: string) => { setMessage(text); window.setTimeout(() => window.location.reload(), 1200); };
 
-  /** Sincroniza agora (botão, ou logo depois de criar a conta). Mostra o que houve; a escolha "somar ou usar o da conta" aparece sozinha (needsChoice). */
-  const syncNow = async (chosen?: "sum" | "adopt") => {
-    if (syncing) return;
-    setSyncing(true); setError(""); setMessage(""); setArrived(false);
-    const outcome = await runAccountSync({ mode: chosen });
-    setSyncing(false);
-    setTick((tick) => tick + 1);
-    if (outcome.status === "ok") {
-      if (chosen) { reloadSoon(t.account.signedIn); return; } // escolheu: recarrega para o app inteiro ler o que mudou
-      setMessage(outcome.changedFromAccount ? t.account.syncArrived : t.account.syncDone);
-    } else if (outcome.status === "error") setError(outcome.network ? t.account.syncOffline : t.account.syncFailed);
-  };
+  /** Logo depois de criar a conta, ou "Tentar de novo" depois de um erro: a sincronização ao vivo roda agora. */
+  const syncNow = () => requestAccountSync(0);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -128,8 +125,7 @@ export function AccountRow() {
         const saved = await pvpLogin(name, password);
         await offerToSavePassword(saved, password);
         setUsername(saved);
-        const outcome = await runAccountSync(); // o progresso deste aparelho entra na conta (e o da conta chega aqui) antes de recarregar
-        if (outcome.status === "needs-choice") { open("idle"); return; } // a pergunta "somar ou usar o da conta" aparece na linha
+        await runAccountSync(); // a conta chega aqui (e o que este aparelho jogou sem conta sobe, uma vez) antes de recarregar
         reloadSoon(t.account.signedIn); // recarrega para o app inteiro (fila, amigos, nome, progresso) ler a identidade da conta
         return;
       }
@@ -139,7 +135,7 @@ export function AccountRow() {
         await offerToSavePassword(saved, password);
         open("idle");
         setMessage(t.account.created);
-        void syncNow(); // o progresso que este aparelho já tem sobe para a conta nova
+        syncNow(); // o progresso que este aparelho já tem sobe para a conta nova
         return;
       }
       await pvpChangePassword(password, next);
@@ -163,25 +159,18 @@ export function AccountRow() {
   };
 
   const field = (suffix: string) => `${ids}-${suffix}`;
-  const statusLine = syncing ? t.account.syncing : status?.error ? t.account.syncFailed : status?.ok && status.at ? syncedAgo(status.at) : t.account.syncNever;
+  const statusLine = live.state === "saving" ? t.account.liveSaving : live.state === "offline" ? t.account.liveOffline : live.state === "error" ? t.account.liveError
+    : status?.ok && status.at ? t.account.liveSaved : t.account.syncNever;
   return <div className="cv-row">
     <span className="cv-k">{t.account.label}</span>
     <div className="cv-ctl acct">
       {mode === "idle" && <>
         <p className="cv-hint">{username ? t.account.hintIn(username) : t.account.hintOut}</p>
-        {needsChoice && <div className="acct-choice" role="group" aria-label={t.account.choiceTitle}>
-          <strong>{t.account.choiceTitle}</strong>
-          <p className="cv-hint">{t.account.choiceBody}</p>
-          <div className="cv-chips">
-            <button type="button" className="cv-chip acct-go" disabled={syncing} onClick={() => void syncNow("sum")}>{t.account.choiceSum}</button>
-            <button type="button" className="cv-chip" disabled={syncing} onClick={() => void syncNow("adopt")}>{t.account.choiceAdopt}</button>
-          </div>
-        </div>}
-        {username && !needsChoice && <p className="cv-hint acct-sync" role="status">{statusLine}{!syncing && status?.error && <small className="acct-err">{t.account.syncDetail(status.error)}</small>}</p>}
+        {username && <p className="cv-hint acct-sync" role="status">{statusLine}{live.state === "error" && live.detail && <small className="acct-err">{t.account.syncDetail(live.detail)}</small>}</p>}
         <div className="cv-chips">
           {username
             ? <>
-              {!needsChoice && <button type="button" className="cv-chip" disabled={busy || syncing} onClick={() => void syncNow()}>{t.account.syncNow}</button>}
+              {live.state === "error" && <button type="button" className="cv-chip" disabled={busy} onClick={syncNow}>{t.account.retry}</button>}
               <button type="button" className="cv-chip" disabled={busy} onClick={() => open("password")}>{t.account.changePassword}</button>
               <button type="button" className="cv-chip" disabled={busy} onClick={() => void signOut()}>{t.account.signOut}</button>
             </>

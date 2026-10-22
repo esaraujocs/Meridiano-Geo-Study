@@ -105,9 +105,22 @@ export async function pvpQueueGet(): Promise<PvpQueueView> {
   const { queue } = await request("GET", "/queue", requireIdentity());
   return queue as PvpQueueView;
 }
-export async function pvpQueueJoin(prefs: QueuePrefs, name: string, ladders: LadderStandings): Promise<PvpQueueView> {
-  const { queue } = await request("POST", "/queue", requireIdentity(), { ladder: prefs.ladder, mode: prefs.mode, name, ladders });
+export async function pvpQueueJoin(prefs: QueuePrefs, name: string, ladders: LadderStandings, device?: string): Promise<PvpQueueView> {
+  const { queue } = await request("POST", "/queue", requireIdentity(), { ladder: prefs.ladder, mode: prefs.mode, name, ladders, ...(device ? { device } : {}) });
   return queue as PvpQueueView;
+}
+/** Um duelo por vez por conta (22/10/2026): reserva a conta para este aparelho. "taken": outro aparelho da conta está num duelo; "unavailable": o
+ *  servidor ainda não conhece a reserva (versão anterior) — o duelo segue. Erro de rede é lançado (quem chama pede conexão). */
+export async function pvpLeaseDuel(device: string): Promise<"ok" | "taken" | "unavailable"> {
+  try { await request("POST", "/me/lease", requireIdentity(), { device }); return "ok"; }
+  catch (error) {
+    if (error instanceof PvpClientError && error.code === "taken") return "taken";
+    if (error instanceof PvpClientError && error.code === "not_found") return "unavailable";
+    throw error;
+  }
+}
+export async function pvpReleaseDuel(device: string): Promise<void> {
+  await request("POST", "/me/release", requireIdentity(), { device }).catch(() => undefined);
 }
 export async function pvpQueueLeave(): Promise<PvpQueueView> {
   const { queue } = await request("POST", "/queue/leave", requireIdentity(), {});
@@ -256,6 +269,10 @@ export function pvpSubscribeQueue(onView: (view: PvpQueueView) => void, onError?
   });
   source.addEventListener("social", (event) => {
     try { const data: unknown = JSON.parse((event as MessageEvent).data); if (isSocialEvent(data)) onSocial?.(data); } catch (error) { onError?.(error); }
+  });
+  // conta ao vivo: outro aparelho mudou a conta; quem cuida é account-live.ts
+  source.addEventListener("account", (event) => {
+    try { const data = JSON.parse((event as MessageEvent).data) as { rev?: unknown }; if (typeof data.rev === "number") window.dispatchEvent(new CustomEvent("carta-account-remote", { detail: { rev: data.rev } })); } catch { /* aviso estragado: o próximo vem */ }
   });
   source.onerror = () => onError?.(new PvpClientError("network", "A conexão com a fila caiu; tentando de novo…"));
   return () => source.close();
