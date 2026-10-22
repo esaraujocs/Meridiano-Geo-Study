@@ -69,7 +69,7 @@ assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "d", "exata", "b"), fals
 const p1 = tv.travelPuzzle(g, "e", 7), p2 = tv.travelPuzzle(g, "e", 7);
 assert.deepEqual(p1, p2);
 assert.equal(tv.distancesFrom(g, p1.end).get(p1.start), p1.shortest + 1);
-assert.ok(p1.shortest >= 1 && p1.shortest <= 6);
+assert.ok(p1.shortest >= 1, "sem teto de tamanho");
 assert.equal(tv.travelPuzzle(g, "z", 1), null);
 assert.equal(tv.travelPuzzle(g, "e", 7, "exata").budget, p1.shortest + 1);
 
@@ -115,6 +115,7 @@ for (const end of dests) for (let seed = 0; seed < 5; seed++) {
   assert.equal(route.length - 2, p.shortest);
   hops.set(p.shortest + 2, (hops.get(p.shortest + 2) ?? 0) + 1);
 }
+assert.ok(Math.max(...hops.keys()) >= 12, "saem travessias longas (Canadá → Brasil tem 10 países)");
 console.log("rotas por tamanho (países):", [...hops].sort((a, b) => a[0] - b[0]).map(([k, v]) => `${k}:${v}`).join(" "));
 console.log(`travel ok · ${pool.length} países, ${dests.length} destinos`);
 await rm(out, { recursive: true, force: true });

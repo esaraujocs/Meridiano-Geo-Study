@@ -141,7 +141,7 @@ export function saveTravelLevel(level: TravelLevel) {
   try { localStorage.setItem(TRAVEL_LEVEL_KEY, level); } catch { /* sem armazenamento */ }
 }
 /** A folga de cada nível e o que ele paga, para a Mesa. */
-export const TRAVEL_LEVEL_EXTRA: Record<TravelLevel, string> = { livre: "4–6", trilha: "2–3", exata: "1" };
+export const TRAVEL_LEVEL_EXTRA: Record<TravelLevel, string> = { livre: "4–8", trilha: "2–3", exata: "1" };
 /** Quanto cada nível paga a mais. */
 export const TRAVEL_LEVEL_COINS: Record<TravelLevel, number> = { livre: 1, trilha: 1.25, exata: 1.5 };
 
@@ -159,8 +159,10 @@ export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: Rea
   return near.has(tip);
 }
 
-/** Rotas de 3 a 8 países ao todo (decisão do Enzo, "misturadas"): de 2 a 7 fronteiras entre origem e destino, com as do meio mais frequentes. */
-export const TRAVEL_HOPS: ReadonlyArray<readonly [number, number]> = [[2, 1], [3, 2], [4, 2], [5, 2], [6, 1], [7, 1]];
+/** Sem teto de tamanho (22/10/2026, pedido do Enzo: "deixa sem limite"; até então eram de 3 a 8 países e as travessias de ponta a ponta, como
+ *  Canadá → Brasil (9 fronteiras) ou Portugal → África do Sul (10), nunca saíam): a distância é sorteada entre todas as que o destino tem, de
+ *  TRAVEL_MIN_HOPS fronteiras até a mais longa, cada uma com a mesma chance; a origem, entre os países a essa distância. */
+export const TRAVEL_MIN_HOPS = 2;
 
 function hash(text: string): number {
   let h = 2166136261;
@@ -168,20 +170,18 @@ function hash(text: string): number {
   return h >>> 0;
 }
 
-/** Os destinos que têm alguma origem a 2–7 fronteiras (os que dão rota). */
+/** Os destinos que têm alguma origem a pelo menos TRAVEL_MIN_HOPS fronteiras (os que dão rota). */
 export function travelDestinations(graph: TravelGraph): string[] {
-  return [...graph.keys()].filter((id) => [...distancesFrom(graph, id).values()].some((d) => d >= 2 && d <= 7)).sort();
+  return [...graph.keys()].filter((id) => [...distancesFrom(graph, id).values()].some((d) => d >= TRAVEL_MIN_HOPS)).sort();
 }
 
-/** A rota de um destino: a distância sorteada entre as que existem (pelos pesos de TRAVEL_HOPS) e a origem entre os países a essa distância. */
+/** A rota de um destino: a distância sorteada entre as que existem (todas com a mesma chance) e a origem entre os países a essa distância. */
 export function travelPuzzle(graph: TravelGraph, end: string, seed: number | string, level: TravelLevel = "livre"): TravelPuzzle | null {
   const byHops = new Map<number, string[]>();
-  for (const [id, d] of distancesFrom(graph, end)) if (d >= 2 && d <= 7) (byHops.get(d) ?? byHops.set(d, []).get(d)!).push(id);
-  const options = TRAVEL_HOPS.filter(([hops]) => byHops.has(hops));
+  for (const [id, d] of distancesFrom(graph, end)) if (d >= TRAVEL_MIN_HOPS) (byHops.get(d) ?? byHops.set(d, []).get(d)!).push(id);
+  const options = [...byHops.keys()].sort((a, b) => a - b);
   if (!options.length) return null;
-  const total = options.reduce((sum, [, weight]) => sum + weight, 0);
-  let pick = hash(`${seed}:${end}:hops`) % total;
-  const hops = options.find(([, weight]) => (pick -= weight) < 0)![0];
+  const hops = options[hash(`${seed}:${end}:hops`) % options.length];
   const starts = byHops.get(hops)!.sort();
   const start = starts[hash(`${seed}:${end}:start`) % starts.length];
   return { start, end, shortest: hops - 1, budget: travelBudget(hops - 1, level) };
