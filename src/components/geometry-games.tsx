@@ -8,7 +8,7 @@ import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoun
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
-import { guessAllowed, readTravelLevel, travelBand, wrongSide, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { guessAllowed, readTravelLevel, travelBand, wrongSide, travelBoxes, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
 import { TravelMap, travelPoints, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
@@ -519,7 +519,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   }, [guesses, linked, meta, puzzle, reveal]);
   // os pequenos demais para o contorno aparecer ganham um ponto
   const points = useMemo(() => (puzzle ? travelPoints(meta, [...reveal.map((id) => [id, "reveal"] as [string, TravelPaint]), ...guesses.filter((guess) => !guess.off).map((guess) => [guess.id, shownGrade(guess)] as [string, TravelPaint]), [puzzle.start, "end"], [puzzle.end, "end"]]) : []), [guesses, linked, meta, puzzle, reveal]);
-  const boxes = useMemo(() => (puzzle ? [puzzle.start, puzzle.end, ...guesses.filter((guess) => guess.grade !== "far").map((guess) => guess.id), ...reveal].map((id) => travelBox(meta, id)).filter((box): box is NonNullable<typeof box> => Boolean(box)) : []), [guesses, meta, puzzle, reveal]);
+  const boxes = useMemo(() => (puzzle ? travelBoxes(meta, [puzzle.start, puzzle.end, ...guesses.filter((guess) => guess.grade !== "far").map((guess) => guess.id), ...reveal]) : []), [guesses, meta, puzzle, reveal]);
   const dashed = useMemo(() => (closed ? shortestPath.slice(1, -1).flatMap((id) => travelFeatureIds(meta, id)) : nextHint && !have.has(nextHint) ? travelFeatureIds(meta, nextHint) : []), [closed, have, meta, nextHint, shortestPath]);
   const initials = puzzle && showInitials ? remainingRoute(graph, puzzle, have).map((id) => nameOf(id).charAt(0).toUpperCase()).join(" · ") : "";
   if (error) return <GeometryError error={error} onBack={onBack} />;
@@ -546,7 +546,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
           <div className="gs-kicker tv-kicker">{t.travel.from} <b className={`tv-end${sideShown ? " is-flash" : ""}`} key={`start-${sideHint}`}>{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
           <div className="tv-mapwrap">
             <TravelMap paints={paints} points={points} boxes={boxes} borders={borders || Boolean(closed)} dashed={dashed} />
-            {sideShown && !closed && <div className="tv-side" key={sideHint} aria-hidden="true"><b>{t.travel.wrongSideTitle(nameOf(puzzle.start))}</b><small>{t.travel.wrongSideSub}</small></div>}
+            {sideShown && !closed && <div className="tv-side" key={sideHint} aria-hidden="true"><i>⚠️</i><b>{t.travel.wrongSideTitle(nameOf(puzzle.start))}</b><small>{t.travel.wrongSideSub}</small></div>}
             {closed && <div className={`tv-done is-${closed}`} aria-hidden="true">
               <i>{closed === "won" ? "✓" : "✕"}</i>
               <b>{closed === "won" ? (guesses.length === puzzle.shortest ? t.travel.donePerfect : t.travel.doneWon) : t.travel.doneLost}</b>

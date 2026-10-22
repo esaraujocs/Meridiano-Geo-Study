@@ -241,6 +241,35 @@ export function travelBox(meta: Meta, id: string): readonly [number, number, num
   return [lon - rLon, lat - r, lon + rLon, lat + r];
 }
 
+/** As caixas que a câmera enquadra. Um país enorme (Rússia, Canadá, EUA, China…) entra só com o pedaço perto dos outros da rota
+ *  (22/10/2026, pedido do Enzo: "as rotas pela Rússia dão um zoom out para a Rússia inteira, até o Ártico"); sozinho, ou com outros
+ *  enormes só, fica inteiro. `TRAVEL_BIG_R`: a partir de ~2,8 milhões de km²; a folga em graus em volta dos outros. */
+const TRAVEL_BIG_R = 10;
+const TRAVEL_CLIP_PAD = 6;
+export function travelBoxes(meta: Meta, ids: readonly string[]): (readonly [number, number, number, number])[] {
+  const boxes = ids.map((id) => travelBox(meta, id)).filter((box): box is NonNullable<typeof box> => Boolean(box));
+  const isBig = (box: readonly number[]) => (box[3] - box[1]) / 2 >= TRAVEL_BIG_R;
+  const small = boxes.filter((box) => !isBig(box));
+  if (!small.length || small.length === boxes.length) return boxes;
+  const south = Math.min(...small.map((box) => box[1])) - TRAVEL_CLIP_PAD, north = Math.max(...small.map((box) => box[3])) + TRAVEL_CLIP_PAD;
+  const mid = Math.max(Math.abs(south), Math.abs(north)) > 80 ? 0 : (south + north) / 2;
+  const padLon = TRAVEL_CLIP_PAD / Math.max(0.3, Math.cos((mid * Math.PI) / 180));
+  const west = Math.min(...small.map((box) => box[0])) - padLon, east = Math.max(...small.map((box) => box[2])) + padLon;
+  // o pedaço do país grande dentro da área dos outros (com folga); sem encontro, a beirada dele mais perto
+  const clip = (low: number, high: number, from: number, to: number): [number, number] => {
+    const a = Math.max(low, from), b = Math.min(high, to);
+    if (a <= b) return [a, b];
+    const edge = high < from ? high : low;
+    return [edge - 1, edge + 1];
+  };
+  return boxes.map((box) => {
+    if (!isBig(box)) return box;
+    const [w, e] = clip(box[0], box[2], west, east);
+    const [s, n] = clip(box[1], box[3], south, north);
+    return [w, s, e, n] as const;
+  });
+}
+
 /** Uma rota já jogada, para o carrossel do resultado: o caminho da pessoa (o que os chutes ligaram, ou o mais curto se perdeu), o mais curto e os chutes. */
 export type TravelRecapRoute = { start: string; end: string; won: boolean; path: string[]; shortest: string[]; guesses: string[] };
 export function travelRecap(rounds: readonly { targetId: string; correct: boolean; route?: string[]; shortest?: string[]; guesses?: string[] }[]): TravelRecapRoute[] {

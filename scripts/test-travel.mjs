@@ -133,3 +133,16 @@ assert.ok(counts.curta >= 2 && counts.media >= 2 && counts.longa >= 2, `mistura 
 console.log("rotas por tamanho (países):", [...hops].sort((a, b) => a[0] - b[0]).map(([k, v]) => `${k}:${v}`).join(" "));
 console.log(`travel ok · ${pool.length} países, ${dests.length} destinos`);
 await rm(out, { recursive: true, force: true });
+
+// câmera: país enorme entra só com o pedaço perto dos outros (Rússia sem o Ártico inteiro numa rota Finlândia → Mongólia)
+{
+  const ru = byName("Rússia"), fi = byName("Finlândia"), mn = byName("Mongólia"), kp = byName("Coreia do Norte");
+  const whole = tv.travelBox(catalog.meta, ru);
+  const [, , , [ , ruS, , ruN]] = [0, 0, 0, tv.travelBoxes(catalog.meta, [fi, mn, ru])[2]];
+  assert.ok(ruN < whole[3] - 5 && ruN <= 76, `Rússia cortada no norte (${ruN.toFixed(1)} < ${whole[3].toFixed(1)})`);
+  assert.ok(ruS >= whole[1], "nunca maior que a caixa inteira");
+  const east = tv.travelBoxes(catalog.meta, [ru, kp])[0];
+  assert.ok(east[0] > whole[0] + 30, `Rússia → Coreia do Norte enquadra o Extremo Oriente (${east[0].toFixed(1)})`);
+  assert.deepEqual(tv.travelBoxes(catalog.meta, [ru, byName("China")]), [whole, tv.travelBox(catalog.meta, byName("China"))], "só enormes: inteiros");
+}
+console.log("travel boxes ok");

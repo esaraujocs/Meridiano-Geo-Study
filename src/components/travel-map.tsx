@@ -7,7 +7,7 @@ import "./map-style";
 import { MAP_URL } from "../domain/offline-map";
 import { mixHex } from "../domain/map-palette";
 import { mapPaletteFor } from "../domain/themes";
-import { travelBox, travelFeatureIds, type TravelGrade, type TravelRecapRoute } from "../domain/travel";
+import { travelBoxes, travelFeatureIds, type TravelGrade, type TravelRecapRoute } from "../domain/travel";
 import type { Legacy } from "../domain/types";
 import { t } from "../domain/i18n";
 
@@ -173,7 +173,7 @@ export function TravelRecap({ routes, meta }: { routes: readonly TravelRecapRout
     const ids = [...new Set([route.start, route.end, ...route.path, ...route.shortest])];
     return {
       paints: out, points: travelPoints(meta, shown),
-      boxes: ids.map((id) => travelBox(meta, id)).filter((box): box is NonNullable<typeof box> => Boolean(box)),
+      boxes: travelBoxes(meta, ids),
       dashed: route.shortest.slice(1, -1).flatMap((id) => travelFeatureIds(meta, id)),
     };
   }, [meta, route]);
