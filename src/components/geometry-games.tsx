@@ -21,6 +21,7 @@ import { useAdvance } from "./use-advance";
 import { useLeaveGuard } from "./leave-guard";
 import { feedbackHoldMs, feedbackSkipAfterMs } from "../domain/feedback-timing";
 import { TypedAnswerInput } from "./typed-answer-input";
+import { answerKey } from "../domain/typed-answer";
 import { t } from "../domain/i18n";
 import { isCountry } from "../domain/sovereignty";
 import { baseVariant, divisionCountry, divisionCountryOf, unitWord } from "../domain/divisions";
@@ -328,18 +329,34 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const ids = useMemo(() => travelPool(meta).filter((id) => inRegion(id, region, data)), [data, meta, region]);
   const graph = useMemo(() => travelGraph(meta, ids), [meta, ids]);
   const destinations = useMemo(() => travelDestinations(graph), [graph]);
-  // o nome digitado → o país do jogo (as nações do Reino Unido valem pelo Reino Unido)
-  const nameIndex = useMemo(() => {
+  // o nome digitado → o país do jogo, só entre os países do Travel (as nações do Reino Unido valem pelo Reino Unido); a chave é a da escrita
+  // (sem acento, espaço nem apóstrofo). Fora do jogo, um índice à parte só para dizer "não está neste recorte".
+  const { nameIndex, otherIndex } = useMemo(() => {
     const index = new Map<string, string>();
+    const other = new Map<string, string>();
+    const pool = new Set(travelPool(meta));
     const byCca3 = new Map(Object.entries(meta).filter(([, item]) => item.cca3).map(([id, item]) => [item.cca3!.toUpperCase(), id]));
     for (const id of Object.keys(meta)) {
       const parent = (meta[id] as { substitui?: string }).substitui;
       const target = parent ? byCca3.get(parent.toUpperCase()) ?? id : id;
-      for (const alias of aliases(meta[id])) if (!index.has(alias) || target === id) index.set(alias, target);
+      const names = [meta[id]?.pt, meta[id]?.en, ...((meta[id] as { al?: string[] }).al ?? [])].filter((name): name is string => Boolean(name));
+      for (const name of names) {
+        const key = answerKey(name);
+        if (!key) continue;
+        if (pool.has(target)) { if (!index.has(key) || target === id) index.set(key, target); }
+        else if (!other.has(key)) other.set(key, target);
+      }
     }
-    return index;
+    return { nameIndex: index, otherIndex: other };
   }, [meta]);
-  const answers = useMemo(() => [...nameIndex.keys()], [nameIndex]);
+  // os nomes que começam com o que foi digitado, de países diferentes (o "vietna" de Vietnã não espera o "vietnam" do mesmo país)
+  const matchesFor = (value: string) => {
+    const key = answerKey(value);
+    if (key.length < 2) return [];
+    const ids = new Set<string>();
+    for (const [name, id] of nameIndex) if (name.startsWith(key) && id !== puzzle?.start && id !== puzzle?.end) ids.add(id);
+    return [...ids];
+  };
   const runSeed = useRef(settings.deckSeed ?? Math.floor(Math.random() * 0x7fffffff));
   const deck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
   const [puzzle, setPuzzle] = useState<TravelPuzzle | null>(null);
@@ -390,15 +407,15 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     setClosed(won ? "won" : "lost");
     // Escudo: a rota perdida não quebra a sequência nem pesa na partida (a rodada fica de fora da conta, ver spoils.ts).
     const shielded = !won && supply.consumeArmed("escudo");
-    const route = (bestRoute(graph, active.start, active.end, new Set(all.map((guess) => guess.id))) ?? []).map(nameOf).join(" → ");
-    setNotice({ kind: won ? "ok" : "no", text: `${won ? t.travel.won(all.length, active.shortest) : t.travel.lost(route)}${shielded ? ` · ${t.supplies.shieldSaved}` : ""}` });
+    const path = bestRoute(graph, active.start, active.end, new Set(all.map((guess) => guess.id))) ?? [];
+    setNotice({ kind: won ? "ok" : "no", text: `${won ? t.travel.won(all.length, active.shortest) : t.travel.lost(path.map(nameOf).join(" → "), active.shortest)}${shielded ? ` · ${t.supplies.shieldSaved}` : ""}` });
     setStreak((current) => won ? current + 1 : shielded ? current : 0);
     const weight = travelWeight(active, all.length, hints.size, won);
     leaveGuard.noteAnswer();
     log.push({ correct: won, tier: entityTier(meta, active.end), weight, shielded });
     session.recordRound({
       targetId: active.end, correct: won, responseTimeMs: Date.now() - startedAt.current, answeredAt: Date.now(),
-      selectedId: value, attempts: all.length, guesses: all.map((guess) => guess.id),
+      selectedId: value, attempts: all.length, guesses: all.map((guess) => guess.id), route: path,
       tier: entityTier(meta, active.end), weight,
       ...(supply.assisted || shielded ? { assisted: true } : {}),
       ...(shielded ? { shielded: true } : {}),
@@ -410,7 +427,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     if (!puzzle || !value.trim() || closedRef.current) return;
     setTyped("");
     requestAnimationFrame(() => inputRef.current?.focus());
-    const id = nameIndex.get(normalizeName(value));
+    const id = nameIndex.get(answerKey(value)) ?? otherIndex.get(answerKey(value));
     if (!id) { setNotice({ kind: "no", text: t.travel.unknown }); return; }
     if (id === puzzle.start || id === puzzle.end) { setNotice({ kind: "info", text: t.travel.endpoint }); return; }
     if (have.has(id)) { setNotice({ kind: "info", text: t.travel.duplicate }); return; }
@@ -422,6 +439,13 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     if (routeClosed(graph, puzzle.start, puzzle.end, linked)) closeRoute(puzzle, true, all, value);
     else if (all.length >= puzzle.budget) closeRoute(puzzle, false, all, value);
     else setNotice({ kind: grade === "far" ? "no" : grade === "near" ? "info" : "ok", text: t.travel.graded(nameOf(id), t.travel.grades[grade]) });
+  };
+  // digitou um nome inteiro que só um país do jogo tem: chuta sozinho (21/10/2026, o Enzo precisava do Enter); senão, as sugestões tocáveis
+  const suggestions = useMemo(() => matchesFor(typed), [typed, nameIndex, puzzle]);
+  const onType = (value: string) => {
+    setTyped(value);
+    const id = nameIndex.get(answerKey(value));
+    if (id && matchesFor(value).every((other) => other === id)) submit(value);
   };
   const useHint = (hint: TravelHint) => {
     if (!puzzle || closed || hints.has(hint)) return;
@@ -487,7 +511,7 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
         <main className="gs-stage tv-stage" data-target-id={import.meta.env.DEV ? `${puzzle.start}>${puzzle.end}` : undefined}>
           <div className="gs-kicker tv-kicker">{t.travel.from} <b className="tv-end">{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
           <TravelMap paints={paints} points={points} boxes={boxes} borders={hints.has("borders")} dashed={dashed} />
-          <div className="tv-count"><span>{t.travel.counter(guesses.length, puzzle.budget, puzzle.shortest)}</span>{initials && <b>{t.travel.initials(initials)}</b>}</div>
+          <div className="tv-count"><span>{t.travel.counter(guesses.length, puzzle.budget, closed ? puzzle.shortest : undefined)}</span>{initials && <b>{t.travel.initials(initials)}</b>}</div>
           <ol className="tv-guesses" aria-label={t.travel.guessesAria}>
             {guesses.map((guess) => {
               const grade = shownGrade(guess);
@@ -501,9 +525,12 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
         </main>
         <section className="gs-tray" aria-label={t.common.answersRegion}>
           <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
-            <TypedAnswerInput key={`${puzzle.start}-${puzzle.end}`} inputRef={inputRef} aria-label={t.travel.guessField} autoFocus value={typed} disabled={Boolean(closed)} onChange={setTyped} onCommit={submit} answers={answers} ambiguitySafe />
+            <TypedAnswerInput key={`${puzzle.start}-${puzzle.end}`} inputRef={inputRef} aria-label={t.travel.guessField} autoFocus value={typed} disabled={Boolean(closed)} onChange={onType} onCommit={submit} />
             <button className="go" disabled={Boolean(closed) || !typed.trim()}>{t.travel.guess}</button>
           </form>
+          {!closed && suggestions.length > 0 && <div className="tv-suggest" role="group" aria-label={t.travel.suggestions}>
+            {suggestions.slice(0, 4).map((id) => <button key={id} type="button" className="tv-sug" onPointerDown={(event) => event.preventDefault()} onClick={() => submit(nameOf(id))}>{nameOf(id)}</button>)}
+          </div>}
           {closed
             ? <ContinueBar holdMs={null} onSkip={flow.skip} />
             : <div className="tv-hints" role="group" aria-label={t.travel.hints}>

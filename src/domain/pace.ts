@@ -45,10 +45,10 @@ export const ROUND_UNLOCKS = [
 export type RoundUnlockKey = (typeof ROUND_UNLOCKS)[number]["key"];
 export const roundUnlockFor = (tier: RoundTier) => ROUND_UNLOCKS.find((item) => item.tier === tier) ?? null;
 
-// No Travel a rodada é uma rota inteira (bem mais longa), então os cortes são a metade.
+// No Travel a rodada é uma rota inteira: 1, 2, 5 e 10 rotas (21/10/2026, o Enzo achou 10 rotas maçante: "talvez individuais/2/5").
 export function roundLimitFor(tier: RoundTier, family: Family): number | null {
   if (tier === "all") return null;
-  const limits = family === "travel" ? [5, 10, 25, 50] : [10, 20, 50, 100];
+  const limits = family === "travel" ? [1, 2, 5, 10] : [10, 20, 50, 100];
   return limits[ROUND_TIERS.indexOf(tier)];
 }
 /** O menor corte que já cobre o baralho inteiro do recorte (é ele que aparece como "Todas · N"). */

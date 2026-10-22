@@ -228,7 +228,7 @@ function QuestionList({ questions, flagOf }: { questions: readonly Question[]; f
       return <li key={`${question.id}:${index}`} className={question === slowest ? "is-slowest" : undefined} aria-label={t.progress.questionsAria(question.name, time, question.correct)}>
         <span className={question.correct ? "ok" : "no"} aria-hidden="true">{question.correct ? "✓" : "✕"}</span>
         {src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : <span className="pr-flag" aria-hidden="true" />}
-        <span className="pr-q-name" aria-hidden="true">{question.name}{question.answer || question.typed !== undefined ? <small>{" · "}{!question.correct && question.typed !== undefined ? <><em>{question.typed || "—"}</em>{question.answer ? ` → ${question.answer}` : ""}</> : question.answer}</small> : null}</span>
+        <span className="pr-q-name" aria-hidden="true">{question.name}{question.route ? <small>{" · "}{question.route}</small> : question.answer || question.typed !== undefined ? <small>{" · "}{!question.correct && question.typed !== undefined ? <><em>{question.typed || "—"}</em>{question.answer ? ` → ${question.answer}` : ""}</> : question.answer}</small> : null}</span>
         <span className="pr-q-bar" aria-hidden="true"><i style={{ width: `${question.ms === null ? 0 : (question.ms / max) * 100}%` }} /></span>
         <strong aria-hidden="true">{time}</strong>
       </li>;

@@ -234,7 +234,7 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     pos.current = d.from - dx / step;
     paint(true);
   };
-  const onPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+  const onPointerEnd = (event: { pointerId: number; type: string; clientX: number }) => {
     const d = drag.current;
     if (!d || d.id !== event.pointerId) return;
     drag.current = null;
@@ -254,6 +254,38 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     target = Math.max(base - geo.current.per, Math.min(base + geo.current.per, target));
     animateTo(target);
   };
+  // rede de segurança (21/10/2026, o Enzo no iPhone: "o swipe às vezes para no meio do caminho e fica lá"): o pointerdown para a animação, e se o
+  // fim do toque não chega ao trilho (o iOS transforma o gesto em rolagem, o dedo sai dele, a captura se perde) o cartão ficava parado no meio.
+  // Qualquer fim de toque na janela fecha o arraste; e nada parado fica fora de um cartão inteiro.
+  const endRef = useRef(onPointerEnd);
+  endRef.current = onPointerEnd;
+  useEffect(() => {
+    if (!loop) return;
+    const onEnd = (event: globalThis.PointerEvent) => endRef.current(event);
+    const onTouchEnd = (event: TouchEvent) => {
+      const d = drag.current;
+      if (!d || event.touches.length) return;
+      const touch = event.changedTouches[0];
+      endRef.current({ pointerId: d.id, type: "pointercancel", clientX: touch?.clientX ?? d.lastX });
+    };
+    const settleIfStuck = () => window.setTimeout(() => {
+      if (!drag.current && !anim.current && Math.abs(pos.current - Math.round(pos.current)) > 0.001) animateTo(Math.round(pos.current));
+    }, 120);
+    window.addEventListener("pointerup", onEnd);
+    window.addEventListener("pointercancel", onEnd);
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchcancel", onTouchEnd);
+    window.addEventListener("pointerup", settleIfStuck);
+    window.addEventListener("touchend", settleIfStuck);
+    return () => {
+      window.removeEventListener("pointerup", onEnd);
+      window.removeEventListener("pointercancel", onEnd);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+      window.removeEventListener("pointerup", settleIfStuck);
+      window.removeEventListener("touchend", settleIfStuck);
+    };
+  }, [loop, animateTo]);
   // um arraste não abre o cartão em que começou
   const onClickCapture = (event: MouseEvent<HTMLDivElement>) => {
     if (!dragged.current) return;
@@ -272,7 +304,7 @@ export function HubCarousel({ label, children }: { label: string; children: Reac
     return slot > -0.5 && slot < per - 0.5;
   };
   return <div className="hx-car" data-loop={loop ? "true" : undefined} onKeyDown={loop ? onKeyDown : undefined}>
-    <div className="hx-track" ref={track} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={onClickCapture} role="region" aria-label={label}>
+    <div className="hx-track" ref={track} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onLostPointerCapture={(event) => { if (event.target === track.current) onPointerEnd(event); }} onClickCapture={onClickCapture} role="region" aria-label={label}>
       {items.map((child, index) => {
         const live = interactive(index);
         return <div key={index} ref={(el) => { slides.current[index] = el; }} className="hx-slide" aria-hidden={live ? undefined : true} inert={!live}>{child}</div>;

@@ -132,7 +132,7 @@ assert.equal(spoils.entityTier(undefined, "a"), 1);
 // ---- ritmo e rodadas
 const tiers = ["short", "long", "fifty", "hundred", "all"];
 assert.deepEqual(tiers.map((tier) => pace.roundLimitFor(tier, "mapa")), [10, 20, 50, 100, null]);
-assert.deepEqual(tiers.map((tier) => pace.roundLimitFor(tier, "travel")), [5, 10, 25, 50, null], "Travel: rota inteira, cortes pela metade");
+assert.deepEqual(tiers.map((tier) => pace.roundLimitFor(tier, "travel")), [1, 2, 5, 10, null], "Travel: rota inteira, cortes de 1, 2, 5 e 10 rotas");
 assert.deepEqual(pace.ROUND_UNLOCKS.map((item) => [item.key, item.cost]), [["rounds:20", 3000], ["rounds:50", 8000], ["rounds:100", 20000], ["rounds:all", 85000]]);
 // cortes oferecidos por recorte: só até o que já cobre o baralho inteiro
 const chips = (family, total) => pace.roundChips(family, total).map((chip) => `${chip.tier}:${chip.label}`);
@@ -141,7 +141,7 @@ assert.deepEqual(chips("mapa", 59), ["short:10", "long:20", "fifty:50", "hundred
 assert.deepEqual(chips("mapa", 27), ["short:10", "long:20", "fifty:Todas · 27"], "Caribe: não oferece 100 nem baralho completo");
 assert.deepEqual(chips("mapa", 20), ["short:10", "long:Todas · 20"]);
 assert.deepEqual(chips("mapa", 8), ["short:8"], "recorte menor que 10 é todo grátis");
-assert.deepEqual(chips("travel", 150), ["short:5", "long:10", "fifty:25", "hundred:50", "all:Todas · 150"]);
+assert.deepEqual(chips("travel", 150), ["short:1", "long:2", "fifty:5", "hundred:10", "all:Todas · 150"]);
 assert.equal(pace.coveringTier("mapa", 55), "hundred");
 assert.equal(pace.displayTier("hundred", "mapa", 27), "fifty", "corte guardado maior aparece como o que cobre o recorte");
 assert.equal(pace.displayTier("long", "mapa", 27), "long");

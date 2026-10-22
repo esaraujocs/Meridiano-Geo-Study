@@ -82,7 +82,8 @@ type Miss = { id: string; name: string; flag?: string };
 /** Um tempo do duelo: o modo, o placar contra o bot e, se a partida ainda existe, o que a pessoa acertou e errou. */
 /** Cada pergunta da partida (21/10/2026, pedido do Enzo: o tempo por pergunta no Histórico): o alvo, se acertou, o tempo e, nas escritas, o que
  *  foi digitado quando errou e a resposta esperada (a capital, na escrita da capital). */
-export type Question = { id: string; name: string; flag?: string; correct: boolean; ms: number | null; timedOut?: boolean; answer?: string; typed?: string };
+/** `route`: no Travel, o caminho da rota (origem → … → destino) ou, nas partidas antigas, os países acertados. */
+export type Question = { id: string; name: string; flag?: string; correct: boolean; ms: number | null; timedOut?: boolean; answer?: string; typed?: string; route?: string };
 export type DuelLegRow = { mode: string; playerCorrect: number; botCorrect: number; total: number; playerMs: number | null; botMs: number | null; pattern: string; misses: Miss[]; questions: Question[] };
 export type DuelRow = {
   /** Contra bot (liga/MMR) ou com amigo (PvP, força própria). O layout é o mesmo; só o rótulo do adversário e do delta muda. */
@@ -188,11 +189,14 @@ function questionsOf(session: SurfaceSession, meta: Record<string, Meta>, flagOf
   return session.rounds.filter((round) => round.targetId).map((round) => {
     const item = meta[round.targetId];
     const answer = capital && typeof item?.cap === "string" ? item.cap : undefined;
+    const nameOf = (id: string) => meta[id]?.pt ?? id;
+    const route = session.variant !== "travel" ? undefined : round.route?.length ? round.route.map(nameOf).join(" → ") : round.guesses?.length ? round.guesses.map(nameOf).join(", ") : undefined;
     return {
       id: round.targetId, name: item?.pt ?? round.targetId, flag: flagOf(round.targetId), correct: round.correct,
       ms: typeof round.responseTimeMs === "number" ? round.responseTimeMs : null,
       ...(round.timedOut ? { timedOut: true } : {}),
       ...(answer ? { answer } : {}),
+      ...(route ? { route } : {}),
       ...(writing && !round.correct && round.selectedId !== undefined ? { typed: round.selectedId } : {}),
     };
   });

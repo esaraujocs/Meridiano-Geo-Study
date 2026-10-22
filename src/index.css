@@ -2121,6 +2121,8 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 .tv-count{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font:500 12px 'DM Mono',monospace;letter-spacing:.04em;color:var(--muted)}
 .tv-count b{font-weight:600;color:var(--ink)}
 .tv-hints{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tv-suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:-4px}
+.tv-sug{min-height:34px;padding:0 13px;border-radius:99px;border:1.5px solid var(--green);background:color-mix(in srgb,var(--green) 12%,var(--surface));color:var(--ink);font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
 .tv-hints-label{font:500 11px 'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tv-hint{min-height:34px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
 .tv-hint:hover:not(:disabled){border-color:var(--green)}
@@ -2129,7 +2131,10 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 @media (min-width:900px){.tv-hints small{flex-basis:auto}}
 @media (max-width:760px){
   .gs-travel .tv-stage{margin:8px 10px 6px;padding:8px}
-  .tv-map{height:clamp(170px,calc(100dvh - 560px),340px);border-radius:14px}
+  /* o mapa fica com toda a altura que sobra (21/10/2026: com altura fixa ele achatava no iPhone e sobrava vão embaixo do aviso) */
+  .tv-map{flex:1 1 0;height:auto;min-height:200px;border-radius:14px}
+  .gs-travel .tv-stage{gap:6px}
+  .tv-hints-label{display:none}
   .gs-travel .gs-ribbon{min-height:34px;font-size:13px;padding:6px 12px}
   .gs-travel .gs-tray{gap:8px}
   .tv-hints small{display:none}
