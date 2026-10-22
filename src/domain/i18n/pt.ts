@@ -1129,7 +1129,7 @@ export const pt = {
     guessesAria: "Seus chutes",
     counter: (used: number, budget: number, shortest?: number) => `Chutes ${used} de ${budget}${shortest === undefined ? "" : ` · mínimo ${shortest}`}`,
     suggestions: "Países que combinam com o que você digitou",
-    grades: { linked: "no caminho e ligado à origem", closer: "no caminho", near: "perto do caminho", far: "longe do caminho", end: "origem ou destino", reveal: "o caminho que faltava" },
+    grades: { linked: "no caminho e ligado à origem", closer: "no caminho, ainda não ligado à origem", near: "perto do caminho", far: "longe do caminho", end: "origem ou destino", reveal: "o caminho que faltava" },
     unknown: "Não reconheci esse país (não conta como chute).",
     outside: (name: string) => `${name} não está neste recorte (não conta como chute).`,
     endpoint: "Esse é a origem ou o destino.",

@@ -1127,7 +1127,7 @@ export const es: Messages = {
     guessesAria: "Tus intentos",
     counter: (used: number, budget: number, shortest?: number) => `Intentos ${used} de ${budget}${shortest === undefined ? "" : ` · mínimo ${shortest}`}`,
     suggestions: "Países que coinciden con lo que escribiste",
-    grades: { linked: "en el camino y unido al origen", closer: "en el camino", near: "cerca del camino", far: "lejos del camino", end: "origen o destino", reveal: "el camino que faltaba" },
+    grades: { linked: "en el camino y unido al origen", closer: "en el camino, aún sin unir al origen", near: "cerca del camino", far: "lejos del camino", end: "origen o destino", reveal: "el camino que faltaba" },
     unknown: "No reconocí ese país (no cuenta como intento).",
     outside: (name: string) => `${name} no está en esta región (no cuenta como intento).`,
     endpoint: "Ese es el origen o el destino.",

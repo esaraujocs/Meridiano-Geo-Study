@@ -1126,7 +1126,7 @@ export const en: Messages = {
     guessesAria: "Your guesses",
     counter: (used: number, budget: number, shortest?: number) => `Guesses ${used} of ${budget}${shortest === undefined ? "" : ` · minimum ${shortest}`}`,
     suggestions: "Countries matching what you typed",
-    grades: { linked: "on the way and linked to the start", closer: "on the way", near: "close to the way", far: "far from the way", end: "start or destination", reveal: "the missing way" },
+    grades: { linked: "on the way and linked to the start", closer: "on the way, not linked to the start yet", near: "close to the way", far: "far from the way", end: "start or destination", reveal: "the missing way" },
     unknown: "I didn't recognise that country (not counted).",
     outside: (name: string) => `${name} isn't in this region (not counted).`,
     endpoint: "That's the start or the destination.",

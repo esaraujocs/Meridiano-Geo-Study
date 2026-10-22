@@ -10,6 +10,9 @@ export type TravelGraph = ReadonlyMap<string, ReadonlySet<string>>;
 /** Pontes e túneis que o Travle conta como ligação (cca3), além das fronteiras do catálogo: o Eurotúnel, Øresund e a ponte de Singapura.
  *  O Pelješac e o Bósforo ficam dentro de um país só; territórios ultramarinos não ligam o país-mãe (decisão do Enzo). */
 export const TRAVEL_LINKS: ReadonlyArray<readonly [string, string]> = [["FRA", "GBR"], ["DNK", "SWE"], ["MYS", "SGP"]];
+/** Fronteiras que o catálogo tem só por um exclave (como no Travle, exclave não liga): Kaliningrado (Lituânia–Rússia; o catálogo já não ligava
+ *  Polônia–Rússia), Nakhchivan (Turquia–Azerbaijão) e Cabinda (Angola–Congo). Achado pelo Enzo em 21/10/2026 (Polônia → Rússia não fechava). */
+export const TRAVEL_UNLINKS: ReadonlyArray<readonly [string, string]> = [["LTU", "RUS"], ["TUR", "AZE"], ["AGO", "COG"]];
 /** O Saara Ocidental entra (como no Travle: é ele que separa o Marrocos da Mauritânia), fora do filtro "Só países". */
 export const TRAVEL_EXTRA_IDS: readonly string[] = ["732"];
 
@@ -40,6 +43,10 @@ export function travelGraph(meta: Meta, ids: readonly string[]): Map<string, Set
   };
   for (const id of ids) for (const border of meta[id]?.borders ?? []) link(id, byCca3.get(String(border).toUpperCase()));
   for (const [a, b] of TRAVEL_LINKS) link(byCca3.get(a), byCca3.get(b));
+  for (const [a, b] of TRAVEL_UNLINKS) {
+    const x = byCca3.get(a), y = byCca3.get(b);
+    if (x && y) { graph.get(x)?.delete(y); graph.get(y)?.delete(x); }
+  }
   return graph;
 }
 
