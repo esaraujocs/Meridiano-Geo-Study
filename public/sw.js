@@ -8,9 +8,14 @@ const MAP_FILE = "meridiano-hd-6ff43c179555c6cd94e19f645a63dcf3b05daa73706333542
 const DIVISION_MAPS = /*__CARTA_DIVISION_MAPS__*/{};
 const divisionKey = (path) => `${path}?v=${DIVISION_MAPS[path]}`;
 const CORE = /*__CARTA_PRECACHE__*/[];
+// A soma do conteúdo de tudo o que vai no CORE (22/10/2026): os dados não têm hash no nome (/data/explore-capitals.json), então um build que só
+// muda um deles deixava este arquivo idêntico, o navegador não instalava o service worker novo e seguia servindo a cópia velha do cache. Com a
+// soma aqui, qualquer dado novo muda o sw.js e a instalação baixa o CORE de novo.
+const VERSION = /*__CARTA_VERSION__*/"";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
+  // `cache: "reload"`: direto da rede, sem passar pelo cache HTTP do navegador (que podia devolver a versão anterior do mesmo nome)
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE.map((url) => new Request(url, { cache: "reload" })))));
   self.skipWaiting();
 });
 

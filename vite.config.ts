@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { pvpPlugin } from "./server/pvp-plugin.mjs";
@@ -71,9 +72,19 @@ const injectPrecacheManifest = () => {
       throw new Error(`Marcador de precache ou dos mapas de país não encontrado em ${outDir}/sw.js.`);
     }
     const maps = Object.fromEntries(DIVISION_INDEX.map((country) => [country.map.url, country.map.sha256]));
+    // a versão do service worker: a soma do conteúdo de tudo o que ele guarda (ver VERSION no sw.js)
+    const versionMarker = '/*__CARTA_VERSION__*/""';
+    if (!source.includes(versionMarker)) throw new Error(`Marcador da versão não encontrado em ${outDir}/sw.js.`);
+    const hash = createHash("sha256");
+    for (const path of precache) {
+      const file = new URL(path === "/" ? "index.html" : `.${path}`, dist);
+      try { hash.update(path); hash.update(await readFile(file)); } catch { /* página sem arquivo próprio */ }
+    }
+    hash.update(JSON.stringify(maps));
     await writeFile(
       serviceWorker,
-      source.replace(marker, `/*__CARTA_PRECACHE__*/${JSON.stringify(precache)}`).replace(mapsMarker, `/*__CARTA_DIVISION_MAPS__*/${JSON.stringify(maps)}`),
+      source.replace(marker, `/*__CARTA_PRECACHE__*/${JSON.stringify(precache)}`).replace(mapsMarker, `/*__CARTA_DIVISION_MAPS__*/${JSON.stringify(maps)}`)
+        .replace(versionMarker, `/*__CARTA_VERSION__*/${JSON.stringify(hash.digest("hex").slice(0, 16))}`),
     );
   },
   };
