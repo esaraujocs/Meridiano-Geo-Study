@@ -167,8 +167,10 @@ def zones_overture(country, config, build):
     sea = {code: shapely.union_all(np.array(parts, dtype=object)) for code, parts in sea.items()}
     units = {unit["code"]: unit for unit in config["units"]}
     excluded = set(config.get("exclude", []))
+    # `noSource`: unidade sem linha no Overture, montada pelo `override`/`fill` (as regiões ultramarinas da França)
+    unsourced = {code for code, unit in units.items() if unit.get("noSource")}
     problems = [f"{code} está no Overture e não na config" for code in sorted(set(land) - set(units) - excluded)]
-    problems += [f"{code} está na config e não no Overture" for code in sorted(set(units) - set(land))]
+    problems += [f"{code} está na config e não no Overture" for code in sorted(set(units) - set(land) - unsourced)]
     # o nome confere com o `sourceName` da unidade, quando o Overture usa outra língua (na China, o chinês), ou com o `name`
     problems += [f"{code}: nome {names[code]!r} no Overture, {units[code].get('sourceName', units[code]['name'])!r} na config"
                  for code in units if code in names and names[code] != units[code].get("sourceName", units[code]["name"])]
@@ -183,6 +185,8 @@ def zones_overture(country, config, build):
             zone = shapely.union(zone, extra)
             taken = shapely.union(taken, extra)
         zones[code] = {"geom": land[code], "zone": shapely.make_valid(zone), "area": None, "ref": f"{country.upper()}-{code}", "neutral": code in excluded}
+    for code in sorted(unsourced):
+        zones[code] = {"geom": shapely.Polygon(), "zone": shapely.Polygon(), "area": None, "ref": units[code].get("ref", f"{country.upper()}-{code}"), "neutral": False}
     return zones
 
 
@@ -260,7 +264,9 @@ def split_land(country, config, zones, out_dir, land_by_unit):
     for path in sorted(glob.glob(os.path.join(WORLD, "pieces", "*.parquet"))):
         table = pq.read_table(path)
         if config["carta"] != "*":  # "*": o mundo inteiro (Mapas históricos)
-            table = table.filter(pc.equal(table.column("carta_id"), config["carta"]))
+            # `alsoCarta`: outras entidades do mapa-múndi que o pacote também divide (a França com a Guiana e Mayotte, territórios à parte no mapa-múndi)
+            cartas = [config["carta"], *config.get("alsoCarta", [])]
+            table = table.filter(pc.is_in(table.column("carta_id"), value_set=pa.array(cartas)))
         if table.num_rows == 0:
             continue
         cy = int(os.path.basename(path)[:3])

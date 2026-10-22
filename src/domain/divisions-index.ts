@@ -386,6 +386,10 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
   {
     "id": "fr",
     "carta": "250",
+    "alsoCarta": [
+      "254",
+      "175"
+    ],
     "name": {
       "pt": "França",
       "en": "France",
@@ -440,12 +444,23 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
         "count": 5,
         "capitals": 5,
         "flags": 0
+      },
+      {
+        "key": "overseas",
+        "name": {
+          "pt": "Ultramar",
+          "en": "Overseas",
+          "es": "Ultramar"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
       }
     ],
-    "count": 13,
+    "count": 18,
     "flags": false,
     "flagCount": 0,
-    "capitals": 13,
+    "capitals": 18,
     "frame": [
       -5.3,
       41.3,
@@ -455,8 +470,8 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
     "map": {
       "url": "/maps/divisions-fr.pmtiles",
-      "bytes": 850382,
-      "sha256": "ffb0486629e25106a7c3c736ca9d18ef0bce9768ef121bda96a33ae01b922d3b"
+      "bytes": 889509,
+      "sha256": "f2c61c670567b29981d5a163b67472c97b3080a2c4f03c998d2422a7f5ce1b7b"
     }
   },
   {

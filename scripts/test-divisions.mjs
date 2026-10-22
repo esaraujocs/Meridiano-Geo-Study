@@ -262,12 +262,17 @@ for (const country of DIVISION_INDEX) {
   assert.equal(row("cn").borders.length, 0, "as Canárias não têm divisa");
 }
 
-// ---- França (22/10/2026): as 13 regiões metropolitanas, sem as ultramarinas (neutras)
+// ---- França (22/10/2026): as 18 regiões, as 13 metropolitanas e as 5 ultramarinas (a Guiana e Mayotte vêm de outras entidades do mapa-múndi)
 {
   const { units } = files.fr;
   const row = (code) => units.units[`fr-${code}`];
-  assert.equal(Object.keys(units.units).length, 13);
-  assert.equal(DIVISION_INDEX.find((country) => country.id === "fr").capitals, 13);
+  assert.equal(Object.keys(units.units).length, 18);
+  const fr = DIVISION_INDEX.find((country) => country.id === "fr");
+  assert.equal(fr.capitals, 18); assert.deepEqual(fr.alsoCarta, ["254", "175"]);
+  assert.equal(fr.regions.find((region) => region.key === "overseas").count, 5);
+  for (const code of ["gp", "mq", "gf", "re", "yt"]) { assert.equal(row(code).region, "overseas"); assert.ok(row(code).area > 300, `${code}: tem terra`); }
+  assert.ok(row("gf").area > 80000, "a Guiana inteira"); assert.equal(row("gf").ref, "FR-973");
+  assert.deepEqual(fr.frame, [-5.3, 41.3, 9.7, 51.2], "o país inteiro abre na metrópole");
   assert.equal(row("idf").name.pt, "Ilha de França"); assert.equal(row("20r").borders.length, 0, "a Córsega não tem divisa");
   assert.ok(row("idf").borders.includes("fr-hdf") && row("idf").borders.includes("fr-cvl"));
 }

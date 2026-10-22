@@ -34,6 +34,7 @@ import {
   markerBandFilter,
   markerFilter,
   markerLayerId,
+  type SmallEntitySource,
 } from "../domain/small-entities";
 import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
 import { mapDeckSignature } from "../domain/map-round-engine";
@@ -61,8 +62,10 @@ export type MapBoard = {
   unit: UnitWord;
   /** [oeste, sul, leste, norte] do recorte: a câmera enquadra por ela (no lugar de REGION_CAMERA). */
   bounds: [number, number, number, number];
-  /** O mapa-múndi de fundo: sem a entidade que o tabuleiro detalha (`hide`, o carta_id dela) e sem responder ao clique. */
-  backdrop?: { url: string; hide: string };
+  /** O mapa-múndi de fundo: sem as entidades que o tabuleiro detalha (`hide`, os carta_id delas) e sem responder ao clique. */
+  backdrop?: { url: string; hide: readonly string[] };
+  /** Os pontos clicáveis das unidades pequenas (`boardMarkerSource`). */
+  markers?: SmallEntitySource;
 };
 /** Folga da câmera do tabuleiro: o alvo fica em cima e a bandeja de suprimentos embaixo. */
 const boardPadding = (element: HTMLElement | null) => {
@@ -146,9 +149,10 @@ export function Game({
   const featureSignature = mapDeckSignature(features.map((item) => item.id));
   // Territórios absorvidos (Guadalupe, Martinica...) nunca são alvo, mas aparecem com o recorte;
   // seguem a mesma regra do "Só ONU" das demais entidades pequenas (não são membros).
-  // No tabuleiro de um país não há marcadores (os do mapa-múndi são de países; uma unidade minúscula, como o DC, não entra no pacote).
+  // No tabuleiro de um país os marcadores são os das unidades pequenas do pacote (`board.markers`), só as do recorte.
   const absorbedMarkerIds = onlyUn || board ? [] : ABSORBED_MARKER_IDS.filter((id) => inRegion(id, region, data));
-  const markerIds = board ? [] : [...features.map((feature) => feature.id), ...absorbedMarkerIds];
+  const boardMarkerIds = new Set(board?.markers?.features.map((feature) => feature.properties.carta_id) ?? []);
+  const markerIds = board ? features.map((feature) => feature.id).filter((id) => boardMarkerIds.has(id)) : [...features.map((feature) => feature.id), ...absorbedMarkerIds];
   const markerSignature = markerIds.join("|");
   // No modo Capitais mostra o nome da capital (foi o que foi perguntado); no modo Mapa, o nome do país.
   const capitalMode = ruleVariant === "capital-pais";
@@ -465,7 +469,7 @@ export function Game({
     };
     map.on("load", handleLoad);
     const exposeActiveMarkerIds = () => {
-      const active = filteredMarkerSource(markerIds);
+      const active = filteredMarkerSource(markerIds, board?.markers);
       mapEl.current?.setAttribute(
         "data-marker-ids",
         active.features.map((item) => item.properties.carta_id).join(","),
@@ -598,7 +602,7 @@ export function Game({
       "small-entities-hit",
       filter as unknown as maplibregl.FilterSpecification,
     );
-    const active = filteredMarkerSource(markerIds);
+    const active = filteredMarkerSource(markerIds, board?.markers);
     mapEl.current?.setAttribute(
       "data-marker-ids",
       active.features.map((item) => item.properties.carta_id).join(","),

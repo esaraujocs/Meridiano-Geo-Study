@@ -1,5 +1,5 @@
 {
- "source": "França: as 13 regiões metropolitanas (Córsega incluída). As 5 regiões ultramarinas ficam de fora por ora: o Overture não as traz como regiões da França, a Guiana Francesa e Mayotte são entidades próprias no mapa-múndi e Guadalupe, Martinica e Reunião (absorvidas na França do mapa HD) ficam longe demais (viram terra neutra pelo leftoverKm). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName). Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição. Sem bandeiras por ora.",
+ "source": "França: as 18 regiões, as 13 metropolitanas (Córsega incluída) e as 5 ultramarinas (Guadalupe, Martinica, Guiana Francesa, Reunião e Mayotte; 22/10/2026, pedido do Enzo: no mapa-múndi e nas bandeiras elas seguem territórios à parte, aqui são regiões da França). As metropolitanas vêm das divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName); as ultramarinas não estão no Overture como regiões da França (noSource): Guiana e Mayotte são entidades próprias do mapa HD (alsoCarta + override) e Guadalupe, Martinica e Reunião estão absorvidas na França do mapa HD (fill por caixa); Clipperton fica neutra. Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado; Basse-Terre, Fort-de-France, Caiena, Saint-Denis e Mamoudzou), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição, mais o Ultramar. Sem bandeiras por ora.",
  "country": "fr",
  "regions": {
   "north": {
@@ -16,6 +16,11 @@
    "pt": "Sul e Leste",
    "en": "South and East",
    "es": "Sur y Este"
+  },
+  "overseas": {
+   "pt": "Ultramar",
+   "en": "Overseas",
+   "es": "Ultramar"
   }
  },
  "units": {
@@ -214,6 +219,64 @@
     "fr-idf"
    ]
   },
+  "fr-gf": {
+   "code": "GF",
+   "ref": "FR-973",
+   "name": {
+    "pt": "Guiana Francesa",
+    "en": "French Guiana",
+    "es": "Guayana Francesa"
+   },
+   "alias": [
+    "Guyane",
+    "Guiana"
+   ],
+   "capital": {
+    "pt": "Caiena",
+    "en": "Cayenne",
+    "es": "Cayena"
+   },
+   "capAl": [
+    "Cayenne",
+    "Cayena"
+   ],
+   "region": "overseas",
+   "area": 83958,
+   "ll": [
+    4.037,
+    -53.0013
+   ],
+   "bbox": [
+    -54.603,
+    2.111,
+    -51.615,
+    5.777
+   ],
+   "borders": []
+  },
+  "fr-gp": {
+   "code": "GP",
+   "ref": "FR-971",
+   "name": {
+    "pt": "Guadalupe",
+    "en": "Guadeloupe",
+    "es": "Guadalupe"
+   },
+   "capital": "Basse-Terre",
+   "region": "overseas",
+   "area": 1641,
+   "ll": [
+    16.0885,
+    -61.6668
+   ],
+   "bbox": [
+    -61.81,
+    15.84,
+    -61.001,
+    16.514
+   ],
+   "borders": []
+  },
   "fr-hdf": {
    "code": "HDF",
    "ref": "FR-HDF",
@@ -280,6 +343,29 @@
     "fr-hdf",
     "fr-nor"
    ]
+  },
+  "fr-mq": {
+   "code": "MQ",
+   "ref": "FR-972",
+   "name": {
+    "pt": "Martinica",
+    "en": "Martinique",
+    "es": "Martinica"
+   },
+   "capital": "Fort-de-France",
+   "region": "overseas",
+   "area": 1095,
+   "ll": [
+    14.7237,
+    -61.0761
+   ],
+   "bbox": [
+    -61.229,
+    14.395,
+    -60.81,
+    14.879
+   ],
+   "borders": []
   },
   "fr-naq": {
    "code": "NAQ",
@@ -461,6 +547,56 @@
     "fr-naq",
     "fr-nor"
    ]
+  },
+  "fr-re": {
+   "code": "RE",
+   "ref": "FR-974",
+   "name": {
+    "pt": "Reunião",
+    "en": "Réunion",
+    "es": "Reunión"
+   },
+   "alias": [
+    "La Réunion",
+    "Reuniao"
+   ],
+   "capital": "Saint-Denis",
+   "region": "overseas",
+   "area": 2512,
+   "ll": [
+    -21.1078,
+    55.5038
+   ],
+   "bbox": [
+    55.217,
+    -21.39,
+    55.837,
+    -20.872
+   ],
+   "borders": []
+  },
+  "fr-yt": {
+   "code": "YT",
+   "ref": "FR-976",
+   "name": {
+    "pt": "Mayotte",
+    "en": "Mayotte",
+    "es": "Mayotte"
+   },
+   "capital": "Mamoudzou",
+   "region": "overseas",
+   "area": 372,
+   "ll": [
+    -12.7859,
+    45.1604
+   ],
+   "bbox": [
+    45.018,
+    -13.0,
+    45.3,
+    -12.636
+   ],
+   "borders": []
   }
  }
 }

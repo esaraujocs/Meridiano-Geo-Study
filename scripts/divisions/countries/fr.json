@@ -1,5 +1,5 @@
 {
-  "comment": "França: as 13 regiões metropolitanas (Córsega incluída). As 5 regiões ultramarinas ficam de fora por ora: o Overture não as traz como regiões da França, a Guiana Francesa e Mayotte são entidades próprias no mapa-múndi e Guadalupe, Martinica e Reunião (absorvidas na França do mapa HD) ficam longe demais (viram terra neutra pelo leftoverKm). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName). Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição. Sem bandeiras por ora.",
+  "comment": "França: as 18 regiões, as 13 metropolitanas (Córsega incluída) e as 5 ultramarinas (Guadalupe, Martinica, Guiana Francesa, Reunião e Mayotte; 22/10/2026, pedido do Enzo: no mapa-múndi e nas bandeiras elas seguem territórios à parte, aqui são regiões da França). As metropolitanas vêm das divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName); as ultramarinas não estão no Overture como regiões da França (noSource): Guiana e Mayotte são entidades próprias do mapa HD (alsoCarta + override) e Guadalupe, Martinica e Reunião estão absorvidas na França do mapa HD (fill por caixa); Clipperton fica neutra. Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado; Basse-Terre, Fort-de-France, Caiena, Saint-Denis e Mamoudzou), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição, mais o Ultramar. Sem bandeiras por ora.",
   "id": "fr",
   "carta": "250",
   "source": "overture",
@@ -40,6 +40,11 @@
       "pt": "Sul e Leste",
       "en": "South and East",
       "es": "Sur y Este"
+    },
+    "overseas": {
+      "pt": "Ultramar",
+      "en": "Overseas",
+      "es": "Ultramar"
     }
   },
   "frame": [
@@ -52,8 +57,8 @@
   "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
   "sources": [
     {
-      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 250)",
-      "use": "a terra da França metropolitana, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 250, 254 e 175)",
+      "use": "a terra da França, da Guiana Francesa e de Mayotte, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
       "license": "ODbL 1.0",
       "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
     },
@@ -62,7 +67,7 @@
       "url": "https://docs.overturemaps.org/guides/divisions/",
       "license": "ODbL 1.0",
       "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
-      "use": "as divisas entre as 13 regiões"
+      "use": "as divisas entre as 13 regiões metropolitanas"
     }
   ],
   "units": [
@@ -284,6 +289,118 @@
       ],
       "capital": "Nantes",
       "region": "west"
+    },
+    {
+      "code": "GP",
+      "ref": "FR-971",
+      "noSource": true,
+      "name": "Guadeloupe",
+      "names": {
+        "pt": "Guadalupe",
+        "es": "Guadalupe"
+      },
+      "capital": "Basse-Terre",
+      "region": "overseas",
+      "fill": [
+        {
+          "carta": "250",
+          "box": [
+            -61.9,
+            15.8,
+            -60.9,
+            16.6
+          ]
+        }
+      ]
+    },
+    {
+      "code": "MQ",
+      "ref": "FR-972",
+      "noSource": true,
+      "name": "Martinique",
+      "names": {
+        "pt": "Martinica",
+        "es": "Martinica"
+      },
+      "capital": "Fort-de-France",
+      "region": "overseas",
+      "fill": [
+        {
+          "carta": "250",
+          "box": [
+            -61.3,
+            14.3,
+            -60.7,
+            14.95
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GF",
+      "ref": "FR-973",
+      "noSource": true,
+      "name": "French Guiana",
+      "names": {
+        "pt": "Guiana Francesa",
+        "es": "Guayana Francesa"
+      },
+      "capital": {
+        "pt": "Caiena",
+        "en": "Cayenne",
+        "es": "Cayena"
+      },
+      "region": "overseas",
+      "override": [
+        "254"
+      ],
+      "alias": [
+        "Guyane",
+        "Guiana"
+      ],
+      "capAl": [
+        "Cayenne",
+        "Cayena"
+      ]
+    },
+    {
+      "code": "RE",
+      "ref": "FR-974",
+      "noSource": true,
+      "name": "Réunion",
+      "names": {
+        "pt": "Reunião",
+        "es": "Reunión"
+      },
+      "capital": "Saint-Denis",
+      "region": "overseas",
+      "fill": [
+        {
+          "carta": "250",
+          "box": [
+            55.1,
+            -21.5,
+            55.9,
+            -20.8
+          ]
+        }
+      ],
+      "alias": [
+        "La Réunion",
+        "Reuniao"
+      ]
+    },
+    {
+      "code": "YT",
+      "ref": "FR-976",
+      "noSource": true,
+      "name": "Mayotte",
+      "names": {},
+      "capital": "Mamoudzou",
+      "region": "overseas",
+      "override": [
+        "175"
+      ]
     }
   ],
   "probes": [
@@ -358,6 +475,40 @@
       -1.5536,
       47.2184,
       "fr-pdl"
+    ],
+    [
+      "Pointe-à-Pitre",
+      -61.534,
+      16.241,
+      "fr-gp"
+    ],
+    [
+      "Fort-de-France",
+      -61.073,
+      14.616,
+      "fr-mq"
+    ],
+    [
+      "Caiena",
+      -52.326,
+      4.938,
+      "fr-gf"
+    ],
+    [
+      "Saint-Denis (Reunião)",
+      55.448,
+      -20.882,
+      "fr-re"
+    ],
+    [
+      "Mamoudzou",
+      45.227,
+      -12.781,
+      "fr-yt"
     ]
+  ],
+  "alsoCarta": [
+    "254",
+    "175"
   ]
 }

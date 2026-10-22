@@ -78,7 +78,7 @@ def entry(country):
     return {
         "id": country, **({"kind": "era", "subtitle": config["subtitle"]} if era else {}),
         # a época cobre o mundo inteiro: não esconde nenhuma entidade do mapa-múndi (nem há mapa-múndi de fundo)
-        "carta": "" if config["carta"] == "*" else config["carta"], "name": config["name"], "unit": config["unit"],
+        "carta": "" if config["carta"] == "*" else config["carta"], **({"alsoCarta": config["alsoCarta"]} if config.get("alsoCarta") else {}), "name": config["name"], "unit": config["unit"],
         "regions": [{"key": key, "name": names, "count": counts[key], "capitals": capitals[key], "flags": flagged[key]} for key, names in config["regions"].items()],
         "count": len(units), "flags": has_flags, "flagCount": sum(flagged.values()), **({"flagCredits": credits} if credits else {}), "capitals": sum(capitals.values()),
         "frame": frame, "attribution": config["attribution"],

@@ -99,6 +99,7 @@ import { MecenatoReturnToast } from "./components/mecenato-toast";
 import { cachedPeoples, loadPeoples } from "./domain/peoples-data";
 import { isCountry } from "./domain/sovereignty";
 import { isPeoplesFamily, peoplesDeckSize, peoplesPool, type Peoples, type PeoplesVariant } from "./domain/peoples";
+import { boardMarkerSource } from "./domain/small-entities";
 import { DIVISION_COUNTRIES, divisionsOfKind, baseVariant, divisionBounds, divisionCounts, divisionCountry, divisionCountryOf, divisionIdsIn, divisionRegion, divisionSelectedCount, isCapitalVariant, kindOf, unitWord, type DivisionPack } from "./domain/divisions";
 import { cachedDivision, loadDivision, loadDivisionFlags } from "./domain/divisions-data";
 import "./mecenato.css";
@@ -119,6 +120,11 @@ const readQueuePrefs = (): QueuePrefs => {
 /** Aviso da fila que ainda vale mostrar (o servidor guarda o último por um tempo; depois de recarregar a página, um aviso velho não reaparece). */
 const FRESH_NOTICE_MS = 60000;
 
+
+/** Os pontos clicáveis das unidades pequenas do pacote no mapa (Martinica, Ceuta, Rhode Island). */
+function divisionMarkers(pack: DivisionPack) {
+  return boardMarkerSource(Object.keys(pack.bbox).map((id) => ({ id, ll: pack.data.meta[id]?.ll as [number, number] | undefined, area: pack.data.meta[id]?.area, bbox: pack.bbox[id] })));
+}
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
@@ -799,7 +805,7 @@ export function App() {
       if (!country || !pack) return;
       const ids = divisionIdsIn(pack, region);
       const whole = normalizeRegionSelection(region).every((key) => key === divisionRegion(country.id));
-      const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: country.carta } } : {}) };
+      const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: [country.carta, ...(country.alsoCarta ?? [])] } } : {}), markers: divisionMarkers(pack) };
       setExploreSpec({
         data: pack.data, ids, region, board, bbox: pack.bbox,
         title: kindOf(country) === "era" && whole ? t.explore.eraTitle(country.name[uiLocale]) : regionLabel(region),
@@ -1472,7 +1478,7 @@ export function App() {
       if (rule === "mapa" || rule === "capital-pais") {
         const ids = divisionIdsIn(pack, region, variant);
         // a época cobre o mundo inteiro: sem o mapa-múndi de fundo
-        const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: country.carta } } : {}) };
+        const board: MapBoard = { url: country.map.url, attribution: country.attribution, unit: unitWord(country), bounds: divisionBounds(pack, ids, region), ...(country.carta ? { backdrop: { url: MAP_URL, hide: [country.carta, ...(country.alsoCarta ?? [])] } } : {}), markers: divisionMarkers(pack) };
         return <Game key={country.id} data={pack.data} features={ids.map((id) => ({ id }))} region={region} family={family} variant={variant} onBack={leaveGame} onEnd={finishGame} options={sessionOptions} supplies={supplies} board={board} />;
       }
       if (rule === "silhueta" || rule === "silhueta-opcoes") {

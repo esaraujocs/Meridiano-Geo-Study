@@ -23,6 +23,8 @@ export type DivisionCountry = {
   subtitle?: Names;
   /** A entidade do mapa-múndi que o pacote detalha (o mapa de fundo a esconde). */
   carta: string;
+  /** Outras entidades do mapa-múndi que o pacote também detalha (a França: a Guiana e Mayotte). */
+  alsoCarta?: readonly string[];
   name: Names;
   unit: Record<Locale, UnitWord>;
   /** Cada região com as contagens de unidades, de unidades com capital e de unidades com bandeira. */

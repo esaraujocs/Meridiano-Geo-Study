@@ -6,7 +6,7 @@ import { coastBands, graticuleLines, mixHex, rhumbLines } from "../domain/map-pa
 import type { MapPalette } from "../domain/map-palette";
 import { MAP_URL } from "../domain/offline-map";
 import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, type MapBase } from "../domain/map-base";
-import { MARKER_BAND_ZOOMS, markerBandFilter, markerBandOpacity, markerFilter, markerLayerId, SMALL_ENTITY_SOURCE } from "../domain/small-entities";
+import { MARKER_BAND_ZOOMS, markerBandFilter, markerBandOpacity, markerFilter, markerLayerId, SMALL_ENTITY_SOURCE, type SmallEntitySource } from "../domain/small-entities";
 import { MARKER_TOUCH_PX } from "../domain/map-marker-click";
 
 // os mapas do jogo são PMTiles: o protocolo é registrado uma vez, por quem importa este módulo (a partida e o Explorar)
@@ -14,7 +14,7 @@ const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 
 /** Outro tabuleiro no lugar do mapa-múndi (um país de Estados e províncias, uma época): os tiles, a atribuição e o mapa-múndi de fundo. */
-export type StyleBoard = { url: string; attribution: string; backdrop?: { url: string; hide: string } };
+export type StyleBoard = { url: string; attribution: string; backdrop?: { url: string; hide: readonly string[] }; markers?: SmallEntitySource };
 
 export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }: {
   /** A paleta já com o estilo de mapa e o fundo aplicados. */
@@ -40,7 +40,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
       },
       ...(MAP_BASE_TILES[mapBase] ? { "map-base": { type: "raster" as const, tiles: [MAP_BASE_TILES[mapBase] as string], tileSize: 512, maxzoom: MAP_BASE_MAXZOOM } } : {}),
       ...(board?.backdrop ? { backdrop: { type: "vector" as const, url: `pmtiles://${board.backdrop.url}`, promoteId: "carta_id" } } : {}),
-      "small-entities": { type: "geojson", data: SMALL_ENTITY_SOURCE as unknown as GeoJSON.FeatureCollection },
+      "small-entities": { type: "geojson", data: (board?.markers ?? SMALL_ENTITY_SOURCE) as unknown as GeoJSON.FeatureCollection },
       ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
       ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs, palette.rhumb.directions) as unknown as GeoJSON.FeatureCollection } } : {}),
     },
@@ -69,7 +69,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         type: "fill" as const,
         source: "backdrop",
         "source-layer": "countries",
-        filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!=", ["get", "carta_id"], board.backdrop.hide]] as unknown as maplibregl.FilterSpecification,
+        filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!", ["in", ["get", "carta_id"], ["literal", [...board.backdrop.hide]]]]] as unknown as maplibregl.FilterSpecification,
         paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, palette.outline, 0.25) },
       }] : []),
       ...(mapBase === "relevo" ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
