@@ -1,4 +1,5 @@
 type SessionLike = {
+  family?: unknown;
   complete?: unknown;
   completa?: unknown;
   rounds?: unknown;
@@ -25,5 +26,18 @@ export function playerStatsFromSessions(sessions: SessionLike[]) {
       Number(session.roundCount ?? session.rodadas ?? aggregate.rod ?? 0)
     );
   }, 0);
-  return { completedSessions: completed.length, rounds, boostedRounds };
+  // XP do Travel pelo tamanho da rota (22/10/2026, pedido do Enzo: "joguei algumas de Travel e o XP subiu praticamente nada"): cada rota vale
+  // o peso das moedas dela (`weight`: países no meio × nível × o desconto dos chutes a mais) em rodadas de XP, no mínimo 1 (a rota perdida).
+  // `xpRounds`/`xpBoosted` entram no XP; `rounds` segue sendo a contagem de rodadas que aparece na tela.
+  const unit = (session: SessionLike, round: unknown) => (session.family === "travel" ? Math.max(1, Number((round as { weight?: unknown } | null)?.weight) || 0) : 1);
+  let xpRounds = rounds, xpBoosted = boostedRounds;
+  for (const session of completed) {
+    if (session.family !== "travel" || !Array.isArray(session.rounds)) continue;
+    for (const round of session.rounds) {
+      const extra = unit(session, round) - 1;
+      xpRounds += extra;
+      if ((round as { boosted?: unknown } | null)?.boosted === true) xpBoosted += extra;
+    }
+  }
+  return { completedSessions: completed.length, rounds, boostedRounds, xpRounds, xpBoosted };
 }

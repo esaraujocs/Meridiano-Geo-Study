@@ -66,7 +66,7 @@ assert.deepEqual(playerStats.playerStatsFromSessions([
   migratedOtherMode,
   abandoned([answer("ignored", true, "mapa")]),
   { complete: true, aggregate: { rod: 7 } },
-]), { completedSessions: 3, rounds: 10, boostedRounds: 0 });
+]), { completedSessions: 3, rounds: 10, boostedRounds: 0, xpRounds: 10, xpBoosted: 0 });
 const transformed = migration.transformLegacy({ history: { sessoes: [
   { ini: 100, modo: "mapa", completa: true, r: [["chronology", true, 9000], ["chronology", true, 1]] },
   { ini: 200, modo: "bn", completa: true, r: [["chronology", false, 1], ["chronology", true, 8000]] },
@@ -98,7 +98,16 @@ assert.equal(curve.xpFrom(10, 1, 4), 10 * 2 + 4 * 6 + 50, "4 turbinadas entre 10
 assert.equal(curve.xpFrom(10, 0, 99), 80, "nunca mais turbinadas do que rodadas");
 assert.equal(curve.xpFrom(10, 0, 0), curve.xpFrom(10, 0), "sem Tônico nada muda");
 const boostedSession = (n, complete = true) => ({ complete, rounds: Array.from({ length: 10 }, (_, i) => ({ targetId: "t" + i, correct: true, ...(i < n ? { boosted: true } : {}) })) });
-assert.deepEqual(playerStats.playerStatsFromSessions([boostedSession(4), boostedSession(0)]), { completedSessions: 2, rounds: 20, boostedRounds: 4 });
+assert.deepEqual(playerStats.playerStatsFromSessions([boostedSession(4), boostedSession(0)]), { completedSessions: 2, rounds: 20, boostedRounds: 4, xpRounds: 20, xpBoosted: 4 });
+// Travel: cada rota vale o peso dela em rodadas de XP (no mínimo 1); o Tônico multiplica o mesmo peso
+{
+  const travel = { family: "travel", complete: true, rounds: [{ weight: 5 }, { weight: 0 }, { weight: 2.5, boosted: true }] };
+  const stats = playerStats.playerStatsFromSessions([travel]);
+  assert.equal(stats.rounds, 3, "a tela continua contando 3 rodadas");
+  assert.equal(stats.xpRounds, 8.5, "5 + 1 (perdida) + 2,5");
+  assert.equal(stats.xpBoosted, 2.5, "a rota turbinada conta pelo peso");
+  assert.equal(playerStats.playerStatsFromSessions([{ ...travel, complete: false }]).xpRounds, 0, "abandonada não rende");
+}
 assert.equal(playerStats.playerStatsFromSessions([boostedSession(10, false)]).boostedRounds, 0, "partida abandonada não rende XP, nem o turbinado");
 const tonic = await import(`file://${out}/tonic.js`);
 const state = tonic.createTonicState(0);
