@@ -151,6 +151,13 @@ export const travelExtra = (shortest: number, level: TravelLevel = "livre") =>
   level === "exata" ? 1 : level === "trilha" ? (shortest <= 3 ? 2 : 3) : shortest <= 3 ? 4 : shortest <= 6 ? 5 : shortest <= 9 ? 6 : shortest <= 12 ? 7 : 8;
 export const travelBudget = (shortest: number, level: TravelLevel = "livre") => shortest + travelExtra(shortest, level);
 
+/** Começou pelo lado errado (22/10/2026, pedido do Enzo: "muitas vezes começo do país do final; é confusão de ordem, não erro, penalizar é chato"):
+ *  na Trilha e em Em ordem, um chute que o nível não aceita mas faz fronteira com o DESTINO não gasta chute; a tela avisa por onde começar. */
+export function wrongSide(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
+  if (level === "livre" || guessAllowed(graph, puzzle, have, guess, level, tip)) return false;
+  return graph.get(guess)?.has(puzzle.end) ?? false;
+}
+
 /** O nível aceita o chute? `tip`: em "Em ordem", o último país aceito (ou a origem). */
 export function guessAllowed(graph: TravelGraph, puzzle: TravelPuzzle, have: ReadonlySet<string>, guess: string, level: TravelLevel, tip = puzzle.start): boolean {
   if (level === "livre") return true;

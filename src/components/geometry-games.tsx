@@ -8,7 +8,7 @@ import { ContinueBar, GameTopBar, NeighborChip, SupplyTray, useGameKeys, useRoun
 import { useSupplies } from "./use-supplies";
 import { emptySupplyCounts, letterHint, lupaToHide, type SupplyCounts, type SupplyId } from "../domain/supplies";
 import { aliases, featurePath, normalizeName, silhouetteIndex } from "../domain/legacy-geometry";
-import { guessAllowed, readTravelLevel, travelBand, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
+import { guessAllowed, readTravelLevel, travelBand, wrongSide, travelBox, bestRoute, gradeGuess, linkedToStart, remainingRoute, routeClosed, travelDestinations, travelFeatureIds, travelGraph, travelPool, travelPuzzle, travelWeight, type TravelGrade, type TravelPuzzle } from "../domain/travel";
 import { TravelMap, travelPoints, type TravelPaint } from "./travel-map";
 import { startLearningSession, type LearningSessionHandle, type SessionResult } from "../domain/learning-store";
 import { createFiniteDeck, deckSeedFor, seedFromParts } from "../domain/finite-deck";
@@ -361,6 +361,15 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const [borders, setBorders] = useState(false);
   const [showInitials, setShowInitials] = useState(false);
   const [nextHint, setNextHint] = useState<string | null>(null);
+  // aviso "comece pela origem": o número muda a cada vez (reinicia a animação) e some sozinho
+  const [sideHint, setSideHint] = useState(0);
+  const [sideShown, setSideShown] = useState(false);
+  useEffect(() => {
+    if (!sideHint) return;
+    setSideShown(true);
+    const timer = window.setTimeout(() => setSideShown(false), 3800);
+    return () => window.clearTimeout(timer);
+  }, [sideHint]);
   const [closed, setClosed] = useState<"won" | "lost" | null>(null);
   const [typed, setTyped] = useState("");
   const [notice, setNotice] = useState<TravelNotice>({ kind: "", text: "" });
@@ -434,6 +443,12 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     if (id === puzzle.start || id === puzzle.end) { setNotice({ kind: "info", text: t.travel.endpoint }); return; }
     if (have.has(id)) { setNotice({ kind: "info", text: t.travel.duplicate }); return; }
     if (!graph.has(id)) { setNotice({ kind: "no", text: t.travel.outside(nameOf(id)) }); return; }
+    if (wrongSide(graph, puzzle, have, id, level, tip)) {
+      // pelo lado do destino: não gasta chute; o aviso diz por onde começar (e a origem pisca)
+      setNotice({ kind: "info", text: t.travel.wrongSide(nameOf(puzzle.start)) });
+      setSideHint((current) => current + 1);
+      return;
+    }
     const allowed = guessAllowed(graph, puzzle, have, id, level, tip);
     const grade = allowed ? gradeGuess(graph, puzzle, have, id) : "far";
     const all: TravelGuess[] = [...guesses, allowed ? { id, grade } : { id, grade, off: true }];
@@ -528,9 +543,10 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
       </GameTopBar>
       <div className="gs-body">
         <main className="gs-stage tv-stage" data-target-id={import.meta.env.DEV ? `${puzzle.start}>${puzzle.end}` : undefined}>
-          <div className="gs-kicker tv-kicker">{t.travel.from} <b className="tv-end">{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
+          <div className="gs-kicker tv-kicker">{t.travel.from} <b className={`tv-end${sideShown ? " is-flash" : ""}`} key={`start-${sideHint}`}>{nameOf(puzzle.start)}</b> {t.travel.to} <b className="tv-end">{nameOf(puzzle.end)}</b></div>
           <div className="tv-mapwrap">
             <TravelMap paints={paints} points={points} boxes={boxes} borders={borders || Boolean(closed)} dashed={dashed} />
+            {sideShown && !closed && <div className="tv-side" key={sideHint} aria-hidden="true"><b>{t.travel.wrongSideTitle(nameOf(puzzle.start))}</b><small>{t.travel.wrongSideSub}</small></div>}
             {closed && <div className={`tv-done is-${closed}`} aria-hidden="true">
               <i>{closed === "won" ? "✓" : "✕"}</i>
               <b>{closed === "won" ? (guesses.length === puzzle.shortest ? t.travel.donePerfect : t.travel.doneWon) : t.travel.doneLost}</b>

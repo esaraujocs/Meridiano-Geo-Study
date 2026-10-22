@@ -65,6 +65,12 @@ assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "x", "exata", "b"), true
 assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "f", "exata", "b"), false, "F encosta na origem, mas a ponta agora é B");
 assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "f", "trilha"), true, "na Trilha pode ramificar");
 assert.equal(tv.guessAllowed(g, puzzle, new Set(["b"]), "d", "exata", "b"), false, "pular um país não vale");
+// começou pelo lado do destino: D encosta em E (o destino) e não na trilha — não gasta chute na Trilha nem em Em ordem; no Livre vale normal
+assert.equal(tv.wrongSide(g, puzzle, new Set(), "d", "trilha"), true);
+assert.equal(tv.wrongSide(g, puzzle, new Set(), "d", "exata"), true);
+assert.equal(tv.wrongSide(g, puzzle, new Set(), "d", "livre"), false);
+assert.equal(tv.wrongSide(g, puzzle, new Set(), "f", "exata"), false, "F é chute aceito (encosta na origem)");
+assert.equal(tv.wrongSide(g, puzzle, new Set(["b"]), "x", "exata", "b"), false, "X encosta na ponta: aceito, não é lado errado");
 // sorteio: determinístico, distância de 2 a 7 fronteiras, origem à distância sorteada
 const p1 = tv.travelPuzzle(g, "e", 7), p2 = tv.travelPuzzle(g, "e", 7);
 assert.deepEqual(p1, p2);
