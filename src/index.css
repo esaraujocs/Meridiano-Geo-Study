@@ -2122,6 +2122,7 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
 .tv-count b{font-weight:600;color:var(--ink)}
 .tv-hints{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .tv-suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:-4px}
+.tv-sug[aria-pressed=true]{background:var(--green);color:var(--paper)}
 .tv-sug{min-height:34px;padding:0 13px;border-radius:99px;border:1.5px solid var(--green);background:color-mix(in srgb,var(--green) 12%,var(--surface));color:var(--ink);font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
 .tv-hints-label{font:500 11px 'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tv-hint{min-height:34px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}

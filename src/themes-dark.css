@@ -74,3 +74,6 @@
 /* o retorno da escrita ("Certo"/"Resposta certa" e "você digitou") tinha o verde-escuro fixo do tema claro: 2,1:1 sobre o escuro (achado com a escrita do Brasil, 06/10) */
 :root[data-scheme="dark"] :is(.reveal small,.reveal em,.reveal-skip){color:var(--muted)}
 :root[data-scheme="dark"] .reveal-ok small{color:var(--ok-ink)}
+
+/* botão de responder dos campos de escrita (Travel, escritas): no escuro o --green é claro, o texto branco ficava em 2:1 */
+:root[data-scheme="dark"] .gs-field .go:not(:disabled){color:var(--paper)}

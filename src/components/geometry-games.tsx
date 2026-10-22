@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { Feature, Geometry } from "geojson";
 import type { AnyQuizVariant, Family, Legacy, RegionSelection } from "../domain/types";
 import { inRegion, regionLabel } from "../domain/regions";
@@ -353,9 +353,14 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
   const matchesFor = (value: string) => {
     const key = answerKey(value);
     if (key.length < 2) return [];
-    const ids = new Set<string>();
-    for (const [name, id] of nameIndex) if (name.startsWith(key) && id !== puzzle?.start && id !== puzzle?.end) ids.add(id);
-    return [...ids];
+    const ids = new Map<string, number>();
+    for (const [name, id] of nameIndex) {
+      if (!name.startsWith(key) || id === puzzle?.start || id === puzzle?.end) continue;
+      // o nome exato primeiro ("guine": Guiné antes de Guiné Equatorial), depois o mais curto
+      const rank = name === key ? 0 : name.length;
+      ids.set(id, Math.min(ids.get(id) ?? Infinity, rank));
+    }
+    return [...ids].sort((a, b) => a[1] - b[1] || nameOf(a[0]).localeCompare(nameOf(b[0]))).map(([id]) => id);
   };
   const runSeed = useRef(settings.deckSeed ?? Math.floor(Math.random() * 0x7fffffff));
   const deck = useRef<ReturnType<typeof createFiniteDeck<string>> | null>(null);
@@ -441,7 +446,17 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
     else setNotice({ kind: grade === "far" ? "no" : grade === "near" ? "info" : "ok", text: t.travel.graded(nameOf(id), t.travel.grades[grade]) });
   };
   // digitou um nome inteiro que só um país do jogo tem: chuta sozinho (21/10/2026, o Enzo precisava do Enter); senão, as sugestões tocáveis
-  const suggestions = useMemo(() => matchesFor(typed), [typed, nameIndex, puzzle]);
+  const suggestions = useMemo(() => matchesFor(typed).filter((id) => !have.has(id)).slice(0, 4), [typed, nameIndex, puzzle, have]);
+  // Enter (ou Chutar) chuta a sugestão destacada, a primeira por padrão; as setas trocam o destaque (21/10/2026, ideia do Enzo)
+  const [picked, setPicked] = useState(0);
+  useEffect(() => setPicked(0), [typed]);
+  const onSuggestKey = (event: ReactKeyboardEvent<HTMLFormElement>) => {
+    if (suggestions.length < 2) return;
+    const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    setPicked((current) => (current + step + suggestions.length) % suggestions.length);
+  };
   const onType = (value: string) => {
     setTyped(value);
     const id = nameIndex.get(answerKey(value));
@@ -524,12 +539,12 @@ function TravelGame({ data, region, options, onBack, onEnd, onRestart, supplies 
           <div className={`gs-ribbon wrap on ${notice.kind || "info"}`} role="status" aria-live="polite">{notice.text || t.travel.typeHint}</div>
         </main>
         <section className="gs-tray" aria-label={t.common.answersRegion}>
-          <form className="gs-field" onSubmit={(event) => { event.preventDefault(); submit(); }}>
+          <form className="gs-field" onKeyDownCapture={onSuggestKey} onSubmit={(event) => { event.preventDefault(); const id = suggestions[Math.min(picked, suggestions.length - 1)]; submit(id ? nameOf(id) : typed); }}>
             <TypedAnswerInput key={`${puzzle.start}-${puzzle.end}`} inputRef={inputRef} aria-label={t.travel.guessField} autoFocus value={typed} disabled={Boolean(closed)} onChange={onType} onCommit={submit} />
             <button className="go" disabled={Boolean(closed) || !typed.trim()}>{t.travel.guess}</button>
           </form>
           {!closed && suggestions.length > 0 && <div className="tv-suggest" role="group" aria-label={t.travel.suggestions}>
-            {suggestions.slice(0, 4).map((id) => <button key={id} type="button" className="tv-sug" onPointerDown={(event) => event.preventDefault()} onClick={() => submit(nameOf(id))}>{nameOf(id)}</button>)}
+            {suggestions.map((id, index) => <button key={id} type="button" className="tv-sug" aria-pressed={index === picked} onPointerDown={(event) => event.preventDefault()} onClick={() => submit(nameOf(id))}>{nameOf(id)}</button>)}
           </div>}
           {closed
             ? <ContinueBar holdMs={null} onSkip={flow.skip} />
