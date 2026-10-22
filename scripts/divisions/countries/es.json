@@ -1,0 +1,431 @@
+{
+  "comment": "Espanha: as 17 comunidades autônomas e as 2 cidades autônomas (Ceuta e Melilla), o primeiro nível de divisão. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName); a linha sem código (Plazas de Soberanía: os rochedos espanhóis da costa do Marrocos) fica fora das zonas e a terra vai para a unidade mais perto. Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o nome local aceito na escrita; capitais da Wikipédia (sede do governo autônomo: Valladolid em Castela e Leão, Mérida, Vitória). Canárias (capital dividida entre Santa Cruz de Tenerife e Las Palmas), Ceuta e Melilla (a capital é a própria cidade) ficam fora dos modos de capital. Regiões (recortes): agrupamento nosso por posição, inspirado nos NUTS 1, com as Canárias no Sul. Sem bandeiras por ora.",
+  "id": "es",
+  "carta": "724",
+  "source": "overture",
+  "name": {
+    "pt": "Espanha",
+    "en": "Spain",
+    "es": "España"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "comunidade",
+      "many": "comunidades",
+      "g": "f"
+    },
+    "en": {
+      "one": "community",
+      "many": "communities"
+    },
+    "es": {
+      "one": "comunidad",
+      "many": "comunidades",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    },
+    "east": {
+      "pt": "Leste",
+      "en": "East",
+      "es": "Este"
+    },
+    "center": {
+      "pt": "Centro",
+      "en": "Centre",
+      "es": "Centro"
+    },
+    "south": {
+      "pt": "Sul e Canárias",
+      "en": "South and Canaries",
+      "es": "Sur y Canarias"
+    }
+  },
+  "frame": [
+    -9.6,
+    35.1,
+    4.6,
+    43.9
+  ],
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 724)",
+      "use": "a terra da Espanha, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 19 comunidades e cidades autônomas"
+    }
+  ],
+  "units": [
+    {
+      "code": "AN",
+      "name": "Andalusia",
+      "sourceName": "Andalucía",
+      "names": {
+        "pt": "Andaluzia",
+        "es": "Andalucía"
+      },
+      "capital": {
+        "pt": "Sevilha",
+        "en": "Seville",
+        "es": "Sevilla"
+      },
+      "capAl": [
+        "Sevilla"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "AR",
+      "name": "Aragon",
+      "sourceName": "Aragón",
+      "names": {
+        "pt": "Aragão",
+        "es": "Aragón"
+      },
+      "capital": {
+        "pt": "Saragoça",
+        "en": "Zaragoza",
+        "es": "Zaragoza"
+      },
+      "capAl": [
+        "Zaragoza"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "AS",
+      "name": "Asturias",
+      "sourceName": "Asturias / Asturies",
+      "names": {
+        "pt": "Astúrias"
+      },
+      "capital": "Oviedo",
+      "region": "north"
+    },
+    {
+      "code": "CB",
+      "name": "Cantabria",
+      "names": {
+        "pt": "Cantábria"
+      },
+      "capital": "Santander",
+      "region": "north"
+    },
+    {
+      "code": "CE",
+      "name": "Ceuta",
+      "region": "south"
+    },
+    {
+      "code": "CL",
+      "name": "Castile and León",
+      "sourceName": "Castilla y León",
+      "names": {
+        "pt": "Castela e Leão",
+        "es": "Castilla y León"
+      },
+      "alias": [
+        "Castilla y León"
+      ],
+      "capital": "Valladolid",
+      "region": "center"
+    },
+    {
+      "code": "CM",
+      "name": "Castilla–La Mancha",
+      "sourceName": "Castilla-La Mancha",
+      "names": {
+        "pt": "Castela-La Mancha",
+        "es": "Castilla-La Mancha"
+      },
+      "alias": [
+        "Castilla-La Mancha",
+        "Castela-Mancha"
+      ],
+      "capital": "Toledo",
+      "region": "center"
+    },
+    {
+      "code": "CN",
+      "name": "Canary Islands",
+      "sourceName": "Canarias",
+      "names": {
+        "pt": "Canárias",
+        "es": "Canarias"
+      },
+      "alias": [
+        "Ilhas Canárias",
+        "Islas Canarias"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "CT",
+      "name": "Catalonia",
+      "sourceName": "Catalunya",
+      "names": {
+        "pt": "Catalunha",
+        "es": "Cataluña"
+      },
+      "alias": [
+        "Catalunya"
+      ],
+      "capital": "Barcelona",
+      "region": "east"
+    },
+    {
+      "code": "EX",
+      "name": "Extremadura",
+      "names": {
+        "pt": "Estremadura"
+      },
+      "alias": [
+        "Extremadura"
+      ],
+      "capital": "Mérida",
+      "region": "center"
+    },
+    {
+      "code": "GA",
+      "name": "Galicia",
+      "names": {
+        "pt": "Galiza"
+      },
+      "alias": [
+        "Galícia"
+      ],
+      "capital": "Santiago de Compostela",
+      "capAl": [
+        "Santiago"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "IB",
+      "name": "Balearic Islands",
+      "sourceName": "Illes Balears",
+      "names": {
+        "pt": "Ilhas Baleares",
+        "es": "Islas Baleares"
+      },
+      "alias": [
+        "Baleares",
+        "Illes Balears"
+      ],
+      "capital": {
+        "pt": "Palma",
+        "en": "Palma",
+        "es": "Palma"
+      },
+      "capAl": [
+        "Palma de Maiorca",
+        "Palma de Mallorca"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "MC",
+      "name": "Region of Murcia",
+      "sourceName": "Región de Murcia",
+      "names": {
+        "pt": "Região de Múrcia",
+        "es": "Región de Murcia"
+      },
+      "alias": [
+        "Múrcia",
+        "Murcia"
+      ],
+      "capital": {
+        "pt": "Múrcia",
+        "en": "Murcia",
+        "es": "Murcia"
+      },
+      "capAl": [
+        "Murcia"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "MD",
+      "name": "Community of Madrid",
+      "sourceName": "Comunidad de Madrid",
+      "names": {
+        "pt": "Comunidade de Madrid",
+        "es": "Comunidad de Madrid"
+      },
+      "alias": [
+        "Madrid"
+      ],
+      "capital": "Madrid",
+      "region": "center"
+    },
+    {
+      "code": "ML",
+      "name": "Melilla",
+      "names": {
+        "pt": "Melilha"
+      },
+      "alias": [
+        "Melilla"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "NC",
+      "name": "Navarre",
+      "sourceName": "Navarra / Nafarroa",
+      "names": {
+        "pt": "Navarra",
+        "es": "Navarra"
+      },
+      "capital": "Pamplona",
+      "capAl": [
+        "Iruña"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "PV",
+      "name": "Basque Country",
+      "sourceName": "Euskadi",
+      "names": {
+        "pt": "País Basco",
+        "es": "País Vasco"
+      },
+      "alias": [
+        "Euskadi"
+      ],
+      "capital": {
+        "pt": "Vitória",
+        "en": "Vitoria-Gasteiz",
+        "es": "Vitoria"
+      },
+      "capAl": [
+        "Vitoria-Gasteiz",
+        "Vitoria",
+        "Gasteiz"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "RI",
+      "name": "La Rioja",
+      "alias": [
+        "Rioja"
+      ],
+      "capital": "Logroño",
+      "region": "north"
+    },
+    {
+      "code": "VC",
+      "name": "Valencian Community",
+      "sourceName": "Comunitat Valenciana",
+      "names": {
+        "pt": "Comunidade Valenciana",
+        "es": "Comunidad Valenciana"
+      },
+      "alias": [
+        "Valência",
+        "Comunitat Valenciana"
+      ],
+      "capital": {
+        "pt": "Valência",
+        "en": "Valencia",
+        "es": "Valencia"
+      },
+      "capAl": [
+        "Valencia"
+      ],
+      "region": "east"
+    }
+  ],
+  "probes": [
+    [
+      "Madri (Puerta del Sol)",
+      -3.7038,
+      40.4168,
+      "es-md"
+    ],
+    [
+      "Barcelona",
+      2.1734,
+      41.3851,
+      "es-ct"
+    ],
+    [
+      "Sevilha",
+      -5.9845,
+      37.3891,
+      "es-an"
+    ],
+    [
+      "Palma",
+      2.6502,
+      39.5696,
+      "es-ib"
+    ],
+    [
+      "Las Palmas",
+      -15.4363,
+      28.1235,
+      "es-cn"
+    ],
+    [
+      "Santa Cruz de Tenerife",
+      -16.2546,
+      28.4636,
+      "es-cn"
+    ],
+    [
+      "Ceuta",
+      -5.3075,
+      35.8894,
+      "es-ce"
+    ],
+    [
+      "Melilla",
+      -2.9381,
+      35.2923,
+      "es-ml"
+    ],
+    [
+      "Bilbao",
+      -2.935,
+      43.263,
+      "es-pv"
+    ],
+    [
+      "Santiago de Compostela",
+      -8.5448,
+      42.8782,
+      "es-ga"
+    ],
+    [
+      "Valência",
+      -0.3763,
+      39.4699,
+      "es-vc"
+    ],
+    [
+      "Saragoça",
+      -0.8891,
+      41.6488,
+      "es-ar"
+    ]
+  ]
+}

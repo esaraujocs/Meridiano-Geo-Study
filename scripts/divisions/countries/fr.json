@@ -1,0 +1,363 @@
+{
+  "comment": "França: as 13 regiões metropolitanas (Córsega incluída). As 5 regiões ultramarinas ficam de fora por ora: o Overture não as traz como regiões da França, a Guiana Francesa e Mayotte são entidades próprias no mapa-múndi e Guadalupe, Martinica e Reunião (absorvidas na França do mapa HD) ficam longe demais (viram terra neutra pelo leftoverKm). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName). Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição. Sem bandeiras por ora.",
+  "id": "fr",
+  "carta": "250",
+  "source": "overture",
+  "name": {
+    "pt": "França",
+    "en": "France",
+    "es": "Francia"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "região",
+      "many": "regiões",
+      "g": "f"
+    },
+    "en": {
+      "one": "region",
+      "many": "regions"
+    },
+    "es": {
+      "one": "región",
+      "many": "regiones",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    },
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    },
+    "south": {
+      "pt": "Sul e Leste",
+      "en": "South and East",
+      "es": "Sur y Este"
+    }
+  },
+  "frame": [
+    -5.3,
+    41.3,
+    9.7,
+    51.2
+  ],
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 250)",
+      "use": "a terra da França metropolitana, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 13 regiões"
+    }
+  ],
+  "units": [
+    {
+      "code": "20R",
+      "name": "Corsica",
+      "sourceName": "Corse",
+      "names": {
+        "pt": "Córsega",
+        "es": "Córcega"
+      },
+      "alias": [
+        "Corse"
+      ],
+      "capital": "Ajaccio",
+      "region": "south"
+    },
+    {
+      "code": "ARA",
+      "name": "Auvergne-Rhône-Alpes",
+      "names": {
+        "pt": "Auvérnia-Ródano-Alpes",
+        "es": "Auvernia-Ródano-Alpes"
+      },
+      "capital": {
+        "pt": "Lyon",
+        "en": "Lyon",
+        "es": "Lyon"
+      },
+      "capAl": [
+        "Lião",
+        "Lion"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "BFC",
+      "name": "Bourgogne-Franche-Comté",
+      "names": {
+        "pt": "Borgonha-Franco-Condado",
+        "es": "Borgoña-Franco Condado"
+      },
+      "capital": "Dijon",
+      "region": "south"
+    },
+    {
+      "code": "BRE",
+      "name": "Brittany",
+      "sourceName": "Bretagne",
+      "names": {
+        "pt": "Bretanha",
+        "es": "Bretaña"
+      },
+      "alias": [
+        "Bretagne"
+      ],
+      "capital": "Rennes",
+      "region": "west"
+    },
+    {
+      "code": "CVL",
+      "name": "Centre-Val de Loire",
+      "names": {
+        "pt": "Centro-Vale do Loire",
+        "es": "Centro-Valle de Loira"
+      },
+      "capital": {
+        "pt": "Orléans",
+        "en": "Orléans",
+        "es": "Orleans"
+      },
+      "capAl": [
+        "Orleans",
+        "Orleães"
+      ],
+      "region": "west"
+    },
+    {
+      "code": "GES",
+      "name": "Grand Est",
+      "names": {
+        "pt": "Grande Leste",
+        "es": "Gran Este"
+      },
+      "alias": [
+        "Grand Est"
+      ],
+      "capital": {
+        "pt": "Estrasburgo",
+        "en": "Strasbourg",
+        "es": "Estrasburgo"
+      },
+      "capAl": [
+        "Strasbourg"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "HDF",
+      "name": "Hauts-de-France",
+      "names": {
+        "pt": "Altos da França",
+        "es": "Alta Francia"
+      },
+      "alias": [
+        "Hauts-de-France"
+      ],
+      "capital": "Lille",
+      "region": "north"
+    },
+    {
+      "code": "IDF",
+      "name": "Île-de-France",
+      "names": {
+        "pt": "Ilha de França",
+        "es": "Isla de Francia"
+      },
+      "alias": [
+        "Île-de-France",
+        "Ile-de-France"
+      ],
+      "capital": {
+        "pt": "Paris",
+        "en": "Paris",
+        "es": "París"
+      },
+      "region": "north"
+    },
+    {
+      "code": "NAQ",
+      "name": "Nouvelle-Aquitaine",
+      "names": {
+        "pt": "Nova Aquitânia",
+        "es": "Nueva Aquitania"
+      },
+      "alias": [
+        "Nouvelle-Aquitaine"
+      ],
+      "capital": {
+        "pt": "Bordeaux",
+        "en": "Bordeaux",
+        "es": "Burdeos"
+      },
+      "capAl": [
+        "Bordéus",
+        "Burdeos"
+      ],
+      "region": "west"
+    },
+    {
+      "code": "NOR",
+      "name": "Normandy",
+      "sourceName": "Normandie",
+      "names": {
+        "pt": "Normandia",
+        "es": "Normandía"
+      },
+      "alias": [
+        "Normandie"
+      ],
+      "capital": {
+        "pt": "Rouen",
+        "en": "Rouen",
+        "es": "Ruan"
+      },
+      "capAl": [
+        "Ruão",
+        "Ruan"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "OCC",
+      "name": "Occitania",
+      "sourceName": "Occitanie",
+      "names": {
+        "pt": "Occitânia"
+      },
+      "alias": [
+        "Occitanie"
+      ],
+      "capital": "Toulouse",
+      "capAl": [
+        "Tolosa"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "PAC",
+      "name": "Provence-Alpes-Côte d'Azur",
+      "names": {
+        "pt": "Provença-Alpes-Costa Azul",
+        "es": "Provenza-Alpes-Costa Azul"
+      },
+      "alias": [
+        "Provence-Alpes-Côte d'Azur",
+        "PACA"
+      ],
+      "capital": {
+        "pt": "Marselha",
+        "en": "Marseille",
+        "es": "Marsella"
+      },
+      "capAl": [
+        "Marseille",
+        "Marsella"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "PDL",
+      "name": "Pays de la Loire",
+      "names": {
+        "pt": "Países do Loire",
+        "es": "Países del Loira"
+      },
+      "alias": [
+        "Pays de la Loire"
+      ],
+      "capital": "Nantes",
+      "region": "west"
+    }
+  ],
+  "probes": [
+    [
+      "Paris (Notre-Dame)",
+      2.3499,
+      48.853,
+      "fr-idf"
+    ],
+    [
+      "Lyon",
+      4.8357,
+      45.764,
+      "fr-ara"
+    ],
+    [
+      "Marselha",
+      5.3698,
+      43.2965,
+      "fr-pac"
+    ],
+    [
+      "Ajaccio",
+      8.7369,
+      41.9192,
+      "fr-20r"
+    ],
+    [
+      "Brest",
+      -4.4861,
+      48.3904,
+      "fr-bre"
+    ],
+    [
+      "Estrasburgo",
+      7.7521,
+      48.5734,
+      "fr-ges"
+    ],
+    [
+      "Bordeaux",
+      -0.5792,
+      44.8378,
+      "fr-naq"
+    ],
+    [
+      "Lille",
+      3.0573,
+      50.6292,
+      "fr-hdf"
+    ],
+    [
+      "Toulouse",
+      1.4442,
+      43.6047,
+      "fr-occ"
+    ],
+    [
+      "Ilha de Ré",
+      -1.43,
+      46.2,
+      "fr-naq"
+    ],
+    [
+      "Dijon",
+      5.0415,
+      47.322,
+      "fr-bfc"
+    ],
+    [
+      "Nantes",
+      -1.5536,
+      47.2184,
+      "fr-pdl"
+    ]
+  ]
+}

@@ -297,6 +297,169 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     }
   },
   {
+    "id": "es",
+    "carta": "724",
+    "name": {
+      "pt": "Espanha",
+      "en": "Spain",
+      "es": "España"
+    },
+    "unit": {
+      "pt": {
+        "one": "comunidade",
+        "many": "comunidades",
+        "g": "f"
+      },
+      "en": {
+        "one": "community",
+        "many": "communities"
+      },
+      "es": {
+        "one": "comunidad",
+        "many": "comunidades",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "center",
+        "name": {
+          "pt": "Centro",
+          "en": "Centre",
+          "es": "Centro"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul e Canárias",
+          "en": "South and Canaries",
+          "es": "Sur y Canarias"
+        },
+        "count": 5,
+        "capitals": 2,
+        "flags": 0
+      }
+    ],
+    "count": 19,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 16,
+    "frame": [
+      -9.6,
+      35.1,
+      4.6,
+      43.9
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-es.pmtiles",
+      "bytes": 626669,
+      "sha256": "a55baa8de9c7899081b5c6539086ae718f2e7999090fe6a1515f613b3c835cc1"
+    }
+  },
+  {
+    "id": "fr",
+    "carta": "250",
+    "name": {
+      "pt": "França",
+      "en": "France",
+      "es": "Francia"
+    },
+    "unit": {
+      "pt": {
+        "one": "região",
+        "many": "regiões",
+        "g": "f"
+      },
+      "en": {
+        "one": "region",
+        "many": "regions"
+      },
+      "es": {
+        "one": "región",
+        "many": "regiones",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul e Leste",
+          "en": "South and East",
+          "es": "Sur y Este"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      }
+    ],
+    "count": 13,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 13,
+    "frame": [
+      -5.3,
+      41.3,
+      9.7,
+      51.2
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-fr.pmtiles",
+      "bytes": 850382,
+      "sha256": "ffb0486629e25106a7c3c736ca9d18ef0bce9768ef121bda96a33ae01b922d3b"
+    }
+  },
+  {
     "id": "1914",
     "kind": "era",
     "subtitle": {

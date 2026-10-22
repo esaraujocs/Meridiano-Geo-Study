@@ -1,0 +1,466 @@
+{
+ "source": "França: as 13 regiões metropolitanas (Córsega incluída). As 5 regiões ultramarinas ficam de fora por ora: o Overture não as traz como regiões da França, a Guiana Francesa e Mayotte são entidades próprias no mapa-múndi e Guadalupe, Martinica e Reunião (absorvidas na França do mapa HD) ficam longe demais (viram terra neutra pelo leftoverKm). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome francês, sourceName). Nomes nos três idiomas pelos títulos das Wikipédias pt/en/es (22/10/2026), com o francês aceito na escrita; capitais = a sede da prefeitura regional (Dijon em Borgonha-Franco-Condado), com as grafias portuguesas tradicionais aceitas (Lião, Bordéus, Ruão). Regiões (recortes): agrupamento nosso por posição. Sem bandeiras por ora.",
+ "country": "fr",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "south": {
+   "pt": "Sul e Leste",
+   "en": "South and East",
+   "es": "Sur y Este"
+  }
+ },
+ "units": {
+  "fr-20r": {
+   "code": "20R",
+   "ref": "FR-20R",
+   "name": {
+    "pt": "Córsega",
+    "en": "Corsica",
+    "es": "Córcega"
+   },
+   "alias": [
+    "Corse"
+   ],
+   "capital": "Ajaccio",
+   "region": "south",
+   "area": 8710,
+   "ll": [
+    42.2426,
+    9.1174
+   ],
+   "bbox": [
+    8.54,
+    41.366,
+    9.56,
+    43.012
+   ],
+   "borders": []
+  },
+  "fr-ara": {
+   "code": "ARA",
+   "ref": "FR-ARA",
+   "name": {
+    "pt": "Auvérnia-Ródano-Alpes",
+    "en": "Auvergne-Rhône-Alpes",
+    "es": "Auvernia-Ródano-Alpes"
+   },
+   "capital": {
+    "pt": "Lyon",
+    "en": "Lyon",
+    "es": "Lyon"
+   },
+   "capAl": [
+    "Lião",
+    "Lion"
+   ],
+   "region": "south",
+   "area": 70663,
+   "ll": [
+    45.2695,
+    4.6141
+   ],
+   "bbox": [
+    2.063,
+    44.115,
+    7.185,
+    46.804
+   ],
+   "borders": [
+    "fr-bfc",
+    "fr-cvl",
+    "fr-naq",
+    "fr-occ",
+    "fr-pac"
+   ]
+  },
+  "fr-bfc": {
+   "code": "BFC",
+   "ref": "FR-BFC",
+   "name": {
+    "pt": "Borgonha-Franco-Condado",
+    "en": "Bourgogne-Franche-Comté",
+    "es": "Borgoña-Franco Condado"
+   },
+   "capital": "Dijon",
+   "region": "south",
+   "area": 47928,
+   "ll": [
+    47.1187,
+    4.4295
+   ],
+   "bbox": [
+    2.844,
+    46.156,
+    7.138,
+    48.4
+   ],
+   "borders": [
+    "fr-ara",
+    "fr-cvl",
+    "fr-ges",
+    "fr-idf"
+   ]
+  },
+  "fr-bre": {
+   "code": "BRE",
+   "ref": "FR-BRE",
+   "name": {
+    "pt": "Bretanha",
+    "en": "Brittany",
+    "es": "Bretaña"
+   },
+   "alias": [
+    "Bretagne"
+   ],
+   "capital": "Rennes",
+   "region": "west",
+   "area": 27389,
+   "ll": [
+    48.0554,
+    -2.3961
+   ],
+   "bbox": [
+    -4.795,
+    47.278,
+    -1.016,
+    48.891
+   ],
+   "borders": [
+    "fr-nor",
+    "fr-pdl"
+   ]
+  },
+  "fr-cvl": {
+   "code": "CVL",
+   "ref": "FR-CVL",
+   "name": {
+    "pt": "Centro-Vale do Loire",
+    "en": "Centre-Val de Loire",
+    "es": "Centro-Valle de Loira"
+   },
+   "capital": {
+    "pt": "Orléans",
+    "en": "Orléans",
+    "es": "Orleans"
+   },
+   "capAl": [
+    "Orleans",
+    "Orleães"
+   ],
+   "region": "west",
+   "area": 39420,
+   "ll": [
+    47.3979,
+    1.6318
+   ],
+   "bbox": [
+    0.053,
+    46.347,
+    3.129,
+    48.941
+   ],
+   "borders": [
+    "fr-ara",
+    "fr-bfc",
+    "fr-idf",
+    "fr-naq",
+    "fr-nor",
+    "fr-pdl"
+   ]
+  },
+  "fr-ges": {
+   "code": "GES",
+   "ref": "FR-GES",
+   "name": {
+    "pt": "Grande Leste",
+    "en": "Grand Est",
+    "es": "Gran Este"
+   },
+   "alias": [
+    "Grand Est"
+   ],
+   "capital": {
+    "pt": "Estrasburgo",
+    "en": "Strasbourg",
+    "es": "Estrasburgo"
+   },
+   "capAl": [
+    "Strasbourg"
+   ],
+   "region": "north",
+   "area": 57548,
+   "ll": [
+    48.8894,
+    4.8026
+   ],
+   "bbox": [
+    3.384,
+    47.42,
+    8.233,
+    50.169
+   ],
+   "borders": [
+    "fr-bfc",
+    "fr-hdf",
+    "fr-idf"
+   ]
+  },
+  "fr-hdf": {
+   "code": "HDF",
+   "ref": "FR-HDF",
+   "name": {
+    "pt": "Altos da França",
+    "en": "Hauts-de-France",
+    "es": "Alta Francia"
+   },
+   "alias": [
+    "Hauts-de-France"
+   ],
+   "capital": "Lille",
+   "region": "north",
+   "area": 31833,
+   "ll": [
+    49.9238,
+    2.6549
+   ],
+   "bbox": [
+    1.38,
+    48.837,
+    4.256,
+    51.089
+   ],
+   "borders": [
+    "fr-ges",
+    "fr-idf",
+    "fr-nor"
+   ]
+  },
+  "fr-idf": {
+   "code": "IDF",
+   "ref": "FR-IDF",
+   "name": {
+    "pt": "Ilha de França",
+    "en": "Île-de-France",
+    "es": "Isla de Francia"
+   },
+   "alias": [
+    "Île-de-France",
+    "Ile-de-France"
+   ],
+   "capital": {
+    "pt": "Paris",
+    "en": "Paris",
+    "es": "París"
+   },
+   "region": "north",
+   "area": 12033,
+   "ll": [
+    48.6272,
+    2.7054
+   ],
+   "bbox": [
+    1.446,
+    48.12,
+    3.559,
+    49.241
+   ],
+   "borders": [
+    "fr-bfc",
+    "fr-cvl",
+    "fr-ges",
+    "fr-hdf",
+    "fr-nor"
+   ]
+  },
+  "fr-naq": {
+   "code": "NAQ",
+   "ref": "FR-NAQ",
+   "name": {
+    "pt": "Nova Aquitânia",
+    "en": "Nouvelle-Aquitaine",
+    "es": "Nueva Aquitania"
+   },
+   "alias": [
+    "Nouvelle-Aquitaine"
+   ],
+   "capital": {
+    "pt": "Bordeaux",
+    "en": "Bordeaux",
+    "es": "Burdeos"
+   },
+   "capAl": [
+    "Bordéus",
+    "Burdeos"
+   ],
+   "region": "west",
+   "area": 84555,
+   "ll": [
+    45.5542,
+    0.4026
+   ],
+   "bbox": [
+    -1.789,
+    42.778,
+    2.612,
+    47.176
+   ],
+   "borders": [
+    "fr-ara",
+    "fr-cvl",
+    "fr-occ",
+    "fr-pdl"
+   ]
+  },
+  "fr-nor": {
+   "code": "NOR",
+   "ref": "FR-NOR",
+   "name": {
+    "pt": "Normandia",
+    "en": "Normandy",
+    "es": "Normandía"
+   },
+   "alias": [
+    "Normandie"
+   ],
+   "capital": {
+    "pt": "Rouen",
+    "en": "Rouen",
+    "es": "Ruan"
+   },
+   "capAl": [
+    "Ruão",
+    "Ruan"
+   ],
+   "region": "north",
+   "area": 30039,
+   "ll": [
+    49.3299,
+    0.9529
+   ],
+   "bbox": [
+    -1.949,
+    48.179,
+    1.803,
+    50.071
+   ],
+   "borders": [
+    "fr-bre",
+    "fr-cvl",
+    "fr-hdf",
+    "fr-idf",
+    "fr-pdl"
+   ]
+  },
+  "fr-occ": {
+   "code": "OCC",
+   "ref": "FR-OCC",
+   "name": {
+    "pt": "Occitânia",
+    "en": "Occitania",
+    "es": "Occitania"
+   },
+   "alias": [
+    "Occitanie"
+   ],
+   "capital": "Toulouse",
+   "capAl": [
+    "Tolosa"
+   ],
+   "region": "south",
+   "area": 73223,
+   "ll": [
+    43.5792,
+    2.1274
+   ],
+   "bbox": [
+    -0.327,
+    42.334,
+    4.845,
+    45.047
+   ],
+   "borders": [
+    "fr-ara",
+    "fr-naq",
+    "fr-pac"
+   ]
+  },
+  "fr-pac": {
+   "code": "PAC",
+   "ref": "FR-PAC",
+   "name": {
+    "pt": "Provença-Alpes-Costa Azul",
+    "en": "Provence-Alpes-Côte d'Azur",
+    "es": "Provenza-Alpes-Costa Azul"
+   },
+   "alias": [
+    "Provence-Alpes-Côte d'Azur",
+    "PACA"
+   ],
+   "capital": {
+    "pt": "Marselha",
+    "en": "Marseille",
+    "es": "Marsella"
+   },
+   "capAl": [
+    "Marseille",
+    "Marsella"
+   ],
+   "region": "south",
+   "area": 31615,
+   "ll": [
+    43.9605,
+    6.3357
+   ],
+   "bbox": [
+    4.23,
+    43.026,
+    7.719,
+    45.126
+   ],
+   "borders": [
+    "fr-ara",
+    "fr-occ"
+   ]
+  },
+  "fr-pdl": {
+   "code": "PDL",
+   "ref": "FR-PDL",
+   "name": {
+    "pt": "Países do Loire",
+    "en": "Pays de la Loire",
+    "es": "Países del Loira"
+   },
+   "alias": [
+    "Pays de la Loire"
+   ],
+   "capital": "Nantes",
+   "region": "west",
+   "area": 32330,
+   "ll": [
+    47.777,
+    -0.4091
+   ],
+   "bbox": [
+    -2.56,
+    46.266,
+    0.914,
+    48.568
+   ],
+   "borders": [
+    "fr-bre",
+    "fr-cvl",
+    "fr-naq",
+    "fr-nor"
+   ]
+  }
+ }
+}

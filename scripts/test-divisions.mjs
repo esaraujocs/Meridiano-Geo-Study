@@ -61,8 +61,8 @@ async function mapReader(file) {
 // ---- cada país do índice: o pacote inteiro, sem nada próprio dele
 // a época de 1914 entra no índice quando o pacote dela é gerado (até lá o cartão de Mapas históricos fica escondido no Hub)
 const HAS_1914 = DIVISION_INDEX.some((country) => country.id === "1914");
-assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn", ...(HAS_1914 ? ["1914"] : [])], "o índice traz o Brasil, os EUA, a China (e a época de 1914), na ordem da Mesa");
-assert.deepEqual(DIVISION_INDEX.map((country) => country.kind ?? "country"), ["country", "country", "country", ...(HAS_1914 ? ["era"] : [])]);
+assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn", "es", "fr", ...(HAS_1914 ? ["1914"] : [])], "o índice traz o Brasil, os EUA, a China, a Espanha, a França (e a época de 1914), na ordem da Mesa");
+assert.deepEqual(DIVISION_INDEX.map((country) => country.kind ?? "country"), ["country", "country", "country", "country", "country", ...(HAS_1914 ? ["era"] : [])]);
 const files = {};
 let points = 0;
 for (const country of DIVISION_INDEX) {
@@ -249,6 +249,29 @@ for (const country of DIVISION_INDEX) {
   assert.ok(Object.entries(units.units).every(([id, value]) => value.borders.length > 0 || id === "cn-hi"), "as outras 30 têm vizinho");
 }
 
+// ---- Espanha (22/10/2026): as 17 comunidades autônomas + Ceuta e Melilla; Canárias, Ceuta e Melilla sem capital (fora dos modos de capital)
+{
+  const { units } = files.es;
+  const row = (code) => units.units[`es-${code}`];
+  assert.equal(Object.keys(units.units).length, 19);
+  const es = DIVISION_INDEX.find((country) => country.id === "es");
+  assert.equal(es.capitals, 16, "sem capital: Canárias, Ceuta e Melilla");
+  for (const code of ["cn", "ce", "ml"]) assert.equal(row(code).capital, undefined, `${code}: sem capital`);
+  assert.equal(row("pv").name.pt, "País Basco"); assert.equal(row("ct").name.es, "Cataluña"); assert.equal(row("ga").capital, "Santiago de Compostela");
+  assert.deepEqual(row("md").borders, ["es-cl", "es-cm"], "Madri só encosta nas duas Castelas");
+  assert.equal(row("cn").borders.length, 0, "as Canárias não têm divisa");
+}
+
+// ---- França (22/10/2026): as 13 regiões metropolitanas, sem as ultramarinas (neutras)
+{
+  const { units } = files.fr;
+  const row = (code) => units.units[`fr-${code}`];
+  assert.equal(Object.keys(units.units).length, 13);
+  assert.equal(DIVISION_INDEX.find((country) => country.id === "fr").capitals, 13);
+  assert.equal(row("idf").name.pt, "Ilha de França"); assert.equal(row("20r").borders.length, 0, "a Córsega não tem divisa");
+  assert.ok(row("idf").borders.includes("fr-hdf") && row("idf").borders.includes("fr-cvl"));
+}
+
 // ---- Mapas históricos, 1914 (véspera da Primeira Guerra): Estados, colônias e protetorados como alvos próprios; fronteiras do OpenHistoricalMap com a
 // costa do mapa HD; as capitais de 1914 por idioma; as miudezas e as disputas da época (o Chaco, o Labrador) neutras
 if (HAS_1914) {
@@ -256,9 +279,10 @@ if (HAS_1914) {
   const row = (code) => units.units[`1914-${code}`];
   assert.equal(Object.keys(units.units).length, 146);
   assert.equal(Object.keys(flags.flags).length, 89, "as bandeiras de 1914: 89 dos 146");
-  assert.equal(DIVISION_INDEX[3].kind, "era"); assert.equal(DIVISION_INDEX[3].carta, ""); assert.deepEqual(DIVISION_INDEX[3].frame, [-170, -56, 190, 78]);
-  assert.equal(DIVISION_INDEX[3].subtitle.pt, "Véspera da Primeira Guerra");
-  assert.equal(DIVISION_INDEX[3].capitals, 142, "sem capital: Groenlândia, Estados da Trégua, Estados Malaios Não Federados e Saguia el-Hamra");
+  const era = DIVISION_INDEX.find((country) => country.id === "1914");
+  assert.equal(era.kind, "era"); assert.equal(era.carta, ""); assert.deepEqual(era.frame, [-170, -56, 190, 78]);
+  assert.equal(era.subtitle.pt, "Véspera da Primeira Guerra");
+  assert.equal(era.capitals, 142, "sem capital: Groenlândia, Estados da Trégua, Estados Malaios Não Federados e Saguia el-Hamra");
   for (const code of ["grl", "tru", "ums", "sgh"]) assert.equal(row(code).capital, undefined, `${code}: sem capital única`);
   assert.deepEqual(row("auh").capital, { pt: "Viena", en: "Vienna", es: "Viena" });
   assert.deepEqual(row("rus").capital, { pt: "São Petersburgo", en: "Saint Petersburg", es: "San Petersburgo" }); assert.ok(row("rus").capAl.includes("Petrogrado"));
@@ -427,8 +451,8 @@ assert.equal(modeStats.sessionInMode({ family: "brasil", variant: "br-mapa" }, m
 assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", regions: ["dv:us:west", "dv:us:south"] }, mapMode), true);
 
 // seletor de países da Mesa: continente pelo mapa-múndi, precisão e últimos jogados pelas sessões, busca sem acento nos três idiomas
-const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" } };
-assert.deepEqual(D.divisionsOfKind("country").map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia"]);
+const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" }, "724": { reg: "Europe" }, "250": { reg: "Europe" } };
+assert.deepEqual(D.divisionsOfKind("country").map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia", "Europe", "Europe"]);
 assert.equal(D.divisionContinent(D.divisionCountry("br"), {}), null);
 const plays = D.divisionCountryPlays([
   { family: "divisoes", variant: "dv-mapa", region: "dv:us", complete: true, roundCount: 10, correct: 7, startedAt: 300 },
@@ -441,7 +465,7 @@ assert.deepEqual(plays, { us: { last: 500, matches: 2, accuracy: 80 }, br: { las
 assert.deepEqual(D.recentDivisionCountries(plays), ["us", "br"]); assert.deepEqual(D.recentDivisionCountries(plays, 1), ["us"]);
 assert.deepEqual(D.recentDivisionCountries({ xx: { last: 999, matches: 1, accuracy: 1 }, ...plays }), ["us", "br"], "país que saiu do índice some");
 const search = (query, extra) => D.divisionsOfKind("country").filter((country) => D.divisionCountryMatches(country, query, extra?.[country.id])).map((country) => country.id);
-assert.deepEqual(search(""), ["br", "us", "cn"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
+assert.deepEqual(search(""), ["br", "us", "cn", "es", "fr"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
 assert.deepEqual(search("brazil"), ["br"], "o nome em inglês vale"); assert.deepEqual(search("estados unidos"), [], "sem o nome do mapa-múndi, não");
 assert.deepEqual(search("estados unidos", { us: ["Estados Unidos", "United States"] }), ["us"], "com o nome do mapa-múndi, sim");
 assert.deepEqual(search("ee. uu"), ["us"], "o nome em espanhol"); assert.deepEqual(search("xyz"), []);
@@ -454,7 +478,7 @@ assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equa
 assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
 assert.equal(D.isDivisionFamily("epocas"), true);
 if (HAS_1914) {
-assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); assert.deepEqual(D.divisionsOfKind("country").map((country) => country.id), ["br", "us", "cn"]);
+assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); assert.deepEqual(D.divisionsOfKind("country").map((country) => country.id), ["br", "us", "cn", "es", "fr"]);
 assert.equal(D.kindOf(D.divisionCountry("1914")), "era"); assert.equal(D.kindOf(D.divisionCountry("br")), "country");
 assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
 assert.equal(D.isDivisionFamily("epocas"), true);

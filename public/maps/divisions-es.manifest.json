@@ -1,0 +1,94 @@
+{
+  "name": "divisions-es",
+  "generator": "scripts/map-hd (fetch-overture.py, fetch-lakes.py, build-pieces.py, build-tiles.py)",
+  "zoom": {
+    "min": 0,
+    "max": 9
+  },
+  "bytes": 626669,
+  "sha256": "a55baa8de9c7899081b5c6539086ae718f2e7999090fe6a1515f613b3c835cc1",
+  "tiles": 342,
+  "layer": "countries",
+  "tolerance": {
+    "0": 2.0,
+    "1": 2.0,
+    "2": 2.0,
+    "3": 2.0,
+    "4": 2.0,
+    "5": 2.0,
+    "6": 1.5,
+    "7": 1.5,
+    "8": 1.5,
+    "9": 1.0
+  },
+  "minArea": {
+    "0": 64,
+    "1": 64,
+    "2": 64,
+    "3": 64,
+    "4": 64,
+    "5": 64,
+    "6": 32,
+    "7": 32,
+    "8": 32,
+    "9": 4
+  },
+  "entities": [
+    "es-an",
+    "es-ar",
+    "es-as",
+    "es-cb",
+    "es-ce",
+    "es-cl",
+    "es-cm",
+    "es-cn",
+    "es-ct",
+    "es-ex",
+    "es-ga",
+    "es-ib",
+    "es-mc",
+    "es-md",
+    "es-ml",
+    "es-nc",
+    "es-pv",
+    "es-ri",
+    "es-vc"
+  ],
+  "neutralVertices": 434,
+  "vertices": {
+    "es-an": 39771,
+    "es-ar": 13275,
+    "es-as": 27398,
+    "es-cb": 40045,
+    "es-ce": 2600,
+    "es-cl": 20944,
+    "es-cm": 18121,
+    "es-cn": 113466,
+    "es-ct": 249168,
+    "es-ex": 13371,
+    "es-ga": 133850,
+    "es-ib": 90498,
+    "es-mc": 16092,
+    "es-md": 6364,
+    "es-ml": 1758,
+    "es-nc": 7818,
+    "es-pv": 24651,
+    "es-ri": 3927,
+    "es-vc": 28495
+  },
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 724)",
+      "use": "a terra da Espanha, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 19 comunidades e cidades autônomas"
+    }
+  ]
+}
