@@ -718,6 +718,7 @@ export const pt = {
     syncArrived: "Chegou progresso novo de outro aparelho. Recarregue a página para ver.",
     syncOffline: "Sem conexão com o servidor. O progresso sincroniza quando ele voltar.",
     syncFailed: "Não foi possível sincronizar agora. Tente de novo mais tarde.",
+    syncDetail: (message: string) => `Detalhe: ${message}`,
     choiceTitle: "Este aparelho e a conta já têm progresso",
     choiceBody: "Somar junta os acertos das cartas que existem nos dois lados (se este aparelho recebeu o progresso da conta por um backup, esses acertos contam em dobro). Usar o da conta mantém o número da conta nas cartas que os dois têm; o que só este aparelho tem continua sendo enviado.",
     choiceSum: "Somar os dois",

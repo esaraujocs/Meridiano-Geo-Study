@@ -715,6 +715,7 @@ export const en: Messages = {
     syncArrived: "New progress arrived from another device. Reload the page to see it.",
     syncOffline: "Can't reach the server. Progress will sync when it is back.",
     syncFailed: "Couldn't sync right now. Try again later.",
+    syncDetail: (message: string) => `Detail: ${message}`,
     choiceTitle: "This device and the account both have progress",
     choiceBody: "Add up combines the hits of cards that exist on both sides (if this device got the account's progress through a backup, those hits count twice). Use the account's keeps the account's number on the cards both have; what only this device has keeps being sent.",
     choiceSum: "Add both up",

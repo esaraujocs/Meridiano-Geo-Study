@@ -2148,3 +2148,6 @@ html[data-reduced-motion=true] .pvp-offer.is-dialog,html[data-reduced-motion=tru
   .gs-travel .gs-tray{grid-row:5;align-self:start;margin:0;gap:12px}
   .gs-travel .gs-tray .gs-field{width:100%}
 }
+
+/* o motivo da falha da sincronização, embaixo do aviso (22/10/2026) */
+.acct-err{display:block;margin-top:2px;font-size:12px;color:var(--muted);word-break:break-word}

@@ -177,7 +177,7 @@ export function AccountRow() {
             <button type="button" className="cv-chip" disabled={syncing} onClick={() => void syncNow("adopt")}>{t.account.choiceAdopt}</button>
           </div>
         </div>}
-        {username && !needsChoice && <p className="cv-hint acct-sync" role="status">{statusLine}</p>}
+        {username && !needsChoice && <p className="cv-hint acct-sync" role="status">{statusLine}{!syncing && status?.error && <small className="acct-err">{t.account.syncDetail(status.error)}</small>}</p>}
         <div className="cv-chips">
           {username
             ? <>

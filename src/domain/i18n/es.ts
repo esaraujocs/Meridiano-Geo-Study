@@ -716,6 +716,7 @@ export const es: Messages = {
     syncArrived: "Llegó progreso nuevo de otro dispositivo. Recarga la página para verlo.",
     syncOffline: "Sin conexión con el servidor. El progreso se sincroniza cuando vuelva.",
     syncFailed: "No se pudo sincronizar ahora. Prueba de nuevo más tarde.",
+    syncDetail: (message: string) => `Detalle: ${message}`,
     choiceTitle: "Este dispositivo y la cuenta ya tienen progreso",
     choiceBody: "Sumar junta los aciertos de las cartas que existen en los dos lados (si este dispositivo recibió el progreso de la cuenta por una copia de seguridad, esos aciertos cuentan doble). Usar la de la cuenta mantiene el número de la cuenta en las cartas que tienen los dos; lo que solo tiene este dispositivo se sigue enviando.",
     choiceSum: "Sumar los dos",
