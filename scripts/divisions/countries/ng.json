@@ -1,0 +1,580 @@
+{
+  "comment": "Nigéria: os 36 estados e o Território da Capital Federal (capital Abuja). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as 6 zonas geopolíticas.",
+  "id": "ng",
+  "carta": "566",
+  "source": "overture",
+  "name": {
+    "pt": "Nigéria",
+    "en": "Nigeria",
+    "es": "Nigeria"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    },
+    "en": {
+      "one": "state",
+      "many": "states"
+    },
+    "es": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    }
+  },
+  "regions": {
+    "nc": {
+      "pt": "Centro-Norte",
+      "en": "North Central",
+      "es": "Centro-Norte"
+    },
+    "ne": {
+      "pt": "Nordeste",
+      "en": "North East",
+      "es": "Noreste"
+    },
+    "nw": {
+      "pt": "Noroeste",
+      "en": "North West",
+      "es": "Noroeste"
+    },
+    "se": {
+      "pt": "Sudeste",
+      "en": "South East",
+      "es": "Sureste"
+    },
+    "ss": {
+      "pt": "Sul-Sul",
+      "en": "South South",
+      "es": "Sur-Sur"
+    },
+    "sw": {
+      "pt": "Sudoeste",
+      "en": "South West",
+      "es": "Suroeste"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 566)",
+      "use": "a terra de Nigéria, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 37 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AB",
+      "name": "Abia",
+      "capital": "Umuahia",
+      "region": "se"
+    },
+    {
+      "code": "AD",
+      "name": "Adamawa",
+      "capital": "Yola",
+      "region": "ne"
+    },
+    {
+      "code": "AK",
+      "name": "Akwa Ibom",
+      "capital": "Uyo",
+      "region": "ss"
+    },
+    {
+      "code": "AN",
+      "name": "Anambra",
+      "capital": "Awka",
+      "region": "se"
+    },
+    {
+      "code": "BA",
+      "name": "Bauchi",
+      "capital": "Bauchi",
+      "region": "ne"
+    },
+    {
+      "code": "BE",
+      "name": "Benue",
+      "capital": "Makurdi",
+      "region": "nc"
+    },
+    {
+      "code": "BO",
+      "name": "Borno",
+      "capital": "Maiduguri",
+      "region": "ne"
+    },
+    {
+      "code": "BY",
+      "name": "Bayelsa",
+      "capital": {
+        "pt": "Yenagoa",
+        "en": "Yenegoa",
+        "es": "Yenagoa"
+      },
+      "capAl": [
+        "Yenegoa"
+      ],
+      "region": "ss"
+    },
+    {
+      "code": "CR",
+      "name": "Cross River",
+      "capital": {
+        "pt": "Calabar (Nigéria)",
+        "en": "Calabar",
+        "es": "Calabar"
+      },
+      "region": "ss"
+    },
+    {
+      "code": "DE",
+      "name": "Delta",
+      "alias": [
+        "Delta State"
+      ],
+      "capital": "Asaba",
+      "region": "ss"
+    },
+    {
+      "code": "EB",
+      "name": "Ebonyi",
+      "capital": "Abakaliki",
+      "region": "se"
+    },
+    {
+      "code": "ED",
+      "name": "Edo",
+      "capital": {
+        "pt": "Benin City",
+        "en": "Benin City",
+        "es": "Ciudad de Benín"
+      },
+      "capAl": [
+        "Cidade do Benim",
+        "Benin"
+      ],
+      "region": "ss"
+    },
+    {
+      "code": "EK",
+      "name": "Ekiti",
+      "capital": "Ado Ekiti",
+      "region": "sw"
+    },
+    {
+      "code": "EN",
+      "name": "Enugu",
+      "capital": "Enugu",
+      "region": "se"
+    },
+    {
+      "code": "FC",
+      "name": "Federal Capital Territory",
+      "names": {
+        "pt": "Território da Capital Federal",
+        "es": "Territorio de la Capital Federal"
+      },
+      "alias": [
+        "FCT"
+      ],
+      "capital": "Abuja",
+      "capAl": [
+        "Abuya"
+      ],
+      "region": "nc"
+    },
+    {
+      "code": "GO",
+      "name": "Gombe",
+      "capital": "Gombe",
+      "region": "ne"
+    },
+    {
+      "code": "IM",
+      "name": "Imo",
+      "capital": "Owerri",
+      "region": "se"
+    },
+    {
+      "code": "JI",
+      "name": "Jigawa",
+      "capital": "Dutse",
+      "region": "nw"
+    },
+    {
+      "code": "KD",
+      "name": "Kaduna",
+      "capital": "Kaduna",
+      "region": "nw"
+    },
+    {
+      "code": "KE",
+      "name": "Kebbi",
+      "capital": "Birnin Kebbi",
+      "region": "nw"
+    },
+    {
+      "code": "KN",
+      "name": "Kano",
+      "alias": [
+        "Kano State"
+      ],
+      "capital": "Kano",
+      "region": "nw"
+    },
+    {
+      "code": "KO",
+      "name": "Kogi",
+      "capital": "Lokoja",
+      "region": "nc"
+    },
+    {
+      "code": "KT",
+      "name": "Katsina",
+      "capital": "Katsina",
+      "region": "nw"
+    },
+    {
+      "code": "KW",
+      "name": "Kwara",
+      "capital": "Ilorin",
+      "region": "nc"
+    },
+    {
+      "code": "LA",
+      "name": "Lagos",
+      "alias": [
+        "Lagos State"
+      ],
+      "capital": "Ikeja",
+      "region": "sw"
+    },
+    {
+      "code": "NA",
+      "name": "Nasarawa",
+      "capital": "Lafia",
+      "region": "nc"
+    },
+    {
+      "code": "NI",
+      "name": "Niger",
+      "names": {
+        "pt": "Níger",
+        "es": "Níger"
+      },
+      "alias": [
+        "Niger State"
+      ],
+      "capital": "Minna",
+      "region": "nc"
+    },
+    {
+      "code": "OG",
+      "name": "Ogun",
+      "capital": "Abeokuta",
+      "region": "sw"
+    },
+    {
+      "code": "ON",
+      "name": "Ondo",
+      "capital": "Akure",
+      "region": "sw"
+    },
+    {
+      "code": "OS",
+      "name": "Osun",
+      "capital": "Osogbo",
+      "region": "sw"
+    },
+    {
+      "code": "OY",
+      "name": "Oyo",
+      "capital": {
+        "pt": "Ibadan",
+        "en": "Ibadan",
+        "es": "Ibadán"
+      },
+      "capAl": [
+        "Ibadã"
+      ],
+      "region": "sw"
+    },
+    {
+      "code": "PL",
+      "name": "Plateau",
+      "capital": "Jos",
+      "region": "nc"
+    },
+    {
+      "code": "RI",
+      "name": "Rivers",
+      "alias": [
+        "Rivers State"
+      ],
+      "capital": "Port Harcourt",
+      "region": "ss"
+    },
+    {
+      "code": "SO",
+      "name": "Sokoto",
+      "capital": "Sokoto",
+      "region": "nw"
+    },
+    {
+      "code": "TA",
+      "name": "Taraba",
+      "capital": "Jalingo",
+      "region": "ne"
+    },
+    {
+      "code": "YO",
+      "name": "Yobe",
+      "capital": "Damaturu",
+      "region": "ne"
+    },
+    {
+      "code": "ZA",
+      "name": "Zamfara",
+      "capital": "Gusau",
+      "region": "nw"
+    }
+  ],
+  "probes": [
+    [
+      "Umuahia",
+      7.4833,
+      5.5333,
+      "ng-ab"
+    ],
+    [
+      "Yola",
+      12.4833,
+      9.2,
+      "ng-ad"
+    ],
+    [
+      "Uyo",
+      7.9333,
+      5.05,
+      "ng-ak"
+    ],
+    [
+      "Awka",
+      7.0821,
+      6.222,
+      "ng-an"
+    ],
+    [
+      "Bauchi",
+      9.8442,
+      10.3158,
+      "ng-ba"
+    ],
+    [
+      "Makurdi",
+      8.5361,
+      7.7306,
+      "ng-be"
+    ],
+    [
+      "Maiduguri",
+      13.15,
+      11.8333,
+      "ng-bo"
+    ],
+    [
+      "Yenagoa",
+      6.2639,
+      4.925,
+      "ng-by"
+    ],
+    [
+      "Calabar (Nigéria)",
+      8.325,
+      4.95,
+      "ng-cr"
+    ],
+    [
+      "Asaba",
+      6.7333,
+      6.1833,
+      "ng-de"
+    ],
+    [
+      "Abakaliki",
+      8.1,
+      6.3333,
+      "ng-eb"
+    ],
+    [
+      "Benin City",
+      5.6145,
+      6.3176,
+      "ng-ed"
+    ],
+    [
+      "Ado Ekiti",
+      5.2167,
+      7.6167,
+      "ng-ek"
+    ],
+    [
+      "Enugu",
+      7.4942,
+      6.4403,
+      "ng-en"
+    ],
+    [
+      "Abuja",
+      7.4914,
+      9.0556,
+      "ng-fc"
+    ],
+    [
+      "Gombe",
+      11.1667,
+      10.2833,
+      "ng-go"
+    ],
+    [
+      "Owerri",
+      7.0333,
+      5.4833,
+      "ng-im"
+    ],
+    [
+      "Dutse",
+      9.3333,
+      11.7,
+      "ng-ji"
+    ],
+    [
+      "Kaduna",
+      7.4165,
+      10.5105,
+      "ng-kd"
+    ],
+    [
+      "Birnin Kebbi",
+      4.1956,
+      12.4318,
+      "ng-ke"
+    ],
+    [
+      "Kano",
+      8.5167,
+      12.0,
+      "ng-kn"
+    ],
+    [
+      "Lokoja",
+      6.7442,
+      7.8019,
+      "ng-ko"
+    ],
+    [
+      "Katsina",
+      7.6008,
+      12.9889,
+      "ng-kt"
+    ],
+    [
+      "Ilorin",
+      4.55,
+      8.5,
+      "ng-kw"
+    ],
+    [
+      "Ikeja",
+      3.3333,
+      6.5833,
+      "ng-la"
+    ],
+    [
+      "Lafia",
+      8.5167,
+      8.5,
+      "ng-na"
+    ],
+    [
+      "Minna",
+      6.5569,
+      9.6139,
+      "ng-ni"
+    ],
+    [
+      "Abeokuta",
+      3.35,
+      7.15,
+      "ng-og"
+    ],
+    [
+      "Akure",
+      5.195,
+      7.25,
+      "ng-on"
+    ],
+    [
+      "Osogbo",
+      4.5667,
+      7.7667,
+      "ng-os"
+    ],
+    [
+      "Ibadan",
+      3.9058,
+      7.3775,
+      "ng-oy"
+    ],
+    [
+      "Jos",
+      8.8833,
+      9.9333,
+      "ng-pl"
+    ],
+    [
+      "Port Harcourt",
+      7.0163,
+      4.7655,
+      "ng-ri"
+    ],
+    [
+      "Sokoto",
+      5.2339,
+      13.0622,
+      "ng-so"
+    ],
+    [
+      "Jalingo",
+      11.3667,
+      8.9,
+      "ng-ta"
+    ],
+    [
+      "Damaturu",
+      11.9667,
+      11.75,
+      "ng-yo"
+    ],
+    [
+      "Gusau",
+      6.6745,
+      12.1628,
+      "ng-za"
+    ]
+  ]
+}

@@ -1,0 +1,444 @@
+{
+ "source": "Etiópia: as 12 regiões e as 2 cidades autônomas (Adis Abeba e Dire Dawa, sem capital). As regiões Etiópia Central e Etiópia do Sul (2023, da divisão da antiga Região das Nações do Sul) não têm código ISO no Overture: são achadas pelo nome (byName) e levam os códigos CE e SE, nossos. Oromia fica fora dos modos de capital (a capital dela é Adis Abeba, que é outra unidade). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Oeste, Centro, Leste e Sul, agrupamento nosso.",
+ "country": "et",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "center": {
+   "pt": "Centro",
+   "en": "Centre",
+   "es": "Centro"
+  },
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  }
+ },
+ "units": {
+  "et-aa": {
+   "code": "AA",
+   "ref": "ET-AA",
+   "name": {
+    "pt": "Adis Abeba",
+    "en": "Addis Ababa",
+    "es": "Adís Abeba"
+   },
+   "alias": [
+    "Addis Abeba",
+    "Finfinne"
+   ],
+   "region": "center",
+   "area": 541,
+   "ll": [
+    8.9852,
+    38.7808
+   ],
+   "bbox": [
+    38.64,
+    8.833,
+    38.908,
+    9.099
+   ],
+   "borders": [
+    "et-or"
+   ]
+  },
+  "et-af": {
+   "code": "AF",
+   "ref": "ET-AF",
+   "name": {
+    "pt": "Afar",
+    "en": "Afar",
+    "es": "Afar"
+   },
+   "capital": "Semera",
+   "region": "north",
+   "area": 95467,
+   "ll": [
+    12.4296,
+    41.0053
+   ],
+   "bbox": [
+    39.651,
+    8.842,
+    42.404,
+    14.549
+   ],
+   "borders": [
+    "et-am",
+    "et-or",
+    "et-so",
+    "et-ti"
+   ]
+  },
+  "et-am": {
+   "code": "AM",
+   "ref": "ET-AM",
+   "name": {
+    "pt": "Amhara",
+    "en": "Amhara",
+    "es": "Amhara"
+   },
+   "capital": "Bahir Dar",
+   "region": "north",
+   "area": 153183,
+   "ll": [
+    11.4759,
+    38.5556
+   ],
+   "bbox": [
+    35.256,
+    8.716,
+    40.213,
+    13.781
+   ],
+   "borders": [
+    "et-af",
+    "et-be",
+    "et-or",
+    "et-ti"
+   ]
+  },
+  "et-be": {
+   "code": "BE",
+   "ref": "ET-BE",
+   "name": {
+    "pt": "Benishangul-Gumuz",
+    "en": "Benishangul-Gumuz",
+    "es": "Benishangul-Gumuz"
+   },
+   "capital": "Asosa",
+   "capAl": [
+    "Assosa"
+   ],
+   "region": "west",
+   "area": 50396,
+   "ll": [
+    10.5511,
+    35.5951
+   ],
+   "bbox": [
+    34.102,
+    8.963,
+    36.699,
+    11.985
+   ],
+   "borders": [
+    "et-am",
+    "et-or"
+   ]
+  },
+  "et-ce": {
+   "code": "CE",
+   "ref": "ET-CE",
+   "name": {
+    "pt": "Etiópia Central",
+    "en": "Central Ethiopia",
+    "es": "Etiopía Central"
+   },
+   "capital": "Hosaena",
+   "capAl": [
+    "Hossana",
+    "Hosanna"
+   ],
+   "region": "center",
+   "area": 15208,
+   "ll": [
+    7.619,
+    37.8959
+   ],
+   "bbox": [
+    37.332,
+    7.058,
+    38.717,
+    8.459
+   ],
+   "borders": [
+    "et-or",
+    "et-se",
+    "et-sw"
+   ]
+  },
+  "et-dd": {
+   "code": "DD",
+   "ref": "ET-DD",
+   "name": {
+    "pt": "Dire Dawa",
+    "en": "Dire Dawa",
+    "es": "Dire Dawa"
+   },
+   "region": "east",
+   "area": 1058,
+   "ll": [
+    9.5796,
+    41.8926
+   ],
+   "bbox": [
+    41.729,
+    9.472,
+    42.341,
+    9.785
+   ],
+   "borders": [
+    "et-or",
+    "et-so"
+   ]
+  },
+  "et-ga": {
+   "code": "GA",
+   "ref": "ET-GA",
+   "name": {
+    "pt": "Gambela",
+    "en": "Gambela",
+    "es": "Gambela"
+   },
+   "capital": "Gambela",
+   "region": "west",
+   "area": 27039,
+   "ll": [
+    7.8174,
+    34.3825
+   ],
+   "bbox": [
+    32.998,
+    7.0,
+    35.393,
+    8.71
+   ],
+   "borders": [
+    "et-or",
+    "et-sw"
+   ]
+  },
+  "et-ha": {
+   "code": "HA",
+   "ref": "ET-HA",
+   "name": {
+    "pt": "Harari",
+    "en": "Harari",
+    "es": "Harari"
+   },
+   "capital": "Harar",
+   "region": "east",
+   "area": 376,
+   "ll": [
+    9.29,
+    42.1681
+   ],
+   "bbox": [
+    42.06,
+    9.187,
+    42.273,
+    9.39
+   ],
+   "borders": [
+    "et-or"
+   ]
+  },
+  "et-or": {
+   "code": "OR",
+   "ref": "ET-OR",
+   "name": {
+    "pt": "Oromia",
+    "en": "Oromia",
+    "es": "Oromía"
+   },
+   "region": "center",
+   "area": 323603,
+   "ll": [
+    7.5199,
+    40.0287
+   ],
+   "bbox": [
+    34.146,
+    3.51,
+    42.979,
+    10.391
+   ],
+   "borders": [
+    "et-aa",
+    "et-af",
+    "et-am",
+    "et-be",
+    "et-ce",
+    "et-dd",
+    "et-ga",
+    "et-ha",
+    "et-se",
+    "et-si",
+    "et-so",
+    "et-sw"
+   ]
+  },
+  "et-se": {
+   "code": "SE",
+   "ref": "ET-SE",
+   "name": {
+    "pt": "Etiópia do Sul",
+    "en": "South Ethiopia",
+    "es": "Etiopía Meridional"
+   },
+   "capital": "Wolaita Sodo",
+   "capAl": [
+    "Sodo"
+   ],
+   "region": "south",
+   "area": 47494,
+   "ll": [
+    5.8966,
+    36.8356
+   ],
+   "bbox": [
+    35.737,
+    4.44,
+    38.44,
+    7.192
+   ],
+   "borders": [
+    "et-ce",
+    "et-or",
+    "et-si",
+    "et-sw"
+   ]
+  },
+  "et-si": {
+   "code": "SI",
+   "ref": "ET-SI",
+   "name": {
+    "pt": "Sidama",
+    "en": "Sidama",
+    "es": "Sidama"
+   },
+   "capital": "Hawassa",
+   "capAl": [
+    "Awassa",
+    "Awasa",
+    "Hawaasa"
+   ],
+   "region": "south",
+   "area": 6878,
+   "ll": [
+    6.7241,
+    38.3615
+   ],
+   "bbox": [
+    37.906,
+    6.139,
+    39.133,
+    7.166
+   ],
+   "borders": [
+    "et-or",
+    "et-se"
+   ]
+  },
+  "et-so": {
+   "code": "SO",
+   "ref": "ET-SO",
+   "name": {
+    "pt": "Somali",
+    "en": "Somali",
+    "es": "Somalí"
+   },
+   "alias": [
+    "Região Somali"
+   ],
+   "capital": "Jijiga",
+   "capAl": [
+    "Djidjiga"
+   ],
+   "region": "east",
+   "area": 311534,
+   "ll": [
+    6.9513,
+    44.1447
+   ],
+   "bbox": [
+    39.092,
+    3.397,
+    47.982,
+    11.096
+   ],
+   "borders": [
+    "et-af",
+    "et-dd",
+    "et-or"
+   ]
+  },
+  "et-sw": {
+   "code": "SW",
+   "ref": "ET-SW",
+   "name": {
+    "pt": "Sudoeste da Etiópia",
+    "en": "South West Ethiopia",
+    "es": "Suroeste de Etiopía"
+   },
+   "capital": "Bonga",
+   "region": "west",
+   "area": 42478,
+   "ll": [
+    6.9837,
+    35.9509
+   ],
+   "bbox": [
+    34.186,
+    5.335,
+    37.533,
+    8.084
+   ],
+   "borders": [
+    "et-ce",
+    "et-ga",
+    "et-or",
+    "et-se"
+   ]
+  },
+  "et-ti": {
+   "code": "TI",
+   "ref": "ET-TI",
+   "name": {
+    "pt": "Tigré",
+    "en": "Tigray",
+    "es": "Tigré"
+   },
+   "alias": [
+    "Tigray"
+   ],
+   "capital": "Mekelle",
+   "capAl": [
+    "Mekele",
+    "Mek'ele"
+   ],
+   "region": "north",
+   "area": 51963,
+   "ll": [
+    13.8038,
+    39.1954
+   ],
+   "bbox": [
+    36.446,
+    12.256,
+    39.992,
+    14.894
+   ],
+   "borders": [
+    "et-af",
+    "et-am"
+   ]
+  }
+ }
+}

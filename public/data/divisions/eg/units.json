@@ -1,0 +1,917 @@
+{
+ "source": "Egito: as 27 províncias (governadorias). O triângulo de Halaib (linha do Overture sem código) vai para o Mar Vermelho por `fill` com caixa, como o Egito o administra e como o mapa-múndi do jogo o mostra. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Delta e Cairo, Canal e Sinai, Alto Egito e Desertos, agrupamento nosso.",
+ "country": "eg",
+ "regions": {
+  "delta": {
+   "pt": "Delta e Cairo",
+   "en": "Delta and Cairo",
+   "es": "Delta y El Cairo"
+  },
+  "canal": {
+   "pt": "Canal e Sinai",
+   "en": "Canal and Sinai",
+   "es": "Canal y Sinaí"
+  },
+  "upper": {
+   "pt": "Alto Egito",
+   "en": "Upper Egypt",
+   "es": "Alto Egipto"
+  },
+  "desert": {
+   "pt": "Desertos",
+   "en": "Deserts",
+   "es": "Desiertos"
+  }
+ },
+ "units": {
+  "eg-alx": {
+   "code": "ALX",
+   "ref": "EG-ALX",
+   "name": {
+    "pt": "Alexandria",
+    "en": "Alexandria",
+    "es": "Alejandría"
+   },
+   "capital": {
+    "pt": "Alexandria",
+    "en": "Alexandria",
+    "es": "Alejandría"
+   },
+   "region": "delta",
+   "area": 2599,
+   "ll": [
+    30.6657,
+    29.7721
+   ],
+   "bbox": [
+    29.588,
+    30.36,
+    30.093,
+    31.358
+   ],
+   "borders": [
+    "eg-bh",
+    "eg-mt"
+   ]
+  },
+  "eg-asn": {
+   "code": "ASN",
+   "ref": "EG-ASN",
+   "name": {
+    "pt": "Assuã",
+    "en": "Aswan",
+    "es": "Asuán"
+   },
+   "alias": [
+    "Assuão"
+   ],
+   "capital": {
+    "pt": "Assuã",
+    "en": "Aswan",
+    "es": "Asuán"
+   },
+   "capAl": [
+    "Assuão"
+   ],
+   "region": "upper",
+   "area": 53092,
+   "ll": [
+    24.5254,
+    32.9076
+   ],
+   "bbox": [
+    31.098,
+    22.0,
+    33.47,
+    25.307
+   ],
+   "borders": [
+    "eg-ba",
+    "eg-lx",
+    "eg-wad"
+   ]
+  },
+  "eg-ast": {
+   "code": "AST",
+   "ref": "EG-AST",
+   "name": {
+    "pt": "Assiut",
+    "en": "Asyut",
+    "es": "Asiut"
+   },
+   "capital": {
+    "pt": "Assiut",
+    "en": "Asyut",
+    "es": "Asiut"
+   },
+   "region": "upper",
+   "area": 17128,
+   "ll": [
+    27.2592,
+    31.093
+   ],
+   "bbox": [
+    30.456,
+    26.77,
+    32.754,
+    27.91
+   ],
+   "borders": [
+    "eg-ba",
+    "eg-mn",
+    "eg-shg",
+    "eg-wad"
+   ]
+  },
+  "eg-ba": {
+   "code": "BA",
+   "ref": "EG-BA",
+   "name": {
+    "pt": "Mar Vermelho",
+    "en": "Red Sea",
+    "es": "Mar Rojo"
+   },
+   "capital": "Hurghada",
+   "capAl": [
+    "Hurgada"
+   ],
+   "region": "desert",
+   "area": 122006,
+   "ll": [
+    23.0663,
+    34.4937
+   ],
+   "bbox": [
+    31.788,
+    21.994,
+    36.893,
+    29.137
+   ],
+   "borders": [
+    "eg-asn",
+    "eg-ast",
+    "eg-bns",
+    "eg-kn",
+    "eg-lx",
+    "eg-mn",
+    "eg-shg",
+    "eg-suz"
+   ]
+  },
+  "eg-bh": {
+   "code": "BH",
+   "ref": "EG-BH",
+   "name": {
+    "pt": "Beheira",
+    "en": "Beheira",
+    "es": "Beheira"
+   },
+   "alias": [
+    "Buhaira"
+   ],
+   "capital": "Damanhur",
+   "region": "delta",
+   "area": 10671,
+   "ll": [
+    30.902,
+    30.3154
+   ],
+   "bbox": [
+    29.617,
+    29.92,
+    30.851,
+    31.467
+   ],
+   "borders": [
+    "eg-alx",
+    "eg-gh",
+    "eg-gz",
+    "eg-kfs",
+    "eg-mnf",
+    "eg-mt"
+   ]
+  },
+  "eg-bns": {
+   "code": "BNS",
+   "ref": "EG-BNS",
+   "name": {
+    "pt": "Beni Suef",
+    "en": "Beni Suef",
+    "es": "Beni Suef"
+   },
+   "capital": "Beni Suef",
+   "region": "upper",
+   "area": 11018,
+   "ll": [
+    28.7285,
+    31.4703
+   ],
+   "bbox": [
+    29.78,
+    28.269,
+    31.971,
+    29.436
+   ],
+   "borders": [
+    "eg-ba",
+    "eg-fym",
+    "eg-gz",
+    "eg-mn",
+    "eg-suz"
+   ]
+  },
+  "eg-c": {
+   "code": "C",
+   "ref": "EG-C",
+   "name": {
+    "pt": "Cairo",
+    "en": "Cairo",
+    "es": "El Cairo"
+   },
+   "capital": {
+    "pt": "Cairo",
+    "en": "Cairo",
+    "es": "El Cairo"
+   },
+   "region": "delta",
+   "area": 3011,
+   "ll": [
+    29.9818,
+    31.6908
+   ],
+   "bbox": [
+    31.215,
+    29.748,
+    31.909,
+    30.321
+   ],
+   "borders": [
+    "eg-gz",
+    "eg-is",
+    "eg-kb",
+    "eg-shr",
+    "eg-suz"
+   ]
+  },
+  "eg-dk": {
+   "code": "DK",
+   "ref": "EG-DK",
+   "name": {
+    "pt": "Dakahlia",
+    "en": "Dakahlia",
+    "es": "Dacalia"
+   },
+   "capital": {
+    "pt": "Mansura",
+    "en": "Mansoura",
+    "es": "El Mansura"
+   },
+   "capAl": [
+    "Almançora",
+    "Mansourah"
+   ],
+   "region": "delta",
+   "area": 3851,
+   "ll": [
+    30.9677,
+    31.4876
+   ],
+   "bbox": [
+    31.2,
+    30.558,
+    32.202,
+    31.516
+   ],
+   "borders": [
+    "eg-dt",
+    "eg-gh",
+    "eg-kb",
+    "eg-kfs",
+    "eg-pts",
+    "eg-shr"
+   ]
+  },
+  "eg-dt": {
+   "code": "DT",
+   "ref": "EG-DT",
+   "name": {
+    "pt": "Damieta",
+    "en": "Damietta",
+    "es": "Damieta"
+   },
+   "capital": {
+    "pt": "Damieta",
+    "en": "Damietta",
+    "es": "Damieta"
+   },
+   "region": "delta",
+   "area": 964,
+   "ll": [
+    31.334,
+    31.688
+   ],
+   "bbox": [
+    31.491,
+    31.105,
+    31.965,
+    31.528
+   ],
+   "borders": [
+    "eg-dk"
+   ]
+  },
+  "eg-fym": {
+   "code": "FYM",
+   "ref": "EG-FYM",
+   "name": {
+    "pt": "Faium",
+    "en": "Faiyum",
+    "es": "Fayún"
+   },
+   "alias": [
+    "Fayoum"
+   ],
+   "capital": {
+    "pt": "Faium",
+    "en": "Faiyum",
+    "es": "Fayún"
+   },
+   "capAl": [
+    "Fayoum"
+   ],
+   "region": "upper",
+   "area": 5467,
+   "ll": [
+    29.2022,
+    30.4246
+   ],
+   "bbox": [
+    29.85,
+    28.962,
+    31.123,
+    29.716
+   ],
+   "borders": [
+    "eg-bns",
+    "eg-gz"
+   ]
+  },
+  "eg-gh": {
+   "code": "GH",
+   "ref": "EG-GH",
+   "name": {
+    "pt": "Gharbia",
+    "en": "Gharbia",
+    "es": "Gharbia"
+   },
+   "capital": "Tanta",
+   "region": "delta",
+   "area": 1846,
+   "ll": [
+    30.8273,
+    31.0533
+   ],
+   "bbox": [
+    30.747,
+    30.575,
+    31.301,
+    31.104
+   ],
+   "borders": [
+    "eg-bh",
+    "eg-dk",
+    "eg-kfs",
+    "eg-mnf"
+   ]
+  },
+  "eg-gz": {
+   "code": "GZ",
+   "ref": "EG-GZ",
+   "name": {
+    "pt": "Gizé",
+    "en": "Giza",
+    "es": "Guiza"
+   },
+   "capital": {
+    "pt": "Gizé",
+    "en": "Giza",
+    "es": "Guiza"
+   },
+   "region": "delta",
+   "area": 38239,
+   "ll": [
+    28.2401,
+    28.3787
+   ],
+   "bbox": [
+    27.311,
+    27.738,
+    31.906,
+    30.34
+   ],
+   "borders": [
+    "eg-bh",
+    "eg-bns",
+    "eg-c",
+    "eg-fym",
+    "eg-kb",
+    "eg-mn",
+    "eg-mnf",
+    "eg-mt",
+    "eg-suz",
+    "eg-wad"
+   ]
+  },
+  "eg-is": {
+   "code": "IS",
+   "ref": "EG-IS",
+   "name": {
+    "pt": "Ismaília",
+    "en": "Ismailia",
+    "es": "Ismailía"
+   },
+   "capital": {
+    "pt": "Ismaília",
+    "en": "Ismailia",
+    "es": "Ismailía"
+   },
+   "region": "canal",
+   "area": 4342,
+   "ll": [
+    30.391,
+    31.9771
+   ],
+   "bbox": [
+    31.746,
+    30.203,
+    32.782,
+    30.964
+   ],
+   "borders": [
+    "eg-c",
+    "eg-pts",
+    "eg-shr",
+    "eg-sin",
+    "eg-suz"
+   ]
+  },
+  "eg-js": {
+   "code": "JS",
+   "ref": "EG-JS",
+   "name": {
+    "pt": "Sinai do Sul",
+    "en": "South Sinai",
+    "es": "Sinaí del Sur"
+   },
+   "capital": "El Tor",
+   "capAl": [
+    "Tor"
+   ],
+   "region": "canal",
+   "area": 29081,
+   "ll": [
+    28.9878,
+    33.9139
+   ],
+   "bbox": [
+    32.632,
+    27.724,
+    34.903,
+    29.923
+   ],
+   "borders": [
+    "eg-sin",
+    "eg-suz"
+   ]
+  },
+  "eg-kb": {
+   "code": "KB",
+   "ref": "EG-KB",
+   "name": {
+    "pt": "Qalyubia",
+    "en": "Qalyubia",
+    "es": "Caliubia"
+   },
+   "capital": "Benha",
+   "capAl": [
+    "Banha"
+   ],
+   "region": "delta",
+   "area": 1173,
+   "ll": [
+    30.2585,
+    31.2446
+   ],
+   "bbox": [
+    31.055,
+    30.093,
+    31.63,
+    30.575
+   ],
+   "borders": [
+    "eg-c",
+    "eg-dk",
+    "eg-gz",
+    "eg-mnf",
+    "eg-shr"
+   ]
+  },
+  "eg-kfs": {
+   "code": "KFS",
+   "ref": "EG-KFS",
+   "name": {
+    "pt": "Kafr el-Sheikh",
+    "en": "Kafr el-Sheikh",
+    "es": "Kafr el Sheij"
+   },
+   "capital": {
+    "pt": "Kafr el-Sheikh",
+    "en": "Kafr el-Sheikh",
+    "es": "Kafr el Sheij"
+   },
+   "region": "delta",
+   "area": 3861,
+   "ll": [
+    31.2054,
+    30.876
+   ],
+   "bbox": [
+    30.368,
+    30.963,
+    31.378,
+    31.602
+   ],
+   "borders": [
+    "eg-bh",
+    "eg-dk",
+    "eg-gh"
+   ]
+  },
+  "eg-kn": {
+   "code": "KN",
+   "ref": "EG-KN",
+   "name": {
+    "pt": "Qena",
+    "en": "Qena",
+    "es": "Quena"
+   },
+   "alias": [
+    "Qina"
+   ],
+   "capital": {
+    "pt": "Qena",
+    "en": "Qena",
+    "es": "Quena"
+   },
+   "capAl": [
+    "Qina"
+   ],
+   "region": "upper",
+   "area": 9271,
+   "ll": [
+    26.1988,
+    33.0644
+   ],
+   "bbox": [
+    31.93,
+    25.693,
+    33.566,
+    26.8
+   ],
+   "borders": [
+    "eg-ba",
+    "eg-lx",
+    "eg-shg",
+    "eg-wad"
+   ]
+  },
+  "eg-lx": {
+   "code": "LX",
+   "ref": "EG-LX",
+   "name": {
+    "pt": "Luxor",
+    "en": "Luxor",
+    "es": "Lúxor"
+   },
+   "capital": "Luxor",
+   "region": "upper",
+   "area": 4301,
+   "ll": [
+    25.5196,
+    32.6757
+   ],
+   "bbox": [
+    32.414,
+    25.159,
+    33.47,
+    25.827
+   ],
+   "borders": [
+    "eg-asn",
+    "eg-ba",
+    "eg-kn",
+    "eg-wad"
+   ]
+  },
+  "eg-mn": {
+   "code": "MN",
+   "ref": "EG-MN",
+   "name": {
+    "pt": "Minya",
+    "en": "Minya",
+    "es": "Menia"
+   },
+   "capital": {
+    "pt": "Minya",
+    "en": "Minya",
+    "es": "Menia"
+   },
+   "region": "upper",
+   "area": 29161,
+   "ll": [
+    28.2498,
+    30.5844
+   ],
+   "bbox": [
+    28.625,
+    27.618,
+    32.654,
+    28.803
+   ],
+   "borders": [
+    "eg-ast",
+    "eg-ba",
+    "eg-bns",
+    "eg-gz",
+    "eg-wad"
+   ]
+  },
+  "eg-mnf": {
+   "code": "MNF",
+   "ref": "EG-MNF",
+   "name": {
+    "pt": "Monufia",
+    "en": "Monufia",
+    "es": "Menufia"
+   },
+   "capital": {
+    "pt": "Shibin el-Kom",
+    "en": "Shibin el-Kom",
+    "es": "Shibin el-Kom"
+   },
+   "capAl": [
+    "Xibin El Kom"
+   ],
+   "region": "delta",
+   "area": 2387,
+   "ll": [
+    30.5196,
+    30.9911
+   ],
+   "bbox": [
+    30.354,
+    30.171,
+    31.258,
+    30.702
+   ],
+   "borders": [
+    "eg-bh",
+    "eg-gh",
+    "eg-gz",
+    "eg-kb"
+   ]
+  },
+  "eg-mt": {
+   "code": "MT",
+   "ref": "EG-MT",
+   "name": {
+    "pt": "Matruh",
+    "en": "Matrouh",
+    "es": "Matruh"
+   },
+   "capital": "Marsa Matruh",
+   "capAl": [
+    "Marsa Matrouh"
+   ],
+   "region": "desert",
+   "area": 154534,
+   "ll": [
+    29.7704,
+    26.5739
+   ],
+   "bbox": [
+    24.65,
+    27.738,
+    30.311,
+    31.671
+   ],
+   "borders": [
+    "eg-alx",
+    "eg-bh",
+    "eg-gz",
+    "eg-wad"
+   ]
+  },
+  "eg-pts": {
+   "code": "PTS",
+   "ref": "EG-PTS",
+   "name": {
+    "pt": "Porto Said",
+    "en": "Port Said",
+    "es": "Puerto Saíd"
+   },
+   "capital": {
+    "pt": "Porto Said",
+    "en": "Port Said",
+    "es": "Puerto Saíd"
+   },
+   "region": "canal",
+   "area": 1334,
+   "ll": [
+    31.0329,
+    32.4258
+   ],
+   "bbox": [
+    32.034,
+    30.868,
+    32.594,
+    31.292
+   ],
+   "borders": [
+    "eg-dk",
+    "eg-is",
+    "eg-shr",
+    "eg-sin"
+   ]
+  },
+  "eg-shg": {
+   "code": "SHG",
+   "ref": "EG-SHG",
+   "name": {
+    "pt": "Sohag",
+    "en": "Sohag",
+    "es": "Suhag"
+   },
+   "capital": {
+    "pt": "Sohag",
+    "en": "Sohag",
+    "es": "Suhag"
+   },
+   "region": "upper",
+   "area": 10191,
+   "ll": [
+    26.6393,
+    32.0446
+   ],
+   "bbox": [
+    31.296,
+    26.192,
+    32.799,
+    27.374
+   ],
+   "borders": [
+    "eg-ast",
+    "eg-ba",
+    "eg-kn",
+    "eg-wad"
+   ]
+  },
+  "eg-shr": {
+   "code": "SHR",
+   "ref": "EG-SHR",
+   "name": {
+    "pt": "Sharqia",
+    "en": "Sharqia",
+    "es": "Sharqia"
+   },
+   "alias": [
+    "Xarqia"
+   ],
+   "capital": "Zagazig",
+   "region": "delta",
+   "area": 4800,
+   "ll": [
+    30.7909,
+    31.9353
+   ],
+   "bbox": [
+    31.279,
+    30.198,
+    32.225,
+    31.062
+   ],
+   "borders": [
+    "eg-c",
+    "eg-dk",
+    "eg-is",
+    "eg-kb",
+    "eg-pts"
+   ]
+  },
+  "eg-sin": {
+   "code": "SIN",
+   "ref": "EG-SIN",
+   "name": {
+    "pt": "Sinai do Norte",
+    "en": "North Sinai",
+    "es": "Sinaí del Norte"
+   },
+   "capital": {
+    "pt": "El Arish",
+    "en": "Arish",
+    "es": "El Arish"
+   },
+   "capAl": [
+    "Arish",
+    "Alarixe"
+   ],
+   "region": "canal",
+   "area": 27706,
+   "ll": [
+    30.4783,
+    33.8586
+   ],
+   "bbox": [
+    32.574,
+    29.534,
+    34.879,
+    31.323
+   ],
+   "borders": [
+    "eg-is",
+    "eg-js",
+    "eg-pts",
+    "eg-suz"
+   ]
+  },
+  "eg-suz": {
+   "code": "SUZ",
+   "ref": "EG-SUZ",
+   "name": {
+    "pt": "Suez",
+    "en": "Suez",
+    "es": "Suez"
+   },
+   "capital": "Suez",
+   "region": "canal",
+   "area": 9043,
+   "ll": [
+    29.321,
+    32.168
+   ],
+   "bbox": [
+    31.844,
+    28.99,
+    32.833,
+    30.262
+   ],
+   "borders": [
+    "eg-ba",
+    "eg-bns",
+    "eg-c",
+    "eg-gz",
+    "eg-is",
+    "eg-js",
+    "eg-sin"
+   ]
+  },
+  "eg-wad": {
+   "code": "WAD",
+   "ref": "EG-WAD",
+   "name": {
+    "pt": "Vale Novo",
+    "en": "New Valley",
+    "es": "Nuevo Valle"
+   },
+   "alias": [
+    "Novo Vale"
+   ],
+   "capital": "Kharga",
+   "capAl": [
+    "El Kharga"
+   ],
+   "region": "desert",
+   "area": 435050,
+   "ll": [
+    24.8593,
+    28.6121
+   ],
+   "bbox": [
+    25.0,
+    22.0,
+    32.74,
+    27.749
+   ],
+   "borders": [
+    "eg-asn",
+    "eg-ast",
+    "eg-gz",
+    "eg-kn",
+    "eg-lx",
+    "eg-mn",
+    "eg-mt",
+    "eg-shg"
+   ]
+  }
+ }
+}

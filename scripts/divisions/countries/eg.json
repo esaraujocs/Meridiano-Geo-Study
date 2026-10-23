@@ -1,0 +1,634 @@
+{
+  "comment": "Egito: as 27 províncias (governadorias). O triângulo de Halaib (linha do Overture sem código) vai para o Mar Vermelho por `fill` com caixa, como o Egito o administra e como o mapa-múndi do jogo o mostra. Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Delta e Cairo, Canal e Sinai, Alto Egito e Desertos, agrupamento nosso.",
+  "id": "eg",
+  "carta": "818",
+  "source": "overture",
+  "name": {
+    "pt": "Egito",
+    "en": "Egypt",
+    "es": "Egipto"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "província",
+      "many": "províncias",
+      "g": "f"
+    },
+    "en": {
+      "one": "governorate",
+      "many": "governorates"
+    },
+    "es": {
+      "one": "gobernación",
+      "many": "gobernaciones",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "delta": {
+      "pt": "Delta e Cairo",
+      "en": "Delta and Cairo",
+      "es": "Delta y El Cairo"
+    },
+    "canal": {
+      "pt": "Canal e Sinai",
+      "en": "Canal and Sinai",
+      "es": "Canal y Sinaí"
+    },
+    "upper": {
+      "pt": "Alto Egito",
+      "en": "Upper Egypt",
+      "es": "Alto Egipto"
+    },
+    "desert": {
+      "pt": "Desertos",
+      "en": "Deserts",
+      "es": "Desiertos"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 818)",
+      "use": "a terra de Egito, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 27 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "ALX",
+      "name": "Alexandria",
+      "sourceName": "الإسكندرية",
+      "names": {
+        "es": "Alejandría"
+      },
+      "capital": {
+        "pt": "Alexandria",
+        "en": "Alexandria",
+        "es": "Alejandría"
+      },
+      "region": "delta"
+    },
+    {
+      "code": "ASN",
+      "name": "Aswan",
+      "sourceName": "أسوان",
+      "names": {
+        "pt": "Assuã",
+        "es": "Asuán"
+      },
+      "alias": [
+        "Assuão"
+      ],
+      "capital": {
+        "pt": "Assuã",
+        "en": "Aswan",
+        "es": "Asuán"
+      },
+      "capAl": [
+        "Assuão"
+      ],
+      "region": "upper"
+    },
+    {
+      "code": "AST",
+      "name": "Asyut",
+      "sourceName": "أسيوط",
+      "names": {
+        "pt": "Assiut",
+        "es": "Asiut"
+      },
+      "capital": {
+        "pt": "Assiut",
+        "en": "Asyut",
+        "es": "Asiut"
+      },
+      "region": "upper"
+    },
+    {
+      "code": "BA",
+      "name": "Red Sea",
+      "sourceName": "البحر الأحمر",
+      "names": {
+        "pt": "Mar Vermelho",
+        "es": "Mar Rojo"
+      },
+      "capital": "Hurghada",
+      "capAl": [
+        "Hurgada"
+      ],
+      "region": "desert",
+      "fill": [
+        {
+          "carta": "818",
+          "box": [
+            34.8,
+            21.9,
+            37.2,
+            23.3
+          ]
+        }
+      ]
+    },
+    {
+      "code": "BH",
+      "name": "Beheira",
+      "sourceName": "البحيرة",
+      "alias": [
+        "Buhaira"
+      ],
+      "capital": "Damanhur",
+      "region": "delta"
+    },
+    {
+      "code": "BNS",
+      "name": "Beni Suef",
+      "sourceName": "بنى سويف",
+      "capital": "Beni Suef",
+      "region": "upper"
+    },
+    {
+      "code": "C",
+      "name": "Cairo",
+      "sourceName": "القاهرة",
+      "names": {
+        "es": "El Cairo"
+      },
+      "capital": {
+        "pt": "Cairo",
+        "en": "Cairo",
+        "es": "El Cairo"
+      },
+      "region": "delta"
+    },
+    {
+      "code": "DK",
+      "name": "Dakahlia",
+      "sourceName": "الدقهلية",
+      "names": {
+        "es": "Dacalia"
+      },
+      "capital": {
+        "pt": "Mansura",
+        "en": "Mansoura",
+        "es": "El Mansura"
+      },
+      "capAl": [
+        "Almançora",
+        "Mansourah"
+      ],
+      "region": "delta"
+    },
+    {
+      "code": "DT",
+      "name": "Damietta",
+      "sourceName": "دمياط",
+      "names": {
+        "pt": "Damieta",
+        "es": "Damieta"
+      },
+      "capital": {
+        "pt": "Damieta",
+        "en": "Damietta",
+        "es": "Damieta"
+      },
+      "region": "delta"
+    },
+    {
+      "code": "FYM",
+      "name": "Faiyum",
+      "sourceName": "الفيوم",
+      "names": {
+        "pt": "Faium",
+        "es": "Fayún"
+      },
+      "alias": [
+        "Fayoum"
+      ],
+      "capital": {
+        "pt": "Faium",
+        "en": "Faiyum",
+        "es": "Fayún"
+      },
+      "capAl": [
+        "Fayoum"
+      ],
+      "region": "upper"
+    },
+    {
+      "code": "GH",
+      "name": "Gharbia",
+      "sourceName": "محافظة الغربية",
+      "capital": "Tanta",
+      "region": "delta"
+    },
+    {
+      "code": "GZ",
+      "name": "Giza",
+      "sourceName": "الجيزة",
+      "names": {
+        "pt": "Gizé",
+        "es": "Guiza"
+      },
+      "capital": {
+        "pt": "Gizé",
+        "en": "Giza",
+        "es": "Guiza"
+      },
+      "region": "delta"
+    },
+    {
+      "code": "IS",
+      "name": "Ismailia",
+      "sourceName": "الإسماعيلية",
+      "names": {
+        "pt": "Ismaília",
+        "es": "Ismailía"
+      },
+      "capital": {
+        "pt": "Ismaília",
+        "en": "Ismailia",
+        "es": "Ismailía"
+      },
+      "region": "canal"
+    },
+    {
+      "code": "JS",
+      "name": "South Sinai",
+      "sourceName": "جنوب سيناء",
+      "names": {
+        "pt": "Sinai do Sul",
+        "es": "Sinaí del Sur"
+      },
+      "capital": "El Tor",
+      "capAl": [
+        "Tor"
+      ],
+      "region": "canal"
+    },
+    {
+      "code": "KB",
+      "name": "Qalyubia",
+      "sourceName": "القليوبية",
+      "names": {
+        "es": "Caliubia"
+      },
+      "capital": "Benha",
+      "capAl": [
+        "Banha"
+      ],
+      "region": "delta"
+    },
+    {
+      "code": "KFS",
+      "name": "Kafr el-Sheikh",
+      "sourceName": "كفر الشيخ",
+      "names": {
+        "es": "Kafr el Sheij"
+      },
+      "capital": {
+        "pt": "Kafr el-Sheikh",
+        "en": "Kafr el-Sheikh",
+        "es": "Kafr el Sheij"
+      },
+      "region": "delta"
+    },
+    {
+      "code": "KN",
+      "name": "Qena",
+      "sourceName": "قنا",
+      "names": {
+        "es": "Quena"
+      },
+      "alias": [
+        "Qina"
+      ],
+      "capital": {
+        "pt": "Qena",
+        "en": "Qena",
+        "es": "Quena"
+      },
+      "capAl": [
+        "Qina"
+      ],
+      "region": "upper"
+    },
+    {
+      "code": "LX",
+      "name": "Luxor",
+      "sourceName": "الأقصر",
+      "names": {
+        "es": "Lúxor"
+      },
+      "capital": "Luxor",
+      "region": "upper"
+    },
+    {
+      "code": "MN",
+      "name": "Minya",
+      "sourceName": "المنيا",
+      "names": {
+        "es": "Menia"
+      },
+      "capital": {
+        "pt": "Minya",
+        "en": "Minya",
+        "es": "Menia"
+      },
+      "region": "upper"
+    },
+    {
+      "code": "MNF",
+      "name": "Monufia",
+      "sourceName": "محافظة المنوفية",
+      "names": {
+        "es": "Menufia"
+      },
+      "capital": {
+        "pt": "Shibin el-Kom",
+        "en": "Shibin el-Kom",
+        "es": "Shibin el-Kom"
+      },
+      "capAl": [
+        "Xibin El Kom"
+      ],
+      "region": "delta"
+    },
+    {
+      "code": "MT",
+      "name": "Matrouh",
+      "sourceName": "مطروح",
+      "names": {
+        "pt": "Matruh",
+        "es": "Matruh"
+      },
+      "capital": "Marsa Matruh",
+      "capAl": [
+        "Marsa Matrouh"
+      ],
+      "region": "desert"
+    },
+    {
+      "code": "PTS",
+      "name": "Port Said",
+      "sourceName": "بورسعيد",
+      "names": {
+        "pt": "Porto Said",
+        "es": "Puerto Saíd"
+      },
+      "capital": {
+        "pt": "Porto Said",
+        "en": "Port Said",
+        "es": "Puerto Saíd"
+      },
+      "region": "canal"
+    },
+    {
+      "code": "SHG",
+      "name": "Sohag",
+      "sourceName": "سوهاج",
+      "names": {
+        "es": "Suhag"
+      },
+      "capital": {
+        "pt": "Sohag",
+        "en": "Sohag",
+        "es": "Suhag"
+      },
+      "region": "upper"
+    },
+    {
+      "code": "SHR",
+      "name": "Sharqia",
+      "sourceName": "الشرقية",
+      "alias": [
+        "Xarqia"
+      ],
+      "capital": "Zagazig",
+      "region": "delta"
+    },
+    {
+      "code": "SIN",
+      "name": "North Sinai",
+      "sourceName": "شمال سيناء",
+      "names": {
+        "pt": "Sinai do Norte",
+        "es": "Sinaí del Norte"
+      },
+      "capital": {
+        "pt": "El Arish",
+        "en": "Arish",
+        "es": "El Arish"
+      },
+      "capAl": [
+        "Arish",
+        "Alarixe"
+      ],
+      "region": "canal"
+    },
+    {
+      "code": "SUZ",
+      "name": "Suez",
+      "sourceName": "السويس",
+      "capital": "Suez",
+      "region": "canal"
+    },
+    {
+      "code": "WAD",
+      "name": "New Valley",
+      "sourceName": "الوادي الجديد",
+      "names": {
+        "pt": "Vale Novo",
+        "es": "Nuevo Valle"
+      },
+      "alias": [
+        "Novo Vale"
+      ],
+      "capital": "Kharga",
+      "capAl": [
+        "El Kharga"
+      ],
+      "region": "desert"
+    }
+  ],
+  "probes": [
+    [
+      "Alexandria",
+      29.8925,
+      31.1975,
+      "eg-alx"
+    ],
+    [
+      "Assuã",
+      32.8997,
+      24.0889,
+      "eg-asn"
+    ],
+    [
+      "Assiut",
+      31.1714,
+      27.1869,
+      "eg-ast"
+    ],
+    [
+      "Hurghada",
+      33.8117,
+      27.2578,
+      "eg-ba"
+    ],
+    [
+      "Damanhur",
+      30.4667,
+      31.05,
+      "eg-bh"
+    ],
+    [
+      "Beni Suef",
+      31.0833,
+      29.0667,
+      "eg-bns"
+    ],
+    [
+      "Cairo",
+      31.2358,
+      30.0444,
+      "eg-c"
+    ],
+    [
+      "Mansura",
+      31.3833,
+      31.05,
+      "eg-dk"
+    ],
+    [
+      "Damieta",
+      31.8214,
+      31.4167,
+      "eg-dt"
+    ],
+    [
+      "Faium",
+      30.8333,
+      29.3,
+      "eg-fym"
+    ],
+    [
+      "Tanta",
+      31.0,
+      30.7833,
+      "eg-gh"
+    ],
+    [
+      "Gizé",
+      31.2118,
+      29.987,
+      "eg-gz"
+    ],
+    [
+      "Ismaília",
+      32.2667,
+      30.5833,
+      "eg-is"
+    ],
+    [
+      "El Tor",
+      33.6167,
+      28.2333,
+      "eg-js"
+    ],
+    [
+      "Benha",
+      31.1797,
+      30.4628,
+      "eg-kb"
+    ],
+    [
+      "Kafr el-Sheikh",
+      30.95,
+      31.1,
+      "eg-kfs"
+    ],
+    [
+      "Qena",
+      32.7167,
+      26.1667,
+      "eg-kn"
+    ],
+    [
+      "Luxor",
+      32.6444,
+      25.6967,
+      "eg-lx"
+    ],
+    [
+      "Minya",
+      30.75,
+      28.0833,
+      "eg-mn"
+    ],
+    [
+      "Shibin el-Kom",
+      31.0,
+      30.55,
+      "eg-mnf"
+    ],
+    [
+      "Marsa Matruh",
+      27.2333,
+      31.3333,
+      "eg-mt"
+    ],
+    [
+      "Porto Said",
+      32.3061,
+      31.2625,
+      "eg-pts"
+    ],
+    [
+      "Sohag",
+      31.6917,
+      26.5606,
+      "eg-shg"
+    ],
+    [
+      "Zagazig",
+      31.5,
+      30.5667,
+      "eg-shr"
+    ],
+    [
+      "El Arish",
+      33.8,
+      31.1333,
+      "eg-sin"
+    ],
+    [
+      "Suez",
+      32.5333,
+      29.9667,
+      "eg-suz"
+    ],
+    [
+      "Kharga",
+      30.5452,
+      25.4506,
+      "eg-wad"
+    ],
+    [
+      "Halaib (triângulo)",
+      36.6,
+      22.2,
+      "eg-ba"
+    ]
+  ]
+}

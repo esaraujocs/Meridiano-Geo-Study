@@ -1,0 +1,299 @@
+{
+  "comment": "Etiópia: as 12 regiões e as 2 cidades autônomas (Adis Abeba e Dire Dawa, sem capital). As regiões Etiópia Central e Etiópia do Sul (2023, da divisão da antiga Região das Nações do Sul) não têm código ISO no Overture: são achadas pelo nome (byName) e levam os códigos CE e SE, nossos. Oromia fica fora dos modos de capital (a capital dela é Adis Abeba, que é outra unidade). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Norte, Oeste, Centro, Leste e Sul, agrupamento nosso.",
+  "id": "et",
+  "carta": "231",
+  "source": "overture",
+  "name": {
+    "pt": "Etiópia",
+    "en": "Ethiopia",
+    "es": "Etiopía"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "região",
+      "many": "regiões",
+      "g": "f"
+    },
+    "en": {
+      "one": "region",
+      "many": "regions"
+    },
+    "es": {
+      "one": "región",
+      "many": "regiones",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    },
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    },
+    "center": {
+      "pt": "Centro",
+      "en": "Centre",
+      "es": "Centro"
+    },
+    "east": {
+      "pt": "Leste",
+      "en": "East",
+      "es": "Este"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 231)",
+      "use": "a terra de Etiópia, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 14 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AA",
+      "name": "Addis Ababa",
+      "sourceName": "አዲስ አበባ",
+      "names": {
+        "pt": "Adis Abeba",
+        "es": "Adís Abeba"
+      },
+      "alias": [
+        "Addis Abeba",
+        "Finfinne"
+      ],
+      "region": "center"
+    },
+    {
+      "code": "AF",
+      "name": "Afar",
+      "sourceName": "አፋር ክልል Afar عفر",
+      "capital": "Semera",
+      "region": "north"
+    },
+    {
+      "code": "AM",
+      "name": "Amhara",
+      "sourceName": "አማራ ክልል",
+      "capital": "Bahir Dar",
+      "region": "north"
+    },
+    {
+      "code": "BE",
+      "name": "Benishangul-Gumuz",
+      "sourceName": "ቤንሻንጉል ጉሙዝ ክልል Benishangul-Gumuz",
+      "capital": "Asosa",
+      "capAl": [
+        "Assosa"
+      ],
+      "region": "west"
+    },
+    {
+      "code": "DD",
+      "name": "Dire Dawa",
+      "sourceName": "Dirree Dhawaa / Dir Dhabe / ድሬዳዋ",
+      "region": "east"
+    },
+    {
+      "code": "GA",
+      "name": "Gambela",
+      "sourceName": "ጋምቤላ ሕዝቦች ክልል Gambela جامبلا",
+      "capital": "Gambela",
+      "region": "west"
+    },
+    {
+      "code": "HA",
+      "name": "Harari",
+      "sourceName": "Naannoo Hararii / ሐረሪ ሕዝብ ክልል",
+      "capital": "Harar",
+      "region": "east"
+    },
+    {
+      "code": "OR",
+      "name": "Oromia",
+      "sourceName": "ኦሮሚያ ክልል Oromia أوروميا",
+      "names": {
+        "es": "Oromía"
+      },
+      "region": "center"
+    },
+    {
+      "code": "SI",
+      "name": "Sidama",
+      "sourceName": "ሲዳማ ክልል Sidama سيداما",
+      "capital": "Hawassa",
+      "capAl": [
+        "Awassa",
+        "Awasa",
+        "Hawaasa"
+      ],
+      "region": "south"
+    },
+    {
+      "code": "SO",
+      "name": "Somali",
+      "sourceName": "ሶማሌ ክልል Somali صومالى",
+      "names": {
+        "es": "Somalí"
+      },
+      "alias": [
+        "Região Somali"
+      ],
+      "capital": "Jijiga",
+      "capAl": [
+        "Djidjiga"
+      ],
+      "region": "east"
+    },
+    {
+      "code": "SW",
+      "name": "South West Ethiopia",
+      "sourceName": "የደቡብ ምዕራብ ኢትዮጵያ ህዝቦች ክልል South West Ethiopia Peoples' Region إقليم شعوب جنوب غرب إثيوبيا",
+      "names": {
+        "pt": "Sudoeste da Etiópia",
+        "es": "Suroeste de Etiopía"
+      },
+      "capital": "Bonga",
+      "region": "west"
+    },
+    {
+      "code": "TI",
+      "name": "Tigray",
+      "sourceName": "ትግራይ تجراى",
+      "names": {
+        "pt": "Tigré",
+        "es": "Tigré"
+      },
+      "alias": [
+        "Tigray"
+      ],
+      "capital": "Mekelle",
+      "capAl": [
+        "Mekele",
+        "Mek'ele"
+      ],
+      "region": "north"
+    },
+    {
+      "code": "CE",
+      "name": "Central Ethiopia",
+      "sourceName": "ማዕከላዊ ኢትዮጵያ ክልላዊ መንግስት Central Ethiopia Regional State ولاية مركز إثيوبيا الإقليمية",
+      "names": {
+        "pt": "Etiópia Central",
+        "es": "Etiopía Central"
+      },
+      "capital": "Hosaena",
+      "capAl": [
+        "Hossana",
+        "Hosanna"
+      ],
+      "region": "center",
+      "byName": true,
+      "ref": "ET-CE"
+    },
+    {
+      "code": "SE",
+      "name": "South Ethiopia",
+      "sourceName": "ደቡብ ኢትዮጵያ ክልላዊ መንግስት South Ethiopia Regional State ولاية جنوب إثيوبيا الإقليمية",
+      "names": {
+        "pt": "Etiópia do Sul",
+        "es": "Etiopía Meridional"
+      },
+      "capital": "Wolaita Sodo",
+      "capAl": [
+        "Sodo"
+      ],
+      "region": "south",
+      "byName": true,
+      "ref": "ET-SE"
+    }
+  ],
+  "probes": [
+    [
+      "Semera",
+      41.0086,
+      11.7922,
+      "et-af"
+    ],
+    [
+      "Bahir Dar",
+      37.39,
+      11.585,
+      "et-am"
+    ],
+    [
+      "Asosa",
+      34.5167,
+      10.0667,
+      "et-be"
+    ],
+    [
+      "Gambela",
+      34.5833,
+      8.25,
+      "et-ga"
+    ],
+    [
+      "Harar",
+      42.1278,
+      9.3111,
+      "et-ha"
+    ],
+    [
+      "Hawassa",
+      38.4667,
+      7.05,
+      "et-si"
+    ],
+    [
+      "Jijiga",
+      42.8,
+      9.35,
+      "et-so"
+    ],
+    [
+      "Bonga",
+      36.25,
+      7.2667,
+      "et-sw"
+    ],
+    [
+      "Mekelle",
+      39.4769,
+      13.4969,
+      "et-ti"
+    ],
+    [
+      "Hosaena",
+      37.85,
+      7.55,
+      "et-ce"
+    ],
+    [
+      "Wolaita Sodo",
+      37.76,
+      6.86,
+      "et-se"
+    ]
+  ]
+}

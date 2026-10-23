@@ -152,9 +152,13 @@ def zones_overture(country, config, build):
     """As divisões "region" do Overture: a terra de cada uma e a com o mar territorial, que vale depois da terra de todas (zonas sem sobreposição)."""
     table = pq.read_table(os.path.join(build, "overture-regions.parquet"))
     land, sea, names = {}, {}, {}
+    # `byName`: unidade sem código ISO no Overture, achada pelo nome (as regiões da Etiópia criadas em 2023)
+    by_name = {unit["sourceName"]: unit["code"] for unit in config["units"] if unit.get("byName")}
     for row in table.to_pylist():
         # linha sem código de região (na China, Aksai Chin, área disputada): fica fora das zonas; se o mapa HD deu essa terra ao país, ela vai
         # para a unidade mais perto, como as outras sobras
+        if not row["region"] and row["name"] in by_name:
+            row = {**row, "region": f"{country.upper()}-{by_name[row['name']]}"}
         if not row["region"]:
             print(f"aviso: linha do Overture sem região ({row['name']}), fora das zonas", flush=True)
             continue

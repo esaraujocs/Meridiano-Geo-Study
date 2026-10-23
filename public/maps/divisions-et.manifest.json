@@ -1,0 +1,84 @@
+{
+  "name": "divisions-et",
+  "generator": "scripts/map-hd (fetch-overture.py, fetch-lakes.py, build-pieces.py, build-tiles.py)",
+  "zoom": {
+    "min": 0,
+    "max": 9
+  },
+  "bytes": 212286,
+  "sha256": "63f8d2f7cd25dab10a0858528ea12c470575e9f643d9a177b7efb0027cfbed7b",
+  "tiles": 354,
+  "layer": "countries",
+  "tolerance": {
+    "0": 2.0,
+    "1": 2.0,
+    "2": 2.0,
+    "3": 2.0,
+    "4": 2.0,
+    "5": 2.0,
+    "6": 1.5,
+    "7": 1.5,
+    "8": 1.5,
+    "9": 1.0
+  },
+  "minArea": {
+    "0": 64,
+    "1": 64,
+    "2": 64,
+    "3": 64,
+    "4": 64,
+    "5": 64,
+    "6": 32,
+    "7": 32,
+    "8": 32,
+    "9": 4
+  },
+  "entities": [
+    "et-aa",
+    "et-af",
+    "et-am",
+    "et-be",
+    "et-ce",
+    "et-dd",
+    "et-ga",
+    "et-ha",
+    "et-or",
+    "et-se",
+    "et-si",
+    "et-so",
+    "et-sw",
+    "et-ti"
+  ],
+  "neutralVertices": 0,
+  "vertices": {
+    "et-aa": 626,
+    "et-af": 1227,
+    "et-am": 30502,
+    "et-be": 2005,
+    "et-ce": 603,
+    "et-dd": 82,
+    "et-ga": 6189,
+    "et-ha": 61,
+    "et-or": 23412,
+    "et-se": 21036,
+    "et-si": 4710,
+    "et-so": 1558,
+    "et-sw": 8122,
+    "et-ti": 10220
+  },
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 231)",
+      "use": "a terra de Etiópia, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 14 unidades"
+    }
+  ]
+}

@@ -1,0 +1,1145 @@
+{
+ "source": "Nigéria: os 36 estados e o Território da Capital Federal (capital Abuja). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as 6 zonas geopolíticas.",
+ "country": "ng",
+ "regions": {
+  "nc": {
+   "pt": "Centro-Norte",
+   "en": "North Central",
+   "es": "Centro-Norte"
+  },
+  "ne": {
+   "pt": "Nordeste",
+   "en": "North East",
+   "es": "Noreste"
+  },
+  "nw": {
+   "pt": "Noroeste",
+   "en": "North West",
+   "es": "Noroeste"
+  },
+  "se": {
+   "pt": "Sudeste",
+   "en": "South East",
+   "es": "Sureste"
+  },
+  "ss": {
+   "pt": "Sul-Sul",
+   "en": "South South",
+   "es": "Sur-Sur"
+  },
+  "sw": {
+   "pt": "Sudoeste",
+   "en": "South West",
+   "es": "Suroeste"
+  }
+ },
+ "units": {
+  "ng-ab": {
+   "code": "AB",
+   "ref": "NG-AB",
+   "name": {
+    "pt": "Abia",
+    "en": "Abia",
+    "es": "Abia"
+   },
+   "capital": "Umuahia",
+   "region": "se",
+   "area": 4882,
+   "ll": [
+    5.6588,
+    7.5949
+   ],
+   "bbox": [
+    7.14,
+    4.823,
+    7.988,
+    6.042
+   ],
+   "borders": [
+    "ng-ak",
+    "ng-an",
+    "ng-cr",
+    "ng-eb",
+    "ng-en",
+    "ng-im",
+    "ng-ri"
+   ]
+  },
+  "ng-ad": {
+   "code": "AD",
+   "ref": "NG-AD",
+   "name": {
+    "pt": "Adamawa",
+    "en": "Adamawa",
+    "es": "Adamawa"
+   },
+   "capital": "Yola",
+   "region": "ne",
+   "area": 38029,
+   "ll": [
+    9.3976,
+    12.2757
+   ],
+   "bbox": [
+    11.342,
+    7.354,
+    13.73,
+    10.949
+   ],
+   "borders": [
+    "ng-bo",
+    "ng-go",
+    "ng-ta"
+   ]
+  },
+  "ng-ak": {
+   "code": "AK",
+   "ref": "NG-AK",
+   "name": {
+    "pt": "Akwa Ibom",
+    "en": "Akwa Ibom",
+    "es": "Akwa Ibom"
+   },
+   "capital": "Uyo",
+   "region": "ss",
+   "area": 6784,
+   "ll": [
+    4.8647,
+    7.832
+   ],
+   "bbox": [
+    7.46,
+    4.465,
+    8.344,
+    5.519
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-cr",
+    "ng-ri"
+   ]
+  },
+  "ng-an": {
+   "code": "AN",
+   "ref": "NG-AN",
+   "name": {
+    "pt": "Anambra",
+    "en": "Anambra",
+    "es": "Anambra"
+   },
+   "capital": "Awka",
+   "region": "se",
+   "area": 4782,
+   "ll": [
+    6.1248,
+    6.9717
+   ],
+   "bbox": [
+    6.634,
+    5.722,
+    7.339,
+    6.802
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-de",
+    "ng-ed",
+    "ng-en",
+    "ng-im",
+    "ng-ko",
+    "ng-ri"
+   ]
+  },
+  "ng-ba": {
+   "code": "BA",
+   "ref": "NG-BA",
+   "name": {
+    "pt": "Bauchi",
+    "en": "Bauchi",
+    "es": "Bauchi"
+   },
+   "capital": "Bauchi",
+   "region": "ne",
+   "area": 48015,
+   "ll": [
+    10.3668,
+    9.7742
+   ],
+   "bbox": [
+    8.749,
+    9.5,
+    11.023,
+    12.52
+   ],
+   "borders": [
+    "ng-go",
+    "ng-ji",
+    "ng-kd",
+    "ng-kn",
+    "ng-pl",
+    "ng-ta",
+    "ng-yo"
+   ]
+  },
+  "ng-be": {
+   "code": "BE",
+   "ref": "NG-BE",
+   "name": {
+    "pt": "Benue",
+    "en": "Benue",
+    "es": "Benue"
+   },
+   "capital": "Makurdi",
+   "region": "nc",
+   "area": 30905,
+   "ll": [
+    7.259,
+    9.23
+   ],
+   "bbox": [
+    7.53,
+    6.442,
+    9.889,
+    8.158
+   ],
+   "borders": [
+    "ng-cr",
+    "ng-eb",
+    "ng-en",
+    "ng-ko",
+    "ng-na",
+    "ng-ta"
+   ]
+  },
+  "ng-bo": {
+   "code": "BO",
+   "ref": "NG-BO",
+   "name": {
+    "pt": "Borno",
+    "en": "Borno",
+    "es": "Borno"
+   },
+   "capital": "Maiduguri",
+   "region": "ne",
+   "area": 72852,
+   "ll": [
+    12.0019,
+    13.2619
+   ],
+   "bbox": [
+    11.529,
+    10.022,
+    14.676,
+    13.721
+   ],
+   "borders": [
+    "ng-ad",
+    "ng-go",
+    "ng-yo"
+   ]
+  },
+  "ng-by": {
+   "code": "BY",
+   "ref": "NG-BY",
+   "name": {
+    "pt": "Bayelsa",
+    "en": "Bayelsa",
+    "es": "Bayelsa"
+   },
+   "capital": {
+    "pt": "Yenagoa",
+    "en": "Yenegoa",
+    "es": "Yenagoa"
+   },
+   "capAl": [
+    "Yenegoa"
+   ],
+   "region": "ss",
+   "area": 9440,
+   "ll": [
+    4.7241,
+    6.0452
+   ],
+   "bbox": [
+    5.378,
+    4.27,
+    6.607,
+    5.38
+   ],
+   "borders": [
+    "ng-de",
+    "ng-ri"
+   ]
+  },
+  "ng-cr": {
+   "code": "CR",
+   "ref": "NG-CR",
+   "name": {
+    "pt": "Cross River",
+    "en": "Cross River",
+    "es": "Cross River"
+   },
+   "capital": {
+    "pt": "Calabar (Nigéria)",
+    "en": "Calabar",
+    "es": "Calabar"
+   },
+   "region": "ss",
+   "area": 21139,
+   "ll": [
+    5.5644,
+    8.3946
+   ],
+   "bbox": [
+    7.841,
+    4.689,
+    9.474,
+    6.896
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-ak",
+    "ng-be",
+    "ng-eb"
+   ]
+  },
+  "ng-de": {
+   "code": "DE",
+   "ref": "NG-DE",
+   "name": {
+    "pt": "Delta",
+    "en": "Delta",
+    "es": "Delta"
+   },
+   "alias": [
+    "Delta State"
+   ],
+   "capital": "Asaba",
+   "region": "ss",
+   "area": 17200,
+   "ll": [
+    5.4527,
+    5.6952
+   ],
+   "bbox": [
+    4.979,
+    5.012,
+    6.767,
+    6.501
+   ],
+   "borders": [
+    "ng-an",
+    "ng-by",
+    "ng-ed",
+    "ng-on",
+    "ng-ri"
+   ]
+  },
+  "ng-eb": {
+   "code": "EB",
+   "ref": "NG-EB",
+   "name": {
+    "pt": "Ebonyi",
+    "en": "Ebonyi",
+    "es": "Ebonyi"
+   },
+   "capital": "Abakaliki",
+   "region": "se",
+   "area": 6351,
+   "ll": [
+    6.2852,
+    8.0861
+   ],
+   "bbox": [
+    7.54,
+    5.685,
+    8.455,
+    6.794
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-be",
+    "ng-cr",
+    "ng-en"
+   ]
+  },
+  "ng-ed": {
+   "code": "ED",
+   "ref": "NG-ED",
+   "name": {
+    "pt": "Edo",
+    "en": "Edo",
+    "es": "Edo"
+   },
+   "capital": {
+    "pt": "Benin City",
+    "en": "Benin City",
+    "es": "Ciudad de Benín"
+   },
+   "capAl": [
+    "Cidade do Benim",
+    "Benin"
+   ],
+   "region": "ss",
+   "area": 19642,
+   "ll": [
+    6.7706,
+    6.1935
+   ],
+   "bbox": [
+    5.009,
+    5.748,
+    6.716,
+    7.591
+   ],
+   "borders": [
+    "ng-an",
+    "ng-de",
+    "ng-ko",
+    "ng-on"
+   ]
+  },
+  "ng-ek": {
+   "code": "EK",
+   "ref": "NG-EK",
+   "name": {
+    "pt": "Ekiti",
+    "en": "Ekiti",
+    "es": "Ekiti"
+   },
+   "capital": "Ado Ekiti",
+   "region": "sw",
+   "area": 5807,
+   "ll": [
+    7.7298,
+    5.2009
+   ],
+   "bbox": [
+    4.864,
+    7.283,
+    5.792,
+    8.111
+   ],
+   "borders": [
+    "ng-ko",
+    "ng-kw",
+    "ng-on",
+    "ng-os"
+   ]
+  },
+  "ng-en": {
+   "code": "EN",
+   "ref": "NG-EN",
+   "name": {
+    "pt": "Enugu",
+    "en": "Enugu",
+    "es": "Enugu"
+   },
+   "capital": "Enugu",
+   "region": "se",
+   "area": 7594,
+   "ll": [
+    6.4566,
+    7.4337
+   ],
+   "bbox": [
+    6.932,
+    5.925,
+    7.903,
+    7.104
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-an",
+    "ng-be",
+    "ng-eb",
+    "ng-ko"
+   ]
+  },
+  "ng-fc": {
+   "code": "FC",
+   "ref": "NG-FC",
+   "name": {
+    "pt": "Território da Capital Federal",
+    "en": "Federal Capital Territory",
+    "es": "Territorio de la Capital Federal"
+   },
+   "alias": [
+    "FCT"
+   ],
+   "capital": "Abuja",
+   "capAl": [
+    "Abuya"
+   ],
+   "region": "nc",
+   "area": 7513,
+   "ll": [
+    8.8012,
+    7.112
+   ],
+   "bbox": [
+    6.778,
+    8.458,
+    7.724,
+    9.409
+   ],
+   "borders": [
+    "ng-kd",
+    "ng-ko",
+    "ng-na",
+    "ng-ni"
+   ]
+  },
+  "ng-go": {
+   "code": "GO",
+   "ref": "NG-GO",
+   "name": {
+    "pt": "Gombe",
+    "en": "Gombe",
+    "es": "Gombe"
+   },
+   "capital": "Gombe",
+   "region": "ne",
+   "area": 16999,
+   "ll": [
+    10.7398,
+    11.1034
+   ],
+   "bbox": [
+    10.473,
+    9.546,
+    11.858,
+    11.312
+   ],
+   "borders": [
+    "ng-ad",
+    "ng-ba",
+    "ng-bo",
+    "ng-ta",
+    "ng-yo"
+   ]
+  },
+  "ng-im": {
+   "code": "IM",
+   "ref": "NG-IM",
+   "name": {
+    "pt": "Imo",
+    "en": "Imo",
+    "es": "Imo"
+   },
+   "capital": "Owerri",
+   "region": "se",
+   "area": 5156,
+   "ll": [
+    5.5318,
+    7.0682
+   ],
+   "bbox": [
+    6.639,
+    5.195,
+    7.432,
+    5.939
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-an",
+    "ng-ri"
+   ]
+  },
+  "ng-ji": {
+   "code": "JI",
+   "ref": "NG-JI",
+   "name": {
+    "pt": "Jigawa",
+    "en": "Jigawa",
+    "es": "Jigawa"
+   },
+   "capital": "Dutse",
+   "region": "nw",
+   "area": 23695,
+   "ll": [
+    12.3351,
+    9.6356
+   ],
+   "bbox": [
+    8.128,
+    10.942,
+    10.602,
+    13.028
+   ],
+   "borders": [
+    "ng-ba",
+    "ng-kn",
+    "ng-kt",
+    "ng-yo"
+   ]
+  },
+  "ng-kd": {
+   "code": "KD",
+   "ref": "NG-KD",
+   "name": {
+    "pt": "Kaduna",
+    "en": "Kaduna",
+    "es": "Kaduna"
+   },
+   "capital": "Kaduna",
+   "region": "nw",
+   "area": 45175,
+   "ll": [
+    10.5563,
+    7.7717
+   ],
+   "bbox": [
+    6.086,
+    9.001,
+    8.824,
+    11.524
+   ],
+   "borders": [
+    "ng-ba",
+    "ng-fc",
+    "ng-kn",
+    "ng-kt",
+    "ng-na",
+    "ng-ni",
+    "ng-pl",
+    "ng-za"
+   ]
+  },
+  "ng-ke": {
+   "code": "KE",
+   "ref": "NG-KE",
+   "name": {
+    "pt": "Kebbi",
+    "en": "Kebbi",
+    "es": "Kebbi"
+   },
+   "capital": "Birnin Kebbi",
+   "region": "nw",
+   "area": 36721,
+   "ll": [
+    12.1212,
+    4.1014
+   ],
+   "bbox": [
+    3.476,
+    10.101,
+    6.164,
+    13.245
+   ],
+   "borders": [
+    "ng-ni",
+    "ng-so",
+    "ng-za"
+   ]
+  },
+  "ng-kn": {
+   "code": "KN",
+   "ref": "NG-KN",
+   "name": {
+    "pt": "Kano",
+    "en": "Kano",
+    "es": "Kano"
+   },
+   "alias": [
+    "Kano State"
+   ],
+   "capital": "Kano",
+   "region": "nw",
+   "area": 20434,
+   "ll": [
+    11.6827,
+    8.6184
+   ],
+   "bbox": [
+    7.675,
+    10.543,
+    9.36,
+    12.605
+   ],
+   "borders": [
+    "ng-ba",
+    "ng-ji",
+    "ng-kd",
+    "ng-kt"
+   ]
+  },
+  "ng-ko": {
+   "code": "KO",
+   "ref": "NG-KO",
+   "name": {
+    "pt": "Kogi",
+    "en": "Kogi",
+    "es": "Kogi"
+   },
+   "capital": "Lokoja",
+   "region": "nc",
+   "area": 29171,
+   "ll": [
+    7.5362,
+    7.2897
+   ],
+   "bbox": [
+    5.322,
+    6.532,
+    7.866,
+    8.739
+   ],
+   "borders": [
+    "ng-an",
+    "ng-be",
+    "ng-ed",
+    "ng-ek",
+    "ng-en",
+    "ng-fc",
+    "ng-kw",
+    "ng-na",
+    "ng-ni",
+    "ng-on"
+   ]
+  },
+  "ng-kt": {
+   "code": "KT",
+   "ref": "NG-KT",
+   "name": {
+    "pt": "Katsina",
+    "en": "Katsina",
+    "es": "Katsina"
+   },
+   "capital": "Katsina",
+   "region": "nw",
+   "area": 24097,
+   "ll": [
+    12.6423,
+    7.5262
+   ],
+   "bbox": [
+    6.852,
+    11.13,
+    9.047,
+    13.342
+   ],
+   "borders": [
+    "ng-ji",
+    "ng-kd",
+    "ng-kn",
+    "ng-za"
+   ]
+  },
+  "ng-kw": {
+   "code": "KW",
+   "ref": "NG-KW",
+   "name": {
+    "pt": "Kwara",
+    "en": "Kwara",
+    "es": "Kwara"
+   },
+   "capital": "Ilorin",
+   "region": "nc",
+   "area": 33793,
+   "ll": [
+    8.6133,
+    4.8359
+   ],
+   "bbox": [
+    2.729,
+    8.008,
+    6.208,
+    10.168
+   ],
+   "borders": [
+    "ng-ek",
+    "ng-ko",
+    "ng-ni",
+    "ng-os",
+    "ng-oy"
+   ]
+  },
+  "ng-la": {
+   "code": "LA",
+   "ref": "NG-LA",
+   "name": {
+    "pt": "Lagos",
+    "en": "Lagos",
+    "es": "Lagos"
+   },
+   "alias": [
+    "Lagos State"
+   ],
+   "capital": "Ikeja",
+   "region": "sw",
+   "area": 3258,
+   "ll": [
+    6.5428,
+    3.9559
+   ],
+   "bbox": [
+    2.707,
+    6.37,
+    4.351,
+    6.697
+   ],
+   "borders": [
+    "ng-og"
+   ]
+  },
+  "ng-na": {
+   "code": "NA",
+   "ref": "NG-NA",
+   "name": {
+    "pt": "Nasarawa",
+    "en": "Nasarawa",
+    "es": "Nasarawa"
+   },
+   "capital": "Lafia",
+   "region": "nc",
+   "area": 26516,
+   "ll": [
+    8.5005,
+    8.0425
+   ],
+   "bbox": [
+    6.935,
+    7.766,
+    9.623,
+    9.329
+   ],
+   "borders": [
+    "ng-be",
+    "ng-fc",
+    "ng-kd",
+    "ng-ko",
+    "ng-pl",
+    "ng-ta"
+   ]
+  },
+  "ng-ni": {
+   "code": "NI",
+   "ref": "NG-NI",
+   "name": {
+    "pt": "Níger",
+    "en": "Niger",
+    "es": "Níger"
+   },
+   "alias": [
+    "Niger State"
+   ],
+   "capital": "Minna",
+   "region": "nc",
+   "area": 70412,
+   "ll": [
+    9.7695,
+    5.6336
+   ],
+   "bbox": [
+    3.577,
+    8.183,
+    7.379,
+    11.371
+   ],
+   "borders": [
+    "ng-fc",
+    "ng-kd",
+    "ng-ke",
+    "ng-ko",
+    "ng-kw",
+    "ng-za"
+   ]
+  },
+  "ng-og": {
+   "code": "OG",
+   "ref": "NG-OG",
+   "name": {
+    "pt": "Ogun",
+    "en": "Ogun",
+    "es": "Ogun"
+   },
+   "capital": "Abeokuta",
+   "region": "sw",
+   "area": 16819,
+   "ll": [
+    7.0141,
+    3.1141
+   ],
+   "bbox": [
+    2.69,
+    6.279,
+    4.61,
+    7.952
+   ],
+   "borders": [
+    "ng-la",
+    "ng-on",
+    "ng-os",
+    "ng-oy"
+   ]
+  },
+  "ng-on": {
+   "code": "ON",
+   "ref": "NG-ON",
+   "name": {
+    "pt": "Ondo",
+    "en": "Ondo",
+    "es": "Ondo"
+   },
+   "capital": "Akure",
+   "region": "sw",
+   "area": 15066,
+   "ll": [
+    6.9187,
+    4.896
+   ],
+   "bbox": [
+    4.376,
+    5.891,
+    6.004,
+    7.75
+   ],
+   "borders": [
+    "ng-de",
+    "ng-ed",
+    "ng-ek",
+    "ng-ko",
+    "ng-og",
+    "ng-os"
+   ]
+  },
+  "ng-os": {
+   "code": "OS",
+   "ref": "NG-OS",
+   "name": {
+    "pt": "Osun",
+    "en": "Osun",
+    "es": "Osun"
+   },
+   "capital": "Osogbo",
+   "region": "sw",
+   "area": 8630,
+   "ll": [
+    7.5403,
+    4.4965
+   ],
+   "bbox": [
+    4.053,
+    6.981,
+    5.058,
+    8.095
+   ],
+   "borders": [
+    "ng-ek",
+    "ng-kw",
+    "ng-og",
+    "ng-on",
+    "ng-oy"
+   ]
+  },
+  "ng-oy": {
+   "code": "OY",
+   "ref": "NG-OY",
+   "name": {
+    "pt": "Oyo",
+    "en": "Oyo",
+    "es": "Oyo"
+   },
+   "capital": {
+    "pt": "Ibadan",
+    "en": "Ibadan",
+    "es": "Ibadán"
+   },
+   "capAl": [
+    "Ibadã"
+   ],
+   "region": "sw",
+   "area": 27741,
+   "ll": [
+    8.2045,
+    3.5369
+   ],
+   "bbox": [
+    2.678,
+    7.081,
+    4.569,
+    9.188
+   ],
+   "borders": [
+    "ng-kw",
+    "ng-og",
+    "ng-os"
+   ]
+  },
+  "ng-pl": {
+   "code": "PL",
+   "ref": "NG-PL",
+   "name": {
+    "pt": "Plateau",
+    "en": "Plateau",
+    "es": "Plateau"
+   },
+   "capital": "Jos",
+   "region": "nc",
+   "area": 26408,
+   "ll": [
+    8.9641,
+    9.6417
+   ],
+   "bbox": [
+    8.554,
+    8.367,
+    10.64,
+    10.384
+   ],
+   "borders": [
+    "ng-ba",
+    "ng-kd",
+    "ng-na",
+    "ng-ta"
+   ]
+  },
+  "ng-ri": {
+   "code": "RI",
+   "ref": "NG-RI",
+   "name": {
+    "pt": "Rivers",
+    "en": "Rivers",
+    "es": "Rivers"
+   },
+   "alias": [
+    "Rivers State"
+   ],
+   "capital": "Port Harcourt",
+   "region": "ss",
+   "area": 10412,
+   "ll": [
+    4.7096,
+    6.9076
+   ],
+   "bbox": [
+    6.399,
+    4.314,
+    7.598,
+    5.73
+   ],
+   "borders": [
+    "ng-ab",
+    "ng-ak",
+    "ng-an",
+    "ng-by",
+    "ng-de",
+    "ng-im"
+   ]
+  },
+  "ng-so": {
+   "code": "SO",
+   "ref": "NG-SO",
+   "name": {
+    "pt": "Sokoto",
+    "en": "Sokoto",
+    "es": "Sokoto"
+   },
+   "capital": "Sokoto",
+   "region": "nw",
+   "area": 31130,
+   "ll": [
+    13.2154,
+    5.235
+   ],
+   "bbox": [
+    4.142,
+    11.53,
+    6.82,
+    13.886
+   ],
+   "borders": [
+    "ng-ke",
+    "ng-za"
+   ]
+  },
+  "ng-ta": {
+   "code": "TA",
+   "ref": "NG-TA",
+   "name": {
+    "pt": "Taraba",
+    "en": "Taraba",
+    "es": "Taraba"
+   },
+   "capital": "Jalingo",
+   "region": "ne",
+   "area": 59572,
+   "ll": [
+    7.9665,
+    10.5403
+   ],
+   "bbox": [
+    9.116,
+    6.5,
+    11.904,
+    9.616
+   ],
+   "borders": [
+    "ng-ad",
+    "ng-ba",
+    "ng-be",
+    "ng-go",
+    "ng-na",
+    "ng-pl"
+   ]
+  },
+  "ng-yo": {
+   "code": "YO",
+   "ref": "NG-YO",
+   "name": {
+    "pt": "Yobe",
+    "en": "Yobe",
+    "es": "Yobe"
+   },
+   "capital": "Damaturu",
+   "region": "ne",
+   "area": 45885,
+   "ll": [
+    12.528,
+    11.5093
+   ],
+   "bbox": [
+    9.675,
+    10.568,
+    12.504,
+    13.381
+   ],
+   "borders": [
+    "ng-ba",
+    "ng-bo",
+    "ng-go",
+    "ng-ji"
+   ]
+  },
+  "ng-za": {
+   "code": "ZA",
+   "ref": "NG-ZA",
+   "name": {
+    "pt": "Zamfara",
+    "en": "Zamfara",
+    "es": "Zamfara"
+   },
+   "capital": "Gusau",
+   "region": "nw",
+   "area": 34619,
+   "ll": [
+    12.214,
+    6.4031
+   ],
+   "bbox": [
+    4.861,
+    10.863,
+    7.247,
+    13.182
+   ],
+   "borders": [
+    "ng-kd",
+    "ng-ke",
+    "ng-kt",
+    "ng-ni",
+    "ng-so"
+   ]
+  }
+ }
+}

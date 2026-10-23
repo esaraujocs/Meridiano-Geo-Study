@@ -1,0 +1,497 @@
+{
+  "comment": "República Democrática do Congo: as 26 províncias da reforma de 2015 (Kinshasa, cidade-província, sem capital). Capitais do Wikidata, com Tshikapa em Kasai e Kananga em Kasai Central (o Wikidata ainda traz as de antes de 2015). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Oeste, Noroeste, Nordeste, Leste, Sul e Centro, agrupamento nosso (perto das 11 províncias de antes de 2015).",
+  "id": "cd",
+  "carta": "180",
+  "source": "overture",
+  "name": {
+    "pt": "RD Congo",
+    "en": "DR Congo",
+    "es": "RD Congo"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "província",
+      "many": "províncias",
+      "g": "f"
+    },
+    "en": {
+      "one": "province",
+      "many": "provinces"
+    },
+    "es": {
+      "one": "provincia",
+      "many": "provincias",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    },
+    "northwest": {
+      "pt": "Noroeste",
+      "en": "Northwest",
+      "es": "Noroeste"
+    },
+    "northeast": {
+      "pt": "Nordeste",
+      "en": "Northeast",
+      "es": "Noreste"
+    },
+    "east": {
+      "pt": "Leste",
+      "en": "East",
+      "es": "Este"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    },
+    "center": {
+      "pt": "Centro",
+      "en": "Centre",
+      "es": "Centro"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 180)",
+      "use": "a terra de RD Congo, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 26 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "BC",
+      "name": "Kongo Central",
+      "sourceName": "Kongo-Central",
+      "alias": [
+        "Congo Central",
+        "Bas-Congo"
+      ],
+      "capital": "Matadi",
+      "region": "west"
+    },
+    {
+      "code": "BU",
+      "name": "Bas-Uele",
+      "names": {
+        "pt": "Baixo Uele",
+        "es": "Bajo Uele"
+      },
+      "alias": [
+        "Bas-Uele"
+      ],
+      "capital": "Buta",
+      "region": "northeast"
+    },
+    {
+      "code": "EQ",
+      "name": "Équateur",
+      "names": {
+        "es": "Ecuador"
+      },
+      "alias": [
+        "Equateur"
+      ],
+      "capital": "Mbandaka",
+      "region": "northwest"
+    },
+    {
+      "code": "HK",
+      "name": "Haut-Katanga",
+      "names": {
+        "pt": "Alto Katanga",
+        "es": "Alto Katanga"
+      },
+      "alias": [
+        "Haut-Katanga"
+      ],
+      "capital": "Lubumbashi",
+      "region": "south"
+    },
+    {
+      "code": "HL",
+      "name": "Haut-Lomami",
+      "names": {
+        "pt": "Alto Lomami",
+        "es": "Alto Lomami"
+      },
+      "alias": [
+        "Haut-Lomami"
+      ],
+      "capital": "Kamina",
+      "region": "south"
+    },
+    {
+      "code": "HU",
+      "name": "Haut-Uele",
+      "names": {
+        "pt": "Alto Uele",
+        "es": "Alto Uele"
+      },
+      "alias": [
+        "Haut-Uele"
+      ],
+      "capital": "Isiro",
+      "region": "northeast"
+    },
+    {
+      "code": "IT",
+      "name": "Ituri",
+      "capital": "Bunia",
+      "region": "northeast"
+    },
+    {
+      "code": "KC",
+      "name": "Kasaï-Central",
+      "names": {
+        "pt": "Kasai Central",
+        "es": "Kasai Central"
+      },
+      "alias": [
+        "Kasai-Central"
+      ],
+      "capital": "Kananga",
+      "region": "center"
+    },
+    {
+      "code": "KE",
+      "name": "Kasaï-Oriental",
+      "names": {
+        "pt": "Kasai Oriental",
+        "es": "Kasai Oriental"
+      },
+      "alias": [
+        "Kasai-Oriental"
+      ],
+      "capital": "Mbuji-Mayi",
+      "region": "center"
+    },
+    {
+      "code": "KG",
+      "name": "Kwango",
+      "alias": [
+        "Cuango"
+      ],
+      "capital": "Kenge",
+      "region": "west"
+    },
+    {
+      "code": "KL",
+      "name": "Kwilu",
+      "alias": [
+        "Cuílo"
+      ],
+      "capital": "Bandundu",
+      "region": "west"
+    },
+    {
+      "code": "KN",
+      "name": "Kinshasa",
+      "names": {
+        "es": "Kinsasa"
+      },
+      "alias": [
+        "Quinxassa"
+      ],
+      "region": "west"
+    },
+    {
+      "code": "KS",
+      "name": "Kasaï",
+      "names": {
+        "pt": "Kasai",
+        "es": "Kasai"
+      },
+      "alias": [
+        "Kasaï"
+      ],
+      "capital": "Tshikapa",
+      "region": "center"
+    },
+    {
+      "code": "LO",
+      "name": "Lomami",
+      "capital": "Kabinda",
+      "region": "center"
+    },
+    {
+      "code": "LU",
+      "name": "Lualaba",
+      "capital": "Kolwezi",
+      "region": "south"
+    },
+    {
+      "code": "MA",
+      "name": "Maniema",
+      "capital": "Kindu",
+      "region": "east"
+    },
+    {
+      "code": "MN",
+      "name": "Mai-Ndombe",
+      "capital": "Inongo",
+      "region": "west"
+    },
+    {
+      "code": "MO",
+      "name": "Mongala",
+      "capital": "Lisala",
+      "region": "northwest"
+    },
+    {
+      "code": "NK",
+      "name": "North Kivu",
+      "sourceName": "Nord-Kivu",
+      "names": {
+        "pt": "Kivu do Norte",
+        "es": "Kivu del Norte"
+      },
+      "alias": [
+        "Nord-Kivu"
+      ],
+      "capital": "Goma",
+      "region": "east"
+    },
+    {
+      "code": "NU",
+      "name": "North Ubangi",
+      "sourceName": "Nord-Ubangi",
+      "names": {
+        "pt": "Ubangui do Norte",
+        "es": "Ubangi del Norte"
+      },
+      "alias": [
+        "Nord-Ubangi"
+      ],
+      "capital": "Gbadolite",
+      "region": "northwest"
+    },
+    {
+      "code": "SA",
+      "name": "Sankuru",
+      "capital": "Lusambo",
+      "region": "center"
+    },
+    {
+      "code": "SK",
+      "name": "South Kivu",
+      "sourceName": "Sud-Kivu",
+      "names": {
+        "pt": "Kivu do Sul",
+        "es": "Kivu del Sur"
+      },
+      "alias": [
+        "Sud-Kivu"
+      ],
+      "capital": "Bukavu",
+      "region": "east"
+    },
+    {
+      "code": "SU",
+      "name": "South Ubangi",
+      "sourceName": "Sud-Ubangi",
+      "names": {
+        "pt": "Ubangui do Sul",
+        "es": "Ubangi del Sur"
+      },
+      "alias": [
+        "Sud-Ubangi"
+      ],
+      "capital": "Gemena",
+      "region": "northwest"
+    },
+    {
+      "code": "TA",
+      "name": "Tanganyika",
+      "names": {
+        "pt": "Tanganica",
+        "es": "Tanganica"
+      },
+      "alias": [
+        "Tanganyika"
+      ],
+      "capital": "Kalemie",
+      "region": "east"
+    },
+    {
+      "code": "TO",
+      "name": "Tshopo",
+      "capital": "Kisangani",
+      "region": "northeast"
+    },
+    {
+      "code": "TU",
+      "name": "Tshuapa",
+      "capital": "Boende",
+      "region": "northwest"
+    }
+  ],
+  "probes": [
+    [
+      "Matadi",
+      13.4833,
+      -5.8167,
+      "cd-bc"
+    ],
+    [
+      "Buta",
+      24.73,
+      2.7858,
+      "cd-bu"
+    ],
+    [
+      "Mbandaka",
+      18.2603,
+      0.0486,
+      "cd-eq"
+    ],
+    [
+      "Lubumbashi",
+      27.4828,
+      -11.6642,
+      "cd-hk"
+    ],
+    [
+      "Kamina",
+      24.998,
+      -8.7351,
+      "cd-hl"
+    ],
+    [
+      "Isiro",
+      27.6167,
+      2.7833,
+      "cd-hu"
+    ],
+    [
+      "Bunia",
+      30.25,
+      1.5667,
+      "cd-it"
+    ],
+    [
+      "Kananga",
+      22.4167,
+      -5.8961,
+      "cd-kc"
+    ],
+    [
+      "Mbuji-Mayi",
+      23.5997,
+      -6.1261,
+      "cd-ke"
+    ],
+    [
+      "Kenge",
+      16.9,
+      -4.83,
+      "cd-kg"
+    ],
+    [
+      "Bandundu",
+      17.3833,
+      -3.3167,
+      "cd-kl"
+    ],
+    [
+      "Tshikapa",
+      20.7958,
+      -6.4167,
+      "cd-ks"
+    ],
+    [
+      "Kabinda",
+      24.4818,
+      -6.1379,
+      "cd-lo"
+    ],
+    [
+      "Kolwezi",
+      25.4667,
+      -10.7167,
+      "cd-lu"
+    ],
+    [
+      "Kindu",
+      25.9167,
+      -2.95,
+      "cd-ma"
+    ],
+    [
+      "Inongo",
+      18.28,
+      -1.94,
+      "cd-mn"
+    ],
+    [
+      "Lisala",
+      21.51,
+      2.14,
+      "cd-mo"
+    ],
+    [
+      "Goma",
+      29.2229,
+      -1.6641,
+      "cd-nk"
+    ],
+    [
+      "Gbadolite",
+      21.0,
+      4.275,
+      "cd-nu"
+    ],
+    [
+      "Lusambo",
+      23.4368,
+      -4.9729,
+      "cd-sa"
+    ],
+    [
+      "Bukavu",
+      28.8428,
+      -2.4908,
+      "cd-sk"
+    ],
+    [
+      "Gemena",
+      19.7667,
+      3.25,
+      "cd-su"
+    ],
+    [
+      "Kalemie",
+      29.1906,
+      -5.9128,
+      "cd-ta"
+    ],
+    [
+      "Kisangani",
+      25.1911,
+      0.5153,
+      "cd-to"
+    ],
+    [
+      "Boende",
+      20.8806,
+      -0.2817,
+      "cd-tu"
+    ]
+  ]
+}

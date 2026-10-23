@@ -1030,6 +1030,409 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     }
   },
   {
+    "id": "eg",
+    "carta": "818",
+    "name": {
+      "pt": "Egito",
+      "en": "Egypt",
+      "es": "Egipto"
+    },
+    "unit": {
+      "pt": {
+        "one": "província",
+        "many": "províncias",
+        "g": "f"
+      },
+      "en": {
+        "one": "governorate",
+        "many": "governorates"
+      },
+      "es": {
+        "one": "gobernación",
+        "many": "gobernaciones",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "delta",
+        "name": {
+          "pt": "Delta e Cairo",
+          "en": "Delta and Cairo",
+          "es": "Delta y El Cairo"
+        },
+        "count": 11,
+        "capitals": 11,
+        "flags": 0
+      },
+      {
+        "key": "canal",
+        "name": {
+          "pt": "Canal e Sinai",
+          "en": "Canal and Sinai",
+          "es": "Canal y Sinaí"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "upper",
+        "name": {
+          "pt": "Alto Egito",
+          "en": "Upper Egypt",
+          "es": "Alto Egipto"
+        },
+        "count": 8,
+        "capitals": 8,
+        "flags": 0
+      },
+      {
+        "key": "desert",
+        "name": {
+          "pt": "Desertos",
+          "en": "Deserts",
+          "es": "Desiertos"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      }
+    ],
+    "count": 27,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 27,
+    "frame": [
+      24.65,
+      21.994,
+      36.893,
+      31.671
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-eg.pmtiles",
+      "bytes": 592686,
+      "sha256": "f105fda1f59a1fe0f4d6e5c3cb3f28901d4117989fada4692d6d64d4ad9be3fe"
+    }
+  },
+  {
+    "id": "ng",
+    "carta": "566",
+    "name": {
+      "pt": "Nigéria",
+      "en": "Nigeria",
+      "es": "Nigeria"
+    },
+    "unit": {
+      "pt": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      },
+      "en": {
+        "one": "state",
+        "many": "states"
+      },
+      "es": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "nc",
+        "name": {
+          "pt": "Centro-Norte",
+          "en": "North Central",
+          "es": "Centro-Norte"
+        },
+        "count": 7,
+        "capitals": 7,
+        "flags": 0
+      },
+      {
+        "key": "ne",
+        "name": {
+          "pt": "Nordeste",
+          "en": "North East",
+          "es": "Noreste"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "nw",
+        "name": {
+          "pt": "Noroeste",
+          "en": "North West",
+          "es": "Noroeste"
+        },
+        "count": 7,
+        "capitals": 7,
+        "flags": 0
+      },
+      {
+        "key": "se",
+        "name": {
+          "pt": "Sudeste",
+          "en": "South East",
+          "es": "Sureste"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "ss",
+        "name": {
+          "pt": "Sul-Sul",
+          "en": "South South",
+          "es": "Sur-Sur"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "sw",
+        "name": {
+          "pt": "Sudoeste",
+          "en": "South West",
+          "es": "Suroeste"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      }
+    ],
+    "count": 37,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 37,
+    "frame": [
+      2.678,
+      4.27,
+      14.676,
+      13.886
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-ng.pmtiles",
+      "bytes": 305403,
+      "sha256": "84635b8196bb3779ce73660cfd2652873718b363f8278c6f15713e6f81af3c3d"
+    }
+  },
+  {
+    "id": "et",
+    "carta": "231",
+    "name": {
+      "pt": "Etiópia",
+      "en": "Ethiopia",
+      "es": "Etiopía"
+    },
+    "unit": {
+      "pt": {
+        "one": "região",
+        "many": "regiões",
+        "g": "f"
+      },
+      "en": {
+        "one": "region",
+        "many": "regions"
+      },
+      "es": {
+        "one": "región",
+        "many": "regiones",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      },
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      },
+      {
+        "key": "center",
+        "name": {
+          "pt": "Centro",
+          "en": "Centre",
+          "es": "Centro"
+        },
+        "count": 3,
+        "capitals": 1,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 3,
+        "capitals": 2,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 2,
+        "capitals": 2,
+        "flags": 0
+      }
+    ],
+    "count": 14,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 11,
+    "frame": [
+      32.998,
+      3.397,
+      47.982,
+      14.894
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-et.pmtiles",
+      "bytes": 212286,
+      "sha256": "63f8d2f7cd25dab10a0858528ea12c470575e9f643d9a177b7efb0027cfbed7b"
+    }
+  },
+  {
+    "id": "cd",
+    "carta": "180",
+    "name": {
+      "pt": "RD Congo",
+      "en": "DR Congo",
+      "es": "RD Congo"
+    },
+    "unit": {
+      "pt": {
+        "one": "província",
+        "many": "províncias",
+        "g": "f"
+      },
+      "en": {
+        "one": "province",
+        "many": "provinces"
+      },
+      "es": {
+        "one": "provincia",
+        "many": "provincias",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 5,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "northwest",
+        "name": {
+          "pt": "Noroeste",
+          "en": "Northwest",
+          "es": "Noroeste"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "northeast",
+        "name": {
+          "pt": "Nordeste",
+          "en": "Northeast",
+          "es": "Noreste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      },
+      {
+        "key": "center",
+        "name": {
+          "pt": "Centro",
+          "en": "Centre",
+          "es": "Centro"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      }
+    ],
+    "count": 26,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 25,
+    "frame": [
+      12.2,
+      -13.459,
+      31.277,
+      5.392
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-cd.pmtiles",
+      "bytes": 755980,
+      "sha256": "2c0c7b68260aa02599022dc0f4a69a0b1793bf17df48864c3361bcff7f8e85d2"
+    }
+  },
+  {
     "id": "1914",
     "kind": "era",
     "subtitle": {

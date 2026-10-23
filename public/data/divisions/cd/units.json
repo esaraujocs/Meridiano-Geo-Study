@@ -1,0 +1,829 @@
+{
+ "source": "República Democrática do Congo: as 26 províncias da reforma de 2015 (Kinshasa, cidade-província, sem capital). Capitais do Wikidata, com Tshikapa em Kasai e Kananga em Kasai Central (o Wikidata ainda traz as de antes de 2015). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Oeste, Noroeste, Nordeste, Leste, Sul e Centro, agrupamento nosso (perto das 11 províncias de antes de 2015).",
+ "country": "cd",
+ "regions": {
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "northwest": {
+   "pt": "Noroeste",
+   "en": "Northwest",
+   "es": "Noroeste"
+  },
+  "northeast": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Noreste"
+  },
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  },
+  "center": {
+   "pt": "Centro",
+   "en": "Centre",
+   "es": "Centro"
+  }
+ },
+ "units": {
+  "cd-bc": {
+   "code": "BC",
+   "ref": "CD-BC",
+   "name": {
+    "pt": "Kongo Central",
+    "en": "Kongo Central",
+    "es": "Kongo Central"
+   },
+   "alias": [
+    "Congo Central",
+    "Bas-Congo"
+   ],
+   "capital": "Matadi",
+   "region": "west",
+   "area": 54118,
+   "ll": [
+    -5.2895,
+    15.1711
+   ],
+   "bbox": [
+    12.2,
+    -6.078,
+    16.267,
+    -4.278
+   ],
+   "borders": [
+    "cd-kg",
+    "cd-kn"
+   ]
+  },
+  "cd-bu": {
+   "code": "BU",
+   "ref": "CD-BU",
+   "name": {
+    "pt": "Baixo Uele",
+    "en": "Bas-Uele",
+    "es": "Bajo Uele"
+   },
+   "alias": [
+    "Bas-Uele"
+   ],
+   "capital": "Buta",
+   "region": "northeast",
+   "area": 148881,
+   "ll": [
+    3.7268,
+    25.7881
+   ],
+   "bbox": [
+    22.433,
+    1.938,
+    27.702,
+    5.392
+   ],
+   "borders": [
+    "cd-hu",
+    "cd-mo",
+    "cd-nu",
+    "cd-to"
+   ]
+  },
+  "cd-eq": {
+   "code": "EQ",
+   "ref": "CD-EQ",
+   "name": {
+    "pt": "Équateur",
+    "en": "Équateur",
+    "es": "Ecuador"
+   },
+   "alias": [
+    "Equateur"
+   ],
+   "capital": "Mbandaka",
+   "region": "northwest",
+   "area": 101916,
+   "ll": [
+    0.3383,
+    19.0049
+   ],
+   "bbox": [
+    16.511,
+    -2.0,
+    20.782,
+    2.126
+   ],
+   "borders": [
+    "cd-mn",
+    "cd-mo",
+    "cd-su",
+    "cd-tu"
+   ]
+  },
+  "cd-hk": {
+   "code": "HK",
+   "ref": "CD-HK",
+   "name": {
+    "pt": "Alto Katanga",
+    "en": "Haut-Katanga",
+    "es": "Alto Katanga"
+   },
+   "alias": [
+    "Haut-Katanga"
+   ],
+   "capital": "Lubumbashi",
+   "region": "south",
+   "area": 122778,
+   "ll": [
+    -9.2681,
+    27.5258
+   ],
+   "bbox": [
+    25.49,
+    -13.459,
+    29.815,
+    -7.58
+   ],
+   "borders": [
+    "cd-hl",
+    "cd-lu",
+    "cd-ta"
+   ]
+  },
+  "cd-hl": {
+   "code": "HL",
+   "ref": "CD-HL",
+   "name": {
+    "pt": "Alto Lomami",
+    "en": "Haut-Lomami",
+    "es": "Alto Lomami"
+   },
+   "alias": [
+    "Haut-Lomami"
+   ],
+   "capital": "Kamina",
+   "region": "south",
+   "area": 109396,
+   "ll": [
+    -8.1079,
+    25.1556
+   ],
+   "bbox": [
+    23.634,
+    -10.124,
+    27.89,
+    -6.175
+   ],
+   "borders": [
+    "cd-hk",
+    "cd-lo",
+    "cd-lu",
+    "cd-ta"
+   ]
+  },
+  "cd-hu": {
+   "code": "HU",
+   "ref": "CD-HU",
+   "name": {
+    "pt": "Alto Uele",
+    "en": "Haut-Uele",
+    "es": "Alto Uele"
+   },
+   "alias": [
+    "Haut-Uele"
+   ],
+   "capital": "Isiro",
+   "region": "northeast",
+   "area": 91929,
+   "ll": [
+    3.3825,
+    28.7682
+   ],
+   "bbox": [
+    26.87,
+    1.47,
+    30.579,
+    5.209
+   ],
+   "borders": [
+    "cd-bu",
+    "cd-it",
+    "cd-to"
+   ]
+  },
+  "cd-it": {
+   "code": "IT",
+   "ref": "CD-IT",
+   "name": {
+    "pt": "Ituri",
+    "en": "Ituri",
+    "es": "Ituri"
+   },
+   "capital": "Bunia",
+   "region": "northeast",
+   "area": 63607,
+   "ll": [
+    1.4253,
+    28.8876
+   ],
+   "bbox": [
+    27.43,
+    0.52,
+    31.277,
+    3.683
+   ],
+   "borders": [
+    "cd-hu",
+    "cd-nk",
+    "cd-to"
+   ]
+  },
+  "cd-kc": {
+   "code": "KC",
+   "ref": "CD-KC",
+   "name": {
+    "pt": "Kasai Central",
+    "en": "Kasaï-Central",
+    "es": "Kasai Central"
+   },
+   "alias": [
+    "Kasai-Central"
+   ],
+   "capital": "Kananga",
+   "region": "center",
+   "area": 57294,
+   "ll": [
+    -6.4039,
+    22.3476
+   ],
+   "bbox": [
+    21.407,
+    -7.898,
+    23.764,
+    -4.203
+   ],
+   "borders": [
+    "cd-ke",
+    "cd-ks",
+    "cd-lo",
+    "cd-lu",
+    "cd-sa"
+   ]
+  },
+  "cd-ke": {
+   "code": "KE",
+   "ref": "CD-KE",
+   "name": {
+    "pt": "Kasai Oriental",
+    "en": "Kasaï-Oriental",
+    "es": "Kasai Oriental"
+   },
+   "alias": [
+    "Kasai-Oriental"
+   ],
+   "capital": "Mbuji-Mayi",
+   "region": "center",
+   "area": 10184,
+   "ll": [
+    -6.1588,
+    23.5085
+   ],
+   "bbox": [
+    22.944,
+    -6.782,
+    24.176,
+    -5.637
+   ],
+   "borders": [
+    "cd-kc",
+    "cd-lo",
+    "cd-sa"
+   ]
+  },
+  "cd-kg": {
+   "code": "KG",
+   "ref": "CD-KG",
+   "name": {
+    "pt": "Kwango",
+    "en": "Kwango",
+    "es": "Kwango"
+   },
+   "alias": [
+    "Cuango"
+   ],
+   "capital": "Kenge",
+   "region": "west",
+   "area": 90157,
+   "ll": [
+    -6.9509,
+    18.0978
+   ],
+   "bbox": [
+    16.114,
+    -8.13,
+    19.975,
+    -4.234
+   ],
+   "borders": [
+    "cd-bc",
+    "cd-kl",
+    "cd-kn",
+    "cd-ks"
+   ]
+  },
+  "cd-kl": {
+   "code": "KL",
+   "ref": "CD-KL",
+   "name": {
+    "pt": "Kwilu",
+    "en": "Kwilu",
+    "es": "Kwilu"
+   },
+   "alias": [
+    "Cuílo"
+   ],
+   "capital": "Bandundu",
+   "region": "west",
+   "area": 79581,
+   "ll": [
+    -4.7962,
+    18.7643
+   ],
+   "bbox": [
+    16.479,
+    -6.401,
+    20.205,
+    -3.22
+   ],
+   "borders": [
+    "cd-kg",
+    "cd-kn",
+    "cd-ks",
+    "cd-mn"
+   ]
+  },
+  "cd-kn": {
+   "code": "KN",
+   "ref": "CD-KN",
+   "name": {
+    "pt": "Kinshasa",
+    "en": "Kinshasa",
+    "es": "Kinsasa"
+   },
+   "alias": [
+    "Quinxassa"
+   ],
+   "region": "west",
+   "area": 10789,
+   "ll": [
+    -4.4114,
+    15.9982
+   ],
+   "bbox": [
+    15.127,
+    -5.032,
+    16.534,
+    -3.928
+   ],
+   "borders": [
+    "cd-bc",
+    "cd-kg",
+    "cd-kl",
+    "cd-mn"
+   ]
+  },
+  "cd-ks": {
+   "code": "KS",
+   "ref": "CD-KS",
+   "name": {
+    "pt": "Kasai",
+    "en": "Kasaï",
+    "es": "Kasai"
+   },
+   "alias": [
+    "Kasaï"
+   ],
+   "capital": "Tshikapa",
+   "region": "center",
+   "area": 96225,
+   "ll": [
+    -6.1633,
+    20.8143
+   ],
+   "bbox": [
+    19.674,
+    -7.283,
+    22.539,
+    -2.464
+   ],
+   "borders": [
+    "cd-kc",
+    "cd-kg",
+    "cd-kl",
+    "cd-mn",
+    "cd-sa",
+    "cd-tu"
+   ]
+  },
+  "cd-lo": {
+   "code": "LO",
+   "ref": "CD-LO",
+   "name": {
+    "pt": "Lomami",
+    "en": "Lomami",
+    "es": "Lomami"
+   },
+   "capital": "Kabinda",
+   "region": "center",
+   "area": 53744,
+   "ll": [
+    -5.6974,
+    25.1764
+   ],
+   "bbox": [
+    23.017,
+    -7.995,
+    26.278,
+    -4.814
+   ],
+   "borders": [
+    "cd-hl",
+    "cd-kc",
+    "cd-ke",
+    "cd-lu",
+    "cd-ma",
+    "cd-sa",
+    "cd-ta"
+   ]
+  },
+  "cd-lu": {
+   "code": "LU",
+   "ref": "CD-LU",
+   "name": {
+    "pt": "Lualaba",
+    "en": "Lualaba",
+    "es": "Lualaba"
+   },
+   "capital": "Kolwezi",
+   "region": "south",
+   "area": 121667,
+   "ll": [
+    -9.541,
+    23.0855
+   ],
+   "bbox": [
+    21.751,
+    -11.737,
+    27.132,
+    -7.657
+   ],
+   "borders": [
+    "cd-hk",
+    "cd-hl",
+    "cd-kc",
+    "cd-lo"
+   ]
+  },
+  "cd-ma": {
+   "code": "MA",
+   "ref": "CD-MA",
+   "name": {
+    "pt": "Maniema",
+    "en": "Maniema",
+    "es": "Maniema"
+   },
+   "capital": "Kindu",
+   "region": "east",
+   "area": 130307,
+   "ll": [
+    -3.6206,
+    25.9994
+   ],
+   "bbox": [
+    24.471,
+    -5.0,
+    28.8,
+    0.009
+   ],
+   "borders": [
+    "cd-lo",
+    "cd-nk",
+    "cd-sa",
+    "cd-sk",
+    "cd-ta",
+    "cd-to"
+   ]
+  },
+  "cd-mn": {
+   "code": "MN",
+   "ref": "CD-MN",
+   "name": {
+    "pt": "Mai-Ndombe",
+    "en": "Mai-Ndombe",
+    "es": "Mai-Ndombe"
+   },
+   "capital": "Inongo",
+   "region": "west",
+   "area": 127214,
+   "ll": [
+    -2.8187,
+    19.4482
+   ],
+   "bbox": [
+    15.895,
+    -4.383,
+    21.005,
+    -0.695
+   ],
+   "borders": [
+    "cd-eq",
+    "cd-kl",
+    "cd-kn",
+    "cd-ks",
+    "cd-tu"
+   ]
+  },
+  "cd-mo": {
+   "code": "MO",
+   "ref": "CD-MO",
+   "name": {
+    "pt": "Mongala",
+    "en": "Mongala",
+    "es": "Mongala"
+   },
+   "capital": "Lisala",
+   "region": "northwest",
+   "area": 56340,
+   "ll": [
+    2.2429,
+    21.488
+   ],
+   "bbox": [
+    19.208,
+    0.726,
+    23.58,
+    3.333
+   ],
+   "borders": [
+    "cd-bu",
+    "cd-eq",
+    "cd-nu",
+    "cd-su",
+    "cd-to",
+    "cd-tu"
+   ]
+  },
+  "cd-nk": {
+   "code": "NK",
+   "ref": "CD-NK",
+   "name": {
+    "pt": "Kivu do Norte",
+    "en": "North Kivu",
+    "es": "Kivu del Norte"
+   },
+   "alias": [
+    "Nord-Kivu"
+   ],
+   "capital": "Goma",
+   "region": "east",
+   "area": 57117,
+   "ll": [
+    -0.9451,
+    28.6188
+   ],
+   "bbox": [
+    27.227,
+    -2.066,
+    29.987,
+    0.954
+   ],
+   "borders": [
+    "cd-it",
+    "cd-ma",
+    "cd-sk",
+    "cd-to"
+   ]
+  },
+  "cd-nu": {
+   "code": "NU",
+   "ref": "CD-NU",
+   "name": {
+    "pt": "Ubangui do Norte",
+    "en": "North Ubangi",
+    "es": "Ubangi del Norte"
+   },
+   "alias": [
+    "Nord-Ubangi"
+   ],
+   "capital": "Gbadolite",
+   "region": "northwest",
+   "area": 54258,
+   "ll": [
+    3.6045,
+    21.7034
+   ],
+   "bbox": [
+    19.016,
+    2.888,
+    23.527,
+    5.15
+   ],
+   "borders": [
+    "cd-bu",
+    "cd-mo",
+    "cd-su"
+   ]
+  },
+  "cd-sa": {
+   "code": "SA",
+   "ref": "CD-SA",
+   "name": {
+    "pt": "Sankuru",
+    "en": "Sankuru",
+    "es": "Sankuru"
+   },
+   "capital": "Lusambo",
+   "region": "center",
+   "area": 106910,
+   "ll": [
+    -3.3362,
+    23.5221
+   ],
+   "bbox": [
+    21.701,
+    -5.857,
+    25.116,
+    -1.693
+   ],
+   "borders": [
+    "cd-kc",
+    "cd-ke",
+    "cd-ks",
+    "cd-lo",
+    "cd-ma",
+    "cd-to",
+    "cd-tu"
+   ]
+  },
+  "cd-sk": {
+   "code": "SK",
+   "ref": "CD-SK",
+   "name": {
+    "pt": "Kivu do Sul",
+    "en": "South Kivu",
+    "es": "Kivu del Sur"
+   },
+   "alias": [
+    "Sud-Kivu"
+   ],
+   "capital": "Bukavu",
+   "region": "east",
+   "area": 59397,
+   "ll": [
+    -3.1092,
+    28.0703
+   ],
+   "bbox": [
+    26.811,
+    -5.01,
+    29.264,
+    -1.619
+   ],
+   "borders": [
+    "cd-ma",
+    "cd-nk",
+    "cd-ta"
+   ]
+  },
+  "cd-su": {
+   "code": "SU",
+   "ref": "CD-SU",
+   "name": {
+    "pt": "Ubangui do Sul",
+    "en": "South Ubangi",
+    "es": "Ubangi del Sur"
+   },
+   "alias": [
+    "Sud-Ubangi"
+   ],
+   "capital": "Gemena",
+   "region": "northwest",
+   "area": 53274,
+   "ll": [
+    2.8947,
+    19.3821
+   ],
+   "bbox": [
+    18.072,
+    1.884,
+    20.907,
+    4.774
+   ],
+   "borders": [
+    "cd-eq",
+    "cd-mo",
+    "cd-nu"
+   ]
+  },
+  "cd-ta": {
+   "code": "TA",
+   "ref": "CD-TA",
+   "name": {
+    "pt": "Tanganica",
+    "en": "Tanganyika",
+    "es": "Tanganica"
+   },
+   "alias": [
+    "Tanganyika"
+   ],
+   "capital": "Kalemie",
+   "region": "east",
+   "area": 120769,
+   "ll": [
+    -6.2852,
+    27.9395
+   ],
+   "bbox": [
+    25.958,
+    -8.421,
+    30.591,
+    -5.0
+   ],
+   "borders": [
+    "cd-hk",
+    "cd-hl",
+    "cd-lo",
+    "cd-ma",
+    "cd-sk"
+   ]
+  },
+  "cd-to": {
+   "code": "TO",
+   "ref": "CD-TO",
+   "name": {
+    "pt": "Tshopo",
+    "en": "Tshopo",
+    "es": "Tshopo"
+   },
+   "capital": "Kisangani",
+   "region": "northeast",
+   "area": 197056,
+   "ll": [
+    0.7061,
+    24.6797
+   ],
+   "bbox": [
+    22.264,
+    -1.981,
+    28.182,
+    2.399
+   ],
+   "borders": [
+    "cd-bu",
+    "cd-hu",
+    "cd-it",
+    "cd-ma",
+    "cd-mo",
+    "cd-nk",
+    "cd-sa",
+    "cd-tu"
+   ]
+  },
+  "cd-tu": {
+   "code": "TU",
+   "ref": "CD-TU",
+   "name": {
+    "pt": "Tshuapa",
+    "en": "Tshuapa",
+    "es": "Tshuapa"
+   },
+   "capital": "Boende",
+   "region": "northwest",
+   "area": 138795,
+   "ll": [
+    -0.7039,
+    21.6847
+   ],
+   "bbox": [
+    19.46,
+    -2.669,
+    24.412,
+    1.762
+   ],
+   "borders": [
+    "cd-eq",
+    "cd-ks",
+    "cd-mn",
+    "cd-mo",
+    "cd-sa",
+    "cd-to"
+   ]
+  }
+ }
+}

@@ -61,8 +61,8 @@ async function mapReader(file) {
 // ---- cada país do índice: o pacote inteiro, sem nada próprio dele
 // a época de 1914 entra no índice quando o pacote dela é gerado (até lá o cartão de Mapas históricos fica escondido no Hub)
 const HAS_1914 = DIVISION_INDEX.some((country) => country.id === "1914");
-assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", ...(HAS_1914 ? ["1914"] : [])], "o índice traz os 11 países (e a época de 1914), na ordem da Mesa");
-assert.deepEqual(DIVISION_INDEX.map((country) => country.kind ?? "country"), [...Array(11).fill("country"), ...(HAS_1914 ? ["era"] : [])]);
+assert.deepEqual(DIVISION_INDEX.map((country) => country.id), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", "eg", "ng", "et", "cd", ...(HAS_1914 ? ["1914"] : [])], "o índice traz os 15 países (e a época de 1914), na ordem da Mesa");
+assert.deepEqual(DIVISION_INDEX.map((country) => country.kind ?? "country"), [...Array(15).fill("country"), ...(HAS_1914 ? ["era"] : [])]);
 const files = {};
 let points = 0;
 for (const country of DIVISION_INDEX) {
@@ -278,7 +278,7 @@ for (const country of DIVISION_INDEX) {
 }
 
 // ---- Alemanha, Rússia, Argentina, Peru, Austrália e Indonésia (22/10/2026): as contagens e as unidades sem capital
-for (const [cc, count, capitals, none] of [["de", 16, 13, ["be", "hh", "hb"]], ["ru", 83, 81, ["mow", "spe"]], ["ar", 24, 23, ["c"]], ["pe", 25, 25, []], ["au", 8, 8, []], ["id", 38, 37, ["jk"]]]) {
+for (const [cc, count, capitals, none] of [["de", 16, 13, ["be", "hh", "hb"]], ["ru", 83, 81, ["mow", "spe"]], ["ar", 24, 23, ["c"]], ["pe", 25, 25, []], ["au", 8, 8, []], ["id", 38, 37, ["jk"]], ["eg", 27, 27, []], ["ng", 37, 37, []], ["et", 14, 11, ["aa", "dd", "or"]], ["cd", 26, 25, ["kn"]]]) {
   const { units } = files[cc];
   assert.equal(Object.keys(units.units).length, count, `${cc}: ${count} unidades`);
   assert.equal(DIVISION_INDEX.find((country) => country.id === cc).capitals, capitals, `${cc}: ${capitals} com capital`);
@@ -464,8 +464,8 @@ assert.equal(modeStats.sessionInMode({ family: "brasil", variant: "br-mapa" }, m
 assert.equal(modeStats.sessionInMode({ family: "divisoes", variant: "dv-mapa", regions: ["dv:us:west", "dv:us:south"] }, mapMode), true);
 
 // seletor de países da Mesa: continente pelo mapa-múndi, precisão e últimos jogados pelas sessões, busca sem acento nos três idiomas
-const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" }, "724": { reg: "Europe" }, "250": { reg: "Europe" }, "276": { reg: "Europe" }, "643": { reg: "Europe" }, "32": { reg: "Americas" }, "604": { reg: "Americas" }, "36": { reg: "Oceania" }, "360": { reg: "Asia" } };
-assert.deepEqual(D.divisionsOfKind("country").map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia", "Europe", "Europe", "Europe", "Europe", "Americas", "Americas", "Oceania", "Asia"]);
+const worldRegs = { "76": { reg: "Americas" }, "840": { reg: "Americas" }, "156": { reg: "Asia" }, "724": { reg: "Europe" }, "250": { reg: "Europe" }, "276": { reg: "Europe" }, "643": { reg: "Europe" }, "32": { reg: "Americas" }, "604": { reg: "Americas" }, "36": { reg: "Oceania" }, "360": { reg: "Asia" }, "818": { reg: "Africa" }, "566": { reg: "Africa" }, "231": { reg: "Africa" }, "180": { reg: "Africa" } };
+assert.deepEqual(D.divisionsOfKind("country").map((country) => D.divisionContinent(country, worldRegs)), ["Americas", "Americas", "Asia", "Europe", "Europe", "Europe", "Europe", "Americas", "Americas", "Oceania", "Asia", "Africa", "Africa", "Africa", "Africa"]);
 assert.equal(D.divisionContinent(D.divisionCountry("br"), {}), null);
 const plays = D.divisionCountryPlays([
   { family: "divisoes", variant: "dv-mapa", region: "dv:us", complete: true, roundCount: 10, correct: 7, startedAt: 300 },
@@ -478,7 +478,7 @@ assert.deepEqual(plays, { us: { last: 500, matches: 2, accuracy: 80 }, br: { las
 assert.deepEqual(D.recentDivisionCountries(plays), ["us", "br"]); assert.deepEqual(D.recentDivisionCountries(plays, 1), ["us"]);
 assert.deepEqual(D.recentDivisionCountries({ xx: { last: 999, matches: 1, accuracy: 1 }, ...plays }), ["us", "br"], "país que saiu do índice some");
 const search = (query, extra) => D.divisionsOfKind("country").filter((country) => D.divisionCountryMatches(country, query, extra?.[country.id])).map((country) => country.id);
-assert.deepEqual(search(""), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
+assert.deepEqual(search(""), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", "eg", "ng", "et", "cd"]); assert.deepEqual(search("  CHI"), ["cn"]); assert.deepEqual(search("eua"), ["us"]); assert.deepEqual(search("usa"), ["us"]);
 assert.deepEqual(search("brazil"), ["br"], "o nome em inglês vale"); assert.deepEqual(search("estados unidos"), [], "sem o nome do mapa-múndi, não");
 assert.deepEqual(search("estados unidos", { us: ["Estados Unidos", "United States"] }), ["us"], "com o nome do mapa-múndi, sim");
 assert.deepEqual(search("ee. uu"), ["us"], "o nome em espanhol"); assert.deepEqual(search("xyz"), []);
@@ -491,7 +491,7 @@ assert.equal(dominated.OUTSIDE_DOMAIN_FAMILIES.has("epocas"), true); assert.equa
 assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
 assert.equal(D.isDivisionFamily("epocas"), true);
 if (HAS_1914) {
-assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); assert.deepEqual(D.divisionsOfKind("country").map((country) => country.id), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id"]);
+assert.deepEqual(D.divisionsOfKind("era").map((era) => era.id), ["1914"]); assert.deepEqual(D.divisionsOfKind("country").map((country) => country.id), ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", "eg", "ng", "et", "cd"]);
 assert.equal(D.kindOf(D.divisionCountry("1914")), "era"); assert.equal(D.kindOf(D.divisionCountry("br")), "country");
 assert.equal(D.familyOfKind("era"), "epocas"); assert.equal(D.kindOfFamily("epocas"), "era"); assert.equal(D.kindOfFamily("brasil"), "country"); assert.equal(D.kindOfFamily("mapa"), null);
 assert.equal(D.isDivisionFamily("epocas"), true);
