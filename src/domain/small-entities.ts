@@ -100,9 +100,9 @@ export function filteredMarkerSource(entityIds: Iterable<string>, source: SmallE
 
 /** Marcadores no tabuleiro de um país (22/10/2026, com as regiões ultramarinas da França): toda unidade menor que `BOARD_MARKER_KM2` ganha um
  *  ponto clicável no rótulo dela, como as ilhas do mapa-múndi (Martinica, Reunião, Ceuta, Rhode Island). O ponto some quando o contorno passa de
- *  ~`BOARD_MARKER_PX` na tela; o zoom é encaixado numa das faixas do mapa-múndi (as camadas dos marcadores são as mesmas). */
+ *  ~`BOARD_MARKER_PX` na tela (8: com 16 o Reino Unido ficava coberto de pontos); o zoom é encaixado numa das faixas do mapa-múndi (as camadas dos marcadores são as mesmas). */
 export const BOARD_MARKER_KM2 = 5000;
-export const BOARD_MARKER_PX = 16;
+export const BOARD_MARKER_PX = 8;
 export function boardMarkerSource(units: readonly { id: string; ll?: readonly [number, number]; area?: number; bbox?: readonly [number, number, number, number] }[]): SmallEntitySource {
   const features: MarkerFeature[] = [];
   for (const unit of units) {

@@ -6,6 +6,7 @@ Escolhe as linhas pelo índice local build/map-hd/overture-meta.parquet (feito p
 linhas que as contêm (as colunas necessárias). Retoma de onde parou: cada grupo baixado vira um arquivo em build/divisions/<país>/rg/.
 Grava build/divisions/<país>/overture-regions.parquet (id, region, class, is_land, is_territorial, name, geometry WKB).
 """
+import json
 import os
 import sys
 import time
@@ -27,7 +28,11 @@ def main():
         sys.exit("uso: fetch-overture-regions.py <país>")
     country = sys.argv[1].lower()
     meta = pq.read_table(os.path.join(ROOT, "map-hd", "overture-meta.parquet"))
-    rows = meta.filter(pc.and_(pc.equal(meta["country"], country.upper()), pc.equal(meta["subtype"], "region"))).to_pylist()
+    # `overtureSubtype` da config: o nível do Overture que o pacote lê (o Reino Unido usa "county": os condados e as áreas de conselho, juntados
+    # pela config; o padrão é "region", o primeiro nível)
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "countries", f"{country}.json")
+    subtype = json.load(open(config_path, encoding="utf8")).get("overtureSubtype", "region") if os.path.exists(config_path) else "region"
+    rows = meta.filter(pc.and_(pc.equal(meta["country"], country.upper()), pc.equal(meta["subtype"], subtype))).to_pylist()
     if not rows:
         sys.exit(f"nenhuma divisão de primeiro nível de {country.upper()} no índice do Overture")
     wanted = pa.array([row["id"] for row in rows])

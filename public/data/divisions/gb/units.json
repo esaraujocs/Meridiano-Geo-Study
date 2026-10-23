@@ -1,0 +1,4140 @@
+{
+ "source": "Reino Unido (opção B do Enzo, 22/10/2026): os 48 condados cerimoniais da Inglaterra, as 32 áreas de conselho da Escócia, as 22 áreas principais de Gales e os 11 distritos da Irlanda do Norte (113; palavra \"condado\"). Fonte: o nível \"county\" do Overture (overtureSubtype), juntado pela config (sourceNames): os condados ingleses saem das 151 autoridades do Overture (Grande Londres = os 32 bairros; Stockton-on-Tees fica inteira em Durham, Middlesbrough e Redcar em Yorkshire do Norte). A terra é a das 4 nações do mapa HD (alsoCarta); Man, Jersey e Guernsey ficam de fora. Nomes do Wikidata e da Wikipédia, curados; capitais = a sede do condado ou do conselho (Wikidata P36); sem capital: Grande Londres, a City of London, os 6 condados metropolitanos (sem conselho de condado) e Aberdeenshire (a sede fica em Aberdeen, que é outra unidade); a Irlanda do Norte sem capitais (as sedes de alguns distritos se dividem entre cidades). População do Wikidata. Línguas co-oficiais: o gaélico escocês (Gaelic Language Act 2005), o galês (Welsh Language Measure 2011) e o irlandês (Identity and Language Act 2022). Recortes: Inglaterra Norte, Centro e Sul, Escócia, Gales e Irlanda do Norte.",
+ "country": "gb",
+ "regions": {
+  "eng-north": {
+   "pt": "Inglaterra · Norte",
+   "en": "England · North",
+   "es": "Inglaterra · Norte"
+  },
+  "eng-mid": {
+   "pt": "Inglaterra · Centro",
+   "en": "England · Midlands",
+   "es": "Inglaterra · Centro"
+  },
+  "eng-south": {
+   "pt": "Inglaterra · Sul",
+   "en": "England · South",
+   "es": "Inglaterra · Sur"
+  },
+  "sct": {
+   "pt": "Escócia",
+   "en": "Scotland",
+   "es": "Escocia"
+  },
+  "wls": {
+   "pt": "País de Gales",
+   "en": "Wales",
+   "es": "Gales"
+  },
+  "nir": {
+   "pt": "Irlanda do Norte",
+   "en": "Northern Ireland",
+   "es": "Irlanda del Norte"
+  }
+ },
+ "units": {
+  "gb-aberd2": {
+   "code": "ABERD2",
+   "ref": "GB-ABERD2",
+   "name": {
+    "pt": "Aberdeenshire",
+    "en": "Aberdeenshire",
+    "es": "Aberdeenshire"
+   },
+   "region": "sct",
+   "area": 6294,
+   "ll": [
+    57.2204,
+    -2.6369
+   ],
+   "bbox": [
+    -3.802,
+    56.748,
+    -1.766,
+    57.701
+   ],
+   "borders": [
+    "gb-aberde",
+    "gb-angus",
+    "gb-highla",
+    "gb-moray",
+    "gb-pertha"
+   ],
+   "pop": 261210,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-aberde": {
+   "code": "ABERDE",
+   "ref": "GB-ABERDE",
+   "name": {
+    "pt": "Aberdeen",
+    "en": "Aberdeen City",
+    "es": "Aberdeen"
+   },
+   "capital": "Aberdeen",
+   "region": "sct",
+   "area": 185,
+   "ll": [
+    57.162,
+    -2.1999
+   ],
+   "bbox": [
+    -2.361,
+    57.076,
+    -2.041,
+    57.235
+   ],
+   "borders": [
+    "gb-aberd2"
+   ],
+   "pop": 228670,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-angus": {
+   "code": "ANGUS",
+   "ref": "GB-ANGUS",
+   "name": {
+    "pt": "Angus",
+    "en": "Angus",
+    "es": "Angus"
+   },
+   "capital": "Forfar",
+   "region": "sct",
+   "area": 2177,
+   "ll": [
+    56.7315,
+    -2.8804
+   ],
+   "bbox": [
+    -3.407,
+    56.465,
+    -2.427,
+    56.987
+   ],
+   "borders": [
+    "gb-aberd2",
+    "gb-dundee",
+    "gb-pertha"
+   ],
+   "pop": 115820,
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-antrim": {
+   "code": "ANTRIM",
+   "ref": "GB-ANTRIM",
+   "name": {
+    "pt": "Antrim and Newtownabbey",
+    "en": "Antrim and Newtownabbey",
+    "es": "Antrim and Newtownabbey"
+   },
+   "region": "nir",
+   "area": 568,
+   "ll": [
+    54.7107,
+    -6.1395
+   ],
+   "bbox": [
+    -6.479,
+    54.588,
+    -5.869,
+    54.812
+   ],
+   "borders": [
+    "gb-armagh",
+    "gb-belfas",
+    "gb-lisbur",
+    "gb-midand",
+    "gb-miduls"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-ardsan": {
+   "code": "ARDSAN",
+   "ref": "GB-ARDSAN",
+   "name": {
+    "pt": "Ards and North Down",
+    "en": "Ards and North Down",
+    "es": "Ards and North Down"
+   },
+   "region": "nir",
+   "area": 461,
+   "ll": [
+    54.6163,
+    -5.6027
+   ],
+   "bbox": [
+    -5.86,
+    54.332,
+    -5.433,
+    54.682
+   ],
+   "borders": [
+    "gb-belfas",
+    "gb-lisbur",
+    "gb-newrym"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-argyll": {
+   "code": "ARGYLL",
+   "ref": "GB-ARGYLL",
+   "name": {
+    "pt": "Argyll and Bute",
+    "en": "Argyll and Bute",
+    "es": "Argyll and Bute"
+   },
+   "capital": "Lochgilphead",
+   "region": "sct",
+   "area": 6948,
+   "ll": [
+    56.2789,
+    -5.3017
+   ],
+   "bbox": [
+    -6.998,
+    55.289,
+    -4.56,
+    56.692
+   ],
+   "borders": [
+    "gb-highla",
+    "gb-pertha",
+    "gb-stirli",
+    "gb-westdu"
+   ],
+   "pop": 85870,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-armagh": {
+   "code": "ARMAGH",
+   "ref": "GB-ARMAGH",
+   "name": {
+    "pt": "Armagh City, Banbridge and Craigavon",
+    "en": "Armagh City, Banbridge and Craigavon",
+    "es": "Armagh City, Banbridge and Craigavon"
+   },
+   "region": "nir",
+   "area": 1331,
+   "ll": [
+    54.3674,
+    -6.5611
+   ],
+   "bbox": [
+    -6.878,
+    54.18,
+    -6.02,
+    54.572
+   ],
+   "borders": [
+    "gb-antrim",
+    "gb-lisbur",
+    "gb-miduls",
+    "gb-newrym"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-bedfor": {
+   "code": "BEDFOR",
+   "ref": "GB-BEDFOR",
+   "name": {
+    "pt": "Bedfordshire",
+    "en": "Bedfordshire",
+    "es": "Bedfordshire"
+   },
+   "capital": "Bedford",
+   "region": "eng-south",
+   "area": 1225,
+   "ll": [
+    52.1087,
+    -0.4484
+   ],
+   "bbox": [
+    -0.702,
+    51.805,
+    -0.144,
+    52.323
+   ],
+   "borders": [
+    "gb-buckin",
+    "gb-cambri",
+    "gb-hertfo",
+    "gb-northa"
+   ],
+   "pop": 682311,
+   "popYear": 2020
+  },
+  "gb-belfas": {
+   "code": "BELFAS",
+   "ref": "GB-BELFAS",
+   "name": {
+    "pt": "Belfast",
+    "en": "Belfast",
+    "es": "Belfast"
+   },
+   "region": "nir",
+   "area": 134,
+   "ll": [
+    54.5897,
+    -5.9732
+   ],
+   "bbox": [
+    -6.061,
+    54.531,
+    -5.81,
+    54.693
+   ],
+   "borders": [
+    "gb-antrim",
+    "gb-ardsan",
+    "gb-lisbur"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-berksh": {
+   "code": "BERKSH",
+   "ref": "GB-BERKSH",
+   "name": {
+    "pt": "Berkshire",
+    "en": "Berkshire",
+    "es": "Berkshire"
+   },
+   "capital": "Reading",
+   "region": "eng-south",
+   "area": 1256,
+   "ll": [
+    51.4513,
+    -0.783
+   ],
+   "bbox": [
+    -1.585,
+    51.329,
+    -0.49,
+    51.577
+   ],
+   "borders": [
+    "gb-buckin",
+    "gb-greate",
+    "gb-hampsh",
+    "gb-oxford",
+    "gb-surrey",
+    "gb-wiltsh"
+   ],
+   "pop": 917762,
+   "popYear": 2020
+  },
+  "gb-blaena": {
+   "code": "BLAENA",
+   "ref": "GB-BLAENA",
+   "name": {
+    "pt": "Blaenau Gwent",
+    "en": "Blaenau Gwent",
+    "es": "Blaenau Gwent"
+   },
+   "capital": "Ebbw Vale",
+   "region": "wls",
+   "area": 109,
+   "ll": [
+    51.7513,
+    -3.1578
+   ],
+   "bbox": [
+    -3.31,
+    51.682,
+    -3.106,
+    51.826
+   ],
+   "borders": [
+    "gb-caerph",
+    "gb-monmou",
+    "gb-powys",
+    "gb-torfae"
+   ],
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-bridge": {
+   "code": "BRIDGE",
+   "ref": "GB-BRIDGE",
+   "name": {
+    "pt": "Bridgend",
+    "en": "Bridgend",
+    "es": "Bridgend"
+   },
+   "capital": "Bridgend",
+   "region": "wls",
+   "area": 247,
+   "ll": [
+    51.5642,
+    -3.5796
+   ],
+   "bbox": [
+    -3.763,
+    51.47,
+    -3.463,
+    51.646
+   ],
+   "borders": [
+    "gb-neathp",
+    "gb-rhondd",
+    "gb-valeof"
+   ],
+   "pop": 144876,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-bristo": {
+   "code": "BRISTO",
+   "ref": "GB-BRISTO",
+   "name": {
+    "pt": "Bristol",
+    "en": "Bristol",
+    "es": "Bristol"
+   },
+   "capital": "Bristol",
+   "region": "eng-south",
+   "area": 109,
+   "ll": [
+    51.4543,
+    -2.5823
+   ],
+   "bbox": [
+    -2.718,
+    51.398,
+    -2.51,
+    51.544
+   ],
+   "borders": [
+    "gb-glouce",
+    "gb-somers"
+   ],
+   "pop": 479024,
+   "popYear": 2022
+  },
+  "gb-buckin": {
+   "code": "BUCKIN",
+   "ref": "GB-BUCKIN",
+   "name": {
+    "pt": "Buckinghamshire",
+    "en": "Buckinghamshire",
+    "es": "Buckinghamshire"
+   },
+   "capital": "Aylesbury",
+   "region": "eng-south",
+   "area": 1878,
+   "ll": [
+    51.8832,
+    -0.8793
+   ],
+   "bbox": [
+    -1.141,
+    51.486,
+    -0.477,
+    52.195
+   ],
+   "borders": [
+    "gb-bedfor",
+    "gb-berksh",
+    "gb-greate",
+    "gb-hertfo",
+    "gb-northa",
+    "gb-oxford"
+   ],
+   "pop": 817263,
+   "popYear": 2020
+  },
+  "gb-caerph": {
+   "code": "CAERPH",
+   "ref": "GB-CAERPH",
+   "name": {
+    "pt": "Caerphilly",
+    "en": "Caerphilly",
+    "es": "Caerphilly"
+   },
+   "capital": "Caerphilly",
+   "region": "wls",
+   "area": 277,
+   "ll": [
+    51.638,
+    -3.2064
+   ],
+   "bbox": [
+    -3.334,
+    51.546,
+    -3.065,
+    51.799
+   ],
+   "borders": [
+    "gb-blaena",
+    "gb-cardif",
+    "gb-merthy",
+    "gb-newpor",
+    "gb-powys",
+    "gb-rhondd",
+    "gb-torfae"
+   ],
+   "pop": 181019,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-cambri": {
+   "code": "CAMBRI",
+   "ref": "GB-CAMBRI",
+   "name": {
+    "pt": "Cambridgeshire",
+    "en": "Cambridgeshire",
+    "es": "Cambridgeshire"
+   },
+   "capital": "Cambridge",
+   "region": "eng-south",
+   "area": 3386,
+   "ll": [
+    52.3903,
+    -0.0376
+   ],
+   "bbox": [
+    -0.499,
+    52.006,
+    0.514,
+    52.739
+   ],
+   "borders": [
+    "gb-bedfor",
+    "gb-essex",
+    "gb-hertfo",
+    "gb-lincol",
+    "gb-norfol",
+    "gb-northa",
+    "gb-suffol"
+   ],
+   "pop": 859830,
+   "popYear": 2020
+  },
+  "gb-cardif": {
+   "code": "CARDIF",
+   "ref": "GB-CARDIF",
+   "name": {
+    "pt": "Cardiff",
+    "en": "Cardiff",
+    "es": "Cardiff"
+   },
+   "capital": "Cardiff",
+   "region": "wls",
+   "area": 143,
+   "ll": [
+    51.5074,
+    -3.1784
+   ],
+   "bbox": [
+    -3.342,
+    51.445,
+    -3.043,
+    51.56
+   ],
+   "borders": [
+    "gb-caerph",
+    "gb-newpor",
+    "gb-rhondd",
+    "gb-valeof"
+   ],
+   "pop": 364248,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-carmar": {
+   "code": "CARMAR",
+   "ref": "GB-CARMAR",
+   "name": {
+    "pt": "Carmarthenshire",
+    "en": "Carmarthenshire",
+    "es": "Carmarthenshire"
+   },
+   "capital": "Carmarthen",
+   "region": "wls",
+   "area": 2366,
+   "ll": [
+    51.8838,
+    -4.1452
+   ],
+   "bbox": [
+    -4.723,
+    51.655,
+    -3.647,
+    52.142
+   ],
+   "borders": [
+    "gb-ceredi",
+    "gb-neathp",
+    "gb-pembro",
+    "gb-powys",
+    "gb-swanse"
+   ],
+   "pop": 187568,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-causew": {
+   "code": "CAUSEW",
+   "ref": "GB-CAUSEW",
+   "name": {
+    "pt": "Causeway Coast and Glens",
+    "en": "Causeway Coast and Glens",
+    "es": "Causeway Coast and Glens"
+   },
+   "region": "nir",
+   "area": 1975,
+   "ll": [
+    55.0293,
+    -6.8533
+   ],
+   "bbox": [
+    -7.167,
+    54.82,
+    -5.978,
+    55.313
+   ],
+   "borders": [
+    "gb-derryc",
+    "gb-midand",
+    "gb-miduls"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-ceredi": {
+   "code": "CEREDI",
+   "ref": "GB-CEREDI",
+   "name": {
+    "pt": "Ceredigion",
+    "en": "Ceredigion",
+    "es": "Ceredigion"
+   },
+   "capital": "Aberystwyth",
+   "capAl": [
+    "Aberystwyth"
+   ],
+   "region": "wls",
+   "area": 1778,
+   "ll": [
+    52.32,
+    -3.9267
+   ],
+   "bbox": [
+    -4.692,
+    52.027,
+    -3.658,
+    52.561
+   ],
+   "borders": [
+    "gb-carmar",
+    "gb-gwyned",
+    "gb-pembro",
+    "gb-powys"
+   ],
+   "pop": 72992,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-cheshi": {
+   "code": "CHESHI",
+   "ref": "GB-CHESHI",
+   "name": {
+    "pt": "Cheshire",
+    "en": "Cheshire",
+    "es": "Cheshire"
+   },
+   "capital": "Chester",
+   "region": "eng-north",
+   "area": 2333,
+   "ll": [
+    53.1852,
+    -2.54
+   ],
+   "bbox": [
+    -3.11,
+    52.947,
+    -1.975,
+    53.481
+   ],
+   "borders": [
+    "gb-derbys",
+    "gb-flints",
+    "gb-great2",
+    "gb-mersey",
+    "gb-shrops",
+    "gb-staffo",
+    "gb-wrexha"
+   ],
+   "pop": 1069646,
+   "popYear": 2020
+  },
+  "gb-cityo2": {
+   "code": "CITYO2",
+   "ref": "GB-CITYO2",
+   "name": {
+    "pt": "Edimburgo",
+    "en": "City of Edinburgh",
+    "es": "Edimburgo"
+   },
+   "capital": {
+    "pt": "Edimburgo",
+    "en": "Edinburgh",
+    "es": "Edimburgo"
+   },
+   "region": "sct",
+   "area": 262,
+   "ll": [
+    55.9216,
+    -3.3282
+   ],
+   "bbox": [
+    -3.45,
+    55.82,
+    -3.078,
+    56.002
+   ],
+   "borders": [
+    "gb-eastlo",
+    "gb-midlot",
+    "gb-scotti",
+    "gb-westlo"
+   ],
+   "pop": 524930,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-cityof": {
+   "code": "CITYOF",
+   "ref": "GB-CITYOF",
+   "name": {
+    "pt": "Cidade de Londres",
+    "en": "City of London",
+    "es": "City de Londres"
+   },
+   "region": "eng-south",
+   "area": 2,
+   "ll": [
+    51.5143,
+    -0.085
+   ],
+   "bbox": [
+    -0.112,
+    51.508,
+    -0.078,
+    51.522
+   ],
+   "borders": [
+    "gb-greate"
+   ],
+   "pop": 10847,
+   "popYear": 2022
+  },
+  "gb-clackm": {
+   "code": "CLACKM",
+   "ref": "GB-CLACKM",
+   "name": {
+    "pt": "Clackmannanshire",
+    "en": "Clackmannanshire",
+    "es": "Clackmannanshire"
+   },
+   "capital": "Alloa",
+   "region": "sct",
+   "area": 158,
+   "ll": [
+    56.1595,
+    -3.7808
+   ],
+   "bbox": [
+    -3.884,
+    56.079,
+    -3.575,
+    56.217
+   ],
+   "borders": [
+    "gb-falkir",
+    "gb-fife",
+    "gb-pertha",
+    "gb-stirli"
+   ],
+   "pop": 51540,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-conwy": {
+   "code": "CONWY",
+   "ref": "GB-CONWY",
+   "name": {
+    "pt": "Conwy",
+    "en": "Conwy",
+    "es": "Conwy"
+   },
+   "capital": "Conwy",
+   "region": "wls",
+   "area": 1127,
+   "ll": [
+    53.1699,
+    -3.6945
+   ],
+   "bbox": [
+    -4.031,
+    52.949,
+    -3.455,
+    53.343
+   ],
+   "borders": [
+    "gb-denbig",
+    "gb-gwyned"
+   ],
+   "pop": 117181,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-cornwa": {
+   "code": "CORNWA",
+   "ref": "GB-CORNWA",
+   "name": {
+    "pt": "Cornualha",
+    "en": "Cornwall",
+    "es": "Cornualles"
+   },
+   "capital": "Truro",
+   "region": "eng-south",
+   "area": 3555,
+   "ll": [
+    50.5683,
+    -4.5269
+   ],
+   "bbox": [
+    -6.328,
+    49.903,
+    -4.167,
+    50.929
+   ],
+   "borders": [
+    "gb-devon"
+   ],
+   "pop": 568210
+  },
+  "gb-cumbri": {
+   "code": "CUMBRI",
+   "ref": "GB-CUMBRI",
+   "name": {
+    "pt": "Cúmbria",
+    "en": "Cumbria",
+    "es": "Cumbria"
+   },
+   "capital": "Carlisle",
+   "region": "eng-north",
+   "area": 6779,
+   "ll": [
+    54.6066,
+    -2.8504
+   ],
+   "bbox": [
+    -3.64,
+    54.045,
+    -2.159,
+    55.189
+   ],
+   "borders": [
+    "gb-dumfri",
+    "gb-durham",
+    "gb-lancas",
+    "gb-northu",
+    "gb-northy",
+    "gb-scotti"
+   ],
+   "pop": 499781,
+   "popYear": 2020
+  },
+  "gb-denbig": {
+   "code": "DENBIG",
+   "ref": "GB-DENBIG",
+   "name": {
+    "pt": "Denbighshire",
+    "en": "Denbighshire",
+    "es": "Denbighshire"
+   },
+   "capital": "Ruthin",
+   "region": "wls",
+   "area": 832,
+   "ll": [
+    53.0635,
+    -3.3451
+   ],
+   "bbox": [
+    -3.602,
+    52.862,
+    -3.09,
+    53.352
+   ],
+   "borders": [
+    "gb-conwy",
+    "gb-flints",
+    "gb-gwyned",
+    "gb-powys",
+    "gb-wrexha"
+   ],
+   "pop": 95330,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-derbys": {
+   "code": "DERBYS",
+   "ref": "GB-DERBYS",
+   "name": {
+    "pt": "Derbyshire",
+    "en": "Derbyshire",
+    "es": "Derbyshire"
+   },
+   "capital": "Matlock",
+   "region": "eng-mid",
+   "area": 2619,
+   "ll": [
+    53.0908,
+    -1.5544
+   ],
+   "bbox": [
+    -2.034,
+    52.699,
+    -1.166,
+    53.54
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-great2",
+    "gb-leices",
+    "gb-nottin",
+    "gb-southy",
+    "gb-staffo",
+    "gb-westyo"
+   ],
+   "pop": 1056000,
+   "popYear": 2021
+  },
+  "gb-derryc": {
+   "code": "DERRYC",
+   "ref": "GB-DERRYC",
+   "name": {
+    "pt": "Derry City and Strabane",
+    "en": "Derry City and Strabane",
+    "es": "Derry City and Strabane"
+   },
+   "region": "nir",
+   "area": 1236,
+   "ll": [
+    54.8968,
+    -7.2514
+   ],
+   "bbox": [
+    -7.921,
+    54.612,
+    -6.904,
+    55.067
+   ],
+   "borders": [
+    "gb-causew",
+    "gb-ferman",
+    "gb-miduls"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-devon": {
+   "code": "DEVON",
+   "ref": "GB-DEVON",
+   "name": {
+    "pt": "Devon",
+    "en": "Devon",
+    "es": "Devon"
+   },
+   "capital": "Exeter",
+   "region": "eng-south",
+   "area": 6702,
+   "ll": [
+    50.7339,
+    -3.8971
+   ],
+   "bbox": [
+    -4.55,
+    50.202,
+    -2.887,
+    51.246
+   ],
+   "borders": [
+    "gb-cornwa",
+    "gb-dorset",
+    "gb-somers"
+   ],
+   "pop": 1209773,
+   "popYear": 2020
+  },
+  "gb-dorset": {
+   "code": "DORSET",
+   "ref": "GB-DORSET",
+   "name": {
+    "pt": "Dorset",
+    "en": "Dorset",
+    "es": "Dorset"
+   },
+   "capital": "Dorchester",
+   "region": "eng-south",
+   "area": 2644,
+   "ll": [
+    50.812,
+    -2.2466
+   ],
+   "bbox": [
+    -2.961,
+    50.513,
+    -1.682,
+    51.08
+   ],
+   "borders": [
+    "gb-devon",
+    "gb-hampsh",
+    "gb-somers",
+    "gb-wiltsh"
+   ],
+   "pop": 776780,
+   "popYear": 2020
+  },
+  "gb-dumfri": {
+   "code": "DUMFRI",
+   "ref": "GB-DUMFRI",
+   "name": {
+    "pt": "Dumfries and Galloway",
+    "en": "Dumfries and Galloway",
+    "es": "Dumfries and Galloway"
+   },
+   "capital": "Dumfries",
+   "region": "sct",
+   "area": 6420,
+   "ll": [
+    55.1351,
+    -3.9001
+   ],
+   "bbox": [
+    -5.187,
+    54.633,
+    -2.858,
+    55.464
+   ],
+   "borders": [
+    "gb-cumbri",
+    "gb-eastay",
+    "gb-scotti",
+    "gb-southa",
+    "gb-southl"
+   ],
+   "pop": 148860,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-dundee": {
+   "code": "DUNDEE",
+   "ref": "GB-DUNDEE",
+   "name": {
+    "pt": "Dundee",
+    "en": "Dundee City",
+    "es": "Dundee"
+   },
+   "capital": "Dundee",
+   "region": "sct",
+   "area": 59,
+   "ll": [
+    56.476,
+    -3.0264
+   ],
+   "bbox": [
+    -3.098,
+    56.451,
+    -2.838,
+    56.504
+   ],
+   "borders": [
+    "gb-angus",
+    "gb-pertha"
+   ],
+   "pop": 149320,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-durham": {
+   "code": "DURHAM",
+   "ref": "GB-DURHAM",
+   "name": {
+    "pt": "Durham",
+    "en": "Durham",
+    "es": "Durham"
+   },
+   "capital": "Durham",
+   "region": "eng-north",
+   "area": 2724,
+   "ll": [
+    54.6635,
+    -1.9901
+   ],
+   "bbox": [
+    -2.356,
+    54.452,
+    -1.132,
+    54.919
+   ],
+   "borders": [
+    "gb-cumbri",
+    "gb-northu",
+    "gb-northy",
+    "gb-tynean"
+   ],
+   "pop": 871531,
+   "popYear": 2020
+  },
+  "gb-eastay": {
+   "code": "EASTAY",
+   "ref": "GB-EASTAY",
+   "name": {
+    "pt": "East Ayrshire",
+    "en": "East Ayrshire",
+    "es": "East Ayrshire"
+   },
+   "capital": "Kilmarnock",
+   "region": "sct",
+   "area": 1267,
+   "ll": [
+    55.4385,
+    -4.2911
+   ],
+   "bbox": [
+    -4.638,
+    55.138,
+    -3.957,
+    55.763
+   ],
+   "borders": [
+    "gb-dumfri",
+    "gb-eastre",
+    "gb-north2",
+    "gb-southa",
+    "gb-southl"
+   ],
+   "pop": 122010,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-eastdu": {
+   "code": "EASTDU",
+   "ref": "GB-EASTDU",
+   "name": {
+    "pt": "East Dunbartonshire",
+    "en": "East Dunbartonshire",
+    "es": "East Dunbartonshire"
+   },
+   "capital": "Kirkintilloch",
+   "region": "sct",
+   "area": 173,
+   "ll": [
+    55.9601,
+    -4.2196
+   ],
+   "bbox": [
+    -4.402,
+    55.897,
+    -4.047,
+    56.03
+   ],
+   "borders": [
+    "gb-glasgo",
+    "gb-northl",
+    "gb-stirli",
+    "gb-westdu"
+   ],
+   "pop": 108640,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-eastlo": {
+   "code": "EASTLO",
+   "ref": "GB-EASTLO",
+   "name": {
+    "pt": "East Lothian",
+    "en": "East Lothian",
+    "es": "East Lothian"
+   },
+   "capital": "Haddington",
+   "region": "sct",
+   "area": 676,
+   "ll": [
+    55.9465,
+    -2.7319
+   ],
+   "bbox": [
+    -3.089,
+    55.819,
+    -2.367,
+    56.066
+   ],
+   "borders": [
+    "gb-cityo2",
+    "gb-midlot",
+    "gb-scotti"
+   ],
+   "pop": 107090,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-eastre": {
+   "code": "EASTRE",
+   "ref": "GB-EASTRE",
+   "name": {
+    "pt": "East Renfrewshire",
+    "en": "East Renfrewshire",
+    "es": "East Renfrewshire"
+   },
+   "capital": "Giffnock",
+   "region": "sct",
+   "area": 175,
+   "ll": [
+    55.7466,
+    -4.3252
+   ],
+   "bbox": [
+    -4.551,
+    55.679,
+    -4.222,
+    55.823
+   ],
+   "borders": [
+    "gb-eastay",
+    "gb-glasgo",
+    "gb-north2",
+    "gb-renfre",
+    "gb-southl"
+   ],
+   "pop": 95530,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-eastri": {
+   "code": "EASTRI",
+   "ref": "GB-EASTRI",
+   "name": {
+    "pt": "East Riding of Yorkshire",
+    "en": "East Riding of Yorkshire",
+    "es": "Yorkshire del Este"
+   },
+   "capital": "Beverley",
+   "region": "eng-north",
+   "area": 2469,
+   "ll": [
+    53.9242,
+    -0.3928
+   ],
+   "bbox": [
+    -1.104,
+    53.608,
+    0.147,
+    54.176
+   ],
+   "borders": [
+    "gb-lincol",
+    "gb-northy",
+    "gb-southy"
+   ],
+   "pop": 602327,
+   "popYear": 2020
+  },
+  "gb-eastsu": {
+   "code": "EASTSU",
+   "ref": "GB-EASTSU",
+   "name": {
+    "pt": "Sussex Oriental",
+    "en": "East Sussex",
+    "es": "Sussex Oriental"
+   },
+   "capital": "Lewes",
+   "region": "eng-south",
+   "area": 1796,
+   "ll": [
+    50.9343,
+    0.2049
+   ],
+   "bbox": [
+    -0.245,
+    50.734,
+    0.868,
+    51.147
+   ],
+   "borders": [
+    "gb-kent",
+    "gb-surrey",
+    "gb-westsu"
+   ],
+   "pop": 822950,
+   "popYear": 2021
+  },
+  "gb-essex": {
+   "code": "ESSEX",
+   "ref": "GB-ESSEX",
+   "name": {
+    "pt": "Essex",
+    "en": "Essex",
+    "es": "Essex"
+   },
+   "capital": "Chelmsford",
+   "region": "eng-south",
+   "area": 3659,
+   "ll": [
+    51.8032,
+    0.4209
+   ],
+   "bbox": [
+    -0.02,
+    51.452,
+    1.292,
+    52.093
+   ],
+   "borders": [
+    "gb-cambri",
+    "gb-greate",
+    "gb-hertfo",
+    "gb-suffol"
+   ],
+   "pop": 1859800,
+   "popYear": 2021
+  },
+  "gb-falkir": {
+   "code": "FALKIR",
+   "ref": "GB-FALKIR",
+   "name": {
+    "pt": "Falkirk",
+    "en": "Falkirk",
+    "es": "Falkirk"
+   },
+   "capital": "Falkirk",
+   "region": "sct",
+   "area": 295,
+   "ll": [
+    55.9843,
+    -3.7902
+   ],
+   "bbox": [
+    -4.03,
+    55.896,
+    -3.512,
+    56.106
+   ],
+   "borders": [
+    "gb-clackm",
+    "gb-northl",
+    "gb-stirli",
+    "gb-westlo"
+   ],
+   "pop": 160890,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-ferman": {
+   "code": "FERMAN",
+   "ref": "GB-FERMAN",
+   "name": {
+    "pt": "Fermanagh and Omagh",
+    "en": "Fermanagh and Omagh",
+    "es": "Fermanagh and Omagh"
+   },
+   "region": "nir",
+   "area": 2990,
+   "ll": [
+    54.4056,
+    -7.5858
+   ],
+   "bbox": [
+    -8.178,
+    54.114,
+    -6.941,
+    54.78
+   ],
+   "borders": [
+    "gb-derryc",
+    "gb-miduls"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-fife": {
+   "code": "FIFE",
+   "ref": "GB-FIFE",
+   "name": {
+    "pt": "Fife",
+    "en": "Fife",
+    "es": "Fife"
+   },
+   "capital": "Glenrothes",
+   "region": "sct",
+   "area": 1322,
+   "ll": [
+    56.254,
+    -3.1413
+   ],
+   "bbox": [
+    -3.738,
+    56.006,
+    -2.585,
+    56.452
+   ],
+   "borders": [
+    "gb-clackm",
+    "gb-pertha"
+   ],
+   "pop": 373550,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-flints": {
+   "code": "FLINTS",
+   "ref": "GB-FLINTS",
+   "name": {
+    "pt": "Flintshire",
+    "en": "Flintshire",
+    "es": "Flintshire"
+   },
+   "capital": "Mold",
+   "region": "wls",
+   "area": 434,
+   "ll": [
+    53.1583,
+    -3.0968
+   ],
+   "bbox": [
+    -3.401,
+    53.072,
+    -2.92,
+    53.357
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-denbig",
+    "gb-wrexha"
+   ],
+   "pop": 155593,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-glasgo": {
+   "code": "GLASGO",
+   "ref": "GB-GLASGO",
+   "name": {
+    "pt": "Glasgow",
+    "en": "Glasgow City",
+    "es": "Glasgow"
+   },
+   "capital": "Glasgow",
+   "region": "sct",
+   "area": 177,
+   "ll": [
+    55.8634,
+    -4.2753
+   ],
+   "bbox": [
+    -4.392,
+    55.781,
+    -4.072,
+    55.929
+   ],
+   "borders": [
+    "gb-eastdu",
+    "gb-eastre",
+    "gb-northl",
+    "gb-renfre",
+    "gb-southl",
+    "gb-westdu"
+   ],
+   "pop": 633120,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-glouce": {
+   "code": "GLOUCE",
+   "ref": "GB-GLOUCE",
+   "name": {
+    "pt": "Gloucestershire",
+    "en": "Gloucestershire",
+    "es": "Gloucestershire"
+   },
+   "capital": "Gloucester",
+   "region": "eng-south",
+   "area": 3176,
+   "ll": [
+    51.7768,
+    -2.2899
+   ],
+   "bbox": [
+    -2.688,
+    51.416,
+    -1.615,
+    52.113
+   ],
+   "borders": [
+    "gb-bristo",
+    "gb-herefo",
+    "gb-monmou",
+    "gb-oxford",
+    "gb-somers",
+    "gb-warwic",
+    "gb-wiltsh",
+    "gb-worces"
+   ],
+   "pop": 928466,
+   "popYear": 2020
+  },
+  "gb-great2": {
+   "code": "GREAT2",
+   "ref": "GB-GREAT2",
+   "name": {
+    "pt": "Grande Manchester",
+    "en": "Greater Manchester",
+    "es": "Gran Mánchester"
+   },
+   "region": "eng-north",
+   "area": 1269,
+   "ll": [
+    53.4985,
+    -2.187
+   ],
+   "bbox": [
+    -2.73,
+    53.327,
+    -1.91,
+    53.686
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-derbys",
+    "gb-lancas",
+    "gb-mersey",
+    "gb-westyo"
+   ],
+   "pop": 3017590,
+   "popYear": 2025
+  },
+  "gb-greate": {
+   "code": "GREATE",
+   "ref": "GB-GREATE",
+   "name": {
+    "pt": "Grande Londres",
+    "en": "Greater London",
+    "es": "Gran Londres"
+   },
+   "region": "eng-south",
+   "area": 1579,
+   "ll": [
+    51.5107,
+    -0.251
+   ],
+   "bbox": [
+    -0.51,
+    51.287,
+    0.334,
+    51.692
+   ],
+   "borders": [
+    "gb-berksh",
+    "gb-buckin",
+    "gb-cityof",
+    "gb-essex",
+    "gb-hertfo",
+    "gb-kent",
+    "gb-surrey"
+   ],
+   "pop": 8866180,
+   "popYear": 2022
+  },
+  "gb-gwyned": {
+   "code": "GWYNED",
+   "ref": "GB-GWYNED",
+   "name": {
+    "pt": "Gwynedd",
+    "en": "Gwynedd",
+    "es": "Gwynedd"
+   },
+   "capital": "Caernarfon",
+   "region": "wls",
+   "area": 2540,
+   "ll": [
+    52.8198,
+    -3.7566
+   ],
+   "bbox": [
+    -4.768,
+    52.542,
+    -3.437,
+    53.247
+   ],
+   "borders": [
+    "gb-ceredi",
+    "gb-conwy",
+    "gb-denbig",
+    "gb-powys"
+   ],
+   "pop": 124560,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-hampsh": {
+   "code": "HAMPSH",
+   "ref": "GB-HAMPSH",
+   "name": {
+    "pt": "Hampshire",
+    "en": "Hampshire",
+    "es": "Hampshire"
+   },
+   "capital": "Winchester",
+   "region": "eng-south",
+   "area": 3768,
+   "ll": [
+    51.105,
+    -1.2352
+   ],
+   "bbox": [
+    -1.957,
+    50.706,
+    -0.729,
+    51.384
+   ],
+   "borders": [
+    "gb-berksh",
+    "gb-dorset",
+    "gb-surrey",
+    "gb-westsu",
+    "gb-wiltsh"
+   ],
+   "pop": 1857824,
+   "popYear": 2021
+  },
+  "gb-herefo": {
+   "code": "HEREFO",
+   "ref": "GB-HEREFO",
+   "name": {
+    "pt": "Herefordshire",
+    "en": "Herefordshire",
+    "es": "Herefordshire"
+   },
+   "capital": "Hereford",
+   "region": "eng-mid",
+   "area": 2174,
+   "ll": [
+    52.1249,
+    -2.8043
+   ],
+   "bbox": [
+    -3.142,
+    51.826,
+    -2.338,
+    52.396
+   ],
+   "borders": [
+    "gb-glouce",
+    "gb-monmou",
+    "gb-powys",
+    "gb-shrops",
+    "gb-worces"
+   ],
+   "pop": 188719,
+   "popYear": 2022
+  },
+  "gb-hertfo": {
+   "code": "HERTFO",
+   "ref": "GB-HERTFO",
+   "name": {
+    "pt": "Hertfordshire",
+    "en": "Hertfordshire",
+    "es": "Hertfordshire"
+   },
+   "capital": "Hertford",
+   "region": "eng-south",
+   "area": 1636,
+   "ll": [
+    51.8548,
+    -0.1425
+   ],
+   "bbox": [
+    -0.745,
+    51.6,
+    0.196,
+    52.08
+   ],
+   "borders": [
+    "gb-bedfor",
+    "gb-buckin",
+    "gb-cambri",
+    "gb-essex",
+    "gb-greate"
+   ],
+   "pop": 1204588,
+   "popYear": 2022
+  },
+  "gb-highla": {
+   "code": "HIGHLA",
+   "ref": "GB-HIGHLA",
+   "name": {
+    "pt": "Highland",
+    "en": "Highland",
+    "es": "Highland"
+   },
+   "capital": "Inverness",
+   "region": "sct",
+   "area": 26010,
+   "ll": [
+    57.4032,
+    -5.0076
+   ],
+   "bbox": [
+    -6.789,
+    56.497,
+    -3.024,
+    58.672
+   ],
+   "borders": [
+    "gb-aberd2",
+    "gb-argyll",
+    "gb-moray",
+    "gb-pertha"
+   ],
+   "pop": 235830,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-inverc": {
+   "code": "INVERC",
+   "ref": "GB-INVERC",
+   "name": {
+    "pt": "Inverclyde",
+    "en": "Inverclyde",
+    "es": "Inverclyde"
+   },
+   "capital": "Greenock",
+   "region": "sct",
+   "area": 161,
+   "ll": [
+    55.886,
+    -4.6733
+   ],
+   "bbox": [
+    -4.899,
+    55.838,
+    -4.597,
+    55.963
+   ],
+   "borders": [
+    "gb-north2",
+    "gb-renfre"
+   ],
+   "pop": 77800,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-isleo2": {
+   "code": "ISLEO2",
+   "ref": "GB-ISLEO2",
+   "name": {
+    "pt": "Anglesey",
+    "en": "Isle of Anglesey",
+    "es": "Anglesey"
+   },
+   "capital": "Llangefni",
+   "region": "wls",
+   "area": 713,
+   "ll": [
+    53.305,
+    -4.4118
+   ],
+   "bbox": [
+    -4.697,
+    53.126,
+    -4.04,
+    53.43
+   ],
+   "borders": [],
+   "pop": 69961,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-isleof": {
+   "code": "ISLEOF",
+   "ref": "GB-ISLEOF",
+   "name": {
+    "pt": "Ilha de Wight",
+    "en": "Isle of Wight",
+    "es": "Isla de Wight"
+   },
+   "capital": "Newport",
+   "region": "eng-south",
+   "area": 380,
+   "ll": [
+    50.6741,
+    -1.2949
+   ],
+   "bbox": [
+    -1.587,
+    50.575,
+    -1.07,
+    50.767
+   ],
+   "borders": [],
+   "pop": 140794,
+   "popYear": 2022
+  },
+  "gb-kent": {
+   "code": "KENT",
+   "ref": "GB-KENT",
+   "name": {
+    "pt": "Kent",
+    "en": "Kent",
+    "es": "Kent"
+   },
+   "capital": "Maidstone",
+   "region": "eng-south",
+   "area": 3769,
+   "ll": [
+    51.2018,
+    0.5691
+   ],
+   "bbox": [
+    0.0,
+    50.912,
+    1.45,
+    51.52
+   ],
+   "borders": [
+    "gb-eastsu",
+    "gb-greate",
+    "gb-surrey"
+   ],
+   "pop": 1855842,
+   "popYear": 2021
+  },
+  "gb-lancas": {
+   "code": "LANCAS",
+   "ref": "GB-LANCAS",
+   "name": {
+    "pt": "Lancashire",
+    "en": "Lancashire",
+    "es": "Lancashire"
+   },
+   "capital": "Preston",
+   "region": "eng-north",
+   "area": 3061,
+   "ll": [
+    53.8539,
+    -2.6239
+   ],
+   "bbox": [
+    -3.059,
+    53.484,
+    -2.046,
+    54.24
+   ],
+   "borders": [
+    "gb-cumbri",
+    "gb-great2",
+    "gb-mersey",
+    "gb-northy",
+    "gb-westyo"
+   ],
+   "pop": 1515487,
+   "popYear": 2020
+  },
+  "gb-leices": {
+   "code": "LEICES",
+   "ref": "GB-LEICES",
+   "name": {
+    "pt": "Leicestershire",
+    "en": "Leicestershire",
+    "es": "Leicestershire"
+   },
+   "capital": "Leicester",
+   "region": "eng-mid",
+   "area": 2153,
+   "ll": [
+    52.6189,
+    -1.1235
+   ],
+   "bbox": [
+    -1.598,
+    52.392,
+    -0.664,
+    52.977
+   ],
+   "borders": [
+    "gb-derbys",
+    "gb-lincol",
+    "gb-northa",
+    "gb-nottin",
+    "gb-rutlan",
+    "gb-staffo",
+    "gb-warwic"
+   ],
+   "pop": 1067121,
+   "popYear": 2020
+  },
+  "gb-lincol": {
+   "code": "LINCOL",
+   "ref": "GB-LINCOL",
+   "name": {
+    "pt": "Lincolnshire",
+    "en": "Lincolnshire",
+    "es": "Lincolnshire"
+   },
+   "capital": "Lincoln",
+   "region": "eng-mid",
+   "area": 7004,
+   "ll": [
+    53.2432,
+    -0.2819
+   ],
+   "bbox": [
+    -0.95,
+    52.64,
+    0.356,
+    53.734
+   ],
+   "borders": [
+    "gb-cambri",
+    "gb-eastri",
+    "gb-leices",
+    "gb-norfol",
+    "gb-nottin",
+    "gb-rutlan",
+    "gb-southy"
+   ],
+   "pop": 1098445,
+   "popYear": 2020
+  },
+  "gb-lisbur": {
+   "code": "LISBUR",
+   "ref": "GB-LISBUR",
+   "name": {
+    "pt": "Lisburn and Castlereagh",
+    "en": "Lisburn and Castlereagh",
+    "es": "Lisburn and Castlereagh"
+   },
+   "region": "nir",
+   "area": 506,
+   "ll": [
+    54.5262,
+    -6.1402
+   ],
+   "bbox": [
+    -6.303,
+    54.371,
+    -5.758,
+    54.624
+   ],
+   "borders": [
+    "gb-antrim",
+    "gb-ardsan",
+    "gb-armagh",
+    "gb-belfas",
+    "gb-newrym"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-mersey": {
+   "code": "MERSEY",
+   "ref": "GB-MERSEY",
+   "name": {
+    "pt": "Merseyside",
+    "en": "Merseyside",
+    "es": "Merseyside"
+   },
+   "region": "eng-north",
+   "area": 642,
+   "ll": [
+    53.41,
+    -2.8625
+   ],
+   "bbox": [
+    -3.2,
+    53.296,
+    -2.577,
+    53.702
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-great2",
+    "gb-lancas"
+   ],
+   "pop": 1442081,
+   "popYear": 2022
+  },
+  "gb-merthy": {
+   "code": "MERTHY",
+   "ref": "GB-MERTHY",
+   "name": {
+    "pt": "Merthyr Tydfil",
+    "en": "Merthyr Tydfil",
+    "es": "Merthyr Tydfil"
+   },
+   "capital": "Merthyr Tydfil",
+   "region": "wls",
+   "area": 113,
+   "ll": [
+    51.7536,
+    -3.3773
+   ],
+   "bbox": [
+    -3.453,
+    51.645,
+    -3.274,
+    51.835
+   ],
+   "borders": [
+    "gb-caerph",
+    "gb-powys",
+    "gb-rhondd"
+   ],
+   "pop": 60183,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-midand": {
+   "code": "MIDAND",
+   "ref": "GB-MIDAND",
+   "name": {
+    "pt": "Mid and East Antrim",
+    "en": "Mid and East Antrim",
+    "es": "Mid and East Antrim"
+   },
+   "region": "nir",
+   "area": 1050,
+   "ll": [
+    54.914,
+    -6.2112
+   ],
+   "bbox": [
+    -6.507,
+    54.689,
+    -5.688,
+    55.059
+   ],
+   "borders": [
+    "gb-antrim",
+    "gb-causew",
+    "gb-miduls"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-midlot": {
+   "code": "MIDLOT",
+   "ref": "GB-MIDLOT",
+   "name": {
+    "pt": "Midlothian",
+    "en": "Midlothian",
+    "es": "Midlothian"
+   },
+   "capital": "Dalkeith",
+   "region": "sct",
+   "area": 353,
+   "ll": [
+    55.8239,
+    -3.1087
+   ],
+   "bbox": [
+    -3.369,
+    55.71,
+    -2.846,
+    55.931
+   ],
+   "borders": [
+    "gb-cityo2",
+    "gb-eastlo",
+    "gb-scotti"
+   ],
+   "pop": 92460,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-miduls": {
+   "code": "MIDULS",
+   "ref": "GB-MIDULS",
+   "name": {
+    "pt": "Mid Ulster",
+    "en": "Mid Ulster",
+    "es": "Mid Ulster"
+   },
+   "region": "nir",
+   "area": 1823,
+   "ll": [
+    54.6555,
+    -6.762
+   ],
+   "bbox": [
+    -7.368,
+    54.327,
+    -6.458,
+    54.952
+   ],
+   "borders": [
+    "gb-antrim",
+    "gb-armagh",
+    "gb-causew",
+    "gb-derryc",
+    "gb-ferman",
+    "gb-midand"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-monmou": {
+   "code": "MONMOU",
+   "ref": "GB-MONMOU",
+   "name": {
+    "pt": "Monmouthshire",
+    "en": "Monmouthshire",
+    "es": "Monmouthshire"
+   },
+   "capital": "Usk",
+   "region": "wls",
+   "area": 852,
+   "ll": [
+    51.7736,
+    -2.8692
+   ],
+   "bbox": [
+    -3.157,
+    51.554,
+    -2.65,
+    51.983
+   ],
+   "borders": [
+    "gb-blaena",
+    "gb-glouce",
+    "gb-herefo",
+    "gb-newpor",
+    "gb-powys",
+    "gb-torfae"
+   ],
+   "pop": 94142,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-moray": {
+   "code": "MORAY",
+   "ref": "GB-MORAY",
+   "name": {
+    "pt": "Moray",
+    "en": "Moray",
+    "es": "Moray"
+   },
+   "capital": "Elgin",
+   "region": "sct",
+   "area": 2231,
+   "ll": [
+    57.4924,
+    -3.2148
+   ],
+   "bbox": [
+    -3.762,
+    57.068,
+    -2.65,
+    57.725
+   ],
+   "borders": [
+    "gb-aberd2",
+    "gb-highla"
+   ],
+   "pop": 95820,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-neathp": {
+   "code": "NEATHP",
+   "ref": "GB-NEATHP",
+   "name": {
+    "pt": "Neath Port Talbot",
+    "en": "Neath Port Talbot",
+    "es": "Neath Port Talbot"
+   },
+   "capital": "Port Talbot",
+   "region": "wls",
+   "area": 445,
+   "ll": [
+    51.668,
+    -3.7521
+   ],
+   "bbox": [
+    -3.936,
+    51.527,
+    -3.563,
+    51.81
+   ],
+   "borders": [
+    "gb-bridge",
+    "gb-carmar",
+    "gb-powys",
+    "gb-rhondd",
+    "gb-swanse"
+   ],
+   "pop": 142906,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-newpor": {
+   "code": "NEWPOR",
+   "ref": "GB-NEWPOR",
+   "name": {
+    "pt": "Newport",
+    "en": "Newport",
+    "es": "Newport"
+   },
+   "capital": "Newport",
+   "region": "wls",
+   "area": 191,
+   "ll": [
+    51.5824,
+    -2.9007
+   ],
+   "bbox": [
+    -3.124,
+    51.502,
+    -2.803,
+    51.65
+   ],
+   "borders": [
+    "gb-caerph",
+    "gb-cardif",
+    "gb-monmou",
+    "gb-torfae"
+   ],
+   "pop": 167899,
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-newrym": {
+   "code": "NEWRYM",
+   "ref": "GB-NEWRYM",
+   "name": {
+    "pt": "Newry, Mourne and Down",
+    "en": "Newry, Mourne and Down",
+    "es": "Newry, Mourne and Down"
+   },
+   "region": "nir",
+   "area": 1633,
+   "ll": [
+    54.1674,
+    -5.9907
+   ],
+   "bbox": [
+    -6.669,
+    54.023,
+    -5.523,
+    54.496
+   ],
+   "borders": [
+    "gb-ardsan",
+    "gb-armagh",
+    "gb-lisbur"
+   ],
+   "langs": {
+    "pt": [
+     "irlandês"
+    ],
+    "en": [
+     "Irish"
+    ],
+    "es": [
+     "irlandés"
+    ]
+   }
+  },
+  "gb-norfol": {
+   "code": "NORFOL",
+   "ref": "GB-NORFOL",
+   "name": {
+    "pt": "Norfolk",
+    "en": "Norfolk",
+    "es": "Norfolk"
+   },
+   "capital": "Norwich",
+   "region": "eng-south",
+   "area": 5363,
+   "ll": [
+    52.6584,
+    1.153
+   ],
+   "bbox": [
+    0.157,
+    52.355,
+    1.746,
+    52.98
+   ],
+   "borders": [
+    "gb-cambri",
+    "gb-lincol",
+    "gb-suffol"
+   ],
+   "pop": 925299,
+   "popYear": 2022
+  },
+  "gb-north2": {
+   "code": "NORTH2",
+   "ref": "GB-NORTH2",
+   "name": {
+    "pt": "North Ayrshire",
+    "en": "North Ayrshire",
+    "es": "North Ayrshire"
+   },
+   "capital": "Irvine",
+   "region": "sct",
+   "area": 881,
+   "ll": [
+    55.7256,
+    -4.766
+   ],
+   "bbox": [
+    -5.397,
+    55.434,
+    -4.493,
+    55.893
+   ],
+   "borders": [
+    "gb-eastay",
+    "gb-eastre",
+    "gb-inverc",
+    "gb-renfre",
+    "gb-southa"
+   ],
+   "pop": 134740,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-northa": {
+   "code": "NORTHA",
+   "ref": "GB-NORTHA",
+   "name": {
+    "pt": "Northamptonshire",
+    "en": "Northamptonshire",
+    "es": "Northamptonshire"
+   },
+   "capital": "Northampton",
+   "region": "eng-mid",
+   "area": 2358,
+   "ll": [
+    52.2538,
+    -1.0012
+   ],
+   "bbox": [
+    -1.332,
+    51.977,
+    -0.342,
+    52.642
+   ],
+   "borders": [
+    "gb-bedfor",
+    "gb-buckin",
+    "gb-cambri",
+    "gb-leices",
+    "gb-oxford",
+    "gb-rutlan",
+    "gb-warwic"
+   ],
+   "pop": 757181,
+   "popYear": 2020
+  },
+  "gb-northl": {
+   "code": "NORTHL",
+   "ref": "GB-NORTHL",
+   "name": {
+    "pt": "North Lanarkshire",
+    "en": "North Lanarkshire",
+    "es": "North Lanarkshire"
+   },
+   "capital": "Motherwell",
+   "region": "sct",
+   "area": 468,
+   "ll": [
+    55.8748,
+    -3.9745
+   ],
+   "bbox": [
+    -4.194,
+    55.735,
+    -3.711,
+    56.028
+   ],
+   "borders": [
+    "gb-eastdu",
+    "gb-falkir",
+    "gb-glasgo",
+    "gb-southl",
+    "gb-stirli",
+    "gb-westlo"
+   ],
+   "pop": 341370,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-northu": {
+   "code": "NORTHU",
+   "ref": "GB-NORTHU",
+   "name": {
+    "pt": "Northumberland",
+    "en": "Northumberland",
+    "es": "Northumberland"
+   },
+   "capital": "Morpeth",
+   "region": "eng-north",
+   "area": 5003,
+   "ll": [
+    55.1739,
+    -2.0494
+   ],
+   "bbox": [
+    -2.69,
+    54.782,
+    -1.462,
+    55.811
+   ],
+   "borders": [
+    "gb-cumbri",
+    "gb-durham",
+    "gb-scotti",
+    "gb-tynean"
+   ],
+   "pop": 324362,
+   "popYear": 2022
+  },
+  "gb-northy": {
+   "code": "NORTHY",
+   "ref": "GB-NORTHY",
+   "name": {
+    "pt": "Yorkshire do Norte",
+    "en": "North Yorkshire",
+    "es": "Yorkshire del Norte"
+   },
+   "capital": "Northallerton",
+   "region": "eng-north",
+   "area": 8592,
+   "ll": [
+    54.2859,
+    -1.0257
+   ],
+   "bbox": [
+    -2.565,
+    53.621,
+    -0.213,
+    54.648
+   ],
+   "borders": [
+    "gb-cumbri",
+    "gb-durham",
+    "gb-eastri",
+    "gb-lancas",
+    "gb-southy",
+    "gb-westyo"
+   ],
+   "pop": 1170146,
+   "popYear": 2020
+  },
+  "gb-nottin": {
+   "code": "NOTTIN",
+   "ref": "GB-NOTTIN",
+   "name": {
+    "pt": "Nottinghamshire",
+    "en": "Nottinghamshire",
+    "es": "Nottinghamshire"
+   },
+   "capital": "West Bridgford",
+   "region": "eng-mid",
+   "area": 2157,
+   "ll": [
+    53.1432,
+    -0.9804
+   ],
+   "bbox": [
+    -1.344,
+    52.789,
+    -0.667,
+    53.502
+   ],
+   "borders": [
+    "gb-derbys",
+    "gb-leices",
+    "gb-lincol",
+    "gb-southy"
+   ],
+   "pop": 1170475,
+   "popYear": 2020
+  },
+  "gb-orkney": {
+   "code": "ORKNEY",
+   "ref": "GB-ORKNEY",
+   "name": {
+    "pt": "Órcades",
+    "en": "Orkney Islands",
+    "es": "Orcadas"
+   },
+   "capital": "Kirkwall",
+   "region": "sct",
+   "area": 1012,
+   "ll": [
+    59.0578,
+    -3.2006
+   ],
+   "bbox": [
+    -3.436,
+    58.73,
+    -2.371,
+    59.393
+   ],
+   "borders": [],
+   "pop": 22270,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-outerh": {
+   "code": "OUTERH",
+   "ref": "GB-OUTERH",
+   "name": {
+    "pt": "Hébridas Exteriores",
+    "en": "Outer Hebrides",
+    "es": "Hébridas Exteriores"
+   },
+   "capital": "Stornoway",
+   "region": "sct",
+   "area": 3082,
+   "ll": [
+    58.225,
+    -6.587
+   ],
+   "bbox": [
+    -8.617,
+    56.796,
+    -6.138,
+    58.516
+   ],
+   "borders": [],
+   "pop": 26720,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-oxford": {
+   "code": "OXFORD",
+   "ref": "GB-OXFORD",
+   "name": {
+    "pt": "Oxfordshire",
+    "en": "Oxfordshire",
+    "es": "Oxfordshire"
+   },
+   "capital": "Oxford",
+   "region": "eng-south",
+   "area": 2599,
+   "ll": [
+    51.7841,
+    -1.4176
+   ],
+   "bbox": [
+    -1.72,
+    51.46,
+    -0.87,
+    52.168
+   ],
+   "borders": [
+    "gb-berksh",
+    "gb-buckin",
+    "gb-glouce",
+    "gb-northa",
+    "gb-warwic",
+    "gb-wiltsh"
+   ],
+   "pop": 738276,
+   "popYear": 2022
+  },
+  "gb-pembro": {
+   "code": "PEMBRO",
+   "ref": "GB-PEMBRO",
+   "name": {
+    "pt": "Pembrokeshire",
+    "en": "Pembrokeshire",
+    "es": "Pembrokeshire"
+   },
+   "capital": "Haverfordwest",
+   "region": "wls",
+   "area": 1611,
+   "ll": [
+    51.9058,
+    -4.8546
+   ],
+   "bbox": [
+    -5.353,
+    51.596,
+    -4.487,
+    52.118
+   ],
+   "borders": [
+    "gb-carmar",
+    "gb-ceredi"
+   ],
+   "pop": 125818,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-pertha": {
+   "code": "PERTHA",
+   "ref": "GB-PERTHA",
+   "name": {
+    "pt": "Perth and Kinross",
+    "en": "Perth and Kinross",
+    "es": "Perth and Kinross"
+   },
+   "capital": "Perth",
+   "region": "sct",
+   "area": 5363,
+   "ll": [
+    56.5635,
+    -3.7253
+   ],
+   "bbox": [
+    -4.718,
+    56.133,
+    -3.052,
+    56.949
+   ],
+   "borders": [
+    "gb-aberd2",
+    "gb-angus",
+    "gb-argyll",
+    "gb-clackm",
+    "gb-dundee",
+    "gb-fife",
+    "gb-highla",
+    "gb-stirli"
+   ],
+   "pop": 151950,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-powys": {
+   "code": "POWYS",
+   "ref": "GB-POWYS",
+   "name": {
+    "pt": "Powys",
+    "en": "Powys",
+    "es": "Powys"
+   },
+   "capital": "Llandrindod Wells",
+   "region": "wls",
+   "area": 5181,
+   "ll": [
+    52.2064,
+    -3.4139
+   ],
+   "bbox": [
+    -3.923,
+    51.753,
+    -2.95,
+    52.902
+   ],
+   "borders": [
+    "gb-blaena",
+    "gb-caerph",
+    "gb-carmar",
+    "gb-ceredi",
+    "gb-denbig",
+    "gb-gwyned",
+    "gb-herefo",
+    "gb-merthy",
+    "gb-monmou",
+    "gb-neathp",
+    "gb-rhondd",
+    "gb-shrops",
+    "gb-wrexha"
+   ],
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-renfre": {
+   "code": "RENFRE",
+   "ref": "GB-RENFRE",
+   "name": {
+    "pt": "Renfrewshire",
+    "en": "Renfrewshire",
+    "es": "Renfrewshire"
+   },
+   "capital": "Paisley",
+   "region": "sct",
+   "area": 262,
+   "ll": [
+    55.8567,
+    -4.5307
+   ],
+   "bbox": [
+    -4.784,
+    55.76,
+    -4.355,
+    55.93
+   ],
+   "borders": [
+    "gb-eastre",
+    "gb-glasgo",
+    "gb-inverc",
+    "gb-north2",
+    "gb-westdu"
+   ],
+   "pop": 179100,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-rhondd": {
+   "code": "RHONDD",
+   "ref": "GB-RHONDD",
+   "name": {
+    "pt": "Rhondda Cynon Taf",
+    "en": "Rhondda Cynon Taf",
+    "es": "Rhondda Cynon Taf"
+   },
+   "capital": "Clydach Vale",
+   "capAl": [
+    "Tonypandy"
+   ],
+   "region": "wls",
+   "area": 421,
+   "ll": [
+    51.6003,
+    -3.3903
+   ],
+   "bbox": [
+    -3.591,
+    51.499,
+    -3.238,
+    51.83
+   ],
+   "borders": [
+    "gb-bridge",
+    "gb-caerph",
+    "gb-cardif",
+    "gb-merthy",
+    "gb-neathp",
+    "gb-powys",
+    "gb-valeof"
+   ],
+   "pop": 240131,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-rutlan": {
+   "code": "RUTLAN",
+   "ref": "GB-RUTLAN",
+   "name": {
+    "pt": "Rutland",
+    "en": "Rutland",
+    "es": "Rutland"
+   },
+   "capital": "Oakham",
+   "region": "eng-mid",
+   "area": 391,
+   "ll": [
+    52.6554,
+    -0.6865
+   ],
+   "bbox": [
+    -0.822,
+    52.525,
+    -0.43,
+    52.76
+   ],
+   "borders": [
+    "gb-leices",
+    "gb-lincol",
+    "gb-northa"
+   ],
+   "pop": 41151,
+   "popYear": 2022
+  },
+  "gb-scotti": {
+   "code": "SCOTTI",
+   "ref": "GB-SCOTTI",
+   "name": {
+    "pt": "Scottish Borders",
+    "en": "Scottish Borders",
+    "es": "Scottish Borders"
+   },
+   "capital": "Newtown St Boswells",
+   "region": "sct",
+   "area": 4726,
+   "ll": [
+    55.536,
+    -2.7546
+   ],
+   "bbox": [
+    -3.54,
+    55.108,
+    -2.034,
+    55.946
+   ],
+   "borders": [
+    "gb-cityo2",
+    "gb-cumbri",
+    "gb-dumfri",
+    "gb-eastlo",
+    "gb-midlot",
+    "gb-northu",
+    "gb-southl",
+    "gb-westlo"
+   ],
+   "pop": 115510,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-shetla": {
+   "code": "SHETLA",
+   "ref": "GB-SHETLA",
+   "name": {
+    "pt": "Shetland",
+    "en": "Shetland Islands",
+    "es": "Islas Shetland"
+   },
+   "capital": "Lerwick",
+   "region": "sct",
+   "area": 1466,
+   "ll": [
+    60.2971,
+    -1.2569
+   ],
+   "bbox": [
+    -2.116,
+    59.511,
+    -0.754,
+    60.846
+   ],
+   "borders": [],
+   "pop": 22920,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-shrops": {
+   "code": "SHROPS",
+   "ref": "GB-SHROPS",
+   "name": {
+    "pt": "Shropshire",
+    "en": "Shropshire",
+    "es": "Shropshire"
+   },
+   "capital": "Shrewsbury",
+   "region": "eng-mid",
+   "area": 3469,
+   "ll": [
+    52.639,
+    -2.6461
+   ],
+   "bbox": [
+    -3.236,
+    52.307,
+    -2.233,
+    52.998
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-herefo",
+    "gb-powys",
+    "gb-staffo",
+    "gb-worces",
+    "gb-wrexha"
+   ],
+   "pop": 506737,
+   "popYear": 2020
+  },
+  "gb-somers": {
+   "code": "SOMERS",
+   "ref": "GB-SOMERS",
+   "name": {
+    "pt": "Somerset",
+    "en": "Somerset",
+    "es": "Somerset"
+   },
+   "capital": "Taunton",
+   "region": "eng-south",
+   "area": 4174,
+   "ll": [
+    51.1837,
+    -2.7403
+   ],
+   "bbox": [
+    -3.839,
+    50.821,
+    -2.245,
+    51.503
+   ],
+   "borders": [
+    "gb-bristo",
+    "gb-devon",
+    "gb-dorset",
+    "gb-glouce",
+    "gb-wiltsh"
+   ],
+   "pop": 975782,
+   "popYear": 2020
+  },
+  "gb-southa": {
+   "code": "SOUTHA",
+   "ref": "GB-SOUTHA",
+   "name": {
+    "pt": "South Ayrshire",
+    "en": "South Ayrshire",
+    "es": "South Ayrshire"
+   },
+   "capital": "Ayr",
+   "region": "sct",
+   "area": 1218,
+   "ll": [
+    55.2701,
+    -4.6715
+   ],
+   "bbox": [
+    -5.061,
+    54.998,
+    -4.399,
+    55.602
+   ],
+   "borders": [
+    "gb-dumfri",
+    "gb-eastay",
+    "gb-north2"
+   ],
+   "pop": 112610,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-southl": {
+   "code": "SOUTHL",
+   "ref": "GB-SOUTHL",
+   "name": {
+    "pt": "South Lanarkshire",
+    "en": "South Lanarkshire",
+    "es": "South Lanarkshire"
+   },
+   "capital": "Hamilton",
+   "region": "sct",
+   "area": 1764,
+   "ll": [
+    55.5906,
+    -3.7135
+   ],
+   "bbox": [
+    -4.283,
+    55.292,
+    -3.397,
+    55.844
+   ],
+   "borders": [
+    "gb-dumfri",
+    "gb-eastay",
+    "gb-eastre",
+    "gb-glasgo",
+    "gb-northl",
+    "gb-scotti",
+    "gb-westlo"
+   ],
+   "pop": 320530,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-southy": {
+   "code": "SOUTHY",
+   "ref": "GB-SOUTHY",
+   "name": {
+    "pt": "Yorkshire do Sul",
+    "en": "South Yorkshire",
+    "es": "Yorkshire del Sur"
+   },
+   "region": "eng-north",
+   "area": 1546,
+   "ll": [
+    53.4571,
+    -1.5101
+   ],
+   "bbox": [
+    -1.822,
+    53.302,
+    -0.865,
+    53.661
+   ],
+   "borders": [
+    "gb-derbys",
+    "gb-eastri",
+    "gb-lincol",
+    "gb-northy",
+    "gb-nottin",
+    "gb-westyo"
+   ],
+   "pop": 1392105,
+   "popYear": 2022
+  },
+  "gb-staffo": {
+   "code": "STAFFO",
+   "ref": "GB-STAFFO",
+   "name": {
+    "pt": "Staffordshire",
+    "en": "Staffordshire",
+    "es": "Staffordshire"
+   },
+   "capital": "Stafford",
+   "region": "eng-mid",
+   "area": 2712,
+   "ll": [
+    52.8855,
+    -2.1025
+   ],
+   "bbox": [
+    -2.471,
+    52.424,
+    -1.585,
+    53.226
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-derbys",
+    "gb-leices",
+    "gb-shrops",
+    "gb-warwic",
+    "gb-westmi",
+    "gb-worces"
+   ],
+   "pop": 1139794,
+   "popYear": 2020
+  },
+  "gb-stirli": {
+   "code": "STIRLI",
+   "ref": "GB-STIRLI",
+   "name": {
+    "pt": "Stirling",
+    "en": "Stirling",
+    "es": "Stirling"
+   },
+   "capital": "Stirling",
+   "region": "sct",
+   "area": 2227,
+   "ll": [
+    56.2813,
+    -4.4459
+   ],
+   "bbox": [
+    -4.854,
+    55.958,
+    -3.798,
+    56.547
+   ],
+   "borders": [
+    "gb-argyll",
+    "gb-clackm",
+    "gb-eastdu",
+    "gb-falkir",
+    "gb-northl",
+    "gb-pertha",
+    "gb-westdu"
+   ],
+   "pop": 94210,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-suffol": {
+   "code": "SUFFOL",
+   "ref": "GB-SUFFOL",
+   "name": {
+    "pt": "Suffolk",
+    "en": "Suffolk",
+    "es": "Suffolk"
+   },
+   "capital": "Ipswich",
+   "region": "eng-south",
+   "area": 3801,
+   "ll": [
+    52.1801,
+    0.8904
+   ],
+   "bbox": [
+    0.34,
+    51.932,
+    1.763,
+    52.55
+   ],
+   "borders": [
+    "gb-cambri",
+    "gb-essex",
+    "gb-norfol"
+   ],
+   "pop": 768555,
+   "popYear": 2022
+  },
+  "gb-surrey": {
+   "code": "SURREY",
+   "ref": "GB-SURREY",
+   "name": {
+    "pt": "Surrey",
+    "en": "Surrey",
+    "es": "Surrey"
+   },
+   "capital": "Reigate",
+   "capAl": [
+    "Guildford"
+   ],
+   "region": "eng-south",
+   "area": 1662,
+   "ll": [
+    51.268,
+    -0.491
+   ],
+   "bbox": [
+    -0.849,
+    51.072,
+    0.058,
+    51.472
+   ],
+   "borders": [
+    "gb-berksh",
+    "gb-eastsu",
+    "gb-greate",
+    "gb-hampsh",
+    "gb-kent",
+    "gb-westsu"
+   ],
+   "pop": 1214540,
+   "popYear": 2022
+  },
+  "gb-swanse": {
+   "code": "SWANSE",
+   "ref": "GB-SWANSE",
+   "name": {
+    "pt": "Swansea",
+    "en": "Swansea",
+    "es": "Swansea"
+   },
+   "capital": "Swansea",
+   "region": "wls",
+   "area": 376,
+   "ll": [
+    51.6875,
+    -3.9693
+   ],
+   "bbox": [
+    -4.309,
+    51.537,
+    -3.843,
+    51.774
+   ],
+   "borders": [
+    "gb-carmar",
+    "gb-neathp"
+   ],
+   "pop": 246466,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-torfae": {
+   "code": "TORFAE",
+   "ref": "GB-TORFAE",
+   "name": {
+    "pt": "Torfaen",
+    "en": "Torfaen",
+    "es": "Torfaen"
+   },
+   "capital": "Pontypool",
+   "region": "wls",
+   "area": 125,
+   "ll": [
+    51.7277,
+    -3.0688
+   ],
+   "bbox": [
+    -3.144,
+    51.607,
+    -2.959,
+    51.796
+   ],
+   "borders": [
+    "gb-blaena",
+    "gb-caerph",
+    "gb-monmou",
+    "gb-newpor"
+   ],
+   "pop": 93049,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-tynean": {
+   "code": "TYNEAN",
+   "ref": "GB-TYNEAN",
+   "name": {
+    "pt": "Tyne and Wear",
+    "en": "Tyne and Wear",
+    "es": "Tyne y Wear"
+   },
+   "region": "eng-north",
+   "area": 543,
+   "ll": [
+    54.9798,
+    -1.6267
+   ],
+   "bbox": [
+    -1.853,
+    54.799,
+    -1.348,
+    55.079
+   ],
+   "borders": [
+    "gb-durham",
+    "gb-northu"
+   ],
+   "pop": 1141795,
+   "popYear": 2022
+  },
+  "gb-valeof": {
+   "code": "VALEOF",
+   "ref": "GB-VALEOF",
+   "name": {
+    "pt": "Vale de Glamorgan",
+    "en": "Vale of Glamorgan",
+    "es": "Valle de Glamorgan"
+   },
+   "capital": "Barry",
+   "region": "wls",
+   "area": 330,
+   "ll": [
+    51.447,
+    -3.3649
+   ],
+   "bbox": [
+    -3.642,
+    51.381,
+    -3.164,
+    51.515
+   ],
+   "borders": [
+    "gb-bridge",
+    "gb-cardif",
+    "gb-rhondd"
+   ],
+   "pop": 132165,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  },
+  "gb-warwic": {
+   "code": "WARWIC",
+   "ref": "GB-WARWIC",
+   "name": {
+    "pt": "Warwickshire",
+    "en": "Warwickshire",
+    "es": "Warwickshire"
+   },
+   "capital": "Warwick",
+   "region": "eng-mid",
+   "area": 1968,
+   "ll": [
+    52.2032,
+    -1.6061
+   ],
+   "bbox": [
+    -1.96,
+    51.955,
+    -1.175,
+    52.687
+   ],
+   "borders": [
+    "gb-glouce",
+    "gb-leices",
+    "gb-northa",
+    "gb-oxford",
+    "gb-staffo",
+    "gb-westmi",
+    "gb-worces"
+   ],
+   "pop": 607604,
+   "popYear": 2022
+  },
+  "gb-westdu": {
+   "code": "WESTDU",
+   "ref": "GB-WESTDU",
+   "name": {
+    "pt": "West Dunbartonshire",
+    "en": "West Dunbartonshire",
+    "es": "West Dunbartonshire"
+   },
+   "capital": "Dumbarton",
+   "region": "sct",
+   "area": 157,
+   "ll": [
+    55.9914,
+    -4.5349
+   ],
+   "bbox": [
+    -4.66,
+    55.89,
+    -4.376,
+    56.068
+   ],
+   "borders": [
+    "gb-argyll",
+    "gb-eastdu",
+    "gb-glasgo",
+    "gb-renfre",
+    "gb-stirli"
+   ],
+   "pop": 88930,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-westlo": {
+   "code": "WESTLO",
+   "ref": "GB-WESTLO",
+   "name": {
+    "pt": "West Lothian",
+    "en": "West Lothian",
+    "es": "West Lothian"
+   },
+   "capital": "Livingston",
+   "region": "sct",
+   "area": 425,
+   "ll": [
+    55.8889,
+    -3.5376
+   ],
+   "bbox": [
+    -3.831,
+    55.771,
+    -3.388,
+    56.009
+   ],
+   "borders": [
+    "gb-cityo2",
+    "gb-falkir",
+    "gb-northl",
+    "gb-scotti",
+    "gb-southl"
+   ],
+   "pop": 183100,
+   "popYear": 2019,
+   "langs": {
+    "pt": [
+     "gaélico escocês"
+    ],
+    "en": [
+     "Scottish Gaelic"
+    ],
+    "es": [
+     "gaélico escocés"
+    ]
+   }
+  },
+  "gb-westmi": {
+   "code": "WESTMI",
+   "ref": "GB-WESTMI",
+   "name": {
+    "pt": "Midlands Ocidentais",
+    "en": "West Midlands",
+    "es": "Midlands Occidentales"
+   },
+   "region": "eng-mid",
+   "area": 899,
+   "ll": [
+    52.5282,
+    -1.9728
+   ],
+   "bbox": [
+    -2.207,
+    52.348,
+    -1.424,
+    52.663
+   ],
+   "borders": [
+    "gb-staffo",
+    "gb-warwic",
+    "gb-worces"
+   ],
+   "pop": 2953816,
+   "popYear": 2022
+  },
+  "gb-westsu": {
+   "code": "WESTSU",
+   "ref": "GB-WESTSU",
+   "name": {
+    "pt": "Sussex Ocidental",
+    "en": "West Sussex",
+    "es": "Sussex Occidental"
+   },
+   "capital": "Chichester",
+   "region": "eng-south",
+   "area": 1988,
+   "ll": [
+    50.9546,
+    -0.4154
+   ],
+   "bbox": [
+    -0.958,
+    50.723,
+    0.044,
+    51.167
+   ],
+   "borders": [
+    "gb-eastsu",
+    "gb-hampsh",
+    "gb-surrey"
+   ],
+   "pop": 892336,
+   "popYear": 2022
+  },
+  "gb-westyo": {
+   "code": "WESTYO",
+   "ref": "GB-WESTYO",
+   "name": {
+    "pt": "Yorkshire Ocidental",
+    "en": "West Yorkshire",
+    "es": "Yorkshire del Oeste"
+   },
+   "region": "eng-north",
+   "area": 2022,
+   "ll": [
+    53.732,
+    -1.8288
+   ],
+   "bbox": [
+    -2.173,
+    53.52,
+    -1.199,
+    53.963
+   ],
+   "borders": [
+    "gb-derbys",
+    "gb-great2",
+    "gb-lancas",
+    "gb-northy",
+    "gb-southy"
+   ],
+   "pop": 2378148,
+   "popYear": 2022
+  },
+  "gb-wiltsh": {
+   "code": "WILTSH",
+   "ref": "GB-WILTSH",
+   "name": {
+    "pt": "Wiltshire",
+    "en": "Wiltshire",
+    "es": "Wiltshire"
+   },
+   "capital": "Trowbridge",
+   "region": "eng-south",
+   "area": 3476,
+   "ll": [
+    51.3395,
+    -1.9612
+   ],
+   "bbox": [
+    -2.364,
+    50.945,
+    -1.486,
+    51.703
+   ],
+   "borders": [
+    "gb-berksh",
+    "gb-dorset",
+    "gb-glouce",
+    "gb-hampsh",
+    "gb-oxford",
+    "gb-somers"
+   ],
+   "pop": 726951,
+   "popYear": 2020
+  },
+  "gb-worces": {
+   "code": "WORCES",
+   "ref": "GB-WORCES",
+   "name": {
+    "pt": "Worcestershire",
+    "en": "Worcestershire",
+    "es": "Worcestershire"
+   },
+   "capital": "Worcester",
+   "region": "eng-mid",
+   "area": 1738,
+   "ll": [
+    52.2357,
+    -2.1432
+   ],
+   "bbox": [
+    -2.663,
+    51.967,
+    -1.758,
+    52.455
+   ],
+   "borders": [
+    "gb-glouce",
+    "gb-herefo",
+    "gb-shrops",
+    "gb-staffo",
+    "gb-warwic",
+    "gb-westmi"
+   ],
+   "pop": 609216,
+   "popYear": 2022
+  },
+  "gb-wrexha": {
+   "code": "WREXHA",
+   "ref": "GB-WREXHA",
+   "name": {
+    "pt": "Wrexham",
+    "en": "Wrexham",
+    "es": "Wrexham"
+   },
+   "capital": "Wrexham",
+   "region": "wls",
+   "area": 505,
+   "ll": [
+    53.0467,
+    -2.9644
+   ],
+   "bbox": [
+    -3.375,
+    52.867,
+    -2.724,
+    53.133
+   ],
+   "borders": [
+    "gb-cheshi",
+    "gb-denbig",
+    "gb-flints",
+    "gb-powys",
+    "gb-shrops"
+   ],
+   "pop": 136126,
+   "popYear": 2018,
+   "langs": {
+    "pt": [
+     "galês"
+    ],
+    "en": [
+     "Welsh"
+    ],
+    "es": [
+     "galés"
+    ]
+   }
+  }
+ }
+}

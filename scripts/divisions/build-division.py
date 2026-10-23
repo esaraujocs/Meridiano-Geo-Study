@@ -154,7 +154,16 @@ def zones_overture(country, config, build):
     land, sea, names = {}, {}, {}
     # `byName`: unidade sem código ISO no Overture, achada pelo nome (as regiões da Etiópia criadas em 2023)
     by_name = {unit["sourceName"]: unit["code"] for unit in config["units"] if unit.get("byName")}
+    # `sourceNames`: a unidade junta várias linhas do Overture pelo nome (os condados ingleses: Grande Londres são os 32 bairros); no nível
+    # "county" o campo `region` do Overture é a região-mãe, não a unidade
+    by_source = {name: unit["code"] for unit in config["units"] for name in unit.get("sourceNames", [])}
+    unmapped = []
     for row in table.to_pylist():
+        if by_source:
+            if row["name"] not in by_source:
+                unmapped.append(row["name"])
+                continue
+            row = {**row, "region": f"{country.upper()}-{by_source[row['name']]}"}
         # linha sem código de região (na China, Aksai Chin, área disputada): fica fora das zonas; se o mapa HD deu essa terra ao país, ela vai
         # para a unidade mais perto, como as outras sobras
         if not row["region"] and row["name"] in by_name:
@@ -174,10 +183,11 @@ def zones_overture(country, config, build):
     # `noSource`: unidade sem linha no Overture, montada pelo `override`/`fill` (as regiões ultramarinas da França)
     unsourced = {code for code, unit in units.items() if unit.get("noSource")}
     problems = [f"{code} está no Overture e não na config" for code in sorted(set(land) - set(units) - excluded)]
+    problems += [f"linha do Overture {name!r} sem unidade na config (sourceNames)" for name in sorted(set(unmapped))]
     problems += [f"{code} está na config e não no Overture" for code in sorted(set(units) - set(land) - unsourced)]
     # o nome confere com o `sourceName` da unidade, quando o Overture usa outra língua (na China, o chinês), ou com o `name`
     problems += [f"{code}: nome {names[code]!r} no Overture, {units[code].get('sourceName', units[code]['name'])!r} na config"
-                 for code in units if code in names and names[code] != units[code].get("sourceName", units[code]["name"])]
+                 for code in units if code in names and not units[code].get("sourceNames") and names[code] != units[code].get("sourceName", units[code]["name"])]
     if problems:
         sys.exit("a config não confere com o Overture:\n" + "\n".join(problems))
     taken = shapely.union_all(np.array(list(land.values()), dtype=object))

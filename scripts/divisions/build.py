@@ -19,7 +19,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-COUNTRIES = ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", "eg", "ng", "et", "cd", "ca", "in", "ie", "1914"]
+COUNTRIES = ["br", "us", "cn", "es", "fr", "de", "ru", "ar", "pe", "au", "id", "eg", "ng", "et", "cd", "ca", "in", "ie", "gb", "1914"]
 INDEX = os.path.join(ROOT, "src", "domain", "divisions-index.ts")
 
 

@@ -1716,6 +1716,121 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     }
   },
   {
+    "id": "gb",
+    "carta": "826",
+    "alsoCarta": [
+      "gb-eng",
+      "gb-sct",
+      "gb-wls",
+      "gb-nir"
+    ],
+    "name": {
+      "pt": "Reino Unido",
+      "en": "United Kingdom",
+      "es": "Reino Unido"
+    },
+    "unit": {
+      "pt": {
+        "one": "condado",
+        "many": "condados",
+        "g": "m"
+      },
+      "en": {
+        "one": "county",
+        "many": "counties"
+      },
+      "es": {
+        "one": "condado",
+        "many": "condados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "eng-north",
+        "name": {
+          "pt": "Inglaterra · Norte",
+          "en": "England · North",
+          "es": "Inglaterra · Norte"
+        },
+        "count": 12,
+        "capitals": 7,
+        "flags": 0
+      },
+      {
+        "key": "eng-mid",
+        "name": {
+          "pt": "Inglaterra · Centro",
+          "en": "England · Midlands",
+          "es": "Inglaterra · Centro"
+        },
+        "count": 12,
+        "capitals": 11,
+        "flags": 0
+      },
+      {
+        "key": "eng-south",
+        "name": {
+          "pt": "Inglaterra · Sul",
+          "en": "England · South",
+          "es": "Inglaterra · Sur"
+        },
+        "count": 24,
+        "capitals": 22,
+        "flags": 0
+      },
+      {
+        "key": "sct",
+        "name": {
+          "pt": "Escócia",
+          "en": "Scotland",
+          "es": "Escocia"
+        },
+        "count": 32,
+        "capitals": 31,
+        "flags": 0
+      },
+      {
+        "key": "wls",
+        "name": {
+          "pt": "País de Gales",
+          "en": "Wales",
+          "es": "Gales"
+        },
+        "count": 22,
+        "capitals": 22,
+        "flags": 0
+      },
+      {
+        "key": "nir",
+        "name": {
+          "pt": "Irlanda do Norte",
+          "en": "Northern Ireland",
+          "es": "Irlanda del Norte"
+        },
+        "count": 11,
+        "capitals": 0,
+        "flags": 0
+      }
+    ],
+    "count": 113,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 93,
+    "frame": [
+      -8.617,
+      49.903,
+      1.763,
+      60.846
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-gb.pmtiles",
+      "bytes": 1577230,
+      "sha256": "82eb41665e09c9b72e2bd05926883a11a10ec9dc61b12e681c4920386b993291"
+    }
+  },
+  {
     "id": "1914",
     "kind": "era",
     "subtitle": {
