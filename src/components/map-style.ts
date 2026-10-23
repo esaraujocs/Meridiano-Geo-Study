@@ -14,7 +14,9 @@ const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 
 /** Outro tabuleiro no lugar do mapa-múndi (um país de Estados e províncias, uma época): os tiles, a atribuição e o mapa-múndi de fundo. */
-export type StyleBoard = { url: string; attribution: string; backdrop?: { url: string; hide: readonly string[] }; markers?: SmallEntitySource };
+export type StyleBoard = { url: string; attribution: string; backdrop?: { url: string; hide: readonly string[] }; markers?: SmallEntitySource;
+  /** Outros tabuleiros desenhados junto (o Explorar com todos os países de Estados e províncias): uma fonte e uma camada `land-<i>` por país. */
+  extra?: readonly string[] };
 
 export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }: {
   /** A paleta já com o estilo de mapa e o fundo aplicados. */
@@ -41,6 +43,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
       ...(MAP_BASE_TILES[mapBase] ? { "map-base": { type: "raster" as const, tiles: [MAP_BASE_TILES[mapBase] as string], tileSize: 512, maxzoom: MAP_BASE_MAXZOOM } } : {}),
       ...(board?.backdrop ? { backdrop: { type: "vector" as const, url: `pmtiles://${board.backdrop.url}`, promoteId: "carta_id" } } : {}),
       "small-entities": { type: "geojson", data: (board?.markers ?? SMALL_ENTITY_SOURCE) as unknown as GeoJSON.FeatureCollection },
+      ...Object.fromEntries((board?.extra ?? []).map((url, index) => [`atlas-${index}`, { type: "vector" as const, url: `pmtiles://${url}`, promoteId: "carta_id" }])),
       ...(palette.graticule ? { graticule: { type: "geojson" as const, data: graticuleLines(palette.graticuleStep) as unknown as GeoJSON.FeatureCollection } } : {}),
       ...(palette.rhumb ? { rhumb: { type: "geojson" as const, data: rhumbLines(palette.rhumb.hubs, palette.rhumb.directions) as unknown as GeoJSON.FeatureCollection } } : {}),
     },
@@ -85,6 +88,14 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
           "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number>,
         },
       },
+      ...(board?.extra ?? []).map((_, index) => ({
+        id: `land-${index}`,
+        type: "fill" as const,
+        source: `atlas-${index}`,
+        "source-layer": "countries",
+        filter: ["==", ["geometry-type"], "Polygon"] as unknown as maplibregl.FilterSpecification,
+        paint: { "fill-color": palette.land, "fill-outline-color": palette.outline, "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number> },
+      })),
       // com a foto, as costas e fronteiras viram um traço claro e fino sobre um contorno escuro (lê no deserto e na floresta)
       ...mapBaseBorderLayers(mapBase, borderPalette).map((line) => ({ id: line.id, type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": line.color, "line-opacity": line.opacity, "line-width": ["interpolate", ["linear"], ["zoom"], 1, line.width[0], 6, line.width[1]] as unknown as maplibregl.ExpressionSpecification } })),
       // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores

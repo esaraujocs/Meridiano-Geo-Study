@@ -796,9 +796,33 @@ export function App() {
   const startGame = () => { rememberConfig(configOf({ topFamily, variant, pace, roundTier, region, onlyUn })); beginGame(); };
   // ---- Explorar (20/10/2026): o mapa da família aberta na Mesa, livre, com os nomes à vista (sem sessão, moedas nem XP) ----
   const [exploring, setExploring] = useState(false);
+  // Estados e províncias: o Explorar com todos os países de uma vez (22/10/2026, pedido do Enzo: "um mapa-múndi livre com as que temos")
+  const [exploreAll, setExploreAll] = useState(false);
   const [exploreSpec, setExploreSpec] = useState<ExploreSpec | null>(null);
   const EXPLORE_FAMILIES: readonly TopFamily[] = ["mapa", "capitais", "divisoes", "epocas"];
   const openExplore = async () => {
+    if (family === "divisoes" && exploreAll) {
+      const countries = divisionsOfKind("country");
+      // loadDivision, não ensureDivision: o pacote da Mesa (o país escolhido) não muda
+      const packs = (await Promise.all(countries.map((country) => loadDivision(country.id).catch(() => null)))).filter((pack): pack is DivisionPack => Boolean(pack));
+      if (!packs.length) return;
+      // um catálogo só, juntando os países (os ids já levam o país: "es-ct", "ru-mow")
+      const meta = Object.assign({}, ...packs.map((pack) => pack.data.meta));
+      const bbox = Object.assign({}, ...packs.map((pack) => pack.bbox));
+      const ids = packs.flatMap((pack) => pack.data.mapEntityIds);
+      // `?lite`: o service worker não guarda os 15 mapas inteiros, só os pedaços vistos
+      const urls = countries.map((country) => `${country.map.url}?lite`);
+      const board: MapBoard = {
+        url: urls[0], extra: urls.slice(1), attribution: countries[0].attribution, unit: unitWord(countries[0]), bounds: [-165, -50, 180, 75],
+        backdrop: { url: MAP_URL, hide: countries.flatMap((country) => [country.carta, ...(country.alsoCarta ?? [])]) },
+      };
+      setExploreSpec({
+        data: { ...packs[0].data, sourceVersion: "divisions-all", meta, mapEntityIds: ids }, ids, region, board, bbox,
+        title: t.explore.allCountries, capitals: false, loadFlags: () => Promise.resolve({}),
+      });
+      setScreen("explore");
+      return;
+    }
     if (family === "divisoes" || family === "epocas") {
       const country = divisionCountry(divisionId);
       const pack = country ? (divisionPack?.country === country.id ? divisionPack : await ensureDivision(country.id)) : null;
@@ -1572,6 +1596,8 @@ export function App() {
            presetApi={presetApi}
            pillarPct={pillarPct}
            exploring={exploring}
+           exploreAll={exploreAll}
+           onExploreAll={topFamily === "divisoes" ? setExploreAll : undefined}
            setExploring={setExploring}
            onExplore={EXPLORE_FAMILIES.includes(topFamily) ? () => void openExplore() : undefined}
             setVariant={setVariant}

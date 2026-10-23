@@ -20,7 +20,8 @@ import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domai
 import { nearestWithin, SEA_TAP_PX } from "../domain/map-nearest";
 import { exploreUnits, placeLabels, searchUnits, wrapNear, zoomForArea, type ExploreUnit } from "../domain/explore";
 import { continentLabel } from "../domain/collection-view";
-import { divisionRegionLabel } from "../domain/divisions";
+import { divisionCountry, divisionRegionLabel } from "../domain/divisions";
+import { locale as uiLocale } from "../domain/i18n/locale";
 import { flagSource, type FlagCatalog } from "../domain/quiz";
 import type { Legacy, RegionSelection } from "../domain/types";
 import { formatNumber, t } from "../domain/i18n";
@@ -59,6 +60,8 @@ const luminance = (hex: string) => {
 
 export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => void }) {
   const { data, ids, region, board } = spec;
+  // as camadas de terra: a do tabuleiro e, no Explorar com todos os países, uma por país a mais
+  const landLayers = useMemo(() => ["land", ...(board?.extra ?? []).map((_, index) => `land-${index}`)], [board]);
   const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
   const mapBase = useMemo(() => (board ? "padrao" : readMapBase()), []);
   const satellite = isSatellite(mapBase);
@@ -138,10 +141,10 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
           const projected = map.project(coordinates);
           return [{ answerId: resolveMarkerClick(feature, "").answerId, distancePx: Math.hypot(projected.x - x, projected.y - y), coordinates }];
         });
-      const land = map.queryRenderedFeatures([x, y], { layers: ["land"] }).find((feature) => feature.properties?.carta_id);
+      const land = map.queryRenderedFeatures([x, y], { layers: landLayers }).find((feature) => feature.properties?.carta_id);
       const choice = chooseClickAnswer(markers, land ? String(land.properties?.carta_id) : "");
       if (choice.answerId) return choice.answerId;
-      const near = map.queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: board ? ["land"] : ["land", "small-entities-hit"] })
+      const near = map.queryRenderedFeatures([[x - SEA_TAP_PX, y - SEA_TAP_PX], [x + SEA_TAP_PX, y + SEA_TAP_PX]], { layers: board ? landLayers : ["land", "small-entities-hit"] })
         .filter((feature) => feature.properties?.carta_id && (feature.layer.id !== "small-entities-hit" || isMarkerVisibleAtZoom(feature.properties?.switchZoom, zoom)))
         .map((feature) => ({ answerId: String(feature.properties?.answer_id ?? feature.properties?.carta_id), geometry: feature.geometry as unknown as { type: string; coordinates: unknown } }));
       return nearestWithin(near, (position) => map.project(position), x, y, SEA_TAP_PX)?.answerId ?? "";
@@ -163,8 +166,10 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
     const is = ["==", ["get", "carta_id"], selected ?? "__none__"];
     const isMarker = ["==", ["coalesce", ["get", "answer_id"], ["get", "carta_id"]], selected ?? "__none__"];
     try {
-      map.setPaintProperty("land", "fill-color", ["case", is, palette.answer, palette.land] as unknown as maplibregl.ExpressionSpecification);
-      if (palette.landMarkedOpacity !== undefined) map.setPaintProperty("land", "fill-opacity", landOpacityPaint(palette, [is]) as maplibregl.DataDrivenPropertyValueSpecification<number>);
+      for (const layer of landLayers) {
+        map.setPaintProperty(layer, "fill-color", ["case", is, palette.answer, palette.land] as unknown as maplibregl.ExpressionSpecification);
+        if (palette.landMarkedOpacity !== undefined) map.setPaintProperty(layer, "fill-opacity", landOpacityPaint(palette, [is]) as maplibregl.DataDrivenPropertyValueSpecification<number>);
+      }
       if (!board) for (const band of MARKER_BAND_ZOOMS) {
         map.setPaintProperty(markerLayerId(band), "circle-color", ["case", isMarker, palette.answer, palette.marker] as unknown as maplibregl.ExpressionSpecification);
         map.setPaintProperty(markerLayerId(band), "circle-radius", ["case", isMarker, 8, 4] as unknown as maplibregl.ExpressionSpecification);
@@ -303,7 +308,8 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
       ];
     return {
       name: meta.pt ?? id,
-      sub: board ? (meta.reg ? divisionRegionLabel(meta.reg) : "") : continentLabel(meta.reg),
+      // com todos os países, a legenda diz também o país ("Norte · França")
+      sub: board ? (meta.reg ? (board.extra?.length ? `${divisionRegionLabel(meta.reg)} · ${divisionCountry(meta.reg.split(":")[0])?.name[uiLocale] ?? ""}` : divisionRegionLabel(meta.reg)) : "") : continentLabel(meta.reg),
       flag: flag ? flagSource(flag) : undefined,
       rows,
       fact: board ? undefined : meta.fato,

@@ -66,6 +66,8 @@ export type MapBoard = {
   backdrop?: { url: string; hide: readonly string[] };
   /** Os pontos clicáveis das unidades pequenas (`boardMarkerSource`). */
   markers?: SmallEntitySource;
+  /** Outros tabuleiros desenhados junto (só no Explorar com todos os países). */
+  extra?: readonly string[];
 };
 /** Folga da câmera do tabuleiro: o alvo fica em cima e a bandeja de suprimentos embaixo. */
 const boardPadding = (element: HTMLElement | null) => {

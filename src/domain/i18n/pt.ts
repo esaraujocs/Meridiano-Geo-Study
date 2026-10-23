@@ -1454,6 +1454,7 @@ export const pt = {
     capital: "Capital",
     coLanguages: "Línguas co-oficiais",
     andMore: (n: number) => `e mais ${n}`,
+    allCountries: "Todos os países",
     population: "População",
     area: "Área",
     languages: "Idiomas",

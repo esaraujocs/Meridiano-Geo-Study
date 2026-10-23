@@ -208,3 +208,8 @@
 /* Explorar escolhido no Ritmo: as rodadas não valem (o mapa é livre) */
 .mz-group.is-off .cv-ctl{opacity:.45}
 .mz-group.is-off .cv-chip{cursor:default}
+
+/* Estados e províncias com o Explorar: o chip "Todos os países" ao lado do seletor (22/10/2026) */
+.mz-allc{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex:none;margin:4px 0 0;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:700 14px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
+.mz-allc[aria-pressed="true"]{border-color:color-mix(in srgb,var(--h,var(--green)) 70%,var(--ink));background:color-mix(in srgb,var(--h,var(--green)) 16%,var(--paper))}
+.mz-head:has(.mz-allc[aria-pressed="true"]) .mz-allc{margin-left:auto}

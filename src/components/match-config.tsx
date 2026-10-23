@@ -49,6 +49,8 @@ export function Recorte({
   presetApi,
   pillarPct = {},
   exploring = false,
+  exploreAll = false,
+  onExploreAll,
   setExploring,
   onExplore,
 }: {
@@ -81,6 +83,9 @@ export function Recorte({
   /** Explorar (só nas famílias que usam o mapa): o mapa livre, com os nomes, sem tempo nem moedas. É um controle à parte, não um ritmo (decisão 3:
    *  `Pace` está costurado na economia), mostrado como a 3ª opção do Ritmo. */
   exploring?: boolean;
+  /** Estados e províncias com o Explorar: o mundo com todos os países de uma vez. */
+  exploreAll?: boolean;
+  onExploreAll?: (value: boolean) => void;
   setExploring?: (value: boolean) => void;
   onExplore?: () => void;
 }) {
@@ -246,7 +251,8 @@ export function Recorte({
           <section className="cv-card mz-card" aria-label={t.config.cardAria}>
             <header className="cv-head mz-head">
               <div><span className="eyebrow">{t.config.newMatch(familyLabel)}</span><h1>{t.config.title}</h1></div>
-              {divCountry && <CountryPicker current={divCountry} data={data} onPick={pickCountry} />}
+              {divCountry && !(explore && exploreAll) && <CountryPicker current={divCountry} data={data} onPick={pickCountry} />}
+              {divCountry && explore && onExploreAll && kindOf(divCountry) === "country" && <button type="button" className="mz-allc" aria-pressed={exploreAll} onClick={() => onExploreAll(!exploreAll)}><Icon type="map" size={16} /><span>{t.explore.allCountries}</span></button>}
               <div className="mz-stats" ref={statsRef}>
                 <button type="button" className="mz-stats-toggle" aria-expanded={statsOpen} aria-controls="mz-stats" onClick={() => setStatsOpen((open) => !open)}>
                   <Icon type="trend" size={16} /><span>{t.config.stats}</span><i aria-hidden="true"><Icon type="chevron" size={14} /></i>

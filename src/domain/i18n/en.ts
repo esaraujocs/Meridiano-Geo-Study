@@ -1975,6 +1975,7 @@ export const en: Messages = {
     capital: "Capital",
     coLanguages: "Co-official languages",
     andMore: (n: number) => `and ${n} more`,
+    allCountries: "All countries",
     population: "Population",
     area: "Area",
     languages: "Languages",

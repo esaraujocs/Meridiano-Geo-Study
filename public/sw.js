@@ -62,7 +62,8 @@ self.addEventListener("fetch", (event) => {
     const cached = caches.open(CACHE).then((cache) => cache.match(divisionKey(url.pathname)));
     event.respondWith(cached.then((hit) => (hit ? (range ? sliceResponse(hit, range) : hit) : fetch(event.request))).catch(() => fetch(event.request)));
     // sem cópia ainda: a rede responde esta partida e o arquivo inteiro vai para o cache sem atrasar nada
-    event.waitUntil(cached.then((hit) => (hit ? undefined : fillDivisionMap(url.pathname))).catch(() => undefined));
+    // `?lite`: o Explorar com todos os países pede só os pedaços à vista; o arquivo inteiro só vai para o cache numa partida do país
+    if (!url.searchParams.has("lite")) event.waitUntil(cached.then((hit) => (hit ? undefined : fillDivisionMap(url.pathname))).catch(() => undefined));
     return;
   }
 
