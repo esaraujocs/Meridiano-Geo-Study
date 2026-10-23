@@ -63,7 +63,8 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
   // as camadas de terra: a do tabuleiro e, no Explorar com todos os países, uma por país a mais
   const landLayers = useMemo(() => ["land", ...(board?.extra ?? []).map((_, index) => `land-${index}`)], [board]);
   const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
-  const mapBase = useMemo(() => (board ? "padrao" : readMapBase()), []);
+  // o fundo das Opções (satélite, relevo) vale no mapa-múndi e no Explorar com todos os países; o tabuleiro de um país segue no padrão
+  const mapBase = useMemo(() => (board && !board.extra ? "padrao" : readMapBase()), []);
   const satellite = isSatellite(mapBase);
   const paletteNow = () => withMapBase(withMapStyle(mapPaletteFor(document.documentElement.dataset.theme), mapStyleId), mapBase);
   const mapEl = useRef<HTMLDivElement>(null);

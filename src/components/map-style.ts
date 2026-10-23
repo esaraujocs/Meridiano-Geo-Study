@@ -30,6 +30,14 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
 }): maplibregl.StyleSpecification {
   const satellite = isSatellite(mapBase);
   const activeFilter = markerFilter(markerIds);
+  // tabuleiro com o mapa-múndi de fundo (22/10/2026, pedido do Enzo): as divisas das unidades num tracejado discreto e as fronteiras dos países
+  // e a costa numa linha contínua por cima, como num atlas; sem o fundo (as épocas, em que as unidades são os países), o contorno de sempre
+  const atlasLines = Boolean(board?.backdrop);
+  const unitOutline = atlasLines ? "rgba(0,0,0,0)" : palette.outline;
+  // o contorno da paleta com o fundo é transparente no satélite e no relevo; as linhas saem do contorno do tema
+  const ink = borderPalette.outline.startsWith("#") ? borderPalette.outline : "#4c8890";
+  const divisionColor = satellite ? "#ffffff" : mixHex(ink, "#ffffff", 0.2);
+  const nationColor = satellite ? "#ffffff" : mixHex(ink, "#ffffff", 0.3);
   return {
     version: 8,
     sources: {
@@ -73,7 +81,8 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         source: "backdrop",
         "source-layer": "countries",
         filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!", ["in", ["get", "carta_id"], ["literal", [...board.backdrop.hide]]]]] as unknown as maplibregl.FilterSpecification,
-        paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, palette.outline, 0.25) },
+        // com a foto de satélite o fundo fica transparente (a foto aparece no mundo todo; só as linhas de cima marcam os países)
+        paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, ink, 0.25), ...(satellite ? { "fill-opacity": 0 } : mapBase === "relevo" ? { "fill-opacity": palette.landOpacity ?? 0.42 } : {}) },
       }] : []),
       ...(mapBase === "relevo" ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
       {
@@ -84,7 +93,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         filter: ["==", ["geometry-type"], "Polygon"] as unknown as maplibregl.FilterSpecification,
         paint: {
           "fill-color": palette.land,
-          "fill-outline-color": palette.outline,
+          "fill-outline-color": unitOutline,
           "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number>,
         },
       },
@@ -94,12 +103,22 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         source: `atlas-${index}`,
         "source-layer": "countries",
         filter: ["==", ["geometry-type"], "Polygon"] as unknown as maplibregl.FilterSpecification,
-        paint: { "fill-color": palette.land, "fill-outline-color": palette.outline, "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number> },
+        paint: { "fill-color": palette.land, "fill-outline-color": unitOutline, "fill-opacity": landOpacityPaint(palette, []) as maplibregl.DataDrivenPropertyValueSpecification<number> },
       })),
       // com a foto, as costas e fronteiras viram um traço claro e fino sobre um contorno escuro (lê no deserto e na floresta)
-      ...mapBaseBorderLayers(mapBase, borderPalette).map((line) => ({ id: line.id, type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": line.color, "line-opacity": line.opacity, "line-width": ["interpolate", ["linear"], ["zoom"], 1, line.width[0], 6, line.width[1]] as unknown as maplibregl.ExpressionSpecification } })),
+      ...(atlasLines ? [] : mapBaseBorderLayers(mapBase, borderPalette)).map((line) => ({ id: line.id, type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": line.color, "line-opacity": line.opacity, "line-width": ["interpolate", ["linear"], ["zoom"], 1, line.width[0], 6, line.width[1]] as unknown as maplibregl.ExpressionSpecification } })),
       // traço de tinta do estilo de mapa (gravura): por cima da terra, por baixo dos marcadores
       ...(palette.ink ? [{ id: "ink", type: "line" as const, source: "atlas", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": palette.ink.color, "line-width": ["interpolate", ["linear"], ["zoom"], 1, palette.ink.width, 6, palette.ink.width * 1.6] as unknown as maplibregl.ExpressionSpecification, "line-opacity": palette.ink.opacity } }] : []),
+      ...(atlasLines ? [
+        ...["atlas", ...(board?.extra ?? []).map((_, index) => `atlas-${index}`)].map((source, index) => ({
+          id: index ? `division-lines-${index - 1}` : "division-lines", type: "line" as const, source, "source-layer": "countries",
+          filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const },
+          paint: { "line-color": divisionColor, "line-opacity": satellite ? 0.7 : 0.9, "line-dasharray": [2.5, 2], "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.7, 6, 1.4] as unknown as maplibregl.ExpressionSpecification },
+        })),
+        ...(satellite ? [{ id: "nation-casing", type: "line" as const, source: "backdrop", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const }, paint: { "line-color": "#06121a", "line-opacity": 0.5, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 1.8, 6, 3.4] as unknown as maplibregl.ExpressionSpecification } }] : []),
+        { id: "nation-lines", type: "line" as const, source: "backdrop", "source-layer": "countries", filter: ["==", "$type", "Polygon"] as unknown as maplibregl.FilterSpecification, layout: { "line-join": "round" as const },
+          paint: { "line-color": nationColor, "line-opacity": 0.9, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.9, 6, 1.8] as unknown as maplibregl.ExpressionSpecification } },
+      ] : []),
       ...MARKER_BAND_ZOOMS.map((band) => ({
         id: markerLayerId(band),
         type: "circle" as const,
