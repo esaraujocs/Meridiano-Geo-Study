@@ -1,7 +1,7 @@
 // O fundo do mapa das partidas (map-base.ts): a escolha guardada, a paleta com o satélite e o relevo e a opacidade da terra.
 import assert from "node:assert/strict";
 import { DEFAULT_MAP_PALETTE } from "../.tmp-map-base/map-palette.js";
-import { MAP_BASES, MAP_BASE_TILES, MAP_BASE_THEME, isSatellite, landOpacityPaint, mapBaseBorderLayers, readMapBase, withMapBase } from "../.tmp-map-base/map-base.js";
+import { MAP_BASES, MAP_BASE_TILES, MAP_BASE_THEME, NATURAL, coversLand, isSatellite, landOpacityPaint, mapBaseBorderLayers, readMapBase, withMapBase } from "../.tmp-map-base/map-base.js";
 
 const store = (value) => ({ getItem: () => value });
 assert.equal(readMapBase(store(null)), "padrao");
@@ -29,6 +29,13 @@ const rel = withMapBase(DEFAULT_MAP_PALETTE, "relevo");
 assert.ok(rel.landOpacity < DEFAULT_MAP_PALETTE.landOpacity);
 assert.equal(rel.landOpacityNear, DEFAULT_MAP_PALETTE.landOpacity);
 assert.equal(rel.ocean, DEFAULT_MAP_PALETTE.ocean); assert.equal(rel.coast, DEFAULT_MAP_PALETTE.coast);
+// natural: a imagem desenhada cobre a terra inteira e não some de perto; mar azul-claro, terra clara (rótulos escuros), sem os enfeites do tema
+const nat = withMapBase(DEFAULT_MAP_PALETTE, "natural");
+assert.ok(coversLand("natural") && coversLand("satelite") && !coversLand("relevo") && !coversLand("padrao") && !isSatellite("natural"));
+assert.equal(nat.landOpacity, 0); assert.equal(nat.landOpacityNear, undefined); assert.ok(nat.landMarkedOpacity > 0.5);
+assert.equal(nat.ocean, NATURAL.ocean); assert.equal(nat.land, NATURAL.land);
+assert.equal(nat.coast, null); assert.equal(nat.graticule, null); assert.equal(nat.rhumb, null); assert.equal(nat.ink, null);
+assert.deepEqual(mapBaseBorderLayers("natural", DEFAULT_MAP_PALETTE).map((layer) => layer.id), ["map-base-borders"]);
 
 // a opacidade da terra: sem os campos novos, um número; com eles, por zoom, e os marcados com a opacidade própria
 assert.equal(landOpacityPaint(DEFAULT_MAP_PALETTE, [["==", 1, 1]]), DEFAULT_MAP_PALETTE.landOpacity);

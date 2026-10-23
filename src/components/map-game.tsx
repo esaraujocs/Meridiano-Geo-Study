@@ -17,7 +17,7 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
-import { isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { coversLand, isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
 import { atlasStyle } from "./map-style";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
@@ -116,6 +116,7 @@ export function Game({
   // Fundo de satélite ou relevo (Configurações, em teste): só no mapa-múndi; no satélite os ornamentos do estilo e a fauna do tema saem.
   const mapBase = useMemo(() => (board ? "padrao" : readMapBase()), []);
   const satellite = isSatellite(mapBase);
+  const covered = coversLand(mapBase);
   const paletteNow = () => withMapBase(withMapStyle(currentPalette(), mapStyleId), mapBase);
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -480,8 +481,8 @@ export function Game({
     map.on("load", exposeActiveMarkerIds);
     map.on("error", handleError);
     // Navios e criaturas do mar do tema (Cartógrafo): ancorados no oceano, acompanham o arrasto e o zoom do mapa.
-    const removeFauna = addMapFauna(map, satellite ? undefined : document.documentElement.dataset.theme);
-    const removeOrnaments = addMapOrnaments(map, satellite ? undefined : mapStyleId);
+    const removeFauna = addMapFauna(map, covered ? undefined : document.documentElement.dataset.theme);
+    const removeOrnaments = addMapOrnaments(map, covered ? undefined : mapStyleId);
     map.addControl(
       new maplibregl.NavigationControl({ showCompass: false }),
       "bottom-right",
@@ -750,7 +751,7 @@ export function Game({
             {feedback || t.map.currentTarget(targetName)}
           </p>
           <p className="map-keyboard-hint">{t.map.keyboardHint}</p>
-          {isMapStyleId(mapStyleId) && !satellite && <div className="map-cartouche" data-style={mapStyleId} aria-hidden="true" style={{ "--c-paper": MAP_STYLES[mapStyleId].ornament.paper, "--c-ink": MAP_STYLES[mapStyleId].ornament.ink, "--c-accent": MAP_STYLES[mapStyleId].ornament.accent } as CSSProperties}><b>{MAP_STYLES[mapStyleId].cartouche[0]}</b><small>{MAP_STYLES[mapStyleId].cartouche[1]}</small></div>}
+          {isMapStyleId(mapStyleId) && !covered && <div className="map-cartouche" data-style={mapStyleId} aria-hidden="true" style={{ "--c-paper": MAP_STYLES[mapStyleId].ornament.paper, "--c-ink": MAP_STYLES[mapStyleId].ornament.ink, "--c-accent": MAP_STYLES[mapStyleId].ornament.accent } as CSSProperties}><b>{MAP_STYLES[mapStyleId].cartouche[0]}</b><small>{MAP_STYLES[mapStyleId].cartouche[1]}</small></div>}
           <div className={`map-crosshair ${keyboardMode ? "is-visible" : ""}`} aria-hidden="true"><i /><i /><span>{t.map.crosshair}</span></div>
           <div className="map-hud">
             <div className="map-note">{t.map.note}</div>

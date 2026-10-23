@@ -13,7 +13,7 @@ import type { MapBoard } from "./map-game";
 import { cameraFor, normalizeRegionSelection } from "../domain/regions";
 import { mapPaletteFor } from "../domain/themes";
 import { withMapStyle } from "../domain/map-styles";
-import { isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { coversLand, isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { ABSORBED_MARKER_IDS, isMarkerVisibleAtZoom, MARKER_BAND_ZOOMS, markerLayerId } from "../domain/small-entities";
 import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
@@ -66,6 +66,7 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
   // o fundo das Opções (satélite, relevo) vale no mapa-múndi e no Explorar com todos os países; o tabuleiro de um país segue no padrão
   const mapBase = useMemo(() => (board && !board.extra ? "padrao" : readMapBase()), []);
   const satellite = isSatellite(mapBase);
+  const covered = coversLand(mapBase);
   const paletteNow = () => withMapBase(withMapStyle(mapPaletteFor(document.documentElement.dataset.theme), mapStyleId), mapBase);
   const mapEl = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -118,8 +119,8 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
       if (event?.sourceId === "backdrop" || event?.sourceId === "map-base") return;
       setMapError(event.error instanceof Error ? event.error.message : t.map.loadFailed);
     });
-    const removeFauna = addMapFauna(map, satellite ? undefined : document.documentElement.dataset.theme);
-    const removeOrnaments = addMapOrnaments(map, satellite ? undefined : mapStyleId);
+    const removeFauna = addMapFauna(map, covered ? undefined : document.documentElement.dataset.theme);
+    const removeOrnaments = addMapOrnaments(map, covered ? undefined : mapStyleId);
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     mapRef.current = map;
     if (import.meta.env.DEV) (window as unknown as { __cartaMap?: maplibregl.Map }).__cartaMap = map;

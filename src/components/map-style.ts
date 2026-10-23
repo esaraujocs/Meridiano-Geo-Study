@@ -5,7 +5,7 @@ import { Protocol } from "pmtiles";
 import { coastBands, graticuleLines, mixHex, rhumbLines } from "../domain/map-palette";
 import type { MapPalette } from "../domain/map-palette";
 import { MAP_URL } from "../domain/offline-map";
-import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, type MapBase } from "../domain/map-base";
+import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, NATURAL, coversLand, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, type MapBase } from "../domain/map-base";
 import { MARKER_BAND_ZOOMS, markerBandFilter, markerBandOpacity, markerFilter, markerLayerId, SMALL_ENTITY_SOURCE, type SmallEntitySource } from "../domain/small-entities";
 import { MARKER_TOUCH_PX } from "../domain/map-marker-click";
 
@@ -29,6 +29,8 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
   markerIds: readonly string[];
 }): maplibregl.StyleSpecification {
   const satellite = isSatellite(mapBase);
+  const natural = mapBase === "natural";
+  const covered = coversLand(mapBase);
   const activeFilter = markerFilter(markerIds);
   // tabuleiro com o mapa-múndi de fundo (22/10/2026, pedido do Enzo): as divisas das unidades num tracejado discreto e as fronteiras dos países
   // e a costa numa linha contínua por cima, como num atlas; sem o fundo (as épocas, em que as unidades são os países), o contorno de sempre
@@ -36,8 +38,8 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
   const unitOutline = atlasLines ? "rgba(0,0,0,0)" : palette.outline;
   // o contorno da paleta com o fundo é transparente no satélite e no relevo; as linhas saem do contorno do tema
   const ink = borderPalette.outline.startsWith("#") ? borderPalette.outline : "#4c8890";
-  const divisionColor = satellite ? "#ffffff" : mixHex(ink, "#ffffff", 0.2);
-  const nationColor = satellite ? "#ffffff" : mixHex(ink, "#ffffff", 0.3);
+  const divisionColor = satellite ? "#ffffff" : natural ? NATURAL.division : mixHex(ink, "#ffffff", 0.2);
+  const nationColor = satellite ? "#ffffff" : natural ? NATURAL.border : mixHex(ink, "#ffffff", 0.3);
   return {
     version: 8,
     sources: {
@@ -61,7 +63,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         type: "background",
         paint: { "background-color": palette.ocean },
       },
-      ...(satellite ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
+      ...(covered ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
       ...(palette.graticule ? [{ id: "graticule", type: "line" as const, source: "graticule", paint: { "line-color": palette.graticule, "line-opacity": palette.graticuleOpacity, "line-width": 0.7, "line-dasharray": [2, 3] } }] : []),
       ...(palette.rhumb ? [{ id: "rhumb", type: "line" as const, source: "rhumb", paint: { "line-color": palette.rhumb.color, "line-opacity": palette.rhumb.opacity, "line-width": 0.7 } }] : []),
       // sombra junto às costas (três faixas opacas, da mais clara à mais escura), por baixo da terra: só aparece do lado do mar
@@ -82,7 +84,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
         "source-layer": "countries",
         filter: ["all", ["==", ["geometry-type"], "Polygon"], ["!", ["in", ["get", "carta_id"], ["literal", [...board.backdrop.hide]]]]] as unknown as maplibregl.FilterSpecification,
         // com a foto de satélite o fundo fica transparente (a foto aparece no mundo todo; só as linhas de cima marcam os países)
-        paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, ink, 0.25), ...(satellite ? { "fill-opacity": 0 } : mapBase === "relevo" ? { "fill-opacity": palette.landOpacity ?? 0.42 } : {}) },
+        paint: { "fill-color": mixHex(palette.ocean, palette.land, 0.3), "fill-outline-color": mixHex(palette.ocean, ink, 0.25), ...(covered ? { "fill-opacity": 0 } : mapBase === "relevo" ? { "fill-opacity": palette.landOpacity ?? 0.42 } : {}) },
       }] : []),
       ...(mapBase === "relevo" ? [{ id: "map-base", type: "raster" as const, source: "map-base", paint: mapBaseRasterPaint(mapBase) } as maplibregl.LayerSpecification] : []),
       {

@@ -5,14 +5,20 @@
 //   padrao            o mapa de sempre (a paleta do tema ou do estilo de mapa);
 //   satelite          a foto inteira: a terra fica transparente e só os países marcados acendem; as fronteiras viram um traço claro e fino;
 //   satelite-noturno  o mesmo mapa com a interface do Noturno (o app não tem modo escuro à parte: o escuro é o tema Noturno);
-//   relevo            só a terra da foto (o mar recortado), apagada e tingida pela terra da paleta; o mar, as costas e o traço continuam os da paleta.
+//   relevo            só a terra da foto (o mar recortado), apagada e tingida pela terra da paleta; o mar, as costas e o traço continuam os da paleta;
+//   natural           a cobertura do solo desenhada (23/10/2026, o modo mapa do Google Earth): areia, cerrado, campo, floresta e gelo em cores suaves,
+//                     tirados da mesma foto (scripts/map-base/build-natural.py), o mar azul-claro e as fronteiras num cinza.
 import { mixHex, type MapPalette } from "./map-palette.js";
 
-export type MapBase = "padrao" | "satelite" | "satelite-noturno" | "relevo";
-export const MAP_BASES: readonly MapBase[] = ["padrao", "satelite", "satelite-noturno", "relevo"];
+export type MapBase = "padrao" | "natural" | "satelite" | "satelite-noturno" | "relevo";
+export const MAP_BASES: readonly MapBase[] = ["padrao", "natural", "satelite", "satelite-noturno", "relevo"];
 export const MAP_BASE_KEY = "carta-map-base";
 export const isMapBase = (value: unknown): value is MapBase => typeof value === "string" && (MAP_BASES as readonly string[]).includes(value);
 export const isSatellite = (base: MapBase) => base === "satelite" || base === "satelite-noturno";
+/** A imagem cobre a terra inteira (satélite e natural): a terra da paleta fica transparente e saem a fauna e os ornamentos do tema. */
+export const coversLand = (base: MapBase) => isSatellite(base) || base === "natural";
+/** O natural: o mar, a terra que decide a cor dos rótulos (a terra mesmo vem da imagem) e o cinza das fronteiras. */
+export const NATURAL = { ocean: "#aacde3", land: "#e2e8cc", border: "#7d877e", division: "#98a198" } as const;
 
 export function readMapBase(storage: Pick<Storage, "getItem"> | undefined = typeof localStorage === "undefined" ? undefined : localStorage): MapBase {
   try {
@@ -26,6 +32,7 @@ export function readMapBase(storage: Pick<Storage, "getItem"> | undefined = type
  *  da paleta, clareado. */
 export function mapBaseBorderLayers(base: MapBase, palette: MapPalette): { id: string; color: string; opacity: number; width: [number, number] }[] {
   if (base === "padrao") return [];
+  if (base === "natural") return [{ id: "map-base-borders", color: NATURAL.border, opacity: 0.9, width: [0.5, 1.2] }];
   const core = isSatellite(base) ? "#ffffff" : mixHex(palette.outline.startsWith("#") ? palette.outline : "#4c8890", "#ffffff", 0.45);
   return [
     { id: "map-base-casing", color: "#06121a", opacity: isSatellite(base) ? 0.5 : 0.55, width: [1.6, 3.2] },
@@ -42,6 +49,7 @@ export const MAP_BASE_TILES: Partial<Record<MapBase, string>> = {
   satelite: "/maps/sat/bm/{z}/{x}/{y}.webp",
   "satelite-noturno": "/maps/sat/bm/{z}/{x}/{y}.webp",
   relevo: "/maps/sat/bm-terra/{z}/{x}/{y}.webp",
+  natural: "/maps/sat/natural/{z}/{x}/{y}.webp",
 };
 export const MAP_BASE_MAXZOOM = 5;
 export const MAP_BASE_CREDIT = "Blue Marble: NASA Earth Observatory";
@@ -52,12 +60,15 @@ export const MAP_BASE_NEAR: readonly [number, number] = [6, 8.5];
  *  só deixa a terra translúcida por cima da foto. */
 export function withMapBase(palette: MapPalette, base: MapBase): MapPalette {
   if (isSatellite(base)) return { ...palette, landOpacity: 0, landOpacityNear: 0.6, landMarkedOpacity: 0.85, outline: "rgba(0,0,0,0)", coast: null, graticule: null, rhumb: null, ink: null };
+  // o natural não some de perto: desenhado em cores chapadas, ampliado ele só fica mais macio
+  if (base === "natural") return { ...palette, ocean: NATURAL.ocean, land: NATURAL.land, landOpacity: 0, landOpacityNear: undefined, landMarkedOpacity: 0.85, outline: "rgba(0,0,0,0)", coast: null, graticule: null, rhumb: null, ink: null };
   if (base === "relevo") return { ...palette, landOpacity: 0.42, landOpacityNear: palette.landOpacity, landMarkedOpacity: 0.85, outline: "rgba(0,0,0,0)" };
   return palette;
 }
 
 /** A pintura da camada da foto (raster): no relevo apagada; nos dois, some aos poucos de perto. */
 export function mapBaseRasterPaint(base: MapBase): Record<string, unknown> {
+  if (base === "natural") return { "raster-opacity": 1, "raster-fade-duration": 0, "raster-resampling": "linear" };
   const fade = ["interpolate", ["linear"], ["zoom"], MAP_BASE_NEAR[0], 1, MAP_BASE_NEAR[1], isSatellite(base) ? 0.35 : 0.4];
   return { "raster-opacity": fade, "raster-fade-duration": 0, "raster-resampling": "linear", ...(base === "relevo" ? { "raster-saturation": -0.45, "raster-contrast": -0.08 } : {}) };
 }
