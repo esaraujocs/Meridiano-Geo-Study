@@ -107,7 +107,8 @@ export function boardMarkerSource(units: readonly { id: string; ll?: readonly [n
   const features: MarkerFeature[] = [];
   for (const unit of units) {
     if (!unit.ll || !unit.bbox || (unit.area ?? Infinity) >= BOARD_MARKER_KM2) continue;
-    const span = Math.max(0.01, unit.bbox[2] - unit.bbox[0], unit.bbox[3] - unit.bbox[1]);
+    // o tamanho pela área (o lado de um quadrado com ela), não pela caixa: arquipélagos espalhados (as Laquedivas, 32 km² em ~3°) sumiriam cedo
+    const span = Math.max(0.01, Math.min(Math.sqrt(unit.area ?? 0) / 111 || Infinity, unit.bbox[2] - unit.bbox[0], unit.bbox[3] - unit.bbox[1]));
     const zoom = Math.log2((BOARD_MARKER_PX * 360) / (512 * span));
     const band = MARKER_BAND_ZOOMS.find((value) => value >= zoom) ?? MARKER_BAND_ZOOMS[MARKER_BAND_ZOOMS.length - 1];
     features.push({ type: "Feature", geometry: { type: "Point", coordinates: [unit.ll[1], unit.ll[0]] }, properties: { carta_id: unit.id, switchZoom: band, un: true } });

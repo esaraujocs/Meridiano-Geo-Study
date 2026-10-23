@@ -1,0 +1,936 @@
+{
+ "source": "Irlanda: os 26 condados da República (palavra \"condado\"; a Irlanda do Norte fica no Reino Unido). A capital é a sede do condado (Clonmel em Tipperary, com Nenagh aceita). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: as 4 províncias históricas (Leinster, Munster, Connacht e o Ulster dos 3 condados da República).",
+ "country": "ie",
+ "regions": {
+  "leinster": {
+   "pt": "Leinster",
+   "en": "Leinster",
+   "es": "Leinster"
+  },
+  "munster": {
+   "pt": "Munster",
+   "en": "Munster",
+   "es": "Munster"
+  },
+  "connacht": {
+   "pt": "Connacht",
+   "en": "Connacht",
+   "es": "Connacht"
+  },
+  "ulster": {
+   "pt": "Ulster",
+   "en": "Ulster",
+   "es": "Úlster"
+  }
+ },
+ "units": {
+  "ie-ce": {
+   "code": "CE",
+   "ref": "IE-CE",
+   "name": {
+    "pt": "Clare",
+    "en": "Clare",
+    "es": "Clare"
+   },
+   "alias": [
+    "County Clare",
+    "Condado de Clare"
+   ],
+   "capital": "Ennis",
+   "region": "munster",
+   "area": 3235,
+   "ll": [
+    52.918,
+    -9.1462
+   ],
+   "bbox": [
+    -9.939,
+    52.555,
+    -8.282,
+    53.158
+   ],
+   "borders": [
+    "ie-g",
+    "ie-ky",
+    "ie-lk",
+    "ie-ta"
+   ],
+   "pop": 117096,
+   "popYear": 2011
+  },
+  "ie-cn": {
+   "code": "CN",
+   "ref": "IE-CN",
+   "name": {
+    "pt": "Cavan",
+    "en": "Cavan",
+    "es": "Cavan"
+   },
+   "alias": [
+    "County Cavan",
+    "Condado de Cavan"
+   ],
+   "capital": "Cavan",
+   "region": "ulster",
+   "area": 1923,
+   "ll": [
+    53.9591,
+    -7.3645
+   ],
+   "bbox": [
+    -8.058,
+    53.766,
+    -6.762,
+    54.304
+   ],
+   "borders": [
+    "ie-ld",
+    "ie-lm",
+    "ie-mh",
+    "ie-mn",
+    "ie-wh"
+   ],
+   "pop": 73183,
+   "popYear": 2011
+  },
+  "ie-co": {
+   "code": "CO",
+   "ref": "IE-CO",
+   "name": {
+    "pt": "Cork",
+    "en": "Cork",
+    "es": "Cork"
+   },
+   "alias": [
+    "County Cork",
+    "Condado de Cork"
+   ],
+   "capital": "Cork",
+   "region": "munster",
+   "area": 7441,
+   "ll": [
+    52.0355,
+    -8.8115
+   ],
+   "bbox": [
+    -10.162,
+    51.448,
+    -7.842,
+    52.388
+   ],
+   "borders": [
+    "ie-ky",
+    "ie-lk",
+    "ie-ta",
+    "ie-wd"
+   ],
+   "pop": 542196,
+   "popYear": 2016
+  },
+  "ie-cw": {
+   "code": "CW",
+   "ref": "IE-CW",
+   "name": {
+    "pt": "Carlow",
+    "en": "Carlow",
+    "es": "Carlow"
+   },
+   "alias": [
+    "County Carlow",
+    "Condado de Carlow"
+   ],
+   "capital": "Carlow",
+   "region": "leinster",
+   "area": 893,
+   "ll": [
+    52.7273,
+    -6.8524
+   ],
+   "bbox": [
+    -7.108,
+    52.464,
+    -6.505,
+    52.918
+   ],
+   "borders": [
+    "ie-ke",
+    "ie-kk",
+    "ie-ls",
+    "ie-ww",
+    "ie-wx"
+   ],
+   "pop": 56875,
+   "popYear": 2016
+  },
+  "ie-d": {
+   "code": "D",
+   "ref": "IE-D",
+   "name": {
+    "pt": "Dublin",
+    "en": "Dublin",
+    "es": "Dublín"
+   },
+   "alias": [
+    "County Dublin",
+    "Condado de Dublin"
+   ],
+   "capital": {
+    "pt": "Dublin",
+    "en": "Dublin",
+    "es": "Dublín"
+   },
+   "capAl": [
+    "Dublín"
+   ],
+   "region": "leinster",
+   "area": 924,
+   "ll": [
+    53.3309,
+    -6.3456
+   ],
+   "bbox": [
+    -6.547,
+    53.178,
+    -5.994,
+    53.635
+   ],
+   "borders": [
+    "ie-ke",
+    "ie-mh",
+    "ie-ww"
+   ],
+   "pop": 1270603,
+   "popYear": 2011
+  },
+  "ie-dl": {
+   "code": "DL",
+   "ref": "IE-DL",
+   "name": {
+    "pt": "Donegal",
+    "en": "Donegal",
+    "es": "Donegal"
+   },
+   "alias": [
+    "County Donegal",
+    "Condado de Donegal"
+   ],
+   "capital": "Lifford",
+   "region": "ulster",
+   "area": 4842,
+   "ll": [
+    54.9181,
+    -7.9775
+   ],
+   "bbox": [
+    -8.805,
+    54.459,
+    -6.922,
+    55.383
+   ],
+   "borders": [
+    "ie-lm"
+   ],
+   "pop": 161137
+  },
+  "ie-g": {
+   "code": "G",
+   "ref": "IE-G",
+   "name": {
+    "pt": "Galway",
+    "en": "Galway",
+    "es": "Galway"
+   },
+   "alias": [
+    "County Galway",
+    "Condado de Galway"
+   ],
+   "capital": "Galway",
+   "region": "connacht",
+   "area": 6144,
+   "ll": [
+    53.3654,
+    -8.5919
+   ],
+   "bbox": [
+    -10.262,
+    52.968,
+    -7.968,
+    53.719
+   ],
+   "borders": [
+    "ie-ce",
+    "ie-mo",
+    "ie-oy",
+    "ie-rn",
+    "ie-ta"
+   ],
+   "pop": 277737,
+   "popYear": 2022
+  },
+  "ie-ke": {
+   "code": "KE",
+   "ref": "IE-KE",
+   "name": {
+    "pt": "Kildare",
+    "en": "Kildare",
+    "es": "Kildare"
+   },
+   "alias": [
+    "County Kildare",
+    "Condado de Kildare"
+   ],
+   "capital": "Naas",
+   "region": "leinster",
+   "area": 1687,
+   "ll": [
+    53.2195,
+    -6.8214
+   ],
+   "bbox": [
+    -7.169,
+    52.858,
+    -6.46,
+    53.451
+   ],
+   "borders": [
+    "ie-cw",
+    "ie-d",
+    "ie-ls",
+    "ie-mh",
+    "ie-oy",
+    "ie-ww"
+   ],
+   "pop": 222130,
+   "popYear": 2016
+  },
+  "ie-kk": {
+   "code": "KK",
+   "ref": "IE-KK",
+   "name": {
+    "pt": "Kilkenny",
+    "en": "Kilkenny",
+    "es": "Kilkenny"
+   },
+   "alias": [
+    "County Kilkenny",
+    "Condado de Kilkenny"
+   ],
+   "capital": "Kilkenny",
+   "region": "leinster",
+   "area": 2063,
+   "ll": [
+    52.5152,
+    -7.1816
+   ],
+   "bbox": [
+    -7.674,
+    52.243,
+    -6.915,
+    52.894
+   ],
+   "borders": [
+    "ie-cw",
+    "ie-ls",
+    "ie-ta",
+    "ie-wd",
+    "ie-wx"
+   ],
+   "pop": 99232,
+   "popYear": 2016
+  },
+  "ie-ky": {
+   "code": "KY",
+   "ref": "IE-KY",
+   "name": {
+    "pt": "Kerry",
+    "en": "Kerry",
+    "es": "Kerry"
+   },
+   "alias": [
+    "County Kerry",
+    "Condado de Kerry"
+   ],
+   "capital": "Tralee",
+   "region": "munster",
+   "area": 4733,
+   "ll": [
+    52.1054,
+    -9.4723
+   ],
+   "bbox": [
+    -10.48,
+    51.688,
+    -9.119,
+    52.592
+   ],
+   "borders": [
+    "ie-ce",
+    "ie-co",
+    "ie-lk"
+   ],
+   "pop": 147707,
+   "popYear": 2016
+  },
+  "ie-ld": {
+   "code": "LD",
+   "ref": "IE-LD",
+   "name": {
+    "pt": "Longford",
+    "en": "Longford",
+    "es": "Longford"
+   },
+   "alias": [
+    "County Longford",
+    "Condado de Longford"
+   ],
+   "capital": "Longford",
+   "region": "leinster",
+   "area": 1087,
+   "ll": [
+    53.6776,
+    -7.7546
+   ],
+   "bbox": [
+    -8.036,
+    53.522,
+    -7.375,
+    53.942
+   ],
+   "borders": [
+    "ie-cn",
+    "ie-lm",
+    "ie-rn",
+    "ie-wh"
+   ],
+   "pop": 40873,
+   "popYear": 2016
+  },
+  "ie-lh": {
+   "code": "LH",
+   "ref": "IE-LH",
+   "name": {
+    "pt": "Louth",
+    "en": "Louth",
+    "es": "Louth"
+   },
+   "alias": [
+    "County Louth",
+    "Condado de Louth"
+   ],
+   "capital": "Dundalk",
+   "region": "leinster",
+   "area": 822,
+   "ll": [
+    53.8889,
+    -6.4859
+   ],
+   "bbox": [
+    -6.695,
+    53.698,
+    -6.103,
+    54.114
+   ],
+   "borders": [
+    "ie-mh",
+    "ie-mn"
+   ],
+   "pop": 128375,
+   "popYear": 2016
+  },
+  "ie-lk": {
+   "code": "LK",
+   "ref": "IE-LK",
+   "name": {
+    "pt": "Limerick",
+    "en": "Limerick",
+    "es": "Limerick"
+   },
+   "alias": [
+    "County Limerick",
+    "Condado de Limerick"
+   ],
+   "capital": "Limerick",
+   "region": "munster",
+   "area": 2680,
+   "ll": [
+    52.5071,
+    -8.5649
+   ],
+   "bbox": [
+    -9.365,
+    52.28,
+    -8.156,
+    52.757
+   ],
+   "borders": [
+    "ie-ce",
+    "ie-co",
+    "ie-ky",
+    "ie-ta"
+   ],
+   "pop": 195175,
+   "popYear": 2016
+  },
+  "ie-lm": {
+   "code": "LM",
+   "ref": "IE-LM",
+   "name": {
+    "pt": "Leitrim",
+    "en": "Leitrim",
+    "es": "Leitrim"
+   },
+   "alias": [
+    "County Leitrim",
+    "Condado de Leitrim"
+   ],
+   "capital": "Carrick-on-Shannon",
+   "region": "connacht",
+   "area": 1582,
+   "ll": [
+    54.2949,
+    -8.194
+   ],
+   "bbox": [
+    -8.428,
+    53.806,
+    -7.585,
+    54.474
+   ],
+   "borders": [
+    "ie-cn",
+    "ie-dl",
+    "ie-ld",
+    "ie-rn",
+    "ie-so"
+   ],
+   "pop": 35199,
+   "popYear": 2022
+  },
+  "ie-ls": {
+   "code": "LS",
+   "ref": "IE-LS",
+   "name": {
+    "pt": "Laois",
+    "en": "Laois",
+    "es": "Laois"
+   },
+   "alias": [
+    "County Laois",
+    "Condado de Laois"
+   ],
+   "capital": "Portlaoise",
+   "capAl": [
+    "Port Laoise"
+   ],
+   "region": "leinster",
+   "area": 1712,
+   "ll": [
+    53.0032,
+    -7.4354
+   ],
+   "bbox": [
+    -7.734,
+    52.781,
+    -6.932,
+    53.216
+   ],
+   "borders": [
+    "ie-cw",
+    "ie-ke",
+    "ie-kk",
+    "ie-oy",
+    "ie-ta"
+   ],
+   "pop": 67012,
+   "popYear": 2016
+  },
+  "ie-mh": {
+   "code": "MH",
+   "ref": "IE-MH",
+   "name": {
+    "pt": "Meath",
+    "en": "Meath",
+    "es": "Meath"
+   },
+   "alias": [
+    "County Meath",
+    "Condado de Meath"
+   ],
+   "capital": "Navan",
+   "region": "leinster",
+   "area": 2333,
+   "ll": [
+    53.6476,
+    -6.7363
+   ],
+   "bbox": [
+    -7.344,
+    53.382,
+    -6.213,
+    53.918
+   ],
+   "borders": [
+    "ie-cn",
+    "ie-d",
+    "ie-ke",
+    "ie-lh",
+    "ie-mn",
+    "ie-oy",
+    "ie-wh"
+   ],
+   "pop": 194942,
+   "popYear": 2016
+  },
+  "ie-mn": {
+   "code": "MN",
+   "ref": "IE-MN",
+   "name": {
+    "pt": "Monaghan",
+    "en": "Monaghan",
+    "es": "Monaghan"
+   },
+   "alias": [
+    "County Monaghan",
+    "Condado de Monaghan"
+   ],
+   "capital": "Monaghan",
+   "region": "ulster",
+   "area": 1289,
+   "ll": [
+    54.2366,
+    -7.008
+   ],
+   "bbox": [
+    -7.34,
+    53.901,
+    -6.55,
+    54.421
+   ],
+   "borders": [
+    "ie-cn",
+    "ie-lh",
+    "ie-mh"
+   ],
+   "pop": 60483,
+   "popYear": 2011
+  },
+  "ie-mo": {
+   "code": "MO",
+   "ref": "IE-MO",
+   "name": {
+    "pt": "Mayo",
+    "en": "Mayo",
+    "es": "Mayo"
+   },
+   "alias": [
+    "County Mayo",
+    "Condado de Mayo"
+   ],
+   "capital": "Castlebar",
+   "region": "connacht",
+   "area": 5573,
+   "ll": [
+    53.854,
+    -9.2564
+   ],
+   "bbox": [
+    -10.259,
+    53.472,
+    -8.583,
+    54.345
+   ],
+   "borders": [
+    "ie-g",
+    "ie-rn",
+    "ie-so"
+   ],
+   "pop": 130638,
+   "popYear": 2011
+  },
+  "ie-oy": {
+   "code": "OY",
+   "ref": "IE-OY",
+   "name": {
+    "pt": "Offaly",
+    "en": "Offaly",
+    "es": "Offaly"
+   },
+   "alias": [
+    "County Offaly",
+    "Condado de Offaly"
+   ],
+   "capital": "Tullamore",
+   "region": "leinster",
+   "area": 1993,
+   "ll": [
+    53.1922,
+    -7.7943
+   ],
+   "bbox": [
+    -8.084,
+    52.848,
+    -6.978,
+    53.424
+   ],
+   "borders": [
+    "ie-g",
+    "ie-ke",
+    "ie-ls",
+    "ie-mh",
+    "ie-rn",
+    "ie-ta",
+    "ie-wh"
+   ],
+   "pop": 78003,
+   "popYear": 2016
+  },
+  "ie-rn": {
+   "code": "RN",
+   "ref": "IE-RN",
+   "name": {
+    "pt": "Roscommon",
+    "en": "Roscommon",
+    "es": "Roscommon"
+   },
+   "alias": [
+    "County Roscommon",
+    "Condado de Roscommon"
+   ],
+   "capital": "Roscommon",
+   "region": "connacht",
+   "area": 2537,
+   "ll": [
+    53.7558,
+    -8.1961
+   ],
+   "bbox": [
+    -8.824,
+    53.271,
+    -7.876,
+    54.125
+   ],
+   "borders": [
+    "ie-g",
+    "ie-ld",
+    "ie-lm",
+    "ie-mo",
+    "ie-oy",
+    "ie-so",
+    "ie-wh"
+   ],
+   "pop": 64436,
+   "popYear": 2016
+  },
+  "ie-so": {
+   "code": "SO",
+   "ref": "IE-SO",
+   "name": {
+    "pt": "Sligo",
+    "en": "Sligo",
+    "es": "Sligo"
+   },
+   "alias": [
+    "County Sligo",
+    "Condado de Sligo"
+   ],
+   "capital": "Sligo",
+   "region": "connacht",
+   "area": 1828,
+   "ll": [
+    54.1248,
+    -8.7812
+   ],
+   "bbox": [
+    -9.137,
+    53.913,
+    -8.153,
+    54.473
+   ],
+   "borders": [
+    "ie-lm",
+    "ie-mo",
+    "ie-rn"
+   ],
+   "pop": 65393,
+   "popYear": 2011
+  },
+  "ie-ta": {
+   "code": "TA",
+   "ref": "IE-TA",
+   "name": {
+    "pt": "Tipperary",
+    "en": "Tipperary",
+    "es": "Tipperary"
+   },
+   "alias": [
+    "County Tipperary",
+    "Condado de Tipperary"
+   ],
+   "capital": "Clonmel",
+   "capAl": [
+    "Nenagh"
+   ],
+   "region": "munster",
+   "area": 4288,
+   "ll": [
+    52.5766,
+    -7.9304
+   ],
+   "bbox": [
+    -8.48,
+    52.202,
+    -7.372,
+    53.168
+   ],
+   "borders": [
+    "ie-ce",
+    "ie-co",
+    "ie-g",
+    "ie-kk",
+    "ie-lk",
+    "ie-ls",
+    "ie-oy",
+    "ie-wd"
+   ],
+   "pop": 158652,
+   "popYear": 2011
+  },
+  "ie-wd": {
+   "code": "WD",
+   "ref": "IE-WD",
+   "name": {
+    "pt": "Waterford",
+    "en": "Waterford",
+    "es": "Waterford"
+   },
+   "alias": [
+    "County Waterford",
+    "Condado de Waterford"
+   ],
+   "capital": "Waterford",
+   "region": "munster",
+   "area": 1850,
+   "ll": [
+    52.2331,
+    -7.5637
+   ],
+   "bbox": [
+    -8.163,
+    51.938,
+    -6.95,
+    52.364
+   ],
+   "borders": [
+    "ie-co",
+    "ie-kk",
+    "ie-ta",
+    "ie-wx"
+   ],
+   "pop": 113795,
+   "popYear": 2011
+  },
+  "ie-wh": {
+   "code": "WH",
+   "ref": "IE-WH",
+   "name": {
+    "pt": "Westmeath",
+    "en": "Westmeath",
+    "es": "Westmeath"
+   },
+   "alias": [
+    "County Westmeath",
+    "Condado de Westmeath"
+   ],
+   "capital": "Mullingar",
+   "region": "leinster",
+   "area": 1831,
+   "ll": [
+    53.5446,
+    -7.3869
+   ],
+   "bbox": [
+    -7.973,
+    53.318,
+    -6.955,
+    53.799
+   ],
+   "borders": [
+    "ie-cn",
+    "ie-ld",
+    "ie-mh",
+    "ie-oy",
+    "ie-rn"
+   ],
+   "pop": 88396,
+   "popYear": 2016
+  },
+  "ie-ww": {
+   "code": "WW",
+   "ref": "IE-WW",
+   "name": {
+    "pt": "Wicklow",
+    "en": "Wicklow",
+    "es": "Wicklow"
+   },
+   "alias": [
+    "County Wicklow",
+    "Condado de Wicklow"
+   ],
+   "capital": "Wicklow",
+   "region": "leinster",
+   "area": 2016,
+   "ll": [
+    52.9939,
+    -6.2506
+   ],
+   "bbox": [
+    -6.792,
+    52.682,
+    -5.998,
+    53.234
+   ],
+   "borders": [
+    "ie-cw",
+    "ie-d",
+    "ie-ke",
+    "ie-wx"
+   ],
+   "pop": 142332,
+   "popYear": 2016
+  },
+  "ie-wx": {
+   "code": "WX",
+   "ref": "IE-WX",
+   "name": {
+    "pt": "Wexford",
+    "en": "Wexford",
+    "es": "Wexford"
+   },
+   "alias": [
+    "County Wexford",
+    "Condado de Wexford"
+   ],
+   "capital": "Wexford",
+   "region": "leinster",
+   "area": 2359,
+   "ll": [
+    52.5529,
+    -6.4251
+   ],
+   "bbox": [
+    -7.018,
+    52.123,
+    -6.141,
+    52.797
+   ],
+   "borders": [
+    "ie-cw",
+    "ie-kk",
+    "ie-wd",
+    "ie-ww"
+   ],
+   "pop": 145273,
+   "popYear": 2011
+  }
+ }
+}

@@ -1,0 +1,475 @@
+{
+ "source": "Canadá: as 10 províncias e os 3 territórios (palavra \"província\"). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Oeste, Centro, Atlântico e Norte (os territórios).",
+ "country": "ca",
+ "regions": {
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "center": {
+   "pt": "Centro",
+   "en": "Central",
+   "es": "Centro"
+  },
+  "atlantic": {
+   "pt": "Atlântico",
+   "en": "Atlantic",
+   "es": "Atlántico"
+  },
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  }
+ },
+ "units": {
+  "ca-ab": {
+   "code": "AB",
+   "ref": "CA-AB",
+   "name": {
+    "pt": "Alberta",
+    "en": "Alberta",
+    "es": "Alberta"
+   },
+   "capital": "Edmonton",
+   "region": "west",
+   "area": 655425,
+   "ll": [
+    52.8668,
+    -113.0264
+   ],
+   "bbox": [
+    -120.001,
+    48.999,
+    -110.005,
+    60.0
+   ],
+   "borders": [
+    "ca-bc",
+    "ca-nt",
+    "ca-sk"
+   ],
+   "pop": 4262635,
+   "popYear": 2021
+  },
+  "ca-bc": {
+   "code": "BC",
+   "ref": "CA-BC",
+   "name": {
+    "pt": "Colúmbia Britânica",
+    "en": "British Columbia",
+    "es": "Columbia Británica"
+   },
+   "capital": "Victoria",
+   "capAl": [
+    "Vitória"
+   ],
+   "region": "west",
+   "area": 941840,
+   "ll": [
+    52.4989,
+    -122.4075
+   ],
+   "bbox": [
+    -139.061,
+    48.314,
+    -114.056,
+    60.0
+   ],
+   "borders": [
+    "ca-ab",
+    "ca-nt",
+    "ca-yt"
+   ],
+   "pop": 5000879,
+   "popYear": 2021
+  },
+  "ca-mb": {
+   "code": "MB",
+   "ref": "CA-MB",
+   "name": {
+    "pt": "Manitoba",
+    "en": "Manitoba",
+    "es": "Manitoba"
+   },
+   "capital": "Winnipeg",
+   "region": "west",
+   "area": 602956,
+   "ll": [
+    56.7629,
+    -95.8277
+   ],
+   "bbox": [
+    -102.008,
+    49.0,
+    -88.986,
+    60.0
+   ],
+   "borders": [
+    "ca-nu",
+    "ca-on",
+    "ca-sk"
+   ],
+   "pop": 1342153,
+   "popYear": 2021
+  },
+  "ca-nb": {
+   "code": "NB",
+   "ref": "CA-NB",
+   "name": {
+    "pt": "Nova Brunswick",
+    "en": "New Brunswick",
+    "es": "Nuevo Brunswick"
+   },
+   "alias": [
+    "Novo Brunswick",
+    "Nouveau-Brunswick"
+   ],
+   "capital": "Fredericton",
+   "region": "atlantic",
+   "area": 72780,
+   "ll": [
+    46.4829,
+    -66.5054
+   ],
+   "bbox": [
+    -69.053,
+    44.599,
+    -63.772,
+    48.072
+   ],
+   "borders": [
+    "ca-ns",
+    "ca-qc"
+   ],
+   "pop": 775610,
+   "popYear": 2021
+  },
+  "ca-nl": {
+   "code": "NL",
+   "ref": "CA-NL",
+   "name": {
+    "pt": "Terra Nova e Labrador",
+    "en": "Newfoundland and Labrador",
+    "es": "Terranova y Labrador"
+   },
+   "alias": [
+    "Terra Nova"
+   ],
+   "capital": "St. John's",
+   "capAl": [
+    "São João da Terra Nova",
+    "San Juan de Terranova"
+   ],
+   "region": "atlantic",
+   "area": 399262,
+   "ll": [
+    53.5498,
+    -61.8874
+   ],
+   "bbox": [
+    -67.821,
+    46.611,
+    -52.619,
+    60.308
+   ],
+   "borders": [
+    "ca-nu",
+    "ca-qc"
+   ],
+   "pop": 510550,
+   "popYear": 2021
+  },
+  "ca-ns": {
+   "code": "NS",
+   "ref": "CA-NS",
+   "name": {
+    "pt": "Nova Escócia",
+    "en": "Nova Scotia",
+    "es": "Nueva Escocia"
+   },
+   "capital": "Halifax",
+   "region": "atlantic",
+   "area": 55254,
+   "ll": [
+    44.45,
+    -65.0946
+   ],
+   "bbox": [
+    -66.213,
+    43.408,
+    -59.788,
+    47.042
+   ],
+   "borders": [
+    "ca-nb"
+   ],
+   "pop": 969383,
+   "popYear": 2021
+  },
+  "ca-nt": {
+   "code": "NT",
+   "ref": "CA-NT",
+   "name": {
+    "pt": "Territórios do Noroeste",
+    "en": "Northwest Territories",
+    "es": "Territorios del Noroeste"
+   },
+   "capital": "Yellowknife",
+   "region": "north",
+   "area": 1274238,
+   "ll": [
+    66.5611,
+    -128.307
+   ],
+   "bbox": [
+    -136.448,
+    59.999,
+    -102.001,
+    78.763
+   ],
+   "borders": [
+    "ca-ab",
+    "ca-bc",
+    "ca-nu",
+    "ca-sk",
+    "ca-yt"
+   ],
+   "pop": 41070,
+   "popYear": 2021,
+   "langs": {
+    "pt": [
+     "chipewyan",
+     "cree",
+     "gwich'in",
+     "inuinnaqtun",
+     "inuktitut",
+     "inuvialuktun",
+     "slavey do norte",
+     "slavey do sul",
+     "tłı̨chǫ"
+    ],
+    "en": [
+     "Chipewyan",
+     "Cree",
+     "Gwich'in",
+     "Inuinnaqtun",
+     "Inuktitut",
+     "Inuvialuktun",
+     "North Slavey",
+     "South Slavey",
+     "Tłı̨chǫ"
+    ],
+    "es": [
+     "chipewyan",
+     "cree",
+     "gwich'in",
+     "inuinnaqtun",
+     "inuktitut",
+     "inuvialuktun",
+     "slavey del norte",
+     "slavey del sur",
+     "tłı̨chǫ"
+    ]
+   }
+  },
+  "ca-nu": {
+   "code": "NU",
+   "ref": "CA-NU",
+   "name": {
+    "pt": "Nunavut",
+    "en": "Nunavut",
+    "es": "Nunavut"
+   },
+   "capital": "Iqaluit",
+   "region": "north",
+   "area": 2048032,
+   "ll": [
+    66.366,
+    -92.8353
+   ],
+   "bbox": [
+    -120.683,
+    59.959,
+    -61.091,
+    83.111
+   ],
+   "borders": [
+    "ca-mb",
+    "ca-nl",
+    "ca-nt",
+    "ca-on",
+    "ca-qc"
+   ],
+   "pop": 36858,
+   "popYear": 2021,
+   "langs": {
+    "pt": [
+     "inuktitut",
+     "inuinnaqtun"
+    ],
+    "en": [
+     "Inuktitut",
+     "Inuinnaqtun"
+    ],
+    "es": [
+     "inuktitut",
+     "inuinnaqtun"
+    ]
+   }
+  },
+  "ca-on": {
+   "code": "ON",
+   "ref": "CA-ON",
+   "name": {
+    "pt": "Ontário",
+    "en": "Ontario",
+    "es": "Ontario"
+   },
+   "capital": "Toronto",
+   "region": "center",
+   "area": 974488,
+   "ll": [
+    52.0262,
+    -85.4295
+   ],
+   "bbox": [
+    -95.155,
+    41.902,
+    -74.32,
+    56.86
+   ],
+   "borders": [
+    "ca-mb",
+    "ca-nu",
+    "ca-qc"
+   ],
+   "pop": 14223942,
+   "popYear": 2021
+  },
+  "ca-pe": {
+   "code": "PE",
+   "ref": "CA-PE",
+   "name": {
+    "pt": "Ilha do Príncipe Eduardo",
+    "en": "Prince Edward Island",
+    "es": "Isla del Príncipe Eduardo"
+   },
+   "capital": "Charlottetown",
+   "region": "atlantic",
+   "area": 5709,
+   "ll": [
+    46.2794,
+    -63.3306
+   ],
+   "bbox": [
+    -64.414,
+    45.948,
+    -61.971,
+    47.059
+   ],
+   "borders": [],
+   "pop": 154331,
+   "popYear": 2021
+  },
+  "ca-qc": {
+   "code": "QC",
+   "ref": "CA-QC",
+   "name": {
+    "pt": "Quebec",
+    "en": "Quebec",
+    "es": "Quebec"
+   },
+   "alias": [
+    "Québec"
+   ],
+   "capital": {
+    "pt": "Quebec",
+    "en": "Quebec City",
+    "es": "Quebec"
+   },
+   "capAl": [
+    "Cidade de Quebec",
+    "Québec"
+   ],
+   "region": "center",
+   "area": 1480495,
+   "ll": [
+    57.463,
+    -71.9307
+   ],
+   "bbox": [
+    -79.763,
+    44.999,
+    -57.108,
+    62.582
+   ],
+   "borders": [
+    "ca-nb",
+    "ca-nl",
+    "ca-nu",
+    "ca-on"
+   ],
+   "pop": 8501833,
+   "popYear": 2021
+  },
+  "ca-sk": {
+   "code": "SK",
+   "ref": "CA-SK",
+   "name": {
+    "pt": "Saskatchewan",
+    "en": "Saskatchewan",
+    "es": "Saskatchewan"
+   },
+   "capital": "Regina",
+   "region": "west",
+   "area": 629907,
+   "ll": [
+    52.1149,
+    -104.1587
+   ],
+   "bbox": [
+    -110.006,
+    49.0,
+    -101.362,
+    60.0
+   ],
+   "borders": [
+    "ca-ab",
+    "ca-mb",
+    "ca-nt"
+   ],
+   "pop": 1132505,
+   "popYear": 2021
+  },
+  "ca-yt": {
+   "code": "YT",
+   "ref": "CA-YT",
+   "name": {
+    "pt": "Yukon",
+    "en": "Yukon",
+    "es": "Yukón"
+   },
+   "capital": "Whitehorse",
+   "region": "north",
+   "area": 480314,
+   "ll": [
+    63.6141,
+    -137.3756
+   ],
+   "bbox": [
+    -141.002,
+    59.999,
+    -123.81,
+    69.647
+   ],
+   "borders": [
+    "ca-bc",
+    "ca-nt"
+   ],
+   "pop": 40232,
+   "popYear": 2021
+  }
+ }
+}

@@ -1433,6 +1433,289 @@ export const DIVISION_INDEX: readonly DivisionCountry[] = [
     }
   },
   {
+    "id": "ca",
+    "carta": "124",
+    "name": {
+      "pt": "Canadá",
+      "en": "Canada",
+      "es": "Canadá"
+    },
+    "unit": {
+      "pt": {
+        "one": "província",
+        "many": "províncias",
+        "g": "f"
+      },
+      "en": {
+        "one": "province",
+        "many": "provinces"
+      },
+      "es": {
+        "one": "provincia",
+        "many": "provincias",
+        "g": "f"
+      }
+    },
+    "regions": [
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "center",
+        "name": {
+          "pt": "Centro",
+          "en": "Central",
+          "es": "Centro"
+        },
+        "count": 2,
+        "capitals": 2,
+        "flags": 0
+      },
+      {
+        "key": "atlantic",
+        "name": {
+          "pt": "Atlântico",
+          "en": "Atlantic",
+          "es": "Atlántico"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      }
+    ],
+    "count": 13,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 13,
+    "frame": [
+      -141.002,
+      41.902,
+      -52.619,
+      83.111
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-ca.pmtiles",
+      "bytes": 12481003,
+      "sha256": "5446b506b13c933f387f3a8275869b4a2bd8cb97368bbac98363d1a32104786e"
+    }
+  },
+  {
+    "id": "in",
+    "carta": "356",
+    "name": {
+      "pt": "Índia",
+      "en": "India",
+      "es": "India"
+    },
+    "unit": {
+      "pt": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      },
+      "en": {
+        "one": "state",
+        "many": "states"
+      },
+      "es": {
+        "one": "estado",
+        "many": "estados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "north",
+        "name": {
+          "pt": "Norte",
+          "en": "North",
+          "es": "Norte"
+        },
+        "count": 8,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "central",
+        "name": {
+          "pt": "Centro",
+          "en": "Central",
+          "es": "Centro"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "east",
+        "name": {
+          "pt": "Leste",
+          "en": "East",
+          "es": "Este"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "west",
+        "name": {
+          "pt": "Oeste",
+          "en": "West",
+          "es": "Oeste"
+        },
+        "count": 4,
+        "capitals": 4,
+        "flags": 0
+      },
+      {
+        "key": "south",
+        "name": {
+          "pt": "Sul",
+          "en": "South",
+          "es": "Sur"
+        },
+        "count": 7,
+        "capitals": 7,
+        "flags": 0
+      },
+      {
+        "key": "northeast",
+        "name": {
+          "pt": "Nordeste",
+          "en": "Northeast",
+          "es": "Noreste"
+        },
+        "count": 8,
+        "capitals": 8,
+        "flags": 0
+      }
+    ],
+    "count": 36,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 33,
+    "frame": [
+      68.484,
+      6.759,
+      97.395,
+      35.673
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-in.pmtiles",
+      "bytes": 1507638,
+      "sha256": "212446512a0d999c273d337d7a57c86afb74886b12300ca1ebcbd66710d7a864"
+    }
+  },
+  {
+    "id": "ie",
+    "carta": "372",
+    "name": {
+      "pt": "Irlanda",
+      "en": "Ireland",
+      "es": "Irlanda"
+    },
+    "unit": {
+      "pt": {
+        "one": "condado",
+        "many": "condados",
+        "g": "m"
+      },
+      "en": {
+        "one": "county",
+        "many": "counties"
+      },
+      "es": {
+        "one": "condado",
+        "many": "condados",
+        "g": "m"
+      }
+    },
+    "regions": [
+      {
+        "key": "leinster",
+        "name": {
+          "pt": "Leinster",
+          "en": "Leinster",
+          "es": "Leinster"
+        },
+        "count": 12,
+        "capitals": 12,
+        "flags": 0
+      },
+      {
+        "key": "munster",
+        "name": {
+          "pt": "Munster",
+          "en": "Munster",
+          "es": "Munster"
+        },
+        "count": 6,
+        "capitals": 6,
+        "flags": 0
+      },
+      {
+        "key": "connacht",
+        "name": {
+          "pt": "Connacht",
+          "en": "Connacht",
+          "es": "Connacht"
+        },
+        "count": 5,
+        "capitals": 5,
+        "flags": 0
+      },
+      {
+        "key": "ulster",
+        "name": {
+          "pt": "Ulster",
+          "en": "Ulster",
+          "es": "Úlster"
+        },
+        "count": 3,
+        "capitals": 3,
+        "flags": 0
+      }
+    ],
+    "count": 26,
+    "flags": false,
+    "flagCount": 0,
+    "capitals": 26,
+    "frame": [
+      -10.48,
+      51.448,
+      -5.994,
+      55.383
+    ],
+    "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+    "map": {
+      "url": "/maps/divisions-ie.pmtiles",
+      "bytes": 577527,
+      "sha256": "99ed5759eace3b762907c26ecd9732ed64c53e27e15df46fd17757c6a5da78e7"
+    }
+  },
+  {
     "id": "1914",
     "kind": "era",
     "subtitle": {

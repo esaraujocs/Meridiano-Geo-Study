@@ -1,0 +1,80 @@
+{
+  "name": "divisions-ca",
+  "generator": "scripts/map-hd (fetch-overture.py, fetch-lakes.py, build-pieces.py, build-tiles.py)",
+  "zoom": {
+    "min": 0,
+    "max": 8
+  },
+  "bytes": 12481003,
+  "sha256": "5446b506b13c933f387f3a8275869b4a2bd8cb97368bbac98363d1a32104786e",
+  "tiles": 3909,
+  "layer": "countries",
+  "tolerance": {
+    "0": 2.0,
+    "1": 2.0,
+    "2": 2.0,
+    "3": 2.0,
+    "4": 2.0,
+    "5": 2.0,
+    "6": 1.5,
+    "7": 1.5,
+    "8": 1.5
+  },
+  "minArea": {
+    "0": 64,
+    "1": 64,
+    "2": 64,
+    "3": 64,
+    "4": 64,
+    "5": 64,
+    "6": 32,
+    "7": 32,
+    "8": 4
+  },
+  "entities": [
+    "ca-ab",
+    "ca-bc",
+    "ca-mb",
+    "ca-nb",
+    "ca-nl",
+    "ca-ns",
+    "ca-nt",
+    "ca-nu",
+    "ca-on",
+    "ca-pe",
+    "ca-qc",
+    "ca-sk",
+    "ca-yt"
+  ],
+  "neutralVertices": 0,
+  "vertices": {
+    "ca-ab": 42713,
+    "ca-bc": 1830781,
+    "ca-mb": 574561,
+    "ca-nb": 119414,
+    "ca-nl": 1604732,
+    "ca-ns": 394449,
+    "ca-nt": 1171922,
+    "ca-nu": 6620162,
+    "ca-on": 1817838,
+    "ca-pe": 51638,
+    "ca-qc": 2149729,
+    "ca-sk": 312055,
+    "ca-yt": 50658
+  },
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 124)",
+      "use": "a terra de Canadá, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 13 unidades"
+    }
+  ]
+}

@@ -1,0 +1,1644 @@
+{
+ "source": "Índia: os 28 estados e os 8 territórios da União (palavra \"estado\"). A terra que o mapa HD dá à Índia é a que se divide (a linha do Overture sem código, a área do Arunachal reivindicada pela China, fica fora das zonas). Chandigarh (território) sem capital; Punjab e Haryana fora dos modos de capital (a capital dos dois é Chandigarh, que é outra unidade). Capitais de hoje: Amaravati (Andhra Pradesh), Sri Vijaya Puram (antiga Port Blair, renomeada em 2024), Srinagar (com Jammu aceita), Leh (com Kargil aceita). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: os conselhos zonais (Norte, Centro, Leste, Oeste, Sul e Nordeste), com Andamão e Nicobar no Leste e Laquedivas no Sul.",
+ "country": "in",
+ "regions": {
+  "north": {
+   "pt": "Norte",
+   "en": "North",
+   "es": "Norte"
+  },
+  "central": {
+   "pt": "Centro",
+   "en": "Central",
+   "es": "Centro"
+  },
+  "east": {
+   "pt": "Leste",
+   "en": "East",
+   "es": "Este"
+  },
+  "west": {
+   "pt": "Oeste",
+   "en": "West",
+   "es": "Oeste"
+  },
+  "south": {
+   "pt": "Sul",
+   "en": "South",
+   "es": "Sur"
+  },
+  "northeast": {
+   "pt": "Nordeste",
+   "en": "Northeast",
+   "es": "Noreste"
+  }
+ },
+ "units": {
+  "in-an": {
+   "code": "AN",
+   "ref": "IN-AN",
+   "name": {
+    "pt": "Andamão e Nicobar",
+    "en": "Andaman and Nicobar Islands",
+    "es": "Islas Andamán y Nicobar"
+   },
+   "alias": [
+    "Andaman e Nicobar"
+   ],
+   "capital": "Sri Vijaya Puram",
+   "capAl": [
+    "Port Blair"
+   ],
+   "region": "east",
+   "area": 7440,
+   "ll": [
+    12.5632,
+    92.8361
+   ],
+   "bbox": [
+    92.204,
+    6.759,
+    94.277,
+    13.674
+   ],
+   "borders": [],
+   "pop": 356152,
+   "popYear": 2005
+  },
+  "in-ap": {
+   "code": "AP",
+   "ref": "IN-AP",
+   "name": {
+    "pt": "Andhra Pradesh",
+    "en": "Andhra Pradesh",
+    "es": "Andhra Pradesh"
+   },
+   "capital": "Amaravati",
+   "region": "south",
+   "area": 163118,
+   "ll": [
+    14.7994,
+    78.859
+   ],
+   "bbox": [
+    76.76,
+    12.624,
+    84.766,
+    19.166
+   ],
+   "borders": [
+    "in-cg",
+    "in-ka",
+    "in-od",
+    "in-py",
+    "in-tn",
+    "in-ts"
+   ],
+   "pop": 53586000,
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "telugo",
+     "urdu"
+    ],
+    "en": [
+     "Telugu",
+     "Urdu"
+    ],
+    "es": [
+     "telugu",
+     "urdu"
+    ]
+   }
+  },
+  "in-ar": {
+   "code": "AR",
+   "ref": "IN-AR",
+   "name": {
+    "pt": "Arunachal Pradesh",
+    "en": "Arunachal Pradesh",
+    "es": "Arunachal Pradesh"
+   },
+   "capital": "Itanagar",
+   "region": "northeast",
+   "area": 83246,
+   "ll": [
+    28.4571,
+    94.7633
+   ],
+   "bbox": [
+    91.562,
+    26.651,
+    97.395,
+    29.375
+   ],
+   "borders": [
+    "in-as",
+    "in-nl"
+   ],
+   "pop": 1382611,
+   "popYear": 2011
+  },
+  "in-as": {
+   "code": "AS",
+   "ref": "IN-AS",
+   "name": {
+    "pt": "Assam",
+    "en": "Assam",
+    "es": "Assam"
+   },
+   "alias": [
+    "Assão"
+   ],
+   "capital": "Dispur",
+   "region": "northeast",
+   "area": 78656,
+   "ll": [
+    26.2096,
+    93.0158
+   ],
+   "bbox": [
+    89.699,
+    24.136,
+    96.012,
+    27.971
+   ],
+   "borders": [
+    "in-ar",
+    "in-ml",
+    "in-mn",
+    "in-mz",
+    "in-nl",
+    "in-tr",
+    "in-wb"
+   ],
+   "pop": 31205576,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "assamês",
+     "bengali",
+     "bodo"
+    ],
+    "en": [
+     "Assamese",
+     "Bengali",
+     "Bodo"
+    ],
+    "es": [
+     "asamés",
+     "bengalí",
+     "bodo"
+    ]
+   }
+  },
+  "in-br": {
+   "code": "BR",
+   "ref": "IN-BR",
+   "name": {
+    "pt": "Bihar",
+    "en": "Bihar",
+    "es": "Bihar"
+   },
+   "capital": "Patna",
+   "region": "east",
+   "area": 94341,
+   "ll": [
+    25.6892,
+    86.0988
+   ],
+   "bbox": [
+    83.322,
+    24.287,
+    88.294,
+    27.519
+   ],
+   "borders": [
+    "in-jh",
+    "in-up",
+    "in-wb"
+   ],
+   "pop": 103804637,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "urdu"
+    ],
+    "en": [
+     "Urdu"
+    ],
+    "es": [
+     "urdu"
+    ]
+   }
+  },
+  "in-cg": {
+   "code": "CG",
+   "ref": "IN-CG",
+   "name": {
+    "pt": "Chhattisgarh",
+    "en": "Chhattisgarh",
+    "es": "Chhattisgarh"
+   },
+   "capital": "Raipur",
+   "region": "central",
+   "area": 135511,
+   "ll": [
+    22.1446,
+    82.5792
+   ],
+   "bbox": [
+    80.244,
+    17.782,
+    84.396,
+    24.107
+   ],
+   "borders": [
+    "in-ap",
+    "in-jh",
+    "in-mh",
+    "in-mp",
+    "in-od",
+    "in-ts",
+    "in-up"
+   ],
+   "pop": 29436231,
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "chhattisgarhi"
+    ],
+    "en": [
+     "Chhattisgarhi"
+    ],
+    "es": [
+     "chhattisgarhi"
+    ]
+   }
+  },
+  "in-ch": {
+   "code": "CH",
+   "ref": "IN-CH",
+   "name": {
+    "pt": "Chandigarh",
+    "en": "Chandigarh",
+    "es": "Chandigarh"
+   },
+   "region": "north",
+   "area": 117,
+   "ll": [
+    30.7207,
+    76.7914
+   ],
+   "bbox": [
+    76.705,
+    30.665,
+    76.849,
+    30.795
+   ],
+   "borders": [
+    "in-hr",
+    "in-pb"
+   ]
+  },
+  "in-dh": {
+   "code": "DH",
+   "ref": "IN-DH",
+   "name": {
+    "pt": "Dadra e Nagar Haveli e Damão e Diu",
+    "en": "Dadra and Nagar Haveli and Daman and Diu",
+    "es": "Dadra y Nagar Haveli y Damán y Diu"
+   },
+   "capital": {
+    "pt": "Damão",
+    "en": "Daman",
+    "es": "Damán"
+   },
+   "capAl": [
+    "Daman"
+   ],
+   "region": "west",
+   "area": 601,
+   "ll": [
+    20.2713,
+    73.0724
+   ],
+   "bbox": [
+    70.874,
+    20.047,
+    73.217,
+    20.742
+   ],
+   "borders": [
+    "in-gj",
+    "in-mh"
+   ],
+   "pop": 585764,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "guzerate"
+    ],
+    "en": [
+     "Gujarati"
+    ],
+    "es": [
+     "guyaratí"
+    ]
+   }
+  },
+  "in-dl": {
+   "code": "DL",
+   "ref": "IN-DL",
+   "name": {
+    "pt": "Délhi",
+    "en": "Delhi",
+    "es": "Delhi"
+   },
+   "alias": [
+    "Delhi",
+    "Deli"
+   ],
+   "capital": {
+    "pt": "Nova Délhi",
+    "en": "New Delhi",
+    "es": "Nueva Delhi"
+   },
+   "capAl": [
+    "New Delhi",
+    "Nova Deli"
+   ],
+   "region": "north",
+   "area": 1484,
+   "ll": [
+    28.6648,
+    77.1168
+   ],
+   "bbox": [
+    76.839,
+    28.405,
+    77.345,
+    28.883
+   ],
+   "borders": [
+    "in-hr",
+    "in-up"
+   ],
+   "langs": {
+    "pt": [
+     "urdu",
+     "panjabi"
+    ],
+    "en": [
+     "Urdu",
+     "Punjabi"
+    ],
+    "es": [
+     "urdu",
+     "panyabí"
+    ]
+   }
+  },
+  "in-ga": {
+   "code": "GA",
+   "ref": "IN-GA",
+   "name": {
+    "pt": "Goa",
+    "en": "Goa",
+    "es": "Goa"
+   },
+   "capital": "Panaji",
+   "capAl": [
+    "Pangim"
+   ],
+   "region": "west",
+   "area": 3645,
+   "ll": [
+    15.3663,
+    74.085
+   ],
+   "bbox": [
+    73.676,
+    14.9,
+    74.336,
+    15.801
+   ],
+   "borders": [
+    "in-ka",
+    "in-mh"
+   ],
+   "pop": 1458545,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "concani",
+     "marata"
+    ],
+    "en": [
+     "Konkani",
+     "Marathi"
+    ],
+    "es": [
+     "konkani",
+     "maratí"
+    ]
+   }
+  },
+  "in-gj": {
+   "code": "GJ",
+   "ref": "IN-GJ",
+   "name": {
+    "pt": "Gujarate",
+    "en": "Gujarat",
+    "es": "Guyarat"
+   },
+   "alias": [
+    "Gujarat",
+    "Guzerate"
+   ],
+   "capital": "Gandhinagar",
+   "region": "west",
+   "area": 182975,
+   "ll": [
+    23.3638,
+    71.7964
+   ],
+   "bbox": [
+    68.484,
+    20.121,
+    74.476,
+    24.709
+   ],
+   "borders": [
+    "in-dh",
+    "in-mh",
+    "in-mp",
+    "in-rj"
+   ],
+   "pop": 60383628,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "guzerate"
+    ],
+    "en": [
+     "Gujarati"
+    ],
+    "es": [
+     "guyaratí"
+    ]
+   }
+  },
+  "in-hp": {
+   "code": "HP",
+   "ref": "IN-HP",
+   "name": {
+    "pt": "Himachal Pradesh",
+    "en": "Himachal Pradesh",
+    "es": "Himachal Pradesh"
+   },
+   "capital": "Shimla",
+   "capAl": [
+    "Simla"
+   ],
+   "region": "north",
+   "area": 55358,
+   "ll": [
+    31.8828,
+    77.3064
+   ],
+   "bbox": [
+    75.594,
+    30.377,
+    78.992,
+    33.256
+   ],
+   "borders": [
+    "in-hr",
+    "in-jk",
+    "in-la",
+    "in-pb",
+    "in-uk",
+    "in-up"
+   ],
+   "pop": 6864602,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "sânscrito"
+    ],
+    "en": [
+     "Sanskrit"
+    ],
+    "es": [
+     "sánscrito"
+    ]
+   }
+  },
+  "in-hr": {
+   "code": "HR",
+   "ref": "IN-HR",
+   "name": {
+    "pt": "Haryana",
+    "en": "Haryana",
+    "es": "Haryana"
+   },
+   "region": "north",
+   "area": 44257,
+   "ll": [
+    29.048,
+    76.2555
+   ],
+   "bbox": [
+    74.474,
+    27.653,
+    77.602,
+    30.929
+   ],
+   "borders": [
+    "in-ch",
+    "in-dl",
+    "in-hp",
+    "in-pb",
+    "in-rj",
+    "in-up"
+   ],
+   "pop": 27761063,
+   "popYear": 2016,
+   "langs": {
+    "pt": [
+     "panjabi"
+    ],
+    "en": [
+     "Punjabi"
+    ],
+    "es": [
+     "panyabí"
+    ]
+   }
+  },
+  "in-jh": {
+   "code": "JH",
+   "ref": "IN-JH",
+   "name": {
+    "pt": "Jharkhand",
+    "en": "Jharkhand",
+    "es": "Jharkhand"
+   },
+   "capital": "Ranchi",
+   "region": "east",
+   "area": 80060,
+   "ll": [
+    23.5327,
+    85.0118
+   ],
+   "bbox": [
+    83.328,
+    21.97,
+    87.963,
+    25.349
+   ],
+   "borders": [
+    "in-br",
+    "in-cg",
+    "in-od",
+    "in-up",
+    "in-wb"
+   ],
+   "pop": 32988134,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "urdu",
+     "santali",
+     "bengali",
+     "mundari",
+     "ho",
+     "kharia",
+     "kurukh",
+     "kurmali",
+     "khortha",
+     "nagpuri",
+     "panchpargania",
+     "oriá",
+     "magahi",
+     "bhojpuri",
+     "maithili",
+     "angika"
+    ],
+    "en": [
+     "Urdu",
+     "Santali",
+     "Bengali",
+     "Mundari",
+     "Ho",
+     "Kharia",
+     "Kurukh",
+     "Kurmali",
+     "Khortha",
+     "Nagpuri",
+     "Panchpargania",
+     "Odia",
+     "Magahi",
+     "Bhojpuri",
+     "Maithili",
+     "Angika"
+    ],
+    "es": [
+     "urdu",
+     "santali",
+     "bengalí",
+     "mundari",
+     "ho",
+     "kharia",
+     "kurukh",
+     "kurmali",
+     "khortha",
+     "nagpuri",
+     "panchpargania",
+     "oriya",
+     "magahi",
+     "bhojpuri",
+     "maithili",
+     "angika"
+    ]
+   }
+  },
+  "in-jk": {
+   "code": "JK",
+   "ref": "IN-JK",
+   "name": {
+    "pt": "Jammu e Caxemira",
+    "en": "Jammu and Kashmir",
+    "es": "Jammu y Cachemira"
+   },
+   "alias": [
+    "Jammu e Kashmir"
+   ],
+   "capital": "Srinagar",
+   "capAl": [
+    "Jammu"
+   ],
+   "region": "north",
+   "area": 42212,
+   "ll": [
+    33.5618,
+    75.0578
+   ],
+   "bbox": [
+    73.75,
+    32.277,
+    76.78,
+    34.787
+   ],
+   "borders": [
+    "in-hp",
+    "in-la",
+    "in-pb"
+   ],
+   "pop": 12258433,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "caxemira",
+     "dogri",
+     "urdu"
+    ],
+    "en": [
+     "Kashmiri",
+     "Dogri",
+     "Urdu"
+    ],
+    "es": [
+     "cachemir",
+     "dogri",
+     "urdu"
+    ]
+   }
+  },
+  "in-ka": {
+   "code": "KA",
+   "ref": "IN-KA",
+   "name": {
+    "pt": "Karnataka",
+    "en": "Karnataka",
+    "es": "Karnataka"
+   },
+   "alias": [
+    "Carnataca"
+   ],
+   "capital": "Bengaluru",
+   "capAl": [
+    "Bangalore"
+   ],
+   "region": "south",
+   "area": 192514,
+   "ll": [
+    15.6302,
+    75.6524
+   ],
+   "bbox": [
+    74.085,
+    11.595,
+    78.588,
+    18.459
+   ],
+   "borders": [
+    "in-ap",
+    "in-ga",
+    "in-kl",
+    "in-mh",
+    "in-tn",
+    "in-ts"
+   ],
+   "pop": 61130704,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "canarês"
+    ],
+    "en": [
+     "Kannada"
+    ],
+    "es": [
+     "canarés"
+    ]
+   }
+  },
+  "in-kl": {
+   "code": "KL",
+   "ref": "IN-KL",
+   "name": {
+    "pt": "Kerala",
+    "en": "Kerala",
+    "es": "Kerala"
+   },
+   "alias": [
+    "Querala"
+   ],
+   "capital": "Thiruvananthapuram",
+   "capAl": [
+    "Trivandrum"
+   ],
+   "region": "south",
+   "area": 38809,
+   "ll": [
+    9.3216,
+    76.85
+   ],
+   "bbox": [
+    74.864,
+    8.294,
+    77.412,
+    12.796
+   ],
+   "borders": [
+    "in-ka",
+    "in-py",
+    "in-tn"
+   ],
+   "pop": 34523726,
+   "popYear": 2017,
+   "langs": {
+    "pt": [
+     "malaiala"
+    ],
+    "en": [
+     "Malayalam"
+    ],
+    "es": [
+     "malayalam"
+    ]
+   }
+  },
+  "in-la": {
+   "code": "LA",
+   "ref": "IN-LA",
+   "name": {
+    "pt": "Ladakh",
+    "en": "Ladakh",
+    "es": "Ladakh"
+   },
+   "alias": [
+    "Ladaque"
+   ],
+   "capital": "Leh",
+   "capAl": [
+    "Kargil"
+   ],
+   "region": "north",
+   "area": 65967,
+   "ll": [
+    34.0622,
+    77.4359
+   ],
+   "bbox": [
+    75.327,
+    32.336,
+    79.561,
+    35.673
+   ],
+   "borders": [
+    "in-hp",
+    "in-jk"
+   ],
+   "pop": 274289,
+   "popYear": 2011
+  },
+  "in-ld": {
+   "code": "LD",
+   "ref": "IN-LD",
+   "name": {
+    "pt": "Laquedivas",
+    "en": "Lakshadweep",
+    "es": "Laquedivas"
+   },
+   "alias": [
+    "Lakshadweep"
+   ],
+   "capital": "Kavaratti",
+   "region": "south",
+   "area": 31,
+   "ll": [
+    10.8116,
+    73.6733
+   ],
+   "bbox": [
+    71.917,
+    8.267,
+    73.703,
+    12.357
+   ],
+   "borders": [],
+   "pop": 64429,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "malaiala"
+    ],
+    "en": [
+     "Malayalam"
+    ],
+    "es": [
+     "malayalam"
+    ]
+   }
+  },
+  "in-mh": {
+   "code": "MH",
+   "ref": "IN-MH",
+   "name": {
+    "pt": "Maharashtra",
+    "en": "Maharashtra",
+    "es": "Maharashtra"
+   },
+   "capital": {
+    "pt": "Mumbai",
+    "en": "Mumbai",
+    "es": "Bombay"
+   },
+   "capAl": [
+    "Bombaim",
+    "Bombay"
+   ],
+   "region": "west",
+   "area": 308170,
+   "ll": [
+    19.3624,
+    75.3259
+   ],
+   "bbox": [
+    72.653,
+    15.606,
+    80.898,
+    22.023
+   ],
+   "borders": [
+    "in-cg",
+    "in-dh",
+    "in-ga",
+    "in-gj",
+    "in-ka",
+    "in-mp",
+    "in-ts"
+   ],
+   "pop": 112372972,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "marata"
+    ],
+    "en": [
+     "Marathi"
+    ],
+    "es": [
+     "maratí"
+    ]
+   }
+  },
+  "in-ml": {
+   "code": "ML",
+   "ref": "IN-ML",
+   "name": {
+    "pt": "Meghalaya",
+    "en": "Meghalaya",
+    "es": "Meghalaya"
+   },
+   "capital": "Shillong",
+   "region": "northeast",
+   "area": 22433,
+   "ll": [
+    25.5511,
+    91.7995
+   ],
+   "bbox": [
+    89.816,
+    25.031,
+    92.803,
+    26.118
+   ],
+   "borders": [
+    "in-as"
+   ],
+   "pop": 3211000,
+   "popYear": 2014,
+   "langs": {
+    "pt": [
+     "khasi",
+     "garo"
+    ],
+    "en": [
+     "Khasi",
+     "Garo"
+    ],
+    "es": [
+     "khasi",
+     "garo"
+    ]
+   }
+  },
+  "in-mn": {
+   "code": "MN",
+   "ref": "IN-MN",
+   "name": {
+    "pt": "Manipur",
+    "en": "Manipur",
+    "es": "Manipur"
+   },
+   "capital": "Imphal",
+   "region": "northeast",
+   "area": 22399,
+   "ll": [
+    24.614,
+    93.782
+   ],
+   "bbox": [
+    92.971,
+    23.834,
+    94.745,
+    25.692
+   ],
+   "borders": [
+    "in-as",
+    "in-mz",
+    "in-nl"
+   ],
+   "pop": 2855794,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "meitei"
+    ],
+    "en": [
+     "Meitei"
+    ],
+    "es": [
+     "meitei"
+    ]
+   }
+  },
+  "in-mp": {
+   "code": "MP",
+   "ref": "IN-MP",
+   "name": {
+    "pt": "Madhya Pradesh",
+    "en": "Madhya Pradesh",
+    "es": "Madhya Pradesh"
+   },
+   "capital": "Bhopal",
+   "region": "central",
+   "area": 308937,
+   "ll": [
+    23.0962,
+    79.8105
+   ],
+   "bbox": [
+    74.029,
+    21.071,
+    82.813,
+    26.87
+   ],
+   "borders": [
+    "in-cg",
+    "in-gj",
+    "in-mh",
+    "in-rj",
+    "in-up"
+   ],
+   "pop": 72597565,
+   "popYear": 2011
+  },
+  "in-mz": {
+   "code": "MZ",
+   "ref": "IN-MZ",
+   "name": {
+    "pt": "Mizoram",
+    "en": "Mizoram",
+    "es": "Mizoram"
+   },
+   "capital": "Aizawl",
+   "region": "northeast",
+   "area": 21118,
+   "ll": [
+    23.5702,
+    92.8639
+   ],
+   "bbox": [
+    92.26,
+    21.942,
+    93.437,
+    24.523
+   ],
+   "borders": [
+    "in-as",
+    "in-mn",
+    "in-tr"
+   ],
+   "pop": 1097206,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "mizo"
+    ],
+    "en": [
+     "Mizo"
+    ],
+    "es": [
+     "mizo"
+    ]
+   }
+  },
+  "in-nl": {
+   "code": "NL",
+   "ref": "IN-NL",
+   "name": {
+    "pt": "Nagaland",
+    "en": "Nagaland",
+    "es": "Nagaland"
+   },
+   "capital": "Kohima",
+   "region": "northeast",
+   "area": 16595,
+   "ll": [
+    26.1362,
+    94.6326
+   ],
+   "bbox": [
+    93.327,
+    25.199,
+    95.242,
+    27.036
+   ],
+   "borders": [
+    "in-ar",
+    "in-as",
+    "in-mn"
+   ],
+   "pop": 1978502,
+   "popYear": 2011
+  },
+  "in-od": {
+   "code": "OD",
+   "ref": "IN-OD",
+   "name": {
+    "pt": "Odisha",
+    "en": "Odisha",
+    "es": "Odisha"
+   },
+   "alias": [
+    "Orissa"
+   ],
+   "capital": "Bhubaneswar",
+   "region": "east",
+   "area": 154530,
+   "ll": [
+    20.2736,
+    84.1152
+   ],
+   "bbox": [
+    81.389,
+    17.813,
+    87.486,
+    22.568
+   ],
+   "borders": [
+    "in-ap",
+    "in-cg",
+    "in-jh",
+    "in-wb"
+   ],
+   "pop": 41974218,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "oriá"
+    ],
+    "en": [
+     "Odia"
+    ],
+    "es": [
+     "oriya"
+    ]
+   }
+  },
+  "in-pb": {
+   "code": "PB",
+   "ref": "IN-PB",
+   "name": {
+    "pt": "Punjab",
+    "en": "Punjab",
+    "es": "Punyab"
+   },
+   "alias": [
+    "Panjab"
+   ],
+   "region": "north",
+   "area": 50383,
+   "ll": [
+    30.7092,
+    75.5089
+   ],
+   "bbox": [
+    73.88,
+    29.543,
+    76.939,
+    32.511
+   ],
+   "borders": [
+    "in-ch",
+    "in-hp",
+    "in-hr",
+    "in-jk",
+    "in-rj"
+   ],
+   "pop": 27743338,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "panjabi"
+    ],
+    "en": [
+     "Punjabi"
+    ],
+    "es": [
+     "panyabí"
+    ]
+   }
+  },
+  "in-py": {
+   "code": "PY",
+   "ref": "IN-PY",
+   "name": {
+    "pt": "Puducherry",
+    "en": "Puducherry",
+    "es": "Puducherry"
+   },
+   "alias": [
+    "Pondicherry"
+   ],
+   "capital": "Puducherry",
+   "capAl": [
+    "Pondicherry",
+    "Pondichéry"
+   ],
+   "region": "south",
+   "area": 496,
+   "ll": [
+    10.9434,
+    79.8119
+   ],
+   "bbox": [
+    79.6,
+    10.828,
+    79.875,
+    12.051
+   ],
+   "borders": [
+    "in-ap",
+    "in-kl",
+    "in-tn"
+   ],
+   "pop": 1394467,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "tâmil",
+     "telugo",
+     "malaiala"
+    ],
+    "en": [
+     "Tamil",
+     "Telugu",
+     "Malayalam"
+    ],
+    "es": [
+     "tamil",
+     "telugu",
+     "malayalam"
+    ]
+   }
+  },
+  "in-rj": {
+   "code": "RJ",
+   "ref": "IN-RJ",
+   "name": {
+    "pt": "Rajastão",
+    "en": "Rajasthan",
+    "es": "Rajastán"
+   },
+   "alias": [
+    "Rajasthan"
+   ],
+   "capital": "Jaipur",
+   "region": "north",
+   "area": 342837,
+   "ll": [
+    26.9889,
+    73.9297
+   ],
+   "bbox": [
+    69.484,
+    23.059,
+    78.272,
+    30.198
+   ],
+   "borders": [
+    "in-gj",
+    "in-hr",
+    "in-mp",
+    "in-pb",
+    "in-up"
+   ],
+   "pop": 68548437,
+   "popYear": 2011
+  },
+  "in-sk": {
+   "code": "SK",
+   "ref": "IN-SK",
+   "name": {
+    "pt": "Sikkim",
+    "en": "Sikkim",
+    "es": "Sikkim"
+   },
+   "alias": [
+    "Siquim"
+   ],
+   "capital": "Gangtok",
+   "region": "northeast",
+   "area": 7117,
+   "ll": [
+    27.5017,
+    88.436
+   ],
+   "bbox": [
+    88.012,
+    27.079,
+    88.921,
+    28.124
+   ],
+   "borders": [
+    "in-wb"
+   ],
+   "pop": 657876,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "nepali",
+     "butia (sikkimês)",
+     "lepcha",
+     "limbu",
+     "newar",
+     "rai",
+     "gurung",
+     "magar",
+     "sherpa",
+     "tamang",
+     "sunwar"
+    ],
+    "en": [
+     "Nepali",
+     "Bhutia (Sikkimese)",
+     "Lepcha",
+     "Limbu",
+     "Newar",
+     "Rai",
+     "Gurung",
+     "Magar",
+     "Sherpa",
+     "Tamang",
+     "Sunwar"
+    ],
+    "es": [
+     "nepalí",
+     "bhutia (sikkimés)",
+     "lepcha",
+     "limbu",
+     "newari",
+     "rai",
+     "gurung",
+     "magar",
+     "sherpa",
+     "tamang",
+     "sunwar"
+    ]
+   }
+  },
+  "in-tn": {
+   "code": "TN",
+   "ref": "IN-TN",
+   "name": {
+    "pt": "Tamil Nadu",
+    "en": "Tamil Nadu",
+    "es": "Tamil Nadu"
+   },
+   "capital": "Chennai",
+   "capAl": [
+    "Madras"
+   ],
+   "region": "south",
+   "area": 130534,
+   "ll": [
+    10.9306,
+    78.2855
+   ],
+   "bbox": [
+    76.233,
+    8.077,
+    80.359,
+    13.549
+   ],
+   "borders": [
+    "in-ap",
+    "in-ka",
+    "in-kl",
+    "in-py"
+   ],
+   "pop": 72147030,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "tâmil"
+    ],
+    "en": [
+     "Tamil"
+    ],
+    "es": [
+     "tamil"
+    ]
+   }
+  },
+  "in-tr": {
+   "code": "TR",
+   "ref": "IN-TR",
+   "name": {
+    "pt": "Tripura",
+    "en": "Tripura",
+    "es": "Tripura"
+   },
+   "capital": "Agartala",
+   "region": "northeast",
+   "area": 10377,
+   "ll": [
+    23.6502,
+    91.5722
+   ],
+   "bbox": [
+    91.151,
+    22.938,
+    92.336,
+    24.531
+   ],
+   "borders": [
+    "in-as",
+    "in-mz"
+   ],
+   "pop": 3673917,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "bengali",
+     "kokborok"
+    ],
+    "en": [
+     "Bengali",
+     "Kokborok"
+    ],
+    "es": [
+     "bengalí",
+     "kokborok"
+    ]
+   }
+  },
+  "in-ts": {
+   "code": "TS",
+   "ref": "IN-TS",
+   "name": {
+    "pt": "Telangana",
+    "en": "Telangana",
+    "es": "Telangana"
+   },
+   "capital": "Hyderabad",
+   "capAl": [
+    "Haiderabad"
+   ],
+   "region": "south",
+   "area": 112453,
+   "ll": [
+    17.869,
+    78.9843
+   ],
+   "bbox": [
+    77.237,
+    15.837,
+    81.323,
+    19.917
+   ],
+   "borders": [
+    "in-ap",
+    "in-cg",
+    "in-ka",
+    "in-mh"
+   ],
+   "pop": 35193978,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "telugo",
+     "urdu"
+    ],
+    "en": [
+     "Telugu",
+     "Urdu"
+    ],
+    "es": [
+     "telugu",
+     "urdu"
+    ]
+   }
+  },
+  "in-uk": {
+   "code": "UK",
+   "ref": "IN-UK",
+   "name": {
+    "pt": "Uttarakhand",
+    "en": "Uttarakhand",
+    "es": "Uttarakhand"
+   },
+   "alias": [
+    "Utaracanda"
+   ],
+   "capital": "Dehradun",
+   "capAl": [
+    "Gairsain"
+   ],
+   "region": "central",
+   "area": 53491,
+   "ll": [
+    30.0849,
+    79.5044
+   ],
+   "bbox": [
+    77.571,
+    28.724,
+    81.044,
+    31.459
+   ],
+   "borders": [
+    "in-hp",
+    "in-up"
+   ],
+   "pop": 10086292,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "sânscrito"
+    ],
+    "en": [
+     "Sanskrit"
+    ],
+    "es": [
+     "sánscrito"
+    ]
+   }
+  },
+  "in-up": {
+   "code": "UP",
+   "ref": "IN-UP",
+   "name": {
+    "pt": "Uttar Pradesh",
+    "en": "Uttar Pradesh",
+    "es": "Uttar Pradesh"
+   },
+   "capital": "Lucknow",
+   "region": "central",
+   "area": 241447,
+   "ll": [
+    26.8588,
+    80.579
+   ],
+   "bbox": [
+    77.084,
+    23.872,
+    84.634,
+    30.406
+   ],
+   "borders": [
+    "in-br",
+    "in-cg",
+    "in-dl",
+    "in-hp",
+    "in-hr",
+    "in-jh",
+    "in-mp",
+    "in-rj",
+    "in-uk"
+   ],
+   "pop": 246270000,
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "urdu"
+    ],
+    "en": [
+     "Urdu"
+    ],
+    "es": [
+     "urdu"
+    ]
+   }
+  },
+  "in-wb": {
+   "code": "WB",
+   "ref": "IN-WB",
+   "name": {
+    "pt": "Bengala Ocidental",
+    "en": "West Bengal",
+    "es": "Bengala Occidental"
+   },
+   "capital": {
+    "pt": "Calcutá",
+    "en": "Kolkata",
+    "es": "Calcuta"
+   },
+   "capAl": [
+    "Kolkata",
+    "Calcutta"
+   ],
+   "region": "east",
+   "area": 85432,
+   "ll": [
+    22.9629,
+    87.7309
+   ],
+   "bbox": [
+    85.82,
+    21.559,
+    89.883,
+    27.214
+   ],
+   "borders": [
+    "in-as",
+    "in-br",
+    "in-jh",
+    "in-od",
+    "in-sk"
+   ],
+   "pop": 91276115,
+   "popYear": 2011,
+   "langs": {
+    "pt": [
+     "bengali",
+     "nepali (em parte)"
+    ],
+    "en": [
+     "Bengali",
+     "Nepali (in part)"
+    ],
+    "es": [
+     "bengalí",
+     "nepalí (en parte)"
+    ]
+   }
+  }
+ }
+}

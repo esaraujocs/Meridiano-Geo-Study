@@ -1,0 +1,361 @@
+{
+  "comment": "Canadá: as 10 províncias e os 3 territórios (palavra \"província\"). Divisas do Overture Maps (divisions/division_area, subtype region, release 2026-09-23.1), conferidas contra esta lista (código ISO 3166-2 e o nome do Overture, sourceName). Nomes e capitais do Wikidata (P300 → rótulos pt/en/es e P36, 22/10/2026), curados para o português do Brasil, com as outras grafias aceitas na escrita. Recortes: Oeste, Centro, Atlântico e Norte (os territórios). Tiles até o zoom 8 (zmax): no 9 o litoral ártico deixava o mapa com 24,6 MB, e o jogo amplia a partir do 8 sem diferença na partida.",
+  "id": "ca",
+  "carta": "124",
+  "source": "overture",
+  "name": {
+    "pt": "Canadá",
+    "en": "Canada",
+    "es": "Canadá"
+  },
+  "nameLocale": "en",
+  "unit": {
+    "pt": {
+      "one": "província",
+      "many": "províncias",
+      "g": "f"
+    },
+    "en": {
+      "one": "province",
+      "many": "provinces"
+    },
+    "es": {
+      "one": "provincia",
+      "many": "provincias",
+      "g": "f"
+    }
+  },
+  "regions": {
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    },
+    "center": {
+      "pt": "Centro",
+      "en": "Central",
+      "es": "Centro"
+    },
+    "atlantic": {
+      "pt": "Atlântico",
+      "en": "Atlantic",
+      "es": "Atlántico"
+    },
+    "north": {
+      "pt": "Norte",
+      "en": "North",
+      "es": "Norte"
+    }
+  },
+  "leftoverKm": 60,
+  "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
+  "sources": [
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 124)",
+      "use": "a terra de Canadá, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre as 13 unidades"
+    }
+  ],
+  "units": [
+    {
+      "code": "AB",
+      "name": "Alberta",
+      "capital": "Edmonton",
+      "region": "west",
+      "pop": 4262635,
+      "popYear": 2021
+    },
+    {
+      "code": "BC",
+      "name": "British Columbia",
+      "names": {
+        "pt": "Colúmbia Britânica",
+        "es": "Columbia Británica"
+      },
+      "capital": "Victoria",
+      "capAl": [
+        "Vitória"
+      ],
+      "region": "west",
+      "pop": 5000879,
+      "popYear": 2021
+    },
+    {
+      "code": "MB",
+      "name": "Manitoba",
+      "capital": "Winnipeg",
+      "region": "west",
+      "pop": 1342153,
+      "popYear": 2021
+    },
+    {
+      "code": "NB",
+      "name": "New Brunswick",
+      "sourceName": "New Brunswick / Nouveau-Brunswick",
+      "names": {
+        "pt": "Nova Brunswick",
+        "es": "Nuevo Brunswick"
+      },
+      "alias": [
+        "Novo Brunswick",
+        "Nouveau-Brunswick"
+      ],
+      "capital": "Fredericton",
+      "region": "atlantic",
+      "pop": 775610,
+      "popYear": 2021
+    },
+    {
+      "code": "NL",
+      "name": "Newfoundland and Labrador",
+      "names": {
+        "pt": "Terra Nova e Labrador",
+        "es": "Terranova y Labrador"
+      },
+      "alias": [
+        "Terra Nova"
+      ],
+      "capital": "St. John's",
+      "capAl": [
+        "São João da Terra Nova",
+        "San Juan de Terranova"
+      ],
+      "region": "atlantic",
+      "pop": 510550,
+      "popYear": 2021
+    },
+    {
+      "code": "NS",
+      "name": "Nova Scotia",
+      "names": {
+        "pt": "Nova Escócia",
+        "es": "Nueva Escocia"
+      },
+      "capital": "Halifax",
+      "region": "atlantic",
+      "pop": 969383,
+      "popYear": 2021
+    },
+    {
+      "code": "NT",
+      "name": "Northwest Territories",
+      "names": {
+        "pt": "Territórios do Noroeste",
+        "es": "Territorios del Noroeste"
+      },
+      "capital": "Yellowknife",
+      "region": "north",
+      "pop": 41070,
+      "popYear": 2021,
+      "langs": {
+        "pt": [
+          "chipewyan",
+          "cree",
+          "gwich'in",
+          "inuinnaqtun",
+          "inuktitut",
+          "inuvialuktun",
+          "slavey do norte",
+          "slavey do sul",
+          "tłı̨chǫ"
+        ],
+        "en": [
+          "Chipewyan",
+          "Cree",
+          "Gwich'in",
+          "Inuinnaqtun",
+          "Inuktitut",
+          "Inuvialuktun",
+          "North Slavey",
+          "South Slavey",
+          "Tłı̨chǫ"
+        ],
+        "es": [
+          "chipewyan",
+          "cree",
+          "gwich'in",
+          "inuinnaqtun",
+          "inuktitut",
+          "inuvialuktun",
+          "slavey del norte",
+          "slavey del sur",
+          "tłı̨chǫ"
+        ]
+      }
+    },
+    {
+      "code": "NU",
+      "name": "Nunavut",
+      "sourceName": "ᓄᓇᕗᑦ Nunavut",
+      "capital": "Iqaluit",
+      "region": "north",
+      "pop": 36858,
+      "popYear": 2021,
+      "langs": {
+        "pt": [
+          "inuktitut",
+          "inuinnaqtun"
+        ],
+        "en": [
+          "Inuktitut",
+          "Inuinnaqtun"
+        ],
+        "es": [
+          "inuktitut",
+          "inuinnaqtun"
+        ]
+      }
+    },
+    {
+      "code": "ON",
+      "name": "Ontario",
+      "names": {
+        "pt": "Ontário"
+      },
+      "capital": "Toronto",
+      "region": "center",
+      "pop": 14223942,
+      "popYear": 2021
+    },
+    {
+      "code": "PE",
+      "name": "Prince Edward Island",
+      "names": {
+        "pt": "Ilha do Príncipe Eduardo",
+        "es": "Isla del Príncipe Eduardo"
+      },
+      "capital": "Charlottetown",
+      "region": "atlantic",
+      "pop": 154331,
+      "popYear": 2021
+    },
+    {
+      "code": "QC",
+      "name": "Quebec",
+      "sourceName": "Québec",
+      "alias": [
+        "Québec"
+      ],
+      "capital": {
+        "pt": "Quebec",
+        "en": "Quebec City",
+        "es": "Quebec"
+      },
+      "capAl": [
+        "Cidade de Quebec",
+        "Québec"
+      ],
+      "region": "center",
+      "pop": 8501833,
+      "popYear": 2021
+    },
+    {
+      "code": "SK",
+      "name": "Saskatchewan",
+      "capital": "Regina",
+      "region": "west",
+      "pop": 1132505,
+      "popYear": 2021
+    },
+    {
+      "code": "YT",
+      "name": "Yukon",
+      "names": {
+        "es": "Yukón"
+      },
+      "capital": "Whitehorse",
+      "region": "north",
+      "pop": 40232,
+      "popYear": 2021
+    }
+  ],
+  "probes": [
+    [
+      "Edmonton",
+      -113.5,
+      53.5333,
+      "ca-ab"
+    ],
+    [
+      "Victoria",
+      -123.3657,
+      48.4222,
+      "ca-bc"
+    ],
+    [
+      "Winnipeg",
+      -97.1386,
+      49.8956,
+      "ca-mb"
+    ],
+    [
+      "Fredericton",
+      -66.6667,
+      45.95,
+      "ca-nb"
+    ],
+    [
+      "St. John's",
+      -52.7119,
+      47.5614,
+      "ca-nl"
+    ],
+    [
+      "Halifax",
+      -63.5714,
+      44.6478,
+      "ca-ns"
+    ],
+    [
+      "Yellowknife",
+      -114.3975,
+      62.4422,
+      "ca-nt"
+    ],
+    [
+      "Iqaluit",
+      -68.5217,
+      63.7494,
+      "ca-nu"
+    ],
+    [
+      "Toronto",
+      -79.3867,
+      43.6703,
+      "ca-on"
+    ],
+    [
+      "Charlottetown",
+      -63.1267,
+      46.2353,
+      "ca-pe"
+    ],
+    [
+      "Quebec",
+      -71.2242,
+      46.8161,
+      "ca-qc"
+    ],
+    [
+      "Regina",
+      -104.6067,
+      50.4547,
+      "ca-sk"
+    ],
+    [
+      "Whitehorse",
+      -135.0558,
+      60.7172,
+      "ca-yt"
+    ]
+  ],
+  "zmax": 8
+}
