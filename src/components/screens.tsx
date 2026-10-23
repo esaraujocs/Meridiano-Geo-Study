@@ -21,7 +21,7 @@ import { SHOP_THEMES, THEMES, isThemeOwned } from "../domain/themes";
 import { BACKUP_STORES, coinBalance, exportProgress, importProgress, parseBackup, previewImport } from "../domain/progress-backup";
 import { leagueOf, divisionRoman } from "../domain/league";
 import { leaguePip } from "../domain/duel-labels";
-import { MAP_BASES, type MapBase } from "../domain/map-base";
+import { MAP_BASES, MAP_PROJECTIONS, MAP_PROJECTION_KEY, readMapProjection, type MapBase, type MapProjection } from "../domain/map-base";
 import type { ArenaSearch } from "./hub-parts";
 import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
@@ -147,6 +147,8 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, mapBase, onM
   onDebugChange: (options: { announce: boolean }) => Promise<void> | void;
   onBack: () => void;
 }) {
+  const [projection, setProjection] = useState<MapProjection>(() => readMapProjection());
+  const pickProjection = (value: MapProjection) => { setProjection(value); try { localStorage.setItem(MAP_PROJECTION_KEY, value); } catch { /* sem armazenamento */ } };
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem("carta-reduced-motion") === "1");
   const [timerLate, setTimerLate] = useState(() => localStorage.getItem("carta-timer-late") === "1");
   const [cacheReport, setCacheReport] = useState(t.options.cacheChecking);
@@ -205,6 +207,16 @@ export function OptionsScreen({ data, theme, ownedUnlocks, onTheme, mapBase, onM
               {MAP_BASES.map((item) => <button type="button" key={item} className="cv-chip" aria-pressed={mapBase === item} onClick={() => onMapBase(item)}>{t.options.mapBases[item]}</button>)}
             </div>
             <p className="cv-hint">{t.options.mapBaseHint}</p>
+          </div>
+        </div>
+        {/* a projeção do mapa (23/10/2026, em teste): plana ou o globo */}
+        <div className="cv-row">
+          <span className="cv-k">{t.options.projection}</span>
+          <div className="cv-ctl">
+            <div className="cv-chips" role="group" aria-label={t.options.projection}>
+              {MAP_PROJECTIONS.map((item) => <button type="button" key={item} className="cv-chip" aria-pressed={projection === item} onClick={() => pickProjection(item)}>{t.options.projections[item]}</button>)}
+            </div>
+            <p className="cv-hint">{t.options.projectionHint}</p>
           </div>
         </div>
         <div className="cv-row">

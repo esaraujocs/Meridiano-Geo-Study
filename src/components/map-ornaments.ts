@@ -20,7 +20,7 @@ export function addMapOrnaments(map: maplibregl.Map, styleId: string | undefined
     image.src = src;
     image.style.width = image.style.height = `calc(var(--ornament-k, 1) * ${px}px)`;
     element.appendChild(image);
-    return new maplibregl.Marker({ element, anchor: "center" }).setLngLat([lng, lat]).addTo(map);
+    return new maplibregl.Marker({ element, anchor: "center", opacityWhenCovered: "0" }).setLngLat([lng, lat]).addTo(map);
   });
   const update = () => {
     const zoom = map.getZoom();

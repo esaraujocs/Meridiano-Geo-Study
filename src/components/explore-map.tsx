@@ -13,7 +13,7 @@ import type { MapBoard } from "./map-game";
 import { cameraFor, normalizeRegionSelection } from "../domain/regions";
 import { mapPaletteFor } from "../domain/themes";
 import { withMapStyle } from "../domain/map-styles";
-import { coversLand, isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { coversLand, isSatellite, landOpacityPaint, readMapBase, readMapProjection, globeFitZoom, withMapBase } from "../domain/map-base";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { ABSORBED_MARKER_IDS, isMarkerVisibleAtZoom, MARKER_BAND_ZOOMS, markerLayerId } from "../domain/small-entities";
 import { chooseClickAnswer, MARKER_TOUCH_PX, resolveMarkerClick } from "../domain/map-marker-click";
@@ -58,6 +58,20 @@ const luminance = (hex: string) => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
 
+/** No globo, onde o nome do ponto pode ir: em nenhum lugar se o ponto está do lado de trás da Terra (o transform da câmera, o mesmo que os
+ *  marcadores do MapLibre usam; não é API pública, daí o acesso por fora) ou tão perto da borda que o texto sairia para o espaço (fora do disco
+ *  da Terra na tela, menos uma folga para o texto). */
+function globePoint(map: maplibregl.Map, at: maplibregl.LngLat): { x: number; y: number } {
+  const hidden = { x: NaN, y: NaN };
+  const camera = map as unknown as { _camera?: { transform?: { isLocationOccluded?: (point: maplibregl.LngLat) => boolean } } };
+  if (camera._camera?.transform?.isLocationOccluded?.call(camera._camera.transform, at)) return hidden;
+  const point = map.project(at);
+  const middle = map.project(map.getCenter());
+  // a perspectiva da câmera deixa o disco ~11% menor que a conta plana (medido no zoom 2,2)
+  const radius = (0.89 * 512 * 2 ** map.getZoom()) / (2 * Math.PI);
+  return Math.hypot(point.x - middle.x, point.y - middle.y) > radius - Math.min(64, radius * 0.18) ? hidden : point;
+}
+
 export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => void }) {
   const { data, ids, region, board } = spec;
   // as camadas de terra: a do tabuleiro e, no Explorar com todos os países, uma por país a mais
@@ -65,6 +79,7 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
   const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
   // o fundo das Opções (satélite, relevo) vale no mapa-múndi e no Explorar com todos os países; o tabuleiro de um país segue no padrão
   const mapBase = useMemo(() => (board && !board.extra ? "padrao" : readMapBase()), []);
+  const projection = useMemo(() => (board && !board.extra ? "plana" : readMapProjection()), []);
   const satellite = isSatellite(mapBase);
   const covered = coversLand(mapBase);
   const paletteNow = () => withMapBase(withMapStyle(mapPaletteFor(document.documentElement.dataset.theme), mapStyleId), mapBase);
@@ -98,8 +113,11 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
     try {
       map = new maplibregl.Map({
         container: mapEl.current,
-        style: atlasStyle({ palette, borderPalette: withMapStyle(mapPaletteFor(document.documentElement.dataset.theme), mapStyleId), board, mapBase, markerIds: board ? [] : [...data.mapEntityIds, ...ABSORBED_MARKER_IDS] }),
-        ...(board ? { bounds: board.bounds, fitBoundsOptions: { padding: { top: 76, bottom: 24, left: 24, right: 24 } } } : { center: camera.center, zoom: camera.zoom }),
+        style: atlasStyle({ palette, borderPalette: withMapStyle(mapPaletteFor(document.documentElement.dataset.theme), mapStyleId), board, mapBase, projection, markerIds: board ? [] : [...data.mapEntityIds, ...ABSORBED_MARKER_IDS] }),
+        // no globo, o mundo (o mapa-múndi e o Explorar com todos os países) enquadra a Terra inteira
+        ...(projection === "globo" && (!board || board.extra) && (board || (normalizeRegionSelection(region)[0] ?? "mundo") === "mundo")
+          ? { center: board ? [10, 25] as [number, number] : camera.center, zoom: globeFitZoom(mapEl.current.clientWidth, mapEl.current.clientHeight) }
+          : board ? { bounds: board.bounds, fitBoundsOptions: { padding: { top: 76, bottom: 24, left: 24, right: 24 } } } : { center: camera.center, zoom: camera.zoom }),
         maxZoom: MAP_MAX_ZOOM,
         attributionControl: { compact: true },
         dragRotate: false,
@@ -194,7 +212,10 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
     const { showNames: names, showCapitals: caps, selected: chosen } = settings.current;
     const placed = placeLabels({
       units, width, height, selected: chosen, names, capitals: caps,
-      project: ([lng, lat]) => map.project([wrapNear(lng, center), lat]),
+      project: ([lng, lat]) => {
+        const at = new maplibregl.LngLat(wrapNear(lng, center), lat);
+        return projection === "globo" ? globePoint(map, at) : map.project(at);
+      },
       size: (id, kind) => {
         const entry = elements.current.get(id);
         if (!entry) return null;
@@ -375,7 +396,7 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
         </div>
       </header>
       <main className="ex-wrap">
-        <div ref={mapEl} className="map ex-map" role="application" tabIndex={0} aria-label={t.explore.mapAria} />
+        <div ref={mapEl} className={`map ex-map${projection === "globo" ? " is-globe" : ""}`} role="application" tabIndex={0} aria-label={t.explore.mapAria} />
         <div ref={layerRef} className={`ex-layer${lightLand ? " is-light" : ""}`} aria-hidden="true" />
         <p className="sr-only" role="status" aria-live="polite">{card ? t.explore.selected(card.name) : ""}</p>
         {card && (

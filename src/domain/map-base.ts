@@ -27,6 +27,22 @@ export function readMapBase(storage: Pick<Storage, "getItem"> | undefined = type
   } catch { return "padrao"; }
 }
 
+/** A projeção do mapa (23/10/2026, pedido do Enzo, em teste nas Opções): plana (o Mercator de sempre) ou o globo do MapLibre, em que a Groenlândia
+ *  aparece no tamanho certo perto da África. Vale no mapa da partida e no Explorar; o Travel segue plano. */
+export type MapProjection = "plana" | "globo";
+export const MAP_PROJECTIONS: readonly MapProjection[] = ["plana", "globo"];
+export const MAP_PROJECTION_KEY = "carta-map-projection";
+export function readMapProjection(storage: Pick<Storage, "getItem"> | undefined = typeof localStorage === "undefined" ? undefined : localStorage): MapProjection {
+  try { return storage?.getItem(MAP_PROJECTION_KEY) === "globo" ? "globo" : "plana"; } catch { return "plana"; }
+}
+
+/** O zoom em que o globo inteiro ocupa ~92% do lado menor da tela (no globo do MapLibre o diâmetro é 512·2^zoom/π px); o zoom do recorte Mundo
+ *  foi feito para o plano e deixava o globo com metade da altura. */
+export function globeFitZoom(width: number, height: number): number {
+  const side = Math.max(200, Math.min(width, height)) * 0.92;
+  return Math.log2((side * Math.PI) / 512);
+}
+
 /** As costas e fronteiras sobre a foto (10/10/2026; o Enzo: "a cor das linhas dos países contrastou mal com o Saara"): um contorno escuro largo
  *  por baixo e um traço claro fino por cima, que se lê tanto no deserto claro quanto na floresta escura. No relevo o traço claro é o contorno
  *  da paleta, clareado. */

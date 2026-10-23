@@ -17,7 +17,7 @@ import { addMapFauna } from "./map-fauna";
 import { addMapOrnaments } from "./map-ornaments";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { MAP_STYLES, isMapStyleId, withMapStyle } from "../domain/map-styles";
-import { coversLand, isSatellite, landOpacityPaint, readMapBase, withMapBase } from "../domain/map-base";
+import { coversLand, isSatellite, landOpacityPaint, readMapBase, readMapProjection, globeFitZoom, withMapBase } from "../domain/map-base";
 import { useLeaveGuard } from "./leave-guard";
 import { atlasStyle } from "./map-style";
 import { GameTopBar, SupplyTray, neighborClue, useGameKeys, useRoundLog } from "./game-shell";
@@ -115,6 +115,8 @@ export function Game({
   const mapStyleId = useMemo(() => activeCosmetics()["map-style"], []);
   // Fundo de satélite ou relevo (Configurações, em teste): só no mapa-múndi; no satélite os ornamentos do estilo e a fauna do tema saem.
   const mapBase = useMemo(() => (board ? "padrao" : readMapBase()), []);
+  // o globo (em teste nas Opções) só no mapa-múndi, como o fundo
+  const projection = useMemo(() => (board ? "plana" : readMapProjection()), []);
   const satellite = isSatellite(mapBase);
   const covered = coversLand(mapBase);
   const paletteNow = () => withMapBase(withMapStyle(currentPalette(), mapStyleId), mapBase);
@@ -277,10 +279,16 @@ export function Game({
   };
   const lanternRef = useRef(false);
   const flyOptions = () => (document.documentElement.dataset.reducedMotion === "true" ? { duration: 0 } : { duration: 900 });
+  // no globo, o recorte Mundo enquadra a Terra inteira na tela
+  const cameraZoom = (zoom: number) => {
+    const el = mapEl.current;
+    if (projection !== "globo" || !el || (normalizeRegionSelection(region)[0] ?? "mundo") !== "mundo") return zoom;
+    return globeFitZoom(el.clientWidth, el.clientHeight);
+  };
   const resetCamera = () => {
     if (board) { mapRef.current?.fitBounds(board.bounds, { padding: boardPadding(mapEl.current), ...flyOptions() }); return; }
     const camera = cameraFor(normalizeRegionSelection(region)[0] ?? "mundo");
-    mapRef.current?.flyTo({ center: camera.center, zoom: camera.zoom, ...flyOptions() });
+    mapRef.current?.flyTo({ center: camera.center, zoom: cameraZoom(camera.zoom), ...flyOptions() });
   };
   // Lanterna: a câmera voa até o alvo e fecha numa janela de ~1.200 km (lanternZoom), ainda dá para mexer no mapa.
   const shine = () => {
@@ -318,7 +326,7 @@ export function Game({
     element.className = "hit-pulse";
     element.setAttribute("aria-hidden", "true");
     element.innerHTML = "<i></i><i></i><b>✓</b>";
-    const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat(point).addTo(map);
+    const marker = new maplibregl.Marker({ element, anchor: "center", opacityWhenCovered: "0" }).setLngLat(point).addTo(map);
     window.setTimeout(() => { try { marker.remove(); } catch { /* mapa já removido */ } }, 1000);
   };
 
@@ -437,8 +445,8 @@ export function Game({
     try {
       map = new maplibregl.Map({
         container: mapEl.current,
-        style: atlasStyle({ palette, borderPalette: withMapStyle(currentPalette(), mapStyleId), board, mapBase, markerIds }),
-        ...(board ? { bounds: board.bounds, fitBoundsOptions: { padding: boardPadding(mapEl.current) } } : { center: camera.center, zoom: camera.zoom }),
+        style: atlasStyle({ palette, borderPalette: withMapStyle(currentPalette(), mapStyleId), board, mapBase, markerIds, projection }),
+        ...(board ? { bounds: board.bounds, fitBoundsOptions: { padding: boardPadding(mapEl.current) } } : { center: camera.center, zoom: cameraZoom(camera.zoom) }),
         maxZoom: MAP_MAX_ZOOM,
         attributionControl: { compact: true },
         // O norte fica sempre para cima: sem girar (dedos, botão direito, teclado) nem inclinar.
@@ -690,7 +698,7 @@ export function Game({
       const element = document.createElement("div");
       element.className = "map-reveal-label";
       element.textContent = label;
-      const marker = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([ll[1], ll[0]]).addTo(map);
+      const marker = new maplibregl.Marker({ element, anchor: "center", opacityWhenCovered: "0" }).setLngLat([ll[1], ll[0]]).addTo(map);
       markers.set(id, marker);
     }
   }, [revealed, revealNames, mapReady]);
@@ -758,7 +766,7 @@ export function Game({
           </div>
           <div
             ref={mapEl}
-            className="map"
+            className={`map${projection === "globo" ? " is-globe" : ""}`}
             role="application"
             tabIndex={0}
             aria-label={t.map.mapAria(targetName)}

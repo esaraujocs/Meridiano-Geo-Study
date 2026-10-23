@@ -30,7 +30,7 @@ export function addMapFauna(map: maplibregl.Map, themeId: string | undefined): (
     image.style.height = `calc(var(--fauna-k, 1) * ${Math.round(figure.px * figure.aspect * 10) / 10}px)`;
     if (figure.flip) image.style.transform = "scaleX(-1)";
     element.appendChild(image);
-    return new maplibregl.Marker({ element, anchor: "center" }).setLngLat([figure.lng, figure.lat]).addTo(map);
+    return new maplibregl.Marker({ element, anchor: "center", opacityWhenCovered: "0" }).setLngLat([figure.lng, figure.lat]).addTo(map);
   });
   const update = () => {
     const zoom = map.getZoom();

@@ -5,7 +5,7 @@ import { Protocol } from "pmtiles";
 import { coastBands, graticuleLines, mixHex, rhumbLines } from "../domain/map-palette";
 import type { MapPalette } from "../domain/map-palette";
 import { MAP_URL } from "../domain/offline-map";
-import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, NATURAL, coversLand, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, type MapBase } from "../domain/map-base";
+import { MAP_BASE_CREDIT, MAP_BASE_MAXZOOM, MAP_BASE_TILES, NATURAL, coversLand, isSatellite, landOpacityPaint, mapBaseBorderLayers, mapBaseRasterPaint, type MapBase, type MapProjection } from "../domain/map-base";
 import { MARKER_BAND_ZOOMS, markerBandFilter, markerBandOpacity, markerFilter, markerLayerId, SMALL_ENTITY_SOURCE, type SmallEntitySource } from "../domain/small-entities";
 import { MARKER_TOUCH_PX } from "../domain/map-marker-click";
 
@@ -18,7 +18,7 @@ export type StyleBoard = { url: string; attribution: string; backdrop?: { url: s
   /** Outros tabuleiros desenhados junto (o Explorar com todos os países de Estados e províncias): uma fonte e uma camada `land-<i>` por país. */
   extra?: readonly string[] };
 
-export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }: {
+export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds, projection = "plana" }: {
   /** A paleta já com o estilo de mapa e o fundo aplicados. */
   palette: MapPalette;
   /** A paleta do tema com o estilo de mapa, sem o fundo (o traço das fronteiras sobre a foto sai dela). */
@@ -27,6 +27,7 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
   mapBase: MapBase;
   /** As entidades pequenas com marcador (no tabuleiro de um país, nenhuma). */
   markerIds: readonly string[];
+  projection?: MapProjection;
 }): maplibregl.StyleSpecification {
   const satellite = isSatellite(mapBase);
   const natural = mapBase === "natural";
@@ -42,6 +43,8 @@ export function atlasStyle({ palette, borderPalette, board, mapBase, markerIds }
   const nationColor = satellite ? "#ffffff" : natural ? NATURAL.border : mixHex(ink, "#ffffff", 0.3);
   return {
     version: 8,
+    // o globo com um halo de atmosfera, que some ao chegar perto (de perto o MapLibre já passa ao plano)
+    ...(projection === "globo" ? { projection: { type: "globe" }, sky: { "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] } } as Partial<maplibregl.StyleSpecification> : {}),
     sources: {
       atlas: {
         type: "vector",

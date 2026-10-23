@@ -67,3 +67,6 @@
   .ex-card{top:auto;bottom:0;left:0;right:0;width:auto;max-height:55%;border-radius:22px 22px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom))}
   .ex-card p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 }
+
+/* O globo (23/10/2026, em teste nas Opções): em volta da Terra, o espaço escuro, em qualquer tema (vale também no mapa da partida) */
+.map.is-globe{background:radial-gradient(circle at 50% 50%,#1d3446 0%,#0d1824 46%,#060b12 100%)}

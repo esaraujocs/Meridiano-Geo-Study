@@ -1,7 +1,7 @@
 // O fundo do mapa das partidas (map-base.ts): a escolha guardada, a paleta com o satélite e o relevo e a opacidade da terra.
 import assert from "node:assert/strict";
 import { DEFAULT_MAP_PALETTE } from "../.tmp-map-base/map-palette.js";
-import { MAP_BASES, MAP_BASE_TILES, MAP_BASE_THEME, NATURAL, coversLand, isSatellite, landOpacityPaint, mapBaseBorderLayers, readMapBase, withMapBase } from "../.tmp-map-base/map-base.js";
+import { MAP_BASES, MAP_BASE_TILES, MAP_BASE_THEME, NATURAL, coversLand, globeFitZoom, readMapProjection, isSatellite, landOpacityPaint, mapBaseBorderLayers, readMapBase, withMapBase } from "../.tmp-map-base/map-base.js";
 
 const store = (value) => ({ getItem: () => value });
 assert.equal(readMapBase(store(null)), "padrao");
@@ -9,6 +9,13 @@ assert.equal(readMapBase(store("relevo")), "relevo");
 assert.equal(readMapBase(store("qualquer")), "padrao", "valor desconhecido volta ao padrão");
 assert.equal(readMapBase({ getItem: () => { throw new Error("sem armazenamento"); } }), "padrao");
 assert.equal(readMapBase(undefined), "padrao");
+// projeção: plana por padrão, globo só com o valor certo; o globo inteiro cabe no lado menor da tela (diâmetro 512·2^zoom/π)
+assert.equal(readMapProjection(store(null)), "plana");
+assert.equal(readMapProjection(store("globo")), "globo");
+assert.equal(readMapProjection(store("qualquer")), "plana");
+assert.equal(readMapProjection({ getItem: () => { throw new Error("sem armazenamento"); } }), "plana");
+assert.ok(Math.abs((512 * 2 ** globeFitZoom(1503, 850)) / Math.PI - 850 * 0.92) < 1);
+assert.ok(globeFitZoom(390, 700) < globeFitZoom(1503, 850));
 
 // o padrão não mexe na paleta; todo fundo que não é o padrão tem ladrilhos
 assert.equal(withMapBase(DEFAULT_MAP_PALETTE, "padrao"), DEFAULT_MAP_PALETTE);
