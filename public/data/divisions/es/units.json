@@ -56,7 +56,9 @@
     "es-cm",
     "es-ex",
     "es-mc"
-   ]
+   ],
+   "pop": 8619616,
+   "popYear": 2024
   },
   "es-ar": {
    "code": "AR",
@@ -93,7 +95,9 @@
     "es-nc",
     "es-ri",
     "es-vc"
-   ]
+   ],
+   "pop": 1347834,
+   "popYear": 2024
   },
   "es-as": {
    "code": "AS",
@@ -120,7 +124,9 @@
     "es-cb",
     "es-cl",
     "es-ga"
-   ]
+   ],
+   "pop": 1008028,
+   "popYear": 2024
   },
   "es-cb": {
    "code": "CB",
@@ -147,7 +153,9 @@
     "es-as",
     "es-cl",
     "es-pv"
-   ]
+   ],
+   "pop": 591563,
+   "popYear": 2024
   },
   "es-ce": {
    "code": "CE",
@@ -169,7 +177,9 @@
     -5.278,
     35.918
    ],
-   "borders": []
+   "borders": [],
+   "pop": 83595,
+   "popYear": 2025
   },
   "es-cl": {
    "code": "CL",
@@ -205,7 +215,9 @@
     "es-md",
     "es-pv",
     "es-ri"
-   ]
+   ],
+   "pop": 2388350,
+   "popYear": 2024
   },
   "es-cm": {
    "code": "CM",
@@ -240,7 +252,9 @@
     "es-mc",
     "es-md",
     "es-vc"
-   ]
+   ],
+   "pop": 2098853,
+   "popYear": 2024
   },
   "es-cn": {
    "code": "CN",
@@ -266,7 +280,9 @@
     -13.424,
     29.416
    ],
-   "borders": []
+   "borders": [],
+   "pop": 2228862,
+   "popYear": 2024
   },
   "es-ct": {
    "code": "CT",
@@ -295,7 +311,9 @@
    "borders": [
     "es-ar",
     "es-vc"
-   ]
+   ],
+   "pop": 8034743,
+   "popYear": 2024
   },
   "es-ex": {
    "code": "EX",
@@ -325,7 +343,9 @@
     "es-an",
     "es-cl",
     "es-cm"
-   ]
+   ],
+   "pop": 1052790,
+   "popYear": 2024
   },
   "es-ga": {
    "code": "GA",
@@ -357,7 +377,9 @@
    "borders": [
     "es-as",
     "es-cl"
-   ]
+   ],
+   "pop": 2703353,
+   "popYear": 2024
   },
   "es-ib": {
    "code": "IB",
@@ -392,7 +414,9 @@
     4.328,
     40.09
    ],
-   "borders": []
+   "borders": [],
+   "pop": 1176659,
+   "popYear": 2022
   },
   "es-mc": {
    "code": "MC",
@@ -430,7 +454,9 @@
     "es-an",
     "es-cm",
     "es-vc"
-   ]
+   ],
+   "pop": 1586989,
+   "popYear": 2025
   },
   "es-md": {
    "code": "MD",
@@ -459,7 +485,9 @@
    "borders": [
     "es-cl",
     "es-cm"
-   ]
+   ],
+   "pop": 7001715,
+   "popYear": 2024
   },
   "es-ml": {
    "code": "ML",
@@ -484,7 +512,9 @@
     -2.419,
     35.32
    ],
-   "borders": []
+   "borders": [],
+   "pop": 86780,
+   "popYear": 2025
   },
   "es-nc": {
    "code": "NC",
@@ -514,7 +544,9 @@
     "es-ar",
     "es-pv",
     "es-ri"
-   ]
+   ],
+   "pop": 678338,
+   "popYear": 2024
   },
   "es-pv": {
    "code": "PV",
@@ -554,7 +586,9 @@
     "es-cl",
     "es-nc",
     "es-ri"
-   ]
+   ],
+   "pop": 2230452,
+   "popYear": 2024
   },
   "es-ri": {
    "code": "RI",
@@ -585,7 +619,9 @@
     "es-cl",
     "es-nc",
     "es-pv"
-   ]
+   ],
+   "pop": 324399,
+   "popYear": 2024
   },
   "es-vc": {
    "code": "VC",
@@ -624,7 +660,9 @@
     "es-cm",
     "es-ct",
     "es-mc"
-   ]
+   ],
+   "pop": 5316541,
+   "popYear": 2024
   }
  }
 }

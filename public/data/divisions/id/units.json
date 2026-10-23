@@ -58,7 +58,9 @@
    ],
    "borders": [
     "id-su"
-   ]
+   ],
+   "pop": 5554800,
+   "popYear": 2024
   },
   "id-ba": {
    "code": "BA",
@@ -81,7 +83,9 @@
     115.711,
     -8.062
    ],
-   "borders": []
+   "borders": [],
+   "pop": 4362700,
+   "popYear": 2021
   },
   "id-bb": {
    "code": "BB",
@@ -110,7 +114,9 @@
     108.3,
     -1.501
    ],
-   "borders": []
+   "borders": [],
+   "pop": 1531500,
+   "popYear": 2024
   },
   "id-be": {
    "code": "BE",
@@ -138,7 +144,9 @@
     "id-la",
     "id-sb",
     "id-ss"
-   ]
+   ],
+   "pop": 2112200,
+   "popYear": 2024
   },
   "id-bt": {
    "code": "BT",
@@ -164,7 +172,9 @@
    "borders": [
     "id-jb",
     "id-jk"
-   ]
+   ],
+   "pop": 12431400,
+   "popYear": 2024
   },
   "id-go": {
    "code": "GO",
@@ -190,7 +200,9 @@
    "borders": [
     "id-sa",
     "id-st"
-   ]
+   ],
+   "pop": 1227800,
+   "popYear": 2024
   },
   "id-ja": {
    "code": "JA",
@@ -218,7 +230,9 @@
     "id-ri",
     "id-sb",
     "id-ss"
-   ]
+   ],
+   "pop": 3724300,
+   "popYear": 2024
   },
   "id-jb": {
    "code": "JB",
@@ -248,7 +262,9 @@
     "id-bt",
     "id-jk",
     "id-jt"
-   ]
+   ],
+   "pop": 50345200,
+   "popYear": 2024
   },
   "id-ji": {
    "code": "JI",
@@ -283,7 +299,9 @@
    ],
    "borders": [
     "id-jt"
-   ]
+   ],
+   "pop": 41814500,
+   "popYear": 2024
   },
   "id-jk": {
    "code": "JK",
@@ -308,7 +326,9 @@
    "borders": [
     "id-bt",
     "id-jb"
-   ]
+   ],
+   "pop": 11135191,
+   "popYear": 2024
   },
   "id-jt": {
    "code": "JT",
@@ -338,7 +358,9 @@
     "id-jb",
     "id-ji",
     "id-yo"
-   ]
+   ],
+   "pop": 37892300,
+   "popYear": 2024
   },
   "id-kb": {
    "code": "KB",
@@ -367,7 +389,9 @@
    "borders": [
     "id-ki",
     "id-kt"
-   ]
+   ],
+   "pop": 5695500,
+   "popYear": 2024
   },
   "id-ki": {
    "code": "KI",
@@ -398,7 +422,9 @@
     "id-ks",
     "id-kt",
     "id-ku"
-   ]
+   ],
+   "pop": 4045900,
+   "popYear": 2024
   },
   "id-kr": {
    "code": "KR",
@@ -427,7 +453,9 @@
     109.121,
     4.775
    ],
-   "borders": []
+   "borders": [],
+   "pop": 2183300,
+   "popYear": 2024
   },
   "id-ks": {
    "code": "KS",
@@ -456,7 +484,9 @@
    "borders": [
     "id-ki",
     "id-kt"
-   ]
+   ],
+   "pop": 4273400,
+   "popYear": 2024
   },
   "id-kt": {
    "code": "KT",
@@ -486,7 +516,9 @@
     "id-kb",
     "id-ki",
     "id-ks"
-   ]
+   ],
+   "pop": 2809700,
+   "popYear": 2024
   },
   "id-ku": {
    "code": "KU",
@@ -514,7 +546,9 @@
    ],
    "borders": [
     "id-ki"
-   ]
+   ],
+   "pop": 739800,
+   "popYear": 2024
   },
   "id-la": {
    "code": "LA",
@@ -540,7 +574,9 @@
    "borders": [
     "id-be",
     "id-ss"
-   ]
+   ],
+   "pop": 9419600,
+   "popYear": 2024
   },
   "id-ma": {
    "code": "MA",
@@ -566,7 +602,9 @@
     134.902,
     -2.773
    ],
-   "borders": []
+   "borders": [],
+   "pop": 1945600,
+   "popYear": 2024
   },
   "id-mu": {
    "code": "MU",
@@ -592,7 +630,9 @@
     129.656,
     2.644
    ],
-   "borders": []
+   "borders": [],
+   "pop": 1355600,
+   "popYear": 2024
   },
   "id-nb": {
    "code": "NB",
@@ -618,7 +658,9 @@
     119.335,
     -8.081
    ],
-   "borders": []
+   "borders": [],
+   "pop": 5646000,
+   "popYear": 2024
   },
   "id-nt": {
    "code": "NT",
@@ -647,7 +689,9 @@
     125.186,
     -8.064
    ],
-   "borders": []
+   "borders": [],
+   "pop": 5656000,
+   "popYear": 2024
   },
   "id-pa": {
    "code": "PA",
@@ -673,7 +717,9 @@
    "borders": [
     "id-pe",
     "id-pt"
-   ]
+   ],
+   "pop": 4542600,
+   "popYear": 2024
   },
   "id-pb": {
    "code": "PB",
@@ -699,7 +745,9 @@
    "borders": [
     "id-pd",
     "id-pt"
-   ]
+   ],
+   "pop": 1205800,
+   "popYear": 2024
   },
   "id-pd": {
    "code": "PD",
@@ -727,7 +775,9 @@
    ],
    "borders": [
     "id-pb"
-   ]
+   ],
+   "pop": 603054,
+   "popYear": 2021
   },
   "id-pe": {
    "code": "PE",
@@ -761,7 +811,8 @@
     "id-pa",
     "id-ps",
     "id-pt"
-   ]
+   ],
+   "pop": 1408641
   },
   "id-ps": {
    "code": "PS",
@@ -845,7 +896,9 @@
     "id-ja",
     "id-sb",
     "id-su"
-   ]
+   ],
+   "pop": 6728100,
+   "popYear": 2024
   },
   "id-sa": {
    "code": "SA",
@@ -873,7 +926,9 @@
    ],
    "borders": [
     "id-go"
-   ]
+   ],
+   "pop": 2701800,
+   "popYear": 2024
   },
   "id-sb": {
    "code": "SB",
@@ -901,7 +956,9 @@
     "id-ja",
     "id-ri",
     "id-su"
-   ]
+   ],
+   "pop": 5836200,
+   "popYear": 2024
   },
   "id-sg": {
    "code": "SG",
@@ -930,7 +987,9 @@
    "borders": [
     "id-sn",
     "id-st"
-   ]
+   ],
+   "pop": 2793100,
+   "popYear": 2024
   },
   "id-sn": {
    "code": "SN",
@@ -968,7 +1027,9 @@
     "id-sg",
     "id-sr",
     "id-st"
-   ]
+   ],
+   "pop": 9463400,
+   "popYear": 2024
   },
   "id-sr": {
    "code": "SR",
@@ -997,7 +1058,9 @@
    "borders": [
     "id-sn",
     "id-st"
-   ]
+   ],
+   "pop": 1503200,
+   "popYear": 2024
   },
   "id-ss": {
    "code": "SS",
@@ -1027,7 +1090,9 @@
     "id-be",
     "id-ja",
     "id-la"
-   ]
+   ],
+   "pop": 8837300,
+   "popYear": 2024
   },
   "id-st": {
    "code": "ST",
@@ -1058,7 +1123,9 @@
     "id-sg",
     "id-sn",
     "id-sr"
-   ]
+   ],
+   "pop": 3121800,
+   "popYear": 2024
   },
   "id-su": {
    "code": "SU",
@@ -1085,7 +1152,9 @@
     "id-ac",
     "id-ri",
     "id-sb"
-   ]
+   ],
+   "pop": 15588500,
+   "popYear": 2024
   },
   "id-yo": {
    "code": "YO",
@@ -1116,7 +1185,9 @@
    ],
    "borders": [
     "id-jt"
-   ]
+   ],
+   "pop": 3759500,
+   "popYear": 2024
   }
  }
 }

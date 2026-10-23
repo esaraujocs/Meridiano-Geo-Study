@@ -62,7 +62,9 @@
    "borders": [
     "cd-kg",
     "cd-kn"
-   ]
+   ],
+   "pop": 6838500,
+   "popYear": 2020
   },
   "cd-bu": {
    "code": "BU",
@@ -93,7 +95,9 @@
     "cd-mo",
     "cd-nu",
     "cd-to"
-   ]
+   ],
+   "pop": 1369600,
+   "popYear": 2020
   },
   "cd-eq": {
    "code": "EQ",
@@ -124,7 +128,9 @@
     "cd-mo",
     "cd-su",
     "cd-tu"
-   ]
+   ],
+   "pop": 1856000,
+   "popYear": 2020
   },
   "cd-hk": {
    "code": "HK",
@@ -154,7 +160,9 @@
     "cd-hl",
     "cd-lu",
     "cd-ta"
-   ]
+   ],
+   "pop": 5718800,
+   "popYear": 2020
   },
   "cd-hl": {
    "code": "HL",
@@ -185,7 +193,9 @@
     "cd-lo",
     "cd-lu",
     "cd-ta"
-   ]
+   ],
+   "pop": 3662800,
+   "popYear": 2020
   },
   "cd-hu": {
    "code": "HU",
@@ -215,7 +225,9 @@
     "cd-bu",
     "cd-it",
     "cd-to"
-   ]
+   ],
+   "pop": 2242500,
+   "popYear": 2020
   },
   "cd-it": {
    "code": "IT",
@@ -242,7 +254,9 @@
     "cd-hu",
     "cd-nk",
     "cd-to"
-   ]
+   ],
+   "pop": 4392200,
+   "popYear": 2020
   },
   "cd-kc": {
    "code": "KC",
@@ -274,7 +288,9 @@
     "cd-lo",
     "cd-lu",
     "cd-sa"
-   ]
+   ],
+   "pop": 4045300,
+   "popYear": 2020
   },
   "cd-ke": {
    "code": "KE",
@@ -304,7 +320,9 @@
     "cd-kc",
     "cd-lo",
     "cd-sa"
-   ]
+   ],
+   "pop": 3864300,
+   "popYear": 2020
   },
   "cd-kg": {
    "code": "KG",
@@ -335,7 +353,9 @@
     "cd-kl",
     "cd-kn",
     "cd-ks"
-   ]
+   ],
+   "pop": 2618700,
+   "popYear": 2020
   },
   "cd-kl": {
    "code": "KL",
@@ -366,7 +386,9 @@
     "cd-kn",
     "cd-ks",
     "cd-mn"
-   ]
+   ],
+   "pop": 6682300,
+   "popYear": 2020
   },
   "cd-kn": {
    "code": "KN",
@@ -396,7 +418,9 @@
     "cd-kg",
     "cd-kl",
     "cd-mn"
-   ]
+   ],
+   "pop": 14565700,
+   "popYear": 2020
   },
   "cd-ks": {
    "code": "KS",
@@ -460,7 +484,9 @@
     "cd-ma",
     "cd-sa",
     "cd-ta"
-   ]
+   ],
+   "pop": 3001900,
+   "popYear": 2020
   },
   "cd-lu": {
    "code": "LU",
@@ -488,7 +514,9 @@
     "cd-hl",
     "cd-kc",
     "cd-lo"
-   ]
+   ],
+   "pop": 3183300,
+   "popYear": 2020
   },
   "cd-ma": {
    "code": "MA",
@@ -518,7 +546,9 @@
     "cd-sk",
     "cd-ta",
     "cd-to"
-   ]
+   ],
+   "pop": 2856300,
+   "popYear": 2020
   },
   "cd-mn": {
    "code": "MN",
@@ -547,7 +577,9 @@
     "cd-kn",
     "cd-ks",
     "cd-tu"
-   ]
+   ],
+   "pop": 2254100,
+   "popYear": 2020
   },
   "cd-mo": {
    "code": "MO",
@@ -577,7 +609,9 @@
     "cd-su",
     "cd-to",
     "cd-tu"
-   ]
+   ],
+   "pop": 2114100,
+   "popYear": 2020
   },
   "cd-nk": {
    "code": "NK",
@@ -608,7 +642,9 @@
     "cd-ma",
     "cd-sk",
     "cd-to"
-   ]
+   ],
+   "pop": 8147400,
+   "popYear": 2020
   },
   "cd-nu": {
    "code": "NU",
@@ -638,7 +674,9 @@
     "cd-bu",
     "cd-mo",
     "cd-su"
-   ]
+   ],
+   "pop": 1269000,
+   "popYear": 2015
   },
   "cd-sa": {
    "code": "SA",
@@ -669,7 +707,9 @@
     "cd-ma",
     "cd-to",
     "cd-tu"
-   ]
+   ],
+   "pop": 2593400,
+   "popYear": 2020
   },
   "cd-sk": {
    "code": "SK",
@@ -699,7 +739,9 @@
     "cd-ma",
     "cd-nk",
     "cd-ta"
-   ]
+   ],
+   "pop": 7066400,
+   "popYear": 2020
   },
   "cd-su": {
    "code": "SU",
@@ -729,7 +771,9 @@
     "cd-eq",
     "cd-mo",
     "cd-nu"
-   ]
+   ],
+   "pop": 2987100,
+   "popYear": 2020
   },
   "cd-ta": {
    "code": "TA",
@@ -761,7 +805,9 @@
     "cd-lo",
     "cd-ma",
     "cd-sk"
-   ]
+   ],
+   "pop": 3792200,
+   "popYear": 2020
   },
   "cd-to": {
    "code": "TO",
@@ -793,7 +839,9 @@
     "cd-nk",
     "cd-sa",
     "cd-tu"
-   ]
+   ],
+   "pop": 2829700,
+   "popYear": 2020
   },
   "cd-tu": {
    "code": "TU",
@@ -823,7 +871,9 @@
     "cd-mo",
     "cd-sa",
     "cd-to"
-   ]
+   ],
+   "pop": 1944500,
+   "popYear": 2020
   }
  }
 }

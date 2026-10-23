@@ -80,13 +80,17 @@
       "capAl": [
         "Banda Achém"
       ],
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 5554800,
+      "popYear": 2024
     },
     {
       "code": "BA",
       "name": "Bali",
       "capital": "Denpasar",
-      "region": "java"
+      "region": "java",
+      "pop": 4362700,
+      "popYear": 2021
     },
     {
       "code": "BB",
@@ -103,13 +107,17 @@
       "capAl": [
         "Pangkalpinang"
       ],
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 1531500,
+      "popYear": 2024
     },
     {
       "code": "BE",
       "name": "Bengkulu",
       "capital": "Bengkulu",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 2112200,
+      "popYear": 2024
     },
     {
       "code": "BT",
@@ -118,19 +126,25 @@
         "es": "Bantén"
       },
       "capital": "Serang",
-      "region": "java"
+      "region": "java",
+      "pop": 12431400,
+      "popYear": 2024
     },
     {
       "code": "GO",
       "name": "Gorontalo",
       "capital": "Gorontalo",
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 1227800,
+      "popYear": 2024
     },
     {
       "code": "JA",
       "name": "Jambi",
       "capital": "Jambi",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 3724300,
+      "popYear": 2024
     },
     {
       "code": "JB",
@@ -144,7 +158,9 @@
         "Jawa Barat"
       ],
       "capital": "Bandung",
-      "region": "java"
+      "region": "java",
+      "pop": 50345200,
+      "popYear": 2024
     },
     {
       "code": "JI",
@@ -165,7 +181,9 @@
       "capAl": [
         "Surabaya"
       ],
-      "region": "java"
+      "region": "java",
+      "pop": 41814500,
+      "popYear": 2024
     },
     {
       "code": "JK",
@@ -175,7 +193,9 @@
         "pt": "Jacarta",
         "es": "Yakarta"
       },
-      "region": "java"
+      "region": "java",
+      "pop": 11135191,
+      "popYear": 2024
     },
     {
       "code": "JT",
@@ -189,7 +209,9 @@
         "Jawa Tengah"
       ],
       "capital": "Semarang",
-      "region": "java"
+      "region": "java",
+      "pop": 37892300,
+      "popYear": 2024
     },
     {
       "code": "KB",
@@ -203,7 +225,9 @@
         "Bornéu Ocidental"
       ],
       "capital": "Pontianak",
-      "region": "kalimantan"
+      "region": "kalimantan",
+      "pop": 5695500,
+      "popYear": 2024
     },
     {
       "code": "KI",
@@ -217,7 +241,9 @@
         "Bornéu Oriental"
       ],
       "capital": "Samarinda",
-      "region": "kalimantan"
+      "region": "kalimantan",
+      "pop": 4045900,
+      "popYear": 2024
     },
     {
       "code": "KR",
@@ -234,7 +260,9 @@
       "capAl": [
         "Tanjungpinang"
       ],
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 2183300,
+      "popYear": 2024
     },
     {
       "code": "KS",
@@ -248,7 +276,9 @@
         "Bornéu do Sul"
       ],
       "capital": "Banjarbaru",
-      "region": "kalimantan"
+      "region": "kalimantan",
+      "pop": 4273400,
+      "popYear": 2024
     },
     {
       "code": "KT",
@@ -262,7 +292,9 @@
       "capAl": [
         "Palangkaraya"
       ],
-      "region": "kalimantan"
+      "region": "kalimantan",
+      "pop": 2809700,
+      "popYear": 2024
     },
     {
       "code": "KU",
@@ -276,13 +308,17 @@
         "Kalimantan Setentrional"
       ],
       "capital": "Tanjung Selor",
-      "region": "kalimantan"
+      "region": "kalimantan",
+      "pop": 739800,
+      "popYear": 2024
     },
     {
       "code": "LA",
       "name": "Lampung",
       "capital": "Bandar Lampung",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 9419600,
+      "popYear": 2024
     },
     {
       "code": "MA",
@@ -295,7 +331,9 @@
         "Maluku"
       ],
       "capital": "Ambon",
-      "region": "east"
+      "region": "east",
+      "pop": 1945600,
+      "popYear": 2024
     },
     {
       "code": "MU",
@@ -309,7 +347,9 @@
         "Maluku Utara"
       ],
       "capital": "Sofifi",
-      "region": "east"
+      "region": "east",
+      "pop": 1355600,
+      "popYear": 2024
     },
     {
       "code": "NB",
@@ -323,7 +363,9 @@
         "Sonda Ocidental"
       ],
       "capital": "Mataram",
-      "region": "java"
+      "region": "java",
+      "pop": 5646000,
+      "popYear": 2024
     },
     {
       "code": "NT",
@@ -340,7 +382,9 @@
       "capAl": [
         "Cupão"
       ],
-      "region": "java"
+      "region": "java",
+      "pop": 5656000,
+      "popYear": 2024
     },
     {
       "code": "PA",
@@ -349,7 +393,9 @@
         "es": "Papúa"
       },
       "capital": "Jayapura",
-      "region": "east"
+      "region": "east",
+      "pop": 4542600,
+      "popYear": 2024
     },
     {
       "code": "PB",
@@ -360,7 +406,9 @@
         "es": "Papúa Occidental"
       },
       "capital": "Manokwari",
-      "region": "east"
+      "region": "east",
+      "pop": 1205800,
+      "popYear": 2024
     },
     {
       "code": "PD",
@@ -374,7 +422,9 @@
         "Sudoeste de Papua"
       ],
       "capital": "Sorong",
-      "region": "east"
+      "region": "east",
+      "pop": 603054,
+      "popYear": 2021
     },
     {
       "code": "PE",
@@ -392,7 +442,8 @@
       "capAl": [
         "Jayawijaya"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 1408641
     },
     {
       "code": "PS",
@@ -423,7 +474,9 @@
       "code": "RI",
       "name": "Riau",
       "capital": "Pekanbaru",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 6728100,
+      "popYear": 2024
     },
     {
       "code": "SA",
@@ -437,7 +490,9 @@
         "Sulawesi do Norte"
       ],
       "capital": "Manado",
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 2701800,
+      "popYear": 2024
     },
     {
       "code": "SB",
@@ -448,7 +503,9 @@
         "es": "Sumatra Occidental"
       },
       "capital": "Padang",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 5836200,
+      "popYear": 2024
     },
     {
       "code": "SG",
@@ -462,7 +519,9 @@
         "Sulawesi do Sudeste"
       ],
       "capital": "Kendari",
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 2793100,
+      "popYear": 2024
     },
     {
       "code": "SN",
@@ -484,7 +543,9 @@
         "Macáçar",
         "Macassar"
       ],
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 9463400,
+      "popYear": 2024
     },
     {
       "code": "SR",
@@ -498,7 +559,9 @@
         "Sulawesi Ocidental"
       ],
       "capital": "Mamuju",
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 1503200,
+      "popYear": 2024
     },
     {
       "code": "SS",
@@ -512,7 +575,9 @@
       "capAl": [
         "Palimbão"
       ],
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 8837300,
+      "popYear": 2024
     },
     {
       "code": "ST",
@@ -526,7 +591,9 @@
         "Sulawesi Central"
       ],
       "capital": "Palu",
-      "region": "sulawesi"
+      "region": "sulawesi",
+      "pop": 3121800,
+      "popYear": 2024
     },
     {
       "code": "SU",
@@ -537,7 +604,9 @@
         "es": "Sumatra Septentrional"
       },
       "capital": "Medan",
-      "region": "sumatra"
+      "region": "sumatra",
+      "pop": 15588500,
+      "popYear": 2024
     },
     {
       "code": "YO",
@@ -550,7 +619,9 @@
       "capAl": [
         "Jogjacarta"
       ],
-      "region": "java"
+      "region": "java",
+      "pop": 3759500,
+      "popYear": 2024
     }
   ],
   "probes": [

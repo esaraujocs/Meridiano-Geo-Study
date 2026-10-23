@@ -47,7 +47,9 @@
    ],
    "borders": [
     "au-nsw"
-   ]
+   ],
+   "pop": 481700,
+   "popYear": 2024
   },
   "au-nsw": {
    "code": "NSW",
@@ -82,7 +84,9 @@
     "au-qld",
     "au-sa",
     "au-vic"
-   ]
+   ],
+   "pop": 8545100,
+   "popYear": 2024
   },
   "au-nt": {
    "code": "NT",
@@ -109,7 +113,9 @@
     "au-qld",
     "au-sa",
     "au-wa"
-   ]
+   ],
+   "pop": 262200,
+   "popYear": 2024
   },
   "au-qld": {
    "code": "QLD",
@@ -136,7 +142,9 @@
     "au-nsw",
     "au-nt",
     "au-sa"
-   ]
+   ],
+   "pop": 5618800,
+   "popYear": 2024
   },
   "au-sa": {
    "code": "SA",
@@ -172,7 +180,9 @@
     "au-qld",
     "au-vic",
     "au-wa"
-   ]
+   ],
+   "pop": 1891700,
+   "popYear": 2024
   },
   "au-tas": {
    "code": "TAS",
@@ -195,7 +205,9 @@
     148.482,
     -39.579
    ],
-   "borders": []
+   "borders": [],
+   "pop": 539590,
+   "popYear": 2020
   },
   "au-vic": {
    "code": "VIC",
@@ -221,7 +233,9 @@
    "borders": [
     "au-nsw",
     "au-sa"
-   ]
+   ],
+   "pop": 7074468,
+   "popYear": 2025
   },
   "au-wa": {
    "code": "WA",
@@ -247,7 +261,9 @@
    "borders": [
     "au-nt",
     "au-sa"
-   ]
+   ],
+   "pop": 3008700,
+   "popYear": 2024
   }
  }
 }

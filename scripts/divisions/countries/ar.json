@@ -78,7 +78,9 @@
         "en": "Salta",
         "es": "Salta"
       },
-      "region": "nw"
+      "region": "nw",
+      "pop": 1441351,
+      "popYear": 2022
     },
     {
       "code": "B",
@@ -88,7 +90,9 @@
         "en": "La Plata",
         "es": "La Plata"
       },
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 17523996,
+      "popYear": 2022
     },
     {
       "code": "C",
@@ -104,7 +108,9 @@
         "Ciudad Autónoma de Buenos Aires",
         "Cidade Autônoma de Buenos Aires"
       ],
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 3121707,
+      "popYear": 2022
     },
     {
       "code": "D",
@@ -117,7 +123,9 @@
       "capAl": [
         "São Luís"
       ],
-      "region": "cuyo"
+      "region": "cuyo",
+      "pop": 542069,
+      "popYear": 2022
     },
     {
       "code": "E",
@@ -127,7 +135,9 @@
         "en": "Paraná",
         "es": "Paraná"
       },
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 1425578,
+      "popYear": 2022
     },
     {
       "code": "F",
@@ -137,7 +147,9 @@
         "en": "La Rioja",
         "es": "La Rioja"
       },
-      "region": "nw"
+      "region": "nw",
+      "pop": 383865,
+      "popYear": 2022
     },
     {
       "code": "G",
@@ -147,7 +159,9 @@
         "en": "Santiago del Estero",
         "es": "Santiago del Estero"
       },
-      "region": "nw"
+      "region": "nw",
+      "pop": 1060906,
+      "popYear": 2022
     },
     {
       "code": "H",
@@ -160,7 +174,9 @@
       "capAl": [
         "Resistência"
       ],
-      "region": "ne"
+      "region": "ne",
+      "pop": 1129606,
+      "popYear": 2022
     },
     {
       "code": "J",
@@ -170,7 +186,9 @@
         "en": "San Juan",
         "es": "San Juan"
       },
-      "region": "cuyo"
+      "region": "cuyo",
+      "pop": 822853,
+      "popYear": 2022
     },
     {
       "code": "K",
@@ -183,7 +201,9 @@
       "capAl": [
         "Catamarca"
       ],
-      "region": "nw"
+      "region": "nw",
+      "pop": 429562,
+      "popYear": 2022
     },
     {
       "code": "L",
@@ -193,7 +213,9 @@
         "en": "Santa Rosa",
         "es": "Santa Rosa"
       },
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 361859,
+      "popYear": 2022
     },
     {
       "code": "M",
@@ -203,7 +225,9 @@
         "en": "Mendoza",
         "es": "Mendoza"
       },
-      "region": "cuyo"
+      "region": "cuyo",
+      "pop": 2043540,
+      "popYear": 2022
     },
     {
       "code": "N",
@@ -213,7 +237,9 @@
         "en": "Posadas",
         "es": "Posadas"
       },
-      "region": "ne"
+      "region": "ne",
+      "pop": 1278873,
+      "popYear": 2022
     },
     {
       "code": "P",
@@ -223,7 +249,9 @@
         "en": "Formosa",
         "es": "Formosa"
       },
-      "region": "ne"
+      "region": "ne",
+      "pop": 607419,
+      "popYear": 2022
     },
     {
       "code": "Q",
@@ -233,7 +261,9 @@
         "en": "Neuquén",
         "es": "Neuquén"
       },
-      "region": "patagonia"
+      "region": "patagonia",
+      "pop": 710814,
+      "popYear": 2022
     },
     {
       "code": "R",
@@ -243,7 +273,9 @@
         "en": "Viedma",
         "es": "Viedma"
       },
-      "region": "patagonia"
+      "region": "patagonia",
+      "pop": 750768,
+      "popYear": 2022
     },
     {
       "code": "S",
@@ -256,7 +288,9 @@
         "en": "Santa Fe",
         "es": "Santa Fe"
       },
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 3544908,
+      "popYear": 2022
     },
     {
       "code": "T",
@@ -273,7 +307,9 @@
         "Tucumán",
         "São Miguel de Tucumã"
       ],
-      "region": "nw"
+      "region": "nw",
+      "pop": 1731820,
+      "popYear": 2022
     },
     {
       "code": "U",
@@ -283,7 +319,9 @@
         "en": "Rawson",
         "es": "Rawson"
       },
-      "region": "patagonia"
+      "region": "patagonia",
+      "pop": 592621,
+      "popYear": 2022
     },
     {
       "code": "V",
@@ -299,7 +337,9 @@
         "en": "Ushuaia",
         "es": "Ushuaia"
       },
-      "region": "patagonia"
+      "region": "patagonia",
+      "pop": 185732,
+      "popYear": 2022
     },
     {
       "code": "W",
@@ -309,7 +349,9 @@
         "en": "Corrientes",
         "es": "Corrientes"
       },
-      "region": "ne"
+      "region": "ne",
+      "pop": 1212696,
+      "popYear": 2022
     },
     {
       "code": "X",
@@ -325,7 +367,9 @@
       "capAl": [
         "Córdova"
       ],
-      "region": "pampas"
+      "region": "pampas",
+      "pop": 3840905,
+      "popYear": 2022
     },
     {
       "code": "Y",
@@ -338,7 +382,9 @@
       "capAl": [
         "Jujuy"
       ],
-      "region": "nw"
+      "region": "nw",
+      "pop": 811611,
+      "popYear": 2022
     },
     {
       "code": "Z",
@@ -348,7 +394,9 @@
         "en": "Río Gallegos",
         "es": "Río Gallegos"
       },
-      "region": "patagonia"
+      "region": "patagonia",
+      "pop": 337226,
+      "popYear": 2022
     }
   ],
   "probes": [

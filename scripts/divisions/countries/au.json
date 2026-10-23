@@ -73,7 +73,9 @@
       "capAl": [
         "Canberra"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 481700,
+      "popYear": 2024
     },
     {
       "code": "NSW",
@@ -90,7 +92,9 @@
       "capAl": [
         "Sidney"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 8545100,
+      "popYear": 2024
     },
     {
       "code": "NT",
@@ -100,13 +104,17 @@
         "es": "Territorio del Norte"
       },
       "capital": "Darwin",
-      "region": "west"
+      "region": "west",
+      "pop": 262200,
+      "popYear": 2024
     },
     {
       "code": "QLD",
       "name": "Queensland",
       "capital": "Brisbane",
-      "region": "east"
+      "region": "east",
+      "pop": 5618800,
+      "popYear": 2024
     },
     {
       "code": "SA",
@@ -123,7 +131,9 @@
         "en": "Adelaide",
         "es": "Adelaida"
       },
-      "region": "west"
+      "region": "west",
+      "pop": 1891700,
+      "popYear": 2024
     },
     {
       "code": "TAS",
@@ -132,7 +142,9 @@
         "pt": "Tasmânia"
       },
       "capital": "Hobart",
-      "region": "east"
+      "region": "east",
+      "pop": 539590,
+      "popYear": 2020
     },
     {
       "code": "VIC",
@@ -141,7 +153,9 @@
         "pt": "Vitória"
       },
       "capital": "Melbourne",
-      "region": "east"
+      "region": "east",
+      "pop": 7074468,
+      "popYear": 2025
     },
     {
       "code": "WA",
@@ -151,7 +165,9 @@
         "es": "Australia Occidental"
       },
       "capital": "Perth",
-      "region": "west"
+      "region": "west",
+      "pop": 3008700,
+      "popYear": 2024
     }
   ],
   "probes": [

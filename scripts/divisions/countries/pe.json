@@ -64,7 +64,9 @@
       "code": "AMA",
       "name": "Amazonas",
       "capital": "Chachapoyas",
-      "region": "north"
+      "region": "north",
+      "pop": 437579,
+      "popYear": 2026
     },
     {
       "code": "ANC",
@@ -74,19 +76,25 @@
         "Ancash"
       ],
       "capital": "Huaraz",
-      "region": "center"
+      "region": "center",
+      "pop": 1201826,
+      "popYear": 2026
     },
     {
       "code": "APU",
       "name": "Apurímac",
       "capital": "Abancay",
-      "region": "south"
+      "region": "south",
+      "pop": 419957,
+      "popYear": 2026
     },
     {
       "code": "ARE",
       "name": "Arequipa",
       "capital": "Arequipa",
-      "region": "south"
+      "region": "south",
+      "pop": 1814554,
+      "popYear": 2025
     },
     {
       "code": "AYA",
@@ -96,19 +104,25 @@
         "Aiacucho",
         "Huamanga"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 665109,
+      "popYear": 2026
     },
     {
       "code": "CAJ",
       "name": "Cajamarca",
       "capital": "Cajamarca",
-      "region": "north"
+      "region": "north",
+      "pop": 1445237,
+      "popYear": 2026
     },
     {
       "code": "CAL",
       "name": "Callao",
       "capital": "Callao",
-      "region": "center"
+      "region": "center",
+      "pop": 1239513,
+      "popYear": 2026
     },
     {
       "code": "CUS",
@@ -120,31 +134,41 @@
       "capAl": [
         "Cuzco"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 1401025,
+      "popYear": 2026
     },
     {
       "code": "HUC",
       "name": "Huánuco",
       "capital": "Huánuco",
-      "region": "center"
+      "region": "center",
+      "pop": 807393,
+      "popYear": 2025
     },
     {
       "code": "HUV",
       "name": "Huancavelica",
       "capital": "Huancavelica",
-      "region": "center"
+      "region": "center",
+      "pop": 319137,
+      "popYear": 2026
     },
     {
       "code": "ICA",
       "name": "Ica",
       "capital": "Ica",
-      "region": "center"
+      "region": "center",
+      "pop": 1093680,
+      "popYear": 2026
     },
     {
       "code": "JUN",
       "name": "Junín",
       "capital": "Huancayo",
-      "region": "center"
+      "region": "center",
+      "pop": 1376453,
+      "popYear": 2026
     },
     {
       "code": "LAL",
@@ -153,13 +177,17 @@
         "Liberdade"
       ],
       "capital": "Trujillo",
-      "region": "north"
+      "region": "north",
+      "pop": 2171379,
+      "popYear": 2026
     },
     {
       "code": "LAM",
       "name": "Lambayeque",
       "capital": "Chiclayo",
-      "region": "north"
+      "region": "north",
+      "pop": 1384130,
+      "popYear": 2026
     },
     {
       "code": "LIM",
@@ -168,13 +196,17 @@
       "capAl": [
         "Huacho"
       ],
-      "region": "center"
+      "region": "center",
+      "pop": 11595510,
+      "popYear": 2026
     },
     {
       "code": "LOR",
       "name": "Loreto",
       "capital": "Iquitos",
-      "region": "north"
+      "region": "north",
+      "pop": 1068905,
+      "popYear": 2026
     },
     {
       "code": "MDD",
@@ -183,55 +215,73 @@
         "Madre de Deus"
       ],
       "capital": "Puerto Maldonado",
-      "region": "south"
+      "region": "south",
+      "pop": 212872,
+      "popYear": 2026
     },
     {
       "code": "MOQ",
       "name": "Moquegua",
       "capital": "Moquegua",
-      "region": "south"
+      "region": "south",
+      "pop": 205591,
+      "popYear": 2026
     },
     {
       "code": "PAS",
       "name": "Pasco",
       "capital": "Cerro de Pasco",
-      "region": "center"
+      "region": "center",
+      "pop": 264254,
+      "popYear": 2026
     },
     {
       "code": "PIU",
       "name": "Piura",
       "capital": "Piura",
-      "region": "north"
+      "region": "north",
+      "pop": 2196006,
+      "popYear": 2026
     },
     {
       "code": "PUN",
       "name": "Puno",
       "capital": "Puno",
-      "region": "south"
+      "region": "south",
+      "pop": 1203271,
+      "popYear": 2026
     },
     {
       "code": "SAM",
       "name": "San Martín",
       "capital": "Moyobamba",
-      "region": "north"
+      "region": "north",
+      "pop": 958305,
+      "popYear": 2026
     },
     {
       "code": "TAC",
       "name": "Tacna",
       "capital": "Tacna",
-      "region": "south"
+      "region": "south",
+      "pop": 406531,
+      "popYear": 2026
     },
     {
       "code": "TUM",
       "name": "Tumbes",
       "capital": "Tumbes",
-      "region": "north"
+      "region": "north",
+      "pop": 335501,
+      "popYear": 2026
     },
     {
       "code": "UCA",
       "name": "Ucayali",
       "capital": "Pucallpa",
-      "region": "center"
+      "region": "center",
+      "pop": 623868,
+      "popYear": 2025
     }
   ],
   "probes": [

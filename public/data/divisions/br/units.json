@@ -53,7 +53,9 @@
    "borders": [
     "br-am",
     "br-ro"
-   ]
+   ],
+   "pop": 830018,
+   "popYear": 2022
   },
   "br-al": {
    "code": "AL",
@@ -80,7 +82,9 @@
     "br-ba",
     "br-pe",
     "br-se"
-   ]
+   ],
+   "pop": 3127683,
+   "popYear": 2022
   },
   "br-am": {
    "code": "AM",
@@ -109,7 +113,9 @@
     "br-pa",
     "br-ro",
     "br-rr"
-   ]
+   ],
+   "pop": 3941613,
+   "popYear": 2022
   },
   "br-ap": {
    "code": "AP",
@@ -134,7 +140,9 @@
    ],
    "borders": [
     "br-pa"
-   ]
+   ],
+   "pop": 733759,
+   "popYear": 2022
   },
   "br-ba": {
    "code": "BA",
@@ -166,7 +174,9 @@
     "br-pi",
     "br-se",
     "br-to"
-   ]
+   ],
+   "pop": 14141626,
+   "popYear": 2022
   },
   "br-ce": {
    "code": "CE",
@@ -194,7 +204,9 @@
     "br-pe",
     "br-pi",
     "br-rn"
-   ]
+   ],
+   "pop": 8794957,
+   "popYear": 2022
   },
   "br-df": {
    "code": "DF",
@@ -220,7 +232,9 @@
    "borders": [
     "br-go",
     "br-mg"
-   ]
+   ],
+   "pop": 2817381,
+   "popYear": 2022
   },
   "br-es": {
    "code": "ES",
@@ -247,7 +261,9 @@
     "br-ba",
     "br-mg",
     "br-rj"
-   ]
+   ],
+   "pop": 3833712,
+   "popYear": 2022
   },
   "br-go": {
    "code": "GO",
@@ -277,7 +293,9 @@
     "br-ms",
     "br-mt",
     "br-to"
-   ]
+   ],
+   "pop": 7056495,
+   "popYear": 2022
   },
   "br-ma": {
    "code": "MA",
@@ -307,7 +325,9 @@
     "br-pa",
     "br-pi",
     "br-to"
-   ]
+   ],
+   "pop": 6776699,
+   "popYear": 2022
   },
   "br-mg": {
    "code": "MG",
@@ -338,7 +358,9 @@
     "br-ms",
     "br-rj",
     "br-sp"
-   ]
+   ],
+   "pop": 20539989,
+   "popYear": 2022
   },
   "br-ms": {
    "code": "MS",
@@ -367,7 +389,9 @@
     "br-mt",
     "br-pr",
     "br-sp"
-   ]
+   ],
+   "pop": 2757013,
+   "popYear": 2022
   },
   "br-mt": {
    "code": "MT",
@@ -397,7 +421,9 @@
     "br-pa",
     "br-ro",
     "br-to"
-   ]
+   ],
+   "pop": 3893659,
+   "popYear": 2025
   },
   "br-pa": {
    "code": "PA",
@@ -427,7 +453,9 @@
     "br-mt",
     "br-rr",
     "br-to"
-   ]
+   ],
+   "pop": 8120131,
+   "popYear": 2022
   },
   "br-pb": {
    "code": "PB",
@@ -454,7 +482,9 @@
     "br-ce",
     "br-pe",
     "br-rn"
-   ]
+   ],
+   "pop": 3974687,
+   "popYear": 2022
   },
   "br-pe": {
    "code": "PE",
@@ -483,7 +513,9 @@
     "br-ce",
     "br-pb",
     "br-pi"
-   ]
+   ],
+   "pop": 9058931,
+   "popYear": 2022
   },
   "br-pi": {
    "code": "PI",
@@ -512,7 +544,9 @@
     "br-ma",
     "br-pe",
     "br-to"
-   ]
+   ],
+   "pop": 3271199,
+   "popYear": 2022
   },
   "br-pr": {
    "code": "PR",
@@ -539,7 +573,9 @@
     "br-ms",
     "br-sc",
     "br-sp"
-   ]
+   ],
+   "pop": 11444380,
+   "popYear": 2022
   },
   "br-rj": {
    "code": "RJ",
@@ -566,7 +602,9 @@
     "br-es",
     "br-mg",
     "br-sp"
-   ]
+   ],
+   "pop": 16055174,
+   "popYear": 2022
   },
   "br-rn": {
    "code": "RN",
@@ -592,7 +630,9 @@
    "borders": [
     "br-ce",
     "br-pb"
-   ]
+   ],
+   "pop": 3302729,
+   "popYear": 2022
   },
   "br-ro": {
    "code": "RO",
@@ -619,7 +659,9 @@
     "br-ac",
     "br-am",
     "br-mt"
-   ]
+   ],
+   "pop": 1581196,
+   "popYear": 2022
   },
   "br-rr": {
    "code": "RR",
@@ -645,7 +687,9 @@
    "borders": [
     "br-am",
     "br-pa"
-   ]
+   ],
+   "pop": 636707,
+   "popYear": 2022
   },
   "br-rs": {
    "code": "RS",
@@ -670,7 +714,9 @@
    ],
    "borders": [
     "br-sc"
-   ]
+   ],
+   "pop": 10882965,
+   "popYear": 2022
   },
   "br-sc": {
    "code": "SC",
@@ -696,7 +742,9 @@
    "borders": [
     "br-pr",
     "br-rs"
-   ]
+   ],
+   "pop": 7610361,
+   "popYear": 2022
   },
   "br-se": {
    "code": "SE",
@@ -722,7 +770,9 @@
    "borders": [
     "br-al",
     "br-ba"
-   ]
+   ],
+   "pop": 2210004,
+   "popYear": 2022
   },
   "br-sp": {
    "code": "SP",
@@ -750,7 +800,9 @@
     "br-ms",
     "br-pr",
     "br-rj"
-   ]
+   ],
+   "pop": 46081801,
+   "popYear": 2025
   },
   "br-to": {
    "code": "TO",
@@ -780,7 +832,9 @@
     "br-mt",
     "br-pa",
     "br-pi"
-   ]
+   ],
+   "pop": 1511460,
+   "popYear": 2022
   }
  }
 }

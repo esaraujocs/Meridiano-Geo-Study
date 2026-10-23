@@ -77,7 +77,9 @@
         "en": "Alexandria",
         "es": "Alejandría"
       },
-      "region": "delta"
+      "region": "delta",
+      "pop": 5163750,
+      "popYear": 2017
     },
     {
       "code": "ASN",
@@ -98,7 +100,9 @@
       "capAl": [
         "Assuão"
       ],
-      "region": "upper"
+      "region": "upper",
+      "pop": 1473975,
+      "popYear": 2017
     },
     {
       "code": "AST",
@@ -113,7 +117,9 @@
         "en": "Asyut",
         "es": "Asiut"
       },
-      "region": "upper"
+      "region": "upper",
+      "pop": 4383289,
+      "popYear": 2017
     },
     {
       "code": "BA",
@@ -138,7 +144,9 @@
             23.3
           ]
         }
-      ]
+      ],
+      "pop": 359888,
+      "popYear": 2017
     },
     {
       "code": "BH",
@@ -148,14 +156,18 @@
         "Buhaira"
       ],
       "capital": "Damanhur",
-      "region": "delta"
+      "region": "delta",
+      "pop": 6171613,
+      "popYear": 2017
     },
     {
       "code": "BNS",
       "name": "Beni Suef",
       "sourceName": "بنى سويف",
       "capital": "Beni Suef",
-      "region": "upper"
+      "region": "upper",
+      "pop": 3154100,
+      "popYear": 2017
     },
     {
       "code": "C",
@@ -169,7 +181,9 @@
         "en": "Cairo",
         "es": "El Cairo"
       },
-      "region": "delta"
+      "region": "delta",
+      "pop": 9539673,
+      "popYear": 2017
     },
     {
       "code": "DK",
@@ -187,7 +201,9 @@
         "Almançora",
         "Mansourah"
       ],
-      "region": "delta"
+      "region": "delta",
+      "pop": 6492381,
+      "popYear": 2017
     },
     {
       "code": "DT",
@@ -202,7 +218,9 @@
         "en": "Damietta",
         "es": "Damieta"
       },
-      "region": "delta"
+      "region": "delta",
+      "pop": 1496765,
+      "popYear": 2017
     },
     {
       "code": "FYM",
@@ -223,14 +241,18 @@
       "capAl": [
         "Fayoum"
       ],
-      "region": "upper"
+      "region": "upper",
+      "pop": 3596954,
+      "popYear": 2017
     },
     {
       "code": "GH",
       "name": "Gharbia",
       "sourceName": "محافظة الغربية",
       "capital": "Tanta",
-      "region": "delta"
+      "region": "delta",
+      "pop": 4999633,
+      "popYear": 2017
     },
     {
       "code": "GZ",
@@ -245,7 +267,9 @@
         "en": "Giza",
         "es": "Guiza"
       },
-      "region": "delta"
+      "region": "delta",
+      "pop": 8632021,
+      "popYear": 2017
     },
     {
       "code": "IS",
@@ -260,7 +284,9 @@
         "en": "Ismailia",
         "es": "Ismailía"
       },
-      "region": "canal"
+      "region": "canal",
+      "pop": 1303993,
+      "popYear": 2017
     },
     {
       "code": "JS",
@@ -274,7 +300,9 @@
       "capAl": [
         "Tor"
       ],
-      "region": "canal"
+      "region": "canal",
+      "pop": 150088,
+      "popYear": 2006
     },
     {
       "code": "KB",
@@ -287,7 +315,9 @@
       "capAl": [
         "Banha"
       ],
-      "region": "delta"
+      "region": "delta",
+      "pop": 6182750,
+      "popYear": 2024
     },
     {
       "code": "KFS",
@@ -301,7 +331,9 @@
         "en": "Kafr el-Sheikh",
         "es": "Kafr el Sheij"
       },
-      "region": "delta"
+      "region": "delta",
+      "pop": 3362185,
+      "popYear": 2017
     },
     {
       "code": "KN",
@@ -321,7 +353,9 @@
       "capAl": [
         "Qina"
       ],
-      "region": "upper"
+      "region": "upper",
+      "pop": 3164281,
+      "popYear": 2017
     },
     {
       "code": "LX",
@@ -331,7 +365,9 @@
         "es": "Lúxor"
       },
       "capital": "Luxor",
-      "region": "upper"
+      "region": "upper",
+      "pop": 1250209,
+      "popYear": 2017
     },
     {
       "code": "MN",
@@ -345,7 +381,9 @@
         "en": "Minya",
         "es": "Menia"
       },
-      "region": "upper"
+      "region": "upper",
+      "pop": 5497095,
+      "popYear": 2017
     },
     {
       "code": "MNF",
@@ -362,7 +400,9 @@
       "capAl": [
         "Xibin El Kom"
       ],
-      "region": "delta"
+      "region": "delta",
+      "pop": 4301601,
+      "popYear": 2017
     },
     {
       "code": "MT",
@@ -376,7 +416,9 @@
       "capAl": [
         "Marsa Matrouh"
       ],
-      "region": "desert"
+      "region": "desert",
+      "pop": 425624,
+      "popYear": 2017
     },
     {
       "code": "PTS",
@@ -391,7 +433,9 @@
         "en": "Port Said",
         "es": "Puerto Saíd"
       },
-      "region": "canal"
+      "region": "canal",
+      "pop": 749371,
+      "popYear": 2017
     },
     {
       "code": "SHG",
@@ -405,7 +449,9 @@
         "en": "Sohag",
         "es": "Suhag"
       },
-      "region": "upper"
+      "region": "upper",
+      "pop": 4967409,
+      "popYear": 2017
     },
     {
       "code": "SHR",
@@ -415,7 +461,9 @@
         "Xarqia"
       ],
       "capital": "Zagazig",
-      "region": "delta"
+      "region": "delta",
+      "pop": 7163824,
+      "popYear": 2017
     },
     {
       "code": "SIN",
@@ -434,14 +482,18 @@
         "Arish",
         "Alarixe"
       ],
-      "region": "canal"
+      "region": "canal",
+      "pop": 450328,
+      "popYear": 2017
     },
     {
       "code": "SUZ",
       "name": "Suez",
       "sourceName": "السويس",
       "capital": "Suez",
-      "region": "canal"
+      "region": "canal",
+      "pop": 728180,
+      "popYear": 2017
     },
     {
       "code": "WAD",
@@ -458,7 +510,9 @@
       "capAl": [
         "El Kharga"
       ],
-      "region": "desert"
+      "region": "desert",
+      "pop": 241247,
+      "popYear": 2017
     }
   ],
   "probes": [

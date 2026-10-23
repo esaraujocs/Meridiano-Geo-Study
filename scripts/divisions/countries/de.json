@@ -73,7 +73,9 @@
         "es": "Brandeburgo"
       },
       "capital": "Potsdam",
-      "region": "east"
+      "region": "east",
+      "pop": 2534075,
+      "popYear": 2022
     },
     {
       "code": "BE",
@@ -82,7 +84,9 @@
         "pt": "Berlim",
         "es": "Berlín"
       },
-      "region": "east"
+      "region": "east",
+      "pop": 3700577,
+      "popYear": 2025
     },
     {
       "code": "BW",
@@ -97,7 +101,9 @@
       "capAl": [
         "Estugarda"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 11104040,
+      "popYear": 2022
     },
     {
       "code": "BY",
@@ -118,12 +124,16 @@
       "capAl": [
         "München"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 13038724,
+      "popYear": 2022
     },
     {
       "code": "HB",
       "name": "Bremen",
-      "region": "north"
+      "region": "north",
+      "pop": 693204,
+      "popYear": 2022
     },
     {
       "code": "HE",
@@ -133,7 +143,9 @@
         "Hessen"
       ],
       "capital": "Wiesbaden",
-      "region": "west"
+      "region": "west",
+      "pop": 6207278,
+      "popYear": 2022
     },
     {
       "code": "HH",
@@ -142,7 +154,9 @@
         "pt": "Hamburgo",
         "es": "Hamburgo"
       },
-      "region": "north"
+      "region": "north",
+      "pop": 1869473,
+      "popYear": 2025
     },
     {
       "code": "MV",
@@ -155,7 +169,9 @@
         "Mecklemburgo"
       ],
       "capital": "Schwerin",
-      "region": "north"
+      "region": "north",
+      "pop": 1570817,
+      "popYear": 2022
     },
     {
       "code": "NI",
@@ -176,7 +192,9 @@
       "capAl": [
         "Hannover"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 7943265,
+      "popYear": 2022
     },
     {
       "code": "NW",
@@ -190,7 +208,9 @@
         "Nordrhein-Westfalen"
       ],
       "capital": "Düsseldorf",
-      "region": "west"
+      "region": "west",
+      "pop": 17890489,
+      "popYear": 2022
     },
     {
       "code": "RP",
@@ -211,13 +231,17 @@
       "capAl": [
         "Mogúncia"
       ],
-      "region": "west"
+      "region": "west",
+      "pop": 4094169,
+      "popYear": 2022
     },
     {
       "code": "SH",
       "name": "Schleswig-Holstein",
       "capital": "Kiel",
-      "region": "north"
+      "region": "north",
+      "pop": 2953270,
+      "popYear": 2022
     },
     {
       "code": "SL",
@@ -231,7 +255,9 @@
         "en": "Saarbrücken",
         "es": "Sarrebruck"
       },
-      "region": "west"
+      "region": "west",
+      "pop": 1006864,
+      "popYear": 2022
     },
     {
       "code": "SN",
@@ -253,7 +279,9 @@
       "capAl": [
         "Dresda"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 4089467,
+      "popYear": 2023
     },
     {
       "code": "ST",
@@ -272,7 +300,9 @@
         "en": "Magdeburg",
         "es": "Magdeburgo"
       },
-      "region": "east"
+      "region": "east",
+      "pop": 2146443,
+      "popYear": 2022
     },
     {
       "code": "TH",
@@ -286,7 +316,9 @@
         "Thüringen"
       ],
       "capital": "Erfurt",
-      "region": "east"
+      "region": "east",
+      "pop": 2110396,
+      "popYear": 2022
     }
   ],
   "probes": [

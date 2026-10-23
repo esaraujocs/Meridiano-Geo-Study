@@ -45,7 +45,9 @@
     -129.994,
     71.387
    ],
-   "borders": []
+   "borders": [],
+   "pop": 733391,
+   "popYear": 2020
   },
   "us-al": {
    "code": "AL",
@@ -73,7 +75,9 @@
     "us-ga",
     "us-ms",
     "us-tn"
-   ]
+   ],
+   "pop": 5024279,
+   "popYear": 2020
   },
   "us-ar": {
    "code": "AR",
@@ -103,7 +107,9 @@
     "us-ok",
     "us-tn",
     "us-tx"
-   ]
+   ],
+   "pop": 3011524,
+   "popYear": 2020
   },
   "us-az": {
    "code": "AZ",
@@ -131,7 +137,9 @@
     "us-nm",
     "us-nv",
     "us-ut"
-   ]
+   ],
+   "pop": 7151502,
+   "popYear": 2020
   },
   "us-ca": {
    "code": "CA",
@@ -158,7 +166,9 @@
     "us-az",
     "us-nv",
     "us-or"
-   ]
+   ],
+   "pop": 39538223,
+   "popYear": 2020
   },
   "us-co": {
    "code": "CO",
@@ -188,7 +198,9 @@
     "us-ok",
     "us-ut",
     "us-wy"
-   ]
+   ],
+   "pop": 5773714,
+   "popYear": 2020
   },
   "us-ct": {
    "code": "CT",
@@ -215,7 +227,9 @@
     "us-ma",
     "us-ny",
     "us-ri"
-   ]
+   ],
+   "pop": 3605944,
+   "popYear": 2020
   },
   "us-de": {
    "code": "DE",
@@ -242,7 +256,9 @@
     "us-md",
     "us-nj",
     "us-pa"
-   ]
+   ],
+   "pop": 989948,
+   "popYear": 2020
   },
   "us-fl": {
    "code": "FL",
@@ -268,7 +284,9 @@
    "borders": [
     "us-al",
     "us-ga"
-   ]
+   ],
+   "pop": 21538187,
+   "popYear": 2020
   },
   "us-ga": {
    "code": "GA",
@@ -297,7 +315,9 @@
     "us-nc",
     "us-sc",
     "us-tn"
-   ]
+   ],
+   "pop": 10711908,
+   "popYear": 2020
   },
   "us-hi": {
    "code": "HI",
@@ -320,7 +340,9 @@
     -154.807,
     22.233
    ],
-   "borders": []
+   "borders": [],
+   "pop": 1455271,
+   "popYear": 2020
   },
   "us-ia": {
    "code": "IA",
@@ -350,7 +372,9 @@
     "us-ne",
     "us-sd",
     "us-wi"
-   ]
+   ],
+   "pop": 3190369,
+   "popYear": 2020
   },
   "us-id": {
    "code": "ID",
@@ -380,7 +404,9 @@
     "us-ut",
     "us-wa",
     "us-wy"
-   ]
+   ],
+   "pop": 1839106,
+   "popYear": 2020
   },
   "us-il": {
    "code": "IL",
@@ -410,7 +436,9 @@
     "us-mi",
     "us-mo",
     "us-wi"
-   ]
+   ],
+   "pop": 12812508,
+   "popYear": 2020
   },
   "us-in": {
    "code": "IN",
@@ -438,7 +466,9 @@
     "us-ky",
     "us-mi",
     "us-oh"
-   ]
+   ],
+   "pop": 6785528,
+   "popYear": 2020
   },
   "us-ks": {
    "code": "KS",
@@ -466,7 +496,9 @@
     "us-mo",
     "us-ne",
     "us-ok"
-   ]
+   ],
+   "pop": 2937880,
+   "popYear": 2020
   },
   "us-ky": {
    "code": "KY",
@@ -497,7 +529,9 @@
     "us-tn",
     "us-va",
     "us-wv"
-   ]
+   ],
+   "pop": 4505836,
+   "popYear": 2020
   },
   "us-la": {
    "code": "LA",
@@ -524,7 +558,9 @@
     "us-ar",
     "us-ms",
     "us-tx"
-   ]
+   ],
+   "pop": 4657757,
+   "popYear": 2020
   },
   "us-ma": {
    "code": "MA",
@@ -553,7 +589,9 @@
     "us-ny",
     "us-ri",
     "us-vt"
-   ]
+   ],
+   "pop": 7029917,
+   "popYear": 2020
   },
   "us-md": {
    "code": "MD",
@@ -581,7 +619,9 @@
     "us-pa",
     "us-va",
     "us-wv"
-   ]
+   ],
+   "pop": 6177224,
+   "popYear": 2020
   },
   "us-me": {
    "code": "ME",
@@ -606,7 +646,9 @@
    ],
    "borders": [
     "us-nh"
-   ]
+   ],
+   "pop": 1362359,
+   "popYear": 2020
   },
   "us-mi": {
    "code": "MI",
@@ -635,7 +677,9 @@
     "us-mn",
     "us-oh",
     "us-wi"
-   ]
+   ],
+   "pop": 10077331,
+   "popYear": 2020
   },
   "us-mn": {
    "code": "MN",
@@ -664,7 +708,9 @@
     "us-nd",
     "us-sd",
     "us-wi"
-   ]
+   ],
+   "pop": 5706494,
+   "popYear": 2020
   },
   "us-mo": {
    "code": "MO",
@@ -696,7 +742,9 @@
     "us-ne",
     "us-ok",
     "us-tn"
-   ]
+   ],
+   "pop": 6154913,
+   "popYear": 2020
   },
   "us-ms": {
    "code": "MS",
@@ -724,7 +772,9 @@
     "us-ar",
     "us-la",
     "us-tn"
-   ]
+   ],
+   "pop": 2961279,
+   "popYear": 2020
   },
   "us-mt": {
    "code": "MT",
@@ -752,7 +802,9 @@
     "us-nd",
     "us-sd",
     "us-wy"
-   ]
+   ],
+   "pop": 1084225,
+   "popYear": 2020
   },
   "us-nc": {
    "code": "NC",
@@ -780,7 +832,9 @@
     "us-sc",
     "us-tn",
     "us-va"
-   ]
+   ],
+   "pop": 10439388,
+   "popYear": 2020
   },
   "us-nd": {
    "code": "ND",
@@ -807,7 +861,9 @@
     "us-mn",
     "us-mt",
     "us-sd"
-   ]
+   ],
+   "pop": 779094,
+   "popYear": 2020
   },
   "us-ne": {
    "code": "NE",
@@ -837,7 +893,9 @@
     "us-mo",
     "us-sd",
     "us-wy"
-   ]
+   ],
+   "pop": 1961504,
+   "popYear": 2020
   },
   "us-nh": {
    "code": "NH",
@@ -864,7 +922,9 @@
     "us-ma",
     "us-me",
     "us-vt"
-   ]
+   ],
+   "pop": 1377529,
+   "popYear": 2020
   },
   "us-nj": {
    "code": "NJ",
@@ -891,7 +951,9 @@
     "us-de",
     "us-ny",
     "us-pa"
-   ]
+   ],
+   "pop": 9288994,
+   "popYear": 2020
   },
   "us-nm": {
    "code": "NM",
@@ -919,7 +981,9 @@
     "us-co",
     "us-ok",
     "us-tx"
-   ]
+   ],
+   "pop": 2117522,
+   "popYear": 2020
   },
   "us-nv": {
    "code": "NV",
@@ -948,7 +1012,9 @@
     "us-id",
     "us-or",
     "us-ut"
-   ]
+   ],
+   "pop": 3104614,
+   "popYear": 2020
   },
   "us-ny": {
    "code": "NY",
@@ -980,7 +1046,9 @@
     "us-nj",
     "us-pa",
     "us-vt"
-   ]
+   ],
+   "pop": 20201249,
+   "popYear": 2020
   },
   "us-oh": {
    "code": "OH",
@@ -1009,7 +1077,9 @@
     "us-mi",
     "us-pa",
     "us-wv"
-   ]
+   ],
+   "pop": 11799448,
+   "popYear": 2020
   },
   "us-ok": {
    "code": "OK",
@@ -1039,7 +1109,9 @@
     "us-mo",
     "us-nm",
     "us-tx"
-   ]
+   ],
+   "pop": 3959353,
+   "popYear": 2020
   },
   "us-or": {
    "code": "OR",
@@ -1067,7 +1139,9 @@
     "us-id",
     "us-nv",
     "us-wa"
-   ]
+   ],
+   "pop": 4237256,
+   "popYear": 2020
   },
   "us-pa": {
    "code": "PA",
@@ -1097,7 +1171,9 @@
     "us-ny",
     "us-oh",
     "us-wv"
-   ]
+   ],
+   "pop": 13002700,
+   "popYear": 2020
   },
   "us-ri": {
    "code": "RI",
@@ -1123,7 +1199,9 @@
    "borders": [
     "us-ct",
     "us-ma"
-   ]
+   ],
+   "pop": 1097379,
+   "popYear": 2020
   },
   "us-sc": {
    "code": "SC",
@@ -1149,7 +1227,9 @@
    "borders": [
     "us-ga",
     "us-nc"
-   ]
+   ],
+   "pop": 5118425,
+   "popYear": 2020
   },
   "us-sd": {
    "code": "SD",
@@ -1179,7 +1259,9 @@
     "us-nd",
     "us-ne",
     "us-wy"
-   ]
+   ],
+   "pop": 886667,
+   "popYear": 2020
   },
   "us-tn": {
    "code": "TN",
@@ -1211,7 +1293,9 @@
     "us-ms",
     "us-nc",
     "us-va"
-   ]
+   ],
+   "pop": 6910840,
+   "popYear": 2020
   },
   "us-tx": {
    "code": "TX",
@@ -1239,7 +1323,9 @@
     "us-la",
     "us-nm",
     "us-ok"
-   ]
+   ],
+   "pop": 29145505,
+   "popYear": 2020
   },
   "us-ut": {
    "code": "UT",
@@ -1268,7 +1354,9 @@
     "us-id",
     "us-nv",
     "us-wy"
-   ]
+   ],
+   "pop": 3271616,
+   "popYear": 2020
   },
   "us-va": {
    "code": "VA",
@@ -1297,7 +1385,9 @@
     "us-nc",
     "us-tn",
     "us-wv"
-   ]
+   ],
+   "pop": 8631393,
+   "popYear": 2020
   },
   "us-vt": {
    "code": "VT",
@@ -1324,7 +1414,9 @@
     "us-ma",
     "us-nh",
     "us-ny"
-   ]
+   ],
+   "pop": 643077,
+   "popYear": 2020
   },
   "us-wa": {
    "code": "WA",
@@ -1350,7 +1442,9 @@
    "borders": [
     "us-id",
     "us-or"
-   ]
+   ],
+   "pop": 7705281,
+   "popYear": 2020
   },
   "us-wi": {
    "code": "WI",
@@ -1378,7 +1472,9 @@
     "us-il",
     "us-mi",
     "us-mn"
-   ]
+   ],
+   "pop": 5893718,
+   "popYear": 2020
   },
   "us-wv": {
    "code": "WV",
@@ -1407,7 +1503,9 @@
     "us-oh",
     "us-pa",
     "us-va"
-   ]
+   ],
+   "pop": 1793716,
+   "popYear": 2020
   },
   "us-wy": {
    "code": "WY",
@@ -1437,7 +1535,9 @@
     "us-ne",
     "us-sd",
     "us-ut"
-   ]
+   ],
+   "pop": 576851,
+   "popYear": 2020
   }
  }
 }

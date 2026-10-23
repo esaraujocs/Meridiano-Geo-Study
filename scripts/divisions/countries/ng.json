@@ -79,43 +79,57 @@
       "code": "AB",
       "name": "Abia",
       "capital": "Umuahia",
-      "region": "se"
+      "region": "se",
+      "pop": 3727347,
+      "popYear": 2016
     },
     {
       "code": "AD",
       "name": "Adamawa",
       "capital": "Yola",
-      "region": "ne"
+      "region": "ne",
+      "pop": 4248436,
+      "popYear": 2016
     },
     {
       "code": "AK",
       "name": "Akwa Ibom",
       "capital": "Uyo",
-      "region": "ss"
+      "region": "ss",
+      "pop": 5482177,
+      "popYear": 2016
     },
     {
       "code": "AN",
       "name": "Anambra",
       "capital": "Awka",
-      "region": "se"
+      "region": "se",
+      "pop": 5527809,
+      "popYear": 2016
     },
     {
       "code": "BA",
       "name": "Bauchi",
       "capital": "Bauchi",
-      "region": "ne"
+      "region": "ne",
+      "pop": 6834314,
+      "popYear": 2016
     },
     {
       "code": "BE",
       "name": "Benue",
       "capital": "Makurdi",
-      "region": "nc"
+      "region": "nc",
+      "pop": 5741815,
+      "popYear": 2016
     },
     {
       "code": "BO",
       "name": "Borno",
       "capital": "Maiduguri",
-      "region": "ne"
+      "region": "ne",
+      "pop": 5860183,
+      "popYear": 2016
     },
     {
       "code": "BY",
@@ -128,7 +142,9 @@
       "capAl": [
         "Yenegoa"
       ],
-      "region": "ss"
+      "region": "ss",
+      "pop": 2277961,
+      "popYear": 2016
     },
     {
       "code": "CR",
@@ -138,7 +154,9 @@
         "en": "Calabar",
         "es": "Calabar"
       },
-      "region": "ss"
+      "region": "ss",
+      "pop": 3866269,
+      "popYear": 2016
     },
     {
       "code": "DE",
@@ -147,13 +165,17 @@
         "Delta State"
       ],
       "capital": "Asaba",
-      "region": "ss"
+      "region": "ss",
+      "pop": 5663362,
+      "popYear": 2016
     },
     {
       "code": "EB",
       "name": "Ebonyi",
       "capital": "Abakaliki",
-      "region": "se"
+      "region": "se",
+      "pop": 3490383,
+      "popYear": 2016
     },
     {
       "code": "ED",
@@ -167,19 +189,25 @@
         "Cidade do Benim",
         "Benin"
       ],
-      "region": "ss"
+      "region": "ss",
+      "pop": 4235595,
+      "popYear": 2016
     },
     {
       "code": "EK",
       "name": "Ekiti",
       "capital": "Ado Ekiti",
-      "region": "sw"
+      "region": "sw",
+      "pop": 3270798,
+      "popYear": 2016
     },
     {
       "code": "EN",
       "name": "Enugu",
       "capital": "Enugu",
-      "region": "se"
+      "region": "se",
+      "pop": 4411119,
+      "popYear": 2016
     },
     {
       "code": "FC",
@@ -195,37 +223,49 @@
       "capAl": [
         "Abuya"
       ],
-      "region": "nc"
+      "region": "nc",
+      "pop": 3564126,
+      "popYear": 2016
     },
     {
       "code": "GO",
       "name": "Gombe",
       "capital": "Gombe",
-      "region": "ne"
+      "region": "ne",
+      "pop": 3256962,
+      "popYear": 2016
     },
     {
       "code": "IM",
       "name": "Imo",
       "capital": "Owerri",
-      "region": "se"
+      "region": "se",
+      "pop": 5408756,
+      "popYear": 2016
     },
     {
       "code": "JI",
       "name": "Jigawa",
       "capital": "Dutse",
-      "region": "nw"
+      "region": "nw",
+      "pop": 6000163,
+      "popYear": 2016
     },
     {
       "code": "KD",
       "name": "Kaduna",
       "capital": "Kaduna",
-      "region": "nw"
+      "region": "nw",
+      "pop": 8252366,
+      "popYear": 2016
     },
     {
       "code": "KE",
       "name": "Kebbi",
       "capital": "Birnin Kebbi",
-      "region": "nw"
+      "region": "nw",
+      "pop": 4440050,
+      "popYear": 2016
     },
     {
       "code": "KN",
@@ -234,25 +274,33 @@
         "Kano State"
       ],
       "capital": "Kano",
-      "region": "nw"
+      "region": "nw",
+      "pop": 16076892,
+      "popYear": 2016
     },
     {
       "code": "KO",
       "name": "Kogi",
       "capital": "Lokoja",
-      "region": "nc"
+      "region": "nc",
+      "pop": 4473490,
+      "popYear": 2016
     },
     {
       "code": "KT",
       "name": "Katsina",
       "capital": "Katsina",
-      "region": "nw"
+      "region": "nw",
+      "pop": 7831319,
+      "popYear": 2016
     },
     {
       "code": "KW",
       "name": "Kwara",
       "capital": "Ilorin",
-      "region": "nc"
+      "region": "nc",
+      "pop": 3192893,
+      "popYear": 2016
     },
     {
       "code": "LA",
@@ -261,13 +309,17 @@
         "Lagos State"
       ],
       "capital": "Ikeja",
-      "region": "sw"
+      "region": "sw",
+      "pop": 11000598,
+      "popYear": 2016
     },
     {
       "code": "NA",
       "name": "Nasarawa",
       "capital": "Lafia",
-      "region": "nc"
+      "region": "nc",
+      "pop": 2523395,
+      "popYear": 2016
     },
     {
       "code": "NI",
@@ -280,25 +332,33 @@
         "Niger State"
       ],
       "capital": "Minna",
-      "region": "nc"
+      "region": "nc",
+      "pop": 5556247,
+      "popYear": 2016
     },
     {
       "code": "OG",
       "name": "Ogun",
       "capital": "Abeokuta",
-      "region": "sw"
+      "region": "sw",
+      "pop": 5217716,
+      "popYear": 2016
     },
     {
       "code": "ON",
       "name": "Ondo",
       "capital": "Akure",
-      "region": "sw"
+      "region": "sw",
+      "pop": 4671695,
+      "popYear": 2016
     },
     {
       "code": "OS",
       "name": "Osun",
       "capital": "Osogbo",
-      "region": "sw"
+      "region": "sw",
+      "pop": 4705589,
+      "popYear": 2016
     },
     {
       "code": "OY",
@@ -311,13 +371,17 @@
       "capAl": [
         "Ibadã"
       ],
-      "region": "sw"
+      "region": "sw",
+      "pop": 7667318,
+      "popYear": 2020
     },
     {
       "code": "PL",
       "name": "Plateau",
       "capital": "Jos",
-      "region": "nc"
+      "region": "nc",
+      "pop": 4200442,
+      "popYear": 2016
     },
     {
       "code": "RI",
@@ -326,31 +390,41 @@
         "Rivers State"
       ],
       "capital": "Port Harcourt",
-      "region": "ss"
+      "region": "ss",
+      "pop": 7000924,
+      "popYear": 2016
     },
     {
       "code": "SO",
       "name": "Sokoto",
       "capital": "Sokoto",
-      "region": "nw"
+      "region": "nw",
+      "pop": 4998090,
+      "popYear": 2016
     },
     {
       "code": "TA",
       "name": "Taraba",
       "capital": "Jalingo",
-      "region": "ne"
+      "region": "ne",
+      "pop": 3066834,
+      "popYear": 2016
     },
     {
       "code": "YO",
       "name": "Yobe",
       "capital": "Damaturu",
-      "region": "ne"
+      "region": "ne",
+      "pop": 3649600,
+      "popYear": 2022
     },
     {
       "code": "ZA",
       "name": "Zamfara",
       "capital": "Gusau",
-      "region": "nw"
+      "region": "nw",
+      "pop": 5482423,
+      "popYear": 2020
     }
   ],
   "probes": [

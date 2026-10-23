@@ -101,7 +101,9 @@
       "capAl": [
         "Maicope"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 500731,
+      "popYear": 2025
     },
     {
       "code": "AL",
@@ -116,7 +118,9 @@
         "en": "Gorno-Altaysk",
         "es": "Gorno-Altaisk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 210095,
+      "popYear": 2025
     },
     {
       "code": "ALT",
@@ -131,7 +135,9 @@
         "en": "Barnaul",
         "es": "Barnaúl"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 2099186,
+      "popYear": 2025
     },
     {
       "code": "AMU",
@@ -152,7 +158,9 @@
       "capAl": [
         "Blagoveschensk"
       ],
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 750083,
+      "popYear": 2024
     },
     {
       "code": "ARK",
@@ -172,7 +180,9 @@
         "en": "Arkhangelsk",
         "es": "Arcángel"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 989434,
+      "popYear": 2025
     },
     {
       "code": "AST",
@@ -191,7 +201,9 @@
         "en": "Astrakhan",
         "es": "Astracán"
       },
-      "region": "south"
+      "region": "south",
+      "pop": 946429,
+      "popYear": 2024
     },
     {
       "code": "BA",
@@ -206,7 +218,9 @@
         "en": "Ufa",
         "es": "Ufá"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 4042377,
+      "popYear": 2025
     },
     {
       "code": "BEL",
@@ -225,7 +239,9 @@
         "en": "Belgorod",
         "es": "Bélgorod"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1482025,
+      "popYear": 2025
     },
     {
       "code": "BRY",
@@ -244,7 +260,9 @@
         "en": "Bryansk",
         "es": "Briansk"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1132795,
+      "popYear": 2025
     },
     {
       "code": "BU",
@@ -259,7 +277,9 @@
         "en": "Ulan-Ude",
         "es": "Ulán-Udé"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 971139,
+      "popYear": 2025
     },
     {
       "code": "CE",
@@ -274,7 +294,9 @@
         "en": "Grozny",
         "es": "Grozni"
       },
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 1492992,
+      "popYear": 2021
     },
     {
       "code": "CHE",
@@ -295,7 +317,9 @@
       "capAl": [
         "Cheliabinsk"
       ],
-      "region": "ural"
+      "region": "ural",
+      "pop": 3385124,
+      "popYear": 2025
     },
     {
       "code": "CHU",
@@ -310,7 +334,9 @@
         "en": "Anadyr",
         "es": "Anádyr"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 47778,
+      "popYear": 2025
     },
     {
       "code": "CU",
@@ -325,7 +351,9 @@
         "en": "Cheboksary",
         "es": "Cheboksari"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 1167061,
+      "popYear": 2024
     },
     {
       "code": "DA",
@@ -343,7 +371,9 @@
       "capAl": [
         "Mahackala"
       ],
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 3232224,
+      "popYear": 2024
     },
     {
       "code": "IN",
@@ -358,7 +388,9 @@
         "en": "Magas",
         "es": "Magás"
       },
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 527200,
+      "popYear": 2024
     },
     {
       "code": "IRK",
@@ -373,7 +405,9 @@
         "en": "Irkutsk",
         "es": "Irkutsk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 2322292,
+      "popYear": 2025
     },
     {
       "code": "IVA",
@@ -392,7 +426,9 @@
         "en": "Ivanovo",
         "es": "Ivánovo"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 905900,
+      "popYear": 2024
     },
     {
       "code": "KAM",
@@ -413,7 +449,9 @@
       "capAl": [
         "Petropavlovsk-Kamchatski"
       ],
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 288947,
+      "popYear": 2024
     },
     {
       "code": "KB",
@@ -431,7 +469,9 @@
       "capAl": [
         "Nalchique"
       ],
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 905464,
+      "popYear": 2024
     },
     {
       "code": "KC",
@@ -449,7 +489,9 @@
       "capAl": [
         "Cherquésseque"
       ],
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 468322,
+      "popYear": 2024
     },
     {
       "code": "KDA",
@@ -470,7 +512,9 @@
       "capAl": [
         "Crasnodar"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 5842238,
+      "popYear": 2025
     },
     {
       "code": "KEM",
@@ -485,7 +529,9 @@
         "en": "Kemerovo",
         "es": "Kémerovo"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 2527219,
+      "popYear": 2025
     },
     {
       "code": "KGD",
@@ -504,7 +550,9 @@
         "en": "Kaliningrad",
         "es": "Kaliningrado"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 994599,
+      "popYear": 2023
     },
     {
       "code": "KGN",
@@ -519,7 +567,9 @@
         "en": "Kurgan",
         "es": "Kurgán"
       },
-      "region": "ural"
+      "region": "ural",
+      "pop": 744465,
+      "popYear": 2025
     },
     {
       "code": "KHA",
@@ -537,7 +587,9 @@
         "en": "Khabarovsk",
         "es": "Jabárovsk"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 1273488,
+      "popYear": 2025
     },
     {
       "code": "KHM",
@@ -555,7 +607,9 @@
         "en": "Khanty-Mansiysk",
         "es": "Janti-Mansisk"
       },
-      "region": "ural"
+      "region": "ural",
+      "pop": 1759356,
+      "popYear": 2024
     },
     {
       "code": "KIR",
@@ -574,7 +628,9 @@
         "en": "Kirov",
         "es": "Kírov"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 1129935,
+      "popYear": 2024
     },
     {
       "code": "KK",
@@ -589,7 +645,9 @@
         "en": "Abakan",
         "es": "Abakán"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 525557,
+      "popYear": 2025
     },
     {
       "code": "KL",
@@ -604,7 +662,9 @@
         "en": "Elista",
         "es": "Elistá"
       },
-      "region": "south"
+      "region": "south",
+      "pop": 267588,
+      "popYear": 2025
     },
     {
       "code": "KLU",
@@ -619,7 +679,9 @@
         "en": "Kaluga",
         "es": "Kaluga"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1000980,
+      "popYear": 2021
     },
     {
       "code": "KO",
@@ -634,7 +696,9 @@
         "en": "Syktyvkar",
         "es": "Siktivkar"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 714785,
+      "popYear": 2025
     },
     {
       "code": "KOS",
@@ -653,7 +717,9 @@
         "en": "Kostroma",
         "es": "Kostromá"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 566266,
+      "popYear": 2024
     },
     {
       "code": "KR",
@@ -671,7 +737,9 @@
       "capAl": [
         "Petrozavódseque"
       ],
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 518950,
+      "popYear": 2025
     },
     {
       "code": "KRS",
@@ -689,7 +757,9 @@
         "en": "Kursk",
         "es": "Kursk"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1049783,
+      "popYear": 2025
     },
     {
       "code": "KYA",
@@ -708,7 +778,9 @@
         "en": "Krasnoyarsk",
         "es": "Krasnoyarsk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 2837988,
+      "popYear": 2025
     },
     {
       "code": "LEN",
@@ -727,7 +799,9 @@
         "en": "Gatchina",
         "es": "Gátchina"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 2035762,
+      "popYear": 2024
     },
     {
       "code": "LIP",
@@ -746,7 +820,9 @@
         "en": "Lipetsk",
         "es": "Lípetsk"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1125921,
+      "popYear": 2023
     },
     {
       "code": "MAG",
@@ -761,7 +837,9 @@
         "en": "Magadan",
         "es": "Magadán"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 133387,
+      "popYear": 2024
     },
     {
       "code": "ME",
@@ -778,7 +856,9 @@
       "capAl": [
         "Iochkar-Ola"
       ],
-      "region": "volga"
+      "region": "volga",
+      "pop": 669854,
+      "popYear": 2024
     },
     {
       "code": "MO",
@@ -792,7 +872,9 @@
         "en": "Saransk",
         "es": "Saransk"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 778965,
+      "popYear": 2021
     },
     {
       "code": "MOS",
@@ -807,7 +889,9 @@
         "en": "Krasnogorsk",
         "es": "Krasnogorsk"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 7708499,
+      "popYear": 2021
     },
     {
       "code": "MOW",
@@ -817,7 +901,9 @@
         "pt": "Moscou",
         "es": "Moscú"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 13274285,
+      "popYear": 2025
     },
     {
       "code": "MUR",
@@ -836,7 +922,9 @@
         "en": "Murmansk",
         "es": "Múrmansk"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 656438,
+      "popYear": 2024
     },
     {
       "code": "NEN",
@@ -854,7 +942,9 @@
         "en": "Naryan-Mar",
         "es": "Narián-Mar"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 42224,
+      "popYear": 2024
     },
     {
       "code": "NGR",
@@ -873,7 +963,9 @@
         "en": "Veliky Novgorod",
         "es": "Nóvgorod"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 566960,
+      "popYear": 2025
     },
     {
       "code": "NIZ",
@@ -893,7 +985,9 @@
         "en": "Nizhny Novgorod",
         "es": "Nizhni Nóvgorod"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 3039421,
+      "popYear": 2025
     },
     {
       "code": "NVS",
@@ -908,7 +1002,9 @@
         "en": "Novosibirsk",
         "es": "Novosibirsk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 2786540,
+      "popYear": 2025
     },
     {
       "code": "OMS",
@@ -923,7 +1019,9 @@
         "en": "Omsk",
         "es": "Omsk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 1805806,
+      "popYear": 2025
     },
     {
       "code": "ORE",
@@ -942,7 +1040,9 @@
         "en": "Orenburg",
         "es": "Oremburgo"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 1828655,
+      "popYear": 2024
     },
     {
       "code": "ORL",
@@ -961,7 +1061,9 @@
         "en": "Oryol",
         "es": "Oriol"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 692486,
+      "popYear": 2024
     },
     {
       "code": "PER",
@@ -976,7 +1078,9 @@
         "en": "Perm",
         "es": "Perm"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 2483633,
+      "popYear": 2025
     },
     {
       "code": "PNZ",
@@ -994,7 +1098,9 @@
         "en": "Penza",
         "es": "Penza"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 1213113,
+      "popYear": 2024
     },
     {
       "code": "PRI",
@@ -1013,7 +1119,9 @@
         "en": "Vladivostok",
         "es": "Vladivostok"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 1799659,
+      "popYear": 2025
     },
     {
       "code": "PSK",
@@ -1031,7 +1139,9 @@
         "en": "Pskov",
         "es": "Pskov"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 574480,
+      "popYear": 2025
     },
     {
       "code": "ROS",
@@ -1046,7 +1156,9 @@
         "en": "Rostov-on-Don",
         "es": "Rostov del Don"
       },
-      "region": "south"
+      "region": "south",
+      "pop": 4137335,
+      "popYear": 2025
     },
     {
       "code": "RYA",
@@ -1069,7 +1181,9 @@
       "capAl": [
         "Riazan"
       ],
-      "region": "central"
+      "region": "central",
+      "pop": 1043231,
+      "popYear": 2024
     },
     {
       "code": "SA",
@@ -1084,7 +1198,9 @@
         "en": "Yakutsk",
         "es": "Yakutsk"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 1001664,
+      "popYear": 2024
     },
     {
       "code": "SAK",
@@ -1106,7 +1222,9 @@
       "capAl": [
         "Iujno-Sakhalinsk"
       ],
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 457590,
+      "popYear": 2024
     },
     {
       "code": "SAM",
@@ -1124,7 +1242,9 @@
         "en": "Samara",
         "es": "Samara"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 3112566,
+      "popYear": 2025
     },
     {
       "code": "SAR",
@@ -1143,7 +1263,9 @@
         "en": "Saratov",
         "es": "Sarátov"
       },
-      "region": "volga"
+      "region": "volga",
+      "pop": 2369405,
+      "popYear": 2025
     },
     {
       "code": "SE",
@@ -1158,7 +1280,9 @@
         "en": "Vladikavkaz",
         "es": "Vladikavkaz"
       },
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 678879,
+      "popYear": 2024
     },
     {
       "code": "SMO",
@@ -1176,7 +1300,9 @@
         "en": "Smolensk",
         "es": "Smolensk"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 863987,
+      "popYear": 2024
     },
     {
       "code": "SPE",
@@ -1186,7 +1312,9 @@
         "pt": "São Petersburgo",
         "es": "San Petersburgo"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 5652922,
+      "popYear": 2025
     },
     {
       "code": "STA",
@@ -1205,7 +1333,9 @@
         "en": "Stavropol",
         "es": "Stávropol"
       },
-      "region": "caucasus"
+      "region": "caucasus",
+      "pop": 2884363,
+      "popYear": 2025
     },
     {
       "code": "SVE",
@@ -1220,7 +1350,9 @@
         "en": "Yekaterinburg",
         "es": "Ekaterimburgo"
       },
-      "region": "ural"
+      "region": "ural",
+      "pop": 4221452,
+      "popYear": 2025
     },
     {
       "code": "TA",
@@ -1238,7 +1370,9 @@
       "capAl": [
         "Cazã"
       ],
-      "region": "volga"
+      "region": "volga",
+      "pop": 4003016,
+      "popYear": 2024
     },
     {
       "code": "TAM",
@@ -1253,7 +1387,9 @@
         "en": "Tambov",
         "es": "Tambov"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 956292,
+      "popYear": 2024
     },
     {
       "code": "TOM",
@@ -1268,7 +1404,9 @@
         "en": "Tomsk",
         "es": "Tomsk"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 1039728,
+      "popYear": 2025
     },
     {
       "code": "TUL",
@@ -1286,7 +1424,9 @@
         "en": "Tula",
         "es": "Tula"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1471140,
+      "popYear": 2024
     },
     {
       "code": "TVE",
@@ -1304,7 +1444,9 @@
         "en": "Tver",
         "es": "Tver"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1190574,
+      "popYear": 2025
     },
     {
       "code": "TY",
@@ -1318,7 +1460,9 @@
         "en": "Kyzyl",
         "es": "Kizil"
       },
-      "region": "siberia"
+      "region": "siberia",
+      "pop": 338483,
+      "popYear": 2025
     },
     {
       "code": "TYU",
@@ -1339,7 +1483,9 @@
       "capAl": [
         "Tiumen"
       ],
-      "region": "ural"
+      "region": "ural",
+      "pop": 3890800,
+      "popYear": 2024
     },
     {
       "code": "UD",
@@ -1356,7 +1502,9 @@
       "capAl": [
         "Ijevsk"
       ],
-      "region": "volga"
+      "region": "volga",
+      "pop": 1493356,
+      "popYear": 2021
     },
     {
       "code": "ULY",
@@ -1379,7 +1527,9 @@
       "capAl": [
         "Ulianovsk"
       ],
-      "region": "volga"
+      "region": "volga",
+      "pop": 1172782,
+      "popYear": 2024
     },
     {
       "code": "VGG",
@@ -1397,7 +1547,9 @@
         "en": "Volgograd",
         "es": "Volgogrado"
       },
-      "region": "south"
+      "region": "south",
+      "pop": 2434046,
+      "popYear": 2025
     },
     {
       "code": "VLA",
@@ -1416,7 +1568,9 @@
         "en": "Vladimir",
         "es": "Vladímir"
       },
-      "region": "central"
+      "region": "central",
+      "pop": 1309942,
+      "popYear": 2024
     },
     {
       "code": "VLG",
@@ -1435,7 +1589,9 @@
         "en": "Vologda",
         "es": "Vólogda"
       },
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 1160445,
+      "popYear": 2021
     },
     {
       "code": "VOR",
@@ -1458,7 +1614,9 @@
       "capAl": [
         "Voronej"
       ],
-      "region": "central"
+      "region": "central",
+      "pop": 2260045,
+      "popYear": 2025
     },
     {
       "code": "YAN",
@@ -1476,7 +1634,9 @@
         "en": "Salekhard",
         "es": "Salejard"
       },
-      "region": "ural"
+      "region": "ural",
+      "pop": 515960,
+      "popYear": 2024
     },
     {
       "code": "YAR",
@@ -1498,7 +1658,9 @@
       "capAl": [
         "Iaroslavl"
       ],
-      "region": "central"
+      "region": "central",
+      "pop": 1187558,
+      "popYear": 2024
     },
     {
       "code": "YEV",
@@ -1519,7 +1681,9 @@
       "capAl": [
         "Birobidjan"
       ],
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 144428,
+      "popYear": 2025
     },
     {
       "code": "ZAB",
@@ -1539,7 +1703,9 @@
         "en": "Chita",
         "es": "Chitá"
       },
-      "region": "fareast"
+      "region": "fareast",
+      "pop": 984395,
+      "popYear": 2024
     }
   ],
   "probes": [

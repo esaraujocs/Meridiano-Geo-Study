@@ -62,7 +62,9 @@
     "cn-jx",
     "cn-sd",
     "cn-zj"
-   ]
+   ],
+   "pop": 61027171,
+   "popYear": 2020
   },
   "cn-bj": {
    "code": "BJ",
@@ -87,7 +89,9 @@
    "borders": [
     "cn-he",
     "cn-tj"
-   ]
+   ],
+   "pop": 21893095,
+   "popYear": 2020
   },
   "cn-cq": {
    "code": "CQ",
@@ -115,7 +119,9 @@
     "cn-hn",
     "cn-sc",
     "cn-sn"
-   ]
+   ],
+   "pop": 32054159,
+   "popYear": 2020
   },
   "cn-fj": {
    "code": "FJ",
@@ -142,7 +148,9 @@
     "cn-gd",
     "cn-jx",
     "cn-zj"
-   ]
+   ],
+   "pop": 41540086,
+   "popYear": 2020
   },
   "cn-gd": {
    "code": "GD",
@@ -177,7 +185,9 @@
     "cn-gx",
     "cn-hn",
     "cn-jx"
-   ]
+   ],
+   "pop": 126012510,
+   "popYear": 2020
   },
   "cn-gs": {
    "code": "GS",
@@ -207,7 +217,9 @@
     "cn-sc",
     "cn-sn",
     "cn-xj"
-   ]
+   ],
+   "pop": 25019831,
+   "popYear": 2020
   },
   "cn-gx": {
    "code": "GX",
@@ -235,7 +247,9 @@
     "cn-gz",
     "cn-hn",
     "cn-yn"
-   ]
+   ],
+   "pop": 50126804,
+   "popYear": 2020
   },
   "cn-gz": {
    "code": "GZ",
@@ -264,7 +278,9 @@
     "cn-hn",
     "cn-sc",
     "cn-yn"
-   ]
+   ],
+   "pop": 38562148,
+   "popYear": 2020
   },
   "cn-ha": {
    "code": "HA",
@@ -294,7 +310,9 @@
     "cn-sd",
     "cn-sn",
     "cn-sx"
-   ]
+   ],
+   "pop": 99365519,
+   "popYear": 2020
   },
   "cn-hb": {
    "code": "HB",
@@ -324,7 +342,9 @@
     "cn-hn",
     "cn-jx",
     "cn-sn"
-   ]
+   ],
+   "pop": 57752557,
+   "popYear": 2020
   },
   "cn-he": {
    "code": "HE",
@@ -355,7 +375,9 @@
     "cn-sd",
     "cn-sx",
     "cn-tj"
-   ]
+   ],
+   "pop": 74610235,
+   "popYear": 2020
   },
   "cn-hi": {
    "code": "HI",
@@ -378,7 +400,9 @@
     111.042,
     20.162
    ],
-   "borders": []
+   "borders": [],
+   "pop": 10081232,
+   "popYear": 2020
   },
   "cn-hl": {
    "code": "HL",
@@ -404,7 +428,9 @@
    "borders": [
     "cn-jl",
     "cn-nm"
-   ]
+   ],
+   "pop": 31850088,
+   "popYear": 2020
   },
   "cn-hn": {
    "code": "HN",
@@ -434,7 +460,9 @@
     "cn-gz",
     "cn-hb",
     "cn-jx"
-   ]
+   ],
+   "pop": 66444864,
+   "popYear": 2020
   },
   "cn-jl": {
    "code": "JL",
@@ -461,7 +489,9 @@
     "cn-hl",
     "cn-ln",
     "cn-nm"
-   ]
+   ],
+   "pop": 24073453,
+   "popYear": 2020
   },
   "cn-js": {
    "code": "JS",
@@ -493,7 +523,9 @@
     "cn-sd",
     "cn-sh",
     "cn-zj"
-   ]
+   ],
+   "pop": 84748016,
+   "popYear": 2020
   },
   "cn-jx": {
    "code": "JX",
@@ -523,7 +555,9 @@
     "cn-hb",
     "cn-hn",
     "cn-zj"
-   ]
+   ],
+   "pop": 45188635,
+   "popYear": 2020
   },
   "cn-ln": {
    "code": "LN",
@@ -550,7 +584,9 @@
     "cn-he",
     "cn-jl",
     "cn-nm"
-   ]
+   ],
+   "pop": 42591407,
+   "popYear": 2020
   },
   "cn-nm": {
    "code": "NM",
@@ -582,7 +618,9 @@
     "cn-nx",
     "cn-sn",
     "cn-sx"
-   ]
+   ],
+   "pop": 24049155,
+   "popYear": 2020
   },
   "cn-nx": {
    "code": "NX",
@@ -609,7 +647,9 @@
     "cn-gs",
     "cn-nm",
     "cn-sn"
-   ]
+   ],
+   "pop": 7202654,
+   "popYear": 2020
   },
   "cn-qh": {
    "code": "QH",
@@ -637,7 +677,9 @@
     "cn-sc",
     "cn-xj",
     "cn-xz"
-   ]
+   ],
+   "pop": 5923957,
+   "popYear": 2020
   },
   "cn-sc": {
    "code": "SC",
@@ -668,7 +710,9 @@
     "cn-sn",
     "cn-xz",
     "cn-yn"
-   ]
+   ],
+   "pop": 83674866,
+   "popYear": 2020
   },
   "cn-sd": {
    "code": "SD",
@@ -696,7 +740,9 @@
     "cn-ha",
     "cn-he",
     "cn-js"
-   ]
+   ],
+   "pop": 101527453,
+   "popYear": 2020
   },
   "cn-sh": {
    "code": "SH",
@@ -721,7 +767,9 @@
    "borders": [
     "cn-js",
     "cn-zj"
-   ]
+   ],
+   "pop": 24870895,
+   "popYear": 2020
   },
   "cn-sn": {
    "code": "SN",
@@ -756,7 +804,9 @@
     "cn-nx",
     "cn-sc",
     "cn-sx"
-   ]
+   ],
+   "pop": 39528999,
+   "popYear": 2020
   },
   "cn-sx": {
    "code": "SX",
@@ -784,7 +834,9 @@
     "cn-he",
     "cn-nm",
     "cn-sn"
-   ]
+   ],
+   "pop": 34915616,
+   "popYear": 2020
   },
   "cn-tj": {
    "code": "TJ",
@@ -809,7 +861,9 @@
    "borders": [
     "cn-bj",
     "cn-he"
-   ]
+   ],
+   "pop": 13866009,
+   "popYear": 2020
   },
   "cn-xj": {
    "code": "XJ",
@@ -839,7 +893,9 @@
     "cn-gs",
     "cn-qh",
     "cn-xz"
-   ]
+   ],
+   "pop": 25852345,
+   "popYear": 2020
   },
   "cn-xz": {
    "code": "XZ",
@@ -874,7 +930,9 @@
     "cn-sc",
     "cn-xj",
     "cn-yn"
-   ]
+   ],
+   "pop": 3648100,
+   "popYear": 2020
   },
   "cn-yn": {
    "code": "YN",
@@ -902,7 +960,9 @@
     "cn-gz",
     "cn-sc",
     "cn-xz"
-   ]
+   ],
+   "pop": 47209277,
+   "popYear": 2020
   },
   "cn-zj": {
    "code": "ZJ",
@@ -931,7 +991,9 @@
     "cn-js",
     "cn-jx",
     "cn-sh"
-   ]
+   ],
+   "pop": 64567588,
+   "popYear": 2020
   }
  }
 }

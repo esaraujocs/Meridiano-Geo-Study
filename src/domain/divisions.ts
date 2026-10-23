@@ -195,6 +195,9 @@ export type DivisionUnitRow = {
   bbox: [number, number, number, number];
   /** Vizinhos pelas divisas (ids). */
   borders: string[];
+  /** População (Wikidata, P1082) e o ano da contagem. */
+  pop?: number;
+  popYear?: number;
   /** Tem bandeira? Ausente nos pacotes em que todas têm (ou nenhuma). */
   flag?: boolean;
 };
@@ -235,6 +238,7 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
       cca3: row.code,
       borders: row.borders.map((neighbor) => file.units[neighbor]?.code ?? neighbor),
       area: row.area,
+      ...(row.pop ? { census: [row.pop, row.popYear] as [number, number?] } : {}),
       un: true,
     };
     bbox[id] = row.bbox;

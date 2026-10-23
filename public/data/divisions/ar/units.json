@@ -61,7 +61,9 @@
     "ar-p",
     "ar-t",
     "ar-y"
-   ]
+   ],
+   "pop": 1441351,
+   "popYear": 2022
   },
   "ar-b": {
    "code": "B",
@@ -95,7 +97,9 @@
     "ar-r",
     "ar-s",
     "ar-x"
-   ]
+   ],
+   "pop": 17523996,
+   "popYear": 2022
   },
   "ar-c": {
    "code": "C",
@@ -125,7 +129,9 @@
    ],
    "borders": [
     "ar-b"
-   ]
+   ],
+   "pop": 3121707,
+   "popYear": 2022
   },
   "ar-d": {
    "code": "D",
@@ -161,7 +167,9 @@
     "ar-l",
     "ar-m",
     "ar-x"
-   ]
+   ],
+   "pop": 542069,
+   "popYear": 2022
   },
   "ar-e": {
    "code": "E",
@@ -192,7 +200,9 @@
     "ar-b",
     "ar-s",
     "ar-w"
-   ]
+   ],
+   "pop": 1425578,
+   "popYear": 2022
   },
   "ar-f": {
    "code": "F",
@@ -224,7 +234,9 @@
     "ar-j",
     "ar-k",
     "ar-x"
-   ]
+   ],
+   "pop": 383865,
+   "popYear": 2022
   },
   "ar-g": {
    "code": "G",
@@ -258,7 +270,9 @@
     "ar-s",
     "ar-t",
     "ar-x"
-   ]
+   ],
+   "pop": 1060906,
+   "popYear": 2022
   },
   "ar-h": {
    "code": "H",
@@ -294,7 +308,9 @@
     "ar-p",
     "ar-s",
     "ar-w"
-   ]
+   ],
+   "pop": 1129606,
+   "popYear": 2022
   },
   "ar-j": {
    "code": "J",
@@ -325,7 +341,9 @@
     "ar-d",
     "ar-f",
     "ar-m"
-   ]
+   ],
+   "pop": 822853,
+   "popYear": 2022
   },
   "ar-k": {
    "code": "K",
@@ -361,7 +379,9 @@
     "ar-g",
     "ar-t",
     "ar-x"
-   ]
+   ],
+   "pop": 429562,
+   "popYear": 2022
   },
   "ar-l": {
    "code": "L",
@@ -394,7 +414,9 @@
     "ar-m",
     "ar-r",
     "ar-x"
-   ]
+   ],
+   "pop": 361859,
+   "popYear": 2022
   },
   "ar-m": {
    "code": "M",
@@ -426,7 +448,9 @@
     "ar-j",
     "ar-l",
     "ar-q"
-   ]
+   ],
+   "pop": 2043540,
+   "popYear": 2022
   },
   "ar-n": {
    "code": "N",
@@ -455,7 +479,9 @@
    ],
    "borders": [
     "ar-w"
-   ]
+   ],
+   "pop": 1278873,
+   "popYear": 2022
   },
   "ar-p": {
    "code": "P",
@@ -485,7 +511,9 @@
    "borders": [
     "ar-a",
     "ar-h"
-   ]
+   ],
+   "pop": 607419,
+   "popYear": 2022
   },
   "ar-q": {
    "code": "Q",
@@ -515,7 +543,9 @@
    "borders": [
     "ar-m",
     "ar-r"
-   ]
+   ],
+   "pop": 710814,
+   "popYear": 2022
   },
   "ar-r": {
    "code": "R",
@@ -547,7 +577,9 @@
     "ar-l",
     "ar-q",
     "ar-u"
-   ]
+   ],
+   "pop": 750768,
+   "popYear": 2022
   },
   "ar-s": {
    "code": "S",
@@ -581,7 +613,9 @@
     "ar-h",
     "ar-w",
     "ar-x"
-   ]
+   ],
+   "pop": 3544908,
+   "popYear": 2022
   },
   "ar-t": {
    "code": "T",
@@ -619,7 +653,9 @@
     "ar-a",
     "ar-g",
     "ar-k"
-   ]
+   ],
+   "pop": 1731820,
+   "popYear": 2022
   },
   "ar-u": {
    "code": "U",
@@ -649,7 +685,9 @@
    "borders": [
     "ar-r",
     "ar-z"
-   ]
+   ],
+   "pop": 592621,
+   "popYear": 2022
   },
   "ar-v": {
    "code": "V",
@@ -679,7 +717,9 @@
     -63.796,
     -52.658
    ],
-   "borders": []
+   "borders": [],
+   "pop": 185732,
+   "popYear": 2022
   },
   "ar-w": {
    "code": "W",
@@ -711,7 +751,9 @@
     "ar-h",
     "ar-n",
     "ar-s"
-   ]
+   ],
+   "pop": 1212696,
+   "popYear": 2022
   },
   "ar-x": {
    "code": "X",
@@ -752,7 +794,9 @@
     "ar-k",
     "ar-l",
     "ar-s"
-   ]
+   ],
+   "pop": 3840905,
+   "popYear": 2022
   },
   "ar-y": {
    "code": "Y",
@@ -784,7 +828,9 @@
    ],
    "borders": [
     "ar-a"
-   ]
+   ],
+   "pop": 811611,
+   "popYear": 2022
   },
   "ar-z": {
    "code": "Z",
@@ -813,7 +859,9 @@
    ],
    "borders": [
     "ar-u"
-   ]
+   ],
+   "pop": 337226,
+   "popYear": 2022
   }
  }
 }

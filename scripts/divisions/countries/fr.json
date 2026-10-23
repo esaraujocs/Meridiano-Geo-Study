@@ -83,7 +83,9 @@
         "Corse"
       ],
       "capital": "Ajaccio",
-      "region": "south"
+      "region": "south",
+      "pop": 355486,
+      "popYear": 2023
     },
     {
       "code": "ARA",
@@ -101,7 +103,9 @@
         "Lião",
         "Lion"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 8205557,
+      "popYear": 2023
     },
     {
       "code": "BFC",
@@ -111,7 +115,9 @@
         "es": "Borgoña-Franco Condado"
       },
       "capital": "Dijon",
-      "region": "south"
+      "region": "south",
+      "pop": 2802670,
+      "popYear": 2023
     },
     {
       "code": "BRE",
@@ -125,7 +131,9 @@
         "Bretagne"
       ],
       "capital": "Rennes",
-      "region": "west"
+      "region": "west",
+      "pop": 3449370,
+      "popYear": 2023
     },
     {
       "code": "CVL",
@@ -143,7 +151,9 @@
         "Orleans",
         "Orleães"
       ],
-      "region": "west"
+      "region": "west",
+      "pop": 2587031,
+      "popYear": 2023
     },
     {
       "code": "GES",
@@ -163,7 +173,9 @@
       "capAl": [
         "Strasbourg"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 5563378,
+      "popYear": 2023
     },
     {
       "code": "HDF",
@@ -176,7 +188,9 @@
         "Hauts-de-France"
       ],
       "capital": "Lille",
-      "region": "north"
+      "region": "north",
+      "pop": 5992194,
+      "popYear": 2023
     },
     {
       "code": "IDF",
@@ -194,7 +208,9 @@
         "en": "Paris",
         "es": "París"
       },
-      "region": "north"
+      "region": "north",
+      "pop": 12463067,
+      "popYear": 2023
     },
     {
       "code": "NAQ",
@@ -215,7 +231,9 @@
         "Bordéus",
         "Burdeos"
       ],
-      "region": "west"
+      "region": "west",
+      "pop": 6150451,
+      "popYear": 2023
     },
     {
       "code": "NOR",
@@ -237,7 +255,9 @@
         "Ruão",
         "Ruan"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 3345842,
+      "popYear": 2023
     },
     {
       "code": "OCC",
@@ -253,7 +273,9 @@
       "capAl": [
         "Tolosa"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 6124653,
+      "popYear": 2023
     },
     {
       "code": "PAC",
@@ -275,7 +297,9 @@
         "Marseille",
         "Marsella"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 5218960,
+      "popYear": 2023
     },
     {
       "code": "PDL",
@@ -288,7 +312,9 @@
         "Pays de la Loire"
       ],
       "capital": "Nantes",
-      "region": "west"
+      "region": "west",
+      "pop": 3907156,
+      "popYear": 2023
     },
     {
       "code": "GP",
@@ -311,7 +337,9 @@
             16.6
           ]
         }
-      ]
+      ],
+      "pop": 384160,
+      "popYear": 2023
     },
     {
       "code": "MQ",
@@ -334,7 +362,9 @@
             14.95
           ]
         }
-      ]
+      ],
+      "pop": 360630,
+      "popYear": 2023
     },
     {
       "code": "GF",
@@ -361,7 +391,9 @@
       "capAl": [
         "Cayenne",
         "Cayena"
-      ]
+      ],
+      "pop": 293996,
+      "popYear": 2023
     },
     {
       "code": "RE",
@@ -388,7 +420,9 @@
       "alias": [
         "La Réunion",
         "Reuniao"
-      ]
+      ],
+      "pop": 889679,
+      "popYear": 2023
     },
     {
       "code": "YT",
@@ -400,7 +434,9 @@
       "region": "overseas",
       "override": [
         "175"
-      ]
+      ],
+      "pop": 320901,
+      "popYear": 2024
     }
   ],
   "probes": [

@@ -3,85 +3,645 @@
   "id": "us",
   "carta": "840",
   "source": "overture",
-  "name": {"pt": "EUA", "en": "USA", "es": "EE. UU."},
+  "name": {
+    "pt": "EUA",
+    "en": "USA",
+    "es": "EE. UU."
+  },
   "nameLocale": "en",
-  "unit": {"pt": {"one": "estado", "many": "estados", "g": "m"}, "en": {"one": "state", "many": "states"}, "es": {"one": "estado", "many": "estados", "g": "m"}},
-  "regions": {"northeast": {"pt": "Nordeste", "en": "Northeast", "es": "Noreste"}, "midwest": {"pt": "Meio-Oeste", "en": "Midwest", "es": "Medio Oeste"}, "south": {"pt": "Sul", "en": "South", "es": "Sur"}, "west": {"pt": "Oeste", "en": "West", "es": "Oeste"}},
-  "frame": [-125.0, 24.3, -66.9, 49.5],
-  "exclude": ["DC"],
+  "unit": {
+    "pt": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    },
+    "en": {
+      "one": "state",
+      "many": "states"
+    },
+    "es": {
+      "one": "estado",
+      "many": "estados",
+      "g": "m"
+    }
+  },
+  "regions": {
+    "northeast": {
+      "pt": "Nordeste",
+      "en": "Northeast",
+      "es": "Noreste"
+    },
+    "midwest": {
+      "pt": "Meio-Oeste",
+      "en": "Midwest",
+      "es": "Medio Oeste"
+    },
+    "south": {
+      "pt": "Sul",
+      "en": "South",
+      "es": "Sur"
+    },
+    "west": {
+      "pt": "Oeste",
+      "en": "West",
+      "es": "Oeste"
+    }
+  },
+  "frame": [
+    -125.0,
+    24.3,
+    -66.9,
+    49.5
+  ],
+  "exclude": [
+    "DC"
+  ],
   "leftoverKm": 60,
   "attribution": "© OpenStreetMap contributors · Overture Maps Foundation",
   "sources": [
-    {"name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 840)", "use": "a terra dos EUA, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi", "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"},
-    {"name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1", "url": "https://docs.overturemaps.org/guides/divisions/", "license": "ODbL 1.0", "attribution": "© OpenStreetMap contributors, Overture Maps Foundation", "use": "as divisas entre os 50 estados"}
+    {
+      "name": "Mapa HD do Meridiano (build/map-hd/pieces, carta_id 840)",
+      "use": "a terra dos EUA, com a costa do OSM e a fronteira do Overture, idêntica à do mapa-múndi",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation"
+    },
+    {
+      "name": "Overture Maps, divisions/division_area (subtype region), release 2026-09-23.1",
+      "url": "https://docs.overturemaps.org/guides/divisions/",
+      "license": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+      "use": "as divisas entre os 50 estados"
+    }
   ],
   "units": [
-    {"code": "AK", "name": "Alaska", "names": {"pt": "Alasca"}, "capital": "Juneau", "region": "west"},
-    {"code": "AL", "name": "Alabama", "capital": "Montgomery", "region": "south"},
-    {"code": "AR", "name": "Arkansas", "capital": "Little Rock", "region": "south"},
-    {"code": "AZ", "name": "Arizona", "capital": "Phoenix", "region": "west"},
-    {"code": "CA", "name": "California", "names": {"pt": "Califórnia"}, "capital": "Sacramento", "region": "west"},
-    {"code": "CO", "name": "Colorado", "capital": "Denver", "region": "west"},
-    {"code": "CT", "name": "Connecticut", "capital": "Hartford", "region": "northeast"},
-    {"code": "DE", "name": "Delaware", "capital": "Dover", "region": "south"},
-    {"code": "FL", "name": "Florida", "names": {"pt": "Flórida"}, "capital": "Tallahassee", "region": "south"},
-    {"code": "GA", "name": "Georgia", "names": {"pt": "Geórgia"}, "capital": "Atlanta", "region": "south"},
-    {"code": "HI", "name": "Hawaii", "names": {"pt": "Havaí", "es": "Hawái"}, "capital": "Honolulu", "region": "west"},
-    {"code": "IA", "name": "Iowa", "capital": "Des Moines", "region": "midwest"},
-    {"code": "ID", "name": "Idaho", "capital": "Boise", "region": "west"},
-    {"code": "IL", "name": "Illinois", "capital": "Springfield", "region": "midwest"},
-    {"code": "IN", "name": "Indiana", "capital": "Indianapolis", "region": "midwest"},
-    {"code": "KS", "name": "Kansas", "capital": "Topeka", "region": "midwest"},
-    {"code": "KY", "name": "Kentucky", "capital": "Frankfort", "region": "south"},
-    {"code": "LA", "name": "Louisiana", "names": {"pt": "Luisiana", "es": "Luisiana"}, "capital": "Baton Rouge", "region": "south"},
-    {"code": "MA", "name": "Massachusetts", "capital": "Boston", "region": "northeast"},
-    {"code": "MD", "name": "Maryland", "capital": "Annapolis", "region": "south"},
-    {"code": "ME", "name": "Maine", "capital": "Augusta", "region": "northeast"},
-    {"code": "MI", "name": "Michigan", "names": {"es": "Míchigan"}, "capital": "Lansing", "region": "midwest"},
-    {"code": "MN", "name": "Minnesota", "capital": "Saint Paul", "region": "midwest"},
-    {"code": "MO", "name": "Missouri", "names": {"es": "Misuri"}, "capital": "Jefferson City", "region": "midwest"},
-    {"code": "MS", "name": "Mississippi", "names": {"es": "Misisipi"}, "capital": "Jackson", "region": "south"},
-    {"code": "MT", "name": "Montana", "capital": "Helena", "region": "west"},
-    {"code": "NC", "name": "North Carolina", "names": {"pt": "Carolina do Norte", "es": "Carolina del Norte"}, "capital": "Raleigh", "region": "south"},
-    {"code": "ND", "name": "North Dakota", "names": {"pt": "Dakota do Norte", "es": "Dakota del Norte"}, "capital": "Bismarck", "region": "midwest"},
-    {"code": "NE", "name": "Nebraska", "capital": "Lincoln", "region": "midwest"},
-    {"code": "NH", "name": "New Hampshire", "names": {"es": "Nuevo Hampshire"}, "capital": "Concord", "region": "northeast"},
-    {"code": "NJ", "name": "New Jersey", "names": {"pt": "Nova Jérsei", "es": "Nueva Jersey"}, "capital": "Trenton", "region": "northeast"},
-    {"code": "NM", "name": "New Mexico", "names": {"pt": "Novo México", "es": "Nuevo México"}, "capital": "Santa Fe", "region": "west"},
-    {"code": "NV", "name": "Nevada", "capital": "Carson City", "region": "west"},
-    {"code": "NY", "name": "New York", "names": {"pt": "Nova York", "es": "Nueva York"}, "alias": ["Nova Iorque"], "capital": "Albany", "region": "northeast"},
-    {"code": "OH", "name": "Ohio", "capital": "Columbus", "region": "midwest"},
-    {"code": "OK", "name": "Oklahoma", "capital": "Oklahoma City", "region": "south"},
-    {"code": "OR", "name": "Oregon", "names": {"es": "Oregón"}, "capital": "Salem", "region": "west"},
-    {"code": "PA", "name": "Pennsylvania", "names": {"pt": "Pensilvânia", "es": "Pensilvania"}, "capital": "Harrisburg", "region": "northeast"},
-    {"code": "RI", "name": "Rhode Island", "capital": "Providence", "region": "northeast"},
-    {"code": "SC", "name": "South Carolina", "names": {"pt": "Carolina do Sul", "es": "Carolina del Sur"}, "capital": "Columbia", "region": "south"},
-    {"code": "SD", "name": "South Dakota", "names": {"pt": "Dakota do Sul", "es": "Dakota del Sur"}, "capital": "Pierre", "region": "midwest"},
-    {"code": "TN", "name": "Tennessee", "capital": "Nashville", "region": "south"},
-    {"code": "TX", "name": "Texas", "capital": "Austin", "region": "south"},
-    {"code": "UT", "name": "Utah", "capital": "Salt Lake City", "region": "west"},
-    {"code": "VA", "name": "Virginia", "names": {"pt": "Virgínia"}, "capital": "Richmond", "region": "south"},
-    {"code": "VT", "name": "Vermont", "capital": "Montpelier", "region": "northeast"},
-    {"code": "WA", "name": "Washington", "capital": "Olympia", "region": "west"},
-    {"code": "WI", "name": "Wisconsin", "capital": "Madison", "region": "midwest"},
-    {"code": "WV", "name": "West Virginia", "names": {"pt": "Virgínia Ocidental", "es": "Virginia Occidental"}, "capital": "Charleston", "region": "south"},
-    {"code": "WY", "name": "Wyoming", "capital": "Cheyenne", "region": "west"}
+    {
+      "code": "AK",
+      "name": "Alaska",
+      "names": {
+        "pt": "Alasca"
+      },
+      "capital": "Juneau",
+      "region": "west",
+      "pop": 733391,
+      "popYear": 2020
+    },
+    {
+      "code": "AL",
+      "name": "Alabama",
+      "capital": "Montgomery",
+      "region": "south",
+      "pop": 5024279,
+      "popYear": 2020
+    },
+    {
+      "code": "AR",
+      "name": "Arkansas",
+      "capital": "Little Rock",
+      "region": "south",
+      "pop": 3011524,
+      "popYear": 2020
+    },
+    {
+      "code": "AZ",
+      "name": "Arizona",
+      "capital": "Phoenix",
+      "region": "west",
+      "pop": 7151502,
+      "popYear": 2020
+    },
+    {
+      "code": "CA",
+      "name": "California",
+      "names": {
+        "pt": "Califórnia"
+      },
+      "capital": "Sacramento",
+      "region": "west",
+      "pop": 39538223,
+      "popYear": 2020
+    },
+    {
+      "code": "CO",
+      "name": "Colorado",
+      "capital": "Denver",
+      "region": "west",
+      "pop": 5773714,
+      "popYear": 2020
+    },
+    {
+      "code": "CT",
+      "name": "Connecticut",
+      "capital": "Hartford",
+      "region": "northeast",
+      "pop": 3605944,
+      "popYear": 2020
+    },
+    {
+      "code": "DE",
+      "name": "Delaware",
+      "capital": "Dover",
+      "region": "south",
+      "pop": 989948,
+      "popYear": 2020
+    },
+    {
+      "code": "FL",
+      "name": "Florida",
+      "names": {
+        "pt": "Flórida"
+      },
+      "capital": "Tallahassee",
+      "region": "south",
+      "pop": 21538187,
+      "popYear": 2020
+    },
+    {
+      "code": "GA",
+      "name": "Georgia",
+      "names": {
+        "pt": "Geórgia"
+      },
+      "capital": "Atlanta",
+      "region": "south",
+      "pop": 10711908,
+      "popYear": 2020
+    },
+    {
+      "code": "HI",
+      "name": "Hawaii",
+      "names": {
+        "pt": "Havaí",
+        "es": "Hawái"
+      },
+      "capital": "Honolulu",
+      "region": "west",
+      "pop": 1455271,
+      "popYear": 2020
+    },
+    {
+      "code": "IA",
+      "name": "Iowa",
+      "capital": "Des Moines",
+      "region": "midwest",
+      "pop": 3190369,
+      "popYear": 2020
+    },
+    {
+      "code": "ID",
+      "name": "Idaho",
+      "capital": "Boise",
+      "region": "west",
+      "pop": 1839106,
+      "popYear": 2020
+    },
+    {
+      "code": "IL",
+      "name": "Illinois",
+      "capital": "Springfield",
+      "region": "midwest",
+      "pop": 12812508,
+      "popYear": 2020
+    },
+    {
+      "code": "IN",
+      "name": "Indiana",
+      "capital": "Indianapolis",
+      "region": "midwest",
+      "pop": 6785528,
+      "popYear": 2020
+    },
+    {
+      "code": "KS",
+      "name": "Kansas",
+      "capital": "Topeka",
+      "region": "midwest",
+      "pop": 2937880,
+      "popYear": 2020
+    },
+    {
+      "code": "KY",
+      "name": "Kentucky",
+      "capital": "Frankfort",
+      "region": "south",
+      "pop": 4505836,
+      "popYear": 2020
+    },
+    {
+      "code": "LA",
+      "name": "Louisiana",
+      "names": {
+        "pt": "Luisiana",
+        "es": "Luisiana"
+      },
+      "capital": "Baton Rouge",
+      "region": "south",
+      "pop": 4657757,
+      "popYear": 2020
+    },
+    {
+      "code": "MA",
+      "name": "Massachusetts",
+      "capital": "Boston",
+      "region": "northeast",
+      "pop": 7029917,
+      "popYear": 2020
+    },
+    {
+      "code": "MD",
+      "name": "Maryland",
+      "capital": "Annapolis",
+      "region": "south",
+      "pop": 6177224,
+      "popYear": 2020
+    },
+    {
+      "code": "ME",
+      "name": "Maine",
+      "capital": "Augusta",
+      "region": "northeast",
+      "pop": 1362359,
+      "popYear": 2020
+    },
+    {
+      "code": "MI",
+      "name": "Michigan",
+      "names": {
+        "es": "Míchigan"
+      },
+      "capital": "Lansing",
+      "region": "midwest",
+      "pop": 10077331,
+      "popYear": 2020
+    },
+    {
+      "code": "MN",
+      "name": "Minnesota",
+      "capital": "Saint Paul",
+      "region": "midwest",
+      "pop": 5706494,
+      "popYear": 2020
+    },
+    {
+      "code": "MO",
+      "name": "Missouri",
+      "names": {
+        "es": "Misuri"
+      },
+      "capital": "Jefferson City",
+      "region": "midwest",
+      "pop": 6154913,
+      "popYear": 2020
+    },
+    {
+      "code": "MS",
+      "name": "Mississippi",
+      "names": {
+        "es": "Misisipi"
+      },
+      "capital": "Jackson",
+      "region": "south",
+      "pop": 2961279,
+      "popYear": 2020
+    },
+    {
+      "code": "MT",
+      "name": "Montana",
+      "capital": "Helena",
+      "region": "west",
+      "pop": 1084225,
+      "popYear": 2020
+    },
+    {
+      "code": "NC",
+      "name": "North Carolina",
+      "names": {
+        "pt": "Carolina do Norte",
+        "es": "Carolina del Norte"
+      },
+      "capital": "Raleigh",
+      "region": "south",
+      "pop": 10439388,
+      "popYear": 2020
+    },
+    {
+      "code": "ND",
+      "name": "North Dakota",
+      "names": {
+        "pt": "Dakota do Norte",
+        "es": "Dakota del Norte"
+      },
+      "capital": "Bismarck",
+      "region": "midwest",
+      "pop": 779094,
+      "popYear": 2020
+    },
+    {
+      "code": "NE",
+      "name": "Nebraska",
+      "capital": "Lincoln",
+      "region": "midwest",
+      "pop": 1961504,
+      "popYear": 2020
+    },
+    {
+      "code": "NH",
+      "name": "New Hampshire",
+      "names": {
+        "es": "Nuevo Hampshire"
+      },
+      "capital": "Concord",
+      "region": "northeast",
+      "pop": 1377529,
+      "popYear": 2020
+    },
+    {
+      "code": "NJ",
+      "name": "New Jersey",
+      "names": {
+        "pt": "Nova Jérsei",
+        "es": "Nueva Jersey"
+      },
+      "capital": "Trenton",
+      "region": "northeast",
+      "pop": 9288994,
+      "popYear": 2020
+    },
+    {
+      "code": "NM",
+      "name": "New Mexico",
+      "names": {
+        "pt": "Novo México",
+        "es": "Nuevo México"
+      },
+      "capital": "Santa Fe",
+      "region": "west",
+      "pop": 2117522,
+      "popYear": 2020
+    },
+    {
+      "code": "NV",
+      "name": "Nevada",
+      "capital": "Carson City",
+      "region": "west",
+      "pop": 3104614,
+      "popYear": 2020
+    },
+    {
+      "code": "NY",
+      "name": "New York",
+      "names": {
+        "pt": "Nova York",
+        "es": "Nueva York"
+      },
+      "alias": [
+        "Nova Iorque"
+      ],
+      "capital": "Albany",
+      "region": "northeast",
+      "pop": 20201249,
+      "popYear": 2020
+    },
+    {
+      "code": "OH",
+      "name": "Ohio",
+      "capital": "Columbus",
+      "region": "midwest",
+      "pop": 11799448,
+      "popYear": 2020
+    },
+    {
+      "code": "OK",
+      "name": "Oklahoma",
+      "capital": "Oklahoma City",
+      "region": "south",
+      "pop": 3959353,
+      "popYear": 2020
+    },
+    {
+      "code": "OR",
+      "name": "Oregon",
+      "names": {
+        "es": "Oregón"
+      },
+      "capital": "Salem",
+      "region": "west",
+      "pop": 4237256,
+      "popYear": 2020
+    },
+    {
+      "code": "PA",
+      "name": "Pennsylvania",
+      "names": {
+        "pt": "Pensilvânia",
+        "es": "Pensilvania"
+      },
+      "capital": "Harrisburg",
+      "region": "northeast",
+      "pop": 13002700,
+      "popYear": 2020
+    },
+    {
+      "code": "RI",
+      "name": "Rhode Island",
+      "capital": "Providence",
+      "region": "northeast",
+      "pop": 1097379,
+      "popYear": 2020
+    },
+    {
+      "code": "SC",
+      "name": "South Carolina",
+      "names": {
+        "pt": "Carolina do Sul",
+        "es": "Carolina del Sur"
+      },
+      "capital": "Columbia",
+      "region": "south",
+      "pop": 5118425,
+      "popYear": 2020
+    },
+    {
+      "code": "SD",
+      "name": "South Dakota",
+      "names": {
+        "pt": "Dakota do Sul",
+        "es": "Dakota del Sur"
+      },
+      "capital": "Pierre",
+      "region": "midwest",
+      "pop": 886667,
+      "popYear": 2020
+    },
+    {
+      "code": "TN",
+      "name": "Tennessee",
+      "capital": "Nashville",
+      "region": "south",
+      "pop": 6910840,
+      "popYear": 2020
+    },
+    {
+      "code": "TX",
+      "name": "Texas",
+      "capital": "Austin",
+      "region": "south",
+      "pop": 29145505,
+      "popYear": 2020
+    },
+    {
+      "code": "UT",
+      "name": "Utah",
+      "capital": "Salt Lake City",
+      "region": "west",
+      "pop": 3271616,
+      "popYear": 2020
+    },
+    {
+      "code": "VA",
+      "name": "Virginia",
+      "names": {
+        "pt": "Virgínia"
+      },
+      "capital": "Richmond",
+      "region": "south",
+      "pop": 8631393,
+      "popYear": 2020
+    },
+    {
+      "code": "VT",
+      "name": "Vermont",
+      "capital": "Montpelier",
+      "region": "northeast",
+      "pop": 643077,
+      "popYear": 2020
+    },
+    {
+      "code": "WA",
+      "name": "Washington",
+      "capital": "Olympia",
+      "region": "west",
+      "pop": 7705281,
+      "popYear": 2020
+    },
+    {
+      "code": "WI",
+      "name": "Wisconsin",
+      "capital": "Madison",
+      "region": "midwest",
+      "pop": 5893718,
+      "popYear": 2020
+    },
+    {
+      "code": "WV",
+      "name": "West Virginia",
+      "names": {
+        "pt": "Virgínia Ocidental",
+        "es": "Virginia Occidental"
+      },
+      "capital": "Charleston",
+      "region": "south",
+      "pop": 1793716,
+      "popYear": 2020
+    },
+    {
+      "code": "WY",
+      "name": "Wyoming",
+      "capital": "Cheyenne",
+      "region": "west",
+      "pop": 576851,
+      "popYear": 2020
+    }
   ],
   "probes": [
-    ["Los Angeles", -118.24, 34.05, "us-ca"],
-    ["Nova York (Manhattan)", -73.97, 40.78, "us-ny"],
-    ["Chicago", -87.65, 41.85, "us-il"],
-    ["Houston", -95.37, 29.76, "us-tx"],
-    ["Key West", -81.78, 24.56, "us-fl"],
-    ["Seattle", -122.33, 47.61, "us-wa"],
-    ["Denver", -104.99, 39.74, "us-co"],
-    ["Marquette, Península Superior", -87.4, 46.55, "us-mi"],
-    ["Martha's Vineyard", -70.6, 41.4, "us-ma"],
-    ["Anchorage", -149.9, 61.22, "us-ak"],
-    ["Honolulu", -157.86, 21.31, "us-hi"],
-    ["Attu, além do antimeridiano", 173.2, 52.9, "us-ak"],
-    ["Washington (DC), terra neutra", -77.03, 38.9, ""],
-    ["Toronto, fora dos EUA", -79.38, 43.65, null],
-    ["Atlântico", -60.0, 35.0, null]
+    [
+      "Los Angeles",
+      -118.24,
+      34.05,
+      "us-ca"
+    ],
+    [
+      "Nova York (Manhattan)",
+      -73.97,
+      40.78,
+      "us-ny"
+    ],
+    [
+      "Chicago",
+      -87.65,
+      41.85,
+      "us-il"
+    ],
+    [
+      "Houston",
+      -95.37,
+      29.76,
+      "us-tx"
+    ],
+    [
+      "Key West",
+      -81.78,
+      24.56,
+      "us-fl"
+    ],
+    [
+      "Seattle",
+      -122.33,
+      47.61,
+      "us-wa"
+    ],
+    [
+      "Denver",
+      -104.99,
+      39.74,
+      "us-co"
+    ],
+    [
+      "Marquette, Península Superior",
+      -87.4,
+      46.55,
+      "us-mi"
+    ],
+    [
+      "Martha's Vineyard",
+      -70.6,
+      41.4,
+      "us-ma"
+    ],
+    [
+      "Anchorage",
+      -149.9,
+      61.22,
+      "us-ak"
+    ],
+    [
+      "Honolulu",
+      -157.86,
+      21.31,
+      "us-hi"
+    ],
+    [
+      "Attu, além do antimeridiano",
+      173.2,
+      52.9,
+      "us-ak"
+    ],
+    [
+      "Washington (DC), terra neutra",
+      -77.03,
+      38.9,
+      ""
+    ],
+    [
+      "Toronto, fora dos EUA",
+      -79.38,
+      43.65,
+      null
+    ],
+    [
+      "Atlântico",
+      -60.0,
+      35.0,
+      null
+    ]
   ]
 }

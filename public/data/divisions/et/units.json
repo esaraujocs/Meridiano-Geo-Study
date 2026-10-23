@@ -55,7 +55,9 @@
    ],
    "borders": [
     "et-or"
-   ]
+   ],
+   "pop": 5704000,
+   "popYear": 2024
   },
   "et-af": {
    "code": "AF",
@@ -83,7 +85,9 @@
     "et-or",
     "et-so",
     "et-ti"
-   ]
+   ],
+   "pop": 1411092,
+   "popYear": 2007
   },
   "et-am": {
    "code": "AM",
@@ -111,7 +115,9 @@
     "et-be",
     "et-or",
     "et-ti"
-   ]
+   ],
+   "pop": 19120005,
+   "popYear": 2005
   },
   "et-be": {
    "code": "BE",
@@ -140,7 +146,9 @@
    "borders": [
     "et-am",
     "et-or"
-   ]
+   ],
+   "pop": 784345,
+   "popYear": 2007
   },
   "et-ce": {
    "code": "CE",
@@ -196,7 +204,9 @@
    "borders": [
     "et-or",
     "et-so"
-   ]
+   ],
+   "pop": 277000,
+   "popYear": 2015
   },
   "et-ga": {
    "code": "GA",
@@ -222,7 +232,9 @@
    "borders": [
     "et-or",
     "et-sw"
-   ]
+   ],
+   "pop": 243900,
+   "popYear": 2005
   },
   "et-ha": {
    "code": "HA",
@@ -247,7 +259,9 @@
    ],
    "borders": [
     "et-or"
-   ]
+   ],
+   "pop": 175900,
+   "popYear": 2005
   },
   "et-or": {
    "code": "OR",
@@ -282,7 +296,9 @@
     "et-si",
     "et-so",
     "et-sw"
-   ]
+   ],
+   "pop": 35467001,
+   "popYear": 2017
   },
   "et-se": {
    "code": "SE",
@@ -377,7 +393,9 @@
     "et-af",
     "et-dd",
     "et-or"
-   ]
+   ],
+   "pop": 4329001,
+   "popYear": 2005
   },
   "et-sw": {
    "code": "SW",
@@ -405,7 +423,9 @@
     "et-ga",
     "et-or",
     "et-se"
-   ]
+   ],
+   "pop": 2350000,
+   "popYear": 2023
   },
   "et-ti": {
    "code": "TI",
@@ -438,7 +458,9 @@
    "borders": [
     "et-af",
     "et-am"
-   ]
+   ],
+   "pop": 4960003,
+   "popYear": 2014
   }
  }
 }

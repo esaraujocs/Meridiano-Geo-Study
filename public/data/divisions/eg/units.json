@@ -52,7 +52,9 @@
    "borders": [
     "eg-bh",
     "eg-mt"
-   ]
+   ],
+   "pop": 5163750,
+   "popYear": 2017
   },
   "eg-asn": {
    "code": "ASN",
@@ -89,7 +91,9 @@
     "eg-ba",
     "eg-lx",
     "eg-wad"
-   ]
+   ],
+   "pop": 1473975,
+   "popYear": 2017
   },
   "eg-ast": {
    "code": "AST",
@@ -121,7 +125,9 @@
     "eg-mn",
     "eg-shg",
     "eg-wad"
-   ]
+   ],
+   "pop": 4383289,
+   "popYear": 2017
   },
   "eg-ba": {
    "code": "BA",
@@ -156,7 +162,9 @@
     "eg-mn",
     "eg-shg",
     "eg-suz"
-   ]
+   ],
+   "pop": 359888,
+   "popYear": 2017
   },
   "eg-bh": {
    "code": "BH",
@@ -189,7 +197,9 @@
     "eg-kfs",
     "eg-mnf",
     "eg-mt"
-   ]
+   ],
+   "pop": 6171613,
+   "popYear": 2017
   },
   "eg-bns": {
    "code": "BNS",
@@ -218,7 +228,9 @@
     "eg-gz",
     "eg-mn",
     "eg-suz"
-   ]
+   ],
+   "pop": 3154100,
+   "popYear": 2017
   },
   "eg-c": {
    "code": "C",
@@ -251,7 +263,9 @@
     "eg-kb",
     "eg-shr",
     "eg-suz"
-   ]
+   ],
+   "pop": 9539673,
+   "popYear": 2017
   },
   "eg-dk": {
    "code": "DK",
@@ -289,7 +303,9 @@
     "eg-kfs",
     "eg-pts",
     "eg-shr"
-   ]
+   ],
+   "pop": 6492381,
+   "popYear": 2017
   },
   "eg-dt": {
    "code": "DT",
@@ -318,7 +334,9 @@
    ],
    "borders": [
     "eg-dk"
-   ]
+   ],
+   "pop": 1496765,
+   "popYear": 2017
   },
   "eg-fym": {
    "code": "FYM",
@@ -354,7 +372,9 @@
    "borders": [
     "eg-bns",
     "eg-gz"
-   ]
+   ],
+   "pop": 3596954,
+   "popYear": 2017
   },
   "eg-gh": {
    "code": "GH",
@@ -382,7 +402,9 @@
     "eg-dk",
     "eg-kfs",
     "eg-mnf"
-   ]
+   ],
+   "pop": 4999633,
+   "popYear": 2017
   },
   "eg-gz": {
    "code": "GZ",
@@ -420,7 +442,9 @@
     "eg-mt",
     "eg-suz",
     "eg-wad"
-   ]
+   ],
+   "pop": 8632021,
+   "popYear": 2017
   },
   "eg-is": {
    "code": "IS",
@@ -453,7 +477,9 @@
     "eg-shr",
     "eg-sin",
     "eg-suz"
-   ]
+   ],
+   "pop": 1303993,
+   "popYear": 2017
   },
   "eg-js": {
    "code": "JS",
@@ -482,7 +508,9 @@
    "borders": [
     "eg-sin",
     "eg-suz"
-   ]
+   ],
+   "pop": 150088,
+   "popYear": 2006
   },
   "eg-kb": {
    "code": "KB",
@@ -514,7 +542,9 @@
     "eg-gz",
     "eg-mnf",
     "eg-shr"
-   ]
+   ],
+   "pop": 6182750,
+   "popYear": 2024
   },
   "eg-kfs": {
    "code": "KFS",
@@ -545,7 +575,9 @@
     "eg-bh",
     "eg-dk",
     "eg-gh"
-   ]
+   ],
+   "pop": 3362185,
+   "popYear": 2017
   },
   "eg-kn": {
    "code": "KN",
@@ -583,7 +615,9 @@
     "eg-lx",
     "eg-shg",
     "eg-wad"
-   ]
+   ],
+   "pop": 3164281,
+   "popYear": 2017
   },
   "eg-lx": {
    "code": "LX",
@@ -611,7 +645,9 @@
     "eg-ba",
     "eg-kn",
     "eg-wad"
-   ]
+   ],
+   "pop": 1250209,
+   "popYear": 2017
   },
   "eg-mn": {
    "code": "MN",
@@ -644,7 +680,9 @@
     "eg-bns",
     "eg-gz",
     "eg-wad"
-   ]
+   ],
+   "pop": 5497095,
+   "popYear": 2017
   },
   "eg-mnf": {
    "code": "MNF",
@@ -679,7 +717,9 @@
     "eg-gh",
     "eg-gz",
     "eg-kb"
-   ]
+   ],
+   "pop": 4301601,
+   "popYear": 2017
   },
   "eg-mt": {
    "code": "MT",
@@ -710,7 +750,9 @@
     "eg-bh",
     "eg-gz",
     "eg-wad"
-   ]
+   ],
+   "pop": 425624,
+   "popYear": 2017
   },
   "eg-pts": {
    "code": "PTS",
@@ -742,7 +784,9 @@
     "eg-is",
     "eg-shr",
     "eg-sin"
-   ]
+   ],
+   "pop": 749371,
+   "popYear": 2017
   },
   "eg-shg": {
    "code": "SHG",
@@ -774,7 +818,9 @@
     "eg-ba",
     "eg-kn",
     "eg-wad"
-   ]
+   ],
+   "pop": 4967409,
+   "popYear": 2017
   },
   "eg-shr": {
    "code": "SHR",
@@ -806,7 +852,9 @@
     "eg-is",
     "eg-kb",
     "eg-pts"
-   ]
+   ],
+   "pop": 7163824,
+   "popYear": 2017
   },
   "eg-sin": {
    "code": "SIN",
@@ -842,7 +890,9 @@
     "eg-js",
     "eg-pts",
     "eg-suz"
-   ]
+   ],
+   "pop": 450328,
+   "popYear": 2017
   },
   "eg-suz": {
    "code": "SUZ",
@@ -873,7 +923,9 @@
     "eg-is",
     "eg-js",
     "eg-sin"
-   ]
+   ],
+   "pop": 728180,
+   "popYear": 2017
   },
   "eg-wad": {
    "code": "WAD",
@@ -911,7 +963,9 @@
     "eg-mn",
     "eg-mt",
     "eg-shg"
-   ]
+   ],
+   "pop": 241247,
+   "popYear": 2017
   }
  }
 }

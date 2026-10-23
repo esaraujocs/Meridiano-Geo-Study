@@ -48,7 +48,9 @@
     9.56,
     43.012
    ],
-   "borders": []
+   "borders": [],
+   "pop": 355486,
+   "popYear": 2023
   },
   "fr-ara": {
    "code": "ARA",
@@ -85,7 +87,9 @@
     "fr-naq",
     "fr-occ",
     "fr-pac"
-   ]
+   ],
+   "pop": 8205557,
+   "popYear": 2023
   },
   "fr-bfc": {
    "code": "BFC",
@@ -113,7 +117,9 @@
     "fr-cvl",
     "fr-ges",
     "fr-idf"
-   ]
+   ],
+   "pop": 2802670,
+   "popYear": 2023
   },
   "fr-bre": {
    "code": "BRE",
@@ -142,7 +148,9 @@
    "borders": [
     "fr-nor",
     "fr-pdl"
-   ]
+   ],
+   "pop": 3449370,
+   "popYear": 2023
   },
   "fr-cvl": {
    "code": "CVL",
@@ -180,7 +188,9 @@
     "fr-naq",
     "fr-nor",
     "fr-pdl"
-   ]
+   ],
+   "pop": 2587031,
+   "popYear": 2023
   },
   "fr-ges": {
    "code": "GES",
@@ -217,7 +227,9 @@
     "fr-bfc",
     "fr-hdf",
     "fr-idf"
-   ]
+   ],
+   "pop": 5563378,
+   "popYear": 2023
   },
   "fr-gf": {
    "code": "GF",
@@ -252,7 +264,9 @@
     -51.615,
     5.777
    ],
-   "borders": []
+   "borders": [],
+   "pop": 293996,
+   "popYear": 2023
   },
   "fr-gp": {
    "code": "GP",
@@ -275,7 +289,9 @@
     -61.001,
     16.514
    ],
-   "borders": []
+   "borders": [],
+   "pop": 384160,
+   "popYear": 2023
   },
   "fr-hdf": {
    "code": "HDF",
@@ -305,7 +321,9 @@
     "fr-ges",
     "fr-idf",
     "fr-nor"
-   ]
+   ],
+   "pop": 5992194,
+   "popYear": 2023
   },
   "fr-idf": {
    "code": "IDF",
@@ -342,7 +360,9 @@
     "fr-ges",
     "fr-hdf",
     "fr-nor"
-   ]
+   ],
+   "pop": 12463067,
+   "popYear": 2023
   },
   "fr-mq": {
    "code": "MQ",
@@ -365,7 +385,9 @@
     -60.81,
     14.879
    ],
-   "borders": []
+   "borders": [],
+   "pop": 360630,
+   "popYear": 2023
   },
   "fr-naq": {
    "code": "NAQ",
@@ -404,7 +426,9 @@
     "fr-cvl",
     "fr-occ",
     "fr-pdl"
-   ]
+   ],
+   "pop": 6150451,
+   "popYear": 2023
   },
   "fr-nor": {
    "code": "NOR",
@@ -444,7 +468,9 @@
     "fr-hdf",
     "fr-idf",
     "fr-pdl"
-   ]
+   ],
+   "pop": 3345842,
+   "popYear": 2023
   },
   "fr-occ": {
    "code": "OCC",
@@ -477,7 +503,9 @@
     "fr-ara",
     "fr-naq",
     "fr-pac"
-   ]
+   ],
+   "pop": 6124653,
+   "popYear": 2023
   },
   "fr-pac": {
    "code": "PAC",
@@ -515,7 +543,9 @@
    "borders": [
     "fr-ara",
     "fr-occ"
-   ]
+   ],
+   "pop": 5218960,
+   "popYear": 2023
   },
   "fr-pdl": {
    "code": "PDL",
@@ -546,7 +576,9 @@
     "fr-cvl",
     "fr-naq",
     "fr-nor"
-   ]
+   ],
+   "pop": 3907156,
+   "popYear": 2023
   },
   "fr-re": {
    "code": "RE",
@@ -573,7 +605,9 @@
     55.837,
     -20.872
    ],
-   "borders": []
+   "borders": [],
+   "pop": 889679,
+   "popYear": 2023
   },
   "fr-yt": {
    "code": "YT",
@@ -596,7 +630,9 @@
     45.3,
     -12.636
    ],
-   "borders": []
+   "borders": [],
+   "pop": 320901,
+   "popYear": 2024
   }
  }
 }

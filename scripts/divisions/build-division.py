@@ -484,6 +484,10 @@ def write_outputs(country, config, zones, land_by_unit, public, refresh=()):
             "bbox": [round(value, 3) for value in shapely.bounds(silhouette)],
             "borders": sorted(neighbors_of[code]),
         })
+        # população do Wikidata (P1082, a preferida ou a mais recente) e o ano da contagem: só para mostrar (a dificuldade segue pela área)
+        if unit.get("pop"):
+            entry["pop"] = unit["pop"]
+            if unit.get("popYear"): entry["popYear"] = unit["popYear"]
         catalog[uid] = entry
     document = {"source": config["comment"], "country": country, "regions": config["regions"], "units": catalog}
     json.dump(document, open(os.path.join(public, "units.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)

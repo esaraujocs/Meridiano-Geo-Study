@@ -74,7 +74,9 @@
    ],
    "borders": [
     "ru-kda"
-   ]
+   ],
+   "pop": 500731,
+   "popYear": 2025
   },
   "ru-al": {
    "code": "AL",
@@ -106,7 +108,9 @@
     "ru-kem",
     "ru-kk",
     "ru-ty"
-   ]
+   ],
+   "pop": 210095,
+   "popYear": 2025
   },
   "ru-alt": {
    "code": "ALT",
@@ -137,7 +141,9 @@
     "ru-al",
     "ru-kem",
     "ru-nvs"
-   ]
+   ],
+   "pop": 2099186,
+   "popYear": 2025
   },
   "ru-amu": {
    "code": "AMU",
@@ -175,7 +181,9 @@
     "ru-sa",
     "ru-yev",
     "ru-zab"
-   ]
+   ],
+   "pop": 750083,
+   "popYear": 2024
   },
   "ru-ark": {
    "code": "ARK",
@@ -213,7 +221,9 @@
     "ru-kr",
     "ru-nen",
     "ru-vlg"
-   ]
+   ],
+   "pop": 989434,
+   "popYear": 2025
   },
   "ru-ast": {
    "code": "AST",
@@ -247,7 +257,9 @@
    "borders": [
     "ru-kl",
     "ru-vgg"
-   ]
+   ],
+   "pop": 946429,
+   "popYear": 2024
   },
   "ru-ba": {
    "code": "BA",
@@ -281,7 +293,9 @@
     "ru-sve",
     "ru-ta",
     "ru-ud"
-   ]
+   ],
+   "pop": 4042377,
+   "popYear": 2025
   },
   "ru-bel": {
    "code": "BEL",
@@ -315,7 +329,9 @@
    "borders": [
     "ru-krs",
     "ru-vor"
-   ]
+   ],
+   "pop": 1482025,
+   "popYear": 2025
   },
   "ru-bry": {
    "code": "BRY",
@@ -351,7 +367,9 @@
     "ru-krs",
     "ru-orl",
     "ru-smo"
-   ]
+   ],
+   "pop": 1132795,
+   "popYear": 2025
   },
   "ru-bu": {
    "code": "BU",
@@ -382,7 +400,9 @@
     "ru-irk",
     "ru-ty",
     "ru-zab"
-   ]
+   ],
+   "pop": 971139,
+   "popYear": 2025
   },
   "ru-ce": {
    "code": "CE",
@@ -414,7 +434,9 @@
     "ru-in",
     "ru-se",
     "ru-sta"
-   ]
+   ],
+   "pop": 1492992,
+   "popYear": 2021
   },
   "ru-che": {
    "code": "CHE",
@@ -452,7 +474,9 @@
     "ru-kgn",
     "ru-ore",
     "ru-sve"
-   ]
+   ],
+   "pop": 3385124,
+   "popYear": 2025
   },
   "ru-chu": {
    "code": "CHU",
@@ -483,7 +507,9 @@
     "ru-kam",
     "ru-mag",
     "ru-sa"
-   ]
+   ],
+   "pop": 47778,
+   "popYear": 2025
   },
   "ru-cu": {
    "code": "CU",
@@ -516,7 +542,9 @@
     "ru-niz",
     "ru-ta",
     "ru-uly"
-   ]
+   ],
+   "pop": 1167061,
+   "popYear": 2024
   },
   "ru-da": {
    "code": "DA",
@@ -550,7 +578,9 @@
     "ru-ce",
     "ru-kl",
     "ru-sta"
-   ]
+   ],
+   "pop": 3232224,
+   "popYear": 2024
   },
   "ru-in": {
    "code": "IN",
@@ -580,7 +610,9 @@
    "borders": [
     "ru-ce",
     "ru-se"
-   ]
+   ],
+   "pop": 527200,
+   "popYear": 2024
   },
   "ru-irk": {
    "code": "IRK",
@@ -613,7 +645,9 @@
     "ru-sa",
     "ru-ty",
     "ru-zab"
-   ]
+   ],
+   "pop": 2322292,
+   "popYear": 2025
   },
   "ru-iva": {
    "code": "IVA",
@@ -649,7 +683,9 @@
     "ru-niz",
     "ru-vla",
     "ru-yar"
-   ]
+   ],
+   "pop": 905900,
+   "popYear": 2024
   },
   "ru-kam": {
    "code": "KAM",
@@ -685,7 +721,9 @@
    "borders": [
     "ru-chu",
     "ru-mag"
-   ]
+   ],
+   "pop": 288947,
+   "popYear": 2024
   },
   "ru-kb": {
    "code": "KB",
@@ -719,7 +757,9 @@
     "ru-kc",
     "ru-se",
     "ru-sta"
-   ]
+   ],
+   "pop": 905464,
+   "popYear": 2024
   },
   "ru-kc": {
    "code": "KC",
@@ -753,7 +793,9 @@
     "ru-kb",
     "ru-kda",
     "ru-sta"
-   ]
+   ],
+   "pop": 468322,
+   "popYear": 2024
   },
   "ru-kda": {
    "code": "KDA",
@@ -791,7 +833,9 @@
     "ru-kc",
     "ru-ros",
     "ru-sta"
-   ]
+   ],
+   "pop": 5842238,
+   "popYear": 2025
   },
   "ru-kem": {
    "code": "KEM",
@@ -825,7 +869,9 @@
     "ru-kya",
     "ru-nvs",
     "ru-tom"
-   ]
+   ],
+   "pop": 2527219,
+   "popYear": 2025
   },
   "ru-kgd": {
    "code": "KGD",
@@ -856,7 +902,9 @@
     22.886,
     55.294
    ],
-   "borders": []
+   "borders": [],
+   "pop": 994599,
+   "popYear": 2023
   },
   "ru-kgn": {
    "code": "KGN",
@@ -887,7 +935,9 @@
     "ru-che",
     "ru-sve",
     "ru-tyu"
-   ]
+   ],
+   "pop": 744465,
+   "popYear": 2025
   },
   "ru-kha": {
    "code": "KHA",
@@ -923,7 +973,9 @@
     "ru-pri",
     "ru-sa",
     "ru-yev"
-   ]
+   ],
+   "pop": 1273488,
+   "popYear": 2025
   },
   "ru-khm": {
    "code": "KHM",
@@ -960,7 +1012,9 @@
     "ru-tom",
     "ru-tyu",
     "ru-yan"
-   ]
+   ],
+   "pop": 1759356,
+   "popYear": 2024
   },
   "ru-kir": {
    "code": "KIR",
@@ -1001,7 +1055,9 @@
     "ru-ta",
     "ru-ud",
     "ru-vlg"
-   ]
+   ],
+   "pop": 1129935,
+   "popYear": 2024
   },
   "ru-kk": {
    "code": "KK",
@@ -1033,7 +1089,9 @@
     "ru-kem",
     "ru-kya",
     "ru-ty"
-   ]
+   ],
+   "pop": 525557,
+   "popYear": 2025
   },
   "ru-kl": {
    "code": "KL",
@@ -1066,7 +1124,9 @@
     "ru-ros",
     "ru-sta",
     "ru-vgg"
-   ]
+   ],
+   "pop": 267588,
+   "popYear": 2025
   },
   "ru-klu": {
    "code": "KLU",
@@ -1100,7 +1160,9 @@
     "ru-orl",
     "ru-smo",
     "ru-tul"
-   ]
+   ],
+   "pop": 1000980,
+   "popYear": 2021
   },
   "ru-ko": {
    "code": "KO",
@@ -1135,7 +1197,9 @@
     "ru-per",
     "ru-sve",
     "ru-yan"
-   ]
+   ],
+   "pop": 714785,
+   "popYear": 2025
   },
   "ru-kos": {
    "code": "KOS",
@@ -1172,7 +1236,9 @@
     "ru-niz",
     "ru-vlg",
     "ru-yar"
-   ]
+   ],
+   "pop": 566266,
+   "popYear": 2024
   },
   "ru-kr": {
    "code": "KR",
@@ -1207,7 +1273,9 @@
     "ru-len",
     "ru-mur",
     "ru-vlg"
-   ]
+   ],
+   "pop": 518950,
+   "popYear": 2025
   },
   "ru-krs": {
    "code": "KRS",
@@ -1243,7 +1311,9 @@
     "ru-lip",
     "ru-orl",
     "ru-vor"
-   ]
+   ],
+   "pop": 1049783,
+   "popYear": 2025
   },
   "ru-kya": {
    "code": "KYA",
@@ -1283,7 +1353,9 @@
     "ru-tom",
     "ru-ty",
     "ru-yan"
-   ]
+   ],
+   "pop": 2837988,
+   "popYear": 2025
   },
   "ru-len": {
    "code": "LEN",
@@ -1320,7 +1392,9 @@
     "ru-psk",
     "ru-spe",
     "ru-vlg"
-   ]
+   ],
+   "pop": 2035762,
+   "popYear": 2024
   },
   "ru-lip": {
    "code": "LIP",
@@ -1358,7 +1432,9 @@
     "ru-tam",
     "ru-tul",
     "ru-vor"
-   ]
+   ],
+   "pop": 1125921,
+   "popYear": 2023
   },
   "ru-mag": {
    "code": "MAG",
@@ -1390,7 +1466,9 @@
     "ru-kam",
     "ru-kha",
     "ru-sa"
-   ]
+   ],
+   "pop": 133387,
+   "popYear": 2024
   },
   "ru-me": {
    "code": "ME",
@@ -1425,7 +1503,9 @@
     "ru-kir",
     "ru-niz",
     "ru-ta"
-   ]
+   ],
+   "pop": 669854,
+   "popYear": 2024
   },
   "ru-mo": {
    "code": "MO",
@@ -1458,7 +1538,9 @@
     "ru-pnz",
     "ru-rya",
     "ru-uly"
-   ]
+   ],
+   "pop": 778965,
+   "popYear": 2021
   },
   "ru-mos": {
    "code": "MOS",
@@ -1494,7 +1576,9 @@
     "ru-tve",
     "ru-vla",
     "ru-yar"
-   ]
+   ],
+   "pop": 7708499,
+   "popYear": 2021
   },
   "ru-mow": {
    "code": "MOW",
@@ -1519,7 +1603,9 @@
    "borders": [
     "ru-klu",
     "ru-mos"
-   ]
+   ],
+   "pop": 13274285,
+   "popYear": 2025
   },
   "ru-mur": {
    "code": "MUR",
@@ -1552,7 +1638,9 @@
    ],
    "borders": [
     "ru-kr"
-   ]
+   ],
+   "pop": 656438,
+   "popYear": 2024
   },
   "ru-nen": {
    "code": "NEN",
@@ -1586,7 +1674,9 @@
     "ru-ark",
     "ru-ko",
     "ru-yan"
-   ]
+   ],
+   "pop": 42224,
+   "popYear": 2024
   },
   "ru-ngr": {
    "code": "NGR",
@@ -1622,7 +1712,9 @@
     "ru-psk",
     "ru-tve",
     "ru-vlg"
-   ]
+   ],
+   "pop": 566960,
+   "popYear": 2025
   },
   "ru-niz": {
    "code": "NIZ",
@@ -1663,7 +1755,9 @@
     "ru-mo",
     "ru-rya",
     "ru-vla"
-   ]
+   ],
+   "pop": 3039421,
+   "popYear": 2025
   },
   "ru-nvs": {
    "code": "NVS",
@@ -1695,7 +1789,9 @@
     "ru-kem",
     "ru-oms",
     "ru-tom"
-   ]
+   ],
+   "pop": 2786540,
+   "popYear": 2025
   },
   "ru-oms": {
    "code": "OMS",
@@ -1726,7 +1822,9 @@
     "ru-nvs",
     "ru-tom",
     "ru-tyu"
-   ]
+   ],
+   "pop": 1805806,
+   "popYear": 2025
   },
   "ru-ore": {
    "code": "ORE",
@@ -1762,7 +1860,9 @@
     "ru-che",
     "ru-sam",
     "ru-ta"
-   ]
+   ],
+   "pop": 1828655,
+   "popYear": 2024
   },
   "ru-orl": {
    "code": "ORL",
@@ -1799,7 +1899,9 @@
     "ru-krs",
     "ru-lip",
     "ru-tul"
-   ]
+   ],
+   "pop": 692486,
+   "popYear": 2024
   },
   "ru-per": {
    "code": "PER",
@@ -1832,7 +1934,9 @@
     "ru-ko",
     "ru-sve",
     "ru-ud"
-   ]
+   ],
+   "pop": 2483633,
+   "popYear": 2025
   },
   "ru-pnz": {
    "code": "PNZ",
@@ -1868,7 +1972,9 @@
     "ru-sar",
     "ru-tam",
     "ru-uly"
-   ]
+   ],
+   "pop": 1213113,
+   "popYear": 2024
   },
   "ru-pri": {
    "code": "PRI",
@@ -1901,7 +2007,9 @@
    ],
    "borders": [
     "ru-kha"
-   ]
+   ],
+   "pop": 1799659,
+   "popYear": 2025
   },
   "ru-psk": {
    "code": "PSK",
@@ -1936,7 +2044,9 @@
     "ru-ngr",
     "ru-smo",
     "ru-tve"
-   ]
+   ],
+   "pop": 574480,
+   "popYear": 2025
   },
   "ru-ros": {
    "code": "ROS",
@@ -1969,7 +2079,9 @@
     "ru-sta",
     "ru-vgg",
     "ru-vor"
-   ]
+   ],
+   "pop": 4137335,
+   "popYear": 2025
   },
   "ru-rya": {
    "code": "RYA",
@@ -2013,7 +2125,9 @@
     "ru-tam",
     "ru-tul",
     "ru-vla"
-   ]
+   ],
+   "pop": 1043231,
+   "popYear": 2024
   },
   "ru-sa": {
    "code": "SA",
@@ -2048,7 +2162,9 @@
     "ru-kya",
     "ru-mag",
     "ru-zab"
-   ]
+   ],
+   "pop": 1001664,
+   "popYear": 2024
   },
   "ru-sak": {
    "code": "SAK",
@@ -2082,7 +2198,9 @@
     144.748,
     54.426
    ],
-   "borders": []
+   "borders": [],
+   "pop": 457590,
+   "popYear": 2024
   },
   "ru-sam": {
    "code": "SAM",
@@ -2117,7 +2235,9 @@
     "ru-sar",
     "ru-ta",
     "ru-uly"
-   ]
+   ],
+   "pop": 3112566,
+   "popYear": 2025
   },
   "ru-sar": {
    "code": "SAR",
@@ -2155,7 +2275,9 @@
     "ru-uly",
     "ru-vgg",
     "ru-vor"
-   ]
+   ],
+   "pop": 2369405,
+   "popYear": 2025
   },
   "ru-se": {
    "code": "SE",
@@ -2187,7 +2309,9 @@
     "ru-in",
     "ru-kb",
     "ru-sta"
-   ]
+   ],
+   "pop": 678879,
+   "popYear": 2024
   },
   "ru-smo": {
    "code": "SMO",
@@ -2223,7 +2347,9 @@
     "ru-mos",
     "ru-psk",
     "ru-tve"
-   ]
+   ],
+   "pop": 863987,
+   "popYear": 2024
   },
   "ru-spe": {
    "code": "SPE",
@@ -2247,7 +2373,9 @@
    ],
    "borders": [
     "ru-len"
-   ]
+   ],
+   "pop": 5652922,
+   "popYear": 2025
   },
   "ru-sta": {
    "code": "STA",
@@ -2287,7 +2415,9 @@
     "ru-kl",
     "ru-ros",
     "ru-se"
-   ]
+   ],
+   "pop": 2884363,
+   "popYear": 2025
   },
   "ru-sve": {
    "code": "SVE",
@@ -2322,7 +2452,9 @@
     "ru-ko",
     "ru-per",
     "ru-tyu"
-   ]
+   ],
+   "pop": 4221452,
+   "popYear": 2025
   },
   "ru-ta": {
    "code": "TA",
@@ -2361,7 +2493,9 @@
     "ru-sam",
     "ru-ud",
     "ru-uly"
-   ]
+   ],
+   "pop": 4003016,
+   "popYear": 2024
   },
   "ru-tam": {
    "code": "TAM",
@@ -2394,7 +2528,9 @@
     "ru-rya",
     "ru-sar",
     "ru-vor"
-   ]
+   ],
+   "pop": 956292,
+   "popYear": 2024
   },
   "ru-tom": {
    "code": "TOM",
@@ -2428,7 +2564,9 @@
     "ru-nvs",
     "ru-oms",
     "ru-tyu"
-   ]
+   ],
+   "pop": 1039728,
+   "popYear": 2025
   },
   "ru-tul": {
    "code": "TUL",
@@ -2464,7 +2602,9 @@
     "ru-mos",
     "ru-orl",
     "ru-rya"
-   ]
+   ],
+   "pop": 1471140,
+   "popYear": 2024
   },
   "ru-tve": {
    "code": "TVE",
@@ -2501,7 +2641,9 @@
     "ru-smo",
     "ru-vlg",
     "ru-yar"
-   ]
+   ],
+   "pop": 1190574,
+   "popYear": 2025
   },
   "ru-ty": {
    "code": "TY",
@@ -2534,7 +2676,9 @@
     "ru-irk",
     "ru-kk",
     "ru-kya"
-   ]
+   ],
+   "pop": 338483,
+   "popYear": 2025
   },
   "ru-tyu": {
    "code": "TYU",
@@ -2573,7 +2717,9 @@
     "ru-oms",
     "ru-sve",
     "ru-tom"
-   ]
+   ],
+   "pop": 3890800,
+   "popYear": 2024
   },
   "ru-ud": {
    "code": "UD",
@@ -2608,7 +2754,9 @@
     "ru-kir",
     "ru-per",
     "ru-ta"
-   ]
+   ],
+   "pop": 1493356,
+   "popYear": 2021
   },
   "ru-uly": {
    "code": "ULY",
@@ -2650,7 +2798,9 @@
     "ru-sam",
     "ru-sar",
     "ru-ta"
-   ]
+   ],
+   "pop": 1172782,
+   "popYear": 2024
   },
   "ru-vgg": {
    "code": "VGG",
@@ -2686,7 +2836,9 @@
     "ru-ros",
     "ru-sar",
     "ru-vor"
-   ]
+   ],
+   "pop": 2434046,
+   "popYear": 2025
   },
   "ru-vla": {
    "code": "VLA",
@@ -2723,7 +2875,9 @@
     "ru-niz",
     "ru-rya",
     "ru-yar"
-   ]
+   ],
+   "pop": 1309942,
+   "popYear": 2024
   },
   "ru-vlg": {
    "code": "VLG",
@@ -2763,7 +2917,9 @@
     "ru-ngr",
     "ru-tve",
     "ru-yar"
-   ]
+   ],
+   "pop": 1160445,
+   "popYear": 2021
   },
   "ru-vor": {
    "code": "VOR",
@@ -2806,7 +2962,9 @@
     "ru-sar",
     "ru-tam",
     "ru-vgg"
-   ]
+   ],
+   "pop": 2260045,
+   "popYear": 2025
   },
   "ru-yan": {
    "code": "YAN",
@@ -2841,7 +2999,9 @@
     "ru-ko",
     "ru-kya",
     "ru-nen"
-   ]
+   ],
+   "pop": 515960,
+   "popYear": 2024
   },
   "ru-yar": {
    "code": "YAR",
@@ -2882,7 +3042,9 @@
     "ru-tve",
     "ru-vla",
     "ru-vlg"
-   ]
+   ],
+   "pop": 1187558,
+   "popYear": 2024
   },
   "ru-yev": {
    "code": "YEV",
@@ -2918,7 +3080,9 @@
    "borders": [
     "ru-amu",
     "ru-kha"
-   ]
+   ],
+   "pop": 144428,
+   "popYear": 2025
   },
   "ru-zab": {
    "code": "ZAB",
@@ -2955,7 +3119,9 @@
     "ru-bu",
     "ru-irk",
     "ru-sa"
-   ]
+   ],
+   "pop": 984395,
+   "popYear": 2024
   }
  }
 }

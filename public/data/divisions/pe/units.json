@@ -45,7 +45,9 @@
     "pe-lal",
     "pe-lor",
     "pe-sam"
-   ]
+   ],
+   "pop": 437579,
+   "popYear": 2026
   },
   "pe-anc": {
    "code": "ANC",
@@ -75,7 +77,9 @@
     "pe-huc",
     "pe-lal",
     "pe-lim"
-   ]
+   ],
+   "pop": 1201826,
+   "popYear": 2026
   },
   "pe-apu": {
    "code": "APU",
@@ -102,7 +106,9 @@
     "pe-are",
     "pe-aya",
     "pe-cus"
-   ]
+   ],
+   "pop": 419957,
+   "popYear": 2026
   },
   "pe-are": {
    "code": "ARE",
@@ -132,7 +138,9 @@
     "pe-ica",
     "pe-moq",
     "pe-pun"
-   ]
+   ],
+   "pop": 1814554,
+   "popYear": 2025
   },
   "pe-aya": {
    "code": "AYA",
@@ -166,7 +174,9 @@
     "pe-huv",
     "pe-ica",
     "pe-jun"
-   ]
+   ],
+   "pop": 665109,
+   "popYear": 2026
   },
   "pe-caj": {
    "code": "CAJ",
@@ -194,7 +204,9 @@
     "pe-lal",
     "pe-lam",
     "pe-piu"
-   ]
+   ],
+   "pop": 1445237,
+   "popYear": 2026
   },
   "pe-cal": {
    "code": "CAL",
@@ -219,7 +231,9 @@
    ],
    "borders": [
     "pe-lim"
-   ]
+   ],
+   "pop": 1239513,
+   "popYear": 2026
   },
   "pe-cus": {
    "code": "CUS",
@@ -256,7 +270,9 @@
     "pe-mdd",
     "pe-pun",
     "pe-uca"
-   ]
+   ],
+   "pop": 1401025,
+   "popYear": 2026
   },
   "pe-huc": {
    "code": "HUC",
@@ -287,7 +303,9 @@
     "pe-pas",
     "pe-sam",
     "pe-uca"
-   ]
+   ],
+   "pop": 807393,
+   "popYear": 2025
   },
   "pe-huv": {
    "code": "HUV",
@@ -315,7 +333,9 @@
     "pe-ica",
     "pe-jun",
     "pe-lim"
-   ]
+   ],
+   "pop": 319137,
+   "popYear": 2026
   },
   "pe-ica": {
    "code": "ICA",
@@ -343,7 +363,9 @@
     "pe-aya",
     "pe-huv",
     "pe-lim"
-   ]
+   ],
+   "pop": 1093680,
+   "popYear": 2026
   },
   "pe-jun": {
    "code": "JUN",
@@ -373,7 +395,9 @@
     "pe-lim",
     "pe-pas",
     "pe-uca"
-   ]
+   ],
+   "pop": 1376453,
+   "popYear": 2026
   },
   "pe-lal": {
    "code": "LAL",
@@ -406,7 +430,9 @@
     "pe-huc",
     "pe-lam",
     "pe-sam"
-   ]
+   ],
+   "pop": 2171379,
+   "popYear": 2026
   },
   "pe-lam": {
    "code": "LAM",
@@ -433,7 +459,9 @@
     "pe-caj",
     "pe-lal",
     "pe-piu"
-   ]
+   ],
+   "pop": 1384130,
+   "popYear": 2026
   },
   "pe-lim": {
    "code": "LIM",
@@ -467,7 +495,9 @@
     "pe-ica",
     "pe-jun",
     "pe-pas"
-   ]
+   ],
+   "pop": 11595510,
+   "popYear": 2026
   },
   "pe-lor": {
    "code": "LOR",
@@ -495,7 +525,9 @@
     "pe-huc",
     "pe-sam",
     "pe-uca"
-   ]
+   ],
+   "pop": 1068905,
+   "popYear": 2026
   },
   "pe-mdd": {
    "code": "MDD",
@@ -525,7 +557,9 @@
     "pe-cus",
     "pe-pun",
     "pe-uca"
-   ]
+   ],
+   "pop": 212872,
+   "popYear": 2026
   },
   "pe-moq": {
    "code": "MOQ",
@@ -552,7 +586,9 @@
     "pe-are",
     "pe-pun",
     "pe-tac"
-   ]
+   ],
+   "pop": 205591,
+   "popYear": 2026
   },
   "pe-pas": {
    "code": "PAS",
@@ -580,7 +616,9 @@
     "pe-jun",
     "pe-lim",
     "pe-uca"
-   ]
+   ],
+   "pop": 264254,
+   "popYear": 2026
   },
   "pe-piu": {
    "code": "PIU",
@@ -607,7 +645,9 @@
     "pe-caj",
     "pe-lam",
     "pe-tum"
-   ]
+   ],
+   "pop": 2196006,
+   "popYear": 2026
   },
   "pe-pun": {
    "code": "PUN",
@@ -636,7 +676,9 @@
     "pe-mdd",
     "pe-moq",
     "pe-tac"
-   ]
+   ],
+   "pop": 1203271,
+   "popYear": 2026
   },
   "pe-sam": {
    "code": "SAM",
@@ -664,7 +706,9 @@
     "pe-huc",
     "pe-lal",
     "pe-lor"
-   ]
+   ],
+   "pop": 958305,
+   "popYear": 2026
   },
   "pe-tac": {
    "code": "TAC",
@@ -690,7 +734,9 @@
    "borders": [
     "pe-moq",
     "pe-pun"
-   ]
+   ],
+   "pop": 406531,
+   "popYear": 2026
   },
   "pe-tum": {
    "code": "TUM",
@@ -715,7 +761,9 @@
    ],
    "borders": [
     "pe-piu"
-   ]
+   ],
+   "pop": 335501,
+   "popYear": 2026
   },
   "pe-uca": {
    "code": "UCA",
@@ -745,7 +793,9 @@
     "pe-lor",
     "pe-mdd",
     "pe-pas"
-   ]
+   ],
+   "pop": 623868,
+   "popYear": 2025
   }
  }
 }

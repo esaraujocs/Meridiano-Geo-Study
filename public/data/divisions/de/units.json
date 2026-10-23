@@ -51,7 +51,9 @@
     "de-ni",
     "de-sn",
     "de-st"
-   ]
+   ],
+   "pop": 2534075,
+   "popYear": 2022
   },
   "de-be": {
    "code": "BE",
@@ -75,7 +77,9 @@
    ],
    "borders": [
     "de-bb"
-   ]
+   ],
+   "pop": 3700577,
+   "popYear": 2025
   },
   "de-bw": {
    "code": "BW",
@@ -108,7 +112,9 @@
     "de-by",
     "de-he",
     "de-rp"
-   ]
+   ],
+   "pop": 11104040,
+   "popYear": 2022
   },
   "de-by": {
    "code": "BY",
@@ -146,7 +152,9 @@
     "de-he",
     "de-sn",
     "de-th"
-   ]
+   ],
+   "pop": 13038724,
+   "popYear": 2022
   },
   "de-hb": {
    "code": "HB",
@@ -170,7 +178,9 @@
    ],
    "borders": [
     "de-ni"
-   ]
+   ],
+   "pop": 693204,
+   "popYear": 2022
   },
   "de-he": {
    "code": "HE",
@@ -203,7 +213,9 @@
     "de-nw",
     "de-rp",
     "de-th"
-   ]
+   ],
+   "pop": 6207278,
+   "popYear": 2022
   },
   "de-hh": {
    "code": "HH",
@@ -228,7 +240,9 @@
    "borders": [
     "de-ni",
     "de-sh"
-   ]
+   ],
+   "pop": 1869473,
+   "popYear": 2025
   },
   "de-mv": {
    "code": "MV",
@@ -258,7 +272,9 @@
     "de-bb",
     "de-ni",
     "de-sh"
-   ]
+   ],
+   "pop": 1570817,
+   "popYear": 2022
   },
   "de-ni": {
    "code": "NI",
@@ -301,7 +317,9 @@
     "de-sh",
     "de-st",
     "de-th"
-   ]
+   ],
+   "pop": 7943265,
+   "popYear": 2022
   },
   "de-nw": {
    "code": "NW",
@@ -331,7 +349,9 @@
     "de-he",
     "de-ni",
     "de-rp"
-   ]
+   ],
+   "pop": 17890489,
+   "popYear": 2022
   },
   "de-rp": {
    "code": "RP",
@@ -369,7 +389,9 @@
     "de-he",
     "de-nw",
     "de-sl"
-   ]
+   ],
+   "pop": 4094169,
+   "popYear": 2022
   },
   "de-sh": {
    "code": "SH",
@@ -396,7 +418,9 @@
     "de-hh",
     "de-mv",
     "de-ni"
-   ]
+   ],
+   "pop": 2953270,
+   "popYear": 2022
   },
   "de-sl": {
    "code": "SL",
@@ -425,7 +449,9 @@
    ],
    "borders": [
     "de-rp"
-   ]
+   ],
+   "pop": 1006864,
+   "popYear": 2022
   },
   "de-sn": {
    "code": "SN",
@@ -464,7 +490,9 @@
     "de-by",
     "de-st",
     "de-th"
-   ]
+   ],
+   "pop": 4089467,
+   "popYear": 2023
   },
   "de-st": {
    "code": "ST",
@@ -500,7 +528,9 @@
     "de-ni",
     "de-sn",
     "de-th"
-   ]
+   ],
+   "pop": 2146443,
+   "popYear": 2022
   },
   "de-th": {
    "code": "TH",
@@ -532,7 +562,9 @@
     "de-ni",
     "de-sn",
     "de-st"
-   ]
+   ],
+   "pop": 2110396,
+   "popYear": 2022
   }
  }
 }

@@ -82,21 +82,27 @@
         "Addis Abeba",
         "Finfinne"
       ],
-      "region": "center"
+      "region": "center",
+      "pop": 5704000,
+      "popYear": 2024
     },
     {
       "code": "AF",
       "name": "Afar",
       "sourceName": "አፋር ክልል Afar عفر",
       "capital": "Semera",
-      "region": "north"
+      "region": "north",
+      "pop": 1411092,
+      "popYear": 2007
     },
     {
       "code": "AM",
       "name": "Amhara",
       "sourceName": "አማራ ክልል",
       "capital": "Bahir Dar",
-      "region": "north"
+      "region": "north",
+      "pop": 19120005,
+      "popYear": 2005
     },
     {
       "code": "BE",
@@ -106,27 +112,35 @@
       "capAl": [
         "Assosa"
       ],
-      "region": "west"
+      "region": "west",
+      "pop": 784345,
+      "popYear": 2007
     },
     {
       "code": "DD",
       "name": "Dire Dawa",
       "sourceName": "Dirree Dhawaa / Dir Dhabe / ድሬዳዋ",
-      "region": "east"
+      "region": "east",
+      "pop": 277000,
+      "popYear": 2015
     },
     {
       "code": "GA",
       "name": "Gambela",
       "sourceName": "ጋምቤላ ሕዝቦች ክልል Gambela جامبلا",
       "capital": "Gambela",
-      "region": "west"
+      "region": "west",
+      "pop": 243900,
+      "popYear": 2005
     },
     {
       "code": "HA",
       "name": "Harari",
       "sourceName": "Naannoo Hararii / ሐረሪ ሕዝብ ክልል",
       "capital": "Harar",
-      "region": "east"
+      "region": "east",
+      "pop": 175900,
+      "popYear": 2005
     },
     {
       "code": "OR",
@@ -135,7 +149,9 @@
       "names": {
         "es": "Oromía"
       },
-      "region": "center"
+      "region": "center",
+      "pop": 35467001,
+      "popYear": 2017
     },
     {
       "code": "SI",
@@ -163,7 +179,9 @@
       "capAl": [
         "Djidjiga"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 4329001,
+      "popYear": 2005
     },
     {
       "code": "SW",
@@ -174,7 +192,9 @@
         "es": "Suroeste de Etiopía"
       },
       "capital": "Bonga",
-      "region": "west"
+      "region": "west",
+      "pop": 2350000,
+      "popYear": 2023
     },
     {
       "code": "TI",
@@ -192,7 +212,9 @@
         "Mekele",
         "Mek'ele"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 4960003,
+      "popYear": 2014
     },
     {
       "code": "CE",

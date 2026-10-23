@@ -84,7 +84,9 @@
         "Bas-Congo"
       ],
       "capital": "Matadi",
-      "region": "west"
+      "region": "west",
+      "pop": 6838500,
+      "popYear": 2020
     },
     {
       "code": "BU",
@@ -97,7 +99,9 @@
         "Bas-Uele"
       ],
       "capital": "Buta",
-      "region": "northeast"
+      "region": "northeast",
+      "pop": 1369600,
+      "popYear": 2020
     },
     {
       "code": "EQ",
@@ -109,7 +113,9 @@
         "Equateur"
       ],
       "capital": "Mbandaka",
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 1856000,
+      "popYear": 2020
     },
     {
       "code": "HK",
@@ -122,7 +128,9 @@
         "Haut-Katanga"
       ],
       "capital": "Lubumbashi",
-      "region": "south"
+      "region": "south",
+      "pop": 5718800,
+      "popYear": 2020
     },
     {
       "code": "HL",
@@ -135,7 +143,9 @@
         "Haut-Lomami"
       ],
       "capital": "Kamina",
-      "region": "south"
+      "region": "south",
+      "pop": 3662800,
+      "popYear": 2020
     },
     {
       "code": "HU",
@@ -148,13 +158,17 @@
         "Haut-Uele"
       ],
       "capital": "Isiro",
-      "region": "northeast"
+      "region": "northeast",
+      "pop": 2242500,
+      "popYear": 2020
     },
     {
       "code": "IT",
       "name": "Ituri",
       "capital": "Bunia",
-      "region": "northeast"
+      "region": "northeast",
+      "pop": 4392200,
+      "popYear": 2020
     },
     {
       "code": "KC",
@@ -167,7 +181,9 @@
         "Kasai-Central"
       ],
       "capital": "Kananga",
-      "region": "center"
+      "region": "center",
+      "pop": 4045300,
+      "popYear": 2020
     },
     {
       "code": "KE",
@@ -180,7 +196,9 @@
         "Kasai-Oriental"
       ],
       "capital": "Mbuji-Mayi",
-      "region": "center"
+      "region": "center",
+      "pop": 3864300,
+      "popYear": 2020
     },
     {
       "code": "KG",
@@ -189,7 +207,9 @@
         "Cuango"
       ],
       "capital": "Kenge",
-      "region": "west"
+      "region": "west",
+      "pop": 2618700,
+      "popYear": 2020
     },
     {
       "code": "KL",
@@ -198,7 +218,9 @@
         "Cuílo"
       ],
       "capital": "Bandundu",
-      "region": "west"
+      "region": "west",
+      "pop": 6682300,
+      "popYear": 2020
     },
     {
       "code": "KN",
@@ -209,7 +231,9 @@
       "alias": [
         "Quinxassa"
       ],
-      "region": "west"
+      "region": "west",
+      "pop": 14565700,
+      "popYear": 2020
     },
     {
       "code": "KS",
@@ -228,31 +252,41 @@
       "code": "LO",
       "name": "Lomami",
       "capital": "Kabinda",
-      "region": "center"
+      "region": "center",
+      "pop": 3001900,
+      "popYear": 2020
     },
     {
       "code": "LU",
       "name": "Lualaba",
       "capital": "Kolwezi",
-      "region": "south"
+      "region": "south",
+      "pop": 3183300,
+      "popYear": 2020
     },
     {
       "code": "MA",
       "name": "Maniema",
       "capital": "Kindu",
-      "region": "east"
+      "region": "east",
+      "pop": 2856300,
+      "popYear": 2020
     },
     {
       "code": "MN",
       "name": "Mai-Ndombe",
       "capital": "Inongo",
-      "region": "west"
+      "region": "west",
+      "pop": 2254100,
+      "popYear": 2020
     },
     {
       "code": "MO",
       "name": "Mongala",
       "capital": "Lisala",
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 2114100,
+      "popYear": 2020
     },
     {
       "code": "NK",
@@ -266,7 +300,9 @@
         "Nord-Kivu"
       ],
       "capital": "Goma",
-      "region": "east"
+      "region": "east",
+      "pop": 8147400,
+      "popYear": 2020
     },
     {
       "code": "NU",
@@ -280,13 +316,17 @@
         "Nord-Ubangi"
       ],
       "capital": "Gbadolite",
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 1269000,
+      "popYear": 2015
     },
     {
       "code": "SA",
       "name": "Sankuru",
       "capital": "Lusambo",
-      "region": "center"
+      "region": "center",
+      "pop": 2593400,
+      "popYear": 2020
     },
     {
       "code": "SK",
@@ -300,7 +340,9 @@
         "Sud-Kivu"
       ],
       "capital": "Bukavu",
-      "region": "east"
+      "region": "east",
+      "pop": 7066400,
+      "popYear": 2020
     },
     {
       "code": "SU",
@@ -314,7 +356,9 @@
         "Sud-Ubangi"
       ],
       "capital": "Gemena",
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 2987100,
+      "popYear": 2020
     },
     {
       "code": "TA",
@@ -327,19 +371,25 @@
         "Tanganyika"
       ],
       "capital": "Kalemie",
-      "region": "east"
+      "region": "east",
+      "pop": 3792200,
+      "popYear": 2020
     },
     {
       "code": "TO",
       "name": "Tshopo",
       "capital": "Kisangani",
-      "region": "northeast"
+      "region": "northeast",
+      "pop": 2829700,
+      "popYear": 2020
     },
     {
       "code": "TU",
       "name": "Tshuapa",
       "capital": "Boende",
-      "region": "northwest"
+      "region": "northwest",
+      "pop": 1944500,
+      "popYear": 2020
     }
   ],
   "probes": [

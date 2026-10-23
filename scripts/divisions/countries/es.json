@@ -87,7 +87,9 @@
       "capAl": [
         "Sevilla"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 8619616,
+      "popYear": 2024
     },
     {
       "code": "AR",
@@ -105,7 +107,9 @@
       "capAl": [
         "Zaragoza"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 1347834,
+      "popYear": 2024
     },
     {
       "code": "AS",
@@ -115,7 +119,9 @@
         "pt": "Astúrias"
       },
       "capital": "Oviedo",
-      "region": "north"
+      "region": "north",
+      "pop": 1008028,
+      "popYear": 2024
     },
     {
       "code": "CB",
@@ -124,12 +130,16 @@
         "pt": "Cantábria"
       },
       "capital": "Santander",
-      "region": "north"
+      "region": "north",
+      "pop": 591563,
+      "popYear": 2024
     },
     {
       "code": "CE",
       "name": "Ceuta",
-      "region": "south"
+      "region": "south",
+      "pop": 83595,
+      "popYear": 2025
     },
     {
       "code": "CL",
@@ -143,7 +153,9 @@
         "Castilla y León"
       ],
       "capital": "Valladolid",
-      "region": "center"
+      "region": "center",
+      "pop": 2388350,
+      "popYear": 2024
     },
     {
       "code": "CM",
@@ -158,7 +170,9 @@
         "Castela-Mancha"
       ],
       "capital": "Toledo",
-      "region": "center"
+      "region": "center",
+      "pop": 2098853,
+      "popYear": 2024
     },
     {
       "code": "CN",
@@ -172,7 +186,9 @@
         "Ilhas Canárias",
         "Islas Canarias"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 2228862,
+      "popYear": 2024
     },
     {
       "code": "CT",
@@ -186,7 +202,9 @@
         "Catalunya"
       ],
       "capital": "Barcelona",
-      "region": "east"
+      "region": "east",
+      "pop": 8034743,
+      "popYear": 2024
     },
     {
       "code": "EX",
@@ -198,7 +216,9 @@
         "Extremadura"
       ],
       "capital": "Mérida",
-      "region": "center"
+      "region": "center",
+      "pop": 1052790,
+      "popYear": 2024
     },
     {
       "code": "GA",
@@ -213,7 +233,9 @@
       "capAl": [
         "Santiago"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 2703353,
+      "popYear": 2024
     },
     {
       "code": "IB",
@@ -236,7 +258,9 @@
         "Palma de Maiorca",
         "Palma de Mallorca"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 1176659,
+      "popYear": 2022
     },
     {
       "code": "MC",
@@ -258,7 +282,9 @@
       "capAl": [
         "Murcia"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 1586989,
+      "popYear": 2025
     },
     {
       "code": "MD",
@@ -272,7 +298,9 @@
         "Madrid"
       ],
       "capital": "Madrid",
-      "region": "center"
+      "region": "center",
+      "pop": 7001715,
+      "popYear": 2024
     },
     {
       "code": "ML",
@@ -283,7 +311,9 @@
       "alias": [
         "Melilla"
       ],
-      "region": "south"
+      "region": "south",
+      "pop": 86780,
+      "popYear": 2025
     },
     {
       "code": "NC",
@@ -297,7 +327,9 @@
       "capAl": [
         "Iruña"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 678338,
+      "popYear": 2024
     },
     {
       "code": "PV",
@@ -320,7 +352,9 @@
         "Vitoria",
         "Gasteiz"
       ],
-      "region": "north"
+      "region": "north",
+      "pop": 2230452,
+      "popYear": 2024
     },
     {
       "code": "RI",
@@ -329,7 +363,9 @@
         "Rioja"
       ],
       "capital": "Logroño",
-      "region": "north"
+      "region": "north",
+      "pop": 324399,
+      "popYear": 2024
     },
     {
       "code": "VC",
@@ -351,7 +387,9 @@
       "capAl": [
         "Valencia"
       ],
-      "region": "east"
+      "region": "east",
+      "pop": 5316541,
+      "popYear": 2024
     }
   ],
   "probes": [
