@@ -103,7 +103,18 @@
       ],
       "region": "south",
       "pop": 500731,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "adigue"
+        ],
+        "en": [
+          "Adyghe"
+        ],
+        "es": [
+          "adigué"
+        ]
+      }
     },
     {
       "code": "AL",
@@ -120,7 +131,18 @@
       },
       "region": "siberia",
       "pop": 210095,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "altai"
+        ],
+        "en": [
+          "Altai"
+        ],
+        "es": [
+          "altái"
+        ]
+      }
     },
     {
       "code": "ALT",
@@ -220,7 +242,18 @@
       },
       "region": "volga",
       "pop": 4042377,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "bashkir"
+        ],
+        "en": [
+          "Bashkir"
+        ],
+        "es": [
+          "baskir"
+        ]
+      }
     },
     {
       "code": "BEL",
@@ -279,7 +312,18 @@
       },
       "region": "fareast",
       "pop": 971139,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "buriato"
+        ],
+        "en": [
+          "Buryat"
+        ],
+        "es": [
+          "buriato"
+        ]
+      }
     },
     {
       "code": "CE",
@@ -296,7 +340,18 @@
       },
       "region": "caucasus",
       "pop": 1492992,
-      "popYear": 2021
+      "popYear": 2021,
+      "langs": {
+        "pt": [
+          "checheno"
+        ],
+        "en": [
+          "Chechen"
+        ],
+        "es": [
+          "checheno"
+        ]
+      }
     },
     {
       "code": "CHE",
@@ -353,7 +408,18 @@
       },
       "region": "volga",
       "pop": 1167061,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "chuvache"
+        ],
+        "en": [
+          "Chuvash"
+        ],
+        "es": [
+          "chuvasio"
+        ]
+      }
     },
     {
       "code": "DA",
@@ -373,7 +439,51 @@
       ],
       "region": "caucasus",
       "pop": 3232224,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "avar",
+          "dargin",
+          "kumyk",
+          "lezguio",
+          "lak",
+          "tabasaran",
+          "checheno",
+          "azerbaijano",
+          "nogai",
+          "rutul",
+          "agul",
+          "tsakhur"
+        ],
+        "en": [
+          "Avar",
+          "Dargwa",
+          "Kumyk",
+          "Lezgian",
+          "Lak",
+          "Tabasaran",
+          "Chechen",
+          "Azerbaijani",
+          "Nogai",
+          "Rutul",
+          "Aghul",
+          "Tsakhur"
+        ],
+        "es": [
+          "ávaro",
+          "dargwa",
+          "kumuko",
+          "lezguino",
+          "lak",
+          "tabasarano",
+          "checheno",
+          "azerí",
+          "nogayo",
+          "rutulo",
+          "agul",
+          "tsajur"
+        ]
+      }
     },
     {
       "code": "IN",
@@ -390,7 +500,18 @@
       },
       "region": "caucasus",
       "pop": 527200,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "inguche"
+        ],
+        "en": [
+          "Ingush"
+        ],
+        "es": [
+          "ingush"
+        ]
+      }
     },
     {
       "code": "IRK",
@@ -471,7 +592,21 @@
       ],
       "region": "caucasus",
       "pop": 905464,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "cabardiano",
+          "carachai-balcar"
+        ],
+        "en": [
+          "Kabardian",
+          "Karachay-Balkar"
+        ],
+        "es": [
+          "kabardiano",
+          "karachayo-bálkaro"
+        ]
+      }
     },
     {
       "code": "KC",
@@ -491,7 +626,27 @@
       ],
       "region": "caucasus",
       "pop": 468322,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "carachai-balcar",
+          "cabardiano",
+          "abaza",
+          "nogai"
+        ],
+        "en": [
+          "Karachay-Balkar",
+          "Kabardian",
+          "Abaza",
+          "Nogai"
+        ],
+        "es": [
+          "karachayo-bálkaro",
+          "kabardiano",
+          "abaza",
+          "nogayo"
+        ]
+      }
     },
     {
       "code": "KDA",
@@ -647,7 +802,18 @@
       },
       "region": "siberia",
       "pop": 525557,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "cacásio"
+        ],
+        "en": [
+          "Khakas"
+        ],
+        "es": [
+          "jakasio"
+        ]
+      }
     },
     {
       "code": "KL",
@@ -664,7 +830,18 @@
       },
       "region": "south",
       "pop": 267588,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "calmuco"
+        ],
+        "en": [
+          "Kalmyk"
+        ],
+        "es": [
+          "calmuco"
+        ]
+      }
     },
     {
       "code": "KLU",
@@ -698,7 +875,18 @@
       },
       "region": "northwest",
       "pop": 714785,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "komi"
+        ],
+        "en": [
+          "Komi"
+        ],
+        "es": [
+          "komi"
+        ]
+      }
     },
     {
       "code": "KOS",
@@ -858,7 +1046,21 @@
       ],
       "region": "volga",
       "pop": 669854,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "mari das campinas",
+          "mari das montanhas"
+        ],
+        "en": [
+          "Meadow Mari",
+          "Hill Mari"
+        ],
+        "es": [
+          "mari de las praderas",
+          "mari de las colinas"
+        ]
+      }
     },
     {
       "code": "MO",
@@ -874,7 +1076,21 @@
       },
       "region": "volga",
       "pop": 778965,
-      "popYear": 2021
+      "popYear": 2021,
+      "langs": {
+        "pt": [
+          "moksha",
+          "erzya"
+        ],
+        "en": [
+          "Moksha",
+          "Erzya"
+        ],
+        "es": [
+          "moksha",
+          "erzya"
+        ]
+      }
     },
     {
       "code": "MOS",
@@ -1200,7 +1416,18 @@
       },
       "region": "fareast",
       "pop": 1001664,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "iacuto"
+        ],
+        "en": [
+          "Yakut"
+        ],
+        "es": [
+          "yakuto"
+        ]
+      }
     },
     {
       "code": "SAK",
@@ -1282,7 +1509,18 @@
       },
       "region": "caucasus",
       "pop": 678879,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "ossétio"
+        ],
+        "en": [
+          "Ossetian"
+        ],
+        "es": [
+          "osetio"
+        ]
+      }
     },
     {
       "code": "SMO",
@@ -1372,7 +1610,18 @@
       ],
       "region": "volga",
       "pop": 4003016,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "tártaro"
+        ],
+        "en": [
+          "Tatar"
+        ],
+        "es": [
+          "tártaro"
+        ]
+      }
     },
     {
       "code": "TAM",
@@ -1462,7 +1711,18 @@
       },
       "region": "siberia",
       "pop": 338483,
-      "popYear": 2025
+      "popYear": 2025,
+      "langs": {
+        "pt": [
+          "tuvano"
+        ],
+        "en": [
+          "Tuvan"
+        ],
+        "es": [
+          "tuvano"
+        ]
+      }
     },
     {
       "code": "TYU",
@@ -1504,7 +1764,18 @@
       ],
       "region": "volga",
       "pop": 1493356,
-      "popYear": 2021
+      "popYear": 2021,
+      "langs": {
+        "pt": [
+          "udmurte"
+        ],
+        "en": [
+          "Udmurt"
+        ],
+        "es": [
+          "udmurto"
+        ]
+      }
     },
     {
       "code": "ULY",

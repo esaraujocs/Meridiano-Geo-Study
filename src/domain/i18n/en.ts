@@ -1973,6 +1973,8 @@ export const en: Messages = {
     noResults: "Nothing by that name",
     close: "Close the card",
     capital: "Capital",
+    coLanguages: "Co-official languages",
+    andMore: (n: number) => `and ${n} more`,
     population: "Population",
     area: "Area",
     languages: "Languages",

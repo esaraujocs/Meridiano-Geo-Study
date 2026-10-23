@@ -148,7 +148,18 @@
       "capital": "Nanning",
       "region": "south-central",
       "pop": 50126804,
-      "popYear": 2020
+      "popYear": 2020,
+      "langs": {
+        "pt": [
+          "zhuang"
+        ],
+        "en": [
+          "Zhuang"
+        ],
+        "es": [
+          "zhuang"
+        ]
+      }
     },
     {
       "code": "GZ",
@@ -267,7 +278,18 @@
       "capital": "Hohhot",
       "region": "north",
       "pop": 24049155,
-      "popYear": 2020
+      "popYear": 2020,
+      "langs": {
+        "pt": [
+          "mongol"
+        ],
+        "en": [
+          "Mongolian"
+        ],
+        "es": [
+          "mongol"
+        ]
+      }
     },
     {
       "code": "NX",
@@ -359,7 +381,18 @@
       ],
       "region": "northwest",
       "pop": 25852345,
-      "popYear": 2020
+      "popYear": 2020,
+      "langs": {
+        "pt": [
+          "uigur"
+        ],
+        "en": [
+          "Uyghur"
+        ],
+        "es": [
+          "uigur"
+        ]
+      }
     },
     {
       "code": "XZ",
@@ -379,7 +412,18 @@
       ],
       "region": "southwest",
       "pop": 3648100,
-      "popYear": 2020
+      "popYear": 2020,
+      "langs": {
+        "pt": [
+          "tibetano"
+        ],
+        "en": [
+          "Tibetan"
+        ],
+        "es": [
+          "tibetano"
+        ]
+      }
     },
     {
       "code": "YN",

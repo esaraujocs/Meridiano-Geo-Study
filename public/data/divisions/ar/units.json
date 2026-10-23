@@ -310,7 +310,24 @@
     "ar-w"
    ],
    "pop": 1129606,
-   "popYear": 2022
+   "popYear": 2022,
+   "langs": {
+    "pt": [
+     "qom",
+     "moqoit",
+     "wichí"
+    ],
+    "en": [
+     "Qom",
+     "Moqoit",
+     "Wichí"
+    ],
+    "es": [
+     "qom",
+     "moqoit",
+     "wichí"
+    ]
+   }
   },
   "ar-j": {
    "code": "J",
@@ -753,7 +770,18 @@
     "ar-s"
    ],
    "pop": 1212696,
-   "popYear": 2022
+   "popYear": 2022,
+   "langs": {
+    "pt": [
+     "guarani"
+    ],
+    "en": [
+     "Guarani"
+    ],
+    "es": [
+     "guaraní"
+    ]
+   }
   },
   "ar-x": {
    "code": "X",

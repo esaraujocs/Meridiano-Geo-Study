@@ -1452,6 +1452,8 @@ export const pt = {
     noResults: "Nada com esse nome",
     close: "Fechar a ficha",
     capital: "Capital",
+    coLanguages: "Línguas co-oficiais",
+    andMore: (n: number) => `e mais ${n}`,
     population: "População",
     area: "Área",
     languages: "Idiomas",

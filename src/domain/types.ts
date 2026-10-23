@@ -1,6 +1,8 @@
 export type Meta = {
   /** Unidades de Estados e províncias: a população e o ano da contagem (Wikidata), só para a ficha; fora de `pop`, que decide a dificuldade. */
   census?: [number, number?];
+  /** Unidades de Estados e províncias: as línguas co-oficiais além da nacional, no idioma da interface. */
+  coLangs?: string[];
   pt?: string;
   en?: string;
   cap?: string;

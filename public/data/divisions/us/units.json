@@ -47,7 +47,75 @@
    ],
    "borders": [],
    "pop": 733391,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "iñupiaq",
+     "yupik central",
+     "tlingit",
+     "yupik siberiano",
+     "alutiiq",
+     "aleúte",
+     "dena'ina",
+     "deg xinag",
+     "holikachuk",
+     "koyukon",
+     "kuskokwim superior",
+     "gwich'in",
+     "tanana",
+     "tanana superior",
+     "tanacross",
+     "hän",
+     "ahtna",
+     "eyak",
+     "haida",
+     "tsimshian"
+    ],
+    "en": [
+     "Iñupiaq",
+     "Central Yup'ik",
+     "Tlingit",
+     "Siberian Yupik",
+     "Alutiiq",
+     "Unangax̂ (Aleut)",
+     "Dena'ina",
+     "Deg Xinag",
+     "Holikachuk",
+     "Koyukon",
+     "Upper Kuskokwim",
+     "Gwich'in",
+     "Tanana",
+     "Upper Tanana",
+     "Tanacross",
+     "Hän",
+     "Ahtna",
+     "Eyak",
+     "Haida",
+     "Tsimshian"
+    ],
+    "es": [
+     "iñupiaq",
+     "yupik central",
+     "tlingit",
+     "yupik siberiano",
+     "alutiiq",
+     "aleutiano",
+     "dena'ina",
+     "deg xinag",
+     "holikachuk",
+     "koyukon",
+     "kuskokwim superior",
+     "gwich'in",
+     "tanana",
+     "tanana superior",
+     "tanacross",
+     "hän",
+     "ahtna",
+     "eyak",
+     "haida",
+     "tsimshian"
+    ]
+   }
   },
   "us-al": {
    "code": "AL",
@@ -342,7 +410,18 @@
    ],
    "borders": [],
    "pop": 1455271,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "havaiano"
+    ],
+    "en": [
+     "Hawaiian"
+    ],
+    "es": [
+     "hawaiano"
+    ]
+   }
   },
   "us-ia": {
    "code": "IA",
@@ -1261,7 +1340,18 @@
     "us-wy"
    ],
    "pop": 886667,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "sioux (lakota, dakota, nakota)"
+    ],
+    "en": [
+     "Sioux (Lakota, Dakota, Nakota)"
+    ],
+    "es": [
+     "siux (lakota, dakota, nakota)"
+    ]
+   }
   },
   "us-tn": {
    "code": "TN",

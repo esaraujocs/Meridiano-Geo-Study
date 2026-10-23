@@ -93,7 +93,18 @@
       "capital": "Semera",
       "region": "north",
       "pop": 1411092,
-      "popYear": 2007
+      "popYear": 2007,
+      "langs": {
+        "pt": [
+          "afar"
+        ],
+        "en": [
+          "Afar"
+        ],
+        "es": [
+          "afar"
+        ]
+      }
     },
     {
       "code": "AM",
@@ -140,7 +151,21 @@
       "capital": "Harar",
       "region": "east",
       "pop": 175900,
-      "popYear": 2005
+      "popYear": 2005,
+      "langs": {
+        "pt": [
+          "harari",
+          "oromo"
+        ],
+        "en": [
+          "Harari",
+          "Oromo"
+        ],
+        "es": [
+          "harari",
+          "oromo"
+        ]
+      }
     },
     {
       "code": "OR",
@@ -151,7 +176,18 @@
       },
       "region": "center",
       "pop": 35467001,
-      "popYear": 2017
+      "popYear": 2017,
+      "langs": {
+        "pt": [
+          "oromo"
+        ],
+        "en": [
+          "Oromo"
+        ],
+        "es": [
+          "oromo"
+        ]
+      }
     },
     {
       "code": "SI",
@@ -163,7 +199,18 @@
         "Awasa",
         "Hawaasa"
       ],
-      "region": "south"
+      "region": "south",
+      "langs": {
+        "pt": [
+          "sidamo"
+        ],
+        "en": [
+          "Sidama"
+        ],
+        "es": [
+          "sidamo"
+        ]
+      }
     },
     {
       "code": "SO",
@@ -181,7 +228,18 @@
       ],
       "region": "east",
       "pop": 4329001,
-      "popYear": 2005
+      "popYear": 2005,
+      "langs": {
+        "pt": [
+          "somali"
+        ],
+        "en": [
+          "Somali"
+        ],
+        "es": [
+          "somalí"
+        ]
+      }
     },
     {
       "code": "SW",
@@ -214,7 +272,18 @@
       ],
       "region": "north",
       "pop": 4960003,
-      "popYear": 2014
+      "popYear": 2014,
+      "langs": {
+        "pt": [
+          "tigrínia"
+        ],
+        "en": [
+          "Tigrinya"
+        ],
+        "es": [
+          "tigriña"
+        ]
+      }
     },
     {
       "code": "CE",

@@ -249,7 +249,18 @@
     "cn-yn"
    ],
    "pop": 50126804,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "zhuang"
+    ],
+    "en": [
+     "Zhuang"
+    ],
+    "es": [
+     "zhuang"
+    ]
+   }
   },
   "cn-gz": {
    "code": "GZ",
@@ -620,7 +631,18 @@
     "cn-sx"
    ],
    "pop": 24049155,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "mongol"
+    ],
+    "en": [
+     "Mongolian"
+    ],
+    "es": [
+     "mongol"
+    ]
+   }
   },
   "cn-nx": {
    "code": "NX",
@@ -895,7 +917,18 @@
     "cn-xz"
    ],
    "pop": 25852345,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "uigur"
+    ],
+    "en": [
+     "Uyghur"
+    ],
+    "es": [
+     "uigur"
+    ]
+   }
   },
   "cn-xz": {
    "code": "XZ",
@@ -932,7 +965,18 @@
     "cn-yn"
    ],
    "pop": 3648100,
-   "popYear": 2020
+   "popYear": 2020,
+   "langs": {
+    "pt": [
+     "tibetano"
+    ],
+    "en": [
+     "Tibetan"
+    ],
+    "es": [
+     "tibetano"
+    ]
+   }
   },
   "cn-yn": {
    "code": "YN",

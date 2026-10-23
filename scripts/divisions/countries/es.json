@@ -204,7 +204,21 @@
       "capital": "Barcelona",
       "region": "east",
       "pop": 8034743,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "catalão",
+          "occitano (aranês)"
+        ],
+        "en": [
+          "Catalan",
+          "Occitan (Aranese)"
+        ],
+        "es": [
+          "catalán",
+          "occitano (aranés)"
+        ]
+      }
     },
     {
       "code": "EX",
@@ -235,7 +249,18 @@
       ],
       "region": "north",
       "pop": 2703353,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "galego"
+        ],
+        "en": [
+          "Galician"
+        ],
+        "es": [
+          "gallego"
+        ]
+      }
     },
     {
       "code": "IB",
@@ -260,7 +285,18 @@
       ],
       "region": "east",
       "pop": 1176659,
-      "popYear": 2022
+      "popYear": 2022,
+      "langs": {
+        "pt": [
+          "catalão"
+        ],
+        "en": [
+          "Catalan"
+        ],
+        "es": [
+          "catalán"
+        ]
+      }
     },
     {
       "code": "MC",
@@ -329,7 +365,18 @@
       ],
       "region": "north",
       "pop": 678338,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "basco (em parte)"
+        ],
+        "en": [
+          "Basque (in part)"
+        ],
+        "es": [
+          "euskera (en parte)"
+        ]
+      }
     },
     {
       "code": "PV",
@@ -354,7 +401,18 @@
       ],
       "region": "north",
       "pop": 2230452,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "basco"
+        ],
+        "en": [
+          "Basque"
+        ],
+        "es": [
+          "euskera"
+        ]
+      }
     },
     {
       "code": "RI",
@@ -389,7 +447,18 @@
       ],
       "region": "east",
       "pop": 5316541,
-      "popYear": 2024
+      "popYear": 2024,
+      "langs": {
+        "pt": [
+          "valenciano"
+        ],
+        "en": [
+          "Valencian"
+        ],
+        "es": [
+          "valenciano"
+        ]
+      }
     }
   ],
   "probes": [

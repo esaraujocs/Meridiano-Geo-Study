@@ -87,7 +87,18 @@
     "et-ti"
    ],
    "pop": 1411092,
-   "popYear": 2007
+   "popYear": 2007,
+   "langs": {
+    "pt": [
+     "afar"
+    ],
+    "en": [
+     "Afar"
+    ],
+    "es": [
+     "afar"
+    ]
+   }
   },
   "et-am": {
    "code": "AM",
@@ -261,7 +272,21 @@
     "et-or"
    ],
    "pop": 175900,
-   "popYear": 2005
+   "popYear": 2005,
+   "langs": {
+    "pt": [
+     "harari",
+     "oromo"
+    ],
+    "en": [
+     "Harari",
+     "Oromo"
+    ],
+    "es": [
+     "harari",
+     "oromo"
+    ]
+   }
   },
   "et-or": {
    "code": "OR",
@@ -298,7 +323,18 @@
     "et-sw"
    ],
    "pop": 35467001,
-   "popYear": 2017
+   "popYear": 2017,
+   "langs": {
+    "pt": [
+     "oromo"
+    ],
+    "en": [
+     "Oromo"
+    ],
+    "es": [
+     "oromo"
+    ]
+   }
   },
   "et-se": {
    "code": "SE",
@@ -360,7 +396,18 @@
    "borders": [
     "et-or",
     "et-se"
-   ]
+   ],
+   "langs": {
+    "pt": [
+     "sidamo"
+    ],
+    "en": [
+     "Sidama"
+    ],
+    "es": [
+     "sidamo"
+    ]
+   }
   },
   "et-so": {
    "code": "SO",
@@ -395,7 +442,18 @@
     "et-or"
    ],
    "pop": 4329001,
-   "popYear": 2005
+   "popYear": 2005,
+   "langs": {
+    "pt": [
+     "somali"
+    ],
+    "en": [
+     "Somali"
+    ],
+    "es": [
+     "somalí"
+    ]
+   }
   },
   "et-sw": {
    "code": "SW",
@@ -460,7 +518,18 @@
     "et-am"
    ],
    "pop": 4960003,
-   "popYear": 2014
+   "popYear": 2014,
+   "langs": {
+    "pt": [
+     "tigrínia"
+    ],
+    "en": [
+     "Tigrinya"
+    ],
+    "es": [
+     "tigriña"
+    ]
+   }
   }
  }
 }

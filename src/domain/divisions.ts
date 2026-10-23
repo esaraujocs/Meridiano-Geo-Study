@@ -198,6 +198,8 @@ export type DivisionUnitRow = {
   /** População (Wikidata, P1082) e o ano da contagem. */
   pop?: number;
   popYear?: number;
+  /** Línguas co-oficiais além da nacional, por idioma da interface. */
+  langs?: Record<Locale, string[]>;
   /** Tem bandeira? Ausente nos pacotes em que todas têm (ou nenhuma). */
   flag?: boolean;
 };
@@ -239,6 +241,7 @@ export function divisionCatalog(file: DivisionUnitsFile, locale: Locale = uiLoca
       borders: row.borders.map((neighbor) => file.units[neighbor]?.code ?? neighbor),
       area: row.area,
       ...(row.pop ? { census: [row.pop, row.popYear] as [number, number?] } : {}),
+      ...(row.langs ? { coLangs: row.langs[locale] ?? row.langs.pt } : {}),
       un: true,
     };
     bbox[id] = row.bbox;

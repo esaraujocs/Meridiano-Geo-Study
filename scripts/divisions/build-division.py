@@ -488,6 +488,9 @@ def write_outputs(country, config, zones, land_by_unit, public, refresh=()):
         if unit.get("pop"):
             entry["pop"] = unit["pop"]
             if unit.get("popYear"): entry["popYear"] = unit["popYear"]
+        # línguas co-oficiais da unidade além da nacional (conferidas uma a uma; a lista por idioma da interface)
+        if unit.get("langs"):
+            entry["langs"] = unit["langs"]
         catalog[uid] = entry
     document = {"source": config["comment"], "country": country, "regions": config["regions"], "units": catalog}
     json.dump(document, open(os.path.join(public, "units.json"), "w", encoding="utf8"), ensure_ascii=False, indent=1)

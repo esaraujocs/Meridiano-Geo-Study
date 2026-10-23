@@ -176,7 +176,24 @@
       ],
       "region": "ne",
       "pop": 1129606,
-      "popYear": 2022
+      "popYear": 2022,
+      "langs": {
+        "pt": [
+          "qom",
+          "moqoit",
+          "wichí"
+        ],
+        "en": [
+          "Qom",
+          "Moqoit",
+          "Wichí"
+        ],
+        "es": [
+          "qom",
+          "moqoit",
+          "wichí"
+        ]
+      }
     },
     {
       "code": "J",
@@ -351,7 +368,18 @@
       },
       "region": "ne",
       "pop": 1212696,
-      "popYear": 2022
+      "popYear": 2022,
+      "langs": {
+        "pt": [
+          "guarani"
+        ],
+        "en": [
+          "Guarani"
+        ],
+        "es": [
+          "guaraní"
+        ]
+      }
     },
     {
       "code": "X",

@@ -76,7 +76,18 @@
     "ru-kda"
    ],
    "pop": 500731,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "adigue"
+    ],
+    "en": [
+     "Adyghe"
+    ],
+    "es": [
+     "adigué"
+    ]
+   }
   },
   "ru-al": {
    "code": "AL",
@@ -110,7 +121,18 @@
     "ru-ty"
    ],
    "pop": 210095,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "altai"
+    ],
+    "en": [
+     "Altai"
+    ],
+    "es": [
+     "altái"
+    ]
+   }
   },
   "ru-alt": {
    "code": "ALT",
@@ -295,7 +317,18 @@
     "ru-ud"
    ],
    "pop": 4042377,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "bashkir"
+    ],
+    "en": [
+     "Bashkir"
+    ],
+    "es": [
+     "baskir"
+    ]
+   }
   },
   "ru-bel": {
    "code": "BEL",
@@ -402,7 +435,18 @@
     "ru-zab"
    ],
    "pop": 971139,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "buriato"
+    ],
+    "en": [
+     "Buryat"
+    ],
+    "es": [
+     "buriato"
+    ]
+   }
   },
   "ru-ce": {
    "code": "CE",
@@ -436,7 +480,18 @@
     "ru-sta"
    ],
    "pop": 1492992,
-   "popYear": 2021
+   "popYear": 2021,
+   "langs": {
+    "pt": [
+     "checheno"
+    ],
+    "en": [
+     "Chechen"
+    ],
+    "es": [
+     "checheno"
+    ]
+   }
   },
   "ru-che": {
    "code": "CHE",
@@ -544,7 +599,18 @@
     "ru-uly"
    ],
    "pop": 1167061,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "chuvache"
+    ],
+    "en": [
+     "Chuvash"
+    ],
+    "es": [
+     "chuvasio"
+    ]
+   }
   },
   "ru-da": {
    "code": "DA",
@@ -580,7 +646,51 @@
     "ru-sta"
    ],
    "pop": 3232224,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "avar",
+     "dargin",
+     "kumyk",
+     "lezguio",
+     "lak",
+     "tabasaran",
+     "checheno",
+     "azerbaijano",
+     "nogai",
+     "rutul",
+     "agul",
+     "tsakhur"
+    ],
+    "en": [
+     "Avar",
+     "Dargwa",
+     "Kumyk",
+     "Lezgian",
+     "Lak",
+     "Tabasaran",
+     "Chechen",
+     "Azerbaijani",
+     "Nogai",
+     "Rutul",
+     "Aghul",
+     "Tsakhur"
+    ],
+    "es": [
+     "ávaro",
+     "dargwa",
+     "kumuko",
+     "lezguino",
+     "lak",
+     "tabasarano",
+     "checheno",
+     "azerí",
+     "nogayo",
+     "rutulo",
+     "agul",
+     "tsajur"
+    ]
+   }
   },
   "ru-in": {
    "code": "IN",
@@ -612,7 +722,18 @@
     "ru-se"
    ],
    "pop": 527200,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "inguche"
+    ],
+    "en": [
+     "Ingush"
+    ],
+    "es": [
+     "ingush"
+    ]
+   }
   },
   "ru-irk": {
    "code": "IRK",
@@ -759,7 +880,21 @@
     "ru-sta"
    ],
    "pop": 905464,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "cabardiano",
+     "carachai-balcar"
+    ],
+    "en": [
+     "Kabardian",
+     "Karachay-Balkar"
+    ],
+    "es": [
+     "kabardiano",
+     "karachayo-bálkaro"
+    ]
+   }
   },
   "ru-kc": {
    "code": "KC",
@@ -795,7 +930,27 @@
     "ru-sta"
    ],
    "pop": 468322,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "carachai-balcar",
+     "cabardiano",
+     "abaza",
+     "nogai"
+    ],
+    "en": [
+     "Karachay-Balkar",
+     "Kabardian",
+     "Abaza",
+     "Nogai"
+    ],
+    "es": [
+     "karachayo-bálkaro",
+     "kabardiano",
+     "abaza",
+     "nogayo"
+    ]
+   }
   },
   "ru-kda": {
    "code": "KDA",
@@ -1091,7 +1246,18 @@
     "ru-ty"
    ],
    "pop": 525557,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "cacásio"
+    ],
+    "en": [
+     "Khakas"
+    ],
+    "es": [
+     "jakasio"
+    ]
+   }
   },
   "ru-kl": {
    "code": "KL",
@@ -1126,7 +1292,18 @@
     "ru-vgg"
    ],
    "pop": 267588,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "calmuco"
+    ],
+    "en": [
+     "Kalmyk"
+    ],
+    "es": [
+     "calmuco"
+    ]
+   }
   },
   "ru-klu": {
    "code": "KLU",
@@ -1199,7 +1376,18 @@
     "ru-yan"
    ],
    "pop": 714785,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "komi"
+    ],
+    "en": [
+     "Komi"
+    ],
+    "es": [
+     "komi"
+    ]
+   }
   },
   "ru-kos": {
    "code": "KOS",
@@ -1505,7 +1693,21 @@
     "ru-ta"
    ],
    "pop": 669854,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "mari das campinas",
+     "mari das montanhas"
+    ],
+    "en": [
+     "Meadow Mari",
+     "Hill Mari"
+    ],
+    "es": [
+     "mari de las praderas",
+     "mari de las colinas"
+    ]
+   }
   },
   "ru-mo": {
    "code": "MO",
@@ -1540,7 +1742,21 @@
     "ru-uly"
    ],
    "pop": 778965,
-   "popYear": 2021
+   "popYear": 2021,
+   "langs": {
+    "pt": [
+     "moksha",
+     "erzya"
+    ],
+    "en": [
+     "Moksha",
+     "Erzya"
+    ],
+    "es": [
+     "moksha",
+     "erzya"
+    ]
+   }
   },
   "ru-mos": {
    "code": "MOS",
@@ -2164,7 +2380,18 @@
     "ru-zab"
    ],
    "pop": 1001664,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "iacuto"
+    ],
+    "en": [
+     "Yakut"
+    ],
+    "es": [
+     "yakuto"
+    ]
+   }
   },
   "ru-sak": {
    "code": "SAK",
@@ -2311,7 +2538,18 @@
     "ru-sta"
    ],
    "pop": 678879,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "ossétio"
+    ],
+    "en": [
+     "Ossetian"
+    ],
+    "es": [
+     "osetio"
+    ]
+   }
   },
   "ru-smo": {
    "code": "SMO",
@@ -2495,7 +2733,18 @@
     "ru-uly"
    ],
    "pop": 4003016,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "tártaro"
+    ],
+    "en": [
+     "Tatar"
+    ],
+    "es": [
+     "tártaro"
+    ]
+   }
   },
   "ru-tam": {
    "code": "TAM",
@@ -2678,7 +2927,18 @@
     "ru-kya"
    ],
    "pop": 338483,
-   "popYear": 2025
+   "popYear": 2025,
+   "langs": {
+    "pt": [
+     "tuvano"
+    ],
+    "en": [
+     "Tuvan"
+    ],
+    "es": [
+     "tuvano"
+    ]
+   }
   },
   "ru-tyu": {
    "code": "TYU",
@@ -2756,7 +3016,18 @@
     "ru-ta"
    ],
    "pop": 1493356,
-   "popYear": 2021
+   "popYear": 2021,
+   "langs": {
+    "pt": [
+     "udmurte"
+    ],
+    "en": [
+     "Udmurt"
+    ],
+    "es": [
+     "udmurto"
+    ]
+   }
   },
   "ru-uly": {
    "code": "ULY",

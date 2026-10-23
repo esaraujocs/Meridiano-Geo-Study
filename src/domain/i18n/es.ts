@@ -1974,6 +1974,8 @@ export const es: Messages = {
     noResults: "Nada con ese nombre",
     close: "Cerrar la ficha",
     capital: "Capital",
+    coLanguages: "Lenguas cooficiales",
+    andMore: (n: number) => `y ${n} más`,
     population: "Población",
     area: "Superficie",
     languages: "Idiomas",

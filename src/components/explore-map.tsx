@@ -290,6 +290,8 @@ export function ExploreMap({ spec, onExit }: { spec: ExploreSpec; onExit: () => 
         ...(meta.cap ? [[t.explore.capital, meta.cap] as [string, string]] : []),
         ...(meta.census ? [[t.explore.population, meta.census[1] ? `${formatNumber(meta.census[0])} (${meta.census[1]})` : formatNumber(meta.census[0])] as [string, string]] : []),
         ...(meta.area ? [[t.explore.area, t.explore.km2(formatNumber(Math.round(meta.area)))] as [string, string]] : []),
+        // no máximo 3 línguas e "e mais N" (o Daguestão tem 12; o Alasca, 20)
+        ...(meta.coLangs?.length ? [[t.explore.coLanguages, `${meta.coLangs.slice(0, 3).join(", ")}${meta.coLangs.length > 3 ? ` ${t.explore.andMore(meta.coLangs.length - 3)}` : ""}`] as [string, string]] : []),
         ...(neighborNames.length ? [[t.explore.neighbors, neighborNames.slice(0, 6).join(", ")] as [string, string]] : []),
       ]
       : [

@@ -313,7 +313,21 @@
     "es-vc"
    ],
    "pop": 8034743,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "catalão",
+     "occitano (aranês)"
+    ],
+    "en": [
+     "Catalan",
+     "Occitan (Aranese)"
+    ],
+    "es": [
+     "catalán",
+     "occitano (aranés)"
+    ]
+   }
   },
   "es-ex": {
    "code": "EX",
@@ -379,7 +393,18 @@
     "es-cl"
    ],
    "pop": 2703353,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "galego"
+    ],
+    "en": [
+     "Galician"
+    ],
+    "es": [
+     "gallego"
+    ]
+   }
   },
   "es-ib": {
    "code": "IB",
@@ -416,7 +441,18 @@
    ],
    "borders": [],
    "pop": 1176659,
-   "popYear": 2022
+   "popYear": 2022,
+   "langs": {
+    "pt": [
+     "catalão"
+    ],
+    "en": [
+     "Catalan"
+    ],
+    "es": [
+     "catalán"
+    ]
+   }
   },
   "es-mc": {
    "code": "MC",
@@ -546,7 +582,18 @@
     "es-ri"
    ],
    "pop": 678338,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "basco (em parte)"
+    ],
+    "en": [
+     "Basque (in part)"
+    ],
+    "es": [
+     "euskera (en parte)"
+    ]
+   }
   },
   "es-pv": {
    "code": "PV",
@@ -588,7 +635,18 @@
     "es-ri"
    ],
    "pop": 2230452,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "basco"
+    ],
+    "en": [
+     "Basque"
+    ],
+    "es": [
+     "euskera"
+    ]
+   }
   },
   "es-ri": {
    "code": "RI",
@@ -662,7 +720,18 @@
     "es-mc"
    ],
    "pop": 5316541,
-   "popYear": 2024
+   "popYear": 2024,
+   "langs": {
+    "pt": [
+     "valenciano"
+    ],
+    "en": [
+     "Valencian"
+    ],
+    "es": [
+     "valenciano"
+    ]
+   }
   }
  }
 }
