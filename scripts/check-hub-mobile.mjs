@@ -132,7 +132,7 @@ for (const theme of THEMES) for (const [w, h] of SIZES) {
   const after = await page.evaluate(() => ({ label: document.querySelector(".hx-ladder-swap")?.textContent.trim(), saved: localStorage.getItem("carta-hub-ladder") }));
   check(scope, "trocar a escada do Duelo", Boolean(before) && after.label !== before && Boolean(after.saved), `${before} → ${after.label} (${after.saved})`);
   await page.tap(".hx-ladder-swap"); await sleep(400);
-  check(scope, "Duelar ativo e Desafiar desativado (em breve)", await page.evaluate(() => !document.querySelector(".hx-duel:not(.hx-chal) .hx-go").disabled && document.querySelector(".hx-chal .hx-go").disabled));
+  check(scope, "Duelar e Desafiar ativos", await page.evaluate(() => !document.querySelector(".hx-duel:not(.hx-chal) .hx-go").disabled && !document.querySelector(".hx-chal .hx-go").disabled));
   // a barra de baixo: cada destino abre e fica marcado; os anéis de progresso aparecem
   // os 5 destinos com o círculo; o arco do progresso só nos 3 de progresso (e só com algo feito: em 0% não desenha o ponto)
   const rings = await page.evaluate(() => ({ track: document.querySelectorAll(".mobile-nav .hx-ring").length, arcs: [...document.querySelectorAll(".mobile-nav .hx-ring-arc")].map((c) => c.closest("[data-nav]").dataset.nav) }));

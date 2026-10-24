@@ -2,6 +2,9 @@ import { freshAccountBeforeSpending, hasAccount, isOnline, requestAccountSync, t
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Game, type MapBoard } from "./components/map-game";
 import { ExploreMap, type ExploreSpec } from "./components/explore-map";
+import { ChallengesScreen, challengeName } from "./components/challenges-view";
+import { CHALLENGES, bestRun, challengeSeconds, dailyChallenge, type ChallengeRun } from "./domain/challenges";
+import { listChallengeRuns } from "./domain/challenges-store";
 import { loadFlags } from "./domain/quiz";
 import { locale as uiLocale } from "./domain/i18n/locale";
 import { Header, Hub, OptionsScreen, type NavProgress, type TopFamily } from "./components/screens";
@@ -128,6 +131,13 @@ function divisionMarkers(pack: DivisionPack) {
 
 export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
+  // Desafios: o desafio em que a tela abre (o do dia, pelo Hub; nulo = a lista), se a tabela está correndo (some a barra do app) e as tentativas
+  const [challengeStart, setChallengeStart] = useState<string | null>(null);
+  const [challengePlaying, setChallengePlaying] = useState(false);
+  const [challengeRuns, setChallengeRuns] = useState<ChallengeRun[]>([]);
+  const refreshChallengeRuns = () => { void listChallengeRuns().then(setChallengeRuns, () => undefined); };
+  useEffect(refreshChallengeRuns, []);
+  const openChallenges = (start: string | null) => { setChallengeStart(start); setScreen("challenges"); };
   const [data, setData] = useState<Legacy | null>(null);
   const [error, setError] = useState("");
   // Duelo contra bots (liga no Hub): sempre Mundo inteiro, sem o filtro ONU; a escolha do solo fica guardada.
@@ -1477,6 +1487,9 @@ export function App() {
   if (screen === "mecenato") {
     return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="collection" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store"><MecenatoView onBack={() => setScreen("hub")} onEconomyRefresh={refreshEconomy} onSuppliesRefresh={refreshSupplies} /></main></div>;
   }
+  if (screen === "challenges") {
+    return <div className="app-shell grain">{!challengePlaying && <Header legacy={legacy} economy={economy} navProgress={navProgress} current={undefined} onNavigate={navigate} onSurface={openSurface} />}<main className="content surface st-screen ch-screen" data-surface="challenges"><ChallengesScreen data={data} balance={economy.balance} startWith={challengeStart} onBack={() => { setChallengePlaying(false); setScreen("hub"); }} onPlaying={setChallengePlaying} onRunSaved={refreshChallengeRuns} /></main></div>;
+  }
   if (screen === "store") {
     return <div className="app-shell grain">{themeById(shownTheme)?.wash && <ThemeWash />}<Header legacy={legacy} economy={economy} navProgress={navProgress} current="store" onNavigate={navigate} onSurface={openSurface} /><main className="content surface st-screen" data-surface="store">{trial && <TrialBar name={themeById(trial.id)?.name ?? trial.id} onEnd={endTrial} />}<StoreView onTry={tryTheme} initialTab={storeTab} economy={economy} activeTheme={theme} onEquip={setTheme} onBuy={buyTheme} supplies={supplies} onBuySupply={buySupplyItem} onBuyMode={buyMode} onBuyRounds={buyRounds} onOpenMuseum={openMuseum} onBack={() => setScreen("hub")} /></main></div>;
   }
@@ -1566,6 +1579,12 @@ export function App() {
           trophies={trophies}
           duelsPlayed={duels.length}
           onOpenLeague={() => openLeague()}
+          challengeDaily={(() => {
+            const daily = dailyChallenge();
+            const best = bestRun(challengeRuns.filter((run) => run.challenge === daily.id));
+            return { id: daily.id, name: challengeName(daily), tier: t.challenges.short[daily.tier], scope: t.challenges.scopes[daily.scope], minutes: challengeSeconds(daily, data.meta) / 60, record: best ? Math.floor((best.correct / best.total) * 100) : null, count: CHALLENGES.length };
+          })()}
+          onOpenChallenges={openChallenges}
           arenas={{
             cards: arenaCards, next: arenaNext, formatCost: roundUnlockFor("long")?.cost ?? 3000, boards, botRanking,
             onFriends: openFriends, onOpenPlayer: openPlayer,

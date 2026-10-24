@@ -97,6 +97,7 @@ export type Screen =
    | "options"
   | "store"
   | "mecenato"
+  | "challenges"
   | "league"
   | "duel-reveal"
   | "duel-interlude"

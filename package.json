@@ -69,6 +69,7 @@
     "test:i18n": "node scripts/test-i18n.mjs",
     "test:mecenato": "node scripts/test-mecenato.mjs",
     "test:peoples": "node scripts/test-peoples.mjs",
+    "test:challenges": "node scripts/test-challenges.mjs",
     "test:divisions": "node scripts/test-divisions.mjs",
     "fetch:divisions": "python scripts/divisions/fetch.py",
     "build:divisions": "python scripts/divisions/build.py",

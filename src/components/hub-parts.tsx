@@ -549,23 +549,26 @@ if (typeof document !== "undefined") document.documentElement.dataset.hub = HUB_
 
 /** Desafios. Na faixa o cartão tem a estrutura do Duelo (o desafio do dia e os botões), para não ficar vazio ao lado dele; a tela dos Desafios
  *  ainda não existe, então o desafio do dia é uma prévia e os botões ficam desativados. */
-export function HubChallenges({ full = false }: { full?: boolean }) {
-  const go = <button type="button" className="hx-go" disabled><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>;
+/** O cartão dos Desafios: o desafio do dia (nome, tempo e o seu recorde) e Desafiar, que abre direto nele; "Todos" abre a lista. */
+export type HubChallengeInfo = { id: string; name: string; tier: string; scope: string; minutes: number; record: number | null; count: number };
+export function HubChallenges({ full = false, daily, onOpen }: { full?: boolean; daily?: HubChallengeInfo; onOpen?: (start: string | null) => void }) {
+  const go = <button type="button" className="hx-go" disabled={!daily || !onOpen} onClick={() => daily && onOpen?.(daily.id)}><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>;
+  const record = daily?.record == null ? "—" : `${daily.record}%`;
   return <section className={`hx-duel hx-chal${full ? " is-full" : ""}`} aria-label={t.hub.challengesAria}>
     <div className="hx-duel-top">
       <span className="hx-duel-ic" aria-hidden="true"><Icon type="arches" size={24} /></span>
       <div className="hx-duel-name"><h3>{t.hub.challenges}</h3></div>
-      <span className="hx-pill">{t.hub.challengesSoon}</span>
+      <span className="hx-pill">{daily ? t.challenges.count(daily.count) : t.hub.challengesSoon}</span>
     </div>
     {full ? <>
       <div className="hx-chal-daily">
-        <small>{t.hub.challengesDaily} · {t.hub.challengesSampleInfo}</small>
-        <b>{t.hub.challengesSample}</b>
-        <em aria-label={`${t.hub.challengesRecord}: —`}>—<small aria-hidden="true">{t.hub.challengesRecord}</small></em>
+        <small>{t.hub.challengesDaily}{daily ? ` · ${daily.tier} · ${t.challenges.minutes(daily.minutes)}` : ""}</small>
+        <b title={daily?.name}>{daily?.scope ?? "…"}</b>
+        <em aria-label={`${t.hub.challengesRecord}: ${record}`}>{record}<small aria-hidden="true">{t.hub.challengesRecord}</small></em>
       </div>
       <div className="hx-duel-foot">
         {go}
-        <div className="hx-duel-acts"><button type="button" disabled>{t.hub.challengesAll}</button><button type="button" disabled>{t.hub.challengesRecords}</button></div>
+        <div className="hx-duel-acts"><button type="button" disabled={!onOpen} onClick={() => onOpen?.(null)}>{t.hub.challengesAll}</button></div>
       </div>
     </> : go}
   </section>;

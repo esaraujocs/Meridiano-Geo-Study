@@ -23,7 +23,7 @@ import { leagueOf, divisionRoman } from "../domain/league";
 import { leaguePip } from "../domain/duel-labels";
 import { MAP_BASES, MAP_PROJECTIONS, MAP_PROJECTION_KEY, readMapProjection, type MapBase, type MapProjection } from "../domain/map-base";
 import type { ArenaSearch } from "./hub-parts";
-import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns } from "./hub-parts";
+import { HUB_BAND, HUB_COLUMNS, HUB_LAYOUT, HubCarousel, HubChallenges, HubDuel, HubTitle, HubTurns, type HubChallengeInfo } from "./hub-parts";
 import { useMecenato } from "./use-mecenato";
 import { activeCosmetics } from "../domain/mecenato-store";
 import { LevelFrame } from "./level-frame";
@@ -273,6 +273,8 @@ export function Hub({
   duelReady = true,
   onOpenLeague,
   arenas,
+  challengeDaily,
+  onOpenChallenges,
 }: {
   onSelect: (family: Family) => void;
   economy?: EconomySnapshot | null;
@@ -289,6 +291,9 @@ export function Hub({
   /** O corte de 20 rodadas (Loja) já foi comprado; senão o duelo contra bot mostra um cadeado. */
   duelReady?: boolean;
   onOpenLeague?: () => void;
+  /** O desafio do dia no cartão dos Desafios e a abertura da tela (num desafio ou na lista). */
+  challengeDaily?: HubChallengeInfo;
+  onOpenChallenges?: (start: string | null) => void;
   /** Os dois cartões de escada (Mapas e Bandeiras), a fila e os atalhos do Duelo, que mora no Hub. */
   arenas?: { cards: readonly LadderCard[]; next: readonly Milestone[]; formatCost: number; search: ArenaSearch; boards: Record<Ladder, readonly LeaderboardRow[] | null>; botRanking?: import("../domain/bot-ranking").BotRankingState | null; onFriends?: () => void; onOpenPlayer?: (code: string) => void };
 }) {
@@ -400,7 +405,7 @@ export function Hub({
         <section className="hx-cell hx-arena" aria-labelledby="hx-arena-title">
           <div className="section-label"><h2 id="hx-arena-title">{t.hub.arenaTitle}</h2></div>
           {arenas && <HubDuel cards={arenas.cards} formatReady={duelReady} formatCost={arenas.formatCost} search={arenas.search} onLeague={onOpenLeague} />}
-          <HubChallenges full={HUB_BAND} />
+          <HubChallenges full={HUB_BAND} daily={challengeDaily} onOpen={onOpenChallenges} />
         </section>
         <section className="hx-cell hx-progress hub-progress" aria-labelledby="hub-progress-title">
           <div className="section-label"><h2 id="hub-progress-title">{t.hub.yourProgress}</h2></div>

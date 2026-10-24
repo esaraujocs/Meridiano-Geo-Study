@@ -1,0 +1,110 @@
+// Desafios (challenges.ts): os 21 desafios, os 195 países soberanos por continente, as células de cada degrau (com as lacunas do Vaticano e da
+// Palestina), a moeda 1:1 ("dólar namibiano" sim, "dólar" não), o nome que abre a linha (Níger antes de Nigéria), o recorde, as medalhas e o dia.
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+
+const out = join(tmpdir(), "carta-cega-challenges-test");
+await rm(out, { recursive: true, force: true });
+await mkdir(out, { recursive: true });
+execFileSync("node_modules/.bin/tsc", ["src/domain/challenges.ts", "--outDir", out, "--target", "ES2022", "--module", "ES2022", "--moduleResolution", "Bundler", "--skipLibCheck", "--lib", "ES2022,DOM", "--ignoreConfig"]);
+await writeFile(join(out, "package.json"), JSON.stringify({ type: "module" }));
+const C = await import(pathToFileURL(join(out, "challenges.js")).href);
+
+const meta = JSON.parse(await readFile("public/data/legacy/catalog.json", "utf8")).meta;
+const peoples = JSON.parse(await readFile("public/data/peoples.json", "utf8"));
+const compare = (a, b) => a.localeCompare(b, "pt-BR");
+const board = (id) => C.buildChallenge(C.challengeById(id), meta, peoples, "pt", compare);
+
+// 3 degraus × 7 recortes; ids únicos
+assert.equal(C.CHALLENGES.length, 21);
+assert.equal(new Set(C.CHALLENGES.map((item) => item.id)).size, 21);
+
+// os 195 soberanos, cada um num continente; as Américas em duas
+const world = board("paises-mundo");
+const rows = world.groups.flatMap((group) => group.rows);
+assert.equal(rows.length, 195);
+assert.equal(world.total, 195);
+const counts = Object.fromEntries(world.groups.map((group) => [group.continent, group.rows.length]));
+assert.deepEqual(counts, { africa: 54, "america-do-norte": 23, "america-do-sul": 12, asia: 47, europa: 45, oceania: 14 });
+assert.ok(rows.some((row) => row.id === "275"), "a Palestina entra");
+assert.ok(rows.some((row) => row.id === "336"), "o Vaticano entra");
+assert.equal(world.seconds, 15 * 60);
+for (const scope of C.CONTINENTS) assert.equal(board(`paises-${scope}`).total, counts[scope]);
+
+// a ficha: 5 células por país menos as lacunas (o Vaticano sem gentílico, a Palestina sem moeda própria)
+const ficha = board("ficha-mundo");
+assert.equal(ficha.total, 195 * 5 - 2);
+assert.equal(ficha.seconds, 50 * 60);
+assert.equal(board("capitais-mundo").total, 390);
+const rowOf = (b, id) => b.groups.flatMap((group) => group.rows).find((row) => row.id === id);
+assert.ok(!rowOf(ficha, "336").cells.some((cell) => cell.column === "gentilico"));
+assert.ok(!rowOf(ficha, "275").cells.some((cell) => cell.column === "moeda"));
+
+// a moeda é 1:1: o nome completo, em qualquer dos três idiomas; as duas moedas oficiais valem (Namíbia, Panamá)
+const cell = (id, column) => rowOf(ficha, id).cells.find((item) => item.column === column);
+assert.ok(C.cellAccepts(cell("516", "moeda"), "dolar namibiano"));
+assert.ok(C.cellAccepts(cell("516", "moeda"), "Namibian dollar"));
+assert.ok(C.cellAccepts(cell("516", "moeda"), "rand"));
+assert.ok(!C.cellAccepts(cell("516", "moeda"), "dolar"));
+assert.ok(C.cellAccepts(cell("840", "moeda"), "Dólar americano"));
+assert.ok(!C.cellAccepts(cell("840", "moeda"), "dólar"));
+assert.ok(C.cellAccepts(cell("591", "moeda"), "balboa"));
+assert.ok(C.cellAccepts(cell("204", "moeda"), "franco CFA da África Ocidental"));
+assert.ok(!C.cellAccepts(cell("204", "moeda"), "franco CFA da África Central"));
+assert.ok(!C.cellAccepts(cell("204", "moeda"), "franco"));
+// capital, idioma (qualquer oficial, com ou sem o parêntese) e gentílico
+assert.ok(C.cellAccepts(cell("76", "capital"), "brasilia"));
+assert.ok(C.cellAccepts(cell("756", "idioma"), "romanche"));
+assert.ok(C.cellAccepts(cell("756", "idioma"), "alemão"));
+assert.ok(C.cellAccepts(cell("710", "idioma"), "zulu"));
+assert.ok(C.cellAccepts(cell("76", "gentilico"), "brasileiro"));
+assert.ok(C.cellAccepts(cell("76", "gentilico"), "Brazilian"));
+assert.ok(!C.cellAccepts(cell("76", "capital"), "rio de janeiro"));
+// o gabarito mostra o idioma oficial mais comum entre os do país; os outros oficiais continuam valendo
+assert.equal(cell("32", "idioma").answer, "Espanhol");
+assert.equal(cell("600", "idioma").answer, "Espanhol");
+assert.equal(cell("710", "idioma").answer, "Inglês");
+assert.ok(C.cellAccepts(cell("600", "idioma"), "guarani"));
+
+// o nome abre a linha; Níger primeiro, e Nigéria continua digitando com o Níger já aberto
+assert.equal(C.matchCountry(world, "Brasil", new Set()), "76");
+assert.equal(C.matchCountry(world, "brazil", new Set()), "76");
+assert.equal(C.matchCountry(world, "Niger", new Set()), "562");
+assert.equal(C.matchCountry(world, "Niger", new Set(["562"])), null);
+assert.equal(C.matchCountry(world, "Nigeria", new Set(["562"])), "566");
+assert.equal(C.matchCountry(world, "Bras", new Set()), null);
+assert.equal(C.matchCountry(board("paises-europa"), "Brasil", new Set()), null, "fora do recorte não abre");
+// nome que é o começo de outro espera o Enter (Níger/Nigéria, Guiné/Guiné-Bissau); com o outro já aberto, abre sozinho
+assert.ok(C.countryWaits(world, "Niger", new Set()));
+assert.ok(!C.countryWaits(world, "Niger", new Set(["566"])));
+assert.ok(C.countryWaits(world, "Guine", new Set()));
+assert.ok(!C.countryWaits(world, "Brasil", new Set()));
+// na célula: "real" é certo, mas é o começo de "real brasileiro": espera; o nome inteiro fecha sozinho
+assert.ok(C.cellAccepts(cell("76", "moeda"), "real") && C.cellWaits(cell("76", "moeda"), "real"));
+assert.ok(C.cellAccepts(cell("76", "moeda"), "real brasileiro") && !C.cellWaits(cell("76", "moeda"), "real brasileiro"));
+assert.ok(!C.cellWaits(cell("76", "capital"), "brasilia"));
+
+// recorde e medalhas
+const run = (correct, total, ms) => ({ id: `challenge-run:x:${ms}`, challenge: "x", correct, total, ms, end: "time", at: ms });
+assert.equal(C.bestRun([run(10, 20, 500), run(12, 20, 900), run(12, 20, 700)]).ms, 700);
+assert.equal(C.bestRun([]), null);
+assert.equal(C.medalOf(run(20, 20, 1)), "ouro");
+assert.equal(C.medalOf(run(16, 20, 1)), "prata");
+assert.equal(C.medalOf(run(10, 20, 1)), "bronze");
+assert.equal(C.medalOf(run(9, 20, 1)), null);
+assert.equal(C.parseRun({ id: "challenge-run:paises-mundo:1", challenge: "paises-mundo", correct: 3, total: 195, ms: 10, end: "time", at: 1 }).correct, 3);
+assert.equal(C.parseRun({ id: "preset:1" }), null);
+
+// o desafio do dia: muda de um dia para o outro e nunca é um dos dois maiores do mundo
+const days = Array.from({ length: 60 }, (_, day) => C.dailyChallenge(day * 86_400_000 + 1000).id);
+assert.ok(!days.includes("ficha-mundo") && !days.includes("capitais-mundo"));
+for (let index = 1; index < days.length; index += 1) assert.notEqual(days[index], days[index - 1]);
+assert.equal(new Set(days).size, C.DAILY_POOL.length);
+// o tempo do Hub (só pelo catálogo) bate com o da tabela
+for (const item of C.CHALLENGES) assert.equal(C.challengeSeconds(item, meta), board(item.id).seconds, item.id);
+
+console.log("desafios: 21 desafios, 195 países, ficha com as lacunas, moeda 1:1, abrir linhas, recorde, medalhas e o dia ok");
