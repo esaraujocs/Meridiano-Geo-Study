@@ -22,9 +22,11 @@ export const TIER_COLUMNS: Record<ChallengeTier, readonly ChallengeColumn[]> = {
 };
 /** O tempo = uma folga fixa (as pausas para lembrar os últimos, que existem em qualquer tamanho de lista) + segundos por país (digitar), arredondado
  *  para cima de 30 em 30 s, no mínimo 1 min. Regra do Enzo (24/10/2026): "confortável o suficiente para algumas pausas para pensar, mas desafiador
- *  o suficiente". O mundo fica em 15, 25,5 e 50 min (o Países do mundo é o do JetPunk); os recortes pequenos ganham mais por país (América do Sul:
- *  1 min 30 s nos Países). Até 23/10 um piso de 3 min por degrau empatava as Capitais das duas Américas; até 24/10 a conta era só proporcional. */
-const SECONDS_PER_ROW: Record<ChallengeTier, number> = { paises: 4.4, capitais: 7.5, ficha: 15 };
+ *  o suficiente". O mundo fica em 15, 25,5 e 60 min (o Países do mundo é o do JetPunk; a Ficha do mundo foi de 50 a 60 a pedido dele, ~3,7 s por
+ *  resposta); os recortes pequenos ganham mais por país (América do Sul: 1 min 30 s nos Países). O relógio é um só para a lista: quem responde
+ *  rápido guarda tempo para as que custam. Até 23/10 um piso de 3 min por degrau empatava as Capitais das duas Américas; até 24/10 a conta era só
+ *  proporcional. */
+const SECONDS_PER_ROW: Record<ChallengeTier, number> = { paises: 4.4, capitais: 7.5, ficha: 18.1 };
 const BUFFER_SECONDS: Record<ChallengeTier, number> = { paises: 30, capitais: 45, ficha: 60 };
 
 export type ChallengeDef = { id: string; tier: ChallengeTier; scope: ChallengeScope };

@@ -38,14 +38,14 @@ for (const scope of C.CONTINENTS) assert.equal(board(`paises-${scope}`).total, c
 // a ficha: 5 células por país menos as lacunas (o Vaticano sem gentílico, a Palestina sem moeda própria)
 const ficha = board("ficha-mundo");
 assert.equal(ficha.total, 195 * 5 - 2);
-assert.equal(ficha.seconds, 50 * 60);
+assert.equal(ficha.seconds, 60 * 60);
 assert.equal(board("capitais-mundo").total, 390);
 // o tempo = folga fixa + segundos por país, de 30 em 30 s: o mundo não muda e os recortes pequenos ganham respiro por país
 assert.equal(board("paises-america-do-sul").seconds, 90);
 assert.equal(board("paises-oceania").seconds, 120);
 assert.equal(board("capitais-america-do-sul").seconds, 150);
 assert.equal(board("capitais-america-do-norte").seconds, 240);
-assert.equal(board("ficha-america-do-sul").seconds, 240);
+assert.equal(board("ficha-america-do-sul").seconds, 300);
 assert.equal(board("capitais-mundo").seconds, 25 * 60 + 30);
 const perCountry = (id) => board(id).seconds / board(id).groups.reduce((sum, group) => sum + group.rows.length, 0);
 assert.ok(perCountry("paises-america-do-sul") > perCountry("paises-mundo") + 2, "o recorte pequeno tem mais tempo por país");
