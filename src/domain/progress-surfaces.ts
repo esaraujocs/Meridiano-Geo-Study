@@ -12,6 +12,7 @@ import { conqueredByPillar, domainTimeline, masteredIdsFromSessions } from "./do
 import { t } from "./i18n/index.js";
 import { DUEL_ID_PREFIX, parseDuel, type DuelRecord } from "./duel.js";
 import { PVP_ID_PREFIX, parsePvpMatch, type PvpMatchRecord } from "./pvp-store.js";
+import { CHALLENGE_RUN_PREFIX, parseRun, type ChallengeRun } from "./challenges.js";
 
 export type SurfaceSession = {
   id: string;
@@ -253,6 +254,7 @@ export async function querySurfaces(data?: Legacy) {
   db.close();
   const duels = preferences.filter((row) => String(row?.id ?? "").startsWith(DUEL_ID_PREFIX)).map(parseDuel).filter((item): item is DuelRecord => item !== null);
   const pvpMatches = preferences.filter((row) => String(row?.id ?? "").startsWith(PVP_ID_PREFIX)).map(parsePvpMatch).filter((item): item is PvpMatchRecord => item !== null);
+  const challengeRuns = preferences.filter((row) => String(row?.id ?? "").startsWith(CHALLENGE_RUN_PREFIX)).map(parseRun).filter((item): item is ChallengeRun => item !== null);
   const sessions = rawSessions.map(normalizeSession).sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0));
   const universe = canonicalCurrentIds(data?.meta);
   const snapshot = deriveProgress(progress, universe, sessions);
@@ -273,7 +275,7 @@ export async function querySurfaces(data?: Legacy) {
   // o Resumo do Progresso: o mapa pinta o que foi conquistado em cada pilar, e o gráfico mostra a evolução do domínio dia a dia
   const conquered = conqueredByPillar(rawSessions);
   const localDay = (at: number) => { const d = new Date(at); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
-   return { sessions, duels, pvpMatches, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...masteredIdsFromSessions(rawSessions)],
+   return { sessions, duels, pvpMatches, challengeRuns, playerStats: playerStatsFromSessions(rawSessions), progress: snapshot, cards, achievements: evaluated.filter((item) => !item.deprecated), historical, dominatedIds: [...masteredIdsFromSessions(rawSessions)],
     conquered: { mapa: [...conquered.mapa], bandeiras: [...conquered.bandeiras], capitais: [...conquered.capitais] }, domainTimeline: domainTimeline(rawSessions, localDay) };
 }
 

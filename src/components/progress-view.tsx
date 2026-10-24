@@ -46,11 +46,12 @@ type Props = {
 type FlagOf = (code?: string) => string | undefined;
 
 const LEVEL_COLORS = ["rgba(199,182,143,.7)", "#857b5f", "var(--rar-2, #2F6F6A)", "var(--rar-3, #AB7A1A)", "var(--rar-4, #B65F47)", "#C49345"];
-const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", divisoes: "divisions", epocas: "history" };
+const GROUP_ICON: Record<SessionGroup, string> = { bandeiras: "flag", mapa: "map", capitais: "pin", historicas: "flag", idiomas: "world", gentilicos: "people", moedas: "coins", divisoes: "divisions", epocas: "history", desafios: "star" };
 const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0");
 
 // ---------- linhas de partida (o duelo é uma linha só: adversário, placar e troféus) ----------
 function RowIcon({ row }: { row: SessionRow }) {
+  if (row.challenge) return <span className="pr-sicon pr-sicon-chal"><Icon type="arches" size={20} /></span>;
   return row.duel
     ? <span className={`pr-sicon pr-sicon-duel is-${row.duel.outcome}`}><Icon type="swords" size={20} /></span>
     : <span className="pr-sicon"><Glyph name={GROUP_ICON[row.group]} size={20} /></span>;
@@ -63,7 +64,7 @@ function RowTitle({ row }: { row: SessionRow }) {
 function RowMeta({ row, when, flagIncomplete }: { row: SessionRow; when?: string; flagIncomplete?: boolean }) {
   const lead = row.duel ? t.progress.duelVs(row.duel.botName, row.duel.botLeague) : row.region;
   return <>
-    {lead} · {row.rounds}{t.progress.roundsUnit(row.rounds)}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}{row.device ? ` · ${t.progress.device[row.device]}` : ""}
+    {lead} · {row.challenge ? t.challenges.answers(row.rounds) : <>{row.rounds}{t.progress.roundsUnit(row.rounds)}</>}{row.duration ? ` · ${row.duration}` : ""}{when ? ` · ${when}` : ""}{row.device ? ` · ${t.progress.device[row.device]}` : ""}
     {row.duel?.abandoned ? <> · <span className="pr-inc">{t.progress.duelLeft}</span></> : flagIncomplete && !row.complete ? <> · <span className="pr-inc">{t.progress.incomplete}</span></> : null}
   </>;
 }
@@ -265,7 +266,8 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
       <span className={`pr-chev${open ? " down" : ""}`}><Glyph name="chevron" size={18} stroke={2} /></span>
     </button>
     {open && row.duel && <DuelDetail row={row} duel={row.duel} flagOf={flagOf} />}
-    {open && !row.duel && <div className="pr-sess-detail">
+    {open && row.challenge && <ChallengeDetail row={row} challenge={row.challenge} flagOf={flagOf} />}
+    {open && !row.duel && !row.challenge && <div className="pr-sess-detail">
       <div className="pr-sd-top">
         {row.pattern && <div className="pr-strip" role="img" aria-label={t.progress.stripAria(row.pattern.split("").filter((c) => c === "1").length, row.pattern.length)}>{row.pattern.split("").map((c, index) => <i key={index} className={c === "1" ? "ok" : "no"} />)}</div>}
         <dl>
@@ -279,6 +281,24 @@ function SessionItem({ row, group, open, onToggle, flagOf }: { row: SessionRow; 
         : <><span>{t.progress.youMissed}</span>{row.misses.slice(0, 8).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{row.misses.length > 8 && <span>+{row.misses.length - 8}</span>}</>}</div>}
     </div>}
   </article>;
+}
+
+/** Uma tentativa dos Desafios aberta no histórico: como acabou, os acertos, o tempo, as moedas e o XP, e os países que faltaram. */
+function ChallengeDetail({ row, challenge, flagOf }: { row: SessionRow; challenge: NonNullable<SessionRow["challenge"]>; flagOf: FlagOf }) {
+  return <div className="pr-sess-detail">
+    <div className="pr-sd-top">
+      <dl>
+        <div><dt>{t.challenges.found}</dt><dd>{t.challenges.progress(challenge.correct, challenge.total)}</dd></div>
+        <div><dt>{t.progress.duration}</dt><dd>{row.duration ?? "—"}</dd></div>
+        <div><dt>{t.challenges.coinsLabel}</dt><dd>{challenge.coins === null ? "—" : `+${formatNumber(challenge.coins + challenge.medalBonus)}`}</dd></div>
+        <div><dt>XP</dt><dd>+{formatNumber(challenge.xp)}</dd></div>
+      </dl>
+    </div>
+    <div className="pr-sd-miss">
+      <span>{t.challenges.ends[challenge.end]}{challenge.medal ? ` · ${t.challenges.medals[challenge.medal]}` : ""}{challenge.daily ? ` · ${t.challenges.dailyDouble}` : ""}</span>
+      {row.misses.length > 0 && <><span>{t.challenges.missedLabel}</span>{row.misses.slice(0, 24).map((miss) => { const src = flagOf(miss.flag); return <span className="pr-miss" key={miss.id}>{src ? <img className="pr-flag" src={src} alt="" width={26} height={18} loading="lazy" decoding="async" /> : null}{miss.name}</span>; })}{row.misses.length > 24 && <span>+{row.misses.length - 24}</span>}</>}
+    </div>
+  </div>;
 }
 
 /** Abre o perfil de um jogador (o adversário de um duelo contra pessoa); sem quem trate, o botão não aparece. */
@@ -331,6 +351,7 @@ function History({ rows, now, flagOf }: { rows: SessionRow[]; now: number; flagO
     { key: "historicas", label: t.sessions.groups.historicas, count: counts.get("historicas") ?? 0 },
     { key: "idiomas", label: t.sessions.groups.idiomas, count: counts.get("idiomas") ?? 0 },
     { key: "duelo", label: t.progress.duelChip, count: duelCount },
+    { key: "desafios", label: t.sessions.groups.desafios, count: counts.get("desafios") ?? 0 },
   ];
   if (rows.length === 0) return <div className="pr-card"><div className="pr-empty"><b>{t.progress.noMatches}</b><p>{t.progress.historyEmptyHint}</p></div></div>;
   return <>
@@ -421,6 +442,7 @@ export function ProgressView({ state, data, economy, onTrain, onOpenCollection, 
     sessions: historySessions,
     duels: state.duels,
     pvpMatches: state.pvpMatches,
+    challengeRuns: state.challengeRuns,
     records: state.progress.records ?? [],
     meta: data.meta,
     historicalMeta,

@@ -18,6 +18,7 @@ import type { DuelOutcome, DuelRecord } from "./duel.js";
 import type { Ladder, ModeGroup } from "./duel-modes.js";
 import { botLabel, styleLabel } from "./duel-labels.js";
 import type { PvpMatchRecord } from "./pvp-store.js";
+import { challengeById, medalOf, runXp, type ChallengeEnd, type ChallengeRun, type Medal } from "./challenges.js";
 
 export { TITLE_DOMAIN_PCT }; // % de países conquistados do pilar que abre cada título (a escada: pillars.ts)
 export const FORM_WINDOW = 40; // rodadas da "forma recente"
@@ -36,6 +37,8 @@ export type DashboardInput = {
   duels?: readonly DuelRecord[];
   /** Os duelos com amigo (PvP) já terminados: mesma ideia, uma linha só, ao lado dos duelos contra bot. */
   pvpMatches?: readonly PvpMatchRecord[];
+  /** As tentativas dos Desafios: uma linha cada no histórico, no grupo "desafios". */
+  challengeRuns?: readonly ChallengeRun[];
   records: readonly ProgressRecordLike[];
   meta: Record<string, Meta>;
   /** Nome e bandeira das entidades históricas (mesma forma de `meta`, por id), para o "Você errou" do Históricas no histórico
@@ -107,6 +110,8 @@ export type SessionRow = {
   device?: "desktop" | "mobile";
   /** Só nas linhas de duelo: adversário, placar, troféus e os dois tempos. */
   duel?: DuelRow;
+  /** Só nas linhas dos Desafios: como acabou, a medalha, as moedas (as tentativas de antes de 23/10 não pagaram: nulo) e o XP. */
+  challenge?: { end: ChallengeEnd; medal: Medal; correct: number; total: number; coins: number | null; xp: number; daily: boolean; medalBonus: number };
 };
 export type HistoryGroup = { key: string; label: string; sessions: number; rounds: number; pct: number | null; rows: SessionRow[] };
 
@@ -180,6 +185,35 @@ function missesOf(rounds: SurfaceSession["rounds"], meta: Record<string, Meta>, 
     misses.push({ id: round.targetId, name: meta[round.targetId]?.pt ?? round.targetId, flag: flagOf(round.targetId) });
   }
   return misses;
+}
+
+/** Uma linha por tentativa dos Desafios: o título é o nome do desafio, "rodadas" são as respostas e o que faltou são os países com alguma célula
+ *  vazia (as tentativas de antes de 23/10 não guardavam o que faltou). */
+function buildChallengeRows(runs: readonly ChallengeRun[], meta: Record<string, Meta>, flagOf: (id: string) => string | undefined, now: number): SessionRow[] {
+  return runs.flatMap((run): SessionRow[] => {
+    const def = challengeById(run.challenge);
+    if (!def) return [];
+    const missedIds = [...new Set((run.missed ?? []).map((cell) => cell.split(":")[0]))];
+    return [{
+      id: run.id,
+      title: t.challenges.name(def.tier, def.scope, t.challenges.scopes[def.scope]),
+      family: t.challenges.title,
+      variant: t.challenges.tiers[def.tier],
+      group: "desafios",
+      region: t.challenges.scopes[def.scope],
+      rounds: run.total,
+      duration: formatDuration(run.ms),
+      pct: roundPct(run.correct / run.total),
+      // desistir aqui é terminar antes (paga o que acertou): a tentativa nunca aparece como incompleta
+      complete: true,
+      startedAt: run.at - run.ms,
+      when: relativeWhen(run.at - run.ms, now),
+      pattern: "", avgTimeMs: null, bestStreak: 0,
+      misses: missedIds.map((id) => ({ id, name: meta[id]?.pt ?? id, flag: flagOf(id) })),
+      questions: [],
+      challenge: { end: run.end, medal: medalOf(run), correct: run.correct, total: run.total, coins: run.coins ?? null, xp: runXp(run), daily: run.daily === true, medalBonus: run.medalBonus ?? 0 },
+    }];
+  });
 }
 
 const WRITING_VARIANTS = new Set(["escrita-pais", "escrita-capital", "silhueta", "dv-escrita-nome", "dv-escrita-capital", "dv-silhueta"]);
@@ -611,7 +645,8 @@ export function buildProgressDashboard(input: DashboardInput): Dashboard {
   const duelRows = buildDuelRows(input.duels ?? [], sessions, meta, flagOf, now);
   const pvpRows = buildPvpRows(input.pvpMatches ?? [], sessions, meta, flagOf, now);
   const used = new Set([...duelRows.used, ...pvpRows.used]);
-  const history = [...sessions.filter((session) => !used.has(session.id)).reverse().map((session) => buildRow(session, meta, flagOf, now)), ...duelRows.rows, ...pvpRows.rows]
+  const history = [...sessions.filter((session) => !used.has(session.id)).reverse().map((session) => buildRow(session, meta, flagOf, now)), ...duelRows.rows, ...pvpRows.rows,
+    ...buildChallengeRows(input.challengeRuns ?? [], meta, flagOf, now)]
     .sort((a, b) => b.startedAt - a.startedAt);
 
   return {

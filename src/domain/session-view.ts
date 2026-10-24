@@ -3,7 +3,7 @@ import type { PillarSession } from "./pillars.js";
 import { intlLocale, t } from "./i18n/index.js";
 import { asDivisionSession, divisionRegionLabel, isDivisionFamily, isDivisionRegion } from "./divisions.js";
 
-export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "divisoes" | "epocas";
+export type SessionGroup = "bandeiras" | "mapa" | "capitais" | "historicas" | "idiomas" | "gentilicos" | "moedas" | "divisoes" | "epocas" | "desafios";
 export const SESSION_GROUPS: ReadonlyArray<{ key: SessionGroup; label: string }> =
   (["bandeiras", "mapa", "capitais", "historicas", "idiomas", "gentilicos", "moedas", "divisoes", "epocas"] as const).map((key) => ({ key, label: t.sessions.groups[key] }));
 

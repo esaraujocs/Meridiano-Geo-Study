@@ -108,6 +108,29 @@ assert.equal(C.medalOf(run(9, 20, 1)), null);
 assert.equal(C.parseRun({ id: "challenge-run:paises-mundo:1", challenge: "paises-mundo", correct: 3, total: 195, ms: 10, end: "time", at: 1 }).correct, 3);
 assert.equal(C.parseRun({ id: "preset:1" }), null);
 
+// recompensa: 40 moedas e 2 XP por acerto; o desafio do dia paga em dobro só a primeira tentativa do dia; cada medalha dá o bônus uma vez
+const day = 86_400_000 * 20_000;
+const dailyId = C.dailyChallenge(day).id;
+const otherId = C.CHALLENGES.find((item) => item.id !== dailyId).id;
+let reward = C.challengeReward({ challenge: otherId, correct: 178, total: 195, at: day, earlier: [], granted: new Set() });
+assert.deepEqual([reward.coins, reward.xp, reward.daily], [178 * 40, 356, false]);
+assert.deepEqual(reward.medals, ["bronze", "prata"]);
+assert.equal(reward.medalBonus, 195 * (5 + 10));
+reward = C.challengeReward({ challenge: otherId, correct: 195, total: 195, at: day, earlier: [], granted: new Set(["bronze", "prata"]) });
+assert.deepEqual(reward.medals, ["ouro"]);
+assert.equal(reward.medalBonus, 195 * 20);
+reward = C.challengeReward({ challenge: dailyId, correct: 10, total: 20, at: day + 1000, earlier: [], granted: new Set() });
+assert.equal(reward.coins, 10 * 40 * 2);
+assert.ok(reward.daily);
+reward = C.challengeReward({ challenge: dailyId, correct: 10, total: 20, at: day + 5000, earlier: [{ at: day + 1000 }], granted: new Set(["bronze"]) });
+assert.equal(reward.coins, 10 * 40);
+assert.ok(!reward.daily);
+assert.deepEqual(reward.medals, []);
+assert.equal(C.challengeReward({ challenge: otherId, correct: 9, total: 20, at: day, earlier: [], granted: new Set() }).medalBonus, 0);
+// o XP das tentativas antigas (sem o campo) sai dos acertos; o campo novo é lido
+assert.equal(C.runXp({ correct: 178 }), 356);
+assert.equal(C.parseRun({ id: "challenge-run:x:1", challenge: "x", correct: 3, total: 10, ms: 5, end: "time", at: 1, coins: 120, xp: 6, daily: true, medalBonus: 0, missed: ["76:nome"] }).missed[0], "76:nome");
+
 // o desafio do dia: muda de um dia para o outro e nunca é um dos dois maiores do mundo
 const days = Array.from({ length: 60 }, (_, day) => C.dailyChallenge(day * 86_400_000 + 1000).id);
 assert.ok(!days.includes("ficha-mundo") && !days.includes("capitais-mundo"));

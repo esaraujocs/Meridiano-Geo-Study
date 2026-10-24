@@ -8,6 +8,7 @@ import { levelForXp, xpForLevel, xpFrom } from "./player-level.js";
 import { everDominatedFromSessions, masteredFromSessions } from "./dominated.js";
 import { ROUND_UNLOCKS, type RoundUnlockKey } from "./pace.js";
 import { themeById, themeUnlockKey } from "./themes.js";
+import { CHALLENGE_RUN_PREFIX, parseRun, runXp } from "./challenges.js";
 export { dominatedFromSessions, dominatedIdsFromSessions, everDominatedFromSessions, everDominatedIdsFromSessions, masteredFromSessions, masteredIdsFromSessions } from "./dominated.js";
 
 export type LedgerEntry = { id: string; kind: "credit" | "debit"; amount: number; reason: string; source: string; createdAt: number };
@@ -112,11 +113,13 @@ export async function convertEconomyV2() {
 
 export async function queryEconomy(): Promise<EconomySnapshot> {
   const db = await openDb();
-  const tx = db.transaction(["ledger", "unlocks", "progress", "sessions", "state"], "readonly");
-  const [ledger, unlocks, progress, sessions, adjustRow] = await Promise.all([
+  const tx = db.transaction(["ledger", "unlocks", "progress", "sessions", "state", "preferences"], "readonly");
+  const [ledger, unlocks, progress, sessions, adjustRow, challengeRows] = await Promise.all([
     all<LedgerEntry>(tx.objectStore("ledger")), all<{ key: UnlockKey }>(tx.objectStore("unlocks")),
     all<{ mastery?: number; columns?: Record<string, number> }>(tx.objectStore("progress")), all<unknown>(tx.objectStore("sessions")),
     new Promise<{ amount?: number } | undefined>((resolve, reject) => { const r = tx.objectStore("state").get(XP_ADJUST_ID); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }),
+    // as tentativas dos Desafios: o XP delas soma ao das partidas
+    new Promise<unknown[]>((resolve, reject) => { const r = tx.objectStore("preferences").getAll(IDBKeyRange.bound(CHALLENGE_RUN_PREFIX, `${CHALLENGE_RUN_PREFIX}￿`)); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }),
   ]);
   db.close();
   const earned = ledger.filter((e) => e.kind === "credit").reduce((n, e) => n + e.amount, 0);
@@ -142,7 +145,8 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
   const rounds = playerStats.rounds;
   // maestria = países dominados pela regra permanente (dominated.ts, 04/10); o XP segue na regra antiga (todo país que já teve as 3 certas em 2 modos), então ninguém perde nível
   const dominated = masteredFromSessions(sessions);
-  const xpReal = Math.round(xpFrom(playerStats.xpRounds, everDominatedFromSessions(sessions, progress), playerStats.xpBoosted));
+  const challengeXp = challengeRows.map(parseRun).reduce((sum, run) => sum + (run ? runXp(run) : 0), 0);
+  const xpReal = Math.round(xpFrom(playerStats.xpRounds, everDominatedFromSessions(sessions, progress), playerStats.xpBoosted) + challengeXp);
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);
   const level = levelForXp(xp);

@@ -143,7 +143,12 @@ export const cellId = (rowId: string, column: ChallengeColumn) => `${rowId}:${co
 export type ChallengeEnd = "complete" | "time" | "gaveup";
 /** Uma tentativa terminada: linha imutável na loja `preferences` (`challenge-run:<desafio>:<instante>`), então sincroniza com a conta e entra no
  *  backup sem carimbo; o recorde sai delas. */
-export type ChallengeRun = { id: string; challenge: string; correct: number; total: number; ms: number; end: ChallengeEnd; at: number };
+export type ChallengeRun = {
+  id: string; challenge: string; correct: number; total: number; ms: number; end: ChallengeEnd; at: number;
+  /** Desde 23/10/2026 (as tentativas de antes não pagaram nada): moedas e XP da tentativa, se foi o desafio do dia pago em dobro, o bônus das
+   *  medalhas novas e as células que faltaram (`<país>:<coluna>`, para o Histórico). */
+  coins?: number; xp?: number; daily?: boolean; medalBonus?: number; missed?: string[];
+};
 export const CHALLENGE_RUN_PREFIX = "challenge-run:";
 
 export function parseRun(value: unknown): ChallengeRun | null {
@@ -153,7 +158,14 @@ export function parseRun(value: unknown): ChallengeRun | null {
   const correct = num(row.correct), total = num(row.total), ms = num(row.ms), at = num(row.at);
   if (correct === null || total === null || !total || ms === null || at === null) return null;
   const end = row.end === "complete" || row.end === "time" || row.end === "gaveup" ? row.end : "gaveup";
-  return { id: row.id, challenge: row.challenge, correct: Math.min(correct, total), total, ms, end, at };
+  const optional = {
+    ...(num(row.coins) !== null ? { coins: num(row.coins)! } : {}),
+    ...(num(row.xp) !== null ? { xp: num(row.xp)! } : {}),
+    ...(row.daily === true ? { daily: true } : {}),
+    ...(num(row.medalBonus) !== null ? { medalBonus: num(row.medalBonus)! } : {}),
+    ...(Array.isArray(row.missed) ? { missed: row.missed.filter((item): item is string => typeof item === "string") } : {}),
+  };
+  return { id: row.id, challenge: row.challenge, correct: Math.min(correct, total), total, ms, end, at, ...optional };
 }
 
 /** O recorde: mais acertos (pela fração, se o total mudou) e, empatado, o menor tempo. */
@@ -174,6 +186,39 @@ export function medalOf(run: Pick<ChallengeRun, "correct" | "total"> | null): Me
   const share = run.correct / run.total;
   return share >= 1 ? "ouro" : share >= 0.8 ? "prata" : share >= 0.5 ? "bronze" : null;
 }
+
+// ---- recompensas (23/10/2026, pedido do Enzo: "histórico, XP, moedas")
+/** Por resposta certa: 40 moedas (o ritmo por minuto dos modos de escrita) e 2 XP (o de uma rodada). Desistir também paga o que foi acertado
+ *  (desistir aqui é terminar antes, como no JetPunk). */
+export const CHALLENGE_COINS_PER_ANSWER = 40;
+export const CHALLENGE_XP_PER_ANSWER = 2;
+/** A primeira tentativa do dia no desafio do dia paga as moedas em dobro. */
+export const DAILY_FACTOR = 2;
+/** Bônus único por desafio na primeira vez que se alcança cada medalha, por resposta do desafio (prata no Países do mundo: 1.950). */
+export const MEDAL_BONUS_PER_ANSWER: Record<NonNullable<Medal>, number> = { bronze: 5, prata: 10, ouro: 20 };
+export const MEDALS: readonly NonNullable<Medal>[] = ["bronze", "prata", "ouro"];
+export const medalGrantId = (challenge: string, medal: NonNullable<Medal>) => `grant:challenge:${challenge}:${medal}`;
+export const challengeLedgerId = (runId: string) => `challenge:${runId}`;
+const dayOf = (at: number) => Math.floor(at / 86_400_000);
+
+/** A recompensa de uma tentativa: as moedas e o XP pelos acertos, o dobro do desafio do dia (só a primeira tentativa do dia nele) e as medalhas
+ *  alcançadas que ainda não deram bônus. */
+export function challengeReward({ challenge, correct, total, at, earlier, granted }: {
+  challenge: string; correct: number; total: number; at: number;
+  /** As tentativas anteriores neste desafio. */
+  earlier: readonly Pick<ChallengeRun, "at">[];
+  /** As medalhas deste desafio que já deram bônus. */
+  granted: ReadonlySet<NonNullable<Medal>>;
+}) {
+  const daily = dailyChallenge(at).id === challenge && !earlier.some((run) => dayOf(run.at) === dayOf(at));
+  const coins = correct * CHALLENGE_COINS_PER_ANSWER * (daily ? DAILY_FACTOR : 1);
+  const reached = medalOf({ correct, total });
+  const medals = reached ? MEDALS.slice(0, MEDALS.indexOf(reached) + 1).filter((medal) => !granted.has(medal)) : [];
+  const medalBonus = medals.reduce((sum, medal) => sum + total * MEDAL_BONUS_PER_ANSWER[medal], 0);
+  return { coins, xp: correct * CHALLENGE_XP_PER_ANSWER, daily, medals, medalBonus };
+}
+/** O XP de uma tentativa (as de antes de 23/10 não tinham o campo: valem pelos acertos, como as outras). */
+export const runXp = (run: Pick<ChallengeRun, "correct" | "xp">) => run.xp ?? run.correct * CHALLENGE_XP_PER_ANSWER;
 
 /** O desafio do dia (UTC): roda pelos desafios de continente e pelos países do mundo (os dois maiores do mundo, 25 e 50 min, ficam de fora). */
 export const DAILY_POOL: readonly ChallengeDef[] = CHALLENGES.filter((item) => item.scope !== "mundo" || item.tier === "paises");

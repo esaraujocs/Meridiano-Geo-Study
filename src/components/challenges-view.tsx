@@ -2,13 +2,13 @@
 // JetPunk: digitar o nome de um país abre a linha dele; nas linhas abertas cada célula só aceita a resposta daquele país e fecha sozinha ao acertar.
 // Contra o relógio; ao acabar o tempo, desistir ou completar, o que faltou aparece em vermelho e a tentativa é gravada (o recorde sai delas).
 import { useEffect, useMemo, useRef, useState } from "react";
-import { compareText, t } from "../domain/i18n";
+import { compareText, formatNumber, t } from "../domain/i18n";
 import { locale } from "../domain/i18n/locale";
 import {
   CHALLENGE_SCOPES, CHALLENGE_TIERS, bestRun, buildChallenge, cellAccepts, cellId, challengeById, countryWaits, dailyChallenge, longerKeys, matchCountry, medalOf, spillOf,
   type ChallengeBoard, type ChallengeCell, type ChallengeDef, type ChallengeEnd, type ChallengeRow, type ChallengeRun, type Medal,
 } from "../domain/challenges";
-import { listChallengeRuns, saveChallengeRun } from "../domain/challenges-store";
+import { listChallengeRuns, saveChallengeRun, type SavedChallengeRun } from "../domain/challenges-store";
 import { answerKey } from "../domain/typed-answer";
 import type { PeoplesFile } from "../domain/peoples";
 import type { Legacy } from "../domain/types";
@@ -117,6 +117,7 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
   const [startedAt, setStartedAt] = useState(0);
   const [end, setEnd] = useState<{ kind: ChallengeEnd; ms: number; record: boolean } | null>(null);
   const [confirmQuit, setConfirmQuit] = useState(false);
+  const [reward, setReward] = useState<SavedChallengeRun | null>(null);
   const mainRef = useRef<HTMLInputElement>(null);
   const cellRefs = useRef(new Map<string, HTMLInputElement>());
   const pendingFocus = useRef<string | null>(null);
@@ -136,7 +137,8 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
     setEnd({ kind, ms, record: record && correct > 0 });
     setPhase("done");
     onPlaying(false);
-    void saveChallengeRun(board.def.id, { correct, total: board.total, ms, end: kind }).then(onSaved, () => undefined);
+    const missed = board.groups.flatMap((group) => group.rows.flatMap((row) => row.cells.map((cell) => cellId(row.id, cell.column)))).filter((id) => !solvedNow.has(id));
+    void saveChallengeRun(board.def.id, { correct, total: board.total, ms, end: kind, missed }).then((run) => { setReward(run); onSaved(); }, () => undefined);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -292,9 +294,14 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
         <h2>{t.challenges.ends[end.kind]}</h2>
         <p><b>{t.challenges.score(solved.size, board.total, Math.floor((solved.size / board.total) * 100))}</b> {t.challenges.usedTime(clock(end.ms))}</p>
         {end.record && <p className="ch-new">{t.challenges.newRecord}</p>}
+        {reward && <p className="ch-reward">
+          <span>{t.challenges.reward(formatNumber(reward.coins ?? 0), formatNumber(reward.xp ?? 0))}</span>
+          {reward.daily && <span className="ch-tag">{t.challenges.dailyDouble}</span>}
+          {reward.medals.length > 0 && <span className="ch-tag">{t.challenges.medalBonus(t.challenges.medals[reward.medals[reward.medals.length - 1]], formatNumber(reward.medalBonus ?? 0))}</span>}
+        </p>}
       </div>
       <div className="ch-result-acts">
-        <button type="button" className="ch-go" onClick={() => { setFound(new Set()); setSolved(new Set()); setEnd(null); setTyped(""); setPhase("ready"); }}>{t.challenges.again}</button>
+        <button type="button" className="ch-go" onClick={() => { setFound(new Set()); setSolved(new Set()); setEnd(null); setReward(null); setTyped(""); setPhase("ready"); }}>{t.challenges.again}</button>
         <button type="button" className="ch-ghost" onClick={onExit}>{t.challenges.back}</button>
       </div>
     </section>}
