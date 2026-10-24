@@ -20,9 +20,9 @@ export const TIER_COLUMNS: Record<ChallengeTier, readonly ChallengeColumn[]> = {
   capitais: ["nome", "capital"],
   ficha: ["nome", "capital", "moeda", "idioma", "gentilico"],
 };
-/** Segundos por país em cada degrau (o mundo: 15, 25 e 50 min, perto dos do JetPunk), com um piso por desafio. */
+/** Segundos por país em cada degrau (o mundo: 15, 25,5 e 50 min; o Países do mundo é o do JetPunk), arredondados para cima de 30 em 30 s, no mínimo
+ *  1 min (23/10/2026: com um piso de 3 min por degrau, as Capitais da América do Sul, 12 países, empatavam com as da do Norte, 23). */
 const SECONDS_PER_ROW: Record<ChallengeTier, number> = { paises: 4.6, capitais: 7.7, ficha: 15.35 };
-const MIN_MINUTES: Record<ChallengeTier, number> = { paises: 2, capitais: 3, ficha: 5 };
 
 export type ChallengeDef = { id: string; tier: ChallengeTier; scope: ChallengeScope };
 export const CHALLENGES: readonly ChallengeDef[] = CHALLENGE_TIERS.flatMap((tier) => CHALLENGE_SCOPES.map((scope) => ({ id: `${tier}-${scope}`, tier, scope })));
@@ -96,7 +96,7 @@ export function buildChallenge(def: ChallengeDef, meta: Readonly<Record<string, 
   return { def, columns, groups: ordered, total, seconds: secondsFor(def, rows) };
 }
 
-const secondsFor = (def: ChallengeDef, rows: number) => Math.max(MIN_MINUTES[def.tier], Math.ceil((rows * SECONDS_PER_ROW[def.tier]) / 60)) * 60;
+const secondsFor = (def: ChallengeDef, rows: number) => Math.max(60, Math.ceil((rows * SECONDS_PER_ROW[def.tier]) / 30) * 30);
 /** O tempo do desafio só pelo catálogo (o cartão do Hub mostra antes de carregar as moedas e os gentílicos). */
 export function challengeSeconds(def: ChallengeDef, meta: Readonly<Record<string, Meta>>) {
   const rows = Object.entries(meta).filter(([id, item]) => isSovereign(id, item) && (def.scope === "mundo" || continentOf(item) === def.scope)).length;

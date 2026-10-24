@@ -550,7 +550,7 @@ if (typeof document !== "undefined") document.documentElement.dataset.hub = HUB_
 /** Desafios. Na faixa o cartão tem a estrutura do Duelo (o desafio do dia e os botões), para não ficar vazio ao lado dele; a tela dos Desafios
  *  ainda não existe, então o desafio do dia é uma prévia e os botões ficam desativados. */
 /** O cartão dos Desafios: o desafio do dia (nome, tempo e o seu recorde) e Desafiar, que abre direto nele; "Todos" abre a lista. */
-export type HubChallengeInfo = { id: string; name: string; tier: string; scope: string; minutes: number; record: number | null; count: number };
+export type HubChallengeInfo = { id: string; name: string; tier: string; scope: string; seconds: number; record: number | null; count: number };
 export function HubChallenges({ full = false, daily, onOpen }: { full?: boolean; daily?: HubChallengeInfo; onOpen?: (start: string | null) => void }) {
   const go = <button type="button" className="hx-go" disabled={!daily || !onOpen} onClick={() => daily && onOpen?.(daily.id)}><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>;
   const record = daily?.record == null ? "—" : `${daily.record}%`;
@@ -562,7 +562,7 @@ export function HubChallenges({ full = false, daily, onOpen }: { full?: boolean;
     </div>
     {full ? <>
       <div className="hx-chal-daily">
-        <small>{t.hub.challengesDaily}{daily ? ` · ${daily.tier} · ${t.challenges.minutes(daily.minutes)}` : ""}</small>
+        <small>{t.hub.challengesDaily}{daily ? ` · ${daily.tier} · ${t.challenges.duration(daily.seconds)}` : ""}</small>
         <b title={daily?.name}>{daily?.scope ?? "…"}</b>
         <em aria-label={`${t.hub.challengesRecord}: ${record}`}>{record}<small aria-hidden="true">{t.hub.challengesRecord}</small></em>
       </div>

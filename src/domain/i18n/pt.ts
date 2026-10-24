@@ -2103,7 +2103,7 @@ export const pt = {
     name: (tier: "paises" | "capitais" | "ficha", scope: string, scopeName: string) =>
       `${tier === "paises" ? "Países" : tier === "capitais" ? "Capitais" : "Ficha"} ${scope === "mundo" ? "do mundo" : `da ${scopeName}`}`,
     daily: "Desafio do dia",
-    minutes: (n: number) => `${n} min`,
+    duration: (seconds: number) => (seconds % 60 ? `${Math.floor(seconds / 60)} min ${seconds % 60} s` : `${seconds / 60} min`),
     answers: (n: number) => `${n.toLocaleString("pt-BR")} ${plural(n, "resposta", "respostas")}`,
     record: "Seu recorde",
     noRecord: "sem recorde",

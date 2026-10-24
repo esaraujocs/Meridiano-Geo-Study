@@ -1582,7 +1582,7 @@ export function App() {
           challengeDaily={(() => {
             const daily = dailyChallenge();
             const best = bestRun(challengeRuns.filter((run) => run.challenge === daily.id));
-            return { id: daily.id, name: challengeName(daily), tier: t.challenges.short[daily.tier], scope: t.challenges.scopes[daily.scope], minutes: challengeSeconds(daily, data.meta) / 60, record: best ? Math.floor((best.correct / best.total) * 100) : null, count: CHALLENGES.length };
+            return { id: daily.id, name: challengeName(daily), tier: t.challenges.short[daily.tier], scope: t.challenges.scopes[daily.scope], seconds: challengeSeconds(daily, data.meta), record: best ? Math.floor((best.correct / best.total) * 100) : null, count: CHALLENGES.length };
           })()}
           onOpenChallenges={openChallenges}
           arenas={{

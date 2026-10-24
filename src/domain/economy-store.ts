@@ -142,10 +142,12 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
     escrita: progress.filter((row) => (row.columns?.escrita ?? 0) > 0).length,
   };
   const playerStats = playerStatsFromSessions(sessions as any[]);
-  const rounds = playerStats.rounds;
+  const rounds = playerStats.rounds + challengeRows.reduce<number>((sum, row) => sum + (parseRun(row)?.correct ?? 0), 0);
   // maestria = países dominados pela regra permanente (dominated.ts, 04/10); o XP segue na regra antiga (todo país que já teve as 3 certas em 2 modos), então ninguém perde nível
   const dominated = masteredFromSessions(sessions);
-  const challengeXp = challengeRows.map(parseRun).reduce((sum, run) => sum + (run ? runXp(run) : 0), 0);
+  // os Desafios nas contas: cada tentativa é uma partida, cada resposta certa uma rodada (23/10/2026, pedido do Enzo)
+  const challengeRuns = challengeRows.map(parseRun).filter((run): run is NonNullable<ReturnType<typeof parseRun>> => run !== null);
+  const challengeXp = challengeRuns.reduce((sum, run) => sum + runXp(run), 0);
   const xpReal = Math.round(xpFrom(playerStats.xpRounds, everDominatedFromSessions(sessions, progress), playerStats.xpBoosted) + challengeXp);
   const xpAdjust = Number(adjustRow?.amount ?? 0) || 0; // só existe se a ferramenta de debug definiu o nível
   const xp = Math.max(0, xpReal + xpAdjust);
@@ -159,7 +161,7 @@ export async function queryEconomy(): Promise<EconomySnapshot> {
     coverage: progress.filter((p) => (p.mastery ?? 0) > 0).length,
     coverageByColumn,
     sessions: sessions.filter(isQualifyingSession).length,
-    xp, level, xpBase, xpNext, rounds, completedSessions: playerStats.completedSessions, dominated,
+    xp, level, xpBase, xpNext, rounds, completedSessions: playerStats.completedSessions + challengeRuns.length, dominated,
     xpReal, xpAdjust,
     unlocked,
   };

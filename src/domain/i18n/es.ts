@@ -2101,7 +2101,7 @@ export const es: Messages = {
     name: (tier: "paises" | "capitais" | "ficha", scope: string, scopeName: string) =>
       `${tier === "paises" ? "Países" : tier === "capitais" ? "Capitales" : "Fichas"} ${scope === "mundo" ? "del mundo" : `de ${scopeName}`}`,
     daily: "Desafío del día",
-    minutes: (n: number) => `${n} min`,
+    duration: (seconds: number) => (seconds % 60 ? `${Math.floor(seconds / 60)} min ${seconds % 60} s` : `${seconds / 60} min`),
     answers: (n: number) => `${n.toLocaleString("es-ES")} ${plural(n, "respuesta", "respuestas")}`,
     record: "Tu récord",
     noRecord: "sin récord",

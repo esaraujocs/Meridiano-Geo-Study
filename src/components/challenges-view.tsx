@@ -72,7 +72,7 @@ export function ChallengesScreen({ data, balance, startWith, onBack, onPlaying, 
       <div className="ch-daily-copy">
         <small>{t.challenges.daily}</small>
         <h2>{challengeName(daily)}</h2>
-        <p>{t.challenges.tierHints[daily.tier]}{dailyBoard ? ` · ${t.challenges.minutes(dailyBoard.seconds / 60)} · ${t.challenges.answers(dailyBoard.total)}` : ""}</p>
+        <p>{t.challenges.tierHints[daily.tier]}{dailyBoard ? ` · ${t.challenges.duration(dailyBoard.seconds)} · ${t.challenges.answers(dailyBoard.total)}` : ""}</p>
       </div>
       <RecordBox run={bestOf(daily.id)} />
       <button type="button" className="ch-go" disabled={!dailyBoard} onClick={() => setOpen(daily.id)}><Icon type="arches" size={16} /> {t.hub.challengesGo}</button>
@@ -87,7 +87,7 @@ export function ChallengesScreen({ data, balance, startWith, onBack, onPlaying, 
           const best = bestOf(id);
           return <button type="button" key={id} className={`ch-card${scope === "mundo" ? " is-world" : ""}`} disabled={!item} onClick={() => setOpen(id)}>
             <span className="ch-card-top"><b>{t.challenges.scopes[scope]}</b><MedalBadge medal={medalOf(best)} /></span>
-            <small>{item ? `${t.challenges.minutes(item.seconds / 60)} · ${t.challenges.answers(item.total)}` : "…"}</small>
+            <small>{item ? `${t.challenges.duration(item.seconds)} · ${t.challenges.answers(item.total)}` : "…"}</small>
             <em>{best ? `${pct(best)}%` : t.challenges.noRecord}</em>
           </button>;
         })}
@@ -283,7 +283,7 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
       <div>
         <h2>{t.challenges.howTitle}</h2>
         <ul>{t.challenges.rules.map((rule) => <li key={rule}>{rule}</li>)}</ul>
-        <p className="ch-start-meta">{t.challenges.tierHints[board.def.tier]} · {t.challenges.minutes(board.seconds / 60)} · {t.challenges.answers(board.total)}</p>
+        <p className="ch-start-meta">{t.challenges.tierHints[board.def.tier]} · {t.challenges.duration(board.seconds)} · {t.challenges.answers(board.total)}</p>
       </div>
       <RecordBox run={best} />
       <button type="button" className="ch-go" autoFocus onClick={start}><Icon type="arches" size={16} /> {t.challenges.start}</button>

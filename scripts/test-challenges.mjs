@@ -40,6 +40,16 @@ const ficha = board("ficha-mundo");
 assert.equal(ficha.total, 195 * 5 - 2);
 assert.equal(ficha.seconds, 50 * 60);
 assert.equal(board("capitais-mundo").total, 390);
+// o tempo cresce com o recorte, de 30 em 30 s, no mínimo 1 min (o piso de 3 min empatava as Capitais das duas Américas)
+assert.equal(board("capitais-america-do-sul").seconds, 120);
+assert.equal(board("capitais-america-do-norte").seconds, 180);
+assert.equal(board("paises-america-do-sul").seconds, 60);
+assert.equal(board("paises-oceania").seconds, 90);
+for (const tier of C.CHALLENGE_TIERS) {
+  const times = C.CONTINENTS.map((scope) => board(`${tier}-${scope}`)).sort((a, b) => a.total - b.total);
+  for (let index = 1; index < times.length; index += 1) assert.ok(times[index].seconds >= times[index - 1].seconds, `${tier}: mais respostas, mais tempo`);
+  for (const item of times) assert.equal(item.seconds % 30, 0);
+}
 const rowOf = (b, id) => b.groups.flatMap((group) => group.rows).find((row) => row.id === id);
 assert.ok(!rowOf(ficha, "336").cells.some((cell) => cell.column === "gentilico"));
 assert.ok(!rowOf(ficha, "275").cells.some((cell) => cell.column === "moeda"));
