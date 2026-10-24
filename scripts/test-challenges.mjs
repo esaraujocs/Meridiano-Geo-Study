@@ -40,11 +40,15 @@ const ficha = board("ficha-mundo");
 assert.equal(ficha.total, 195 * 5 - 2);
 assert.equal(ficha.seconds, 50 * 60);
 assert.equal(board("capitais-mundo").total, 390);
-// o tempo cresce com o recorte, de 30 em 30 s, no mínimo 1 min (o piso de 3 min empatava as Capitais das duas Américas)
-assert.equal(board("capitais-america-do-sul").seconds, 120);
-assert.equal(board("capitais-america-do-norte").seconds, 180);
-assert.equal(board("paises-america-do-sul").seconds, 60);
-assert.equal(board("paises-oceania").seconds, 90);
+// o tempo = folga fixa + segundos por país, de 30 em 30 s: o mundo não muda e os recortes pequenos ganham respiro por país
+assert.equal(board("paises-america-do-sul").seconds, 90);
+assert.equal(board("paises-oceania").seconds, 120);
+assert.equal(board("capitais-america-do-sul").seconds, 150);
+assert.equal(board("capitais-america-do-norte").seconds, 240);
+assert.equal(board("ficha-america-do-sul").seconds, 240);
+assert.equal(board("capitais-mundo").seconds, 25 * 60 + 30);
+const perCountry = (id) => board(id).seconds / board(id).groups.reduce((sum, group) => sum + group.rows.length, 0);
+assert.ok(perCountry("paises-america-do-sul") > perCountry("paises-mundo") + 2, "o recorte pequeno tem mais tempo por país");
 for (const tier of C.CHALLENGE_TIERS) {
   const times = C.CONTINENTS.map((scope) => board(`${tier}-${scope}`)).sort((a, b) => a.total - b.total);
   for (let index = 1; index < times.length; index += 1) assert.ok(times[index].seconds >= times[index - 1].seconds, `${tier}: mais respostas, mais tempo`);
