@@ -77,3 +77,9 @@
 
 /* botão de responder dos campos de escrita (Travel, escritas): no escuro o --green é claro, o texto branco ficava em 2:1 */
 :root[data-scheme="dark"] .gs-field .go:not(:disabled){color:var(--paper)}
+
+/* cartão da pergunta no celular (em pé e deitado): o branco translúcido do tema claro virava um cinza sobre o escuro, com o texto de apoio em 2:1; e o
+   cartão do idioma (Idiomas) tinha o mesmo fundo claro com o texto claro do tema */
+@media (max-width:1023px){:root[data-scheme="dark"] .gs-stage{background:color-mix(in srgb,var(--panel-2,var(--paper)) 70%,transparent);border-color:color-mix(in srgb,var(--line) 70%,transparent)}}
+:root[data-scheme="dark"] .gs-lang{background:var(--panel-2,var(--paper));border-color:var(--line);color:var(--muted)}
+:root[data-scheme="dark"] :is(.gs-lang p,.gs-lang dd,.gs-lang-head b){color:var(--ink)}

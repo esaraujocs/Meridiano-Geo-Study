@@ -17,6 +17,7 @@ import "./themes.css";
 import "./themes-league.css";
 import "./themes-dark.css";
 import "./themes-elaborate.css";
+import "./landscape.css";
 
 applyDebugFlagFromUrl();
 // Idioma da página (leitores de tela, hifenização) e título da aba no idioma escolhido.

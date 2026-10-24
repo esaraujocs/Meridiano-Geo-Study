@@ -1,0 +1,94 @@
+/* ---- Partida com o celular deitado (24/10/2026, mock ../mockups-carta-cega/horizontal, opção A escolhida pelo Enzo) ----
+   Só vale em tela deitada e baixa (celular; uma janela de computador muito baixa também). Nada muda em pé nem no desktop.
+   Alternativas (Bandeiras, Capitais, Históricas, Idiomas, povos e moedas, Silhueta): a pergunta à esquerda, as 4 respostas em 2×2 à direita, sair e os
+   suprimentos numa coluna na borda esquerda; o Continuar e o cronômetro ficam no pé do cartão da pergunta. Escrita: o campo em cima à direita, para ficar
+   acima do teclado. Mapa: o mapa na tela inteira, o alvo numa pílula no canto, o placar no outro e os suprimentos na borda direita.
+   Fica de fora o Travel (tela própria). Vem por último no main.tsx, depois dos temas: só mexe em posição e tamanho, as cores seguem do tema. */
+@media (orientation:landscape) and (max-height:500px){
+  :root{--ls-l:max(12px,env(safe-area-inset-left));--ls-r:max(12px,env(safe-area-inset-right));--ls-b:max(8px,env(safe-area-inset-bottom));--ls-rail:0px}
+  /* a coluna dos suprimentos: até 5 numa coluna, a partir de 6 em duas */
+  body:has(.gs-hotbar){--ls-rail:64px}
+  body:has(.gs-hotbar .gs-slot:nth-child(6)){--ls-rail:114px}
+  body:has(.gs-map-screen){--ls-rail:0px}
+
+  .gs-hotbar{left:var(--ls-l);right:auto;top:calc(50% + 21px);bottom:auto;transform:translateY(-50%);display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--rail-rows,5),auto);gap:4px;padding:5px;border-radius:16px;max-width:none;animation:ls-rail-in .28s cubic-bezier(.2,.8,.3,1) both}
+  .gs-hotbar.is-idle{opacity:.45;transform:translateY(-50%);pointer-events:none;animation:none}
+  .gs-hotbar .gs-slot,.gs-hotbar.is-dense .gs-slot,.gs-hotbar.is-tight .gs-slot{width:44px;padding:3px;border-radius:12px}
+  .gs-hotbar .gs-slot-t{display:none}
+  .gs-hotbar .gs-slot-art,.gs-hotbar.is-dense .gs-slot-art,.gs-hotbar.is-tight .gs-slot-art{width:36px;height:36px;border-radius:10px}
+  .gs-hotbar .gs-slot-art svg,.gs-hotbar.is-dense .gs-slot-art svg,.gs-hotbar.is-tight .gs-slot-art svg{width:28px;height:28px}
+  .gs-hotbar .gs-slot-n,.gs-hotbar.is-dense .gs-slot-n,.gs-hotbar.is-tight .gs-slot-n{right:-3px;top:-3px;min-width:16px;height:16px;font-size:10px}
+  .gs-hotbar .gs-slot-used,.gs-hotbar.is-dense .gs-slot-used,.gs-hotbar.is-tight .gs-slot-used{top:3px;width:36px;height:36px;margin-left:-18px}
+  .gs-hotbar .gs-slot:hover:not(:disabled){transform:none}
+
+  /* ---- alternativas e escrita (não o mapa nem o Travel) ---- */
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)){height:100dvh;min-height:0;overflow:hidden;display:grid;grid-template-columns:clamp(220px,36vw,340px) minmax(0,1fr);grid-template-rows:44px minmax(0,1fr) auto;column-gap:10px;padding:0 var(--ls-r) var(--ls-b) calc(var(--ls-l) + var(--ls-rail))}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) :is(.gs-head,.gs-body,.gs-tray){display:contents}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-top{grid-column:1/-1;grid-row:1;height:44px;padding:0;gap:8px;margin-left:calc(-1 * var(--ls-rail));border:0;background:none;box-shadow:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-x{width:34px;height:34px;padding:0;border-radius:50%}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-x::after{content:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-progress{flex:1;width:auto;margin:0}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-chip{height:30px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) :is(.gs-meta,.gs-keys){display:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-stage{grid-column:1;grid-row:2/4;min-height:0;width:auto;margin:0;padding:10px 14px 22px;gap:6px;overflow:hidden;justify-content:center}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-kicker{font-size:13px;line-height:1.25}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-big{font-size:clamp(28px,4.6vw,42px);line-height:1.05}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-big.long{font-size:clamp(24px,3.7vw,34px)}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-big.xlong{font-size:clamp(19px,2.9vw,26px)}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-big.script{font-size:clamp(20px,3.2vw,28px)}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-flag{width:100%;flex:0 1 auto;height:min(210px,calc(100dvh - 150px));min-height:60px;aspect-ratio:auto}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .silhouette-frame{width:auto;height:min(220px,calc(100dvh - 140px));max-width:100%;aspect-ratio:auto}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-ribbon{min-height:34px;margin-top:2px;padding:0 12px;font-size:13px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-ribbon.wrap{padding:6px 12px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) :is(.gs-hintchip,.gs-letterhint){margin-top:4px;padding:5px 12px;font-size:13px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-lang{margin-top:2px;padding:8px 10px;font-size:12px;line-height:1.35}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-lang-head b{font-size:17px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-lang p{margin:3px 0 5px}
+  /* com o cartão do idioma aberto o recado sai (as respostas já mostram o certo e o errado) e a pergunta encolhe */
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-lang) :is(.gs-ribbon,.gs-kicker){display:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-lang) .gs-stage{justify-content:flex-start}
+  /* o cronômetro e o Continuar no pé do cartão da pergunta */
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-timer{grid-column:1;grid-row:3;align-self:end;position:static;margin:0 16px 9px;padding:0;min-height:0;z-index:2;pointer-events:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-timer .round-timer{width:100%;height:5px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-continue{grid-column:1;grid-row:3;align-self:end;justify-self:center;z-index:3;width:auto;min-width:min(220px,80%);height:42px;margin:0 14px 16px;padding:0 22px;border-radius:99px;font-size:15px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-continue) .gs-stage{padding-bottom:66px}
+  /* as 4 respostas em 2×2 na altura toda */
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-options.gs-opts,.gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-options.gs-opts.flags{grid-column:2;grid-row:2/4;align-self:stretch;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;min-height:0;max-width:none;--tile:auto}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-options .gs-opt,.gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-options .quiz-option:has(.opt-flag){height:auto;min-height:0;max-height:none;aspect-ratio:auto;padding:10px 14px;font-size:17px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-options .quiz-option:has(.opt-flag){padding:0}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .quiz-option .opt-flag{padding:10px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-opt .gs-opt-label{padding-left:0}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-key{display:block;top:6px;left:6px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)) .gs-opt:not(:has(.opt-flag)) .gs-opt-label{padding-left:22px}
+
+  /* ---- escrita: o campo em cima à direita (acima do teclado), a pergunta pequena à esquerda ---- */
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-tray{display:flex;flex-direction:column;gap:8px;grid-column:2;grid-row:2/4;min-height:0;width:auto;max-width:none;margin:0;padding:12px 0 0;overflow:auto}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-stage{grid-row:2/4;align-self:start;justify-content:flex-start;padding:10px 12px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-kicker{display:none}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-flag{flex:none;height:96px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .silhouette-frame{height:110px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-timer{grid-column:2;grid-row:2;align-self:start;margin:2px 2px 0}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-continue{align-self:stretch;justify-self:auto;width:auto;margin:0;height:42px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-field{width:auto}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-field input{height:50px;font-size:19px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) .gs-field .go{width:118px;font-size:15px}
+  .gs:not(.gs-map-screen):not(:has(.tv-stage)):has(.gs-field) :is(.gs-hintline,.reveal){width:auto;font-size:12.5px}
+
+  /* ---- mapa na tela inteira ---- */
+  .gs-map-screen .gs-head{position:absolute;top:0;left:0;right:0;z-index:6;padding:8px var(--ls-r) 0 var(--ls-l);pointer-events:none}
+  .gs-map-screen .gs-top{height:36px;padding:0;gap:6px;border:0;background:none;box-shadow:none}
+  .gs-map-screen .gs-top>*{pointer-events:auto}
+  .gs-map-screen .gs-x{width:34px;height:34px;padding:0;border-radius:50%;background:var(--paper)}
+  .gs-map-screen .gs-x::after{content:none}
+  .gs-map-screen .gs-progress{flex:none;width:clamp(90px,16vw,150px);margin-left:auto;padding:0 10px;height:30px;border-radius:99px;background:var(--paper)}
+  .gs-map-screen .gs-chip{height:30px}
+  .gs-map-screen .gs-meta{display:none}
+  .gs .gs-map-screen .map-wrap,.gs-map-screen .map-wrap{position:absolute;inset:0;min-height:0;height:auto}
+  .gs-map-screen .map-target-overlay,.gs .gs-map-screen .map-target-overlay{top:8px;left:calc(var(--ls-l) + 42px);transform:none;justify-items:start;text-align:left;gap:1px;padding:5px 14px 14px;max-width:min(42vw,330px)}
+  .gs-map-screen .map-target-overlay strong{font-size:clamp(20px,3.2vw,28px)}
+  .gs-map-screen .map-target-overlay .round-timer{left:14px;right:14px;top:auto;bottom:6px;width:auto;height:4px;transform:none}
+  .gs-map-screen .map-target-overlay.is-correct{animation:none}
+  .gs-map-screen :is(.map-keyboard-hint,.map-hud,.maplibregl-ctrl-group){display:none}
+  body:has(.gs-map-screen) .gs-hotbar{left:auto;right:var(--ls-r);top:calc(50% + 20px)}
+}
+@keyframes ls-rail-in{from{opacity:0;transform:translate(-10px,-50%)}to{opacity:1;transform:translateY(-50%)}}
