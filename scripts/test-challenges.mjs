@@ -122,6 +122,31 @@ assert.equal(C.medalOf(run(9, 20, 1)), null);
 assert.equal(C.parseRun({ id: "challenge-run:paises-mundo:1", challenge: "paises-mundo", correct: 3, total: 195, ms: 10, end: "time", at: 1 }).correct, 3);
 assert.equal(C.parseRun({ id: "preset:1" }), null);
 
+// o campo único: qualquer resposta, em qualquer ordem
+const sa = board("ficha-america-do-sul");
+const none = new Set();
+assert.deepEqual(C.matchAnswer(sa, "Brasília", none, null), { cell: "76:capital", row: "76", waits: false, ambiguous: false }, "a capital antes do país");
+assert.equal(C.matchAnswer(sa, "Brasil", none, null).cell, "76:nome");
+assert.equal(C.matchAnswer(sa, "real brasileiro", none, null).cell, "76:moeda");
+assert.ok(C.matchAnswer(sa, "espanhol", none, null).ambiguous, "espanhol sem linha: ambíguo");
+assert.equal(C.matchAnswer(sa, "espanhol", new Set(["152:capital"]), "152").cell, "152:idioma", "vai para a última linha mexida (Chile)");
+assert.equal(C.matchAnswer(sa, "espanhol", new Set(["152:capital", "76:nome"]), "76").cell, "152:idioma", "o Brasil não aceita: a única outra linha aberta que aceita");
+assert.ok(C.matchAnswer(sa, "espanhol", new Set(["152:capital", "32:nome"]), "76").ambiguous, "duas linhas abertas aceitam: ambíguo");
+assert.equal(C.matchAnswer(sa, "dolar", none, null).cell, null);
+const ficha2 = board("ficha-mundo");
+assert.ok(!C.matchAnswer(ficha2, "Mali", none, null).waits, "Mali entra na hora (maliano é de outra coluna)");
+assert.ok(!C.matchAnswer(ficha2, "Brasil", none, null).waits, "Brasil entra na hora (Brasília e brasileiro são de outras colunas)");
+// quem continua escrevendo retoma: Brasil + i vira o começo de Brasília; real + espaço, a forma longa da moeda
+assert.ok(C.continuesAnswer(ficha2, "Brasili", new Set(["76:nome"])));
+assert.ok(C.continuesAnswer(ficha2, "Maliano", new Set(["466:nome"])));
+assert.ok(!C.continuesAnswer(ficha2, "BrasilB", new Set(["76:nome"])));
+assert.ok(C.continuesAnswer(ficha2, "real ", new Set(["76:moeda"]), rowOf(ficha, "76").cells.find((c) => c.column === "moeda").keys));
+assert.ok(C.matchAnswer(ficha2, "Niger", none, null).waits);
+assert.ok(!C.matchAnswer(ficha2, "Brasilia", none, null).waits);
+// mesmo nome em duas colunas do mesmo país: a primeira vazia
+assert.equal(C.matchAnswer(ficha2, "Singapura", none, null).cell, "702:nome");
+assert.equal(C.matchAnswer(ficha2, "Singapura", new Set(["702:nome"]), "702").cell, "702:capital");
+
 // recompensa: 40 moedas e 2 XP por acerto; o desafio do dia paga em dobro só a primeira tentativa do dia; cada medalha dá o bônus uma vez
 const day = 86_400_000 * 20_000;
 const dailyId = C.dailyChallenge(day).id;

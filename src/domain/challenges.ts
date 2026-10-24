@@ -141,6 +141,56 @@ export function spillOf(spill: { base: string; longer: readonly string[] }, type
   return spill.longer.some((candidate) => candidate.startsWith(combined)) ? combined : null;
 }
 
+/** O campo único (24/10/2026, pedido do Enzo: "a caixa aceita qualquer elemento, sem ordem e sem clicar no bloco"): qualquer resposta de qualquer
+ *  coluna, em qualquer ordem, vai para a célula dela, também com o país ainda fechado ("Brasília" antes de "Brasil"). A resposta que vale para vários
+ *  países (euro, espanhol, franco CFA da África Ocidental, congolês) vai para a linha da última resposta, se ela aceita; senão para a única linha
+ *  aberta que aceita; senão fica ambígua (escrever o país ou a capital antes). Com o mesmo nome em duas colunas do mesmo país (Guatemala, Kuwait,
+ *  Singapura), a primeira coluna vazia. `waits`: o que foi digitado também é o começo de outra resposta ainda vazia (Mali/maliano, Níger/Nigéria),
+ *  então só entra com o Enter. */
+export type AnswerMatch = { cell: string | null; row: string | null; waits: boolean; ambiguous: boolean };
+export function matchAnswer(board: ChallengeBoard, typed: string, filled: ReadonlySet<string>, current: string | null): AnswerMatch {
+  const none: AnswerMatch = { cell: null, row: null, waits: false, ambiguous: false };
+  const key = answerKey(typed);
+  if (!key) return none;
+  const hits: { row: ChallengeRow; cell: ChallengeCell }[] = [];
+  for (const group of board.groups) for (const row of group.rows) for (const cell of row.cells) {
+    if (!filled.has(cellId(row.id, cell.column)) && cell.keys.has(key)) hits.push({ row, cell });
+  }
+  if (!hits.length) return none;
+  const rowsHit = new Set(hits.map((hit) => hit.row.id));
+  const isOpen = (row: ChallengeRow) => row.cells.some((cell) => filled.has(cellId(row.id, cell.column)));
+  let chosen = rowsHit.size === 1 ? hits[0] : hits.find((hit) => hit.row.id === current);
+  if (!chosen) {
+    const open = hits.filter((hit) => isOpen(hit.row));
+    if (new Set(open.map((hit) => hit.row.id)).size === 1) chosen = open[0];
+  }
+  if (!chosen) return { ...none, ambiguous: true };
+  const chosenId = cellId(chosen.row.id, chosen.cell.column);
+  // só espera por outra resposta da mesma coluna (Niger/Nigeria, Guine/Guine-Bissau); entre colunas (Brasil/Brasilia/brasileiro, Mali/maliano)
+  // a resposta entra na hora e quem continua escrevendo retoma o texto (`continuesAnswer`)
+  let waits = false;
+  for (const group of board.groups) for (const row of group.rows) for (const cell of row.cells) {
+    const id = cellId(row.id, cell.column);
+    if (waits || id === chosenId || cell.column !== chosen.cell.column || filled.has(id)) continue;
+    for (const candidate of cell.keys) if (candidate.length > key.length && candidate.startsWith(key)) { waits = true; break; }
+  }
+  return { cell: chosenId, row: chosen.row.id, waits, ambiguous: false };
+}
+
+/** O texto continua virando alguma resposta ainda vazia, ou uma forma mais longa da que acabou de entrar (`extra`)? Depois de uma resposta entrar
+ *  o campo esvazia; se a próxima tecla, somada ao que entrou, ainda é o começo de uma resposta ("Brasil" + "i" → "Brasili", de Brasília; "real" +
+ *  " " → "real ", de "real brasileiro"), o campo retoma o texto inteiro. */
+export function continuesAnswer(board: ChallengeBoard, typed: string, filled: ReadonlySet<string>, extra: ReadonlySet<string> = new Set()) {
+  const key = answerKey(typed);
+  if (!key) return false;
+  for (const candidate of extra) if (candidate.startsWith(key)) return true;
+  for (const group of board.groups) for (const row of group.rows) for (const cell of row.cells) {
+    if (filled.has(cellId(row.id, cell.column))) continue;
+    for (const candidate of cell.keys) if (candidate.startsWith(key)) return true;
+  }
+  return false;
+}
+
 /** A resposta de uma célula está certa? */
 export const cellAccepts = (cell: ChallengeCell, typed: string) => cell.keys.has(answerKey(typed));
 export const cellId = (rowId: string, column: ChallengeColumn) => `${rowId}:${column}`;

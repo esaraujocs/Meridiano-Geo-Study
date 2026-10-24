@@ -5,8 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { compareText, formatNumber, t } from "../domain/i18n";
 import { locale } from "../domain/i18n/locale";
 import {
-  CHALLENGE_SCOPES, CHALLENGE_TIERS, bestRun, buildChallenge, cellAccepts, cellId, challengeById, countryWaits, dailyChallenge, longerKeys, matchCountry, medalOf, spillOf,
-  type ChallengeBoard, type ChallengeCell, type ChallengeDef, type ChallengeEnd, type ChallengeRow, type ChallengeRun, type Medal,
+  CHALLENGE_SCOPES, CHALLENGE_TIERS, bestRun, buildChallenge, cellId, challengeById, dailyChallenge, continuesAnswer, matchAnswer, medalOf,
+  type AnswerMatch, type ChallengeBoard, type ChallengeCell, type ChallengeColumn, type ChallengeDef, type ChallengeEnd, type ChallengeRow, type ChallengeRun, type Medal,
 } from "../domain/challenges";
 import { listChallengeRuns, saveChallengeRun, type SavedChallengeRun } from "../domain/challenges-store";
 import { answerKey } from "../domain/typed-answer";
@@ -110,18 +110,21 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
   board: ChallengeBoard; best: ChallengeRun | null; onExit: () => void; onPlaying: (playing: boolean) => void; onSaved: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("ready");
-  const [found, setFound] = useState<ReadonlySet<string>>(() => new Set());
   const [solved, setSolved] = useState<ReadonlySet<string>>(() => new Set());
+  // a linha da última resposta: é para ela que vai a resposta que vale para vários países (euro, espanhol)
+  const [current, setCurrent] = useState<string | null>(null);
   const [typed, setTyped] = useState("");
+  const [hint, setHint] = useState<{ kind: "wait"; answer: string; column: ChallengeColumn } | { kind: "ambiguous" } | null>(null);
   const [now, setNow] = useState(0);
   const [startedAt, setStartedAt] = useState(0);
   const [end, setEnd] = useState<{ kind: ChallengeEnd; ms: number; record: boolean } | null>(null);
   const [confirmQuit, setConfirmQuit] = useState(false);
   const [reward, setReward] = useState<SavedChallengeRun | null>(null);
   const mainRef = useRef<HTMLInputElement>(null);
-  const cellRefs = useRef(new Map<string, HTMLInputElement>());
-  const pendingFocus = useRef<string | null>(null);
+  const focusMain = useRef(false);
   const rows = useMemo(() => new Map(board.groups.flatMap((group) => group.rows.map((row) => [row.id, row] as const))), [board]);
+  // o país "abre" (conta como encontrado) quando o nome dele foi escrito
+  const found = useMemo(() => new Set([...rows.keys()].filter((id) => solved.has(cellId(id, "nome")))), [rows, solved]);
   const single = board.columns.length === 1;
   const limit = board.seconds * 1000;
   const left = phase === "playing" ? limit - (now - startedAt) : phase === "ready" ? limit : limit - (end?.ms ?? 0);
@@ -136,6 +139,7 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
     const record = correct / board.total > previous || (correct / board.total === previous && best !== null && ms < best.ms);
     setEnd({ kind, ms, record: record && correct > 0 });
     setPhase("done");
+    setHint(null);
     onPlaying(false);
     const missed = board.groups.flatMap((group) => group.rows.flatMap((row) => row.cells.map((cell) => cellId(row.id, cell.column)))).filter((id) => !solvedNow.has(id));
     void saveChallengeRun(board.def.id, { correct, total: board.total, ms, end: kind, missed }).then((run) => { setReward(run); onSaved(); }, () => undefined);
@@ -146,9 +150,9 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
   useEffect(() => {
     if (phase !== "playing") return;
     const timer = window.setInterval(() => {
-      const current = Date.now();
-      setNow(current);
-      if (current - startedAt >= limit) finish("time", solvedRef.current);
+      const moment = Date.now();
+      setNow(moment);
+      if (moment - startedAt >= limit) finish("time", solvedRef.current);
     }, 250);
     return () => window.clearInterval(timer);
   }, [phase, startedAt]);
@@ -156,11 +160,9 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
   solvedRef.current = solved;
   useEffect(() => () => onPlaying(false), []);
   useEffect(() => {
-    if (!pendingFocus.current) return;
-    const target = pendingFocus.current === "main" ? mainRef.current : cellRefs.current.get(pendingFocus.current);
-    pendingFocus.current = null;
-    target?.focus();
-    target?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!focusMain.current) return;
+    focusMain.current = false;
+    mainRef.current?.focus();
   });
 
   const start = () => {
@@ -170,97 +172,60 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
     setNow(at);
     setPhase("playing");
     onPlaying(true);
-    pendingFocus.current = "main";
+    focusMain.current = true;
   };
-  const nextOpenCell = (row: ChallengeRow, solvedNow: ReadonlySet<string>, after?: ChallengeCell) => {
-    const cells = row.cells.slice(1);
-    const from = after ? cells.indexOf(after) + 1 : 0;
-    return [...cells.slice(from), ...cells.slice(0, from)].find((cell) => !solvedNow.has(cellId(row.id, cell.column))) ?? null;
-  };
-  const solve = (ids: readonly string[], foundNow: ReadonlySet<string>) => {
-    const next = new Set(solved);
-    for (const id of ids) next.add(id);
+  // o que acabou de entrar: se a próxima tecla, somada a ele, ainda vira uma resposta ("Brasil" + "ia" → Brasília, "Mali" + "ano" → maliano) ou a
+  // forma longa dele ("real" + " brasileiro", "Estados Unidos" + " da América"), o campo retoma o texto inteiro
+  const carry = useRef<{ text: string; keys: ReadonlySet<string> } | null>(null);
+  const commit = (match: AnswerMatch, value: string) => {
+    if (!match.cell || !match.row) return;
+    const row = rows.get(match.row)!;
+    const cell = row.cells.find((item) => cellId(row.id, item.column) === match.cell)!;
+    const next = new Set(solved).add(match.cell);
     setSolved(next);
-    setFound(foundNow);
-    if (next.size >= board.total) finish("complete", next);
-    return next;
-  };
-  // depois de uma resposta fechar, quem continua escrevendo a forma longa dela ("Estados Unidos" + " da América", "real" + " brasileiro") tem o
-  // resto engolido, onde quer que o cursor esteja; a primeira tecla que já é outra coisa desliga isso
-  const spill = useRef<{ base: string; longer: readonly string[] } | null>(null);
-  const arm = (keys: ReadonlySet<string>, value: string) => {
-    const longer = longerKeys(keys, value);
-    spill.current = longer.length ? { base: answerKey(value), longer } : null;
-  };
-  const swallow = (value: string) => {
-    if (!spill.current) return false;
-    const next = spillOf(spill.current, value);
-    if (next === null) { spill.current = null; return false; }
-    spill.current = spill.current.longer.some((candidate) => candidate.length > next.length) ? { ...spill.current, base: next } : null;
-    return true;
-  };
-  // o país abre sozinho quando o nome está inteiro e não é o começo de outro país ("Niger" espera o Enter: pode virar "Nigeria")
-  const openCountry = (id: string, value: string) => {
-    const row = rows.get(id)!;
-    const next = solve([cellId(id, "nome")], new Set(found).add(id));
+    setCurrent(row.id);
     setTyped("");
-    arm(row.cells[0].keys, value);
-    const cell = nextOpenCell(row, next);
-    pendingFocus.current = cell ? cellId(id, cell.column) : "main";
+    setHint(null);
+    carry.current = { text: value, keys: cell.keys };
+    document.getElementById(`ch-row-${row.id}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (next.size >= board.total) finish("complete", next);
   };
-  const onMainInput = (value: string) => {
-    if (swallow(value)) { setTyped(""); return; }
+  const onMainInput = (input: string) => {
+    let value = input;
+    const previous = carry.current;
+    if (previous) {
+      // na primeira tecla depois de entrar, o texto que entrou + a tecla; nas seguintes, o campo já traz o texto inteiro
+      const combined = typed === "" ? previous.text + input : input;
+      if (input && continuesAnswer(board, combined, solved, previous.keys)) {
+        value = combined;
+        const key = answerKey(combined);
+        // a forma longa inteira do que já entrou ("real brasileiro"): nada a fazer, o campo esvazia
+        if (previous.keys.has(key) && ![...previous.keys].some((candidate) => candidate.length > key.length && candidate.startsWith(key))) { carry.current = null; setTyped(""); return; }
+      } else carry.current = null;
+    }
     setTyped(value);
-    const id = matchCountry(board, value, found);
-    if (id && !countryWaits(board, value, found)) openCountry(id, value);
+    const match = matchAnswer(board, value, solved, current);
+    if (match.cell && !match.waits) { commit(match, value); return; }
+    if (match.cell && match.row) {
+      const cell = rows.get(match.row)!.cells.find((item) => cellId(match.row!, item.column) === match.cell)!;
+      setHint({ kind: "wait", answer: cell.answer, column: cell.column });
+    } else setHint(match.ambiguous ? { kind: "ambiguous" } : null);
   };
   const onMainKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") return;
     event.preventDefault();
-    const id = matchCountry(board, typed, found);
-    if (id) openCountry(id, typed);
-  };
-  // a célula fecha sozinha com a resposta certa e o cursor pula para a próxima
-  const closeCell = (row: ChallengeRow, cell: ChallengeCell, value: string) => {
-    const next = solve([cellId(row.id, cell.column)], found);
-    arm(cell.keys, value);
-    const following = nextOpenCell(row, next, cell);
-    pendingFocus.current = following ? cellId(row.id, following.column) : "main";
-  };
-  const onCellInput = (row: ChallengeRow, cell: ChallengeCell, input: HTMLInputElement) => {
-    if (swallow(input.value)) { input.value = ""; return; }
-    if (cellAccepts(cell, input.value)) closeCell(row, cell, input.value);
-  };
-  const onCellKey = (row: ChallengeRow, cell: ChallengeCell, event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") { event.preventDefault(); mainRef.current?.focus(); return; }
-    if (event.key !== "Enter" && event.key !== "Tab") return;
-    if (cellAccepts(cell, event.currentTarget.value)) { event.preventDefault(); closeCell(row, cell, event.currentTarget.value); return; }
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const following = nextOpenCell(row, solved, cell);
-      const target = following && following !== cell ? cellRefs.current.get(cellId(row.id, following.column)) : mainRef.current;
-      target?.focus();
-    }
-  };
-  const onCellBlur = (row: ChallengeRow, cell: ChallengeCell, input: HTMLInputElement) => {
-    if (phase === "playing" && !solved.has(cellId(row.id, cell.column)) && cellAccepts(cell, input.value)) solve([cellId(row.id, cell.column)], found);
+    commit(matchAnswer(board, typed, solved, current), typed);
   };
 
   const title = challengeName(board.def);
   const rowsLeft = [...rows.keys()].filter((id) => !found.has(id)).length;
-  const answer = (row: ChallengeRow, cell: ChallengeCell) => {
-    const id = cellId(row.id, cell.column);
-    const ok = solved.has(id);
-    if (ok) return <span className="ch-ok">{cell.answer}</span>;
+  const answer = (cell: ChallengeCell, rowId: string) => {
+    const id = cellId(rowId, cell.column);
+    if (solved.has(id)) return <span className="ch-ok">{cell.answer}</span>;
     if (phase === "done") return <span className="ch-miss" title={t.challenges.missed}>{cell.answer}</span>;
-    if (phase === "playing" && found.has(row.id) && cell.column !== "nome") {
-      return <input ref={(element) => { if (element) cellRefs.current.set(id, element); else cellRefs.current.delete(id); }}
-        className="ch-cell-in" aria-label={t.challenges.cellAria(t.challenges.columns[cell.column], row.name)} autoComplete="off" spellCheck={false}
-        onChange={(event) => onCellInput(row, cell, event.currentTarget)} onKeyDown={(event) => onCellKey(row, cell, event)}
-        onBlur={(event) => onCellBlur(row, cell, event.currentTarget)} />;
-    }
     return <span className="ch-blank" aria-hidden="true" />;
   };
+  const rowState = (row: ChallengeRow) => [row.cells.some((cell) => solved.has(cellId(row.id, cell.column))) ? "is-open" : "", row.id === current && phase === "playing" ? "is-current" : ""].filter(Boolean).join(" ") || undefined;
 
   return <div className={`ch-play is-${phase}${single ? " is-single" : ""}`}>
     <div className="ch-head">
@@ -274,10 +239,11 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
       <div className={`ch-bar-time${left < 60_000 && phase === "playing" ? " is-low" : ""}`}><small>{t.challenges.timeLeft}</small><b>{clock(left)}</b></div>
     </header>
     {phase === "playing" && <div className="ch-type">
-      <input ref={mainRef} value={typed} onChange={(event) => onMainInput(event.currentTarget.value)} onKeyDown={onMainKey} placeholder={t.challenges.typeCountry}
-        aria-label={t.challenges.inputAria} autoComplete="off" spellCheck={false} />
+      <input ref={mainRef} value={typed} onChange={(event) => onMainInput(event.currentTarget.value)} onKeyDown={onMainKey} placeholder={single ? t.challenges.typeCountry : t.challenges.typeAnswer}
+        aria-label={single ? t.challenges.inputAria : t.challenges.inputAnswerAria} aria-describedby="ch-hint" autoComplete="off" spellCheck={false} />
       <small>{t.challenges.rowsLeft(rowsLeft)}</small>
     </div>}
+    {phase === "playing" && <p id="ch-hint" className={`ch-hint${hint ? " is-on" : ""}`} aria-live="polite">{hint?.kind === "wait" ? t.challenges.enterHint(hint.answer, t.challenges.columns[hint.column]) : hint?.kind === "ambiguous" ? t.challenges.ambiguousHint : ""}</p>}
     </div>
     {phase === "ready" && <section className="ch-start">
       <div>
@@ -301,7 +267,7 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
         </p>}
       </div>
       <div className="ch-result-acts">
-        <button type="button" className="ch-go" onClick={() => { setFound(new Set()); setSolved(new Set()); setEnd(null); setReward(null); setTyped(""); setPhase("ready"); }}>{t.challenges.again}</button>
+        <button type="button" className="ch-go" onClick={() => { setSolved(new Set()); setCurrent(null); setEnd(null); setReward(null); setTyped(""); setPhase("ready"); }}>{t.challenges.again}</button>
         <button type="button" className="ch-ghost" onClick={onExit}>{t.challenges.back}</button>
       </div>
     </section>}
@@ -309,13 +275,13 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
       {board.groups.map((group) => <section key={group.continent} className="ch-group" aria-label={t.challenges.scopes[group.continent]} tabIndex={single ? undefined : 0}>
         {board.def.scope === "mundo" && <h3>{t.challenges.scopes[group.continent]} <small>{group.rows.filter((row) => found.has(row.id)).length}/{group.rows.length}</small></h3>}
         {single
-          ? <ol className="ch-list">{group.rows.map((row) => <li key={row.id}>{answer(row, row.cells[0])}</li>)}</ol>
+          ? <ol className="ch-list">{group.rows.map((row) => <li key={row.id} id={`ch-row-${row.id}`}>{answer(row.cells[0], row.id)}</li>)}</ol>
           : <table className="ch-table">
               <thead><tr>{board.columns.map((column) => <th key={column} scope="col">{t.challenges.columns[column]}</th>)}</tr></thead>
-              <tbody>{group.rows.map((row) => <tr key={row.id} className={found.has(row.id) ? "is-open" : undefined}>
+              <tbody>{group.rows.map((row) => <tr key={row.id} id={`ch-row-${row.id}`} className={rowState(row)}>
                 {board.columns.map((column) => {
                   const cell = row.cells.find((item) => item.column === column);
-                  return <td key={column}>{cell ? answer(row, cell) : <span className="ch-none" aria-hidden="true">—</span>}</td>;
+                  return <td key={column}>{cell ? answer(cell, row.id) : <span className="ch-none" aria-hidden="true">—</span>}</td>;
                 })}
               </tr>)}</tbody>
             </table>}
