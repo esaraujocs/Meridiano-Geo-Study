@@ -83,10 +83,19 @@ assert.ok(C.countryWaits(world, "Niger", new Set()));
 assert.ok(!C.countryWaits(world, "Niger", new Set(["566"])));
 assert.ok(C.countryWaits(world, "Guine", new Set()));
 assert.ok(!C.countryWaits(world, "Brasil", new Set()));
-// na célula: "real" é certo, mas é o começo de "real brasileiro": espera; o nome inteiro fecha sozinho
-assert.ok(C.cellAccepts(cell("76", "moeda"), "real") && C.cellWaits(cell("76", "moeda"), "real"));
-assert.ok(C.cellAccepts(cell("76", "moeda"), "real brasileiro") && !C.cellWaits(cell("76", "moeda"), "real brasileiro"));
-assert.ok(!C.cellWaits(cell("76", "capital"), "brasilia"));
+// o próprio apelido longo não faz esperar: "Estados Unidos" abre sozinho (o Enzo teve de escrever "da América", 23/10/2026)
+assert.equal(C.matchCountry(world, "Estados Unidos", new Set()), "840");
+assert.ok(!C.countryWaits(world, "Estados Unidos", new Set()));
+// quem continua escrevendo a forma longa tem o resto engolido; a primeira tecla de outra coisa desliga
+const usKeys = rows.find((row) => row.id === "840").cells[0].keys;
+const spill = { base: "estadosunidos", longer: C.longerKeys(usKeys, "Estados Unidos") };
+assert.ok(spill.longer.includes("estadosunidosdaamerica"));
+assert.equal(C.spillOf(spill, " "), "estadosunidos");
+assert.equal(C.spillOf(spill, " da"), "estadosunidosda");
+assert.equal(C.spillOf(spill, "W"), null);
+assert.ok(C.cellAccepts(cell("76", "moeda"), "real"));
+assert.ok(C.longerKeys(cell("76", "moeda").keys, "real").includes("realbrasileiro"));
+assert.deepEqual(C.longerKeys(cell("76", "capital").keys, "brasilia"), []);
 
 // recorde e medalhas
 const run = (correct, total, ms) => ({ id: `challenge-run:x:${ms}`, challenge: "x", correct, total, ms, end: "time", at: ms });

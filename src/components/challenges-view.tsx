@@ -5,10 +5,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { compareText, t } from "../domain/i18n";
 import { locale } from "../domain/i18n/locale";
 import {
-  CHALLENGE_SCOPES, CHALLENGE_TIERS, bestRun, buildChallenge, cellAccepts, cellId, cellWaits, challengeById, countryWaits, dailyChallenge, matchCountry, medalOf,
+  CHALLENGE_SCOPES, CHALLENGE_TIERS, bestRun, buildChallenge, cellAccepts, cellId, challengeById, countryWaits, dailyChallenge, longerKeys, matchCountry, medalOf, spillOf,
   type ChallengeBoard, type ChallengeCell, type ChallengeDef, type ChallengeEnd, type ChallengeRow, type ChallengeRun, type Medal,
 } from "../domain/challenges";
 import { listChallengeRuns, saveChallengeRun } from "../domain/challenges-store";
+import { answerKey } from "../domain/typed-answer";
 import type { PeoplesFile } from "../domain/peoples";
 import type { Legacy } from "../domain/types";
 import { Icon } from "./icons";
@@ -182,38 +183,56 @@ function ChallengePlay({ board, best, onExit, onPlaying, onSaved }: {
     if (next.size >= board.total) finish("complete", next);
     return next;
   };
-  // o país abre sozinho quando o nome está inteiro e não é o começo de outro ("Niger" espera o Enter: pode virar "Nigeria")
-  const openCountry = (id: string) => {
+  // depois de uma resposta fechar, quem continua escrevendo a forma longa dela ("Estados Unidos" + " da América", "real" + " brasileiro") tem o
+  // resto engolido, onde quer que o cursor esteja; a primeira tecla que já é outra coisa desliga isso
+  const spill = useRef<{ base: string; longer: readonly string[] } | null>(null);
+  const arm = (keys: ReadonlySet<string>, value: string) => {
+    const longer = longerKeys(keys, value);
+    spill.current = longer.length ? { base: answerKey(value), longer } : null;
+  };
+  const swallow = (value: string) => {
+    if (!spill.current) return false;
+    const next = spillOf(spill.current, value);
+    if (next === null) { spill.current = null; return false; }
+    spill.current = spill.current.longer.some((candidate) => candidate.length > next.length) ? { ...spill.current, base: next } : null;
+    return true;
+  };
+  // o país abre sozinho quando o nome está inteiro e não é o começo de outro país ("Niger" espera o Enter: pode virar "Nigeria")
+  const openCountry = (id: string, value: string) => {
     const row = rows.get(id)!;
     const next = solve([cellId(id, "nome")], new Set(found).add(id));
     setTyped("");
+    arm(row.cells[0].keys, value);
     const cell = nextOpenCell(row, next);
     pendingFocus.current = cell ? cellId(id, cell.column) : "main";
   };
   const onMainInput = (value: string) => {
+    if (swallow(value)) { setTyped(""); return; }
     setTyped(value);
     const id = matchCountry(board, value, found);
-    if (id && !countryWaits(board, value, found)) openCountry(id);
+    if (id && !countryWaits(board, value, found)) openCountry(id, value);
   };
   const onMainKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") return;
     event.preventDefault();
     const id = matchCountry(board, typed, found);
-    if (id) openCountry(id);
+    if (id) openCountry(id, typed);
   };
-  // a célula fecha sozinha com a resposta certa, menos quando ela é o começo de outra ("real" de "real brasileiro"): aí no Enter, no Tab ou ao sair
-  const closeCell = (row: ChallengeRow, cell: ChallengeCell) => {
+  // a célula fecha sozinha com a resposta certa e o cursor pula para a próxima
+  const closeCell = (row: ChallengeRow, cell: ChallengeCell, value: string) => {
     const next = solve([cellId(row.id, cell.column)], found);
+    arm(cell.keys, value);
     const following = nextOpenCell(row, next, cell);
     pendingFocus.current = following ? cellId(row.id, following.column) : "main";
   };
   const onCellInput = (row: ChallengeRow, cell: ChallengeCell, input: HTMLInputElement) => {
-    if (cellAccepts(cell, input.value) && !cellWaits(cell, input.value)) closeCell(row, cell);
+    if (swallow(input.value)) { input.value = ""; return; }
+    if (cellAccepts(cell, input.value)) closeCell(row, cell, input.value);
   };
   const onCellKey = (row: ChallengeRow, cell: ChallengeCell, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") { event.preventDefault(); mainRef.current?.focus(); return; }
     if (event.key !== "Enter" && event.key !== "Tab") return;
-    if (cellAccepts(cell, event.currentTarget.value)) { event.preventDefault(); closeCell(row, cell); return; }
+    if (cellAccepts(cell, event.currentTarget.value)) { event.preventDefault(); closeCell(row, cell, event.currentTarget.value); return; }
     if (event.key === "Enter") {
       event.preventDefault();
       const following = nextOpenCell(row, solved, cell);

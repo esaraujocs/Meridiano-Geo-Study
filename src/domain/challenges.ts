@@ -117,19 +117,27 @@ export function countryWaits(board: ChallengeBoard, typed: string, found: Readon
   const key = answerKey(typed);
   if (!key) return false;
   for (const group of board.groups) for (const row of group.rows) {
-    if (found.has(row.id)) continue;
+    // o próprio país não conta ("Estados Unidos" não espera por "Estados Unidos da America", 23/10/2026: o Enzo teve de escrever o nome longo)
+    if (found.has(row.id) || row.cells[0].keys.has(key)) continue;
     for (const candidate of row.cells[0].keys) if (candidate.length > key.length && candidate.startsWith(key)) return true;
   }
   return false;
 }
 
+/** As respostas mais longas da mesma linha ou célula que começam com o que foi aceito ("estadosunidos" → "estadosunidosdaamerica"): quem continua
+ *  escrevendo a forma longa depois de a resposta já ter fechado tem o resto engolido (`spillOf`), em vez de escorrer para a célula seguinte. */
+export function longerKeys(keys: ReadonlySet<string>, typed: string): string[] {
+  const key = answerKey(typed);
+  return key ? [...keys].filter((candidate) => candidate.length > key.length && candidate.startsWith(key)) : [];
+}
+/** Continuando a forma longa: o novo começo (para engolir a tecla), ou nulo quando o que veio já é outra coisa. */
+export function spillOf(spill: { base: string; longer: readonly string[] }, typed: string): string | null {
+  const combined = spill.base + answerKey(typed);
+  return spill.longer.some((candidate) => candidate.startsWith(combined)) ? combined : null;
+}
+
 /** A resposta de uma célula está certa? */
 export const cellAccepts = (cell: ChallengeCell, typed: string) => cell.keys.has(answerKey(typed));
-/** Certa, mas também o começo de outra resposta da mesma célula ("real" de "real brasileiro"): fecha só com Enter, Tab ou ao sair da célula. */
-export function cellWaits(cell: ChallengeCell, typed: string) {
-  const key = answerKey(typed);
-  return [...cell.keys].some((candidate) => candidate.length > key.length && candidate.startsWith(key));
-}
 export const cellId = (rowId: string, column: ChallengeColumn) => `${rowId}:${column}`;
 
 export type ChallengeEnd = "complete" | "time" | "gaveup";
